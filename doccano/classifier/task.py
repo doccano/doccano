@@ -5,7 +5,7 @@ import numpy as np
 
 from doccano.classifier.model import build_model
 from doccano.classifier.preprocess import build_vectorizer
-from doccano.classifier.utils import load_dataset, save_dataset, train_test_split
+from doccano.classifier.utils import load_dataset, save_dataset, make_output, train_test_split
 
 
 def run(filename):
@@ -30,6 +30,5 @@ def run(filename):
     y_prob = np.max(y_prob, axis=-1)
 
     print('Saving...')
-    outputs = {}
-    # data, ids, y_pred, y_prob
-    #save_dataset(outputs, filename)
+    data = make_output(data, ids, y_pred, y_prob)
+    save_dataset(data, filename)
