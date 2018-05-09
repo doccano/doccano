@@ -38,7 +38,7 @@ def make_output(data, ids, y_pred, y_prob):
         if i == len(ids):
             break
         if d['id'] == ids[i]:
-            d['label'] = int(y_pred[i])
+            d['label'] = str(y_pred[i])
             d['prob'] = float(y_prob[i])
             i += 1
 
