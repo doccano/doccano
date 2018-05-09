@@ -1,0 +1,4 @@
+mecab-python3==0.7
+numpy==1.14.3
+scikit-learn==0.19.1
+scipy==1.1.0
