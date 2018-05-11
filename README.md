@@ -2,7 +2,7 @@
 
 doccano is a document annotation tool. The purpose is making annotation process efficient. First, manually labeling small data in minutes using the labeling interface. Second, train built-in classification model using the labeled data and classify unlabeled data with their probability. Then, sort data in ascending order by the probability. You can efficiently annotate the data.
 
-![doccano](docs/placeholder.png)
+![doccano](docs/demo.png)
 
 <!--
 ## Demo
