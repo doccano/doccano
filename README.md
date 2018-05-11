@@ -4,9 +4,6 @@ doccano is a document annotation tool. The purpose is making annotation process 
 
 ![doccano](docs/demo.png)
 
-<!--
-## Demo
--->
 
 ## Features
 
@@ -23,7 +20,7 @@ Put data into [doccano/data](https://github.com/chakki-works/doccano/tree/master
 
 ## Installation
 
-To install namaco, simply run:
+To install doccano, simply run:
 
 ```bash
 $ git clone https://github.com/chakki-works/doccano.git
