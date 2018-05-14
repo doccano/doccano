@@ -8,7 +8,7 @@ from tornado.web import url
 class IndexHandler(tornado.web.RequestHandler):
 
     def get(self):
-        self.render('index2.html')
+        self.render('annotation.html')
 
     def post(self):
         pass
