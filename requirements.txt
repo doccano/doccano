@@ -1,4 +1,7 @@
+Django==2.0.5
 mecab-python3==0.7
 numpy==1.14.3
+pytz==2018.4
 scikit-learn==0.19.1
 scipy==1.1.0
+tornado==5.0.2
