@@ -15,6 +15,7 @@ doccano is a document annotation tool. The purpose is making annotation process 
 * numpy 1.14.3+
 * scikit-learn 0.19.1+
 * scipy 1.1.0+
+* django 2.0.5+
 
 Put data into [doccano/data](https://github.com/chakki-works/doccano/tree/master/data) directory.
 
