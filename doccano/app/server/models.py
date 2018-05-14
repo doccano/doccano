@@ -7,8 +7,8 @@ class Label(models.Model):
 
 class Annotation(models.Model):
     text = models.TextField()
-    prob = models.FloatField()
-    labels = models.ManyToManyField(Label)
+    prob = models.FloatField(blank=True, null=True)
+    labels = models.ManyToManyField(Label, blank=True, null=True)
     # users = models.ManyToManyField(User)
 
 

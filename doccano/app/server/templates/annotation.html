@@ -65,15 +65,13 @@
             <article class="post">
               <h4>
                   <div class="field is-grouped is-grouped-multiline">
-                      <!--<div class="control" v-for="label in items[cur].labels">-->
                       <div class="control" v-for="(label, index) in items[cur].labels">
                           <div class="tags has-addons">
                               <span class="tag is-grey">
                                   <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
-                                  <!--Country-->
                                   [[label.text]]
                               </span>
-                              <span class="tag is-primary" v-if="label.prob">[[label.prob]]<!--0.98--></span>
+                              <span class="tag is-primary" v-if="label.prob">[[label.prob]]</span>
                           </div>
                       </div>
                   </div>
