@@ -37,13 +37,13 @@ var app = new Vue({
       },
     ],
     labels: [],
-    guideline: 'annotation guideline'
+    guideline: ''
   },
   methods: {
     addLabel: function (label) {
       this.items[this.cur]['labels'].push({
-        "text": label,
-        "prob": null
+        'text': label,
+        'prob': null
       })
     },
     deleteLabel: function (index) {
@@ -58,8 +58,9 @@ var app = new Vue({
   },
   created: function () {
     console.log('created');
+    var base_url = window.location.href.split('/').slice(3, 5).join('/');
     var self = this;
-    axios.get('/annotation/api/label')
+    axios.get('/' + base_url + '/apis/label')
       .then(function (response) {
         console.log('label request');
         self.labels = response.data['labels'];
