@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" integrity="sha256-2k1KVsNPRXxZOsXQ8aqcZ9GOOwmJTMoOB5o5Qp1d6/s=" crossorigin="anonymous" />
     <link rel="stylesheet" type="text/css" href="{% static 'forum.css' %}">
       <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
   </head>
   <body>
@@ -112,7 +113,7 @@
               Tags
             </p>
             <div class="tags">
-                <a class="tag is-grey" v-for="label in labels" v-on:click="addLabel(label)">[[label]]</a>
+                <a class="tag is-grey" v-for="label in labels" v-on:click="addLabel(label)">[[label.text]]</a>
             </div>
           </aside>
         </div>
