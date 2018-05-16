@@ -5,17 +5,28 @@ class Label(models.Model):
     text = models.CharField(max_length=100)
 
     def as_dict(self):
-        return {'id': self.id, 'text': self.text}
+        return {'id': self.id,
+                'text': self.text}
+
+
+class RawData(models.Model):
+    text = models.TextField()
+
+    def as_dict(self):
+        return {'id': self.id,
+                'text': self.text}
 
 
 class Annotation(models.Model):
-    text = models.TextField()
     prob = models.FloatField(blank=True, null=True)
-    labels = models.ManyToManyField(Label, blank=True, null=True)
-    # users = models.ManyToManyField(User)
+    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+    data = models.ForeignKey(RawData, on_delete=models.CASCADE)
 
     def as_dict(self):
-        return {'id': self.id, 'text': self.text, 'prob': self.prob}
+        return {'id': self.id,
+                'data_id': self.data.id,
+                'label_id': self.label.id,
+                'prob': self.prob}
 
 
 class User(models.Model):
