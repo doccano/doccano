@@ -21,12 +21,14 @@ class Annotation(models.Model):
     prob = models.FloatField(blank=True, null=True)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
     data = models.ForeignKey(RawData, on_delete=models.CASCADE)
+    manual = models.BooleanField(default=False)
 
     def as_dict(self):
         return {'id': self.id,
                 'data_id': self.data.id,
                 'label_id': self.label.id,
-                'prob': self.prob}
+                'prob': self.prob,
+                'manual': self.manual}
 
 
 class User(models.Model):
