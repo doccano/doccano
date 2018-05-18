@@ -177,15 +177,15 @@
                                     <input class="input" type="text" placeholder="Text input">
                                 </div>
                             </div>
-                            <div class="card" v-for="n in 10">
+                            <div class="card" v-for="item in items.slice(0, cur)">
                                 <div class="card-content">
                                     <div class="content">
                                         <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
+                                            [[ item['text'] ]]
                                         </p>
                                         <div class="tags">
-                                            <a class="tag is-grey">Label1</a>
-                                            <a class="tag is-grey">Label2</a>
+                                            <a class="tag is-grey" v-for="label in item.labels">[[ label.text ]]</a>
+                                            <!--<a class="tag is-grey">Label2</a>-->
                                         </div>
                                     </div>
                                 </div>
