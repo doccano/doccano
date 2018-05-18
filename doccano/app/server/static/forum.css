@@ -62,7 +62,10 @@ article.post:last-child {
     background-color: #eee;
     color: #666;
 }
-
 p {
   font-family: "游ゴシック体", YuGothic, "YuGothic M", sans-serif;
+}
+.box {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
 }
