@@ -92,7 +92,7 @@
                         </div>
                         <div class="is-clearfix	">
                             <div class="buttons has-addons is-left is-pulled-left">
-                                <a class="button is-small" v-on:click="prevPage">
+                                <a class="button is-small" v-on:click="prevPage" :disabled="cur == 0">
                                     <span class="icon">
                                         <i class="fas fa-chevron-circle-left"></i>
                                     </span>
@@ -100,7 +100,7 @@
                                 </a>
                             </div>
                             <div class="buttons has-addons is-right">
-                                <a class="button is-small" v-on:click="nextPage">
+                                <a class="button is-small" v-on:click="nextPage" :disabled="cur + done == total">
                                     <span>Next</span>
                                     <span class="icon">
                                         <i class="fas fa-chevron-circle-right"></i>
