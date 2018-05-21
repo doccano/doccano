@@ -100,7 +100,7 @@
                                 </a>
                             </div>
                             <div class="buttons has-addons is-right">
-                                <a class="button is-small" v-on:click="nextPage" :disabled="cur + done == total">
+                                <a class="button is-small" v-on:click="nextPage" :disabled="remaining == 1">
                                     <span>Next</span>
                                     <span class="icon">
                                         <i class="fas fa-chevron-circle-right"></i>
@@ -149,7 +149,7 @@
                                 </p>
                             </aside>
 
-                            <aside class="menu" style="padding-top:1rem;">
+                            <aside class="menu" style="padding-top:1.5rem;">
                                 <p class="menu-label" style="padding-left:0;">
                                     Progress
                                 </p>
@@ -160,7 +160,7 @@
                                 </p>
                             </aside>
 
-                            <aside class="menu" style="padding-top:1rem;">
+                            <aside class="menu" style="padding-top:1.5rem;">
                                 <p class="menu-label" style="padding-left:0;">
                                     Tags
                                 </p>
@@ -181,18 +181,17 @@
                             <div class="field">
                                 <label class="label">Search</label>
                                 <div class="control">
-                                    <input class="input" type="text" placeholder="Text input">
+                                    <input class="input" type="text" placeholder="Text input" v-model="searchQuery" @keyup.enter="submit">
                                 </div>
                             </div>
-                            <div class="card" v-for="item in items.slice(0, cur)">
+                            <div class="card" v-for="item in history">
                                 <div class="card-content">
                                     <div class="content">
                                         <p>
-                                            [[ item['text'] ]]
+                                            [[ item['text'].slice(0, 100) ]]
                                         </p>
                                         <div class="tags">
                                             <a class="tag is-grey" v-for="label in item.labels">[[ label.text ]]</a>
-                                            <!--<a class="tag is-grey">Label2</a>-->
                                         </div>
                                     </div>
                                 </div>

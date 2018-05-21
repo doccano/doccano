@@ -58,3 +58,17 @@ class MetaInfoAPI(View):
         remaining = RawData.objects.filter(annotation__isnull=True).count()
 
         return JsonResponse({'labels': labels, 'total': total, 'remaining': remaining})
+
+
+class SearchAPI(View):
+
+    def get(self, request, *args, **kwargs):
+        keyword = request.GET.get('keyword')
+        docs = RawData.objects.filter(text__contains=keyword)
+        labels = [[a.as_dict() for a in Annotation.objects.filter(data=d.id)] for d in docs]
+        # print(annotations)
+        # print(docs)
+        docs = [{**d.as_dict(), **{'labels': []}} for d in docs]
+        # Annotation.objects.select_related('data').all().filter(data__text__contains=keyword)
+
+        return JsonResponse({'data': docs})

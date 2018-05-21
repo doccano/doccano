@@ -97,7 +97,9 @@ var vm = new Vue({
         labels: [],
         guideline: 'Here is the Annotation Guideline Text',
         total: 0,
-        remaining: 0
+        remaining: 0,
+        searchQuery: '',
+        history: []
     },
 
     methods: {
@@ -149,8 +151,20 @@ var vm = new Vue({
             this.cur = Math.max(this.cur - 1, 0);
             this.remaining += 1;
         },
-        activeLearn: function() {
+        activeLearn: function () {
             alert('Active Learning!');
+        },
+        submit: function () {
+            console.log('submit' + this.searchQuery);
+            var self = this;
+            axios.get('/' + base_url + '/apis/search?keyword=' + this.searchQuery)
+                .then(function (response) {
+                    console.log('search response');
+                    self.history = response.data['data'];
+                })
+                .catch(function (error) {
+                    console.log('ERROR!! happend by Backend.')
+                });
         }
     },
     created: function () {
