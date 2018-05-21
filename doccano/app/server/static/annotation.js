@@ -95,7 +95,9 @@ var vm = new Vue({
             "text": 'document'
         }],
         labels: [],
-        guideline: 'Here is the Annotation Guideline Text'
+        guideline: 'Here is the Annotation Guideline Text',
+        total: 0,
+        remaining: 0
     },
 
     methods: {
@@ -141,9 +143,11 @@ var vm = new Vue({
         },
         nextPage: function () {
             this.cur = Math.min(this.cur + 1, this.items.length - 1);
+            this.remaining -= 1;
         },
         prevPage: function () {
             this.cur = Math.max(this.cur - 1, 0);
+            this.remaining += 1;
         },
         activeLearn: function() {
             alert('Active Learning!');
@@ -154,6 +158,8 @@ var vm = new Vue({
         axios.get('/' + base_url + '/apis/label')
             .then(function (response) {
                 self.labels = response.data['labels'];
+                self.total = response.data['total'];
+                self.remaining = response.data['remaining'];
             })
             .catch(function (error) {
                 console.log('ERROR!! happend by Backend.')
@@ -166,5 +172,10 @@ var vm = new Vue({
             .catch(function (error) {
                 console.log('ERROR!! happend by Backend.')
             });
+    },
+    computed: {
+        done: function () {
+            return this.total - this.remaining
+        }
     }
 });

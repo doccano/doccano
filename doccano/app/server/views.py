@@ -49,10 +49,12 @@ class AnnotationAPIView(View):
         return JsonResponse({})
 
 
-class LabelAPIView(View):
+class MetaInfoAPI(View):
 
     def get(self, request, *args, **kwargs):
         labels = Label.objects.all()
         labels = [l.as_dict() for l in labels]
+        total = RawData.objects.count()
+        remaining = RawData.objects.filter(annotation__isnull=True).count()
 
-        return JsonResponse({'labels': labels})
+        return JsonResponse({'labels': labels, 'total': total, 'remaining': remaining})
