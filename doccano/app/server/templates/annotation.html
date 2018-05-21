@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Forum - Free Bulma template</title>
+    <title>doccano - Document Annotation Tool</title>
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
         crossorigin="anonymous">
@@ -91,23 +91,23 @@
                             </article>
                         </div>
                         <div class="is-clearfix	">
-                                <div class="buttons has-addons is-left is-pulled-left">
-                                    <a class="button is-small" v-on:click="prevPage">
-                                        <span class="icon">
-                                            <i class="fas fa-chevron-circle-left"></i>
-                                        </span>
-                                        <span>Prev</span>
-                                    </a>
-                                </div>
-                                <div class="buttons has-addons is-right">
-                                    <a class="button is-small" v-on:click="nextPage">
-                                        <span>Next</span>
-                                        <span class="icon">
-                                            <i class="fas fa-chevron-circle-right"></i>
-                                        </span>
-                                    </a>
-                                </div>
+                            <div class="buttons has-addons is-left is-pulled-left">
+                                <a class="button is-small" v-on:click="prevPage">
+                                    <span class="icon">
+                                        <i class="fas fa-chevron-circle-left"></i>
+                                    </span>
+                                    <span>Prev</span>
+                                </a>
                             </div>
+                            <div class="buttons has-addons is-right">
+                                <a class="button is-small" v-on:click="nextPage">
+                                    <span>Next</span>
+                                    <span class="icon">
+                                        <i class="fas fa-chevron-circle-right"></i>
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
                     </tab>
 
                     <tab name="Guideline">
@@ -143,7 +143,9 @@
                                     Active Learning
                                 </p>
                                 <p>
-                                    <a class="button is-primary is-small" v-on:click="activeLearn"><b>Do It!</b></a>
+                                    <a class="button is-primary is-small" v-on:click="activeLearn">
+                                        <b>Do It!</b>
+                                    </a>
                                 </p>
                             </aside>
 
@@ -162,8 +164,13 @@
                                 <p class="menu-label" style="padding-left:0;">
                                     Tags
                                 </p>
-                                <div class="tags">
-                                    <a class="tag is-grey" v-for="label in labels" v-on:click="addLabel(label.text)">[[label.text]]</a>
+                                <div class="field is-grouped is-grouped-multiline">
+                                    <div class="control" v-for="label in labels">
+                                        <div class="tags has-addons">
+                                            <a class="tag is-grey" v-on:click="addLabel(label.text)">[[label.text]]</a>
+                                            <span class="tag is-primary">[[label.shortcut]]</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </aside>
                         </div>

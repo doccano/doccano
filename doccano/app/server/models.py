@@ -3,10 +3,12 @@ from django.db import models
 
 class Label(models.Model):
     text = models.CharField(max_length=100)
+    shortcut = models.CharField(max_length=10)
 
     def as_dict(self):
         return {'id': self.id,
-                'text': self.text}
+                'text': self.text,
+                'shortcut': self.shortcut}
 
 
 class RawData(models.Model):
