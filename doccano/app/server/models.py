@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Label(models.Model):
@@ -33,13 +34,12 @@ class Annotation(models.Model):
                 'manual': self.manual}
 
 
-class User(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-    password = models.CharField(max_length=32)
-    # password = forms.CharField(max_length=32, widget=forms.PasswordInput)
-
-
 class Project(models.Model):
     name = models.CharField(max_length=100)
-    # users = models.ManyToManyField(User)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    users = models.ManyToManyField(User)
+
+    def __str__(self):
+        return self.name

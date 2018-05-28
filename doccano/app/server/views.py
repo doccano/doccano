@@ -3,8 +3,9 @@ import json
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
+from django.views.generic.list import ListView
 
-from .models import Annotation, Label, RawData
+from .models import Annotation, Label, RawData, Project
 
 
 class AnnotationView(View):
@@ -72,3 +73,14 @@ class SearchAPI(View):
         # Annotation.objects.select_related('data').all().filter(data__text__contains=keyword)
 
         return JsonResponse({'data': docs})
+
+
+class ProjectListView(ListView):
+
+    model = Project
+    paginate_by = 100  # if pagination is desired
+    template_name = 'project_list.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
