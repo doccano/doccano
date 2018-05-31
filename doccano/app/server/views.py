@@ -76,6 +76,31 @@ class SearchAPI(View):
         return JsonResponse({'data': docs})
 
 
+class LabelAPI(View):
+
+    def get(self, request, *args, **kwargs):
+        """Get labels."""
+        labels = Label.objects.all()
+        labels = [label.as_dict() for label in labels]
+
+        return JsonResponse({'labels': labels})
+
+    def post(self, request, *args, **kwargs):
+        """Create labels."""
+        Label().save()
+
+        return JsonResponse({'status': 'ok'})
+
+    def put(self, request, *args, **kwargs):
+        """Update labels."""
+        label = Label.objects.get(id=1)
+        label.text = ''
+        label.shortcut = ''
+        label.save()
+
+        return JsonResponse({'status': 'ok'})
+
+
 class ProjectListView(ListView):
 
     model = Project
