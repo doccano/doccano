@@ -101,6 +101,20 @@ class LabelAPI(View):
         return JsonResponse({'status': 'ok'})
 
 
+class RawDataAPI(View):
+
+    def get(self, request, *args, **kwargs):
+        """Get raw data."""
+        data = []
+        return JsonResponse({'data': data})
+
+    def post(self, request, *args, **kwargs):
+        """Upload data."""
+        print(request.FILES['file'])
+        # RawData().save()
+        return JsonResponse({'status': 'ok'})
+
+
 class ProjectListView(ListView):
 
     model = Project
@@ -116,6 +130,16 @@ class ProjectDetailView(DetailView):
 
     model = Project
     template_name = 'project_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class ProjectAdminView(DetailView):
+
+    model = Project
+    template_name = 'project_admin.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
