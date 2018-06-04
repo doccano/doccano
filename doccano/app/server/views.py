@@ -87,16 +87,31 @@ class LabelAPI(View):
 
     def post(self, request, *args, **kwargs):
         """Create labels."""
-        Label().save()
+        text = request.POST.get('text')
+        shortcut = request.POST.get('shortcut')
+        Label(text=text, shortcut=shortcut).save()
 
         return JsonResponse({'status': 'ok'})
 
     def put(self, request, *args, **kwargs):
         """Update labels."""
-        label = Label.objects.get(id=1)
-        label.text = ''
-        label.shortcut = ''
+        body = request.body.decode('utf-8').replace("'", '"')
+        body = json.loads(body)
+        label_id = body.get('id')
+        text = body.get('text')
+        shortcut = body.get('shortcut')
+        label = Label.objects.get(id=label_id)
+        label.text = text
+        label.shortcut = shortcut
         label.save()
+
+        return JsonResponse({'status': 'ok'})
+
+    def delete(self, request, *args, **kwargs):
+        body = request.body.decode('utf-8').replace("'", '"')
+        body = json.loads(body)
+        label_id = body.get('id')
+        Label.objects.get(id=label_id).delete()
 
         return JsonResponse({'status': 'ok'})
 
