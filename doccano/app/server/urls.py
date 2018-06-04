@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import AnnotationView, AnnotationAPIView, MetaInfoAPI, SearchAPI
-from .views import ProjectListView, ProjectDetailView, ProjectAdminView
+from .views import ProjectListView, ProjectDetailView, ProjectAdminView, RawDataAPI
 
 urlpatterns = [
     path('', ProjectListView.as_view(), name='project-list'),
@@ -9,6 +9,7 @@ urlpatterns = [
     path('<int:pk>/admin', ProjectAdminView.as_view()),
     path('<int:project_id>/docs', AnnotationView.as_view()),
     path('<int:project_id>/apis/data', AnnotationAPIView.as_view()),
+    path('<int:pk>/apis/raw_data', RawDataAPI.as_view(), name='data_api'),
     path('<int:project_id>/apis/label', MetaInfoAPI.as_view()),
     path('<int:project_id>/apis/search', SearchAPI.as_view()),
 ]

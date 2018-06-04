@@ -110,8 +110,12 @@ class RawDataAPI(View):
 
     def post(self, request, *args, **kwargs):
         """Upload data."""
-        print(request.FILES['file'])
-        # RawData().save()
+        f = request.FILES['attachment']
+        content = ''.join(chunk.decode('utf-8') for chunk in f.chunks())
+        for line in content.split('\n'):
+            j = json.loads(line)
+            RawData(text=j['text']).save()
+
         return JsonResponse({'status': 'ok'})
 
 
