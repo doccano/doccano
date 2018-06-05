@@ -1,81 +1,68 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} {% load static %}
+{% block header %}
+<!--<link rel="stylesheet" type="text/css" href="{% static 'index.css' %}">-->
+{% endblock %}
+{% block content %}
 <section class="container" id="root">
     <div class="columns">
 
         <div class="column is-12">
-            <tabs>
-                <tab name="Dataset" :selected="true">
-                    <div class="box content">
-                        <article class="post">
-                            <h4>Project Dataset</h4>
-                            <div class="media">
-                                <div class="media-left">
-                                    <p class="image is-32x32">
-                                        <img src="http://bulma.io/images/placeholders/128x128.png">
-                                    </p>
+            <div class="box content">
+                <article class="post">
+                    <h4>Project Dataset</h4>
+                    <div class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <div class="field file has-name">
+                                    <label class="file-label">
+                                        <input class="file-input" type="file" name="resume" ref="file" v-on:change="handleFileUpload()" />
+                                        <span class="file-cta">
+                                            <span class="file-icon">
+                                                <i class="fas fa-upload"></i>
+                                            </span>
+                                            <span class="file-label">
+                                                Choose a file…
+                                            </span>
+                                        </span>
+                                        <span class="file-name">
+                                            [[ file_name ]]
+                                        </span>
+                                    </label>
                                 </div>
-                                <div class="media-content">
-                                    <div class="content">
-                                        <div class="field file has-name">
-                                            <label class="file-label">
-                                                <input class="file-input" type="file" name="resume" ref="file" v-on:change="handleFileUpload()" />
-                                                <span class="file-cta">
-                                                    <span class="file-icon">
-                                                        <i class="fas fa-upload"></i>
-                                                    </span>
-                                                    <span class="file-label">
-                                                        Choose a file…
-                                                    </span>
-                                                </span>
-                                                <span class="file-name">
-                                                    [[ file_name ]]
-                                                </span>
-                                            </label>
-                                        </div>
-                                        <div class="field">
-                                            <div class="control">
-                                                <button class="button is-primary" v-on:click="submitFile()">Submit</button>
-                                            </div>
-                                        </div>
+                                <div class="field">
+                                    <div class="control">
+                                        <button class="button is-primary" v-on:click="submitFile()">Submit</button>
                                     </div>
                                 </div>
-                                <div class="media-right">
-                                    <span class="has-text-grey-light">
-                                        <i class="fa fa-comments"></i> 1</span>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                </tab>
 
-                <tab name="Labels">
-                    <div class="box content">
-                        <article class="post">
-                            <h4>Label Definition</h4>
-                            <div class="media">
-                                <div class="media-left">
-                                    <p class="image is-32x32">
-                                        <img src="http://bulma.io/images/placeholders/128x128.png">
-                                    </p>
+                                <div class="tags">
+                                    <a class="tag is-grey" v-for="label in labels">[[ label.text ]]</a>
                                 </div>
-                                <div class="media-content">
-                                    <div class="content">
-                                        <p>Label definition</p>
-                                        <p>
-                                            <a href="#">@jsmith</a> created at {{ object.created_at|date }} &nbsp;
-                                            <span class="tag">Question</span>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="media-right">
-                                    <span class="has-text-grey-light">
-                                        <i class="fa fa-comments"></i> 1</span>
-                                </div>
+
+
+                                <section class="todoapp">
+                                    <header class="header">
+                                        <h1>Label Settings</h1>
+                                        <input class="new-todo" autofocus autocomplete="off" placeholder="What needs to be done?" v-model="newTodo" @keyup.enter="addTodo">
+                                    </header>
+                                    <section class="main" v-show="todos.length" v-cloak>
+                                        <ul class="todo-list">
+                                            <li v-for="todo in todos" class="todo" :key="todo.id" :class="{ editing: todo == editedTodo }">
+                                                <div class="view">
+                                                    <label @dblclick="editTodo(todo)">{{ todo.title }}</label>
+                                                    <button class="destroy" @click="removeTodo(todo)"></button>
+                                                </div>
+                                                <input class="edit" type="text" v-model="todo.title" v-todo-focus="todo == editedTodo" @blur="doneEdit(todo)" @keyup.enter="doneEdit(todo)"
+                                                    @keyup.esc="cancelEdit(todo)">
+                                            </li>
+                                        </ul>
+                                    </section>
+                                </section>
                             </div>
-                        </article>
+                        </div>
                     </div>
-                </tab>
-            </tabs>
+                </article>
+            </div>
         </div>
 
     </div>
