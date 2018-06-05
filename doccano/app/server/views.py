@@ -125,7 +125,7 @@ class RawDataAPI(View):
 
     def post(self, request, *args, **kwargs):
         """Upload data."""
-        f = request.FILES['attachment']
+        f = request.FILES['file']
         content = ''.join(chunk.decode('utf-8') for chunk in f.chunks())
         for line in content.split('\n'):
             j = json.loads(line)
