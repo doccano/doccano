@@ -1,0 +1,197 @@
+{% extends "base.html" %} {% load static %} {% block header %} {% endblock %} {% block content %}
+<section class="container" id="root">
+    <div class="columns">
+
+        <div class="column is-8">
+            <div class="box content">
+                <article class="post">
+                    <h4>Learning Curve</h4>
+                    <div class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <canvas id="myChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+
+        <div class="column is-4">
+            <div class="box content">
+                <h4>Stats</h4>
+                <canvas id="myPie"></canvas>
+                <div class="tile is-ancestor has-text-centered">
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="title">439k</p>
+                            <p class="subtitle">Users</p>
+                        </article>
+                    </div>
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="title">59k</p>
+                            <p class="subtitle">Labels</p>
+                        </article>
+                    </div>
+                </div>
+                <div class="tile is-ancestor has-text-centered">
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="title">3.4k</p>
+                            <p class="subtitle">Records</p>
+                        </article>
+                    </div>
+                    <div class="tile is-parent">
+                        <article class="tile is-child box">
+                            <p class="title">19</p>
+                            <p class="subtitle">Annotated</p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="columns">
+        <div class="column is-8">
+            <div class="box content">
+                <h4>Labels</h4>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <abbr title="Position">Pos</abbr>
+                            </th>
+                            <th>Label name</th>
+                            <th>Shortcut key</th>
+                            <th>Deletion</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>1</th>
+                            <td>
+                                <a href="https://en.wikipedia.org/wiki/Leicester_City_F.C." title="Leicester City F.C.">Continental Region</a>
+                            </td>
+                            <td>k</td>
+                            <td>
+                                <a class="button is-danger is-small">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>2</th>
+                            <td>
+                                <a href="https://en.wikipedia.org/wiki/Arsenal_F.C." title="Arsenal F.C.">Political Organization Other</a>
+                            </td>
+                            <td>g</td>
+                            <td>
+                                <a class="button is-danger is-small">Delete</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>3</th>
+                            <td>
+                                <a href="https://en.wikipedia.org/wiki/Tottenham_Hotspur_F.C." title="Tottenham Hotspur F.C.">Country</a>
+                            </td>
+                            <td>p</td>
+                            <td>
+                                <a class="button is-danger is-small">Delete</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="column is-4">
+            <div class="box content">
+                <h4>Data Management</h4>
+                <p>Data upload</p>
+                <div class="field file has-name">
+                    <label class="file-label">
+                        <input class="file-input" type="file" name="resume" ref="file" v-on:change="handleFileUpload()" />
+                        <span class="file-name">
+                            [[ file_name ]]
+                        </span>
+                        <span class="file-cta">
+                            <span class="file-icon">
+                                <i class="fas fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                                Select
+                            </span>
+                        </span>
+                        <!--
+                            <button class="button is-primary" v-on:click="submitFile()">Submit</button>
+                            -->
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</section>
+<script type="text/javascript" src="{% static 'project_admin.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script type="text/javascript">
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var ctx1 = document.getElementById('myPie');
+
+    var pie = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [10, 20]
+            }],
+            labels: [
+                'Labeled',
+                'Unlabeled'
+            ]
+        }
+    });
+
+    var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: 'line',
+
+        // The data for our dataset
+        data: {
+            labels: [50, 100, 150, 200, 250, 300],
+            datasets: [{
+                    label: "training",
+                    backgroundColor: 'rgb(80, 220, 100)',
+                    borderColor: 'rgb(80, 220, 100)',
+                    data: [72, 83, 86, 87, 88, 88.5],
+                    fill: false,
+                },
+                {
+                    label: "validation",
+                    backgroundColor: 'rgb(51, 153, 255)',
+                    borderColor: 'rgb(51, 153, 255)',
+                    data: [72, 80, 83, 85, 86, 86.5],
+                    fill: false,
+                }
+            ]
+        },
+
+        // Configuration options go here
+        options: {
+            scales: {
+                yAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Accuracy'
+                    }
+                }],
+                xAxes: [{
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Number of training samples'
+                    }
+                }],
+            }
+        }
+    });
+</script>
+{% endblock %}
