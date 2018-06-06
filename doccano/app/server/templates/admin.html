@@ -67,35 +67,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <th>1</th>
-                                            <td>
-                                                Continental Region
-                                            </td>
-                                            <td>k</td>
-                                            <td>
-                                                <a class="button is-danger is-small">Delete</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>2</th>
-                                            <td>
-                                                Political Organization Other
-                                            </td>
-                                            <td>g</td>
-                                            <td>
-                                                <a class="button is-danger is-small">Delete</a>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <th>3</th>
-                                            <td>
-                                                Country
-                                            </td>
-                                            <td>p</td>
-                                            <td>
-                                                <a class="button is-danger is-small">Delete</a>
-                                            </td>
+                                        <tr v-for="label in labels">
+                                            <th>[[ label.id ]]</th>
+                                            <td>[[ label.text ]]</td>
+                                            <td>[[ label.shortcut ]]</td>
+                                            <td><a class="button is-danger is-small">Delete</a></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -186,6 +162,10 @@
 
         // Configuration options go here
         options: {
+            legend: {
+                display: true,
+                position: 'right'
+            },
             scales: {
                 yAxes: [{
                     scaleLabel: {
