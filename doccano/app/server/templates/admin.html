@@ -19,114 +19,121 @@
 
         <div class="column is-4">
             <div class="box content">
-                <h4>Stats</h4>
-                <canvas id="myPie"></canvas>
-                <div class="tile is-ancestor has-text-centered">
-                    <div class="tile is-parent">
-                        <article class="tile is-child box">
-                            <p class="title">439k</p>
-                            <p class="subtitle">Users</p>
-                        </article>
+                <article class="post">
+                    <h4>Stats</h4>
+                    <div class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <canvas id="myPie"></canvas>
+                            </div>
+                        </div>
                     </div>
-                    <div class="tile is-parent">
-                        <article class="tile is-child box">
-                            <p class="title">59k</p>
-                            <p class="subtitle">Labels</p>
-                        </article>
-                    </div>
-                </div>
-                <div class="tile is-ancestor has-text-centered">
-                    <div class="tile is-parent">
-                        <article class="tile is-child box">
-                            <p class="title">3.4k</p>
-                            <p class="subtitle">Records</p>
-                        </article>
-                    </div>
-                    <div class="tile is-parent">
-                        <article class="tile is-child box">
-                            <p class="title">19</p>
-                            <p class="subtitle">Annotated</p>
-                        </article>
-                    </div>
-                </div>
+                </article>
             </div>
         </div>
     </div>
 
-    <div class="columns">
+    <div class="columns" style="margin-top:-1rem;">
         <div class="column is-8">
             <div class="box content">
-                <h4>Labels</h4>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>
-                                <abbr title="Position">Pos</abbr>
-                            </th>
-                            <th>Label name</th>
-                            <th>Shortcut key</th>
-                            <th>Deletion</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>1</th>
-                            <td>
-                                <a href="https://en.wikipedia.org/wiki/Leicester_City_F.C." title="Leicester City F.C.">Continental Region</a>
-                            </td>
-                            <td>k</td>
-                            <td>
-                                <a class="button is-danger is-small">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>2</th>
-                            <td>
-                                <a href="https://en.wikipedia.org/wiki/Arsenal_F.C." title="Arsenal F.C.">Political Organization Other</a>
-                            </td>
-                            <td>g</td>
-                            <td>
-                                <a class="button is-danger is-small">Delete</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>3</th>
-                            <td>
-                                <a href="https://en.wikipedia.org/wiki/Tottenham_Hotspur_F.C." title="Tottenham Hotspur F.C.">Country</a>
-                            </td>
-                            <td>p</td>
-                            <td>
-                                <a class="button is-danger is-small">Delete</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <article class="post">
+                    <h4>Label Management</h4>
+                    <div class="media">
+                        <div class="media-content">
+                            <div class="content">
+
+                                <div class="field is-grouped">
+                                    <p class="control is-expanded">
+                                        <input class="input" type="text" placeholder="Label name">
+                                    </p>
+                                    <p class="control">
+                                        <input class="input" type="text" placeholder="Shortcut key">
+                                    </p>
+                                    <p class="control">
+                                        <a class="button is-primary">
+                                            Add
+                                        </a>
+                                    </p>
+                                </div>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                Id
+                                            </th>
+                                            <th>Label name</th>
+                                            <th>Shortcut key</th>
+                                            <th>Deletion</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th>1</th>
+                                            <td>
+                                                Continental Region
+                                            </td>
+                                            <td>k</td>
+                                            <td>
+                                                <a class="button is-danger is-small">Delete</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>2</th>
+                                            <td>
+                                                Political Organization Other
+                                            </td>
+                                            <td>g</td>
+                                            <td>
+                                                <a class="button is-danger is-small">Delete</a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>3</th>
+                                            <td>
+                                                Country
+                                            </td>
+                                            <td>p</td>
+                                            <td>
+                                                <a class="button is-danger is-small">Delete</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </article>
             </div>
         </div>
 
         <div class="column is-4">
             <div class="box content">
-                <h4>Data Management</h4>
-                <p>Data upload</p>
-                <div class="field file has-name">
-                    <label class="file-label">
-                        <input class="file-input" type="file" name="resume" ref="file" v-on:change="handleFileUpload()" />
-                        <span class="file-name">
-                            [[ file_name ]]
-                        </span>
-                        <span class="file-cta">
-                            <span class="file-icon">
-                                <i class="fas fa-upload"></i>
-                            </span>
-                            <span class="file-label">
-                                Select
-                            </span>
-                        </span>
-                        <!--
-                            <button class="button is-primary" v-on:click="submitFile()">Submit</button>
-                            -->
-                    </label>
-                </div>
+                <article class="post">
+                    <h4>Data Management</h4>
+                    <div class="media">
+                        <div class="media-content">
+                            <div class="content">
+                                <p>Data upload</p>
+                                <div class="file has-name is-right is-fullwidth">
+                                    <label class="file-label">
+                                        <input class="file-input" type="file" name="resume" ref="file" v-on:change="handleFileUpload()" />
+                                        <span class="file-cta">
+                                            <span class="file-icon">
+                                                <i class="fas fa-upload"></i>
+                                            </span>
+                                            <span class="file-label">
+                                                Upload
+                                            </span>
+                                        </span>
+                                        <span class="file-name">
+                                            [[ file_name ]]
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
             </div>
         </div>
     </div>
@@ -142,7 +149,8 @@
         type: 'doughnut',
         data: {
             datasets: [{
-                data: [10, 20]
+                data: [10, 20],
+                backgroundColor: ["#50dc64", "#3399ff"],
             }],
             labels: [
                 'Labeled',
@@ -162,7 +170,8 @@
                     label: "training",
                     backgroundColor: 'rgb(80, 220, 100)',
                     borderColor: 'rgb(80, 220, 100)',
-                    data: [72, 83, 86, 87, 88, 88.5],
+                    //data: [72, 83, 86, 87, 88, 88.5],
+                    data: [94, 93.5, 93, 93, 93, 92.5],
                     fill: false,
                 },
                 {
