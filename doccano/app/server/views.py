@@ -87,11 +87,16 @@ class LabelAPI(View):
 
     def post(self, request, *args, **kwargs):
         """Create labels."""
-        text = request.POST.get('text')
-        shortcut = request.POST.get('shortcut')
-        Label(text=text, shortcut=shortcut).save()
+        #text = request.POST.get('text')
+        #shortcut = request.POST.get('shortcut')
+        body = request.body.decode('utf-8').replace("'", '"')
+        body = json.loads(body)
+        text = body.get('text')
+        shortcut = body.get('shortcut')
+        label = Label(text=text, shortcut=shortcut)
+        label.save()
 
-        return JsonResponse({'status': 'ok'})
+        return JsonResponse(label.as_dict())
 
     def put(self, request, *args, **kwargs):
         """Update labels."""
@@ -163,10 +168,3 @@ class ProjectAdminView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
-
-
-class TestView(View):
-    template_name = 'admin.html'
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)

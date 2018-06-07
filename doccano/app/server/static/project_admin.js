@@ -15,21 +15,14 @@ var vm = new Vue({
     el: '#root',
     delimiters: ['[[', ']]'],
     data: {
-        cur: 0,
-        items: [{
-            "id": 10,
-            "labels": [{
-                "text": "Prefecture",
-                "prob": 0.98
-            }],
-            "text": 'document'
-        }],
         todos: [],
         labels: [],
         file: null,
         file_name: '',
         newTodo: '',
         editedTodo: null,
+        newLabel: '',
+        newShortcut: '',
     },
 
     methods: {
@@ -51,6 +44,37 @@ var vm = new Vue({
                 })
                 .catch(function () {
                     console.log('FAILURE!!');
+                });
+        },
+        addLabel: function () {
+            var payload = {
+                'text': this.newLabel,
+                'shortcut': this.newShortcut
+            };
+            var self = this;
+            axios.post('/' + base_url + '/apis/labels', payload)
+                .then(function (response) {
+                    console.log('post data');
+                    self.newShortcut = '';
+                    self.newLabel = '';
+                    self.labels.push(response.data);
+                })
+                .catch(function (error) {
+                    console.log('ERROR!! happend by Backend.')
+                });
+        },
+        removeLabel: function (index) {
+            var payload = this.labels[index];
+            var self = this;
+            axios.delete('/' + base_url + '/apis/labels', {
+                    data: payload
+                })
+                .then(function (response) {
+                    self.labels.splice(index, 1);
+                    console.log('delete data');
+                })
+                .catch(function (error) {
+                    console.log('ERROR!! happend by Backend.')
                 });
         },
         addTodo: function () {
