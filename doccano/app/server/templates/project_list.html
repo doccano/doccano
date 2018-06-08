@@ -1,74 +1,47 @@
-{% extends "base.html" %}
-{% load static %}
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block content %}
 <section class="container" id="root">
     <div class="columns">
 
-        <div class="column is-9">
+        <div class="column is-10 is-offset-1">
             <div class="box content">
-                {% for project in object_list %}
                 <article class="post">
-                    <h4><a href="{% url 'annotation' project.id %}">{{ project.name }}</a></h4>
+                    <h4>My Projects</h4>
                     <div class="media">
-                        <div class="media-left">
-                            <p class="image is-32x32">
-                                <img src="http://bulma.io/images/placeholders/128x128.png">
-                            </p>
-                        </div>
                         <div class="media-content">
                             <div class="content">
-                                <p>{{ project.description|truncatechars:200 }}</p>
-                                <p>
-                                    <a href="#">@jsmith</a> created at {{ project.created_at|date }} &nbsp;
-                                    <span class="tag">Question</span>
-                                </p>
+                                <table class="table is-hoverable">
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>Project name</th>
+                                            <th>Priority</th>
+                                            <th>Progress</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for project in object_list %}
+                                        <tr>
+                                            <th style="vertical-align:middle;">{{ forloop.counter }}</th>
+                                            <td>
+                                                <a href="{% url 'annotation' project.id %}">{{ project.name }}</a>
+                                                <p>{{ project.description|truncatechars:50 }}</p>
+                                            </td>
+                                            <td style="vertical-align:middle;"><span class="tag is-danger">High</span></td>
+                                            <td style="vertical-align:middle;"><progress class="progress is-primary" value="70" max="100">30%</progress></td>
+                                            <td style="vertical-align:middle;">
+                                                <a class="button is-link is-small" href="{% url 'project-admin' project.id %}">Admin</a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
                             </div>
-                        </div>
-                        <div class="media-right">
-                            <span class="has-text-grey-light">
-                                <i class="fa fa-comments"></i> 1</span>
                         </div>
                     </div>
                 </article>
-                {% empty %}
-                No projects yet.
-                {% endfor %}
             </div>
         </div>
-
-
-        <div class="column is-3">
-            <a class="button is-primary is-block is-alt is-large" href="#">New Project</a>
-            <aside class="menu">
-                <p class="menu-label">
-                    Tags
-                </p>
-                <ul class="menu-list">
-                    <li>
-                        <span class="tag is-primary is-medium ">Dashboard</span>
-                    </li>
-                    <li>
-                        <span class="tag is-link is-medium ">Customers</span>
-                    </li>
-                    <li>
-                        <span class="tag is-light is-danger is-medium ">Authentication</span>
-                    </li>
-                    <li>
-                        <span class="tag is-dark is-medium ">Payments</span>
-                    </li>
-                    <li>
-                        <span class="tag is-success is-medium ">Transfers</span>
-                    </li>
-                    <li>
-                        <span class="tag is-warning is-medium ">Balance</span>
-                    </li>
-                    <li>
-                        <span class="tag is-medium ">Question</span>
-                    </li>
-                </ul>
-            </aside>
-        </div>
-
     </div>
 </section>
 {% endblock %}
