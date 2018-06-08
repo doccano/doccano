@@ -150,16 +150,6 @@ class ProjectListView(ListView):
         return context
 
 
-class ProjectDetailView(DetailView):
-
-    model = Project
-    template_name = 'project_detail.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
 class ProjectAdminView(DetailView):
 
     model = Project
