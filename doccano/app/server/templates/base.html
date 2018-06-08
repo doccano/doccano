@@ -33,16 +33,6 @@
                     <div class="navbar-item">
                         <div class="field is-grouped">
                             <p class="control">
-                                <a class="button is-small">
-                                    <span class="icon">
-                                        <i class="fa fa-user-plus"></i>
-                                    </span>
-                                    <span>
-                                        Register
-                                    </span>
-                                </a>
-                            </p>
-                            <p class="control">
                                 {% if use.is_authenticated %}
                                 <a class="button is-small is-primary is-outlined" href="{% url 'login' %}">
                                     <span class="icon">
