@@ -1,61 +1,53 @@
 {% extends "base.html" %} {% load widget_tweaks %} {% block content %}
 
+<section class="hero container has-text-centered">
+    <div class="columns hero-body">
+        <div class="column is-4 is-offset-4">
+            <div class="box has-text-left">
+                {% if form.errors %}
+                <p>Your username and password didn't match. Please try again.</p>
+                {% endif %} {% if next %} {% if user.is_authenticated %}
+                <p>Your account doesn't have access to this page. To proceed, please login with an account that has access.</p>
+                {% else %}
+                <p>Please login to see this page.</p>
+                {% endif %} {% endif %}
 
-<!--
-    <input type="submit" value="login" />
-    <input type="hidden" name="next" value="{{ next }}" />
--->
-
-
-<section class="container has-text-centered">
-    <div class="column is-4 is-offset-4">
-        <div class="box has-text-left">
-            {% if form.errors %}
-            <p>Your username and password didn't match. Please try again.</p>
-            {% endif %} {% if next %} {% if user.is_authenticated %}
-            <p>Your account doesn't have access to this page. To proceed, please login with an account that has access.</p>
-            {% else %}
-            <p>Please login to see this page.</p>
-            {% endif %} {% endif %}
-
-            <form method="post" action="{% url 'login' %}">
-                {% csrf_token %}
-                <div class="field ">
-                    <label class="label">Username</label>
-                    <div class="control has-icons-left has-icons-right">
-                        {{ form.username|add_class:"input" }}
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-user"></i>
-                        </span>
-                        <span class="icon is-small is-right">
-                            <i class="fas fa-check"></i>
-                        </span>
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="field ">
+                        <label class="label">Username</label>
+                        <div class="control has-icons-left has-icons-right">
+                            {{ form.username|add_class:"input" }}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
                     </div>
-                </div>
 
-                <div class="field">
-                    <label class="label">Password</label>
-                    <div class="control has-icons-left has-icons-right">
-                        {{ form.password|add_class:"input"}}
-                        <span class="icon is-small is-left">
-                            <i class="fas fa-lock"></i>
-                        </span>
-                        <span class="icon is-small is-right">
-                            <i class="fas fa-check"></i>
-                        </span>
+                    <div class="field">
+                        <label class="label">Password</label>
+                        <div class="control has-icons-left has-icons-right">
+                            {{ form.password|add_class:"input"}}
+                            <span class="icon is-small is-left">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <span class="icon is-small is-right">
+                                <i class="fas fa-check"></i>
+                            </span>
+                        </div>
                     </div>
-                </div>
-                <div class="field">
-                    <label class="checkbox">
-                        <input type="checkbox"> Remember me
-                    </label>
-                </div>
-                <input class="button is-block is-primary is-middle is-fullwidth" type="submit" value="Login" />
-                <input type="hidden" name="next" value="{{ next }}" />
-                <!--
-                <button class="button is-block is-primary is-large is-fullwidth">Login</button>
-                -->
-            </form>
+                    <div class="field">
+                        <label class="checkbox">
+                            <input type="checkbox"> Remember me
+                        </label>
+                    </div>
+                    <input class="button is-block is-primary is-middle is-fullwidth" type="submit" value="Login" />
+                    <input type="hidden" name="next" value="{{ next }}" />
+                </form>
+            </div>
         </div>
     </div>
 </section>

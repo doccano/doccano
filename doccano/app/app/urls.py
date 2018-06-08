@@ -21,7 +21,8 @@ from django.contrib.auth.views import LoginView, PasswordResetView, LogoutView
 urlpatterns = [
     path('projects/', include('server.urls')),
     path('admin/', admin.site.urls),
-    path('login/', LoginView.as_view(template_name='login.html'), name='login'),
+    path('login/', LoginView.as_view(template_name='login.html',
+                                     redirect_authenticated_user=True), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
 ]
