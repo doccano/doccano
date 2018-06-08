@@ -8,7 +8,7 @@
             <div class="box content">
                 {% for project in object_list %}
                 <article class="post">
-                    <h4>{{ project.name }}</h4>
+                    <h4><a href="{% url 'annotation' project.id %}">{{ project.name }}</a></h4>
                     <div class="media">
                         <div class="media-left">
                             <p class="image is-32x32">
