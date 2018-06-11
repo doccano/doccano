@@ -176,6 +176,15 @@ var vm = new Vue({
                 console.log('ERROR!! happend by Backend.')
             });
 
+        axios.get('/' + base_url + '/apis/progress')
+            .then(function (response) {
+                self.total = response.data['total'];
+                self.remaining = response.data['remaining'];
+            })
+            .catch(function (error) {
+                console.log('ERROR!! happend by Backend.')
+            });
+
         axios.get('/' + base_url + '/apis/data')
             .then(function (response) {
                 self.items = response.data['data'];

@@ -23,6 +23,8 @@ var vm = new Vue({
         editedTodo: null,
         newLabel: '',
         newShortcut: '',
+        total: 0,
+        remaining: 0,
     },
 
     methods: {
@@ -116,6 +118,17 @@ var vm = new Vue({
             .then(function (response) {
                 self.labels = response.data['labels'];
                 console.log(self.labels);
+            })
+            .catch(function (error) {
+                console.log('ERROR!! happend by Backend.')
+            });
+        axios.get('/' + base_url + '/apis/progress')
+            .then(function (response) {
+                console.log(response.data);
+                self.total = response.data['total'];
+                self.remaining = response.data['remaining'];
+                console.log(self.total);
+                console.log(self.remaining);
             })
             .catch(function (error) {
                 console.log('ERROR!! happend by Backend.')
