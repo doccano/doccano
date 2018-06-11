@@ -1,0 +1,124 @@
+{% extends "base.html" %} {% load static %} {% block header %}
+<link rel="stylesheet" type="text/css" href="{% static 'inbox.css' %}"> {% endblock %} {% block content %}
+<div class="columns" id="mail-app">
+    <aside class="column is-2 aside hero is-fullheight">
+        <div>
+            <div class="compose has-text-centered">
+                <a class="button is-primary is-block is-bold">
+                    <span class="compose">Active Learn</span>
+                </a>
+            </div>
+            <!--
+            <div class="main">
+                <a href="#" class="item active">
+                    <span class="icon">
+                        <i class="fa fa-inbox"></i>
+                    </span>
+                    <span class="name">Inbox</span>
+                </a>
+            </div>-->
+            <aside class="menu">
+                <p class="menu-label" style="color:#f2f2f2;">
+                    Progress
+                </p>
+                <ul class="menu-list">
+                    <li>
+                        <progress class="progress is-primary" value="15" max="100">30%</progress>
+                    </li>
+
+                </ul>
+            </aside>
+            <aside class="menu">
+
+                <p class="menu-label" style="color:#f2f2f2;">
+                    Labels
+                </p>
+                <ul class="menu-list">
+                    <div class="control" v-for="label in labels">
+                        <li class="tags has-addons">
+                            <span class="tag is-primary">[[label.shortcut]]</span>
+                            <a class="tag is-grey" v-on:click="addLabel(label.text)">[[label.text]]</a>
+                        </li>
+                    </div>
+                </ul>
+            </aside>
+        </div>
+    </aside>
+    <div class="column is-3 messages hero is-fullheight" id="message-feed">
+        <div class="field has-addons" style="margin:0 10px;">
+            <div class="control is-expanded">
+                <input class="input" type="text" placeholder="Find a document" v-model="searchQuery" @keyup.enter="submit">
+            </div>
+            <div class="control">
+                <a class="button is-primary">
+                    <span class="icon is-small">
+                        <i class="fas fa-search"></i>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <div class="inbox-messages" id="inbox-messages">
+            <div v-for="(msg, index) in items" class="card" v-bind:id="'msg-card-'+index" v-on:click="showMessage(msg,index)" v-bind:data-preview-id="index">
+                <div class="card-content">
+                    <div class="msg-header">
+                        <span class="msg-from">
+                            <div class="field is-grouped is-grouped-multiline">
+                                <div class="control" v-for="(label, index) in msg.labels">
+                                    <div class="tags has-addons">
+                                        <span class="tag is-dark">
+                                            <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
+                                            [[label.text]]
+                                        </span>
+                                        <span class="tag is-primary" v-if="label.prob">[[label.prob]]</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                    <div class="msg-snippet">
+                        <p id="fake-snippet-1">[[ msg.text.slice(0, 100) ]]</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="column is-7 message hero is-fullheight is-hidden" id="message-pane">
+        <div class="action-buttons">
+            <div class="control is-grouped">
+                <a class="button is-small" v-on:click="prevPage">
+                    <i class="fa fa-chevron-left"></i>
+                </a>
+                <a class="button is-small" v-on:click="nextPage">
+                    <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+        <div class="box message-preview">
+            <div class="top">
+                <div class="field is-grouped is-grouped-multiline">
+                    <div class="control" v-for="(label, index) in items[cur].labels">
+                        <div class="tags has-addons">
+                            <span class="tag is-dark">
+                                <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
+                                [[label.text]]
+                            </span>
+                            <span class="tag is-primary" v-if="label.prob">[[label.prob]]</span>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="content">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js" integrity="sha256-QHdJObhDO++VITP6S4tMlDHRWMaUOk+s/xWIRgF/YY0="
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js" integrity="sha256-4PIvl58L9q7iwjT654TQJM+C/acEyoG738iL8B8nhXg="
+    crossorigin="anonymous"></script>
+<script type="text/javascript" src="{% static 'annotation.1.js' %}"></script>
+{% endblock %}

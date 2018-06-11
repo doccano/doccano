@@ -16,6 +16,13 @@ class AnnotationView(View):
         return render(request, self.template_name)
 
 
+class InboxView(View):
+    template_name = 'annotation.1.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+
 class AnnotationAPIView(View):
 
     def get(self, request, *args, **kwargs):
