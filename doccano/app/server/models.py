@@ -24,7 +24,7 @@ class Label(models.Model):
                 'shortcut': self.shortcut}
 
 
-class RawData(models.Model):
+class Document(models.Model):
     text = models.TextField()
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
 
@@ -36,7 +36,7 @@ class RawData(models.Model):
 class Annotation(models.Model):
     prob = models.FloatField(blank=True, null=True)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
-    data = models.ForeignKey(RawData, on_delete=models.CASCADE)
+    data = models.ForeignKey(Document, on_delete=models.CASCADE)
     manual = models.BooleanField(default=False)
 
     def as_dict(self):

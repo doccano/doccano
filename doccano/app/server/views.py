@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
-from .models import Annotation, Label, RawData, Project
+from .models import Annotation, Label, Document, Project
 
 
 class AnnotationView(View):
@@ -30,7 +30,7 @@ class AnnotationAPIView(View):
             docs = Annotation.objects.all()
         else:
             # Left outer join data and annotation.
-            docs = RawData.objects.filter(annotation__isnull=True, project=project)
+            docs = Document.objects.filter(annotation__isnull=True, project=project)
             docs = [{**d.as_dict(), **{'labels': []}} for d in docs]
 
         if not docs:
@@ -42,7 +42,7 @@ class AnnotationAPIView(View):
         body = json.loads(request.body)
         data_id, label_id = body.get('id'), body.get('label_id')  # {id:0, label_id:1}
 
-        data = RawData.objects.get(id=data_id)
+        data = Document.objects.get(id=data_id)
         label = Label.objects.get(id=label_id)
         Annotation(data=data, label=label, manual=True).save()
 
@@ -59,8 +59,8 @@ class AnnotationAPIView(View):
 class MetaInfoAPI(View):
 
     def get(self, request, *args, **kwargs):
-        total = RawData.objects.count()
-        remaining = RawData.objects.filter(annotation__isnull=True).count()
+        total = Document.objects.count()
+        remaining = Document.objects.filter(annotation__isnull=True).count()
 
         return JsonResponse({'total': total, 'remaining': remaining})
 
@@ -69,7 +69,7 @@ class SearchAPI(View):
 
     def get(self, request, *args, **kwargs):
         keyword = request.GET.get('keyword')
-        docs = RawData.objects.filter(text__contains=keyword)
+        docs = Document.objects.filter(text__contains=keyword)
         labels = [[a.as_dict() for a in Annotation.objects.filter(data=d.id)] for d in docs]
         # print(annotations)
         # print(docs)
@@ -140,7 +140,7 @@ class RawDataAPI(View):
         content = ''.join(chunk.decode('utf-8') for chunk in f.chunks())
         for line in content.split('\n'):
             j = json.loads(line)
-            RawData(text=j['text']).save()
+            Document(text=j['text']).save()
 
         return JsonResponse({'status': 'ok'})
 

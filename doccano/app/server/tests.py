@@ -3,7 +3,7 @@ import os
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from .models import Project, RawData, Label
+from .models import Project, Document, Label
 
 
 class ProjectModelTest(TestCase):
@@ -24,7 +24,7 @@ class TestRawDataAPI(TestCase):
         self.assertEqual(res.json()['data'], [])
 
     def test_post(self):
-        self.assertEqual(RawData.objects.count(), 0)
+        self.assertEqual(Document.objects.count(), 0)
 
         filename = os.path.join(os.path.dirname(__file__), 'data/test.jsonl')
         client = Client()
@@ -32,7 +32,7 @@ class TestRawDataAPI(TestCase):
             client.post(reverse('data_api', args=[1]),
                         {'name': 'fred', 'attachment': f})
 
-        self.assertGreater(RawData.objects.count(), 0)
+        self.assertGreater(Document.objects.count(), 0)
 
 
 class TestLabelAPI(TestCase):
