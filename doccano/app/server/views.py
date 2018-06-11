@@ -19,6 +19,8 @@ class AnnotationView(View):
 class AnnotationAPIView(View):
 
     def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
+        project = Project.objects.get(id=project_id)
         once_active_learned = len(Annotation.objects.all().exclude(prob=None)) > 0
         if once_active_learned:
             # Use Annotation model & RawData model.
@@ -28,8 +30,11 @@ class AnnotationAPIView(View):
             docs = Annotation.objects.all()
         else:
             # Left outer join data and annotation.
-            docs = RawData.objects.filter(annotation__isnull=True)
+            docs = RawData.objects.filter(annotation__isnull=True, project=project)
             docs = [{**d.as_dict(), **{'labels': []}} for d in docs]
+
+        if not docs:
+            docs = [{'id': None, 'labels': [], 'text': ''}]
 
         return JsonResponse({'data': docs})
 
@@ -54,12 +59,10 @@ class AnnotationAPIView(View):
 class MetaInfoAPI(View):
 
     def get(self, request, *args, **kwargs):
-        labels = Label.objects.all()
-        labels = [l.as_dict() for l in labels]
         total = RawData.objects.count()
         remaining = RawData.objects.filter(annotation__isnull=True).count()
 
-        return JsonResponse({'labels': labels, 'total': total, 'remaining': remaining})
+        return JsonResponse({'total': total, 'remaining': remaining})
 
 
 class SearchAPI(View):
@@ -80,7 +83,8 @@ class LabelAPI(View):
 
     def get(self, request, *args, **kwargs):
         """Get labels."""
-        labels = Label.objects.all()
+        project_id = kwargs.get('pk')
+        labels = Label.objects.filter(project=project_id)
         labels = [label.as_dict() for label in labels]
 
         return JsonResponse({'labels': labels})
@@ -89,11 +93,13 @@ class LabelAPI(View):
         """Create labels."""
         #text = request.POST.get('text')
         #shortcut = request.POST.get('shortcut')
+        project_id = kwargs.get('pk')
+        project = Project.objects.get(id=project_id)
         body = request.body.decode('utf-8').replace("'", '"')
         body = json.loads(body)
         text = body.get('text')
         shortcut = body.get('shortcut')
-        label = Label(text=text, shortcut=shortcut)
+        label = Label(text=text, shortcut=shortcut, project=project)
         label.save()
 
         return JsonResponse(label.as_dict())

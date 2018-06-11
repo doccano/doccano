@@ -87,12 +87,9 @@ var vm = new Vue({
     data: {
         cur: 0,
         items: [{
-            "id": 10,
-            "labels": [{
-                "text": "Prefecture",
-                "prob": 0.98
-            }],
-            "text": 'document'
+            "id": null,
+            "labels": [],
+            "text": ''
         }],
         labels: [],
         guideline: 'Here is the Annotation Guideline Text',
@@ -169,11 +166,11 @@ var vm = new Vue({
     },
     created: function () {
         var self = this;
-        axios.get('/' + base_url + '/apis/label')
+        axios.get('/' + base_url + '/apis/labels')
             .then(function (response) {
                 self.labels = response.data['labels'];
-                self.total = response.data['total'];
-                self.remaining = response.data['remaining'];
+                //self.total = response.data['total'];
+                //self.remaining = response.data['remaining'];
             })
             .catch(function (error) {
                 console.log('ERROR!! happend by Backend.')

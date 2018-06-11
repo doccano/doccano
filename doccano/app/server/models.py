@@ -2,9 +2,21 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class Project(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    users = models.ManyToManyField(User)
+
+    def __str__(self):
+        return self.name
+
+
 class Label(models.Model):
     text = models.CharField(max_length=100)
     shortcut = models.CharField(max_length=10)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
 
     def as_dict(self):
         return {'id': self.id,
@@ -14,6 +26,7 @@ class Label(models.Model):
 
 class RawData(models.Model):
     text = models.TextField()
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
 
     def as_dict(self):
         return {'id': self.id,
@@ -32,14 +45,3 @@ class Annotation(models.Model):
                 'label_id': self.label.id,
                 'prob': self.prob,
                 'manual': self.manual}
-
-
-class Project(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    users = models.ManyToManyField(User)
-
-    def __str__(self):
-        return self.name
