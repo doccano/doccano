@@ -30,7 +30,9 @@
                                             <td style="vertical-align:middle;"><span class="tag is-danger">High</span></td>
                                             <td style="vertical-align:middle;"><progress class="progress is-primary" value="70" max="100">30%</progress></td>
                                             <td style="vertical-align:middle;">
-                                                <a class="button is-link is-small" href="{% url 'project-admin' project.id %}">Admin</a>
+                                                <a class="button is-link is-small" href="{% url 'project-admin' project.id %}">
+                                                        <i class="fas fa-cog"></i>&nbsp;Settings
+                                                </a>
                                             </td>
                                         </tr>
                                         {% endfor %}
