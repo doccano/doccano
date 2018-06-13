@@ -176,7 +176,7 @@ html,body {
     float:right;
   }
   .inbox-messages .msg-snippet {
-    padding: 5px 20px 0px 5px;
+    padding: 5px 20px 0px 0px;
   }
   .inbox-messages .msg-subject .fa {
     font-size: 14px;

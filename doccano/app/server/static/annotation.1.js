@@ -73,10 +73,13 @@ var vm = new Vue({
         nextPage: function () {
             this.cur = Math.min(this.cur + 1, this.items.length - 1);
             this.remaining -= 1;
+            console.log('nextPage');
+            this.showMessage(this.cur);
         },
         prevPage: function () {
             this.cur = Math.max(this.cur - 1, 0);
             this.remaining += 1;
+            this.showMessage(this.cur);
         },
         activeLearn: function () {
             alert('Active Learning!');
@@ -93,15 +96,17 @@ var vm = new Vue({
                     console.log('ERROR!! happend by Backend.')
                 });
         },
-        showMessage: function (msg, index) {
+        showMessage: function (index) {
             this.cur = index;
             console.log(this.cur);
+            console.log(this.items[index]);
             $('#message-pane').removeClass('is-hidden');
             $('.card').removeClass('active');
             $('#msg-card-' + index).addClass('active');
-            $('.message .address .name').text(msg.from);
-            $('.message .address .email').text(msg.email);
-            var msg_body = '<p>' + msg.text + '</p>';
+            //$('.message .address .name').text(msg.from);
+            //$('.message .address .email').text(msg.email);
+            var text = this.items[index].text;
+            var msg_body = '<p>' + text + '</p>';
             $('.message .content').html(msg_body);
         }
     },

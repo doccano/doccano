@@ -59,7 +59,7 @@
         </div>
 
         <div class="inbox-messages" id="inbox-messages">
-            <div v-for="(msg, index) in items" class="card" v-bind:id="'msg-card-'+index" v-on:click="showMessage(msg,index)" v-bind:data-preview-id="index">
+            <div v-for="(msg, index) in items" class="card" v-bind:id="'msg-card-'+index" v-on:click="showMessage(index)" v-bind:data-preview-id="index">
                 <div class="card-content">
                     <div class="msg-header">
                         <span class="msg-from">
