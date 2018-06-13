@@ -82,6 +82,8 @@ class SearchAPI(View):
         docs = Document.objects.filter(text__contains=keyword)
         labels = [[a.as_dict() for a in Annotation.objects.filter(data=d.id)] for d in docs]
         docs = [{**d.as_dict(), **{'labels': []}} for d in docs]
+        if not docs:
+            docs = [{'id': None, 'labels': [], 'text': ''}]
         # Annotation.objects.select_related('data').all().filter(data__text__contains=keyword)
 
         return JsonResponse({'data': docs})

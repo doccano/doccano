@@ -26,7 +26,6 @@ var vm = new Vue({
         total: 0,
         remaining: 0,
         searchQuery: '',
-        history: []
     },
 
     methods: {
@@ -90,7 +89,9 @@ var vm = new Vue({
             axios.get('/' + base_url + '/apis/search?keyword=' + this.searchQuery)
                 .then(function (response) {
                     console.log('search response');
-                    self.history = response.data['data'];
+                    console.log(response.data['data']);
+                    self.items = response.data['data'];
+                    self.searchQuery = '';
                 })
                 .catch(function (error) {
                     console.log('ERROR!! happend by Backend.')
