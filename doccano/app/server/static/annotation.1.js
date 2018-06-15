@@ -143,6 +143,22 @@ var vm = new Vue({
     computed: {
         done: function () {
             return this.total - this.remaining
+        },
+        achievement: function () {
+            if (this.total == 0) {
+                return 0;
+            } else {
+                return (this.total - this.remaining) / this.total * 100
+            }
+        },
+        progressColor: function () {
+            if (this.achievement < 30) {
+                return 'is-danger'
+            } else if (this.achievement < 70) {
+                return 'is-warning'
+            } else {
+                return 'is-primary'
+            }
         }
     }
 });
