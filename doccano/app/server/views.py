@@ -1,6 +1,6 @@
 import json
 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.list import ListView
@@ -174,3 +174,15 @@ class ProjectAdminView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+
+class DataDownloadAPI(View):
+
+    def get(self, request, *args, **kwargs):
+        # j = {'hoge': 'fuga'}
+        annotated_docs = [a.as_dict() for a in Annotation.objects.filter(manual=True)]
+        json_str = json.dumps(annotated_docs)
+        response = HttpResponse(json_str, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename=annotation_data.json'
+
+        return response

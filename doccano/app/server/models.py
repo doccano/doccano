@@ -23,6 +23,9 @@ class Label(models.Model):
                 'text': self.text,
                 'shortcut': self.shortcut}
 
+    def __str__(self):
+        return self.text
+
 
 class Document(models.Model):
     text = models.TextField()
@@ -31,6 +34,9 @@ class Document(models.Model):
     def as_dict(self):
         return {'id': self.id,
                 'text': self.text}
+
+    def __str__(self):
+        return self.text[:50]
 
 
 class Annotation(models.Model):
@@ -41,7 +47,7 @@ class Annotation(models.Model):
 
     def as_dict(self):
         return {'id': self.id,
-                'data_id': self.data.id,
-                'label_id': self.label.id,
+                'doc': self.data.as_dict(),
+                'label': self.label.as_dict(),
                 'prob': self.prob,
                 'manual': self.manual}
