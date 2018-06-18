@@ -54,6 +54,7 @@ var vm = new Vue({
                 .catch(function (error) {
                     console.log('ERROR!! happend by Backend.')
                 });
+            this.updateProgress();
         },
         deleteLabel: function (index) {
             var label2id = swap(this.labels);
@@ -73,9 +74,9 @@ var vm = new Vue({
                     console.log('ERROR!! happend by Backend.')
                 });
             this.items[this.cur]['labels'].splice(index, 1)
+            this.updateProgress();
         },
         nextPage: function () {
-            this.remaining -= 1;
             this.cur += 1;
             if (this.cur == this.items.length) {
               if (this.hasNext) {
@@ -89,7 +90,6 @@ var vm = new Vue({
             this.showMessage(this.cur);
         },
         prevPage: function () {
-            this.remaining += 1;
             this.cur -= 1;
             if (this.cur == -1) {
               if (this.hasPrevious) {
@@ -135,21 +135,10 @@ var vm = new Vue({
             var text = this.items[index].text;
             var msg_body = '<p>' + text + '</p>';
             $('.message .content').html(msg_body);
-        }
-    },
-    created: function () {
-        var self = this;
-        axios.get('/' + base_url + '/apis/labels')
-            .then(function (response) {
-                self.labels = response.data['labels'];
-                //self.total = response.data['total'];
-                //self.remaining = response.data['remaining'];
-            })
-            .catch(function (error) {
-                console.log('ERROR!! happend by Backend.')
-            });
-
-        axios.get('/' + base_url + '/apis/progress')
+        },
+        updateProgress: function() {
+            var self = this;
+            axios.get('/' + base_url + '/apis/progress')
             .then(function (response) {
                 self.total = response.data['total'];
                 self.remaining = response.data['remaining'];
@@ -157,14 +146,19 @@ var vm = new Vue({
             .catch(function (error) {
                 console.log('ERROR!! happend by Backend.')
             });
-
-        axios.get('/' + base_url + '/apis/data')
+        }
+    },
+    created: function () {
+        var self = this;
+        axios.get('/' + base_url + '/apis/labels')
             .then(function (response) {
-                self.items = response.data['data'];
+                self.labels = response.data['labels'];
             })
             .catch(function (error) {
                 console.log('ERROR!! happend by Backend.')
             });
+        this.updateProgress();
+        this.submit()
     },
     computed: {
         done: function () {
