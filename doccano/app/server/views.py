@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.core.paginator import Paginator
 
 from .models import Annotation, Label, Document, Project
 
@@ -85,8 +86,16 @@ class SearchAPI(View):
         if not docs:
             docs = [{'id': None, 'labels': [], 'text': ''}]
         # Annotation.objects.select_related('data').all().filter(data__text__contains=keyword)
+        paginator = Paginator(docs, 5)
+        page = request.GET.get('page', 1)
+        page = paginator.get_page(page)
+        docs = page.object_list
 
-        return JsonResponse({'data': docs})
+        return JsonResponse({'data': docs,
+                             'has_next': page.has_next(),
+                             'has_previous': page.has_previous(),
+                             'previous_page_number': page.previous_page_number() if page.has_previous() else None,
+                             'next_page_number': page.next_page_number() if page.has_next() else None})
 
 
 class LabelAPI(View):

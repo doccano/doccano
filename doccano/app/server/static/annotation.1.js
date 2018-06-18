@@ -26,6 +26,11 @@ var vm = new Vue({
         total: 0,
         remaining: 0,
         searchQuery: '',
+        hasNext: false,
+        hasPrevious: false,
+        nextPageNum: 1,
+        prevPageNum: 1,
+        page: 1,
     },
 
     methods: {
@@ -70,14 +75,31 @@ var vm = new Vue({
             this.items[this.cur]['labels'].splice(index, 1)
         },
         nextPage: function () {
-            this.cur = Math.min(this.cur + 1, this.items.length - 1);
             this.remaining -= 1;
-            console.log('nextPage');
+            this.cur += 1;
+            if (this.cur == this.items.length) {
+              if (this.hasNext) {
+                this.page = this.nextPageNum;
+                this.submit();
+                this.cur = 0;
+              } else {
+                this.cur = this.items.length - 1;
+              }
+            }
             this.showMessage(this.cur);
         },
         prevPage: function () {
-            this.cur = Math.max(this.cur - 1, 0);
             this.remaining += 1;
+            this.cur -= 1;
+            if (this.cur == -1) {
+              if (this.hasPrevious) {
+                this.page = this.prevPageNum;
+                this.submit();
+                this.cur = this.items.length - 1;
+              } else {
+                this.cur = 0;
+              }
+            }
             this.showMessage(this.cur);
         },
         activeLearn: function () {
@@ -86,12 +108,16 @@ var vm = new Vue({
         submit: function () {
             console.log('submit' + this.searchQuery);
             var self = this;
-            axios.get('/' + base_url + '/apis/search?keyword=' + this.searchQuery)
+            axios.get('/' + base_url + '/apis/search?keyword=' + this.searchQuery + '&page=' + this.page)
                 .then(function (response) {
                     console.log('search response');
-                    console.log(response.data['data']);
+                    console.log(response.data);
                     self.items = response.data['data'];
-                    self.searchQuery = '';
+                    self.hasNext = response.data['has_next']
+                    self.nextPageNum = response.data['next_page_number']
+                    self.hasPrevious = response.data['has_previous']
+                    self.prevPageNum = response.data['previous_page_number']
+                    //self.searchQuery = '';
                 })
                 .catch(function (error) {
                     console.log('ERROR!! happend by Backend.')
