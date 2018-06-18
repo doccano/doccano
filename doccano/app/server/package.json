@@ -1,0 +1,20 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "vue": "^2.5.16",
+    "vue-loader": "^15.2.4",
+    "vue-shortkey": "^3.1.5"
+  },
+  "devDependencies": {
+    "webpack": "^4.12.0",
+    "webpack-cli": "^3.0.8"
+  }
+}

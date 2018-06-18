@@ -1,3 +1,6 @@
+import Vue from 'vue';
+Vue.use(require('vue-shortkey'));
+
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 var base_url = window.location.href.split('/').slice(3, 5).join('/');
