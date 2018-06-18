@@ -72,3 +72,9 @@ p {
 .tabs-details {
   margin-right: 1px;
 }
+.project-image {
+  background-image: url('/static/images/cat.png');
+  background-size:     cover;
+  background-repeat:   no-repeat;
+  background-position: center center;
+}
