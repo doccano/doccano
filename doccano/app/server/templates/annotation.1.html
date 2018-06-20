@@ -11,7 +11,11 @@
                     <li>
                         <progress class="progress" v-bind:class="progressColor" v-bind:value="achievement" max="100">30%</progress>
                     </li>
-
+                    <!--
+                    <li class="level-right has-text-white">
+                        [[ achievement ]]%
+                    </li>
+                    -->
                 </ul>
             </aside>
             <aside class="menu">
@@ -69,7 +73,7 @@
             </div>
         </div>
     </div>
-    <div class="column is-7 message hero is-fullheight is-hidden" id="message-pane">
+    <div class="column is-7 message hero is-fullheight" id="message-pane">
         <div class="action-buttons">
             <div class="control is-grouped">
                 <a class="button is-small" v-on:click="prevPage" v-shortkey="['ctrl', 'p']" @shortkey="prevPage">
@@ -95,6 +99,7 @@
                 </div>
                 <hr>
                 <div class="content">
+                    [[ message_body ]]
                 </div>
             </div>
         </div>

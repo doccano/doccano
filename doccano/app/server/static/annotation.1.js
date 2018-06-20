@@ -34,10 +34,19 @@ var vm = new Vue({
         nextPageNum: 1,
         prevPageNum: 1,
         page: 1,
+        message_body: '',
     },
 
     methods: {
         addLabel: function (label) {
+            for (var i = 0; i < this.items[this.cur]['labels'].length; i++) {
+              var item = this.items[this.cur]['labels'][i];
+              if (label == item.text) {
+                this.deleteLabel(i);
+                return;
+              }
+            }
+
             var label = {
                 'text': label,
                 'prob': null
@@ -128,16 +137,11 @@ var vm = new Vue({
         },
         showMessage: function (index) {
             this.cur = index;
-            console.log(this.cur);
-            console.log(this.items[index]);
-            $('#message-pane').removeClass('is-hidden');
+            //$('#message-pane').removeClass('is-hidden');
             $('.card').removeClass('active');
             $('#msg-card-' + index).addClass('active');
-            //$('.message .address .name').text(msg.from);
-            //$('.message .address .email').text(msg.email);
             var text = this.items[index].text;
-            var msg_body = '<p>' + text + '</p>';
-            $('.message .content').html(msg_body);
+            this.message_body = text;
         },
         updateProgress: function() {
             var self = this;
@@ -161,7 +165,7 @@ var vm = new Vue({
                 console.log('ERROR!! happend by Backend.')
             });
         this.updateProgress();
-        this.submit()
+        this.submit();
     },
     computed: {
         done: function () {
