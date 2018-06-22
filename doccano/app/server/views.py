@@ -79,8 +79,9 @@ class ProgressAPI(View):
 class SearchAPI(View):
 
     def get(self, request, *args, **kwargs):
+        project_id = kwargs.get('project_id')
         keyword = request.GET.get('keyword')
-        docs = Document.objects.filter(text__contains=keyword)
+        docs = Document.objects.filter(project=project_id, text__contains=keyword)
         labels = [[a.as_dict() for a in Annotation.objects.filter(data=d.id)] for d in docs]
         docs = [{**d.as_dict(), **{'labels': []}} for d in docs]
         if not docs:
