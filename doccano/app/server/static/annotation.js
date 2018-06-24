@@ -34,7 +34,6 @@ var vm = new Vue({
         nextPageNum: 1,
         prevPageNum: 1,
         page: 1,
-        message_body: '',
     },
 
     methods: {
@@ -137,11 +136,6 @@ var vm = new Vue({
         },
         showMessage: function (index) {
             this.cur = index;
-            //$('#message-pane').removeClass('is-hidden');
-            $('.card').removeClass('active');
-            $('#msg-card-' + index).addClass('active');
-            var text = this.items[index].text;
-            this.message_body = text;
         },
         updateProgress: function() {
             var self = this;

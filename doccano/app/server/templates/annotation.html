@@ -48,7 +48,7 @@
         </div>
 
         <div class="inbox-messages" id="inbox-messages">
-            <div v-for="(msg, index) in items" class="card" v-bind:id="'msg-card-'+index" v-on:click="showMessage(index)" v-bind:data-preview-id="index">
+            <div v-for="(msg, index) in items" class="card" v-bind:class="{ active: index == cur }" v-on:click="showMessage(index)" v-bind:data-preview-id="index">
                 <div class="card-content">
                     <div class="msg-header">
                         <span class="msg-from">
@@ -90,15 +90,15 @@
                         <div class="tags has-addons">
                             <span class="tag is-dark">
                                 <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
-                                [[label.text]]
+                                [[ label.text ]]
                             </span>
-                            <span class="tag is-primary" v-if="label.prob">[[label.prob]]</span>
+                            <span class="tag is-primary" v-if="label.prob">[[ label.prob ]]</span>
                         </div>
                     </div>
                 </div>
                 <hr>
                 <div class="content">
-                    [[ message_body ]]
+                    [[ items[cur].text ]]
                 </div>
             </div>
         </div>
