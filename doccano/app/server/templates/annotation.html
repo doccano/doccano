@@ -8,14 +8,13 @@
                     Progress
                 </p>
                 <ul class="menu-list">
+                    <li class="has-text-grey-light level" style="padding-left:10px;margin-bottom:0;">
+                        <span class="level-left">Achievement</span>
+                        <span class="level-right">[[ achievement ]]%</span>
+                    </li>
                     <li>
                         <progress class="progress" v-bind:class="progressColor" v-bind:value="achievement" max="100">30%</progress>
                     </li>
-                    <!--
-                    <li class="level-right has-text-white">
-                        [[ achievement ]]%
-                    </li>
-                    -->
                 </ul>
             </aside>
             <aside class="menu">
