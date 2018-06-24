@@ -10,15 +10,8 @@ from django.core.paginator import Paginator
 from .models import Annotation, Label, Document, Project
 
 
-class AnnotationView(View):
-    template_name = 'annotation.html'
-
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
-
-
 class InboxView(View):
-    template_name = 'annotation.1.html'
+    template_name = 'annotation.html'
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name)
@@ -189,7 +182,6 @@ class ProjectAdminView(DetailView):
 class DataDownloadAPI(View):
 
     def get(self, request, *args, **kwargs):
-        # j = {'hoge': 'fuga'}
         annotated_docs = [a.as_dict() for a in Annotation.objects.filter(manual=True)]
         json_str = json.dumps(annotated_docs)
         response = HttpResponse(json_str, content_type='application/json')
