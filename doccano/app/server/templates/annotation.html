@@ -36,14 +36,36 @@
     <div class="column is-3 messages hero is-fullheight" id="message-feed">
         <div class="field has-addons" style="margin:0 10px;">
             <div class="control is-expanded">
-                <input class="input" type="text" placeholder="Find a document" v-model="searchQuery" @keyup.enter="submit">
+                <input class="input" type="text" placeholder="Find a document" v-model="searchQuery" @keyup.enter="submit"
+                style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
             </div>
+            
             <div class="control">
-                <a class="button is-primary" v-on:click="submit">
-                    <span class="icon is-small">
-                        <i class="fas fa-search"></i>
-                    </span>
-                </a>
+                <div class="dropdown is-active">
+                    <div class="dropdown-trigger">
+                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" style="border-left:none">
+                            <span class="icon">
+                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <a href="#" class="dropdown-item">
+                                Default
+                            </a>
+                            <a class="dropdown-item">
+                                Active
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                Complete
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                Probability
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
