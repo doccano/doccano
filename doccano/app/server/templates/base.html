@@ -24,12 +24,20 @@
     <nav class="navbar is-white has-shadow">
         <div class="container">
             <div class="navbar-brand">
-                <a class="navbar-item" href="../">
+                <a class="navbar-item" href="{% url 'index' %}">
                     <img src="{% static 'images/logo.png' %}" width="40" height="48">doccano
                 </a>
             </div>
             <div id="topNav" class="navbar-menu">
                 <div class="navbar-end">
+                    <a class="navbar-item" href="{% url 'index' %}">Home</a>
+                    <a class="navbar-item" href="hoge.html">Live Demo</a>
+                    <a class="navbar-item" href="https://github.com/chakki-works/doccano">
+                        <span class="icon is-small">
+                            <i class="fab fa-github"></i>
+                        </span>
+                        <span>&nbsp;GitHub</span>
+                    </a>
                     <div class="navbar-item">
                         <div class="field is-grouped">
                             <p class="control">
@@ -56,10 +64,9 @@
         </div>
     </nav>
 
-    {% block content %}
-    {% endblock %}
-    
-    
+    {% block content %} {% endblock %}
+
+
 
 </body>
 

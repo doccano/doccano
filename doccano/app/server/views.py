@@ -10,6 +10,13 @@ from django.core.paginator import Paginator
 from .models import Annotation, Label, Document, Project
 
 
+class IndexView(View):
+    template_name = 'index.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+
 class InboxView(View):
     template_name = 'annotation.html'
 
