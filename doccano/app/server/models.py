@@ -42,7 +42,7 @@ class Document(models.Model):
 class Annotation(models.Model):
     prob = models.FloatField(blank=True, null=True)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
-    data = models.ForeignKey(Document, on_delete=models.CASCADE)
+    data = models.ForeignKey(Document, related_name='annotations', on_delete=models.CASCADE)
     manual = models.BooleanField(default=False)
 
     def as_dict(self):
