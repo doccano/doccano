@@ -41,7 +41,7 @@
                     <div class="navbar-item">
                         <div class="field is-grouped">
                             <p class="control">
-                                {% if use.is_authenticated %}
+                                {% if not user.is_authenticated %}
                                 <a class="button is-small is-primary is-outlined" href="{% url 'login' %}">
                                     <span class="icon">
                                         <i class="fa fa-user"></i>
