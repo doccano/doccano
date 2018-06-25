@@ -39,7 +39,7 @@
                 <input class="input" type="text" placeholder="Find a document" v-model="searchQuery" @keyup.enter="submit">
             </div>
             <div class="control">
-                <a class="button is-primary">
+                <a class="button is-primary" v-on:click="submit">
                     <span class="icon is-small">
                         <i class="fas fa-search"></i>
                     </span>
