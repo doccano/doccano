@@ -37,7 +37,7 @@ var vm = new Vue({
     },
 
     methods: {
-        addLabel: function (label) {
+        addLabel: async function (label) {
             for (var i = 0; i < this.items[this.cur]['labels'].length; i++) {
               var item = this.items[this.cur]['labels'][i];
               if (label == item.text) {
@@ -58,7 +58,7 @@ var vm = new Vue({
                 'label_id': label2id[label['text']]
             };
 
-            axios.post('/' + base_url + '/apis/data', data)
+            await axios.post('/' + base_url + '/apis/data', data)
                 .then(function (response) {
                     console.log('post data');
                 })
@@ -67,7 +67,7 @@ var vm = new Vue({
                 });
             this.updateProgress();
         },
-        deleteLabel: function (index) {
+        deleteLabel: async function (index) {
             var label2id = swap(this.labels);
             var label = this.items[this.cur]['labels'][index];
             var payload = {
@@ -75,7 +75,7 @@ var vm = new Vue({
                 'label_id': label2id[label['text']]
             };
 
-            axios.delete('/' + base_url + '/apis/data', {
+            await axios.delete('/' + base_url + '/apis/data', {
                     data: payload
                 })
                 .then(function (response) {
@@ -162,9 +162,6 @@ var vm = new Vue({
         this.submit();
     },
     computed: {
-        done: function () {
-            return this.total - this.remaining
-        },
         achievement: function () {
             if (this.total == 0) {
                 return 0;
