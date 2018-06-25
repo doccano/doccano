@@ -8,7 +8,7 @@
                     Progress
                 </p>
                 <ul class="menu-list">
-                    <li class="has-text-grey-light level" style="padding-left:10px;margin-bottom:0;">
+                    <li class="has-text-grey-light level" style="padding-left:10px;margin-bottom:0;font-size:14px">
                         <span class="level-left">Achievement</span>
                         <span class="level-right">[[ achievement ]]%</span>
                     </li>
@@ -49,7 +49,7 @@
 
         <div class="inbox-messages" id="inbox-messages">
             <div v-for="(msg, index) in items" class="card" v-bind:class="{ active: index == cur }" v-on:click="showMessage(index)" v-bind:data-preview-id="index">
-                <div class="card-content">
+                <div class="card-content" style="padding:1.2rem;">
                     <div class="msg-header">
                         <span class="msg-from">
                             <div class="field is-grouped is-grouped-multiline">
@@ -65,7 +65,7 @@
                         </span>
                     </div>
                     <div class="msg-snippet">
-                        <p id="fake-snippet-1">[[ msg.text.slice(0, 100) ]]</p>
+                        <p>[[ msg.text.slice(0, 100) ]]</p>
                     </div>
                 </div>
             </div>
