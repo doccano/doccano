@@ -3,6 +3,16 @@ from django.urls import path
 from .views import IndexView
 from .views import AnnotationAPIView, ProgressAPI, SearchAPI, InboxView
 from .views import ProjectListView, ProjectAdminView, RawDataAPI, LabelAPI, DataDownloadAPI
+from rest_framework import routers
+from .views import LabelViewSet, ProjectViewSet, DocumentViewSet
+
+
+router = routers.DefaultRouter()
+router.register(r'labels', LabelViewSet)
+router.register(r'projects', ProjectViewSet)
+router.register(r'documents', DocumentViewSet)
+#router.register(r'users', UserViewSet)
+
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),

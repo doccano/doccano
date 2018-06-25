@@ -16,7 +16,7 @@ class Project(models.Model):
 class Label(models.Model):
     text = models.CharField(max_length=100, unique=True)
     shortcut = models.CharField(max_length=10, unique=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def as_dict(self):
         return {'id': self.id,

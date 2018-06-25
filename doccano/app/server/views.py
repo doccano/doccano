@@ -1,13 +1,16 @@
 import json
 
+import django_filters
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.core.paginator import Paginator
+from rest_framework import viewsets, filters
 
 from .models import Annotation, Label, Document, Project
+from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer
 
 
 class IndexView(View):
@@ -195,3 +198,19 @@ class DataDownloadAPI(View):
         response['Content-Disposition'] = 'attachment; filename=annotation_data.json'
 
         return response
+
+
+class LabelViewSet(viewsets.ModelViewSet):
+    queryset = Label.objects.all()
+    serializer_class = LabelSerializer
+    filter_fields = ('text', 'project')
+
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+
+
+class DocumentViewSet(viewsets.ModelViewSet):
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
