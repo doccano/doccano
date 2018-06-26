@@ -1,6 +1,6 @@
 import json
 
-import django_filters
+from django_filters.rest_framework import DjangoFilterBackend
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -8,6 +8,9 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.core.paginator import Paginator
 from rest_framework import viewsets, filters
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 
 from .models import Annotation, Label, Document, Project
 from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer
@@ -200,17 +203,53 @@ class DataDownloadAPI(View):
         return response
 
 
-class LabelViewSet(viewsets.ModelViewSet):
-    queryset = Label.objects.all()
-    serializer_class = LabelSerializer
-    filter_fields = ('text', 'project')
-
-
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+
+    @action(methods=['get'], detail=True)
+    def labels(self, request, pk=None):
+        project = self.get_object()
+        res = {label.id: label.text for label in project.labels.all()}
+        return Response(res)
+
+    @action(methods=['get'], detail=True)
+    def docs(self, request, pk=None):
+        project = self.get_object()
+        res = [doc.as_dict() for doc in project.documents.all()]
+        return Response(res)
+
+    @action(methods=['get'], detail=True)
+    def progress(self, request, pk=None):
+        project = self.get_object()
+        docs = project.documents.all()
+        remaining = docs.filter(labels__isnull=True).count()
+        return Response({'total': docs.count(), 'remaining': remaining})
+
+    @action(methods=['post'], detail=True)
+    def upload_doc(self, request, pk=None):
+        project = self.get_object()
+        f = request.FILES['file']
+        content = ''.join(chunk.decode('utf-8') for chunk in f.chunks())
+        for line in content.split('\n'):
+            j = json.loads(line)
+            Document(project=project, text=j['text']).save()
+
+    @action(methods=['get'], detail=True)
+    def download_doc(self, request, pk=None):
+        project = self.get_object()
+        res = []
+        return res
 
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    search_fields = ('text', )
+
+
+class LabelViewSet(viewsets.ModelViewSet):
+    queryset = Label.objects.all()
+    serializer_class = LabelSerializer
+    filter_fields = ('project',)

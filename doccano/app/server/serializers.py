@@ -3,13 +3,6 @@ from rest_framework import serializers
 from .models import Label, Project, Document, Annotation
 
 
-class ProjectSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Project
-        fields = ('id', 'name', 'description', 'created_at', 'updated_at', 'users')
-
-
 class LabelSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -26,9 +19,17 @@ class AnnotationSerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
-    project = ProjectSerializer()
-    annotations = AnnotationSerializer(many=True)
+    labels = AnnotationSerializer(many=True)
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'project', 'annotations')
+        fields = ('id', 'text', 'labels')
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    labels = LabelSerializer(many=True)
+    documents = DocumentSerializer(many=True)
+
+    class Meta:
+        model = Project
+        fields = ('id', 'name', 'description', 'users', 'labels', 'documents')

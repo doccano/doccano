@@ -164,9 +164,9 @@ var vm = new Vue({
     computed: {
         achievement: function () {
             if (this.total == 0) {
-                return 0;
+                return 0
             } else {
-                return (this.total - this.remaining) / this.total * 100
+                return Math.round((this.total - this.remaining) / this.total * 100)
             }
         },
         progressColor: function () {

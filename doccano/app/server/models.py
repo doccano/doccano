@@ -16,7 +16,7 @@ class Project(models.Model):
 class Label(models.Model):
     text = models.CharField(max_length=100, unique=True)
     shortcut = models.CharField(max_length=10, unique=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
 
     def as_dict(self):
         return {'id': self.id,
@@ -29,7 +29,7 @@ class Label(models.Model):
 
 class Document(models.Model):
     text = models.TextField()
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=True)
+    project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
 
     def as_dict(self):
         return {'id': self.id,
@@ -42,7 +42,7 @@ class Document(models.Model):
 class Annotation(models.Model):
     prob = models.FloatField(blank=True, null=True)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
-    data = models.ForeignKey(Document, related_name='annotations', on_delete=models.CASCADE)
+    data = models.ForeignKey(Document, related_name='labels', on_delete=models.CASCADE)
     manual = models.BooleanField(default=False)
 
     def as_dict(self):
