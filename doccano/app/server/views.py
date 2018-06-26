@@ -2,32 +2,39 @@ import json
 
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
+from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from rest_framework.permissions import IsAdminUser
 
 from .models import Annotation, Label, Document, Project
 from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer
 
 
-class IndexView(View):
+class IndexView(TemplateView):
     template_name = 'index.html'
 
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
 
-
-class InboxView(View):
+class InboxView(LoginRequiredMixin, TemplateView):
     template_name = 'annotation.html'
 
-    def get(self, request, *args, **kwargs):
-        return render(request, self.template_name)
+
+class ProjectsView(LoginRequiredMixin, ListView):
+    model = Project
+    paginate_by = 100
+    template_name = 'projects.html'
+
+
+class ProjectAdminView(LoginRequiredMixin, DetailView):
+    model = Project
+    template_name = 'project_admin.html'
 
 
 class AnnotationAPIView(View):
@@ -171,27 +178,6 @@ class RawDataAPI(View):
         return JsonResponse({'status': 'ok'})
 
 
-class ProjectListView(ListView):
-
-    model = Project
-    paginate_by = 100  # if pagination is desired
-    template_name = 'project_list.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
-class ProjectAdminView(DetailView):
-
-    model = Project
-    template_name = 'project_admin.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
-
-
 class DataDownloadAPI(View):
 
     def get(self, request, *args, **kwargs):
@@ -208,48 +194,50 @@ class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
 
     @action(methods=['get'], detail=True)
-    def labels(self, request, pk=None):
-        project = self.get_object()
-        res = {label.id: label.text for label in project.labels.all()}
-        return Response(res)
-
-    @action(methods=['get'], detail=True)
-    def docs(self, request, pk=None):
-        project = self.get_object()
-        res = [doc.as_dict() for doc in project.documents.all()]
-        return Response(res)
-
-    @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
         project = self.get_object()
         docs = project.documents.all()
         remaining = docs.filter(labels__isnull=True).count()
         return Response({'total': docs.count(), 'remaining': remaining})
 
-    @action(methods=['post'], detail=True)
-    def upload_doc(self, request, pk=None):
-        project = self.get_object()
-        f = request.FILES['file']
-        content = ''.join(chunk.decode('utf-8') for chunk in f.chunks())
-        for line in content.split('\n'):
-            j = json.loads(line)
-            Document(project=project, text=j['text']).save()
 
-    @action(methods=['get'], detail=True)
-    def download_doc(self, request, pk=None):
-        project = self.get_object()
-        res = []
-        return res
-
-
-class DocumentViewSet(viewsets.ModelViewSet):
-    queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    search_fields = ('text', )
-
-
-class LabelViewSet(viewsets.ModelViewSet):
+class ProjectLabelsAPI(generics.ListCreateAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
-    filter_fields = ('project',)
+    pagination_class = None
+
+    def get_queryset(self):
+        project_id = self.kwargs['project_id']
+        queryset = self.queryset.filter(project=project_id)
+
+        return queryset
+
+
+class ProjectLabelAPI(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Label.objects.all()
+    serializer_class = LabelSerializer
+
+    def get_queryset(self):
+        project_id = self.kwargs['project_id']
+        queryset = self.queryset.filter(project=project_id)
+
+        return queryset
+
+    def get_object(self):
+        label_id = self.kwargs['label_id']
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=label_id)
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
+
+class ProjectDocsAPI(generics.ListCreateAPIView):
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
+
+    def get_queryset(self):
+        project_id = self.kwargs['project_id']
+        queryset = self.queryset.filter(project=project_id)
+
+        return queryset
