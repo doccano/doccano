@@ -74,7 +74,7 @@ class ProgressAPI(View):
         project = Project.objects.get(id=project_id)
         docs = Document.objects.filter(project=project)
         total = docs.count()
-        remaining = docs.filter(annotation__isnull=True).count()
+        remaining = docs.filter(annotations__isnull=True).count()
 
         return JsonResponse({'total': total, 'remaining': remaining})
 
