@@ -23,7 +23,7 @@
                     Labels
                 </p>
                 <ul class="menu-list">
-                    <div class="control" v-for="label in labels">
+                    <div class="control" v-for="(label, label_id) in labels">
                         <li class="tags has-addons">
                             <span class="tag is-primary">[[label.shortcut]]</span>
                             <a class="tag is-grey" v-on:click="addLabel(label.text)" v-shortkey.once="['ctrl', [[ label.shortcut ]]]" @shortkey="addLabel(label.text)">[[label.text]]</a>

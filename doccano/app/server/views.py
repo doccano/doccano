@@ -210,7 +210,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=True)
     def labels(self, request, pk=None):
         project = self.get_object()
-        res = {label.id: label.text for label in project.labels.all()}
+        res = {label.id: {'text': label.text, 'shortcut': label.shortcut}
+               for label in project.labels.all()}
         return Response(res)
 
     @action(methods=['get'], detail=True)

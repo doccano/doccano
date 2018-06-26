@@ -4,7 +4,12 @@ Vue.use(require('vue-shortkey'));
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 var base_url = window.location.href.split('/').slice(3, 5).join('/');
-
+const HTTP = axios.create({
+    baseURL: '/api/' + base_url + '/',
+    //headers: {
+    //    Authorization: 'Bearer {token}'
+    //}
+})
 
 function swap(values) {
     var ret = {};
@@ -39,11 +44,11 @@ var vm = new Vue({
     methods: {
         addLabel: async function (label) {
             for (var i = 0; i < this.items[this.cur]['labels'].length; i++) {
-              var item = this.items[this.cur]['labels'][i];
-              if (label == item.text) {
-                this.deleteLabel(i);
-                return;
-              }
+                var item = this.items[this.cur]['labels'][i];
+                if (label == item.text) {
+                    this.deleteLabel(i);
+                    return;
+                }
             }
 
             var label = {
@@ -90,26 +95,26 @@ var vm = new Vue({
         nextPage: function () {
             this.cur += 1;
             if (this.cur == this.items.length) {
-              if (this.hasNext) {
-                this.page = this.nextPageNum;
-                this.submit();
-                this.cur = 0;
-              } else {
-                this.cur = this.items.length - 1;
-              }
+                if (this.hasNext) {
+                    this.page = this.nextPageNum;
+                    this.submit();
+                    this.cur = 0;
+                } else {
+                    this.cur = this.items.length - 1;
+                }
             }
             this.showMessage(this.cur);
         },
         prevPage: function () {
             this.cur -= 1;
             if (this.cur == -1) {
-              if (this.hasPrevious) {
-                this.page = this.prevPageNum;
-                this.submit();
-                this.cur = this.items.length - 1;
-              } else {
-                this.cur = 0;
-              }
+                if (this.hasPrevious) {
+                    this.page = this.prevPageNum;
+                    this.submit();
+                    this.cur = this.items.length - 1;
+                } else {
+                    this.cur = 0;
+                }
             }
             this.showMessage(this.cur);
         },
@@ -137,16 +142,12 @@ var vm = new Vue({
         showMessage: function (index) {
             this.cur = index;
         },
-        updateProgress: function() {
-            var self = this;
-            axios.get('/' + base_url + '/apis/progress')
-            .then(function (response) {
-                self.total = response.data['total'];
-                self.remaining = response.data['remaining'];
-            })
-            .catch(function (error) {
-                console.log('ERROR!! happend by Backend.')
-            });
+        updateProgress: function () {
+            HTTP.get('progress')
+                .then(response => {
+                    this.total = response.data['total'];
+                    this.remaining = response.data['remaining'];
+                })
         }
     },
     created: function () {
