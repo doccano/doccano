@@ -5,7 +5,7 @@ from .views import AnnotationAPIView, SearchAPI, InboxView
 from .views import ProjectsView, ProjectAdminView, RawDataAPI, DataDownloadAPI
 from rest_framework import routers
 from .views import ProjectViewSet
-from .views import ProjectLabelsAPI, ProjectLabelAPI, ProjectDocsAPI
+from .views import ProjectLabelsAPI, ProjectLabelAPI, ProjectDocsAPI, AnnotationsAPI, AnnotationAPI
 
 
 router = routers.DefaultRouter()
@@ -17,6 +17,8 @@ urlpatterns = [
     path('api/projects/<int:project_id>/labels/', ProjectLabelsAPI.as_view(), name='labels'),
     path('api/projects/<int:project_id>/labels/<int:label_id>', ProjectLabelAPI.as_view(), name='label'),
     path('api/projects/<int:project_id>/docs/', ProjectDocsAPI.as_view(), name='docs'),
+    path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations', AnnotationsAPI.as_view()),
+    path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>', AnnotationAPI.as_view()),
     path('projects/', ProjectsView.as_view(), name='project-list'),
     path('projects/<int:pk>/admin', ProjectAdminView.as_view(), name='project-admin'),
     path('projects/<int:project_id>/download', DataDownloadAPI.as_view(), name='download'),

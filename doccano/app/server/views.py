@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 
 from .models import Annotation, Label, Document, Project
-from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer
+from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer, AnnotationSerializer
 
 
 class IndexView(TemplateView):
@@ -188,3 +188,43 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
         queryset = self.queryset.filter(project=project_id)
 
         return queryset
+
+
+class AnnotationsAPI(generics.ListCreateAPIView):
+    queryset = Annotation.objects.all()
+    serializer_class = AnnotationSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        doc_id = self.kwargs['doc_id']
+        queryset = self.queryset.filter(data=doc_id)
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        doc_id = self.kwargs['doc_id']
+        label_id = request.data['label_id']
+        doc = Document.objects.get(id=doc_id)
+        label = Label.objects.get(id=label_id)
+        annotation = Annotation(data=doc, label=label, manual=True)
+        annotation.save()
+
+        return Response(annotation)
+
+
+class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Annotation.objects.all()
+    serializer_class = AnnotationSerializer
+
+    def get_queryset(self):
+        doc_id = self.kwargs['doc_id']
+        queryset = self.queryset.filter(data=doc_id)
+
+        return queryset
+
+    def get_object(self):
+        annotation_id = self.kwargs['annotation_id']
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=annotation_id)
+        self.check_object_permissions(self.request, obj)
+
+        return obj
