@@ -192,6 +192,8 @@ class ProjectLabelAPI(generics.RetrieveUpdateDestroyAPIView):
 class ProjectDocsAPI(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('text', )
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
