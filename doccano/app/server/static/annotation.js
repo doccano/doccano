@@ -76,9 +76,10 @@ var vm = new Vue({
             }
             this.showMessage(this.cur);
         },
-        submit: function () {
+        submit: async function () {
             this.url = `docs/?q=${this.searchQuery}`;
-            this.search();
+            await this.search();
+            this.cur = 0;
         },
         search: async function () {
             await HTTP.get(this.url).then(response => {
