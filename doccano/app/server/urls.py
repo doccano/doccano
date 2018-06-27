@@ -2,21 +2,22 @@ from django.urls import path
 
 from .views import IndexView
 from .views import AnnotationAPIView, ProgressAPI, SearchAPI, InboxView
-from .views import ProjectListView, ProjectAdminView, RawDataAPI, LabelAPI, DataDownloadAPI
+from .views import ProjectsView, ProjectAdminView, RawDataAPI, LabelAPI, DataDownloadAPI
 from rest_framework import routers
-from .views import LabelViewSet, ProjectViewSet, DocumentViewSet
+from .views import ProjectViewSet
+from .views import ProjectLabelsAPI, ProjectLabelAPI, ProjectDocsAPI
 
 
 router = routers.DefaultRouter()
-router.register(r'labels', LabelViewSet)
 router.register(r'projects', ProjectViewSet)
-router.register(r'documents', DocumentViewSet)
-#router.register(r'users', UserViewSet)
 
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
-    path('projects/', ProjectListView.as_view(), name='project-list'),
+    path('api/projects/<int:project_id>/labels/', ProjectLabelsAPI.as_view(), name='labels'),
+    path('api/projects/<int:project_id>/labels/<int:label_id>', ProjectLabelAPI.as_view(), name='label'),
+    path('api/projects/<int:project_id>/docs/', ProjectDocsAPI.as_view(), name='docs'),
+    path('projects/', ProjectsView.as_view(), name='project-list'),
     path('projects/<int:pk>/admin', ProjectAdminView.as_view(), name='project-admin'),
     path('projects/<int:project_id>/download', DataDownloadAPI.as_view(), name='download'),
     path('projects/<int:project_id>/', InboxView.as_view(), name='annotation'),
