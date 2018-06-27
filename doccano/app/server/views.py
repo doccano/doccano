@@ -77,18 +77,6 @@ class AnnotationAPIView(View):
         return JsonResponse({})
 
 
-class ProgressAPI(View):
-
-    def get(self, request, *args, **kwargs):
-        project_id = kwargs.get('project_id')
-        project = Project.objects.get(id=project_id)
-        docs = Document.objects.filter(project=project)
-        total = docs.count()
-        remaining = docs.filter(annotations__isnull=True).count()
-
-        return JsonResponse({'total': total, 'remaining': remaining})
-
-
 class SearchAPI(View):
 
     def get(self, request, *args, **kwargs):
