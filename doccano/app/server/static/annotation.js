@@ -151,14 +151,9 @@ var vm = new Vue({
         }
     },
     created: function () {
-        var self = this;
-        axios.get('/' + base_url + '/apis/labels')
-            .then(function (response) {
-                self.labels = response.data['labels'];
-            })
-            .catch(function (error) {
-                console.log('ERROR!! happend by Backend.')
-            });
+        HTTP.get('labels').then(response => {
+            this.labels = response.data
+        });
         this.updateProgress();
         this.submit();
     },

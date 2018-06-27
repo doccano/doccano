@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import IndexView
 from .views import AnnotationAPIView, ProgressAPI, SearchAPI, InboxView
-from .views import ProjectsView, ProjectAdminView, RawDataAPI, LabelAPI, DataDownloadAPI
+from .views import ProjectsView, ProjectAdminView, RawDataAPI, DataDownloadAPI
 from rest_framework import routers
 from .views import ProjectViewSet
 from .views import ProjectLabelsAPI, ProjectLabelAPI, ProjectDocsAPI
@@ -23,7 +23,6 @@ urlpatterns = [
     path('projects/<int:project_id>/', InboxView.as_view(), name='annotation'),
     path('projects/<int:project_id>/apis/data', AnnotationAPIView.as_view()),
     path('projects/<int:pk>/apis/raw_data', RawDataAPI.as_view(), name='data_api'),
-    path('projects/<int:pk>/apis/labels', LabelAPI.as_view(), name='label_api'),
     path('projects/<int:project_id>/apis/progress', ProgressAPI.as_view()),
     path('projects/<int:project_id>/apis/search', SearchAPI.as_view()),
 ]

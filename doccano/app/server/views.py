@@ -112,54 +112,6 @@ class SearchAPI(View):
                              'next_page_number': page.next_page_number() if page.has_next() else None})
 
 
-class LabelAPI(View):
-
-    def get(self, request, *args, **kwargs):
-        """Get labels."""
-        project_id = kwargs.get('pk')
-        labels = Label.objects.filter(project=project_id)
-        labels = [label.as_dict() for label in labels]
-
-        return JsonResponse({'labels': labels})
-
-    def post(self, request, *args, **kwargs):
-        """Create labels."""
-        #text = request.POST.get('text')
-        #shortcut = request.POST.get('shortcut')
-        project_id = kwargs.get('pk')
-        project = Project.objects.get(id=project_id)
-        body = request.body.decode('utf-8').replace("'", '"')
-        body = json.loads(body)
-        text = body.get('text')
-        shortcut = body.get('shortcut')
-        label = Label(text=text, shortcut=shortcut, project=project)
-        label.save()
-
-        return JsonResponse(label.as_dict())
-
-    def put(self, request, *args, **kwargs):
-        """Update labels."""
-        body = request.body.decode('utf-8').replace("'", '"')
-        body = json.loads(body)
-        label_id = body.get('id')
-        text = body.get('text')
-        shortcut = body.get('shortcut')
-        label = Label.objects.get(id=label_id)
-        label.text = text
-        label.shortcut = shortcut
-        label.save()
-
-        return JsonResponse({'status': 'ok'})
-
-    def delete(self, request, *args, **kwargs):
-        body = request.body.decode('utf-8').replace("'", '"')
-        body = json.loads(body)
-        label_id = body.get('id')
-        Label.objects.get(id=label_id).delete()
-
-        return JsonResponse({'status': 'ok'})
-
-
 class RawDataAPI(View):
 
     def get(self, request, *args, **kwargs):
