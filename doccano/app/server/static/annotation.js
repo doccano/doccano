@@ -5,99 +5,57 @@ axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 var base_url = window.location.href.split('/').slice(3, 5).join('/');
 const HTTP = axios.create({
-    baseURL: '/api/' + base_url + '/',
-    //headers: {
-    //    Authorization: 'Bearer {token}'
-    //}
+    baseURL: `/api/${base_url}/`
 })
-
-function swap(values) {
-    var ret = {};
-    for (var item of values) {
-        ret[item['text']] = item['id'];
-    }
-    return ret;
-};
 
 var vm = new Vue({
     el: '#mail-app',
     delimiters: ['[[', ']]'],
     data: {
         cur: 0,
-        items: [{
-            "id": null,
-            "labels": [],
-            "text": ''
-        }],
+        items: [{id: null, text: '', labels: []}],
         labels: [],
         guideline: 'Here is the Annotation Guideline Text',
         total: 0,
         remaining: 0,
         searchQuery: '',
-        hasNext: false,
-        hasPrevious: false,
-        nextPageNum: 1,
-        prevPageNum: 1,
-        page: 1,
+        url: '',
     },
 
     methods: {
-        addLabel: async function (label) {
+        addLabel: async function (label_id) {
             for (var i = 0; i < this.items[this.cur]['labels'].length; i++) {
                 var item = this.items[this.cur]['labels'][i];
-                if (label == item.text) {
+                if (label_id == item.label.id) {
                     this.deleteLabel(i);
                     return;
                 }
             }
 
-            var label = {
-                'text': label,
-                'prob': null
-            };
-            this.items[this.cur]['labels'].push(label);
-
-            var label2id = swap(this.labels);
-            var data = {
-                'id': this.items[this.cur]['id'],
-                'label_id': label2id[label['text']]
+            var payload = {
+                'label_id': label_id
             };
 
-            await axios.post('/' + base_url + '/apis/data', data)
-                .then(function (response) {
-                    console.log('post data');
-                })
-                .catch(function (error) {
-                    console.log('ERROR!! happend by Backend.')
-                });
+            var doc_id = this.items[this.cur].id;
+            await HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
+                this.items[this.cur]['labels'].push(response.data);
+            });
             this.updateProgress();
         },
         deleteLabel: async function (index) {
-            var label2id = swap(this.labels);
-            var label = this.items[this.cur]['labels'][index];
-            var payload = {
-                'id': this.items[this.cur]['id'],
-                'label_id': label2id[label['text']]
-            };
-
-            await axios.delete('/' + base_url + '/apis/data', {
-                    data: payload
-                })
-                .then(function (response) {
-                    console.log('delete data');
-                })
-                .catch(function (error) {
-                    console.log('ERROR!! happend by Backend.')
-                });
-            this.items[this.cur]['labels'].splice(index, 1)
+            var doc_id = this.items[this.cur].id;
+            var annotation_id = this.items[this.cur]['labels'][index].id;
+            HTTP.delete(`docs/${doc_id}/annotations/${annotation_id}`).then(response => {
+                this.items[this.cur]['labels'].splice(index, 1)
+            });
             this.updateProgress();
         },
-        nextPage: function () {
+        nextPage: async function () {
             this.cur += 1;
             if (this.cur == this.items.length) {
-                if (this.hasNext) {
-                    this.page = this.nextPageNum;
-                    this.submit();
+                if (this.next) {
+                    this.url = this.next;
+                    await this.search();
                     this.cur = 0;
                 } else {
                     this.cur = this.items.length - 1;
@@ -105,12 +63,12 @@ var vm = new Vue({
             }
             this.showMessage(this.cur);
         },
-        prevPage: function () {
+        prevPage: async function () {
             this.cur -= 1;
             if (this.cur == -1) {
-                if (this.hasPrevious) {
-                    this.page = this.prevPageNum;
-                    this.submit();
+                if (this.prev) {
+                    this.url = this.prev;
+                    await this.search();
                     this.cur = this.items.length - 1;
                 } else {
                     this.cur = 0;
@@ -118,36 +76,25 @@ var vm = new Vue({
             }
             this.showMessage(this.cur);
         },
-        activeLearn: function () {
-            alert('Active Learning!');
-        },
         submit: function () {
-            console.log('submit' + this.searchQuery);
-            var self = this;
-            axios.get('/' + base_url + '/apis/search?keyword=' + this.searchQuery + '&page=' + this.page)
-                .then(function (response) {
-                    console.log('search response');
-                    console.log(response.data);
-                    self.items = response.data['data'];
-                    self.hasNext = response.data['has_next']
-                    self.nextPageNum = response.data['next_page_number']
-                    self.hasPrevious = response.data['has_previous']
-                    self.prevPageNum = response.data['previous_page_number']
-                    //self.searchQuery = '';
-                })
-                .catch(function (error) {
-                    console.log('ERROR!! happend by Backend.')
-                });
+            this.url = `docs/?q=${this.searchQuery}`;
+            this.search();
+        },
+        search: async function () {
+            await HTTP.get(this.url).then(response => {
+                this.items = response.data['results'];
+                this.next = response.data['next'];
+                this.prev = response.data['previous'];
+            })
         },
         showMessage: function (index) {
             this.cur = index;
         },
         updateProgress: function () {
-            HTTP.get('progress')
-                .then(response => {
-                    this.total = response.data['total'];
-                    this.remaining = response.data['remaining'];
-                })
+            HTTP.get('progress').then(response => {
+                this.total = response.data['total'];
+                this.remaining = response.data['remaining'];
+            })
         }
     },
     created: function () {
@@ -159,11 +106,9 @@ var vm = new Vue({
     },
     computed: {
         achievement: function () {
-            if (this.total == 0) {
-                return 0
-            } else {
-                return Math.round((this.total - this.remaining) / this.total * 100)
-            }
+            var done = this.total - this.remaining;
+            var percentage = Math.round(done / this.total * 100);
+            return this.total > 0 ? percentage : 0;
         },
         progressColor: function () {
             if (this.achievement < 30) {

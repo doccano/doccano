@@ -26,7 +26,7 @@
                     <div class="control" v-for="(label, label_id) in labels">
                         <li class="tags has-addons">
                             <span class="tag is-primary">[[label.shortcut]]</span>
-                            <a class="tag is-grey" v-on:click="addLabel(label.text)" v-shortkey.once="['ctrl', [[ label.shortcut ]]]" @shortkey="addLabel(label.text)">[[label.text]]</a>
+                            <a class="tag is-grey" v-on:click="addLabel(label.id)" v-shortkey.once="['ctrl', [[ label.shortcut ]]]" @shortkey="addLabel(label.id)">[[label.text]]</a>
                         </li>
                     </div>
                 </ul>
@@ -69,18 +69,18 @@
             </div>
         </div>
 
-        <div class="inbox-messages" id="inbox-messages">
+        <div class="inbox-messages" id="inbox-messages" v-if="items.length">
             <div v-for="(msg, index) in items" class="card" v-bind:class="{ active: index == cur }" v-on:click="showMessage(index)" v-bind:data-preview-id="index">
                 <div class="card-content" style="padding:1.2rem;">
                     <div class="msg-header">
                         <span class="msg-from">
                             <div class="field is-grouped is-grouped-multiline">
-                                <div class="control" v-for="(label, index) in msg.labels">
+                                <div class="control" v-for="(annotation, index) in msg.labels">
                                     <div class="tags has-addons">
                                         <span class="tag is-dark">
-                                            [[label.text]]
+                                            [[annotation.label.text]]
                                         </span>
-                                        <span class="tag is-primary" v-if="label.prob">[[label.prob]]</span>
+                                        <span class="tag is-primary" v-if="annotation.label.prob">[[annotation.label.prob]]</span>
                                     </div>
                                 </div>
                             </div>
@@ -105,15 +105,15 @@
             </div>
         </div>
         <div class="box message-preview">
-            <div class="top">
+            <div class="top" v-if="items.length">
                 <div class="field is-grouped is-grouped-multiline">
-                    <div class="control" v-for="(label, index) in items[cur].labels">
+                    <div class="control" v-for="(annotation, index) in items[cur].labels">
                         <div class="tags has-addons">
                             <span class="tag is-dark">
                                 <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
-                                [[ label.text ]]
+                                [[ annotation.label.text ]]
                             </span>
-                            <span class="tag is-primary" v-if="label.prob">[[ label.prob ]]</span>
+                            <span class="tag is-primary" v-if="annotation.label.prob">[[ annotation.label.prob ]]</span>
                         </div>
                     </div>
                 </div>

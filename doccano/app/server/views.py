@@ -37,75 +37,7 @@ class ProjectAdminView(LoginRequiredMixin, DetailView):
     template_name = 'project_admin.html'
 
 
-class AnnotationAPIView(View):
-
-    def get(self, request, *args, **kwargs):
-        project_id = kwargs.get('project_id')
-        project = Project.objects.get(id=project_id)
-        once_active_learned = len(Annotation.objects.all().exclude(prob=None)) > 0
-        if once_active_learned:
-            # Use Annotation model & RawData model.
-            # Left outer join data and annotation.
-            # Filter manual=False
-            # Sort prob
-            docs = Annotation.objects.all()
-        else:
-            # Left outer join data and annotation.
-            docs = Document.objects.filter(annotation__isnull=True, project=project)
-            docs = [{**d.as_dict(), **{'labels': []}} for d in docs]
-
-        if not docs:
-            docs = [{'id': None, 'labels': [], 'text': ''}]
-
-        return JsonResponse({'data': docs})
-
-    def post(self, request, *args, **kwargs):
-        body = json.loads(request.body)
-        data_id, label_id = body.get('id'), body.get('label_id')  # {id:0, label_id:1}
-
-        data = Document.objects.get(id=data_id)
-        label = Label.objects.get(id=label_id)
-        Annotation(data=data, label=label, manual=True).save()
-
-        return JsonResponse({})
-
-    def delete(self, request, *args, **kwargs):
-        body = json.loads(request.body)
-        data_id, label_id = body.get('id'), body.get('label_id')  # {id:0, label_id:1}
-        Annotation.objects.get(data=data_id, label=label_id).delete()
-
-        return JsonResponse({})
-
-
-class SearchAPI(View):
-
-    def get(self, request, *args, **kwargs):
-        project_id = kwargs.get('project_id')
-        keyword = request.GET.get('keyword')
-        docs = Document.objects.filter(project=project_id, text__contains=keyword)
-        labels = [[a.as_dict() for a in Annotation.objects.filter(data=d.id)] for d in docs]
-        docs = [{**d.as_dict(), **{'labels': []}} for d in docs]
-        if not docs:
-            docs = [{'id': None, 'labels': [], 'text': ''}]
-        # Annotation.objects.select_related('data').all().filter(data__text__contains=keyword)
-        paginator = Paginator(docs, 5)
-        page = request.GET.get('page', 1)
-        page = paginator.get_page(page)
-        docs = page.object_list
-
-        return JsonResponse({'data': docs,
-                             'has_next': page.has_next(),
-                             'has_previous': page.has_previous(),
-                             'previous_page_number': page.previous_page_number() if page.has_previous() else None,
-                             'next_page_number': page.next_page_number() if page.has_next() else None})
-
-
 class RawDataAPI(View):
-
-    def get(self, request, *args, **kwargs):
-        """Get raw data."""
-        data = []
-        return JsonResponse({'data': data})
 
     def post(self, request, *args, **kwargs):
         """Upload data."""
@@ -207,8 +139,9 @@ class AnnotationsAPI(generics.ListCreateAPIView):
         label = Label.objects.get(id=label_id)
         annotation = Annotation(data=doc, label=label, manual=True)
         annotation.save()
+        serializer = self.serializer_class(annotation)
 
-        return Response(annotation)
+        return Response(serializer.data)
 
 
 class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
