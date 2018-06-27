@@ -212,6 +212,11 @@ class ProjectLabelsAPI(generics.ListCreateAPIView):
 
         return queryset
 
+    def perform_create(self, serializer):
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, pk=project_id)
+        serializer.save(project=project)
+
 
 class ProjectLabelAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = Label.objects.all()

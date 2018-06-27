@@ -1,26 +1,17 @@
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 var base_url = window.location.href.split('/').slice(3, 5).join('/');
-
-
-function swap(values) {
-    var ret = {};
-    for (var item of values) {
-        ret[item['text']] = item['id'];
-    }
-    return ret;
-};
+const HTTP = axios.create({
+    baseURL: `/api/${base_url}/`,
+})
 
 var vm = new Vue({
     el: '#root',
     delimiters: ['[[', ']]'],
     data: {
-        todos: [],
         labels: [],
         file: null,
         file_name: '',
-        newTodo: '',
-        editedTodo: null,
         newLabel: '',
         newShortcut: '',
         total: 0,
@@ -50,95 +41,29 @@ var vm = new Vue({
         },
         addLabel: function () {
             var payload = {
-                'text': this.newLabel,
-                'shortcut': this.newShortcut
+                text: this.newLabel,
+                shortcut: this.newShortcut
             };
-            var self = this;
-            axios.post('/' + base_url + '/apis/labels', payload)
-                .then(function (response) {
-                    console.log('post data');
-                    self.newShortcut = '';
-                    self.newLabel = '';
-                    self.labels.push(response.data);
-                })
-                .catch(function (error) {
-                    console.log('ERROR!! happend by Backend.')
-                });
+            HTTP.post('labels/', payload).then(response => {
+                this.newLabel = '';
+                this.newShortcut = '';
+                this.labels.push(response.data);
+            })
         },
         removeLabel: function (index) {
-            var payload = this.labels[index];
-            var self = this;
-            axios.delete('/' + base_url + '/apis/labels', {
-                    data: payload
-                })
-                .then(function (response) {
-                    self.labels.splice(index, 1);
-                    console.log('delete data');
-                })
-                .catch(function (error) {
-                    console.log('ERROR!! happend by Backend.')
-                });
-        },
-        addTodo: function () {
-            var value = this.newTodo && this.newTodo.trim();
-            if (!value) {
-                return
-            }
-            this.todos.push({
-                title: value,
+            var label_id = this.labels[index].id;
+            HTTP.delete(`labels/${label_id}`).then(response => {
+                this.labels.splice(index, 1)
             })
-            this.newTodo = ''
-        },
-        removeTodo: function (todo) {
-            this.todos.splice(this.todos.indexOf(todo), 1)
-        },
-
-        editTodo: function (todo) {
-            this.beforeEditCache = todo.title
-            this.editedTodo = todo
-        },
-        doneEdit: function (todo) {
-            if (!this.editedTodo) {
-                return
-            }
-            this.editedTodo = null
-            todo.title = todo.title.trim()
-            if (!todo.title) {
-                this.removeTodo(todo)
-            }
-        },
-        cancelEdit: function (todo) {
-            this.editedTodo = null
-            todo.title = this.beforeEditCache
-        },
+        }
     },
     created: function () {
-        var self = this;
-        axios.get('/' + base_url + '/apis/labels')
-            .then(function (response) {
-                self.labels = response.data['labels'];
-                console.log(self.labels);
-            })
-            .catch(function (error) {
-                console.log('ERROR!! happend by Backend.')
-            });
-        axios.get('/' + base_url + '/apis/progress')
-            .then(function (response) {
-                console.log(response.data);
-                self.total = response.data['total'];
-                self.remaining = response.data['remaining'];
-                console.log(self.total);
-                console.log(self.remaining);
-            })
-            .catch(function (error) {
-                console.log('ERROR!! happend by Backend.')
-            });
-    },
-    directives: {
-        'todo-focus': function (el, binding) {
-            if (binding.value) {
-                el.focus()
-            }
-        }
+        HTTP.get('labels').then(response => {
+            this.labels = response.data
+        })
+        HTTP.get('progress').then(response => {
+            this.total = response.data['total'];
+            this.remaining = response.data['remaining'];
+        })
     }
-});
+})
