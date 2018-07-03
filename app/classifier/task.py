@@ -3,9 +3,9 @@ Task runner.
 """
 import numpy as np
 
-from doccano.classifier.model import build_model
-from doccano.classifier.preprocess import build_vectorizer
-from doccano.classifier.utils import load_dataset, save_dataset, make_output, train_test_split
+from doccano.app.classifier.model import build_model
+from doccano.app.classifier import build_vectorizer
+from doccano.app.classifier import load_dataset, save_dataset, make_output, train_test_split
 
 
 def run(filename):
