@@ -14,7 +14,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
 
-from .models import Annotation, Label, Document, Project
+from .models import Label, Document, Project
+from .models import DocumentAnnotation
 from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer, AnnotationSerializer
 
 
@@ -123,7 +124,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
 
 
 class AnnotationsAPI(generics.ListCreateAPIView):
-    queryset = Annotation.objects.all()
+    queryset = DocumentAnnotation.objects.all()
     serializer_class = AnnotationSerializer
     pagination_class = None
 
@@ -137,7 +138,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
         label_id = request.data['label_id']
         doc = Document.objects.get(id=doc_id)
         label = Label.objects.get(id=label_id)
-        annotation = Annotation(data=doc, label=label, manual=True)
+        annotation = DocumentAnnotation(data=doc, label=label, manual=True)
         annotation.save()
         serializer = self.serializer_class(annotation)
 
@@ -145,7 +146,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
 
 
 class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Annotation.objects.all()
+    queryset = DocumentAnnotation.objects.all()
     serializer_class = AnnotationSerializer
 
     def get_queryset(self):

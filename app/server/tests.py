@@ -1,9 +1,12 @@
 import os
+from unittest.mock import MagicMock
 
 from django.test import TestCase, Client
 from django.urls import reverse
+from django.db.utils import IntegrityError
 
-from .models import Project, Document, Label
+from .models import Project, Document, Label, User
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
 
 class ProjectModelTest(TestCase):
@@ -81,3 +84,35 @@ class TestLabelAPI(TestCase):
         res = client.delete(reverse('label_api', args=[1]),
                             data={"id": label_id})
         self.assertEqual(Label.objects.count(), 0)
+
+
+class TestAnnotationModel(TestCase):
+
+    def setUp(self):
+        project = Project(name='project', description='description')
+        project.save()
+
+        self.user = User(username='hoge', email='hoge@example.com')
+        self.user.save()
+
+        self.doc = Document(text='document', project=project)
+        self.doc.save()
+
+        self.label = Label(text='label', shortcut='k', project=project)
+        self.label.save()
+
+    def test_save(self):
+        self.assertEqual(DocumentAnnotation.objects.count(), 0)
+        doc_ano = DocumentAnnotation(document=self.doc, user=self.user, label=self.label)
+        doc_ano.save()
+        self.assertEqual(DocumentAnnotation.objects.count(), 1)
+        self.assertEqual(doc_ano.document, self.doc)
+        self.assertEqual(doc_ano.user, self.user)
+        self.assertEqual(doc_ano.label, self.label)
+
+    def test_uniquness(self):
+        annotation1 = DocumentAnnotation(document=self.doc, user=self.user, label=self.label)
+        annotation1.save()
+        annotation2 = DocumentAnnotation(document=self.doc, user=self.user, label=self.label)
+        with self.assertRaises(IntegrityError):
+            annotation2.save()
