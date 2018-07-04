@@ -4,6 +4,13 @@ from django.db.utils import IntegrityError
 from mixer.backend.django import mixer
 
 
+class TestProject(TestCase):
+
+    def test_project_type(self):
+        project = mixer.blend('server.Project')
+        project.is_type_of(project.project_type)
+
+
 class TestLabel(TestCase):
 
     def test_shortcut_uniqueness(self):

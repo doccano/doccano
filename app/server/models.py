@@ -5,10 +5,14 @@ from django.contrib.auth.models import User
 
 
 class Project(models.Model):
+    DOCUMENT_CLASSIFICATION = 'DocumentClassification'
+    SEQUENCE_LABELING = 'SequenceLabeling'
+    Seq2seq = 'Seq2seq'
+
     PROJECT_CHOICES = (
-        ('DocumentClassification', 'document classification'),
-        ('SequenceLabeling', 'sequence labeling'),
-        ('Seq2seq', 'sequence to sequence'),
+        (DOCUMENT_CLASSIFICATION, 'document classification'),
+        (SEQUENCE_LABELING, 'sequence labeling'),
+        (Seq2seq, 'sequence to sequence'),
     )
 
     name = models.CharField(max_length=100)
@@ -17,6 +21,9 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     users = models.ManyToManyField(User)
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
+
+    def is_type_of(self, project_type):
+        return project_type == self.project_type
 
     def __str__(self):
         return self.name
