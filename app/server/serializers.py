@@ -20,11 +20,11 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
-    labels = DocumentAnnotationSerializer(many=True)
+    doc_annotations = DocumentAnnotationSerializer(many=True)
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'labels')
+        fields = ('id', 'text', 'doc_annotations')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
