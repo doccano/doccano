@@ -1,24 +1,33 @@
+import string
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 
 
 class Project(models.Model):
+    PROJECT_CHOICES = (
+        ('DocumentClassification', 'document classification'),
+        ('SequenceLabeling', 'sequence labeling'),
+        ('Seq2seq', 'sequence to sequence'),
+    )
+
     name = models.CharField(max_length=100)
     description = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     users = models.ManyToManyField(User)
+    project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
 
     def __str__(self):
         return self.name
 
 
 class Label(models.Model):
-    # choices: shortcut
-    # add color
+    KEY_CHOICES = ((U, c) for U, c in zip(string.ascii_uppercase, string.ascii_lowercase))
+    COLOR_CHOICES = ()
+
     text = models.CharField(max_length=100, unique=True)
-    shortcut = models.CharField(max_length=10, unique=True)
+    shortcut = models.CharField(max_length=10, unique=True, choices=KEY_CHOICES)
     project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
 
     def __str__(self):

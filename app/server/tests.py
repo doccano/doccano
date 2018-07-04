@@ -4,6 +4,21 @@ from django.db.utils import IntegrityError
 from mixer.backend.django import mixer
 
 
+class TestLabel(TestCase):
+
+    def test_shortcut_uniqueness(self):
+        label = mixer.blend('server.Label')
+        with self.assertRaises(IntegrityError):
+            mixer.blend('server.Label',
+                        shortcut=label.shortcut)
+
+    def test_text_uniqueness(self):
+        label = mixer.blend('server.Label')
+        with self.assertRaises(IntegrityError):
+            mixer.blend('server.Label',
+                        text=label.text)
+
+
 class TestDocumentAnnotation(TestCase):
 
     def test_uniqueness(self):
