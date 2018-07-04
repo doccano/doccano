@@ -1,118 +1,44 @@
-import os
-from unittest.mock import MagicMock
-
-from django.test import TestCase, Client
-from django.urls import reverse
+from django.test import TestCase
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
-
-from .models import Project, Document, Label, User
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from mixer.backend.django import mixer
 
 
-class ProjectModelTest(TestCase):
+class TestDocumentAnnotation(TestCase):
 
-    def test_string_representation(self):
-        project = Project(name='my project', description='my description')
-        self.assertEqual(str(project), project.name)
-
-
-class TestRawDataAPI(TestCase):
-
-    def test_get(self):
-        client = Client()
-        res = client.get(reverse('data_api', args=[1]))
-        self.assertEqual(res.status_code, 200)
-        self.assertIsInstance(res.json(), dict)
-        self.assertIn('data', res.json())
-        self.assertEqual(res.json()['data'], [])
-
-    def test_post(self):
-        self.assertEqual(Document.objects.count(), 0)
-
-        filename = os.path.join(os.path.dirname(__file__), 'data/test.jsonl')
-        client = Client()
-        with open(filename) as f:
-            client.post(reverse('data_api', args=[1]),
-                        {'name': 'fred', 'attachment': f})
-
-        self.assertGreater(Document.objects.count(), 0)
-
-
-class TestLabelAPI(TestCase):
-
-    def test_get(self):
-        client = Client()
-        res = client.get(reverse('data_api', args=[1]))
-        self.assertEqual(res.status_code, 200)
-        self.assertIsInstance(res.json(), dict)
-        self.assertIn('data', res.json())
-        self.assertEqual(res.json()['data'], [])
-
-    def test_post(self):
-        self.assertEqual(Label.objects.count(), 0)
-        client = Client()
-        res = client.post(reverse('label_api', args=[1]),
-                          data={'text': 'label1', 'shortcut': 'k'})
-        self.assertGreater(Label.objects.count(), 0)
-        self.assertEqual(Label.objects.count(), 1)
-
-    def test_put(self):
-        self.assertEqual(Label.objects.count(), 0)
-        client = Client()
-        res = client.post(reverse('label_api', args=[1]),
-                          data={'text': 'label1', 'shortcut': 'k'})
-        self.assertEqual(Label.objects.count(), 1)
-        prev_label = Label.objects.all()[0]
-        text = 'neko'
-        shortcut = 'P'
-
-        res = client.put(reverse('label_api', args=[1]),
-                            data={"id": prev_label.id, 'text': text, 'shortcut': shortcut})
-        self.assertEqual(Label.objects.count(), 1)
-        post_label = Label.objects.all()[0]
-        self.assertEqual(prev_label.id, post_label.id)
-        self.assertEqual(post_label.text, text)
-        self.assertEqual(post_label.shortcut, shortcut)
-
-    def test_delete(self):
-        self.assertEqual(Label.objects.count(), 0)
-        client = Client()
-        res = client.post(reverse('label_api', args=[1]),
-                          data={'text': 'label1', 'shortcut': 'k'})
-        self.assertEqual(Label.objects.count(), 1)
-        label_id = Label.objects.all()[0].id
-        res = client.delete(reverse('label_api', args=[1]),
-                            data={"id": label_id})
-        self.assertEqual(Label.objects.count(), 0)
-
-
-class TestAnnotationModel(TestCase):
-
-    def setUp(self):
-        project = Project(name='project', description='description')
-        project.save()
-
-        self.user = User(username='hoge', email='hoge@example.com')
-        self.user.save()
-
-        self.doc = Document(text='document', project=project)
-        self.doc.save()
-
-        self.label = Label(text='label', shortcut='k', project=project)
-        self.label.save()
-
-    def test_save(self):
-        self.assertEqual(DocumentAnnotation.objects.count(), 0)
-        doc_ano = DocumentAnnotation(document=self.doc, user=self.user, label=self.label)
-        doc_ano.save()
-        self.assertEqual(DocumentAnnotation.objects.count(), 1)
-        self.assertEqual(doc_ano.document, self.doc)
-        self.assertEqual(doc_ano.user, self.user)
-        self.assertEqual(doc_ano.label, self.label)
-
-    def test_uniquness(self):
-        annotation1 = DocumentAnnotation(document=self.doc, user=self.user, label=self.label)
-        annotation1.save()
-        annotation2 = DocumentAnnotation(document=self.doc, user=self.user, label=self.label)
+    def test_uniqueness(self):
+        annotation1 = mixer.blend('server.DocumentAnnotation')
         with self.assertRaises(IntegrityError):
-            annotation2.save()
+            mixer.blend('server.DocumentAnnotation',
+                        document=annotation1.document,
+                        user=annotation1.user,
+                        label=annotation1.label)
+
+
+class TestSequenceAnnotation(TestCase):
+
+    def test_uniqueness(self):
+        annotation1 = mixer.blend('server.SequenceAnnotation')
+        with self.assertRaises(IntegrityError):
+            mixer.blend('server.SequenceAnnotation',
+                        document=annotation1.document,
+                        user=annotation1.user,
+                        label=annotation1.label,
+                        start_offset=annotation1.start_offset,
+                        end_offset=annotation1.end_offset)
+
+    def test_position_constraint(self):
+        with self.assertRaises(ValidationError):
+            mixer.blend('server.SequenceAnnotation',
+                        start_offset=1, end_offset=0).clean()
+
+
+class TestSeq2seqAnnotation(TestCase):
+
+    def test_uniqueness(self):
+        annotation1 = mixer.blend('server.Seq2seqAnnotation')
+        with self.assertRaises(IntegrityError):
+            mixer.blend('server.Seq2seqAnnotation',
+                        document=annotation1.document,
+                        user=annotation1.user,
+                        text=annotation1.text)
