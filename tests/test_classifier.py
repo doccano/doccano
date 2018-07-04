@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from doccano.classifier.task import run
+from doccano.app.classifier import run
 
 
 class TestClassifier(unittest.TestCase):
