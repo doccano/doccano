@@ -16,7 +16,8 @@ class Project(models.Model):
     )
 
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.CharField(max_length=500)
+    guideline = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     users = models.ManyToManyField(User)
