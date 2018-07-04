@@ -16,7 +16,7 @@ from rest_framework.permissions import IsAdminUser
 
 from .models import Label, Document, Project
 from .models import DocumentAnnotation
-from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer, AnnotationSerializer
+from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer, DocumentAnnotationSerializer
 
 
 class IndexView(TemplateView):
@@ -70,7 +70,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def progress(self, request, pk=None):
         project = self.get_object()
         docs = project.documents.all()
-        remaining = docs.filter(labels__isnull=True).count()
+        remaining = docs.filter(doc_annotations__isnull=True).count()
         return Response({'total': docs.count(), 'remaining': remaining})
 
 
@@ -125,7 +125,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
 
 class AnnotationsAPI(generics.ListCreateAPIView):
     queryset = DocumentAnnotation.objects.all()
-    serializer_class = AnnotationSerializer
+    serializer_class = DocumentAnnotationSerializer
     pagination_class = None
 
     def get_queryset(self):
@@ -147,7 +147,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
 
 class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = DocumentAnnotation.objects.all()
-    serializer_class = AnnotationSerializer
+    serializer_class = DocumentAnnotationSerializer
 
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']

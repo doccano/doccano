@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Label, Project, Document, Annotation
+from .models import Label, Project, Document
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
 
 class LabelSerializer(serializers.ModelSerializer):
@@ -10,16 +11,16 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'shortcut')
 
 
-class AnnotationSerializer(serializers.ModelSerializer):
+class DocumentAnnotationSerializer(serializers.ModelSerializer):
     label = LabelSerializer()
 
     class Meta:
-        model = Annotation
+        model = DocumentAnnotation
         fields = ('id', 'prob', 'label')
 
 
 class DocumentSerializer(serializers.ModelSerializer):
-    labels = AnnotationSerializer(many=True)
+    labels = DocumentAnnotationSerializer(many=True)
 
     class Meta:
         model = Document
