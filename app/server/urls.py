@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import IndexView
-from .views import InboxView
+from .views import ProjectView
 from .views import ProjectsView, ProjectAdminView, RawDataAPI, DataDownloadAPI
 from rest_framework import routers
 from .views import ProjectViewSet
@@ -22,6 +22,6 @@ urlpatterns = [
     path('projects/', ProjectsView.as_view(), name='project-list'),
     path('projects/<int:pk>/admin', ProjectAdminView.as_view(), name='project-admin'),
     path('projects/<int:project_id>/download', DataDownloadAPI.as_view(), name='download'),
-    path('projects/<int:project_id>/', InboxView.as_view(), name='annotation'),
+    path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
     path('projects/<int:pk>/apis/raw_data', RawDataAPI.as_view(), name='data_api'),
 ]

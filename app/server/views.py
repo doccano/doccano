@@ -13,18 +13,36 @@ from rest_framework import viewsets, filters, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser
+from django.db.models.query import QuerySet
+
 
 from .models import Label, Document, Project
 from .models import DocumentAnnotation
 from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer, DocumentAnnotationSerializer
+from .serializers import SequenceSerializer
 
 
 class IndexView(TemplateView):
     template_name = 'index.html'
 
 
-class InboxView(LoginRequiredMixin, TemplateView):
+class ProjectView(LoginRequiredMixin, TemplateView):
     template_name = 'annotation.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        project_id = kwargs.get('project_id')
+        project = get_object_or_404(Project, pk=project_id)
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            self.template_name = 'annotation.html'
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            self.template_name = 'annotation/sequence_labeling.html'
+        elif project.is_type_of(Project.Seq2seq):
+            self.template_name = 'annotation/seq2seq.html'
+        else:
+            pass
+
+        return context
 
 
 class ProjectsView(LoginRequiredMixin, ListView):
@@ -112,9 +130,18 @@ class ProjectLabelAPI(generics.RetrieveUpdateDestroyAPIView):
 
 class ProjectDocsAPI(generics.ListCreateAPIView):
     queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
+
+    def get_serializer_class(self):
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, pk=project_id)
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            self.serializer_class = DocumentSerializer
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            self.serializer_class = SequenceSerializer
+
+        return self.serializer_class
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
@@ -130,7 +157,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
 
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
-        queryset = self.queryset.filter(data=doc_id)
+        queryset = self.queryset.filter(document=doc_id)
         return queryset
 
     def post(self, request, *args, **kwargs):
@@ -138,7 +165,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
         label_id = request.data['label_id']
         doc = Document.objects.get(id=doc_id)
         label = Label.objects.get(id=label_id)
-        annotation = DocumentAnnotation(data=doc, label=label, manual=True)
+        annotation = DocumentAnnotation(document=doc, label=label, manual=True, user=self.request.user)
         annotation.save()
         serializer = self.serializer_class(annotation)
 
@@ -151,7 +178,7 @@ class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
-        queryset = self.queryset.filter(data=doc_id)
+        queryset = self.queryset.filter(document=doc_id)
 
         return queryset
 

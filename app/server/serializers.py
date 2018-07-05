@@ -20,11 +20,38 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
-    doc_annotations = DocumentAnnotationSerializer(many=True)
+    labels = DocumentAnnotationSerializer(source='doc_annotations', many=True)
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'doc_annotations')
+        fields = ('id', 'text', 'labels')
+
+
+class SequenceAnnotationSerializer(serializers.ModelSerializer):
+    label = LabelSerializer()
+
+    class Meta:
+        model = SequenceAnnotation
+        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset')
+
+
+class SequenceSerializer(serializers.ModelSerializer):
+    labels = SequenceAnnotationSerializer(source='seq_annotations', many=True)
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text', 'labels')
+
+
+class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Seq2seqAnnotation
+        fields = ('id',)
+
+
+class Seq2seqSerializer(serializers.ModelSerializer):
+    pass
 
 
 class ProjectSerializer(serializers.ModelSerializer):
