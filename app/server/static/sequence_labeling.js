@@ -43,7 +43,6 @@ const Annotator = {
             this.startOffset = start;
             this.endOffset = end;
             console.log(start, end);
-            console.log(this.entityPositions);
         },
         validRange: function () {
             if (this.startOffset == this.endOffset) {
@@ -62,14 +61,17 @@ const Annotator = {
         },
         addLabel: function (label_id) {
             if (this.validRange()) {
-                this.entityPositions.push({
+                var label = {
                     start_offset: this.startOffset,
                     end_offset: this.endOffset,
                     label_id: label_id
-                })
+                };
+                this.entityPositions.push(label);
+                return label
             }
         },
         deleteLabel: function (index) {
+            this.$emit('delete-label', index);
             this.entityPositions.splice(index, 1)
         },
         getColor: function (label_id) {
@@ -136,26 +138,15 @@ var vm = new Vue({
 
     methods: {
         annotate: function (label_id) {
-            this.$refs.annotator.addLabel(label_id);
-        },
-        addLabel: async function (label_id) {
-            for (var i = 0; i < this.items[this.cur]['labels'].length; i++) {
-                var item = this.items[this.cur]['labels'][i];
-                if (label_id == item.label.id) {
-                    this.deleteLabel(i);
-                    return;
-                }
-            }
-
-            var payload = {
-                'label_id': label_id
-            };
-
+            var payload = this.$refs.annotator.addLabel(label_id);
             var doc_id = this.items[this.cur].id;
-            await HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
+            HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
                 this.items[this.cur]['labels'].push(response.data);
             });
-            this.updateProgress();
+            this.updateProgress()
+        },
+        addLabel: function (label_id) {
+            
         },
         deleteLabel: async function (index) {
             var doc_id = this.items[this.cur].id;

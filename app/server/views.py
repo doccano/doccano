@@ -17,9 +17,9 @@ from django.db.models.query import QuerySet
 
 
 from .models import Label, Document, Project
-from .models import DocumentAnnotation
+from .models import DocumentAnnotation, SequenceAnnotation
 from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer, DocumentAnnotationSerializer
-from .serializers import SequenceSerializer
+from .serializers import SequenceSerializer, SequenceAnnotationSerializer
 
 
 class IndexView(TemplateView):
@@ -151,21 +151,47 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
 
 
 class AnnotationsAPI(generics.ListCreateAPIView):
-    queryset = DocumentAnnotation.objects.all()
-    serializer_class = DocumentAnnotationSerializer
+    #queryset = DocumentAnnotation.objects.all()
+    #queryset = SequenceAnnotation.objects.all()
+    #serializer_class = DocumentAnnotationSerializer
     pagination_class = None
+
+    def get_serializer_class(self):
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, pk=project_id)
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            self.serializer_class = DocumentAnnotationSerializer
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            self.serializer_class = SequenceAnnotationSerializer
+
+        return self.serializer_class
 
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, pk=project_id)
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            self.queryset = DocumentAnnotation.objects.all()
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            self.queryset = SequenceAnnotation.objects.all()
         queryset = self.queryset.filter(document=doc_id)
+
         return queryset
 
     def post(self, request, *args, **kwargs):
-        doc_id = self.kwargs['doc_id']
-        label_id = request.data['label_id']
-        doc = Document.objects.get(id=doc_id)
-        label = Label.objects.get(id=label_id)
-        annotation = DocumentAnnotation(document=doc, label=label, manual=True, user=self.request.user)
+        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        label = get_object_or_404(Label, pk=request.data['label_id'])
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            self.serializer_class = DocumentAnnotationSerializer
+            annotation = DocumentAnnotation(document=doc, label=label, manual=True,
+                                            user=self.request.user)
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            self.serializer_class = SequenceAnnotationSerializer
+            annotation = SequenceAnnotation(document=doc, label=label, manual=True,
+                                            user=self.request.user,
+                                            start_offset=request.data['start_offset'],
+                                            end_offset=request.data['end_offset'])
         annotation.save()
         serializer = self.serializer_class(annotation)
 
@@ -173,11 +199,15 @@ class AnnotationsAPI(generics.ListCreateAPIView):
 
 
 class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
-    queryset = DocumentAnnotation.objects.all()
-    serializer_class = DocumentAnnotationSerializer
 
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, pk=project_id)
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            self.queryset = DocumentAnnotation.objects.all()
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            self.queryset = SequenceAnnotation.objects.all()
         queryset = self.queryset.filter(document=doc_id)
 
         return queryset
