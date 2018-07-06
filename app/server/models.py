@@ -34,12 +34,18 @@ class Label(models.Model):
     KEY_CHOICES = ((U, c) for U, c in zip(string.ascii_uppercase, string.ascii_lowercase))
     COLOR_CHOICES = ()
 
-    text = models.CharField(max_length=100, unique=True)
-    shortcut = models.CharField(max_length=10, unique=True, choices=KEY_CHOICES)
+    text = models.CharField(max_length=100)
+    shortcut = models.CharField(max_length=10, choices=KEY_CHOICES)
     project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.text
+
+    class Meta:
+        unique_together = (
+            ('project', 'text'),
+            ('project', 'shortcut')
+        )
 
 
 class Document(models.Model):

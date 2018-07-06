@@ -15,14 +15,18 @@ class TestLabel(TestCase):
 
     def test_shortcut_uniqueness(self):
         label = mixer.blend('server.Label')
+        mixer.blend('server.Label', shortcut=label.shortcut)
         with self.assertRaises(IntegrityError):
             mixer.blend('server.Label',
+                        project=label.project,
                         shortcut=label.shortcut)
 
     def test_text_uniqueness(self):
         label = mixer.blend('server.Label')
+        mixer.blend('server.Label', text=label.text)
         with self.assertRaises(IntegrityError):
             mixer.blend('server.Label',
+                        project=label.project,
                         text=label.text)
 
 
