@@ -37,6 +37,8 @@ class Label(models.Model):
     text = models.CharField(max_length=100, unique=True)
     shortcut = models.CharField(max_length=10, unique=True, choices=KEY_CHOICES)
     project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
+    background_color = models.CharField(max_length=7, default='#209cee')
+    text_color = models.CharField(max_length=7, default='#ffffff')
 
     def __str__(self):
         return self.text

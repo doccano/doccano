@@ -91,7 +91,7 @@
         </div>
         <div class="box message-preview">
             <div class="tags">
-                <a v-for="label in labels" v-bind:class="label.color" v-on:click="annotate(label.id)">[[ label.text ]]</a>
+                <a v-for="label in labels" class="tag" v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }" v-on:click="annotate(label.id)">[[ label.text ]]</a>
             </div>
             <hr>
             <annotator ref="annotator" v-bind:labels="labels" v-bind:entity-positions="items[cur].labels.slice()" v-bind:text="items[cur].text" @delete-label="deleteLabel"></annotator>
