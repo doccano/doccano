@@ -4,13 +4,19 @@
 {% block annotation-area %}
 <div class="card">
     <header class="card-header">
-        <div class="card-header-title tags" style="padding:1.5rem;">
-            <a class="tag is-medium"
-               v-for="label in labels"
-               v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
-               v-on:click="addLabel(label.id)">
-               [[ label.text ]]
-            </a>
+        <div class="card-header-title" style="padding:1.5rem;background-color:royalblue;">
+            <div class="field is-grouped is-grouped-multiline">
+                <div class="control" v-for="label in labels">
+                    <div class="tags has-addons">
+                        <a class="tag is-medium"
+                        v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
+                        v-on:click="annotate(label.id)">
+                        [[ label.text ]]
+                        </a>
+                        <span class="tag is-medium">[[ label.shortcut ]]</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
