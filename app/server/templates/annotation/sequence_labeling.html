@@ -1,102 +1,26 @@
-{% extends "base.html" %} {% load static %} {% block header %}
-<link rel="stylesheet" type="text/css" href="{% static 'inbox.css' %}"> {% endblock %} {% block content %}
-<div class="columns" id="mail-app">
-    <aside class="column is-2 aside hero is-fullheight">
-        <div>
-            <aside class="menu">
-                <p class="menu-label" style="color:#f2f2f2;">
-                    Progress
-                </p>
-                <ul class="menu-list">
-                    <li class="has-text-grey-light level" style="padding-left:10px;margin-bottom:0;font-size:14px">
-                        <span class="level-left">Achievement</span>
-                        <span class="level-right">[[ achievement ]]%</span>
-                    </li>
-                    <li>
-                        <progress class="progress" v-bind:class="progressColor" v-bind:value="achievement" max="100">30%</progress>
-                    </li>
-                </ul>
-            </aside>
-            <aside class="menu">
+{% extends "annotation/annotation_base.html" %}
+{% load static %}
 
-                <p class="menu-label" style="color:#f2f2f2;">
-                    Labels
-                </p>
-                <ul class="menu-list">
-                    <div class="control" v-for="(label, label_id) in labels">
-                        <li class="tags has-addons">
-                            <span class="tag is-primary">[[label.shortcut]]</span>
-                            <a class="tag is-grey" v-on:click="addLabel(label.id)" v-shortkey.once="['ctrl', [[ label.shortcut ]]]" @shortkey="addLabel(label.id)">[[label.text]]</a>
-                        </li>
-                    </div>
-                </ul>
-            </aside>
+{% block annotation-area %}
+<div class="card">
+    <header class="card-header">
+        <div class="card-header-title tags" style="padding:1.5rem;">
+            <a class="tag"
+               v-for="label in labels"
+               v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
+               v-on:click="annotate(label.id)">
+               [[ label.text ]]
+            </a>
         </div>
-    </aside>
-    <div class="column is-3 messages hero is-fullheight" id="message-feed">
-        <div class="field has-addons" style="margin:0 10px;">
-            <div class="control is-expanded">
-                <input class="input" type="text" placeholder="Find a document" v-model="searchQuery" @keyup.enter="submit" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
-            </div>
-
-            <div class="control">
-                <div class="dropdown is-hoverable">
-                    <div class="dropdown-trigger">
-                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" style="border-left:none">
-                            <span class="icon">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </button>
-                    </div>
-                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                        <div class="dropdown-content">
-                            <a href="#" class="dropdown-item">
-                                Default
-                            </a>
-                            <a class="dropdown-item">
-                                Active
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                Complete
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                Probability
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="inbox-messages" id="inbox-messages" v-if="items.length">
-            <div v-for="(msg, index) in items" class="card" v-bind:class="{ active: index == cur }" v-on:click="showMessage(index)" v-bind:data-preview-id="index">
-                <div class="card-content" style="padding:1.2rem;">
-                    <div class="msg-snippet">
-                        <p>[[ msg.text.slice(0, 100) ]]</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="column is-7 message hero is-fullheight" id="message-pane">
-        <div class="action-buttons">
-            <div class="control is-grouped">
-                <a class="button is-small" v-on:click="prevPage" v-shortkey="['ctrl', 'p']" @shortkey="prevPage">
-                    <i class="fa fa-chevron-left"></i>
-                </a>
-                <a class="button is-small" v-on:click="nextPage" v-shortkey="['ctrl', 'n']" @shortkey="nextPage">
-                    <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-        </div>
-        <div class="box message-preview">
-            <div class="tags">
-                <a v-for="label in labels" class="tag" v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }" v-on:click="annotate(label.id)">[[ label.text ]]</a>
-            </div>
-            <hr>
+    </header>
+    <div class="card-content">
+        <div class="content">
             <annotator ref="annotator" v-bind:labels="labels" v-bind:entity-positions="items[cur].labels.slice()" v-bind:text="items[cur].text" @delete-label="deleteLabel"></annotator>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block footer %}
 <script type="text/javascript" src="{% static 'sequence_labeling.js' %}"></script>
 {% endblock %}

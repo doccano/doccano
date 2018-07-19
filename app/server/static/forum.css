@@ -5,6 +5,12 @@ html,body {
 footer {
   background-color: #F2F6FA !important;
 }
+.navbar {
+  background-color: #2a2e2f;
+}
+.navbar.has-shadow {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
+}
 .topNav {
   border-top: 5px solid #3498DB;
 }
