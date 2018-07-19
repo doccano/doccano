@@ -34,7 +34,7 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         project_id = kwargs.get('project_id')
         project = get_object_or_404(Project, pk=project_id)
         if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
-            self.template_name = 'annotation.html'
+            self.template_name = 'annotation/document_classification.html'
         elif project.is_type_of(Project.SEQUENCE_LABELING):
             self.template_name = 'annotation/sequence_labeling.html'
         elif project.is_type_of(Project.Seq2seq):

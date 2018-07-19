@@ -1,0 +1,37 @@
+{% extends "annotation/annotation_base.html" %}
+{% load static %}
+
+{% block annotation-area %}
+<div class="card">
+    <header class="card-header">
+        <div class="card-header-title tags" style="padding:1.5rem;">
+            <a class="tag"
+               v-for="label in labels"
+               v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
+               v-on:click="addLabel(label.id)">
+               [[ label.text ]]
+            </a>
+        </div>
+    </header>
+
+    <div class="card-content" v-if="items.length">
+        <div class="control" v-for="(annotation, index) in items[cur].labels">
+            <div class="tags has-addons">
+                <span class="tag is-dark">
+                    [[ annotation.label.text ]]
+                    <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
+                </span>
+                <span class="tag is-primary" v-if="annotation.label.prob">[[ annotation.label.prob ]]</span>
+            </div>
+        </div>
+        <hr v-if="items[cur].labels.length">
+        <div class="content">
+            [[ items[cur].text ]]
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript" src="{% static 'main.js' %}"></script>
+{% endblock %}
