@@ -19,7 +19,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/', ProjectDocsAPI.as_view(), name='docs'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/', AnnotationsAPI.as_view()),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>', AnnotationAPI.as_view()),
-    path('projects/', ProjectsView.as_view(), name='project-list'),
+    path('projects/', ProjectsView.as_view(), name='projects'),
     path('projects/<int:pk>/admin', ProjectAdminView.as_view(), name='project-admin'),
     path('projects/<int:project_id>/download', DataDownloadAPI.as_view(), name='download'),
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),

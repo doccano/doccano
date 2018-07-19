@@ -16,6 +16,7 @@ var vm = new Vue({
         newShortcut: '',
         total: 0,
         remaining: 0,
+        backgroundColor: '#209cee',
     },
 
     methods: {

@@ -10,7 +10,7 @@ const HTTP = axios.create({
 
 const Annotator = {
     template: '<div @click="setSelectedRange">\
-                   <span v-for="r in chunks" :class="r.color">{{ r.word }}<button v-if="r.color" class="delete is-small" @click="deleteLabel(r.index)"></button></span>\
+                   <span v-for="r in chunks" v-bind:class="{tag: r.color}" v-bind:style="{ color: r.color, backgroundColor: r.background }">{{ r.word }}<button v-if="r.color" class="delete is-small" @click="deleteLabel(r.index)"></button></span>\
                </div>',
     props: {
         'labels': Array, // [{id: Integer, color: String, text: String}]
@@ -74,10 +74,17 @@ const Annotator = {
             this.$emit('delete-label', index);
             this.entityPositions.splice(index, 1)
         },
-        getColor: function (label_id) {
+        getBackgroundColor: function (label_id) {
             for (item of this.labels) {
                 if (item.id == label_id) {
-                    return item.color
+                    return item.background_color
+                }
+            }
+        },
+        getTextColor: function (label_id) {
+            for (item of this.labels) {
+                if (item.id == label_id) {
+                    return item.text_color
                 }
             }
         }
@@ -98,12 +105,14 @@ const Annotator = {
                 var text = this.text.slice(left, e['start_offset']);
                 res.push({
                     'word': text,
-                    'color': ''
+                    'color': '',
+                    'background': ''
                 });
                 var text = this.text.slice(e['start_offset'], e['end_offset']);
                 res.push({
                     'word': text,
-                    'color': 'tag is-info',//this.getColor(e['label_id']),
+                    'color': this.getTextColor(e.label.id),
+                    'background': this.getBackgroundColor(e.label.id),
                     'index': i
                 });
                 left = e['end_offset'];
@@ -111,8 +120,12 @@ const Annotator = {
             var text = this.text.slice(left, this.text.length);
             res.push({
                 'word': text,
-                'color': ''
+                'color': '',
+                'background': ''
             });
+            console.log(res);
+            console.log(this.labels);
+            console.log(this.entityPositions);
 
             return res
         }

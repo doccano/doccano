@@ -8,7 +8,7 @@ class LabelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Label
-        fields = ('id', 'text', 'shortcut')
+        fields = ('id', 'text', 'shortcut', 'background_color', 'text_color')
 
 
 class DocumentAnnotationSerializer(serializers.ModelSerializer):

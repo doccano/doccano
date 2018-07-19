@@ -1,0 +1,21 @@
+{% extends "annotation/annotation_base.html" %}
+{% load static %}
+{% block annotation-area %}
+<div class="card">
+    <div class="card-content" v-if="items.length">
+        <div class="content">
+            [[ items[cur].text ]]
+        </div>
+    </div>
+</div>
+
+<div class="card" style="margin-top:30px;">
+    <div class="card-content" contenteditable="true">
+        Input response...
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+<script type="text/javascript" src="{% static 'main.js' %}"></script>
+{% endblock %}
