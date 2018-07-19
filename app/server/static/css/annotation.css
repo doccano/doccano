@@ -132,3 +132,84 @@ body {
 .card.active {
     background-color: #F5F5F5;
 }
+
+.searchFilter {
+    margin-bottom: 20px;    
+  }
+   .searchFilter.btn {
+      display: inline-block;
+      font-weight: 400;
+      line-height: 1.25;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      border: 1px solid transparent;
+      padding: .5rem 1rem;
+      font-size: 16px;
+      border-radius: .25rem;
+      height: 50px;
+      min-width: 20px;
+  }
+  .searchFilter .btn-secondary {
+      color: #373a3c;
+      background-color: #fff;
+      border: 1px solid #ccc;
+  }
+  .searchFilter .btn-secondary:hover {
+      color: #373a3c;
+      background-color: #e6e6e6;
+      border-color: #adadad;
+  }
+  .searchFilter .btn-search {
+    background-color: #00aced;
+    color: #fff;
+    border: 1px solid #00aced;
+  }
+  .searchFilter .btn-search:hover {
+    background-color: #b20a11;
+    color: #fff;
+    border: 1px solid #b20a11;
+  }
+  .searchFilter .label-icon {
+    display: none;  
+  }
+  .searchFilter .dropdown-menu .category_filters {
+    min-width: 178px;
+    width: 100%;
+    margin: 15px 0 0 -25px;
+  }
+  .searchFilter .dropdown-menu-right {
+      right: 170px;
+      min-width: 175px;
+      top: 90%;
+  }
+  .searchFilter .dropdown-menu .category_filters li {
+    list-style-type: none;
+    padding: 2px 10px;
+    font-size: 18px;
+  }
+  .searchFilter .dropdown-menu .category_filters label {
+    margin-left: 15px;
+  }
+  @media (min-width: 768px){
+    .searchFilter .btn {
+      min-width: 172px;  
+    }
+    .searchFilter .label-icon {
+      display: inline-block;  
+    }
+  }
+  @media (max-width: 768px){
+    .main-section {
+      margin-top: -80px;
+    }
+    .searchFilter .dropdown-menu-right {
+      right: 0px;
+    }
+  }
+  
