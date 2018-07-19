@@ -1,51 +1,10 @@
 html,
 body {
     font-family: 'Open Sans', serif;
-    font-size: 14px;
     line-height: 1.5;
     height: 100%;
     background-color: #f3f3f3;
 }
-.navbar {
-    background-color: #2a2e2f;
-}
-.navbar.has-shadow {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
-}
-.nav.is-dark {
-    background-color: #232B2D;
-    color: #F6F7F7;
-}
-.nav.is-dark .nav-item a,
-.nav.is-dark a.nav-item {
-    color: #F6F7F7;
-}
-.nav.is-dark .nav-item a.button.is-default {
-    color: #F6F7F7;
-    background-color: transparent;
-    border-width: 2px;
-}
-.nav.menu {
-    border-bottom: 1px solid #e1e1e1;
-}
-.nav.menu .nav-item .icon-btn {
-    border: 3px solid #B7C6C9;
-    border-radius: 90px;
-    padding: 5px 7px;
-    color: #B7C6C9;
-}
-.nav.menu .nav-item.is-active .icon-btn {
-    color: #2EB398;
-    border: 3px solid #2EB398;
-}
-.nav.menu .nav-item .icon-btn .fa {
-    font-size: 20px;
-    color: #B7C6C9;
-}
-.nav.menu .nav-item.is-active .icon-btn .fa {
-    color: #2EB398;
-}
-
 .aside {
     display: block;
     background-color: #2a2e2f;
@@ -61,21 +20,6 @@ body {
 .message {
     display: block;
     background-color: #f3f3f3;
-}
-
-.aside .compose {
-    height: 95px;
-    margin: 0 -10px;
-    padding: 25px 30px;
-}
-
-.aside .compose .button {
-    color: #F6F7F7;
-}
-
-.aside .compose .button .compose {
-    font-size: 14px;
-    font-weight: 700;
 }
 
 .aside .main {
