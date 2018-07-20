@@ -132,43 +132,24 @@ const Annotator = {
     }
 }
 
-var vm = new Vue({
-    el: '#mail-app',
-    delimiters: ['[[', ']]'],
-    components: {
-        'annotator': Annotator,
+var annotationMixin = {
+    data: function () {
+        return {
+            cur: 0,
+            items: [{
+                id: null,
+                text: '',
+                labels: []
+            }],
+            labels: [],
+            guideline: 'Here is the Annotation Guideline Text',
+            total: 0,
+            remaining: 0,
+            searchQuery: '',
+            url: '',
+        }
     },
-    data: {
-        cur: 0,
-        items: [{id: null, text: '', labels: []}],
-        labels: [],
-        guideline: 'Here is the Annotation Guideline Text',
-        total: 0,
-        remaining: 0,
-        searchQuery: '',
-        url: '',
-    },
-
     methods: {
-        annotate: function (label_id) {
-            var payload = this.$refs.annotator.addLabel(label_id);
-            var doc_id = this.items[this.cur].id;
-            HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
-                this.items[this.cur]['labels'].push(response.data);
-            });
-            this.updateProgress()
-        },
-        addLabel: function (label_id) {
-            
-        },
-        deleteLabel: async function (index) {
-            var doc_id = this.items[this.cur].id;
-            var annotation_id = this.items[this.cur]['labels'][index].id;
-            HTTP.delete(`docs/${doc_id}/annotations/${annotation_id}`).then(response => {
-                this.items[this.cur]['labels'].splice(index, 1)
-            });
-            this.updateProgress();
-        },
         nextPage: async function () {
             this.cur += 1;
             if (this.cur == this.items.length) {
@@ -195,11 +176,6 @@ var vm = new Vue({
             }
             this.showMessage(this.cur);
         },
-        submit: async function () {
-            this.url = `docs/?q=${this.searchQuery}`;
-            await this.search();
-            this.cur = 0;
-        },
         search: async function () {
             await HTTP.get(this.url).then(response => {
                 this.items = response.data['results'];
@@ -210,11 +186,24 @@ var vm = new Vue({
         showMessage: function (index) {
             this.cur = index;
         },
+        submit: async function () {
+            this.url = `docs/?q=${this.searchQuery}`;
+            await this.search();
+            this.cur = 0;
+        },
         updateProgress: function () {
             HTTP.get('progress').then(response => {
                 this.total = response.data['total'];
                 this.remaining = response.data['remaining'];
             })
+        },
+        deleteLabel: async function (index) {
+            var doc_id = this.items[this.cur].id;
+            var annotation_id = this.items[this.cur]['labels'][index].id;
+            HTTP.delete(`docs/${doc_id}/annotations/${annotation_id}`).then(response => {
+                this.items[this.cur]['labels'].splice(index, 1)
+            });
+            this.updateProgress();
         }
     },
     created: function () {
@@ -238,6 +227,25 @@ var vm = new Vue({
             } else {
                 return 'is-primary'
             }
+        }
+    }
+}
+
+var vm = new Vue({
+    el: '#mail-app',
+    delimiters: ['[[', ']]'],
+    components: {
+        'annotator': Annotator,
+    },
+    mixins: [annotationMixin],
+    methods: {
+        annotate: function (label_id) {
+            var payload = this.$refs.annotator.addLabel(label_id);
+            var doc_id = this.items[this.cur].id;
+            HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
+                this.items[this.cur]['labels'].push(response.data);
+            });
+            this.updateProgress()
         }
     }
 });
