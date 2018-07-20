@@ -1,13 +1,6 @@
 {% extends "annotation/annotation_base.html" %}
 {% load static %}
 
-<div class="control">
-<div class="tags has-addons">
-    <span class="tag is-dark">npm</span>
-    <span class="tag is-info">0.5.0</span>
-</div>
-</div>
-
 {% block annotation-area %}
 <div class="card">
     <header class="card-header">
@@ -17,7 +10,7 @@
                     <div class="tags has-addons">
                         <a class="tag is-medium"
                         v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
-                        v-on:click="annotate(label.id)">
+                        v-on:click="annotate(label.id)" v-shortkey.once="['ctrl', [[ label.shortcut ]] ]" @shortkey="annotate(label.id)">
                         [[ label.text ]]
                         </a>
                         <span class="tag is-medium">[[ label.shortcut ]]</span>
@@ -28,12 +21,16 @@
     </header>
     <div class="card-content">
         <div class="content">
-            <annotator ref="annotator" v-bind:labels="labels" v-bind:entity-positions="items[cur].labels.slice()" v-bind:text="items[cur].text" @delete-label="deleteLabel"></annotator>
+            <annotator ref="annotator"
+                       v-bind:labels="labels"
+                       v-bind:entity-positions="items[cur].labels.slice()"
+                       v-bind:text="items[cur].text"
+                       @delete-label="deleteLabel"></annotator>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block footer %}
-<script type="text/javascript" src="{% static 'js/sequence_labeling.js' %}"></script>
+<script type="text/javascript" src="{% static 'dist/sequence_labeling.js' %}"></script>
 {% endblock %}

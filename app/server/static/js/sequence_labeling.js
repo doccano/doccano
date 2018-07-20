@@ -1,14 +1,9 @@
-//import Vue from 'vue';
-//Vue.use(require('vue-shortkey'));
+import Vue from 'vue';
+Vue.use(require('vue-shortkey'));
+import annotationMixin from './mixin.js';
+import HTTP from './http.js';
 
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
-var base_url = window.location.href.split('/').slice(3, 5).join('/');
-const HTTP = axios.create({
-    baseURL: `/api/${base_url}/`
-})
-
-const Annotator = {
+Vue.component('annotator', {
     template: '<div @click="setSelectedRange">\
                    <span v-for="r in chunks" v-bind:class="{tag: r.color}" v-bind:style="{ color: r.color, backgroundColor: r.background }">{{ r.word }}<button v-if="r.color" class="delete is-small" @click="deleteLabel(r.index)"></button></span>\
                </div>',
@@ -75,14 +70,14 @@ const Annotator = {
             this.entityPositions.splice(index, 1)
         },
         getBackgroundColor: function (label_id) {
-            for (item of this.labels) {
+            for (var item of this.labels) {
                 if (item.id == label_id) {
                     return item.background_color
                 }
             }
         },
         getTextColor: function (label_id) {
-            for (item of this.labels) {
+            for (var item of this.labels) {
                 if (item.id == label_id) {
                     return item.text_color
                 }
@@ -101,7 +96,9 @@ const Annotator = {
         chunks: function () {
             var res = [];
             var left = 0;
-            for (let [i, e] of this.sortedEntityPositions.entries()) {
+            var i = 0;
+            for (let i in this.sortedEntityPositions) {
+                var e = this.sortedEntityPositions[i];
                 var text = this.text.slice(left, e['start_offset']);
                 res.push({
                     'word': text,
@@ -130,113 +127,11 @@ const Annotator = {
             return res
         }
     }
-}
-
-var annotationMixin = {
-    data: function () {
-        return {
-            cur: 0,
-            items: [{
-                id: null,
-                text: '',
-                labels: []
-            }],
-            labels: [],
-            guideline: 'Here is the Annotation Guideline Text',
-            total: 0,
-            remaining: 0,
-            searchQuery: '',
-            url: '',
-        }
-    },
-    methods: {
-        nextPage: async function () {
-            this.cur += 1;
-            if (this.cur == this.items.length) {
-                if (this.next) {
-                    this.url = this.next;
-                    await this.search();
-                    this.cur = 0;
-                } else {
-                    this.cur = this.items.length - 1;
-                }
-            }
-            this.showMessage(this.cur);
-        },
-        prevPage: async function () {
-            this.cur -= 1;
-            if (this.cur == -1) {
-                if (this.prev) {
-                    this.url = this.prev;
-                    await this.search();
-                    this.cur = this.items.length - 1;
-                } else {
-                    this.cur = 0;
-                }
-            }
-            this.showMessage(this.cur);
-        },
-        search: async function () {
-            await HTTP.get(this.url).then(response => {
-                this.items = response.data['results'];
-                this.next = response.data['next'];
-                this.prev = response.data['previous'];
-            })
-        },
-        showMessage: function (index) {
-            this.cur = index;
-        },
-        submit: async function () {
-            this.url = `docs/?q=${this.searchQuery}`;
-            await this.search();
-            this.cur = 0;
-        },
-        updateProgress: function () {
-            HTTP.get('progress').then(response => {
-                this.total = response.data['total'];
-                this.remaining = response.data['remaining'];
-            })
-        },
-        deleteLabel: async function (index) {
-            var doc_id = this.items[this.cur].id;
-            var annotation_id = this.items[this.cur]['labels'][index].id;
-            HTTP.delete(`docs/${doc_id}/annotations/${annotation_id}`).then(response => {
-                this.items[this.cur]['labels'].splice(index, 1)
-            });
-            this.updateProgress();
-        }
-    },
-    created: function () {
-        HTTP.get('labels').then(response => {
-            this.labels = response.data
-        });
-        this.updateProgress();
-        this.submit();
-    },
-    computed: {
-        achievement: function () {
-            var done = this.total - this.remaining;
-            var percentage = Math.round(done / this.total * 100);
-            return this.total > 0 ? percentage : 0;
-        },
-        progressColor: function () {
-            if (this.achievement < 30) {
-                return 'is-danger'
-            } else if (this.achievement < 70) {
-                return 'is-warning'
-            } else {
-                return 'is-primary'
-            }
-        }
-    }
-}
+})
 
 var vm = new Vue({
     el: '#mail-app',
     delimiters: ['[[', ']]'],
-    components: {
-        'annotator': Annotator,
-    },
     mixins: [annotationMixin],
     methods: {
         annotate: function (label_id) {
