@@ -88,7 +88,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def progress(self, request, pk=None):
         project = self.get_object()
         docs = project.documents.all()
-        remaining = docs.filter(doc_annotations__isnull=True).count()
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            remaining = docs.filter(doc_annotations__isnull=True).count()
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            remaining = docs.filter(seq_annotations__isnull=True).count()
+        elif project.is_type_of(Project.Seq2seq):
+            remaining = docs.filter(seq2seq_annotations__isnull=True).count()
+        else:
+            remaining = 0
         return Response({'total': docs.count(), 'remaining': remaining})
 
 
