@@ -7,7 +7,7 @@ module.exports = {
         'document_classification': './static/js/document_classification.js'
     },
     output: {
-        path: __dirname + '/static/dist',
+        path: __dirname + '/static/bundle',
         filename: '[name].js'
     },
     module: {
