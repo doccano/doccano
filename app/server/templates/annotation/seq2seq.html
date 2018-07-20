@@ -10,12 +10,15 @@
 </div>
 
 <div class="card" style="margin-top:30px;">
-    <div class="card-content" contenteditable="true">
+    <div class="card-content" contenteditable="true" v-if="items[cur].labels.length">
+        [[ items[cur].labels[0].text ]]
+    </div>
+    <div v-else class="card-content" contenteditable="true">
         Input response...
     </div>
 </div>
 {% endblock %}
 
 {% block footer %}
-<script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+<script type="text/javascript" src="{% static 'bundle/seq2seq.js' %}"></script>
 {% endblock %}

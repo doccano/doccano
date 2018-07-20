@@ -4,7 +4,8 @@ module.exports = {
     mode: 'development',
     entry: {
         'sequence_labeling': './static/js/sequence_labeling.js',
-        'document_classification': './static/js/document_classification.js'
+        'document_classification': './static/js/document_classification.js',
+        'seq2seq': './static/js/seq2seq.js'
     },
     output: {
         path: __dirname + '/static/bundle',

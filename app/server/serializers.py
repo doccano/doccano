@@ -47,11 +47,15 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seq2seqAnnotation
-        fields = ('id',)
+        fields = ('id', 'text')
 
 
 class Seq2seqSerializer(serializers.ModelSerializer):
-    pass
+    labels = Seq2seqAnnotationSerializer(source='seq2seq_annotations', many=True)
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text', 'labels')
 
 
 class ProjectSerializer(serializers.ModelSerializer):

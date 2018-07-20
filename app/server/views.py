@@ -17,9 +17,10 @@ from django.db.models.query import QuerySet
 
 
 from .models import Label, Document, Project
-from .models import DocumentAnnotation, SequenceAnnotation
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 from .serializers import LabelSerializer, ProjectSerializer, DocumentSerializer, DocumentAnnotationSerializer
 from .serializers import SequenceSerializer, SequenceAnnotationSerializer
+from .serializers import Seq2seqSerializer, Seq2seqAnnotationSerializer
 
 
 class IndexView(TemplateView):
@@ -147,6 +148,8 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
             self.serializer_class = DocumentSerializer
         elif project.is_type_of(Project.SEQUENCE_LABELING):
             self.serializer_class = SequenceSerializer
+        elif project.is_type_of(Project.Seq2seq):
+            self.serializer_class = Seq2seqSerializer
 
         return self.serializer_class
 
@@ -158,9 +161,6 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
 
 
 class AnnotationsAPI(generics.ListCreateAPIView):
-    #queryset = DocumentAnnotation.objects.all()
-    #queryset = SequenceAnnotation.objects.all()
-    #serializer_class = DocumentAnnotationSerializer
     pagination_class = None
 
     def get_serializer_class(self):
@@ -170,6 +170,8 @@ class AnnotationsAPI(generics.ListCreateAPIView):
             self.serializer_class = DocumentAnnotationSerializer
         elif project.is_type_of(Project.SEQUENCE_LABELING):
             self.serializer_class = SequenceAnnotationSerializer
+        elif project.is_type_of(Project.Seq2seq):
+            self.serializer_class = Seq2seqAnnotationSerializer
 
         return self.serializer_class
 
@@ -181,6 +183,8 @@ class AnnotationsAPI(generics.ListCreateAPIView):
             self.queryset = DocumentAnnotation.objects.all()
         elif project.is_type_of(Project.SEQUENCE_LABELING):
             self.queryset = SequenceAnnotation.objects.all()
+        elif project.is_type_of(Project.Seq2seq):
+            self.queryset = Seq2seqAnnotation.objects.all()
         queryset = self.queryset.filter(document=doc_id)
 
         return queryset
@@ -199,6 +203,9 @@ class AnnotationsAPI(generics.ListCreateAPIView):
                                             user=self.request.user,
                                             start_offset=request.data['start_offset'],
                                             end_offset=request.data['end_offset'])
+        elif project.is_type_of(Project.Seq2seq):
+            self.serializer_class = Seq2seqAnnotationSerializer
+            annotation = Seq2seqAnnotation(document=doc, manual=True, user=self.request.user)
         annotation.save()
         serializer = self.serializer_class(annotation)
 
@@ -215,6 +222,8 @@ class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
             self.queryset = DocumentAnnotation.objects.all()
         elif project.is_type_of(Project.SEQUENCE_LABELING):
             self.queryset = SequenceAnnotation.objects.all()
+        elif project.is_type_of(Project.Seq2seq):
+            self.queryset = Seq2seqAnnotation.objects.all()
         queryset = self.queryset.filter(document=doc_id)
 
         return queryset
