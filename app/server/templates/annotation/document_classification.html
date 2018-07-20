@@ -10,7 +10,9 @@
                     <div class="tags has-addons">
                         <a class="tag is-medium"
                         v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
-                        v-on:click="annotate(label.id)">
+                        v-on:click="addLabel(label.id)"
+                        v-shortkey.once="['ctrl', [[ label.shortcut ]] ]"
+                        @shortkey="addLabel(label.id)">
                         [[ label.text ]]
                         </a>
                         <span class="tag is-medium">[[ label.shortcut ]]</span>
@@ -39,5 +41,5 @@
 {% endblock %}
 
 {% block footer %}
-<script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+<script type="text/javascript" src="{% static 'dist/document_classification.js' %}"></script>
 {% endblock %}

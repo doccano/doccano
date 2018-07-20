@@ -3,7 +3,8 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 module.exports = {
     mode: 'development',
     entry: {
-        'sequence_labeling': './static/js/sequence_labeling.js'
+        'sequence_labeling': './static/js/sequence_labeling.js',
+        'document_classification': './static/js/document_classification.js'
     },
     output: {
         path: __dirname + '/static/dist',
