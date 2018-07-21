@@ -1,5 +1,5 @@
 import Vue from 'vue';
-Vue.use(require('vue-shortkey'));
+Vue.use(require('vue-shortkey'), { prevent: ['input', 'textarea'] });
 import annotationMixin from './mixin.js';
 import HTTP from './http.js';
 

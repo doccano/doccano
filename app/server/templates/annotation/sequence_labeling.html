@@ -11,7 +11,7 @@
                         <a class="tag is-medium"
                         v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
                         v-on:click="annotate(label.id)"
-                        v-shortkey.once="['ctrl', [[ label.shortcut ]] ]"
+                        v-shortkey.once="[ label.shortcut ]"
                         @shortkey="annotate(label.id)">
                         [[ label.text ]]
                         </a>

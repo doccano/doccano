@@ -31,7 +31,7 @@ class Project(models.Model):
 
 
 class Label(models.Model):
-    KEY_CHOICES = ((U, c) for U, c in zip(string.ascii_uppercase, string.ascii_lowercase))
+    KEY_CHOICES = ((u, c) for u, c in zip(string.ascii_lowercase, string.ascii_lowercase))
     COLOR_CHOICES = ()
 
     text = models.CharField(max_length=100)

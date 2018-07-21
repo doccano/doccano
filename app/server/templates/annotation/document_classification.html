@@ -6,12 +6,12 @@
     <header class="card-header">
         <div class="card-header-title" style="padding:1.5rem;background-color:royalblue;">
             <div class="field is-grouped is-grouped-multiline">
-                <div class="control" v-for="label in labels">
+                <div class="control" v-for="(label, item) in labels">
                     <div class="tags has-addons">
                         <a class="tag is-medium"
                         v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
                         v-on:click="addLabel(label.id)"
-                        v-shortkey.once="['ctrl', [[ label.shortcut ]] ]"
+                        v-shortkey.once="[ label.shortcut ]"
                         @shortkey="addLabel(label.id)">
                         [[ label.text ]]
                         </a>
@@ -23,13 +23,15 @@
     </header>
 
     <div class="card-content" v-if="items.length">
-        <div class="control" v-for="(annotation, index) in items[cur].labels">
-            <div class="tags has-addons">
-                <span class="tag is-dark">
-                    [[ annotation.label.text ]]
-                    <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
-                </span>
-                <span class="tag is-primary" v-if="annotation.label.prob">[[ annotation.label.prob ]]</span>
+        <div class="field is-grouped is-grouped-multiline">
+            <div class="control" v-for="(annotation, index) in items[cur].labels">
+                <div class="tags has-addons">
+                    <span class="tag is-dark">
+                        [[ annotation.label.text ]]
+                        <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
+                    </span>
+                    <span class="tag is-primary" v-if="annotation.label.prob">[[ annotation.label.prob ]]</span>
+                </div>
             </div>
         </div>
         <hr v-if="items[cur].labels.length">
