@@ -1,4 +1,82 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<section class="hero project-image">
+    <div class="container">
+        <div class="columns">
+            <div class="column is-12">
+                <h1 class="title is-1 has-text-white">
+                    Hello, {{ user.get_username | title }}.
+                </h1>
+                <h2 class="subtitle is-4 has-text-white">
+                    I hope you are having a great day!
+                </h2>
+                <p>
+                    <a class="button is-medium is-primary">
+                        Create Project
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    <div class="columns" style="margin-top:0">
+        <div class="column is-3">
+            <aside class="menu">
+                <p class="menu-label">
+                    Categories
+                </p>
+                <ul class="menu-list">
+                    <li>
+                        <a class="is-active">All</a>
+                    </li>
+                    <li>
+                        <a>Document Classification</a>
+                    </li>
+                    <li>
+                        <a>Sequence Labeling</a>
+                    </li>
+                    <li>
+                        <a>Sequence to sequence</a>
+                    </li>
+                </ul>
+            </aside>
+        </div>
+        <div class="column is-9">
+            {% for project in object_list %}
+            {% if forloop.counter0|divisibleby:3 %}
+            <div class="columns features">
+                {% endif %}
+                <div class="column is-4">
+                    <div class="card is-shady">
+                        <div class="card-image">
+                            <figure class="image is-4by3">
+                                <img src="https://source.unsplash.com/RWnpyGtY1aU" alt="Placeholder image" class="modal-button" data-target="modal-image2">
+                            </figure>
+                        </div>
+                        <div class="card-content">
+                            <div class="content">
+                                <h4>
+                                    <a href="{% url 'annotation' project.id %}">{{ project.name }}</a>
+                                </h4>
+                                <p>
+                                    {{ project.description|truncatechars:50 }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% if forloop.counter|divisibleby:3 or forloop.counter|length == object_list|length %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!--
 <section class="container" id="root">
     <div class="columns">
 
@@ -40,11 +118,15 @@
                                                 <a href="{% url 'annotation' project.id %}">{{ project.name }}</a>
                                                 <p>{{ project.description|truncatechars:50 }}</p>
                                             </td>
-                                            <td style="vertical-align:middle;"><span class="tag is-danger">High</span></td>
-                                            <td style="vertical-align:middle;"><progress class="progress is-primary" value="70" max="100">30%</progress></td>
+                                            <td style="vertical-align:middle;">
+                                                <span class="tag is-danger">High</span>
+                                            </td>
+                                            <td style="vertical-align:middle;">
+                                                <progress class="progress is-primary" value="70" max="100">30%</progress>
+                                            </td>
                                             <td style="vertical-align:middle;">
                                                 <a class="button is-link is-small" href="{% url 'project-admin' project.id %}">
-                                                        <i class="fas fa-cog"></i>&nbsp;Settings
+                                                    <i class="fas fa-cog"></i>&nbsp;Settings
                                                 </a>
                                             </td>
                                         </tr>
@@ -59,4 +141,5 @@
         </div>
     </div>
 </section>
+-->
 {% endblock %}
