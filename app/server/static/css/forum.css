@@ -4,6 +4,16 @@ html,body {
 }
 footer {
   background-color: #2a2e2f !important;
+  padding: 2rem 1.5rem 3rem !important;
+}
+.footer a {
+  color: white;
+}
+.footer h2 {
+  margin-bottom: 10px;
+}
+.footer p, strong {
+  color: lemonchiffon;
 }
 .navbar {
   background-color: #2a2e2f;
