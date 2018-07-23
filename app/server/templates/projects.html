@@ -64,6 +64,9 @@
                                 <p>
                                     {{ project.description|truncatechars:50 }}
                                 </p>
+                                <a class="button is-link is-small" href="{% url 'project-admin' project.id %}">
+                                    <i class="fas fa-cog"></i>&nbsp;Settings
+                                </a>
                             </div>
                         </div>
                     </div>
