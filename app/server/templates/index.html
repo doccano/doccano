@@ -1,96 +1,172 @@
-{% extends "base.html" %} {% block content %}
-<div class="hero-body">
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<section class="hero" style="background-color:#2a2e2f">
     <div class="container">
         <div class="columns">
-            <div class="column is-12">
-                <h1 class="title is-1">Doccano</h1>
-                <h2 class="subtitle is-4">
-                    A document annotation tool by active learning.
-                </h2>
-                <p>
-                    <a class="button is-medium is-info is-outlined">
-                        Try Demo
-                    </a>
-                </p>
-            </div>
-        </div>
-
-        <div class="columns is-vcentered">
-            <div class="column is-5">
-                <figure class="image is-4by3">
-                    <img src="https://picsum.photos/800/600/?random" alt="Description">
-                </figure>
-            </div>
-            <div class="column is-6 is-offset-1">
-                <h1 class="title is-2">
-                    Document Classification
-                </h1>
-                <h2 class="subtitle is-4">
-                    Document annotation for any document classification tasks.
-                </h2>
-                <br>
-                <p>
-                    <a class="button is-medium is-info is-outlined">
-                        Try Demo
-                    </a>
-                </p>
-            </div>
-        </div>
-
-        <div class="columns is-vcentered">
-
             <div class="column is-6">
-                <h1 class="title is-2">
-                    Sequence Labeling
-                </h1>
-                <h2 class="subtitle is-4">
-                    A super easy interface to tag for named entity recognition, part-of-speech tagging, semantic role labeling.
-                </h2>
-                <br>
+                <h1 class="title is-1 has-text-white">Text annotation for Human</h1>
+                <h2 class="subtitle is-4 has-text-white">Just create project, upload data and start annotation. You can build dataset in hours.</h2>
                 <p>
-                    <a class="button is-medium is-info is-outlined">
+                    <a class="button is-medium is-primary">
                         Try Demo
                     </a>
                 </p>
             </div>
-
-            <div class="column is-5 is-offset-1">
-                <figure class="image is-4by3">
-                    <img src="https://picsum.photos/800/600/?random" alt="Description">
+            <div class="column is-6">
+                <figure class="image">
+                    <img src="{% static 'images/sequence_labeling.png' %}">
                 </figure>
             </div>
         </div>
+    </div>
+</section>
 
-        <div class="columns is-vcentered">
-            <div class="column is-5">
-                <figure class="image is-4by3">
-                    <img src="https://picsum.photos/800/600/?random" alt="Description">
-                </figure>
+<div class="hero-body" style="background-image:linear-gradient(to bottom, #fafafa, #f3f3f3)">
+
+    <div class="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide">
+                <div class="columns is-vcentered">
+                    <div class="column is-5 is-offset-1">
+                        <figure class="image">
+                            <img src="{% static 'images/sequence_labeling.png' %}" alt="Description">
+                        </figure>
+                    </div>
+                    <div class="column is-5">
+                        <h1 class="title is-2">
+                            Document Classification
+                        </h1>
+                        <h2 class="subtitle is-4">
+                            Document annotation for any document classification tasks.
+                        </h2>
+                        <br>
+                        <p>
+                            <a class="button is-medium is-info is-outlined">
+                                Try Demo
+                            </a>
+                        </p>
+                    </div>
+                </div>
             </div>
-            <div class="column is-6 is-offset-1">
-                <h1 class="title is-2">
-                    Sequence to Sequence
-                </h1>
-                <h2 class="subtitle is-4">
-                    A super easy interface to label for any sequence to sequence tasks.
-                </h2>
-                <br>
-                <p>
-                    <a class="button is-medium is-info is-outlined">
-                        Try Demo
-                    </a>
-                </p>
+            <div class="swiper-slide">
+                <div class="columns is-vcentered">
+                    <div class="column is-5 is-offset-1">
+                        <figure class="image">
+                            <img src="{% static 'images/sequence_labeling.png' %}" alt="Description">
+                        </figure>
+                    </div>
+                    <div class="column is-5">
+                        <h1 class="title is-2">
+                            Sequence Labeling
+                        </h1>
+                        <h2 class="subtitle is-4">
+                            A super easy interface to tag for named entity recognition, part-of-speech tagging, semantic role labeling.
+                        </h2>
+                        <br>
+                        <p>
+                            <a class="button is-medium is-info is-outlined">
+                                Try Demo
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-slide">
+                <div class="columns is-vcentered">
+                    <div class="column is-5 is-offset-1">
+                        <figure class="image">
+                            <img src="{% static 'images/sequence_labeling.png' %}" alt="Description">
+                        </figure>
+                    </div>
+                    <div class="column is-5">
+                        <h1 class="title is-2">
+                            Sequence to Sequence
+                        </h1>
+                        <h2 class="subtitle is-4">
+                            A super easy interface to label for any sequence to sequence tasks.
+                        </h2>
+                        <br>
+                        <p>
+                            <a class="button is-medium is-info is-outlined">
+                                Try Demo
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+</div>
+
+<div class="hero-body" style="background-image:linear-gradient(to bottom, #fafafa, #f3f3f3)">
+    <div class="container">
+
+        <div class="columns features">
+            <div class="column is-4">
+                <div class="card is-shady">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <img src="https://source.unsplash.com/RWnpyGtY1aU" alt="Placeholder image" class="modal-button" data-target="modal-image2">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <h4>Multi-user</h4>
+                            <p>Purus semper eget duis at tellus at urna condimentum mattis. Non blandit massa enim nec. Integer
+                                enim neque volutpat ac tincidunt vitae semper quis. Accumsan tortor posuere ac ut consequat
+                                semper viverra nam.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-4">
+                <div class="card is-shady">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <img src="https://source.unsplash.com/6Ticnhs1AG0" alt="Placeholder image">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <h4>Multi-label</h4>
+                            <p>Ut venenatis tellus in metus vulputate. Amet consectetur adipiscing elit pellentesque. Sed arcu
+                                non odio euismod lacinia at quis risus. Faucibus turpis in eu mi bibendum neque egestas cmonsu
+                                songue. Phasellus vestibulum lorem sed risus.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="column is-4 modal-button" data-target="modal-image">
+                <div class="card is-shady">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <img src="https://i.imgsafe.org/ba/baa924a5e3.png" alt="Placeholder image">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <h4>Active learning</h4>
+                            <p>Imperdiet dui accumsan sit amet nulla facilisi morbi. Fusce ut placerat orci nulla pellentesque
+                                dignissim enim. Libero id faucibus nisl tincidunt eget nullam. Commodo viverra maecenas accumsan
+                                lacus vel facilisis.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<footer class="footer">
+<footer class="footer" style="background-color:#2a2e2f;">
     <div class="container">
         <div class="columns">
             <div class="column is-8">
                 <h2>
-                    <strong>About</strong>
+                    <strong class="has-text-white">About</strong>
                 </h2>
                 <ul>
                     <li>

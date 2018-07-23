@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="{% static 'css/forum.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/css/swiper.min.css">
     {% block header %}{% endblock %}
 </head>
 
@@ -73,6 +74,21 @@
     {% block content %} {% endblock %}
 
     {% block footer %}{% endblock %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/js/swiper.min.js"></script>
+    <script>
+    var mySwiper = new Swiper ('.swiper-container', {
+        // Optional parameters
+        loop: true,
+        autoplay: {
+            delay: 5000,
+        },
+        // Navigation arrows
+        navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+        },
+    })
+    </script>
 </body>
 
 </html>
