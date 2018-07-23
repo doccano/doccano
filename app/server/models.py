@@ -2,6 +2,7 @@ import string
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 class Project(models.Model):
@@ -25,6 +26,17 @@ class Project(models.Model):
 
     def is_type_of(self, project_type):
         return project_type == self.project_type
+
+    @property
+    def image(self):
+        if self.is_type_of(self.DOCUMENT_CLASSIFICATION):
+            url = staticfiles_storage.url('images/cat-1045782_640.jpg')
+        elif self.is_type_of(self.SEQUENCE_LABELING):
+            url = staticfiles_storage.url('images/cat-3449999_640.jpg')
+        elif self.is_type_of(self.Seq2seq):
+            url = staticfiles_storage.url('images/tiger-768574_640.jpg')
+
+        return url
 
     def __str__(self):
         return self.name
