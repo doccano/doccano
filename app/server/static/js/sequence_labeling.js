@@ -91,7 +91,8 @@ Vue.component('annotator', {
     },
     computed: {
         sortedEntityPositions: function () {
-            return this.entityPositions.sort((a, b) => a.start_offset - b.start_offset)
+            this.entityPositions = this.entityPositions.sort((a, b) => a.start_offset - b.start_offset);
+            return this.entityPositions
         },
         chunks: function () {
             var res = [];
