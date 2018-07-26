@@ -15,6 +15,7 @@ var annotationMixin = {
             remaining: 0,
             searchQuery: '',
             url: '',
+            picked: 'all',
         }
     },
     methods: {
@@ -54,8 +55,18 @@ var annotationMixin = {
         showMessage: function (index) {
             this.cur = index;
         },
+        getState: function () {
+            if (this.picked == 'all') {
+                return ''
+            } else if (this.picked == 'active') {
+                return 'true'
+            } else {
+                return 'false'
+            }
+        },
         submit: async function () {
-            this.url = `docs/?q=${this.searchQuery}`;
+            var state = this.getState();
+            this.url = `docs/?q=${this.searchQuery}&is_checked=${state}`;
             await this.search();
             this.cur = 0;
         },
@@ -72,6 +83,11 @@ var annotationMixin = {
                 this.items[this.cur]['labels'].splice(index, 1)
             });
             this.updateProgress();
+        }
+    },
+    watch: {
+        picked: function (){
+            this.submit();
         }
     },
     created: function () {

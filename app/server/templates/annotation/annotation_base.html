@@ -25,19 +25,19 @@
                             </div>
                             <div class="dropdown-menu" id="dropdown-menu" role="menu" style="padding-top:0">
                                 <div class="dropdown-content">
-                                    <a href="#" class="dropdown-item">
+                                    <a class="dropdown-item">
                                         <label class="radio">
-                                            <input type="radio" name="state" checked> All
+                                            <input type="radio" value="all" v-model="picked" checked> All
                                         </label>
                                     </a>
                                     <a class="dropdown-item">
                                         <label class="radio">
-                                            <input type="radio" name="state"> Active
+                                            <input type="radio" value="active" v-model="picked"> Active
                                         </label>
                                     </a>
-                                    <a href="#" class="dropdown-item">
+                                    <a class="dropdown-item">
                                         <label class="radio">
-                                            <input type="radio" name="state"> Completed
+                                            <input type="radio" value="completed" v-model="picked"> Completed
                                         </label>
                                     </a>
                                 </div>

@@ -156,6 +156,19 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
     def get_queryset(self):
         project_id = self.kwargs['project_id']
         queryset = self.queryset.filter(project=project_id)
+        if not self.request.query_params.get('is_checked'):
+            return queryset
+
+        project = get_object_or_404(Project, pk=project_id)
+        isnull = self.request.query_params.get('is_checked') != 'true'
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            queryset = queryset.filter(doc_annotations__isnull=isnull).distinct()
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            queryset = queryset.filter(seq_annotations__isnull=isnull).distinct()
+        elif project.is_type_of(Project.Seq2seq):
+            queryset = queryset.filter(seq2seq_annotations__isnull=isnull).distinct()
+        else:
+            queryset = queryset
 
         return queryset
 
