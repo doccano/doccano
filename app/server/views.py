@@ -160,7 +160,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
             return queryset
 
         project = get_object_or_404(Project, pk=project_id)
-        isnull = self.request.query_params.get('is_checked') != 'true'
+        isnull = self.request.query_params.get('is_checked') == 'true'
         if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
             queryset = queryset.filter(doc_annotations__isnull=isnull).distinct()
         elif project.is_type_of(Project.SEQUENCE_LABELING):
