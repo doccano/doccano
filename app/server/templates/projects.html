@@ -1,6 +1,4 @@
-{% extends "base.html" %}
-{% load static %}
-{% block content %}
+{% extends "base.html" %} {% load static %} {% block content %}
 <section class="hero project-image">
     <div class="container">
         <div class="columns">
@@ -22,7 +20,7 @@
 </section>
 
 <div class="container">
-    <div class="columns" style="margin-top:0">
+    <div id="projects_root" class="columns" style="margin-top:0">
         <div class="column is-3">
             <aside class="menu">
                 <p class="menu-label">
@@ -30,119 +28,45 @@
                 </p>
                 <ul class="menu-list">
                     <li>
-                        <a class="is-active">All</a>
+                        <a v-bind:class="{active: selectedType == 'All' }"
+                           v-on:click="updateSelectedType('All')">All</a>
                     </li>
-                    <li>
-                        <a>Document Classification</a>
-                    </li>
-                    <li>
-                        <a>Sequence Labeling</a>
-                    </li>
-                    <li>
-                        <a>Sequence to sequence</a>
+                    <li v-for="t in uniqueProjectTypes">
+                        <a v-bind:class="{active: t == selectedType }"
+                           v-on:click="updateSelectedType(t)">[[ t ]]</a>
                     </li>
                 </ul>
             </aside>
         </div>
-        <div class="column is-9">
-            {% for project in object_list %}
-            {% if forloop.counter0|divisibleby:3 %}
-            <div class="columns features">
-                {% endif %}
-                <div class="column is-4">
+        <div class="column is-9" >
+            <div class="columns features" v-for="projects in filteredProjects">
+                <div class="column is-4" v-for="project in projects">
                     <div class="card is-shady">
                         <div class="card-image">
                             <figure class="image is-4by3">
-                                <img src="{{ project.image }}" alt="Placeholder image" class="modal-button" data-target="modal-image2">
+                                <img v-bind:src="project.image" alt="Placeholder image" class="modal-button" data-target="modal-image2">
                             </figure>
                         </div>
                         <div class="card-content">
                             <div class="content">
                                 <h4>
-                                    <a href="{% url 'annotation' project.id %}">{{ project.name }}</a>
+                                    <a v-bind:href="'/projects/' + project.id">[[ project.name ]]</a>
                                 </h4>
                                 <p>
-                                    {{ project.description|truncatechars:50 }}
+                                    [[ project.description.slice(0, 50) ]]
                                 </p>
-                                <a class="button is-link is-small" href="{% url 'project-admin' project.id %}">
+                                <a class="button is-link is-small" v-bind:href="'/projects/' + project.id + '/admin'">
                                     <i class="fas fa-cog"></i>&nbsp;Settings
                                 </a>
                             </div>
                         </div>
                     </div>
-                    {% if forloop.counter|divisibleby:3 or forloop.counter|length == object_list|length %}
                 </div>
-                {% endif %}
             </div>
-            {% endfor %}
         </div>
     </div>
 </div>
-
-<!--
-<section class="container" id="root">
-    <div class="columns">
-
-        <div class="column is-10 is-offset-1">
-            <div class="hero project-image">
-                <div class="hero-body">
-                    <div class="container">
-                        <h1 class="title has-text-white">
-                            Hello, {{ user.get_username | title }}.
-                        </h1>
-                        <h2 class="subtitle has-text-white">
-                            I hope you are having a great day!
-                        </h2>
-                        <a class="button is-primary">Create Project</a>
-                    </div>
-                </div>
-            </div>
-            <div class="box content">
-                <article class="post">
-                    <h4>My Projects</h4>
-                    <div class="media">
-                        <div class="media-content">
-                            <div class="content">
-                                <table class="table is-hoverable">
-                                    <thead>
-                                        <tr>
-                                            <th>Id</th>
-                                            <th>Project name</th>
-                                            <th>Priority</th>
-                                            <th>Progress</th>
-                                            <th>Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for project in object_list %}
-                                        <tr>
-                                            <th style="vertical-align:middle;">{{ forloop.counter }}</th>
-                                            <td>
-                                                <a href="{% url 'annotation' project.id %}">{{ project.name }}</a>
-                                                <p>{{ project.description|truncatechars:50 }}</p>
-                                            </td>
-                                            <td style="vertical-align:middle;">
-                                                <span class="tag is-danger">High</span>
-                                            </td>
-                                            <td style="vertical-align:middle;">
-                                                <progress class="progress is-primary" value="70" max="100">30%</progress>
-                                            </td>
-                                            <td style="vertical-align:middle;">
-                                                <a class="button is-link is-small" href="{% url 'project-admin' project.id %}">
-                                                    <i class="fas fa-cog"></i>&nbsp;Settings
-                                                </a>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </div>
-</section>
--->
+{% endblock %}
+{% block footer %}
+<script type="text/javascript" src="{% static 'bundle/projects.js' %}"></script>
 {% endblock %}
