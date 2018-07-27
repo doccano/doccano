@@ -11,13 +11,11 @@ var vm = new Vue({
         get_projects: async function () {
             var base_url = window.location.href.split('/').slice(0, 3).join('/');
             await axios.get(`${base_url}/api/projects`).then(response => {
-                this.items = response.data['results'];
-                console.log(this.items);
+                this.items = response.data;
             })
         },
         updateSelectedType: function (type) {
             this.selectedType = type;
-            console.log(this.selectedType);
         }
     },
     computed: {

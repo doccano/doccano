@@ -73,6 +73,7 @@ class DataDownloadAPI(View):
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    pagination_class = None
 
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
