@@ -59,9 +59,7 @@ class Seq2seqSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    labels = LabelSerializer(many=True)
-    documents = DocumentSerializer(many=True)
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'users', 'labels', 'documents', 'project_type', 'image')
+        fields = ('id', 'name', 'description', 'users', 'project_type', 'image')
