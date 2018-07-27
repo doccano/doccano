@@ -107,3 +107,66 @@ class Seq2seqAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user', 'text')
+
+
+from .serializers import *
+
+
+# temporary solution
+class Factory(object):
+
+    @classmethod
+    def get_template(cls, project):
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            template_name = 'annotation/document_classification.html'
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            template_name = 'annotation/sequence_labeling.html'
+        elif project.is_type_of(Project.Seq2seq):
+            template_name = 'annotation/seq2seq.html'
+        else:
+            raise ValueError('Template does not exist')
+
+        return template_name
+
+    @classmethod
+    def get_documents(cls, project, is_null=True):
+        docs = project.documents.all()
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            docs = docs.filter(doc_annotations__isnull=is_null)
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            docs = docs.filter(seq_annotations__isnull=is_null)
+        elif project.is_type_of(Project.Seq2seq):
+            docs = docs.filter(seq2seq_annotations__isnull=is_null)
+        else:
+            raise ValueError('Invalid project_type')
+
+        return docs
+
+    @classmethod
+    def get_project_serializer(cls, project):
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            return DocumentSerializer
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            return SequenceSerializer
+        elif project.is_type_of(Project.Seq2seq):
+            return Seq2seqSerializer
+        else:
+            raise ValueError('Invalid project_type')
+
+    @classmethod
+    def get_annotation_serializer(cls, project):
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            return DocumentAnnotationSerializer
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            return SequenceAnnotationSerializer
+        elif project.is_type_of(Project.Seq2seq):
+            return Seq2seqAnnotationSerializer
+
+    @classmethod
+    def get_annotations_by_doc(cls, document):
+        if document.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            return document.doc_annotations.all()
+        elif document.project.is_type_of(Project.SEQUENCE_LABELING):
+            return document.seq_annotations.all()
+        elif document.project.is_type_of(Project.Seq2seq):
+            return document.seq2seq_annotations.all()
