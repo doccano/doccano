@@ -67,14 +67,14 @@
         {% block annotation-area %} {% endblock %}
 
         <div class="level" style="margin-top:30px;">
-            <a class="button level-left" v-on:click="prevPage" v-shortkey="['ctrl', 'p']" @shortkey="prevPage">
+            <a class="button level-left" v-on:click="prevPage" v-shortkey="{prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft']}" @shortkey="prevPage">
                 <span class="icon">
                     <i class="fas fa-chevron-left"></i>
                 </span>
                 <span>Prev</span>
             </a>
 
-            <a class="button level-right" v-on:click="nextPage" v-shortkey="['ctrl', 'n']" @shortkey="nextPage">
+            <a class="button level-right" v-on:click="nextPage" v-shortkey="{next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright']}" @shortkey="nextPage">
                 <span>Next</span>
                 <span class="icon">
                     <i class="fas fa-chevron-right"></i>
