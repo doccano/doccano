@@ -3,27 +3,11 @@ Vue.use(require('vue-shortkey'));
 import annotationMixin from './mixin.js';
 import HTTP from './http.js';
 
-// localStorage persistence
-var STORAGE_KEY = 'todos-vuejs-2.0'
-var todoStorage = {
-    fetch: function () {
-        var todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-        todos.forEach(function (todo, index) {
-            todo.id = index
-        })
-        todoStorage.uid = todos.length
-        return todos
-    },
-    save: function (todos) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos))
-    }
-}
 
 var vm = new Vue({
     el: '#mail-app',
     delimiters: ['[[', ']]'],
     data: {
-        todos: todoStorage.fetch(),
         newTodo: '',
         editedTodo: null
     },
@@ -86,13 +70,5 @@ var vm = new Vue({
     created: function () {
         this.updateProgress();
         this.submit();
-    },
-    watch: {
-        todos: {
-            handler: function (todos) {
-                todoStorage.save(todos)
-            },
-            deep: true
-        }
     }
 });
