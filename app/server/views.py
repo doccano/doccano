@@ -165,19 +165,24 @@ class AnnotationsAPI(generics.ListCreateAPIView):
 
     def post(self, request, *args, **kwargs):
         doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
-        label = get_object_or_404(Label, pk=request.data['label_id'])
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         self.serializer_class = Factory.get_annotation_serializer(project)
         if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            label = get_object_or_404(Label, pk=request.data['label_id'])
             annotation = DocumentAnnotation(document=doc, label=label, manual=True,
                                             user=self.request.user)
         elif project.is_type_of(Project.SEQUENCE_LABELING):
+            label = get_object_or_404(Label, pk=request.data['label_id'])
             annotation = SequenceAnnotation(document=doc, label=label, manual=True,
                                             user=self.request.user,
                                             start_offset=request.data['start_offset'],
                                             end_offset=request.data['end_offset'])
         elif project.is_type_of(Project.Seq2seq):
-            annotation = Seq2seqAnnotation(document=doc, manual=True, user=self.request.user)
+            text = request.data['text']
+            annotation = Seq2seqAnnotation(document=doc,
+                                           text=text,
+                                           manual=True,
+                                           user=self.request.user)
         annotation.save()
         serializer = self.serializer_class(annotation)
 
@@ -200,3 +205,18 @@ class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
         self.check_object_permissions(self.request, obj)
 
         return obj
+
+    def put(self, request, *args, **kwargs):
+        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = Factory.get_annotation_serializer(project)
+        if project.is_type_of(Project.Seq2seq):
+            text = request.data['text']
+            annotation = get_object_or_404(Seq2seqAnnotation, pk=request.data['id'])
+            annotation.text = text
+            print(text)
+
+        annotation.save()
+        serializer = self.serializer_class(annotation)
+
+        return Response(serializer.data)

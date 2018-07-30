@@ -36,35 +36,30 @@ var vm = new Vue({
         }
     },
     methods: {
-        addLabel: async function (label_id) {
-            var payload = {
-                'label_id': label_id
-            };
-
-            var doc_id = this.items[this.cur].id;
-            await HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
-                this.items[this.cur]['labels'].push(response.data);
-            });
-            this.updateProgress();
-        },
         addTodo: function () {
             var value = this.newTodo && this.newTodo.trim()
             if (!value) {
                 return
             }
-            this.todos.push({
-                id: todoStorage.uid++,
-                title: value,
+
+            var doc_id = this.items[this.cur].id;
+            var payload = {text: value}
+            HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
+                this.items[this.cur]['labels'].push(response.data)
             })
+
             this.newTodo = ''
         },
 
         removeTodo: function (todo) {
-            this.todos.splice(this.todos.indexOf(todo), 1)
+            var doc_id = this.items[this.cur].id;
+            HTTP.delete(`docs/${doc_id}/annotations/${todo.id}`).then(response => {
+                this.items[this.cur]['labels'].splice(this.items[this.cur]['labels'].indexOf(todo), 1)
+            });
         },
 
         editTodo: function (todo) {
-            this.beforeEditCache = todo.title
+            this.beforeEditCache = todo.text
             this.editedTodo = todo
         },
 
@@ -73,15 +68,19 @@ var vm = new Vue({
                 return
             }
             this.editedTodo = null
-            todo.title = todo.title.trim()
-            if (!todo.title) {
+            todo.text = todo.text.trim()
+            if (!todo.text) {
                 this.removeTodo(todo)
             }
+            var doc_id = this.items[this.cur].id;
+            HTTP.put(`docs/${doc_id}/annotations/${todo.id}`, todo).then(response => {
+                console.log(response)
+            });
         },
 
         cancelEdit: function (todo) {
             this.editedTodo = null
-            todo.title = this.beforeEditCache
+            todo.text = this.beforeEditCache
         }
     },
     created: function () {

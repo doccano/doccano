@@ -7,17 +7,6 @@
     </div>
 </div>
 
-<!--
-<div class="card" style="margin-top:30px;">
-    <div class="card-content" contenteditable="true" v-if="items[cur].labels.length">
-        [[ items[cur].labels[0].text ]]
-    </div>
-    <div v-else class="card-content" contenteditable="true">
-        Input response...
-    </div>
-</div>
--->
-
 <section class="todoapp">
     <header class="header">
         <input class="textarea new-todo"
@@ -26,16 +15,16 @@
                v-model="newTodo"
                @keyup.enter="addTodo">
     </header>
-    <section class="main" v-show="todos.length" v-cloak>
+    <section class="main" v-show="items[cur].labels.length" v-cloak>
         <ul class="todo-list">
-            <li v-for="todo in todos" class="todo" :key="todo.id" :class="{ editing: todo == editedTodo }">
+            <li v-for="todo in items[cur].labels" class="todo" :key="todo.id" :class="{ editing: todo == editedTodo }">
                 <div class="view">
-                    <label @dblclick="editTodo(todo)">[[ todo.title ]]</label>
+                    <label @dblclick="editTodo(todo)">[[ todo.text ]]</label>
                     <button class="delete destroy is-large" @click="removeTodo(todo)"></button>
                 </div>
                 <input class="textarea edit"
                        type="text"
-                       v-model="todo.title"
+                       v-model="todo.text"
                        v-todo-focus="todo == editedTodo"
                        @blur="doneEdit(todo)"
                        @keyup.enter="doneEdit(todo)"
