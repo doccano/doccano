@@ -11,8 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import viewsets, filters, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
-
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from .models import Label, Document, Project, Factory
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
@@ -35,15 +34,16 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ProjectsView(LoginRequiredMixin, ListView):
-    model = Project
-    paginate_by = 100
-    template_name = 'projects.html'
-
-
 class ProjectAdminView(LoginRequiredMixin, DetailView):
     model = Project
     template_name = 'project_admin.html'
+
+
+class ProjectsView(ListView):
+    model = Project
+    paginate_by = 100
+    template_name = 'projects.html'
+    permission_classes = (IsAuthenticated,)
 
 
 class RawDataAPI(View):
@@ -74,6 +74,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     pagination_class = None
+    permission_classes = (IsAuthenticated,)
 
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
@@ -89,6 +90,7 @@ class ProjectLabelsAPI(generics.ListCreateAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
     pagination_class = None
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
@@ -105,6 +107,7 @@ class ProjectLabelsAPI(generics.ListCreateAPIView):
 class ProjectLabelAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
@@ -125,6 +128,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         project_id = self.kwargs['project_id']
@@ -148,6 +152,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
 
 class AnnotationsAPI(generics.ListCreateAPIView):
     pagination_class = None
+    permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
         project_id = self.kwargs['project_id']
@@ -190,6 +195,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
 
 
 class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
