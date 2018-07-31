@@ -39,11 +39,10 @@ class ProjectAdminView(LoginRequiredMixin, DetailView):
     template_name = 'project_admin.html'
 
 
-class ProjectsView(ListView):
+class ProjectsView(LoginRequiredMixin, ListView):
     model = Project
     paginate_by = 100
     template_name = 'projects.html'
-    permission_classes = (IsAuthenticated,)
 
 
 class RawDataAPI(View):
@@ -86,11 +85,24 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response({'total': total, 'remaining': remaining})
 
 
+from rest_framework import permissions
+
+
+class ProjectPermission(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        user = request.user
+        project_id = view.kwargs.get('project_id')
+        project = get_object_or_404(Project, pk=project_id)
+
+        return user in project.users.all()
+
+
 class ProjectLabelsAPI(generics.ListCreateAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
     pagination_class = None
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, ProjectPermission)
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
