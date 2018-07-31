@@ -170,3 +170,12 @@ class Factory(object):
             return document.seq_annotations.all()
         elif document.project.is_type_of(Project.Seq2seq):
             return document.seq2seq_annotations.all()
+
+    @classmethod
+    def get_annotation_class(cls, project):
+        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            return DocumentAnnotation
+        elif project.is_type_of(Project.SEQUENCE_LABELING):
+            return SequenceAnnotation
+        elif project.is_type_of(Project.Seq2seq):
+            return Seq2seqAnnotation

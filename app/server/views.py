@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import viewsets, filters, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAdminUser, IsAuthenticated
 
 from .models import Label, Document, Project, Factory
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
@@ -69,11 +69,43 @@ class DataDownloadAPI(View):
         return response
 
 
+class IsProjectUser(BasePermission):
+
+    def has_permission(self, request, view):
+        user = request.user
+        project_id = view.kwargs.get('project_id')
+        project = get_object_or_404(Project, pk=project_id)
+
+        return user in project.users.all()
+
+
+class IsAdminUserAndWriteOnly(BasePermission):
+
+    def has_permission(self, request, view):
+        if request.method in SAFE_METHODS:
+            return True
+
+        return IsAdminUser().has_permission(request, view)
+
+
+class IsOwnAnnotation(BasePermission):
+
+    def has_permission(self, request, view):
+        user = request.user
+        project_id = view.kwargs.get('project_id')
+        annotation_id = view.kwargs.get('annotation_id')
+        project = get_object_or_404(Project, pk=project_id)
+        Annotation = Factory.get_annotation_class(project)
+        annotation = Annotation.objects.get(id=annotation_id)
+
+        return annotation.user == user
+
+
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     pagination_class = None
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
 
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
@@ -85,24 +117,11 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response({'total': total, 'remaining': remaining})
 
 
-from rest_framework import permissions
-
-
-class ProjectPermission(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        user = request.user
-        project_id = view.kwargs.get('project_id')
-        project = get_object_or_404(Project, pk=project_id)
-
-        return user in project.users.all()
-
-
 class ProjectLabelsAPI(generics.ListCreateAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
     pagination_class = None
-    permission_classes = (IsAuthenticated, ProjectPermission)
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
@@ -119,7 +138,7 @@ class ProjectLabelsAPI(generics.ListCreateAPIView):
 class ProjectLabelAPI(generics.RetrieveUpdateDestroyAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
 
     def get_queryset(self):
         project_id = self.kwargs['project_id']
@@ -140,7 +159,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_serializer_class(self):
         project_id = self.kwargs['project_id']
@@ -164,7 +183,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
 
 class AnnotationsAPI(generics.ListCreateAPIView):
     pagination_class = None
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsProjectUser)
 
     def get_serializer_class(self):
         project_id = self.kwargs['project_id']
@@ -207,7 +226,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
 
 
 class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsProjectUser, IsOwnAnnotation)
 
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
@@ -232,7 +251,6 @@ class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
             text = request.data['text']
             annotation = get_object_or_404(Seq2seqAnnotation, pk=request.data['id'])
             annotation.text = text
-            print(text)
 
         annotation.save()
         serializer = self.serializer_class(annotation)
