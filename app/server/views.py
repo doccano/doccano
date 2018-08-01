@@ -13,7 +13,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAdminUser, IsAuthenticated
 
-from .models import Label, Document, Project, Factory
+from .models import Label, Document, Project
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 from .serializers import LabelSerializer, ProjectSerializer
 
@@ -29,7 +29,7 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         project_id = kwargs.get('project_id')
         project = get_object_or_404(Project, pk=project_id)
-        self.template_name = Factory.get_template(project)
+        self.template_name = project.get_template()
 
         return context
 
@@ -95,7 +95,7 @@ class IsOwnAnnotation(BasePermission):
         project_id = view.kwargs.get('project_id')
         annotation_id = view.kwargs.get('annotation_id')
         project = get_object_or_404(Project, pk=project_id)
-        Annotation = Factory.get_annotation_class(project)
+        Annotation = project.get_annotation_class()
         annotation = Annotation.objects.get(id=annotation_id)
 
         return annotation.user == user
@@ -116,7 +116,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
         project = self.get_object()
-        docs = Factory.get_documents(project, is_null=True)
+        docs = project.get_documents(is_null=True)
         total = project.documents.count()
         remaining = docs.count()
 
@@ -170,7 +170,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
     def get_serializer_class(self):
         project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, pk=project_id)
-        self.serializer_class = Factory.get_project_serializer(project)
+        self.serializer_class = project.get_project_serializer()
 
         return self.serializer_class
 
@@ -182,7 +182,7 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
 
         project = get_object_or_404(Project, pk=project_id)
         is_null = self.request.query_params.get('is_checked') == 'true'
-        queryset = Factory.get_documents(project, is_null).distinct()
+        queryset = project.get_documents(is_null).distinct()
 
         return queryset
 
@@ -194,7 +194,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
     def get_serializer_class(self):
         project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, pk=project_id)
-        self.serializer_class = Factory.get_annotation_serializer(project)
+        self.serializer_class = project.get_annotation_serializer()
 
         return self.serializer_class
 
@@ -203,14 +203,14 @@ class AnnotationsAPI(generics.ListCreateAPIView):
         project = get_object_or_404(Project, pk=project_id)
         doc_id = self.kwargs['doc_id']
         document = get_object_or_404(Document, pk=doc_id, project=project)
-        self.queryset = Factory.get_annotations_by_doc(document)
+        self.queryset = document.get_annotations_by_doc()
 
         return self.queryset
 
     def post(self, request, *args, **kwargs):
         doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = Factory.get_annotation_serializer(project)
+        self.serializer_class = project.get_annotation_serializer()
         if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
             label = get_object_or_404(Label, pk=request.data['label_id'])
             annotation = DocumentAnnotation(document=doc, label=label, manual=True,
@@ -239,7 +239,7 @@ class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
         document = get_object_or_404(Document, pk=doc_id)
-        self.queryset = Factory.get_annotations_by_doc(document)
+        self.queryset = document.get_annotations_by_doc()
 
         return self.queryset
 
@@ -254,7 +254,7 @@ class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
     def put(self, request, *args, **kwargs):
         doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = Factory.get_annotation_serializer(project)
+        self.serializer_class = project.get_annotation_serializer()
         if project.is_type_of(Project.Seq2seq):
             text = request.data['text']
             annotation = get_object_or_404(Seq2seqAnnotation, pk=request.data['id'])
