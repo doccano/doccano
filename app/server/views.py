@@ -107,6 +107,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
 
+    def get_queryset(self):
+        user = self.request.user
+        queryset = self.queryset.filter(users__id__contains=user.id)
+
+        return queryset
+
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
         project = self.get_object()
@@ -193,8 +199,10 @@ class AnnotationsAPI(generics.ListCreateAPIView):
         return self.serializer_class
 
     def get_queryset(self):
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, pk=project_id)
         doc_id = self.kwargs['doc_id']
-        document = get_object_or_404(Document, pk=doc_id)
+        document = get_object_or_404(Document, pk=doc_id, project=project)
         self.queryset = Factory.get_annotations_by_doc(document)
 
         return self.queryset
