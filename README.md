@@ -10,15 +10,19 @@ You can enjoy [annotation demo](http://doccano.herokuapp.com).
 
 First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can annotate text spans quickly.
 
-![Sequence Labeling](./docs/named_entity_annotation.gif)
+![Named Entity Recognition](./docs/named_entity_annotation.gif)
 
 ### Text classification
+
+Second demo is one of the text classification tasks, topic classification. Since there may be more than one category, you can annotate multi-labels.
 
 ![Text Classification](http://via.placeholder.com/600x400)
 
 ### Sequence to sequence
 
-![Sequence Labeling](http://via.placeholder.com/600x400)
+Final demo is one of the sequence to sequence tasks, machine translation. Since there may be more than one responses in sequence to sequence tasks, you can create multi responses.
+
+![Machine Translation](./docs/translation.gif)
 
 ## Features
 
