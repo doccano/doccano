@@ -203,7 +203,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
         project = get_object_or_404(Project, pk=project_id)
         doc_id = self.kwargs['doc_id']
         document = get_object_or_404(Document, pk=doc_id, project=project)
-        self.queryset = document.get_annotations_by_doc()
+        self.queryset = document.get_annotations()
 
         return self.queryset
 
@@ -239,7 +239,7 @@ class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         doc_id = self.kwargs['doc_id']
         document = get_object_or_404(Document, pk=doc_id)
-        self.queryset = document.get_annotations_by_doc()
+        self.queryset = document.get_annotations()
 
         return self.queryset
 

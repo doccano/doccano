@@ -5,8 +5,6 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 
 
-
-
 class Project(models.Model):
     DOCUMENT_CLASSIFICATION = 'DocumentClassification'
     SEQUENCE_LABELING = 'SequenceLabeling'
@@ -89,7 +87,7 @@ class Project(models.Model):
         elif self.is_type_of(Project.Seq2seq):
             return Seq2seqAnnotationSerializer
 
-    def get_annotation_class(self, project):
+    def get_annotation_class(self):
         if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):
             return DocumentAnnotation
         elif self.is_type_of(Project.SEQUENCE_LABELING):
@@ -125,13 +123,13 @@ class Document(models.Model):
     text = models.TextField()
     project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
 
-    def get_annotations(self, document):
+    def get_annotations(self):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
-            return document.doc_annotations.all()
+            return self.doc_annotations.all()
         elif self.project.is_type_of(Project.SEQUENCE_LABELING):
-            return document.seq_annotations.all()
+            return self.seq_annotations.all()
         elif self.project.is_type_of(Project.Seq2seq):
-            return document.seq2seq_annotations.all()
+            return self.seq2seq_annotations.all()
 
     def __str__(self):
         return self.text[:50]
