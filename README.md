@@ -65,4 +65,10 @@ Then, open <http://localhost:8080> in your browser.
 
 ## Contribution
 
-**If you are favorite to doccano, please follow my [GitHub](https://github.com/Hironsan) and [Twitter](https://twitter.com/Hironsan13) account.** Please feel free to contact!
+As with any software doccano is under continuous development. If you have requests for features please file an issue describing your request. Also, if you want to see work towards a specific feature feel free to contribute by working towards it. The standard procedure is to fork the repository, add a feature, fix a bug, then file a pull request that your changes are to be merged into the main repository and included in the next release.
+
+## Contact
+
+For help and feedback please feel free to contact [the author](https://github.com/Hironsan).
+
+**If you are favorite to doccano, please follow my [GitHub](https://github.com/Hironsan) and [Twitter](https://twitter.com/Hironsan13) account.**
