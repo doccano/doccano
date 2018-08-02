@@ -16,7 +16,7 @@ First demo is one of the sequence labeling tasks, named-entity recognition. You 
 
 Second demo is one of the text classification tasks, topic classification. Since there may be more than one category, you can annotate multi-labels.
 
-![Text Classification](http://via.placeholder.com/600x400)
+![Text Classification](./docs/text_classification.gif)
 
 ### Sequence to sequence
 
