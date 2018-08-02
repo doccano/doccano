@@ -8,7 +8,9 @@ You can enjoy [annotation demo](http://doccano.herokuapp.com).
 
 ### Sequence labeling
 
-![Sequence Labeling](http://via.placeholder.com/600x400)
+First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can annotate text spans quickly.
+
+![Sequence Labeling](./docs/named_entity_annotation.gif)
 
 ### Text classification
 
