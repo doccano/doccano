@@ -8,7 +8,7 @@ You can enjoy [annotation demo](http://doccano.herokuapp.com).
 
 ### Sequence labeling
 
-First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can annotate text spans quickly.
+First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can quickly annotate text spans.
 
 ![Named Entity Recognition](./docs/named_entity_annotation.gif)
 
@@ -32,7 +32,7 @@ Final demo is one of the sequence to sequence tasks, machine translation. Since 
 
 ## Requirements
 
-* Python3.6+
+* Python 3.6+
 * django 2.0.5+
 * Google Chrome(highly recommended)
 
