@@ -70,31 +70,38 @@ var annotationMixin = {
             await this.search();
             this.cur = 0;
         },
-        updateProgress: function () {
-            HTTP.get('progress').then(response => {
-                this.total = response.data['total'];
-                this.remaining = response.data['remaining'];
-            })
-        },
         deleteLabel: async function (index) {
             var doc_id = this.items[this.cur].id;
             var annotation_id = this.items[this.cur]['labels'][index].id;
             HTTP.delete(`docs/${doc_id}/annotations/${annotation_id}`).then(response => {
                 this.items[this.cur]['labels'].splice(index, 1)
-            });
-            this.updateProgress();
+            })
+        },
+
+        removeLabel: function (label) {
+            var doc_id = this.items[this.cur].id;
+            HTTP.delete(`docs/${doc_id}/annotations/${label.id}`).then(response => {
+                var index = this.items[this.cur]['labels'].indexOf(label)
+                this.items[this.cur]['labels'].splice(index, 1)
+            })
         }
     },
     watch: {
         picked: function (){
             this.submit();
+        },
+        items: function () {
+            // fetch progress info.
+            HTTP.get('progress').then(response => {
+                this.total = response.data['total'];
+                this.remaining = response.data['remaining'];
+            })
         }
     },
     created: function () {
         HTTP.get('labels').then(response => {
             this.labels = response.data
         });
-        this.updateProgress();
         this.submit();
     },
     computed: {

@@ -68,7 +68,6 @@ var vm = new Vue({
         }
     },
     created: function () {
-        this.updateProgress();
         this.submit();
     }
 });

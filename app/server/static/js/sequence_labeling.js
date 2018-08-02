@@ -5,7 +5,12 @@ import HTTP from './http.js';
 
 Vue.component('annotator', {
     template: '<div @click="setSelectedRange">\
-                   <span v-for="r in chunks" v-bind:class="{tag: r.color}" v-bind:style="{ color: r.color, backgroundColor: r.background }">{{ r.word }}<button v-if="r.color" class="delete is-small" @click="deleteLabel(r.index)"></button></span>\
+                    <span v-for="r in chunks"\
+                         v-bind:class="{tag: r.color}"\
+                         v-bind:style="{ color: r.color, backgroundColor: r.background }"\
+                    >{{ r.word }}<button class="delete is-small"\
+                                         v-if="r.color"\
+                                         @click="deleteLabel(r.index)"></button></span>\
                </div>',
     props: {
         'labels': Array, // [{id: Integer, color: String, text: String}]
@@ -97,7 +102,7 @@ Vue.component('annotator', {
         chunks: function () {
             var res = [];
             var left = 0;
-            var i = 0;
+            var index = 0;
             for (let i in this.sortedEntityPositions) {
                 var e = this.sortedEntityPositions[i];
                 var text = this.text.slice(left, e['start_offset']);
@@ -120,10 +125,7 @@ Vue.component('annotator', {
                 'word': text,
                 'color': '',
                 'background': ''
-            });
-            console.log(res);
-            console.log(this.labels);
-            console.log(this.entityPositions);
+            })
 
             return res
         }
@@ -140,8 +142,7 @@ var vm = new Vue({
             var doc_id = this.items[this.cur].id;
             HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
                 this.items[this.cur]['labels'].push(response.data);
-            });
-            this.updateProgress()
+            })
         }
     }
 });
