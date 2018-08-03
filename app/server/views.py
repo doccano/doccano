@@ -49,9 +49,15 @@ class ProjectsView(LoginRequiredMixin, ListView):
     template_name = 'projects.html'
 
 
-class DatasetView(LoginRequiredMixin, DetailView):
-    model = Project
+class DatasetView(LoginRequiredMixin, ListView):
     template_name = 'admin/dataset.html'
+    context_object_name = 'documents'
+    paginate_by = 5
+
+    def get_queryset(self):
+        project_id = self.kwargs['pk']
+        project = get_object_or_404(Project, pk=project_id)
+        return project.documents.all()
 
 
 class DatasetUpload(LoginRequiredMixin, View):

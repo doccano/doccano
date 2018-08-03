@@ -7,7 +7,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for doc in project.documents.all %}
+        {% for doc in documents %}
         <tr>
             <td>{{ doc.text|truncatechars:100 }}</td>
             <td>label</td>
@@ -15,4 +15,26 @@
         {% endfor %}
     </tbody>
 </table>
+
+{% if is_paginated %}
+  <ul class="pagination is-centered" role="navigation" aria-label="pagination">
+    {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
 {% endblock %}
