@@ -1,0 +1,18 @@
+{% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+<table class="table is-fullwidth is-hoverable">
+    <thead>
+        <tr>
+            <th>Text</th>
+            <th>Label</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for doc in project.documents.all %}
+        <tr>
+            <td>{{ doc.text|truncatechars:100 }}</td>
+            <td>label</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

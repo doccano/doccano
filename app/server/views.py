@@ -47,7 +47,7 @@ class ProjectsView(LoginRequiredMixin, ListView):
 
 class DatasetView(LoginRequiredMixin, DetailView):
     model = Project
-    template_name = 'admin/admin_base.html'
+    template_name = 'admin/dataset.html'
 
 
 class RawDataAPI(View):
