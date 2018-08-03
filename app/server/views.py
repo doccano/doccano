@@ -1,7 +1,11 @@
 import json
 
+
+import csv
+from io import TextIOWrapper
+from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import TemplateView
@@ -50,9 +54,24 @@ class DatasetView(LoginRequiredMixin, DetailView):
     template_name = 'admin/dataset.html'
 
 
-class DatasetUpload(LoginRequiredMixin, DetailView):
+class DatasetUpload(LoginRequiredMixin, View):
     model = Project
-    template_name = 'admin/dataset_upload.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'admin/dataset_upload.html')
+
+    def post(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=kwargs.get('pk'))
+        try:
+            form_data = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
+            reader = csv.reader(form_data)
+            for line in reader:
+                text = line[0]
+                Document(text=text, project=project).save()
+            return HttpResponseRedirect(reverse('dataset', args=[project.id]))
+        except:
+            print("failed")
+            return HttpResponseRedirect(reverse('dataset-upload', args=[project.id]))
 
 
 class RawDataAPI(View):

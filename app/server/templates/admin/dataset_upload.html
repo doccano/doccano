@@ -8,13 +8,15 @@
     </p>
 
     <div class="section">
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
         <div class="control">
             <label class="radio" style="margin-bottom:10px;">
                 <input type="radio" name="format" checked> Upload a CSV file from your computer
             </label>
             <div class="file is-small" style="margin-bottom:20px;">
                 <label class="file-label">
-                    <input class="file-input" type="file" name="resume">
+                    <input class="file-input" type="file" name="csv_file" required>
                     <span class="file-cta">
                         <span class="file-icon">
                             <i class="fas fa-upload"></i>
@@ -26,6 +28,7 @@
                 </label>
             </div>
 
+            <!--
             <label class="radio" style="margin-bottom:10px;">
                 <input type="radio" name="format"> Upload text items from your computer
             </label>
@@ -42,17 +45,19 @@
                     </span>
                 </label>
             </div>
+            -->
         </div>
 
     </div>
 
     <div class="field is-grouped">
         <div class="control">
-            <button class="button is-primary">Upload dataset</button>
+            <button type="submit" class="button is-primary">Upload dataset</button>
         </div>
         <div class="control">
             <button class="button is-text">Cancel</button>
         </div>
     </div>
+    </form>
 </div>
 {% endblock %}
