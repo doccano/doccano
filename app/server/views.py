@@ -45,6 +45,11 @@ class ProjectsView(LoginRequiredMixin, ListView):
     template_name = 'projects.html'
 
 
+class DatasetView(LoginRequiredMixin, DetailView):
+    model = Project
+    template_name = 'admin/admin_base.html'
+
+
 class RawDataAPI(View):
 
     def post(self, request, *args, **kwargs):

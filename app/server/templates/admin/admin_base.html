@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/annotation.css' %}">
+{% endblock %}
+{% block content %}
+<div class="columns" id="mail-app">
+    <aside class="column is-2 aside">
+        <div>
+            <div class="main">
+                <a href="#" class="item active">
+                    <span class="icon">
+                        <i class="fa fa-inbox"></i>
+                    </span>
+                    <span class="name">Dataset</span>
+                </a>
+                <a href="#" class="item">
+                    <span class="icon">
+                        <i class="fa fa-star"></i>
+                    </span>
+                    <span class="name">Labels</span>
+                </a>
+                <a href="#" class="item">
+                    <span class="icon">
+                        <i class="fa fa-envelope-o"></i>
+                    </span>
+                    <span class="name">Statistics</span>
+                </a>
+                <a href="#" class="item">
+                    <span class="icon">
+                        <i class="fa fa-folder-o"></i>
+                    </span>
+                    <span class="name">Users</span>
+                </a>
+            </div>
+        </div>
+    </aside>
+    <div class="column is-10 messages hero is-fullheight" id="message-feed">
+    </div>
+</div>
+{% endblock %}
