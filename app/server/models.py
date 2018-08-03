@@ -131,6 +131,20 @@ class Document(models.Model):
         elif self.project.is_type_of(Project.Seq2seq):
             return self.seq2seq_annotations.all()
 
+    def make_dataset(self):
+        if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+            return self.make_dataset_for_classification()
+        elif self.project.is_type_of(Project.SEQUENCE_LABELING):
+            return self.seq_annotations.all()
+        elif self.project.is_type_of(Project.Seq2seq):
+            return self.seq2seq_annotations.all()
+
+    def make_dataset_for_classification(self):
+        annotations = self.get_annotations()
+        dataset = [[a.document.id, a.document.text, a.label.text, a.user.username]
+                   for a in annotations]
+        return dataset
+
     def __str__(self):
         return self.text[:50]
 

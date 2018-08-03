@@ -93,13 +93,18 @@ class RawDataAPI(View):
         return JsonResponse({'status': 'ok'})
 
 
-class DataDownloadAPI(View):
+class DataDownload(View):
 
     def get(self, request, *args, **kwargs):
-        annotated_docs = [a.as_dict() for a in Annotation.objects.filter(manual=True)]
-        json_str = json.dumps(annotated_docs)
-        response = HttpResponse(json_str, content_type='application/json')
-        response['Content-Disposition'] = 'attachment; filename=annotation_data.json'
+        project_id = self.kwargs['project_id']
+        project = get_object_or_404(Project, pk=project_id)
+        docs = project.get_documents(is_null=False).distinct()
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(project.name)
+
+        writer = csv.writer(response)
+        for d in docs:
+            writer.writerows(d.make_dataset())
 
         return response
 
