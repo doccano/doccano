@@ -1,28 +1,49 @@
 {% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
 <div class="column is-7">
-    <h1>Import text items</h1>
+    <h1 class="title">Import text items</h1>
 
     <p>
-        To build a custom model, you first need to import a set of text items to train it. Generally the more text items the better.
-        Each item should be categorized with a label (labels are essential for telling the model how to classify text). AutoML
-        Natural Language currently supports English text only.
+        <b>To annotate texts, you first need to import a set of text items to annotate it.</b>
+        Each item should contain a text.
     </p>
 
-    <div class="content">
-        <p>Upload a CSV file from your computer</p>
-        <div class="file">
-            <label class="file-label">
-                <input class="file-input" type="file" name="resume">
-                <span class="file-cta">
-                    <span class="file-icon">
-                        <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="file-label">
-                        Select a file…
-                    </span>
-                </span>
+    <div class="section">
+        <div class="control">
+            <label class="radio" style="margin-bottom:10px;">
+                <input type="radio" name="format" checked> Upload a CSV file from your computer
             </label>
+            <div class="file is-small" style="margin-bottom:20px;">
+                <label class="file-label">
+                    <input class="file-input" type="file" name="resume">
+                    <span class="file-cta">
+                        <span class="file-icon">
+                            <i class="fas fa-upload"></i>
+                        </span>
+                        <span class="file-label">
+                            Select a file…
+                        </span>
+                    </span>
+                </label>
+            </div>
+
+            <label class="radio" style="margin-bottom:10px;">
+                <input type="radio" name="format"> Upload text items from your computer
+            </label>
+            <div class="file is-small">
+                <label class="file-label">
+                    <input class="file-input" type="file" name="resume">
+                    <span class="file-cta">
+                        <span class="file-icon">
+                            <i class="fas fa-upload"></i>
+                        </span>
+                        <span class="file-label">
+                            Select a file…
+                        </span>
+                    </span>
+                </label>
+            </div>
         </div>
+
     </div>
 
     <div class="field is-grouped">
