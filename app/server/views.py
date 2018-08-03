@@ -50,6 +50,11 @@ class DatasetView(LoginRequiredMixin, DetailView):
     template_name = 'admin/dataset.html'
 
 
+class DatasetUpload(LoginRequiredMixin, DetailView):
+    model = Project
+    template_name = 'admin/dataset_upload.html'
+
+
 class RawDataAPI(View):
 
     def post(self, request, *args, **kwargs):
