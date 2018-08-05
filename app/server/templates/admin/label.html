@@ -1,0 +1,96 @@
+{% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+<div class="column is-9">
+  <h1 class="title">Add labels</h1>
+
+  <div class="card">
+    <header class="card-header">
+      <div class="card-header-title" style="padding:1.5rem;background-color:royalblue;">
+        <div class="field is-grouped is-grouped-multiline">
+          <div class="control" v-for="label in labels">
+            <div class="tags has-addons">
+              <span class="tag is-medium"
+                 v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }">
+                 <button class="delete is-small" 
+                         style="margin-right:.25rem;margin-left:-.375rem;"
+                         @click="removeLabel(label)"></button>
+                [[ label.text ]]
+            </span>
+              <span class="tag is-medium">[[ label.shortcut ]]</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="card-content">
+      <div class="content">
+
+        <div class="field">
+          <label class="label">Preview</label>
+          <div class="control">
+            <div class="tags has-addons" style="font-weight:700;">
+              <a class="tag is-medium"
+                 v-bind:style="{ color: textColor, backgroundColor: backgroundColor }">
+                [[ labelText ]]
+              </a>
+              <span class="tag is-medium">[[ selectedShortkey ]]</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Label Name</label>
+          <div class="control has-icons-left">
+            <input class="input" type="text" placeholder="Text input" v-model="labelText">
+            <span class="icon is-small is-left">
+              <i class="fa fa-star"></i>
+            </span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Shortcut Key</label>
+          <div class="control">
+            <div class="select">
+              <select v-model="selectedShortkey">
+                <option disabled value="">Please select one</option>
+                <option>a</option>
+                <option>b</option>
+                <option>c</option>
+                <option>d</option>
+                <option>e</option>
+                <option>f</option>
+                <option>g</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="field is-grouped">
+
+          <div class="control is-expanded">
+            <label class="label">Background Color</label>
+            <input class="input" type="color" v-model="backgroundColor">
+          </div>
+
+
+          <div class="control is-expanded">
+            <label class="label">Text Color</label>
+            <input class="input" type="color" v-model="textColor">
+          </div>
+        </div>
+
+        <div class="field is-grouped">
+          <div class="control">
+            <button class="button is-link" @click="addLabel()">Add label</button>
+          </div>
+          <div class="control">
+            <button class="button is-text" @click="reset()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block footer %}
+<script type="text/javascript" src="{% static 'js/label.js' %}"></script>
+{% endblock %}

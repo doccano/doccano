@@ -60,6 +60,10 @@ class DatasetView(LoginRequiredMixin, ListView):
         return project.documents.all()
 
 
+class LabelView(LoginRequiredMixin, TemplateView):
+    template_name = 'admin/label.html'
+
+
 class DatasetUpload(LoginRequiredMixin, TemplateView):
     model = Project
     template_name = 'admin/dataset_upload.html'

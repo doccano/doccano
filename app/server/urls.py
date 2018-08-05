@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import IndexView
-from .views import ProjectView, DatasetView, DatasetUpload
+from .views import ProjectView, DatasetView, DatasetUpload, LabelView
 from .views import ProjectsView, ProjectAdminView, DataDownload
 from rest_framework import routers
 from .views import ProjectViewSet
@@ -25,4 +25,5 @@ urlpatterns = [
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
     path('projects/<int:project_id>/docs/', DatasetView.as_view(), name='dataset'),
     path('projects/<int:project_id>/docs/create', DatasetUpload.as_view(), name='upload'),
+    path('projects/<int:project_id>/labels/', LabelView.as_view(), name='label-management'),
 ]
