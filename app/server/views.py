@@ -60,11 +60,9 @@ class DatasetView(LoginRequiredMixin, ListView):
         return project.documents.all()
 
 
-class DatasetUpload(LoginRequiredMixin, View):
+class DatasetUpload(LoginRequiredMixin, TemplateView):
     model = Project
-
-    def get(self, request, *args, **kwargs):
-        return render(request, 'admin/dataset_upload.html')
+    template_name = 'admin/dataset_upload.html'
 
     def post(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))

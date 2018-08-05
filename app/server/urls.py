@@ -24,5 +24,5 @@ urlpatterns = [
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
     path('projects/<int:project_id>/docs/', DatasetView.as_view(), name='dataset'),
-    path('projects/<int:project_id>/docs/create', DatasetUpload.as_view(), name='dataset-upload'),
+    path('projects/<int:project_id>/docs/create', DatasetUpload.as_view(), name='upload'),
 ]

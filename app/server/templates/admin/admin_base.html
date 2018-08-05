@@ -4,13 +4,13 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
 {% endblock %}
 {% block navigation %}
-<a class="navbar-item" href="{% url 'index' %}">
+<a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
     <span class="icon">
         <i class="fas fa-upload"></i>
     </span>
     <b>Import Data</b>
 </a>
-<a class="navbar-item" href="{% url 'index' %}">
+<a class="navbar-item" href="{% url 'download' view.kwargs.project_id %}">
     <span class="icon">
         <i class="fas fa-download"></i>
     </span>
@@ -22,7 +22,7 @@
     <aside class="column is-2 aside">
         <div>
             <div class="main">
-                <a href="" class="item active">
+                <a href="{% url 'dataset' view.kwargs.project_id %}" class="item active">
                     <span class="icon">
                         <i class="fa fa-inbox"></i>
                     </span>
