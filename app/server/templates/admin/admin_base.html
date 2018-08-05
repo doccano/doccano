@@ -4,7 +4,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
 {% endblock %}
 {% block content %}
-<div class="columns" id="mail-app">
+<div class="columns" id="mail-app" style="margin-right:0;">
     <aside class="column is-2 aside">
         <div>
             <div class="main">
@@ -36,7 +36,9 @@
         </div>
     </aside>
     <div class="column is-10 messages hero is-fullheight" id="message-feed">
+        <div class="box">
         {% block content-area %}{% endblock %}
+        </div>
     </div>
 </div>
 {% endblock %}
