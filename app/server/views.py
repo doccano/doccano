@@ -99,8 +99,9 @@ class DataDownload(View):
         project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, pk=project_id)
         docs = project.get_documents(is_null=False).distinct()
+        filename = '_'.join(project.name.lower().split())
         response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(project.name)
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
 
         writer = csv.writer(response)
         for d in docs:
