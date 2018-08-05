@@ -55,7 +55,7 @@ class DatasetView(LoginRequiredMixin, ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        project_id = self.kwargs['pk']
+        project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, pk=project_id)
         return project.documents.all()
 
@@ -67,7 +67,7 @@ class DatasetUpload(LoginRequiredMixin, View):
         return render(request, 'admin/dataset_upload.html')
 
     def post(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=kwargs.get('pk'))
+        project = get_object_or_404(Project, pk=kwargs.get('project_id'))
         try:
             form_data = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
             reader = csv.reader(form_data)
@@ -78,19 +78,6 @@ class DatasetUpload(LoginRequiredMixin, View):
         except:
             print("failed")
             return HttpResponseRedirect(reverse('dataset-upload', args=[project.id]))
-
-
-class RawDataAPI(View):
-
-    def post(self, request, *args, **kwargs):
-        """Upload data."""
-        f = request.FILES['file']
-        content = ''.join(chunk.decode('utf-8') for chunk in f.chunks())
-        for line in content.split('\n'):
-            j = json.loads(line)
-            Document(text=j['text']).save()
-
-        return JsonResponse({'status': 'ok'})
 
 
 class DataDownload(View):
