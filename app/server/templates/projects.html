@@ -55,10 +55,11 @@
                                 <p>
                                     [[ project.description.slice(0, 50) ]]
                                 </p>
-                                <a class="button is-link is-small" v-bind:href="'/projects/' + project.id + '/admin'">
-                                    <i class="fas fa-cog"></i>&nbsp;Settings
-                                </a>
                             </div>
+                        </div>
+                        <div class="card-footer">
+                            <a v-bind:href="'/projects/' + project.id + '/docs'" class="card-footer-item">Edit</a>
+                            <a href="" class="card-footer-item">Delete</a>
                         </div>
                     </div>
                 </div>
