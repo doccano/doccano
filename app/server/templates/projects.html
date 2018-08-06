@@ -12,11 +12,13 @@
                     <h2 class="subtitle is-4 has-text-white">
                         I hope you are having a great day!
                     </h2>
+                    {% if user.is_superuser %}
                     <p>
                         <a class="button is-medium is-primary" @click="isActive=!isActive">
                             Create Project
                         </a>
                     </p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -93,10 +95,12 @@
                                     </p>
                                 </div>
                             </div>
+                            {% if user.is_superuser %}
                             <div class="card-footer">
                                 <a v-bind:href="'/projects/' + project.id + '/docs'" class="card-footer-item">Edit</a>
                                 <a href="" class="card-footer-item">Delete</a>
                             </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
