@@ -1,65 +1,86 @@
 {% extends "base.html" %} {% load static %} {% block content %}
-<section class="hero project-image">
-    <div class="container">
-        <div class="columns">
-            <div class="column is-12">
-                <h1 class="title is-1 has-text-white">
-                    Hello, {{ user.get_username | title }}.
-                </h1>
-                <h2 class="subtitle is-4 has-text-white">
-                    I hope you are having a great day!
-                </h2>
-                <p>
-                    <a class="button is-medium is-primary">
-                        Create Project
-                    </a>
-                </p>
+<div id="projects_root">
+    <section class="hero project-image">
+        <div class="container">
+            <div class="columns">
+                <div class="column is-12">
+                    <h1 class="title is-1 has-text-white">
+                        Hello, {{ user.get_username | title }}.
+                    </h1>
+                    <h2 class="subtitle is-4 has-text-white">
+                        I hope you are having a great day!
+                    </h2>
+                    <p>
+                        <a class="button is-medium is-primary" @click="isActive=!isActive">
+                            Create Project
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<div class="container">
-    <div id="projects_root" class="columns" style="margin-top:0">
-        <div class="column is-3">
-            <aside class="menu">
-                <p class="menu-label">
-                    Categories
-                </p>
-                <ul class="menu-list">
-                    <li>
-                        <a v-bind:class="{active: selectedType == 'All' }"
-                           v-on:click="updateSelectedType('All')">All</a>
-                    </li>
-                    <li v-for="t in uniqueProjectTypes">
-                        <a v-bind:class="{active: t == selectedType }"
-                           v-on:click="updateSelectedType(t)">[[ t ]]</a>
-                    </li>
-                </ul>
-            </aside>
-        </div>
-        <div class="column is-9" >
-            <div class="columns features" v-for="projects in filteredProjects">
-                <div class="column is-4" v-for="project in projects">
-                    <div class="card is-shady">
-                        <div class="card-image">
-                            <figure class="image is-4by3">
-                                <img v-bind:src="project.image" alt="Placeholder image" class="modal-button" data-target="modal-image2">
-                            </figure>
-                        </div>
-                        <div class="card-content">
-                            <div class="content">
-                                <h4>
-                                    <a v-bind:href="'/projects/' + project.id">[[ project.name ]]</a>
-                                </h4>
-                                <p>
-                                    [[ project.description.slice(0, 50) ]]
-                                </p>
+    <div class="container">
+        <div class="columns" style="margin-top:0">
+            <div class="column is-3">
+                <aside class="menu">
+                    <p class="menu-label">
+                        Categories
+                    </p>
+                    <ul class="menu-list">
+                        <li>
+                            <a v-bind:class="{active: selectedType == 'All' }" v-on:click="updateSelectedType('All')">All</a>
+                        </li>
+                        <li v-for="t in uniqueProjectTypes">
+                            <a v-bind:class="{active: t == selectedType }" v-on:click="updateSelectedType(t)">[[ t ]]</a>
+                        </li>
+                    </ul>
+                </aside>
+            </div>
+            <div class="column is-9">
+                <!-- Modal card for creating project. -->
+                <div class="modal" :class="{ 'is-active': isActive }">
+                    <div class="modal-background"></div>
+                    <div class="modal-card">
+                        <header class="modal-card-head">
+                            <p class="modal-card-title">Create Project</p>
+                            <button class="delete" aria-label="close" @click="isActive=!isActive"></button>
+                        </header>
+                        <form method="post">
+                            {% csrf_token %}
+                            <section class="modal-card-body">
+                                {{ form.as_p }}
+                            </section>
+                            <footer class="modal-card-foot" style="background-color:#dbdbdb !important;padding:20px !important;">
+                                <button class="button is-success">Create</button>
+                                <button class="button" @click="isActive=!isActive">Cancel</button>
+                            </footer>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="columns features" v-for="projects in filteredProjects">
+                    <div class="column is-4" v-for="project in projects">
+                        <div class="card is-shady">
+                            <div class="card-image">
+                                <figure class="image is-4by3">
+                                    <img v-bind:src="project.image" alt="Placeholder image">
+                                </figure>
                             </div>
-                        </div>
-                        <div class="card-footer">
-                            <a v-bind:href="'/projects/' + project.id + '/docs'" class="card-footer-item">Edit</a>
-                            <a href="" class="card-footer-item">Delete</a>
+                            <div class="card-content">
+                                <div class="content">
+                                    <h4>
+                                        <a v-bind:href="'/projects/' + project.id">[[ project.name ]]</a>
+                                    </h4>
+                                    <p>
+                                        [[ project.description.slice(0, 50) ]]
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <a v-bind:href="'/projects/' + project.id + '/docs'" class="card-footer-item">Edit</a>
+                                <a href="" class="card-footer-item">Delete</a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -67,7 +88,6 @@
         </div>
     </div>
 </div>
-{% endblock %}
-{% block footer %}
+{% endblock %} {% block footer %}
 <script type="text/javascript" src="{% static 'bundle/projects.js' %}"></script>
 {% endblock %}

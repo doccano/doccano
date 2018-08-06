@@ -4,6 +4,7 @@ from itertools import chain
 from collections import Counter
 from io import TextIOWrapper
 
+from django import forms
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
@@ -45,10 +46,32 @@ class ProjectAdminView(LoginRequiredMixin, DetailView):
     template_name = 'project_admin.html'
 
 
-class ProjectsView(LoginRequiredMixin, ListView):
+class ProjectForm(forms.ModelForm):
+
+    class Meta:
+        model = Project
+        fields = ('name', 'description', 'project_type', 'users')
+
+
+class ProjectsView(LoginRequiredMixin, TemplateView):
     model = Project
     paginate_by = 100
     template_name = 'projects.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        form = ProjectForm()
+        context['form'] = form
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        form = ProjectForm(request.POST)
+        if form.is_valid():
+            project = form.save()
+            return HttpResponseRedirect(reverse('upload', args=[project.id]))
+        else:
+            return render(request, self.template_name, {'form': form})
 
 
 class DatasetView(LoginRequiredMixin, ListView):

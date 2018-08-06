@@ -22,30 +22,32 @@
     <aside class="column is-2 aside">
         <div>
             <div class="main">
-                <a href="{% url 'dataset' view.kwargs.project_id %}" class="item active">
+                <a href="{% url 'dataset' view.kwargs.project_id %}" class="item">
                     <span class="icon">
                         <i class="fa fa-inbox"></i>
                     </span>
                     <span class="name">Dataset</span>
                 </a>
-                <a href="#" class="item">
+                <a href="{% url 'label-management' view.kwargs.project_id %}" class="item">
                     <span class="icon">
                         <i class="fa fa-star"></i>
                     </span>
                     <span class="name">Labels</span>
                 </a>
-                <a href="#" class="item">
+                <a href="{% url 'stats' view.kwargs.project_id %}" class="item">
                     <span class="icon">
                         <i class="fas fa-signal"></i>
                     </span>
                     <span class="name">Statistics</span>
                 </a>
+                <!--
                 <a href="#" class="item">
                     <span class="icon">
                         <i class="fas fa-users"></i>
                     </span>
                     <span class="name">Users</span>
                 </a>
+                -->
             </div>
         </div>
     </aside>

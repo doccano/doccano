@@ -5,7 +5,8 @@ var vm = new Vue({
     delimiters: ['[[', ']]'],
     data: {
         items: [],
-        selectedType: 'All'
+        selectedType: 'All',
+        isActive: false
     },
     methods: {
         get_projects: async function () {
@@ -38,7 +39,7 @@ var vm = new Vue({
             }
             // create nested projects
             var nested_projects = [];
-            for (var i = 0; i < projects.length % 3; i++) {
+            for (var i = 0; i < Math.ceil(projects.length / 3); i++) {
                 var p = projects.slice(i * 3, (i + 1) * 3);
                 nested_projects.push(p);
             }
