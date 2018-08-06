@@ -1,0 +1,18 @@
+{% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+<div class="columns">
+  <div class="column is-6">
+    <h1 class="title">Label stats</h1>
+    <line-chart :chart-data="labelData"></line-chart>
+
+  </div>
+  <div class="column is-6">
+    <h1 class="title">User stats</h1>
+    <line-chart :chart-data="userData"></line-chart>
+
+  </div>
+</div>
+{% endblock %} {% block footer %}
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+<script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>-->
+<script type="text/javascript" src="{% static 'bundle/stats.js' %}"></script>
+{% endblock %}
