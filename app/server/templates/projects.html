@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% load static %} {% block content %}
+{% extends "base.html" %} {% load static %}
+{% load widget_tweaks %}
+{% block content %}
 <div id="projects_root">
     <section class="hero project-image">
         <div class="container">
@@ -49,7 +51,21 @@
                         <form method="post">
                             {% csrf_token %}
                             <section class="modal-card-body">
-                                {{ form.as_p }}
+                                {% for hidden_field in form.hidden_fields %}
+                                {{ hidden_field }}
+                                {% endfor %}
+                            
+                                {% for field in form.visible_fields %}
+                                <div class="field">
+                                  {{ field.label_tag }}
+                                  <div class="control">
+                                  {% render_field field class="input" %}
+                                  </div>
+                                  {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                  {% endif %}
+                                </div>
+                              {% endfor %}
                             </section>
                             <footer class="modal-card-foot" style="background-color:#dbdbdb !important;padding:20px !important;">
                                 <button class="button is-success">Create</button>
