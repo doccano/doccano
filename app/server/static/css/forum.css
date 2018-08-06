@@ -111,3 +111,10 @@ p {
   height: 100% !important;
   max-height: 200px !important;
 }
+.pagination-link, .pagination-next, .pagination-previous {
+  background-color: white;
+  margin-top: 20px;
+}
+.card-header-title {
+  padding: 1.5rem;
+}
