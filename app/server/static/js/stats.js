@@ -19,15 +19,26 @@ Vue.component('line-chart', {
     extends: HorizontalBar,
     mixins: [reactiveProp],
     props: ['chartData'],
+    data: function () {
+        return {
+            options: {
+                scales: {
+                    yAxes: [{
+                        barPercentage: 0.3,
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0
+                        }
+                    }]
+                },
+                maintainAspectRatio: false,
+            }
+        }
+    },
     mounted() {
-        this.renderChart(this.chartData, {
-            scales: {
-                yAxes: [{
-                    barPercentage: 0.3
-                }],
-            },
-            maintainAspectRatio: false
-        })
+        this.renderChart(this.chartData, this.options)
     }
 })
 
@@ -41,8 +52,6 @@ var vm = new Vue({
 
     methods: {
         makeData(data, labels, label) {
-            console.log(data);
-            console.log(label);
             var data = {
                 labels: labels,
                 datasets: [{
