@@ -107,3 +107,7 @@ p {
   background-color: #3273dc;
   color: #fff;
 }
+.select-height {
+  height: 100% !important;
+  max-height: 200px !important;
+}

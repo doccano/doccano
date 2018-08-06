@@ -58,12 +58,9 @@ class ProjectsView(LoginRequiredMixin, TemplateView):
     paginate_by = 100
     template_name = 'projects.html'
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data()
+    def get(self, request, *args, **kwargs):
         form = ProjectForm()
-        context['form'] = form
-
-        return context
+        return render(request, self.template_name, {'form': form})
 
     def post(self, request, *args, **kwargs):
         form = ProjectForm(request.POST)
