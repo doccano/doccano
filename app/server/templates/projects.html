@@ -98,7 +98,7 @@
                             {% if user.is_superuser %}
                             <div class="card-footer">
                                 <a v-bind:href="'/projects/' + project.id + '/docs'" class="card-footer-item">Edit</a>
-                                <a href="" class="card-footer-item">Delete</a>
+                                <a href="" class="card-footer-item has-text-danger" style="font-weight:700">Delete</a>
                             </div>
                             {% endif %}
                         </div>
