@@ -1,4 +1,63 @@
 {% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+<div class="columns">
+    <div class="column is-12">
+
+        <div class="card">
+            <header class="card-header">
+                <p class="card-header-title">
+                    Import text items
+                </p>
+                <a href="#" class="card-header-icon" aria-label="more options">
+                    <span class="icon">
+                        <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                </a>
+            </header>
+            <div class="card-content">
+                <p>
+                    <b>To annotate texts, you first need to import a set of text items to annotate it.</b>
+                </p>
+                <p>
+                    Each item should contain a text.
+                </p>
+                <form action="" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="section">
+                        <div class="control">
+                            <label class="radio" style="margin-bottom:10px;">
+                                <input type="radio" name="format" checked> Upload a CSV file from your computer
+                            </label>
+                            <div class="file is-small" style="margin-bottom:20px;">
+                                <label class="file-label">
+                                    <input class="file-input" type="file" name="csv_file" required>
+                                    <span class="file-cta">
+                                        <span class="file-icon">
+                                            <i class="fas fa-upload"></i>
+                                        </span>
+                                        <span class="file-label">
+                                            Select a file…
+                                        </span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button type="submit" class="button is-primary">Upload dataset</button>
+                        </div>
+                        <div class="control">
+                            <button class="button is-text">Cancel</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
 <div class="column is-7">
     <h1 class="title">Import text items</h1>
 
@@ -10,25 +69,24 @@
     <div class="section">
         <form action="" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-        <div class="control">
-            <label class="radio" style="margin-bottom:10px;">
-                <input type="radio" name="format" checked> Upload a CSV file from your computer
-            </label>
-            <div class="file is-small" style="margin-bottom:20px;">
-                <label class="file-label">
-                    <input class="file-input" type="file" name="csv_file" required>
-                    <span class="file-cta">
-                        <span class="file-icon">
-                            <i class="fas fa-upload"></i>
-                        </span>
-                        <span class="file-label">
-                            Select a file…
-                        </span>
-                    </span>
+            <div class="control">
+                <label class="radio" style="margin-bottom:10px;">
+                    <input type="radio" name="format" checked> Upload a CSV file from your computer
                 </label>
-            </div>
+                <div class="file is-small" style="margin-bottom:20px;">
+                    <label class="file-label">
+                        <input class="file-input" type="file" name="csv_file" required>
+                        <span class="file-cta">
+                            <span class="file-icon">
+                                <i class="fas fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                                Select a file…
+                            </span>
+                        </span>
+                    </label>
+                </div>
 
-            <!--
             <label class="radio" style="margin-bottom:10px;">
                 <input type="radio" name="format"> Upload text items from your computer
             </label>
@@ -45,8 +103,7 @@
                     </span>
                 </label>
             </div>
-            -->
-        </div>
+            </div>
 
     </div>
 
@@ -60,4 +117,5 @@
     </div>
     </form>
 </div>
+-->
 {% endblock %}
