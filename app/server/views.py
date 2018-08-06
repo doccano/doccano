@@ -1,8 +1,9 @@
 import json
-
-
 import csv
+from itertools import chain
+from collections import Counter
 from io import TextIOWrapper
+
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
@@ -13,6 +14,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import viewsets, filters, generics
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAdminUser, IsAuthenticated
@@ -62,6 +64,10 @@ class DatasetView(LoginRequiredMixin, ListView):
 
 class LabelView(LoginRequiredMixin, TemplateView):
     template_name = 'admin/label.html'
+
+
+class StatsView(LoginRequiredMixin, TemplateView):
+    template_name = 'admin/stats.html'
 
 
 class DatasetUpload(LoginRequiredMixin, TemplateView):
@@ -169,6 +175,30 @@ class ProjectLabelsAPI(generics.ListCreateAPIView):
         project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, pk=project_id)
         serializer.save(project=project)
+
+
+class ProjectStatsAPI(APIView):
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+
+    def get(self, request, *args, **kwargs):
+        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        labels = [label.text for label in p.labels.all()]
+        users = [user.username for user in p.users.all()]
+        docs = [doc for doc in p.documents.all()]
+        nested_labels = [[a.label.text for a in doc.get_annotations()] for doc in docs]
+        nested_users = [[a.user.username for a in doc.get_annotations()] for doc in docs]
+
+        label_count = Counter(chain(*nested_labels))
+        label_data = [label_count[name] for name in labels]
+
+        user_count = Counter(chain(*nested_users))
+        user_data = [user_count[name] for name in users]
+
+        response = {'label': {'labels': labels, 'data': label_data},
+                    'user': {'users': users, 'data': user_data}}
+
+        return Response(response)
 
 
 class ProjectLabelAPI(generics.RetrieveUpdateDestroyAPIView):

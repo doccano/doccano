@@ -1,11 +1,11 @@
 from django.urls import path
 
 from .views import IndexView
-from .views import ProjectView, DatasetView, DatasetUpload, LabelView
+from .views import ProjectView, DatasetView, DatasetUpload, LabelView, StatsView
 from .views import ProjectsView, ProjectAdminView, DataDownload
 from rest_framework import routers
 from .views import ProjectViewSet
-from .views import ProjectLabelsAPI, ProjectLabelAPI, ProjectDocsAPI, AnnotationsAPI, AnnotationAPI
+from .views import ProjectLabelsAPI, ProjectLabelAPI, ProjectDocsAPI, AnnotationsAPI, AnnotationAPI, ProjectStatsAPI
 
 
 router = routers.DefaultRouter()
@@ -14,6 +14,7 @@ router.register(r'projects', ProjectViewSet)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
+    path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),
     path('api/projects/<int:project_id>/labels/', ProjectLabelsAPI.as_view(), name='labels'),
     path('api/projects/<int:project_id>/labels/<int:label_id>', ProjectLabelAPI.as_view(), name='label'),
     path('api/projects/<int:project_id>/docs/', ProjectDocsAPI.as_view(), name='docs'),
@@ -26,4 +27,5 @@ urlpatterns = [
     path('projects/<int:project_id>/docs/', DatasetView.as_view(), name='dataset'),
     path('projects/<int:project_id>/docs/create', DatasetUpload.as_view(), name='upload'),
     path('projects/<int:project_id>/labels/', LabelView.as_view(), name='label-management'),
+    path('projects/<int:project_id>/stats/', StatsView.as_view(), name='stats'),
 ]

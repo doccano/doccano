@@ -6,7 +6,8 @@ module.exports = {
         'sequence_labeling': './static/js/sequence_labeling.js',
         'document_classification': './static/js/document_classification.js',
         'seq2seq': './static/js/seq2seq.js',
-        'projects': './static/js/projects.js'
+        'projects': './static/js/projects.js',
+        'stats': './static/js/stats.js'
     },
     output: {
         path: __dirname + '/static/bundle',
