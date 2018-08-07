@@ -1,6 +1,7 @@
 import {
     HorizontalBar,
-    mixins
+    mixins,
+    Doughnut
 } from 'vue-chartjs'
 const {
     reactiveProp,
@@ -42,12 +43,30 @@ Vue.component('line-chart', {
     }
 })
 
+
+Vue.component('doughnut-chart', {
+    extends: Doughnut,
+    mixins: [reactiveProp],
+    props: ['chartData'],
+    data: function () {
+        return {
+            options: {
+                maintainAspectRatio: false,
+            }
+        }
+    },
+    mounted() {
+        this.renderChart(this.chartData, this.options)
+    }
+})
+
 var vm = new Vue({
     el: '#mail-app',
     delimiters: ['[[', ']]'],
     data: {
         labelData: null,
-        userData: null
+        userData: null,
+        progressData: null
     },
 
     methods: {
@@ -68,6 +87,21 @@ var vm = new Vue({
         HTTP.get('stats').then(response => {
             this.labelData = this.makeData(response.data.label.data, response.data.label.labels, 'Label stats');
             this.userData = this.makeData(response.data.user.data, response.data.user.users, 'User stats');
+        })
+        HTTP.get('progress').then(response => {
+            var complete = response.data['total'] - response.data['remaining'];
+            var incomplete = response.data['remaining'];
+            this.progressData = {
+                datasets: [{
+                    data: [complete, incomplete],
+                    backgroundColor: ['#00d1b2', '#ffdd57']
+                }],
+            
+                labels: [
+                    'Completed',
+                    'Incomplete',
+                ]
+            }
         })
     }
 })
