@@ -44,24 +44,78 @@ To install doccano, simply run:
 $ git clone https://github.com/chakki-works/doccano.git
 $ cd doccano
 $ pip install -r requirements.txt
+$ cd app
 ```
 
-create superuser.
+First we’ll need to create a user who can login to the admin site. Run the following command:
+
 
 ```bash
-$ cd app
 $ python manage.py createsuperuser
+```
+
+Enter your desired username and press enter.
+
+```bash
+Username: admin
+```
+
+You will then be prompted for your desired email address:
+
+```bash
+Email address: admin@example.com
+```
+
+The final step is to enter your password. You will be asked to enter your password twice, the second time as a confirmation of the first.
+
+```bash
+Password: **********
+Password (again): *********
+Superuser created successfully.
 ```
 
 ## Usage
 
-First, run web application:
+### Start the development server
+
+Let’s start the development server and explore it.
+
+If the server is not running start it like so:
 
 ```bash
 $ python manage.py runserver
 ```
 
-Then, open <http://localhost:8080> in your browser.
+Now, open a Web browser and go to <http://127.0.0.1:8080/login/>. You should see the login screen:
+
+<img src="./docs/login_form.png" alt="Login Form" width=400>
+
+### Create a project
+
+Now, try logging in with the superuser account you created in the previous step. You should see the doccano project list page:
+
+<img src="./docs/projects.png" alt="projects" width=600>
+
+You should see there is no project.
+
+To create your project, make sure you’re in the project list page and select `Create Project` button. You should see the following screen:
+
+<img src="./docs/create_project.png" alt="Project Creation" width=400>
+
+In project creation, you can select three project types: text classificatioin, sequence labeling and sequence to sequence. You should select a type with your purpose.
+
+### Import text items
+
+Now that we’ve created a project. Now you’re at the “dataset” page for the project. This page displays all the documents in the project. You can see there is no documents.
+
+To import text items, select `Import Data` button in the navigation bar. You should see the following screen:
+
+<img src="./docs/upload.png" alt="Upload project" width=600>
+
+
+### Define label
+
+### Annotation
 
 ## Contribution
 
