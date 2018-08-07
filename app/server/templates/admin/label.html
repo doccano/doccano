@@ -1,7 +1,6 @@
 {% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
-<div class="column is-9">
-  <h1 class="title">Add labels</h1>
 
+<div class="column is-10 is-offset-1">
   <div class="card">
     <header class="card-header">
       <div class="card-header-title" style="padding:1.5rem;background-color:royalblue;">
@@ -53,13 +52,9 @@
             <div class="select">
               <select v-model="selectedShortkey">
                 <option disabled value="">Please select one</option>
-                <option>a</option>
-                <option>b</option>
-                <option>c</option>
-                <option>d</option>
-                <option>e</option>
-                <option>f</option>
-                <option>g</option>
+                {% for ch in 'abcdefghijklmnopqrstuvwxyz' %}
+                <option>{{ ch }}</option>
+                {% endfor %}
               </select>
             </div>
           </div>
