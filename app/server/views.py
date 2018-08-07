@@ -5,6 +5,7 @@ from collections import Counter
 from io import TextIOWrapper
 
 from django import forms
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
@@ -23,6 +24,11 @@ from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAdminUser
 from .models import Label, Document, Project
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 from .serializers import LabelSerializer, ProjectSerializer
+
+
+class SuperUserMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_superuser
 
 
 class IndexView(TemplateView):
@@ -71,7 +77,7 @@ class ProjectsView(LoginRequiredMixin, TemplateView):
             return render(request, self.template_name, {'form': form})
 
 
-class DatasetView(LoginRequiredMixin, ListView):
+class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
     template_name = 'admin/dataset.html'
     context_object_name = 'documents'
     paginate_by = 5
@@ -82,15 +88,15 @@ class DatasetView(LoginRequiredMixin, ListView):
         return project.documents.all()
 
 
-class LabelView(LoginRequiredMixin, TemplateView):
+class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/label.html'
 
 
-class StatsView(LoginRequiredMixin, TemplateView):
+class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/stats.html'
 
 
-class DatasetUpload(LoginRequiredMixin, TemplateView):
+class DatasetUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     model = Project
     template_name = 'admin/dataset_upload.html'
 
@@ -108,7 +114,7 @@ class DatasetUpload(LoginRequiredMixin, TemplateView):
             return HttpResponseRedirect(reverse('dataset-upload', args=[project.id]))
 
 
-class DataDownload(View):
+class DataDownload(SuperUserMixin, View):
 
     def get(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
