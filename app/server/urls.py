@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import IndexView
 from .views import ProjectView, DatasetView, DatasetUpload, LabelView, StatsView
-from .views import ProjectsView, ProjectAdminView, DataDownload
+from .views import ProjectsView, DataDownload
 from rest_framework import routers
 from .views import ProjectViewSet
 from .views import ProjectLabelsAPI, ProjectLabelAPI, ProjectDocsAPI, AnnotationsAPI, AnnotationAPI, ProjectStatsAPI
@@ -21,7 +21,6 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/', AnnotationsAPI.as_view(), name='annotations'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>', AnnotationAPI.as_view(), name='ann'),
     path('projects/', ProjectsView.as_view(), name='projects'),
-    path('projects/<int:project_id>/admin', ProjectAdminView.as_view(), name='project-admin'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
     path('projects/<int:project_id>/docs/', DatasetView.as_view(), name='dataset'),

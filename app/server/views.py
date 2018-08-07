@@ -47,11 +47,6 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class ProjectAdminView(LoginRequiredMixin, DetailView):
-    model = Project
-    template_name = 'project_admin.html'
-
-
 class ProjectForm(forms.ModelForm):
 
     class Meta:
