@@ -25,9 +25,10 @@
         <div class="content">
             <annotator ref="annotator"
                        v-bind:labels="labels"
-                       v-bind:entity-positions="items[cur].labels.slice()"
+                       v-bind:entity-positions="items[cur].labels"
                        v-bind:text="items[cur].text"
-                       @delete-label="deleteLabel"></annotator>
+                       @delete-label="deleteLabel"
+                       @add-label="addLabel"></annotator>
         </div>
     </div>
 </div>
