@@ -135,7 +135,7 @@ class Document(models.Model):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
             return self.make_dataset_for_classification()
         elif self.project.is_type_of(Project.SEQUENCE_LABELING):
-            return self.seq_annotations.all()
+            return self.make_dataset_for_sequence_labeling()
         elif self.project.is_type_of(Project.Seq2seq):
             return self.make_dataset_for_seq2seq()
 
@@ -143,6 +143,17 @@ class Document(models.Model):
         annotations = self.get_annotations()
         dataset = [[a.document.id, a.document.text, a.label.text, a.user.username]
                    for a in annotations]
+        return dataset
+
+    def make_dataset_for_sequence_labeling(self):
+        annotations = self.get_annotations()
+        dataset = [[self.id, ch, 'O'] for ch in self.text]
+        for a in annotations:
+            for i in range(a.start_offset, a.end_offset):
+                if i == a.start_offset:
+                    dataset[i][2] = 'B-{}'.format(a.label.text)
+                else:
+                    dataset[i][2] = 'I-{}'.format(a.label.text)
         return dataset
 
     def make_dataset_for_seq2seq(self):
