@@ -70,3 +70,12 @@
     font-size: 16pt;
     line-height: 250%;
 }
+
+.bordered-row {
+    border-color: #dfe8f1;
+    border-top-width: 1px;
+    border-top-style: dashed;
+    align-items: center;
+    padding-top: .75rem;
+}
+
