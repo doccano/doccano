@@ -19,15 +19,10 @@ class IndexView(TemplateView):
 
 
 class ProjectView(LoginRequiredMixin, TemplateView):
-    template_name = 'annotation.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        project_id = kwargs.get('project_id')
-        project = get_object_or_404(Project, pk=project_id)
-        self.template_name = project.get_template()
-
-        return context
+    def get_template_names(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return [project.get_template_name()]
 
 
 class ProjectsView(LoginRequiredMixin, TemplateView):
@@ -50,12 +45,10 @@ class ProjectsView(LoginRequiredMixin, TemplateView):
 
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
     template_name = 'admin/dataset.html'
-    context_object_name = 'documents'
     paginate_by = 5
 
     def get_queryset(self):
-        project_id = self.kwargs['project_id']
-        project = get_object_or_404(Project, pk=project_id)
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return project.documents.all()
 
 

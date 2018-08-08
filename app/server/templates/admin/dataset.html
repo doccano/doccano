@@ -19,7 +19,7 @@
                 </tr>
             </thead>
             <tbody>
-                {% for doc in documents %}
+                {% for doc in object_list %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>{{ doc.text|truncatechars:200 }}</td>

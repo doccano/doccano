@@ -38,7 +38,7 @@ class Project(models.Model):
 
         return url
 
-    def get_template(self):
+    def get_template_name(self):
         if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):
             template_name = 'annotation/document_classification.html'
         elif self.is_type_of(Project.SEQUENCE_LABELING):
