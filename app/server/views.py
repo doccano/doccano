@@ -95,7 +95,7 @@ class DatasetUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             return HttpResponseRedirect(reverse('dataset-upload', args=[project.id]))
 
 
-class DataDownload(SuperUserMixin, View):
+class DataDownload(SuperUserMixin, LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
