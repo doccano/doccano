@@ -3,7 +3,6 @@ from itertools import chain
 from collections import Counter
 from io import TextIOWrapper
 
-from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import HttpResponse, HttpResponseRedirect
@@ -16,17 +15,13 @@ from rest_framework import viewsets, filters, generics
 from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
+from .permissions import IsProjectUser, IsAdminUserAndWriteOnly, IsOwnAnnotation, SuperUserMixin
 from .forms import ProjectForm
 from .models import Label, Document, Project
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 from .serializers import LabelSerializer, ProjectSerializer
-
-
-class SuperUserMixin(UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.is_superuser
 
 
 class IndexView(TemplateView):
@@ -115,38 +110,6 @@ class DataDownload(SuperUserMixin, View):
             writer.writerows(d.make_dataset())
 
         return response
-
-
-class IsProjectUser(BasePermission):
-
-    def has_permission(self, request, view):
-        user = request.user
-        project_id = view.kwargs.get('project_id')
-        project = get_object_or_404(Project, pk=project_id)
-
-        return user in project.users.all()
-
-
-class IsAdminUserAndWriteOnly(BasePermission):
-
-    def has_permission(self, request, view):
-        if request.method in SAFE_METHODS:
-            return True
-
-        return IsAdminUser().has_permission(request, view)
-
-
-class IsOwnAnnotation(BasePermission):
-
-    def has_permission(self, request, view):
-        user = request.user
-        project_id = view.kwargs.get('project_id')
-        annotation_id = view.kwargs.get('annotation_id')
-        project = get_object_or_404(Project, pk=project_id)
-        Annotation = project.get_annotation_class()
-        annotation = Annotation.objects.get(id=annotation_id)
-
-        return annotation.user == user
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
