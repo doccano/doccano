@@ -3,9 +3,9 @@ from io import TextIOWrapper
 
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, CreateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -25,22 +25,9 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         return [project.get_template_name()]
 
 
-class ProjectsView(LoginRequiredMixin, TemplateView):
-    model = Project
-    paginate_by = 100
+class ProjectsView(LoginRequiredMixin, CreateView):
+    form_class = ProjectForm
     template_name = 'projects.html'
-
-    def get(self, request, *args, **kwargs):
-        form = ProjectForm()
-        return render(request, self.template_name, {'form': form})
-
-    def post(self, request, *args, **kwargs):
-        form = ProjectForm(request.POST)
-        if form.is_valid():
-            project = form.save()
-            return HttpResponseRedirect(reverse('upload', args=[project.id]))
-        else:
-            return render(request, self.template_name, {'form': form})
 
 
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
@@ -61,7 +48,6 @@ class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
 
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
-    model = Project
     template_name = 'admin/dataset_upload.html'
 
     def post(self, request, *args, **kwargs):
@@ -74,7 +60,6 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 Document(text=text, project=project).save()
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except:
-            print("failed")
             return HttpResponseRedirect(reverse('dataset-upload', args=[project.id]))
 
 

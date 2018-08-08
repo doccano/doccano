@@ -1,6 +1,7 @@
 import string
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 
@@ -23,6 +24,9 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     users = models.ManyToManyField(User)
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
+
+    def get_absolute_url(self):
+        return reverse('upload', args=[self.id])
 
     def is_type_of(self, project_type):
         return project_type == self.project_type
