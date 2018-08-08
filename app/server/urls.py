@@ -1,12 +1,11 @@
 from django.urls import path
+from rest_framework import routers
 
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView
 from .views import ProjectsView, DataDownload
-from rest_framework import routers
-from .views import ProjectViewSet
-from .views import ProjectLabelsAPI, ProjectLabelAPI, ProjectDocsAPI, AnnotationsAPI, AnnotationAPI, ProjectStatsAPI
-
+from .api import ProjectViewSet, ProjectLabelsAPI, ProjectStatsAPI, ProjectLabelAPI, ProjectDocsAPI, \
+    AnnotationsAPI, AnnotationAPI
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
