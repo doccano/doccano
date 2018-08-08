@@ -1,19 +1,16 @@
-import json
 import csv
 from itertools import chain
 from collections import Counter
 from io import TextIOWrapper
 
-from django import forms
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
-from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from rest_framework import viewsets, filters, generics
 from rest_framework.views import APIView
@@ -21,6 +18,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import SAFE_METHODS, BasePermission, IsAdminUser, IsAuthenticated
 
+from .forms import ProjectForm
 from .models import Label, Document, Project
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 from .serializers import LabelSerializer, ProjectSerializer
@@ -45,13 +43,6 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         self.template_name = project.get_template()
 
         return context
-
-
-class ProjectForm(forms.ModelForm):
-
-    class Meta:
-        model = Project
-        fields = ('name', 'description', 'project_type', 'users')
 
 
 class ProjectsView(LoginRequiredMixin, TemplateView):
