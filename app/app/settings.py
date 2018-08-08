@@ -140,6 +140,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/projects/'
 LOGOUT_REDIRECT_URL = '/'
 
