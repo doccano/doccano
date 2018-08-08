@@ -77,7 +77,7 @@ class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/stats.html'
 
 
-class DatasetUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
+class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     model = Project
     template_name = 'admin/dataset_upload.html'
 
