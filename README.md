@@ -4,7 +4,7 @@ doccano is an open source text annotation tool for human. It provides annotation
 
 ## Demo
 
-You can enjoy [annotation demo](http://doccano.herokuapp.com).
+You can enjoy ~~[annotation demo](http://doccano.herokuapp.com)~~.
 
 ### Sequence labeling
 
@@ -112,17 +112,39 @@ To import text items, select `Import Data` button in the navigation bar. You sho
 
 <img src="./docs/upload.png" alt="Upload project" width=600>
 
+The text items should be provided in csv format. As of now, it must contain only texts.
 
-### Define label
+```python
+EU rejects German call to boycott British lamb.
+President Obama is speaking at the White House.
+He lives in Newark, Ohio.
+...
+```
+
+Once you select a csv file on your computer, select `Upload` button.
+
+### Define labels
+
+Now we’ll define your labels. To define your labels, select `Labels` menu. You should see the label editor page:
+
+<img src="./docs/label_editor.png" alt="Edit label" width=600>
+
+In label editor page, we can create labels by specifying label text, shortcut key, background color and text color.
 
 ### Annotation
 
+Now, we are ready to annotate the texts. Back to the project list page and select the project. You can start annotation!
+
+<img src="./docs/annotation.png" alt="Edit label" width=600>
+
+I hope you are having a great day!
+
 ## Contribution
 
-As with any software doccano is under continuous development. If you have requests for features please file an issue describing your request. Also, if you want to see work towards a specific feature feel free to contribute by working towards it. The standard procedure is to fork the repository, add a feature, fix a bug, then file a pull request that your changes are to be merged into the main repository and included in the next release.
+As with any software, doccano is under continuous development. If you have requests for features, please file an issue describing your request. Also, if you want to see work towards a specific feature, feel free to contribute by working towards it. The standard procedure is to fork the repository, add a feature, fix a bug, then file a pull request that your changes are to be merged into the main repository and included in the next release.
 
 ## Contact
 
-For help and feedback please feel free to contact [the author](https://github.com/Hironsan).
+For help and feedback, please feel free to contact [the author](https://github.com/Hironsan).
 
 **If you are favorite to doccano, please follow my [GitHub](https://github.com/Hironsan) and [Twitter](https://twitter.com/Hironsan13) account.**
