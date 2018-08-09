@@ -132,6 +132,12 @@ class AnnotationList(generics.ListCreateAPIView):
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsOwnAnnotation)
 
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = project.get_annotation_serializer()
+
+        return self.serializer_class
+
     def get_queryset(self):
         document = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         self.queryset = document.get_annotations()
@@ -144,17 +150,3 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
         self.check_object_permissions(self.request, obj)
 
         return obj
-
-    def put(self, request, *args, **kwargs):
-        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = project.get_annotation_serializer()
-        if project.is_type_of(Project.Seq2seq):
-            text = request.data['text']
-            annotation = get_object_or_404(Seq2seqAnnotation, pk=request.data['id'])
-            annotation.text = text
-
-        annotation.save()
-        serializer = self.serializer_class(annotation)
-
-        return Response(serializer.data)
