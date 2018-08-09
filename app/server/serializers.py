@@ -18,8 +18,19 @@ class TextSerializer(serializers.ModelSerializer):
         fields = ('id', 'text')
 
 
+class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+
+    def get_queryset(self):
+        view = self.context.get('view', None)
+        request = self.context.get('request', None)
+        queryset = super(ProjectFilteredPrimaryKeyRelatedField, self).get_queryset()
+        if not request or not queryset or not view:
+            return None
+        return queryset.filter(project=view.kwargs['project_id'])
+
+
 class DocumentAnnotationSerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
 
     class Meta:
         model = DocumentAnnotation
@@ -39,7 +50,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class SequenceAnnotationSerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
 
     class Meta:
         model = SequenceAnnotation
