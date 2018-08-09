@@ -22,7 +22,7 @@ class Project(models.Model):
     guideline = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, related_name='projects')
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
 
     def get_absolute_url(self):
@@ -30,6 +30,12 @@ class Project(models.Model):
 
     def is_type_of(self, project_type):
         return project_type == self.project_type
+
+    def get_progress(self):
+        docs = self.get_documents(is_null=True)
+        total = self.documents.count()
+        remaining = docs.count()
+        return {'total': total, 'remaining': remaining}
 
     @property
     def image(self):

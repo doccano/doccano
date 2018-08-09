@@ -21,19 +21,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
-        user = self.request.user
-        queryset = self.queryset.filter(users__id__contains=user.id)
-
-        return queryset
+        return self.request.user.projects
 
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
         project = self.get_object()
-        docs = project.get_documents(is_null=True)
-        total = project.documents.count()
-        remaining = docs.count()
-
-        return Response({'total': total, 'remaining': remaining})
+        return Response(project.get_progress())
 
 
 class ProjectLabelsAPI(generics.ListCreateAPIView):

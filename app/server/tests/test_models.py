@@ -10,6 +10,12 @@ class TestProject(TestCase):
         project = mixer.blend('server.Project')
         project.is_type_of(project.project_type)
 
+    def test_get_progress(self):
+        project = mixer.blend('server.Project')
+        res = project.get_progress()
+        self.assertEqual(res['total'], 0)
+        self.assertEqual(res['remaining'], 0)
+
 
 class TestLabel(TestCase):
 
