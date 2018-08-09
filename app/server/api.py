@@ -146,6 +146,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         document = project.documents.get(id=self.kwargs['doc_id'])
         self.queryset = document.get_annotations()
+        self.queryset = self.queryset.filter(user=self.request.user)
 
         return self.queryset
 
