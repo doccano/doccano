@@ -19,11 +19,15 @@ class TextSerializer(serializers.ModelSerializer):
 
 
 class DocumentAnnotationSerializer(serializers.ModelSerializer):
-    label = LabelSerializer()
+    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
 
     class Meta:
         model = DocumentAnnotation
         fields = ('id', 'prob', 'label')
+
+    def create(self, validated_data):
+        annotation = DocumentAnnotation.objects.create(**validated_data)
+        return annotation
 
 
 class DocumentSerializer(serializers.ModelSerializer):
@@ -35,11 +39,15 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class SequenceAnnotationSerializer(serializers.ModelSerializer):
-    label = LabelSerializer()
+    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
 
     class Meta:
         model = SequenceAnnotation
         fields = ('id', 'prob', 'label', 'start_offset', 'end_offset')
+
+    def create(self, validated_data):
+        annotation = SequenceAnnotation.objects.create(**validated_data)
+        return annotation
 
 
 class SequenceSerializer(serializers.ModelSerializer):

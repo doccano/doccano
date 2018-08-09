@@ -137,61 +137,35 @@ class AnnotationsAPI(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsProjectUser)
 
     def get_serializer_class(self):
-        project_id = self.kwargs['project_id']
-        project = get_object_or_404(Project, pk=project_id)
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         self.serializer_class = project.get_annotation_serializer()
 
         return self.serializer_class
 
     def get_queryset(self):
-        project_id = self.kwargs['project_id']
-        project = get_object_or_404(Project, pk=project_id)
-        doc_id = self.kwargs['doc_id']
-        document = get_object_or_404(Document, pk=doc_id, project=project)
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        document = project.documents.get(id=self.kwargs['doc_id'])
         self.queryset = document.get_annotations()
 
         return self.queryset
 
-    def post(self, request, *args, **kwargs):
+    def perform_create(self, serializer):
         doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = project.get_annotation_serializer()
-        if project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
-            label = get_object_or_404(Label, pk=request.data['label_id'])
-            annotation = DocumentAnnotation(document=doc, label=label, manual=True,
-                                            user=self.request.user)
-        elif project.is_type_of(Project.SEQUENCE_LABELING):
-            label = get_object_or_404(Label, pk=request.data['label_id'])
-            annotation = SequenceAnnotation(document=doc, label=label, manual=True,
-                                            user=self.request.user,
-                                            start_offset=request.data['start_offset'],
-                                            end_offset=request.data['end_offset'])
-        elif project.is_type_of(Project.Seq2seq):
-            text = request.data['text']
-            annotation = Seq2seqAnnotation(document=doc,
-                                           text=text,
-                                           manual=True,
-                                           user=self.request.user)
-        annotation.save()
-        serializer = self.serializer_class(annotation)
-
-        return Response(serializer.data)
+        serializer.save(document=doc, user=self.request.user)
 
 
 class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsOwnAnnotation)
 
     def get_queryset(self):
-        doc_id = self.kwargs['doc_id']
-        document = get_object_or_404(Document, pk=doc_id)
+        document = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         self.queryset = document.get_annotations()
 
         return self.queryset
 
     def get_object(self):
-        annotation_id = self.kwargs['annotation_id']
         queryset = self.filter_queryset(self.get_queryset())
-        obj = get_object_or_404(queryset, pk=annotation_id)
+        obj = get_object_or_404(queryset, pk=self.kwargs['annotation_id'])
         self.check_object_permissions(self.request, obj)
 
         return obj

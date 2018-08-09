@@ -127,6 +127,7 @@ var vm = new Vue({
         addLabel: function (label) {
             var payload = label;
             var doc_id = this.items[this.cur].id;
+            payload['label'] = label.label_id;
             HTTP.post(`docs/${doc_id}/annotations/`, payload).then(response => {
                 this.items[this.cur]['labels'].push(response.data);
             })

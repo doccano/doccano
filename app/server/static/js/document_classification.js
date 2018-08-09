@@ -19,7 +19,7 @@ var vm = new Vue({
             }
 
             var payload = {
-                'label_id': label_id
+                'label': label_id
             };
 
             var doc_id = this.items[this.cur].id;
