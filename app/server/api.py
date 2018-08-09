@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Project, Label, Document, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from .models import Project, Label, Document, Seq2seqAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, TextSerializer
 
@@ -132,7 +132,7 @@ class DocumentList(generics.ListCreateAPIView):
         return queryset
 
 
-class AnnotationsAPI(generics.ListCreateAPIView):
+class AnnotationList(generics.ListCreateAPIView):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser)
 
@@ -155,7 +155,7 @@ class AnnotationsAPI(generics.ListCreateAPIView):
         serializer.save(document=doc, user=self.request.user)
 
 
-class AnnotationAPI(generics.RetrieveUpdateDestroyAPIView):
+class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsOwnAnnotation)
 
     def get_queryset(self):
