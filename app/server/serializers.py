@@ -11,11 +11,18 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'shortcut', 'background_color', 'text_color')
 
 
-class TextSerializer(serializers.ModelSerializer):
+class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
         fields = ('id', 'text')
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = ('id', 'name', 'description', 'users', 'project_type', 'image')
 
 
 class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
@@ -41,14 +48,6 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
         return annotation
 
 
-class DocumentSerializer(serializers.ModelSerializer):
-    labels = DocumentAnnotationSerializer(source='doc_annotations', many=True)
-
-    class Meta:
-        model = Document
-        fields = ('id', 'text', 'labels')
-
-
 class SequenceAnnotationSerializer(serializers.ModelSerializer):
     label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
 
@@ -61,31 +60,8 @@ class SequenceAnnotationSerializer(serializers.ModelSerializer):
         return annotation
 
 
-class SequenceSerializer(serializers.ModelSerializer):
-    labels = SequenceAnnotationSerializer(source='seq_annotations', many=True)
-
-    class Meta:
-        model = Document
-        fields = ('id', 'text', 'labels')
-
-
 class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seq2seqAnnotation
         fields = ('id', 'text')
-
-
-class Seq2seqSerializer(serializers.ModelSerializer):
-    labels = Seq2seqAnnotationSerializer(source='seq2seq_annotations', many=True)
-
-    class Meta:
-        model = Document
-        fields = ('id', 'text', 'labels')
-
-
-class ProjectSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Project
-        fields = ('id', 'name', 'description', 'users', 'project_type', 'image')

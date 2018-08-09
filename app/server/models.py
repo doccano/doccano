@@ -73,19 +73,6 @@ class Project(models.Model):
 
         return docs
 
-    def get_project_serializer(self):
-        from .serializers import DocumentSerializer
-        from .serializers import SequenceSerializer
-        from .serializers import Seq2seqSerializer
-        if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):
-            return DocumentSerializer
-        elif self.is_type_of(Project.SEQUENCE_LABELING):
-            return SequenceSerializer
-        elif self.is_type_of(Project.Seq2seq):
-            return Seq2seqSerializer
-        else:
-            raise ValueError('Invalid project_type')
-
     def get_annotation_serializer(self):
         from .serializers import DocumentAnnotationSerializer
         from .serializers import SequenceAnnotationSerializer

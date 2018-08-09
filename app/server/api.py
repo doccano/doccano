@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from .models import Project, Label, Document, Seq2seqAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer, TextSerializer
+from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -87,35 +87,9 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
         return obj
 
 
-class ProjectDocsAPI(generics.ListCreateAPIView):
-    queryset = Document.objects.all()
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('text', )
-    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
-
-    def get_serializer_class(self):
-        project_id = self.kwargs['project_id']
-        project = get_object_or_404(Project, pk=project_id)
-        self.serializer_class = project.get_project_serializer()
-
-        return self.serializer_class
-
-    def get_queryset(self):
-        project_id = self.kwargs['project_id']
-        queryset = self.queryset.filter(project=project_id)
-        if not self.request.query_params.get('is_checked'):
-            return queryset
-
-        project = get_object_or_404(Project, pk=project_id)
-        is_null = self.request.query_params.get('is_checked') == 'true'
-        queryset = project.get_documents(is_null).distinct()
-
-        return queryset
-
-
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
-    serializer_class = TextSerializer
+    serializer_class = DocumentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
