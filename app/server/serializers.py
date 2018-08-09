@@ -11,6 +11,13 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'shortcut', 'background_color', 'text_color')
 
 
+class TextSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text')
+
+
 class DocumentAnnotationSerializer(serializers.ModelSerializer):
     label = LabelSerializer()
 

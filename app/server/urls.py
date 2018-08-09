@@ -4,8 +4,8 @@ from rest_framework import routers
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView
 from .views import ProjectsView, DataDownload
-from .api import ProjectViewSet, ProjectLabelsAPI, ProjectStatsAPI, ProjectLabelAPI, ProjectDocsAPI, \
-    AnnotationsAPI, AnnotationAPI
+from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, ProjectDocsAPI, \
+    AnnotationsAPI, AnnotationAPI, DocumentList
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -14,9 +14,10 @@ router.register(r'projects', ProjectViewSet)
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
     path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),
-    path('api/projects/<int:project_id>/labels/', ProjectLabelsAPI.as_view(), name='labels'),
-    path('api/projects/<int:project_id>/labels/<int:label_id>', ProjectLabelAPI.as_view(), name='label'),
+    path('api/projects/<int:project_id>/labels/', LabelList.as_view(), name='labels'),
+    path('api/projects/<int:project_id>/labels/<int:label_id>', LabelDetail.as_view(), name='label'),
     path('api/projects/<int:project_id>/docs/', ProjectDocsAPI.as_view(), name='docs'),
+    path('api/projects/<int:project_id>/texts/', DocumentList.as_view(), name='texts'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/', AnnotationsAPI.as_view(), name='annotations'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>', AnnotationAPI.as_view(), name='ann'),
     path('projects/', ProjectsView.as_view(), name='projects'),

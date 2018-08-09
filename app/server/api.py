@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from .models import Project, Label, Document, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer
+from .serializers import ProjectSerializer, LabelSerializer, TextSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -29,21 +29,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(project.get_progress())
 
 
-class ProjectLabelsAPI(generics.ListCreateAPIView):
+class LabelList(generics.ListCreateAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
-        project_id = self.kwargs['project_id']
-        queryset = self.queryset.filter(project=project_id)
+        queryset = self.queryset.filter(project=self.kwargs['project_id'])
 
         return queryset
 
     def perform_create(self, serializer):
-        project_id = self.kwargs['project_id']
-        project = get_object_or_404(Project, pk=project_id)
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
 
 
@@ -71,21 +69,19 @@ class ProjectStatsAPI(APIView):
         return Response(response)
 
 
-class ProjectLabelAPI(generics.RetrieveUpdateDestroyAPIView):
+class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
 
     def get_queryset(self):
-        project_id = self.kwargs['project_id']
-        queryset = self.queryset.filter(project=project_id)
+        queryset = self.queryset.filter(project=self.kwargs['project_id'])
 
         return queryset
 
     def get_object(self):
-        label_id = self.kwargs['label_id']
         queryset = self.filter_queryset(self.get_queryset())
-        obj = get_object_or_404(queryset, pk=label_id)
+        obj = get_object_or_404(queryset, pk=self.kwargs['label_id'])
         self.check_object_permissions(self.request, obj)
 
         return obj
@@ -111,6 +107,25 @@ class ProjectDocsAPI(generics.ListCreateAPIView):
             return queryset
 
         project = get_object_or_404(Project, pk=project_id)
+        is_null = self.request.query_params.get('is_checked') == 'true'
+        queryset = project.get_documents(is_null).distinct()
+
+        return queryset
+
+
+class DocumentList(generics.ListCreateAPIView):
+    queryset = Document.objects.all()
+    serializer_class = TextSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('text', )
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+        if not self.request.query_params.get('is_checked'):
+            return queryset
+
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         is_null = self.request.query_params.get('is_checked') == 'true'
         queryset = project.get_documents(is_null).distinct()
 
