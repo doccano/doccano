@@ -51,7 +51,7 @@
                 <a href="#" class="item" v-for="(msg, index) in items" v-bind:class="{ active: index == cur }" v-on:click="showMessage(index)"
                     v-bind:data-preview-id="index">
                     <span class="icon">
-                        <i class="fa fa-check" v-if="msg.labels.length"></i>
+                        <i class="fa fa-check" v-show="annotations[index] && annotations[index].length"></i>
                     </span>
                     <span class="name">[[ msg.text.slice(0, 40) ]]...</span>
                 </a>

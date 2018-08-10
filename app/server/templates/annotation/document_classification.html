@@ -10,9 +10,9 @@
                     <div class="tags has-addons">
                         <a class="tag is-medium"
                         v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }"
-                        v-on:click="addLabel(label.id)"
+                        v-on:click="addLabel(label)"
                         v-shortkey.once="[ label.shortcut ]"
-                        @shortkey="addLabel(label.id)">
+                        @shortkey="addLabel(label)">
                         [[ label.text ]]
                         </a>
                         <span class="tag is-medium">[[ label.shortcut ]]</span>
@@ -22,20 +22,19 @@
         </div>
     </header>
 
-    <div class="card-content" v-if="items.length">
+    <div class="card-content">
         <div class="field is-grouped is-grouped-multiline">
-            <div class="control" v-for="(annotation, index) in items[cur].labels">
+            <div class="control" v-for="(annotation, index) in annotations[cur]">
                 <div class="tags has-addons">
                     <span class="tag is-medium"
-                          v-bind:style="{ color: annotation.label.text_color, backgroundColor: annotation.label.background_color }">
-                        [[ annotation.label.text ]]
-                        <button class="delete is-small" v-on:click="deleteLabel(index)"></button>
+                          v-bind:style="{ color: getTextColor(annotation.label), 'background-color': getBgColor(annotation.label) }">
+                        [[ getLabelText(annotation.label) ]]
+                        <button class="delete is-small" v-on:click="removeLabel(annotation)"></button>
                     </span>
-                    <span class="tag is-primary" v-if="annotation.label.prob">[[ annotation.label.prob ]]</span>
                 </div>
             </div>
         </div>
-        <hr v-if="items[cur].labels.length">
+        <hr>
         <div class="content">
             [[ items[cur].text ]]
         </div>
