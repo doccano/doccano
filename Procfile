@@ -1,1 +1,1 @@
-web: env PYTHONPATH=$PYTHONPATH:$PWD/app gunicorn app.app.wsgi
+web: gunicorn --pythonpath app app.wsgi
