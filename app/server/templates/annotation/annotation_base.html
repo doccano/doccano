@@ -48,12 +48,12 @@
             </div>
 
             <div class="main">
-                <a href="#" class="item" v-for="(msg, index) in items" v-bind:class="{ active: index == pageNumber }" v-on:click="showMessage(index)"
+                <a href="" class="item" v-for="(doc, index) in docs" v-bind:class="{ active: index == pageNumber }" v-on:click="showMessage(index)"
                     v-bind:data-preview-id="index">
                     <span class="icon">
                         <i class="fa fa-check" v-show="annotations[index] && annotations[index].length"></i>
                     </span>
-                    <span class="name">[[ msg.text.slice(0, 40) ]]...</span>
+                    <span class="name">[[ doc.text.slice(0, 40) ]]...</span>
                 </a>
             </div>
         </div>

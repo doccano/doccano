@@ -4,11 +4,11 @@ const annotationMixin = {
   data() {
     return {
       pageNumber: 0,
-      items: [{
+      docs: [{
         id: null,
         text: '',
-        labels: [],
       }],
+      annotations: [],
       labels: [],
       guideline: '',
       total: 0,
@@ -16,20 +16,19 @@ const annotationMixin = {
       searchQuery: '',
       url: '',
       picked: 'all',
-      annotations: [],
     };
   },
 
   methods: {
     async nextPage() {
       this.pageNumber += 1;
-      if (this.pageNumber === this.items.length) {
+      if (this.pageNumber === this.docs.length) {
         if (this.next) {
           this.url = this.next;
           await this.search();
           this.pageNumber = 0;
         } else {
-          this.pageNumber = this.items.length - 1;
+          this.pageNumber = this.docs.length - 1;
         }
       }
       this.showMessage(this.pageNumber);
@@ -41,7 +40,7 @@ const annotationMixin = {
         if (this.prev) {
           this.url = this.prev;
           await this.search();
-          this.pageNumber = this.items.length - 1;
+          this.pageNumber = this.docs.length - 1;
         } else {
           this.pageNumber = 0;
         }
@@ -51,12 +50,12 @@ const annotationMixin = {
 
     async search() {
       await HTTP.get(this.url).then((response) => {
-        this.items = response.data.results;
+        this.docs = response.data.results;
         this.next = response.data.next;
         this.prev = response.data.previous;
       });
-      for (let i = 0; i < this.items.length; i++) {
-        const docId = this.items[i].id;
+      for (let i = 0; i < this.docs.length; i++) {
+        const docId = this.docs[i].id;
         HTTP.get(`docs/${docId}/annotations/`).then((response) => {
           this.annotations.push(response.data);
         });
@@ -85,7 +84,7 @@ const annotationMixin = {
     },
 
     removeLabel(label) {
-      const docId = this.items[this.pageNumber].id;
+      const docId = this.docs[this.pageNumber].id;
       HTTP.delete(`docs/${docId}/annotations/${label.id}`).then((response) => {
         const index = this.annotations[this.pageNumber].indexOf(response.data);
         this.annotations[this.pageNumber].splice(index, 1);
@@ -98,7 +97,7 @@ const annotationMixin = {
       this.submit();
     },
 
-    items() {
+    docs() {
       // fetch progress info.
       HTTP.get('progress').then((response) => {
         this.total = response.data.total;
