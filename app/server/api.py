@@ -26,7 +26,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
         project = self.get_object()
-        return Response(project.get_progress())
+        return Response(project.get_progress(self.request.user))
 
 
 class LabelList(generics.ListCreateAPIView):

@@ -31,8 +31,8 @@ class Project(models.Model):
     def is_type_of(self, project_type):
         return project_type == self.project_type
 
-    def get_progress(self):
-        docs = self.get_documents(is_null=True)
+    def get_progress(self, user):
+        docs = self.get_documents(is_null=True, user=user)
         total = self.documents.count()
         remaining = docs.count()
         return {'total': total, 'remaining': remaining}
@@ -60,14 +60,23 @@ class Project(models.Model):
 
         return template_name
 
-    def get_documents(self, is_null=True):
+    def get_documents(self, is_null=True, user=None):
         docs = self.documents.all()
         if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):
-            docs = docs.filter(doc_annotations__isnull=is_null)
+            if user:
+                docs = docs.exclude(doc_annotations__user=user)
+            else:
+                docs = docs.filter(doc_annotations__isnull=is_null)
         elif self.is_type_of(Project.SEQUENCE_LABELING):
-            docs = docs.filter(seq_annotations__isnull=is_null)
+            if user:
+                docs = docs.exclude(seq_annotations__user=user)
+            else:
+                docs = docs.filter(seq_annotations__isnull=is_null)
         elif self.is_type_of(Project.Seq2seq):
-            docs = docs.filter(seq2seq_annotations__isnull=is_null)
+            if user:
+                docs = docs.exclude(seq2seq_annotations__user=user)
+            else:
+                docs = docs.filter(seq2seq_annotations__isnull=is_null)
         else:
             raise ValueError('Invalid project_type')
 
