@@ -4,10 +4,7 @@ const annotationMixin = {
   data() {
     return {
       pageNumber: 0,
-      docs: [{
-        id: null,
-        text: '',
-      }],
+      docs: [],
       annotations: [],
       labels: [],
       guideline: '',
@@ -52,9 +49,10 @@ const annotationMixin = {
         this.next = response.data.next;
         this.prev = response.data.previous;
       });
+      this.annotations = [];
       for (let i = 0; i < this.docs.length; i++) {
         const docId = this.docs[i].id;
-        HTTP.get(`docs/${docId}/annotations/`).then((response) => {
+        await HTTP.get(`docs/${docId}/annotations/`).then((response) => {
           this.annotations.push(response.data);
         });
       }
@@ -77,10 +75,10 @@ const annotationMixin = {
       this.pageNumber = 0;
     },
 
-    removeLabel(label) {
+    removeLabel(annotation) {
       const docId = this.docs[this.pageNumber].id;
-      HTTP.delete(`docs/${docId}/annotations/${label.id}`).then((response) => {
-        const index = this.annotations[this.pageNumber].indexOf(response.data);
+      HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then((response) => {
+        const index = this.annotations[this.pageNumber].indexOf(annotation);
         this.annotations[this.pageNumber].splice(index, 1);
       });
     },

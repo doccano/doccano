@@ -14,8 +14,8 @@ const vm = new Vue({
 
   methods: {
     isIn(label) {
-      for (let i = 0; i < this.annotations[this.cur].length; i++) {
-        const a = this.annotations[this.cur][i];
+      for (let i = 0; i < this.annotations[this.pageNumber].length; i++) {
+        const a = this.annotations[this.pageNumber][i];
         if (a.label === label.id) {
           return a;
         }
@@ -28,12 +28,12 @@ const vm = new Vue({
       if (a) {
         this.removeLabel(a);
       } else {
-        const docId = this.items[this.cur].id;
+        const docId = this.docs[this.pageNumber].id;
         const payload = {
           label: label.id,
         };
         await HTTP.post(`docs/${docId}/annotations/`, payload).then((response) => {
-          this.annotations[this.cur].push(response.data);
+          this.annotations[this.pageNumber].push(response.data);
         });
       }
     },
