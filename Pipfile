@@ -16,7 +16,8 @@ python_version = "3.6"
 django-heroku = "*"
 gunicorn = "*"
 django-widget-tweaks = "*"
-
+djangorestframework = "*"
+django-filter = "*"
 
 
 [dev-packages]
