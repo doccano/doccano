@@ -3,7 +3,7 @@ import HTTP from './http';
 const annotationMixin = {
   data() {
     return {
-      cur: 0,
+      pageNumber: 0,
       items: [{
         id: null,
         text: '',
@@ -22,31 +22,31 @@ const annotationMixin = {
 
   methods: {
     async nextPage() {
-      this.cur += 1;
-      if (this.cur === this.items.length) {
+      this.pageNumber += 1;
+      if (this.pageNumber === this.items.length) {
         if (this.next) {
           this.url = this.next;
           await this.search();
-          this.cur = 0;
+          this.pageNumber = 0;
         } else {
-          this.cur = this.items.length - 1;
+          this.pageNumber = this.items.length - 1;
         }
       }
-      this.showMessage(this.cur);
+      this.showMessage(this.pageNumber);
     },
 
     async prevPage() {
-      this.cur -= 1;
-      if (this.cur === -1) {
+      this.pageNumber -= 1;
+      if (this.pageNumber === -1) {
         if (this.prev) {
           this.url = this.prev;
           await this.search();
-          this.cur = this.items.length - 1;
+          this.pageNumber = this.items.length - 1;
         } else {
-          this.cur = 0;
+          this.pageNumber = 0;
         }
       }
-      this.showMessage(this.cur);
+      this.showMessage(this.pageNumber);
     },
 
     async search() {
@@ -64,7 +64,7 @@ const annotationMixin = {
     },
 
     showMessage(index) {
-      this.cur = index;
+      this.pageNumber = index;
     },
 
     getState() {
@@ -81,14 +81,14 @@ const annotationMixin = {
       const state = this.getState();
       this.url = `docs/?q=${this.searchQuery}&is_checked=${state}`;
       await this.search();
-      this.cur = 0;
+      this.pageNumber = 0;
     },
 
     removeLabel(label) {
-      const docId = this.items[this.cur].id;
+      const docId = this.items[this.pageNumber].id;
       HTTP.delete(`docs/${docId}/annotations/${label.id}`).then((response) => {
-        const index = this.annotations[this.cur].indexOf(response.data);
-        this.annotations[this.cur].splice(index, 1);
+        const index = this.annotations[this.pageNumber].indexOf(response.data);
+        this.annotations[this.pageNumber].splice(index, 1);
       });
     },
   },

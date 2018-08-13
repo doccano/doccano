@@ -24,7 +24,7 @@
 
     <div class="card-content">
         <div class="field is-grouped is-grouped-multiline">
-            <div class="control" v-for="(annotation, index) in annotations[cur]">
+            <div class="control" v-for="(annotation, index) in annotations[pageNumber]">
                 <div class="tags has-addons">
                     <span class="tag is-medium"
                           v-bind:style="{ color: id2label[annotation.label].text_color, 'background-color': id2label[annotation.label].background_color }">
@@ -36,7 +36,7 @@
         </div>
         <hr>
         <div class="content">
-            [[ items[cur].text ]]
+            [[ items[pageNumber].text ]]
         </div>
     </div>
 </div>
