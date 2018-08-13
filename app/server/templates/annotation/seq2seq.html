@@ -1,8 +1,8 @@
 {% extends "annotation/annotation_base.html" %} {% load static %} {% block annotation-area %}
 <div class="card" style="background-color:royalblue;color:white;font-weight:bold;">
-    <div class="card-content" v-if="items.length">
-        <div class="content">
-            [[ items[cur].text ]]
+    <div class="card-content">
+        <div class="content" v-if="docs[pageNumber]">
+            [[ docs[pageNumber].text ]]
         </div>
     </div>
 </div>
@@ -15,9 +15,9 @@
                v-model="newTodo"
                @keyup.enter="addTodo">
     </header>
-    <section class="main" v-show="items[cur].labels.length" v-cloak>
+    <section class="main" v-cloak>
         <ul class="todo-list">
-            <li v-for="todo in items[cur].labels" class="todo" :key="todo.id" :class="{ editing: todo == editedTodo }">
+            <li v-for="todo in annotations[pageNumber]" class="todo" :key="todo.id" :class="{ editing: todo == editedTodo }">
                 <div class="view">
                     <label @dblclick="editTodo(todo)">[[ todo.text ]]</label>
                     <button class="delete destroy is-large" @click="removeTodo(todo)"></button>
