@@ -31,7 +31,6 @@ const annotationMixin = {
           this.pageNumber = this.docs.length - 1;
         }
       }
-      this.showMessage(this.pageNumber);
     },
 
     async prevPage() {
@@ -45,7 +44,6 @@ const annotationMixin = {
           this.pageNumber = 0;
         }
       }
-      this.showMessage(this.pageNumber);
     },
 
     async search() {
@@ -60,10 +58,6 @@ const annotationMixin = {
           this.annotations.push(response.data);
         });
       }
-    },
-
-    showMessage(index) {
-      this.pageNumber = index;
     },
 
     getState() {
