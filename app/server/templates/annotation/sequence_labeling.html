@@ -22,12 +22,12 @@
         </div>
     </header>
     <div class="card-content">
-        <div class="content">
+        <div class="content" v-if="docs[pageNumber] && annotations[pageNumber]">
             <annotator ref="annotator"
                        v-bind:labels="labels"
-                       v-bind:entity-positions="items[cur].labels"
-                       v-bind:text="items[cur].text"
-                       @delete-label="deleteLabel"
+                       v-bind:entity-positions="annotations[pageNumber]"
+                       v-bind:text="docs[pageNumber].text"
+                       @remove-label="removeLabel"
                        @add-label="addLabel"></annotator>
         </div>
     </div>
