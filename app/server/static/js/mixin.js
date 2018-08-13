@@ -84,36 +84,6 @@ const annotationMixin = {
       this.cur = 0;
     },
 
-    getTextColor(labelId) {
-      for (let i = 0; i < this.labels.length; i++) {
-        const label = this.labels[i];
-        if (label.id === labelId) {
-          return label.text_color;
-        }
-      }
-      return '#ffffff';
-    },
-
-    getBgColor(labelId) {
-      for (let i = 0; i < this.labels.length; i++) {
-        const label = this.labels[i];
-        if (label.id === labelId) {
-          return label.background_color;
-        }
-      }
-      return '#333333';
-    },
-
-    getLabelText(labelId) {
-      for (let i = 0; i < this.labels.length; i++) {
-        const label = this.labels[i];
-        if (label.id === labelId) {
-          return label.text;
-        }
-      }
-      return 'NO';
-    },
-
     removeLabel(label) {
       const docId = this.items[this.cur].id;
       HTTP.delete(`docs/${docId}/annotations/${label.id}`).then((response) => {
@@ -149,6 +119,15 @@ const annotationMixin = {
       const done = this.total - this.remaining;
       const percentage = Math.round(done / this.total * 100);
       return this.total > 0 ? percentage : 0;
+    },
+
+    id2label() {
+      let id2label = {};
+      for (let i = 0; i < this.labels.length; i++) {
+        const label = this.labels[i];
+        id2label[label.id] = label;
+      }
+      return id2label;
     },
 
     progressColor() {

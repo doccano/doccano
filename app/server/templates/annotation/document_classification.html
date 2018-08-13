@@ -27,8 +27,8 @@
             <div class="control" v-for="(annotation, index) in annotations[cur]">
                 <div class="tags has-addons">
                     <span class="tag is-medium"
-                          v-bind:style="{ color: getTextColor(annotation.label), 'background-color': getBgColor(annotation.label) }">
-                        [[ getLabelText(annotation.label) ]]
+                          v-bind:style="{ color: id2label[annotation.label].text_color, 'background-color': id2label[annotation.label].background_color }">
+                        [[ id2label[annotation.label].text ]]
                         <button class="delete is-small" v-on:click="removeLabel(annotation)"></button>
                     </span>
                 </div>
