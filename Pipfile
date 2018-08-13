@@ -19,6 +19,6 @@ django-widget-tweaks = "*"
 djangorestframework = "*"
 django-filter = "*"
 dj-database-url = "*"
-
+whitenoise = "*"
 
 [dev-packages]
