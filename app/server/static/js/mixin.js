@@ -89,7 +89,7 @@ const annotationMixin = {
       this.submit();
     },
 
-    docs() {
+    annotations() {
       // fetch progress info.
       HTTP.get('progress').then((response) => {
         this.total = response.data.total;
