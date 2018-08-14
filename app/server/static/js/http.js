@@ -1,8 +1,10 @@
+import axios from 'axios';
+
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
-var base_url = window.location.href.split('/').slice(3, 5).join('/');
-let HTTP = axios.create({
-    baseURL: `/api/${base_url}/`
+const baseUrl = window.location.href.split('/').slice(3, 5).join('/');
+const HTTP = axios.create({
+  baseURL: `/api/${baseUrl}/`,
 });
 
 export default HTTP;
