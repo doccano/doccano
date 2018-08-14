@@ -74,8 +74,11 @@
           </div>
         </div>
 
+        
+
         <div class="columns features" v-for="projects in filteredProjects">
           <div class="column is-4" v-for="project in projects">
+
             <div class="card is-shady">
               <div class="card-image">
                 <figure class="image is-4by3">
@@ -93,9 +96,26 @@
                 </div>
               </div>
               {% if user.is_superuser %}
+              <!-- Modal card for creating project. -->
+              <div class="modal" :class="{ 'is-active': isDelete }">
+                <div class="modal-background"></div>
+                <div class="modal-card">
+                  <header class="modal-card-head">
+                    <p class="modal-card-title">Delete Project</p>
+                    <button class="delete" aria-label="close" @click="isDelete=!isDelete"></button>
+                  </header>
+                  <section class="modal-card-body">
+                    Are you sure you want to delete project?
+                  </section>
+                  <footer class="modal-card-foot" style="background-color:#dbdbdb !important;padding:20px !important;">
+                    <button class="button is-danger" @click="deleteProject(project)">Delete</button>
+                    <button class="button" @click="isDelete=!isDelete">Cancel</button>
+                  </footer>
+                </div>
+              </div>
               <div class="card-footer">
                 <a v-bind:href="'/projects/' + project.id + '/docs'" class="card-footer-item">Edit</a>
-                <a href="" class="card-footer-item has-text-danger" style="font-weight:700" @click="deleteProject(project)">Delete</a>
+                <a href="#1" class="card-footer-item has-text-danger" style="font-weight:700" @click="isDelete=!isDelete">Delete</a>
               </div>
               {% endif %}
             </div>
