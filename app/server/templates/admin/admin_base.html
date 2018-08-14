@@ -5,56 +5,54 @@
 {% endblock %}
 {% block navigation %}
 <a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
-    <span class="icon">
-        <i class="fas fa-upload"></i>
-    </span>
-    <b>Import Data</b>
+  <span class="icon">
+    <i class="fas fa-upload"></i>
+  </span>
+  <b>Import Data</b>
 </a>
 <a class="navbar-item" href="{% url 'download' view.kwargs.project_id %}">
-    <span class="icon">
-        <i class="fas fa-download"></i>
-    </span>
-    <b>Export Data</b>
+  <span class="icon">
+    <i class="fas fa-download"></i>
+  </span>
+  <b>Export Data</b>
 </a>
 {% endblock %}
 {% block content %}
 <div class="columns" id="mail-app" style="margin-right:0;">
-    <aside class="column is-2 aside">
-        <div>
-            <div class="main">
-                <a href="{% url 'dataset' view.kwargs.project_id %}" class="item">
-                    <span class="icon">
-                        <i class="fa fa-inbox"></i>
-                    </span>
-                    <span class="name">Dataset</span>
-                </a>
-                <a href="{% url 'label-management' view.kwargs.project_id %}" class="item">
-                    <span class="icon">
-                        <i class="fa fa-star"></i>
-                    </span>
-                    <span class="name">Labels</span>
-                </a>
-                <a href="{% url 'stats' view.kwargs.project_id %}" class="item">
-                    <span class="icon">
-                        <i class="fas fa-signal"></i>
-                    </span>
-                    <span class="name">Statistics</span>
-                </a>
-                <!--
-                <a href="#" class="item">
-                    <span class="icon">
-                        <i class="fas fa-users"></i>
-                    </span>
-                    <span class="name">Users</span>
-                </a>
-                -->
-            </div>
-        </div>
-    </aside>
-    <div class="column is-10 messages hero is-fullheight" id="message-feed">
-        <!--<div class="box">-->
-        {% block content-area %}{% endblock %}
-        <!--</div>-->
+  <aside class="column is-2 aside">
+    <div>
+      <div class="main">
+        <a href="{% url 'dataset' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fa fa-inbox"></i>
+          </span>
+          <span class="name">Dataset</span>
+        </a>
+        <a href="{% url 'label-management' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fa fa-star"></i>
+          </span>
+          <span class="name">Labels</span>
+        </a>
+        <a href="{% url 'stats' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fas fa-signal"></i>
+          </span>
+          <span class="name">Statistics</span>
+        </a>
+        <!--
+        <a href="#" class="item">
+            <span class="icon">
+                <i class="fas fa-users"></i>
+            </span>
+            <span class="name">Users</span>
+        </a>
+        -->
+      </div>
     </div>
+  </aside>
+  <div class="column is-10 messages hero is-fullheight" id="message-feed">
+    {% block content-area %}{% endblock %}
+  </div>
 </div>
 {% endblock %}
