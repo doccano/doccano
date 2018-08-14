@@ -11,7 +11,7 @@ const vm = new Vue({
   },
 
   methods: {
-    get_projects() {
+    getProjects() {
       const baseUrl = window.location.href.split('/').slice(0, 3).join('/');
       axios.get(`${baseUrl}/api/projects`).then((response) => {
         this.items = response.data;
@@ -55,6 +55,6 @@ const vm = new Vue({
   },
 
   created() {
-    this.get_projects();
+    this.getProjects();
   },
 });
