@@ -1,58 +1,52 @@
-{% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
 <div class="card">
-    <header class="card-header">
-        <p class="card-header-title">
-            Dataset
-        </p>
-        <a href="#" class="card-header-icon" aria-label="more options">
-            <span class="icon">
-                <i class="fas fa-angle-down" aria-hidden="true"></i>
-            </span>
-        </a>
-    </header>
-    <div class="card-content">
-        <table class="table is-fullwidth is-hoverable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Text</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for doc in object_list %}
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ doc.text|truncatechars:200 }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <header class="card-header">
+    <p class="card-header-title">
+      Dataset
+    </p>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+  <div class="card-content">
+    <table class="table is-fullwidth is-hoverable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Text</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for doc in object_list %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ doc.text|truncatechars:200 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 {% if is_paginated %}
 <nav class="pagination is-right" role="navigation" aria-label="pagination">
-    <!--
-    {% if page_obj.has_previous %}
-    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Previous</a>
+  <ul class="pagination-list">
+    {% for i in paginator.page_range %}
+    {% if page_obj.number == i %}
+    <li>
+      <a class="pagination-link is-current" aria-label="Goto page {{ i }}">{{ i }}</a>
+    </li>
+    {% else %}
+    <li>
+      <a href="?page={{ i }}" class="pagination-link" aria-label="Goto page {{ i }}">{{ i }}</a>
+    </li>
     {% endif %}
-    {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Next page</a>
-    {% endif %}
-    -->
-    <ul class="pagination-list">
-        {% for i in paginator.page_range %}
-        {% if page_obj.number == i %}
-        <li>
-            <a class="pagination-link is-current" aria-label="Goto page {{ i }}">{{ i }}</a>
-        </li>
-        {% else %}
-        <li>
-            <a href="?page={{ i }}" class="pagination-link" aria-label="Goto page {{ i }}">{{ i }}</a>
-        </li>
-        {% endif %}
-        {% endfor %}
-    </ul>
+    {% endfor %}
+  </ul>
 </nav>
 {% endif %}
 {% endblock %}
