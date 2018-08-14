@@ -1,5 +1,9 @@
 import Vue from 'vue';
 import axios from 'axios';
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+const baseUrl = window.location.href.split('/').slice(0, 3).join('/');
+
 
 const vm = new Vue({
   el: '#projects_root',
@@ -12,9 +16,13 @@ const vm = new Vue({
 
   methods: {
     getProjects() {
-      const baseUrl = window.location.href.split('/').slice(0, 3).join('/');
       axios.get(`${baseUrl}/api/projects`).then((response) => {
         this.items = response.data;
+      });
+    },
+
+    deleteProject(project) {
+      axios.delete(`${baseUrl}/api/projects/${project.id}/`).then((response) => {
       });
     },
 
