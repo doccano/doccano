@@ -8,6 +8,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "chart.js": "^2.7.2",
     "vue": "^2.5.16",
     "vue-chartjs": "^3.4.0",
