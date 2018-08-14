@@ -1,16 +1,8 @@
 import { HorizontalBar, mixins, Doughnut } from 'vue-chartjs';
-import axios from 'axios';
 import Vue from 'vue';
+import HTTP from './http';
 
 const { reactiveProp, reactiveData } = mixins;
-
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
-const baseURL = window.location.href.split('/').slice(3, 5).join('/');
-const HTTP = axios.create({
-  baseURL: `/api/${baseURL}/`,
-});
-
 
 Vue.component('line-chart', {
   extends: HorizontalBar,
