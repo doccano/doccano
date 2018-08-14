@@ -1,80 +1,80 @@
 .aside {
-    display: block;
-    background-color: #2a2e2f;
-    border-right: 1px solid #DEDEDE;
+  display: block;
+  background-color: #2a2e2f;
+  border-right: 1px solid #DEDEDE;
 }
 
 .messages {
-    display: block;
-    background-color: #f3f3f3;
-    border-right: 1px solid #DEDEDE;
+  display: block;
+  background-color: #f3f3f3;
+  border-right: 1px solid #DEDEDE;
 }
 
 .message {
-    display: block;
-    background-color: #f3f3f3;
+  display: block;
+  background-color: #f3f3f3;
 }
 
 .aside .main {
-    padding: 20px 40px;
-    color: #6F7B7E;
+  padding: 20px 40px;
+  color: #6F7B7E;
 }
 
 .aside .title {
-    color: #6F7B7E;
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: uppercase;
+  color: #6F7B7E;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 
 .aside .main .item {
-    display: flex;
-    padding: 10px 0;
-    color: #6F7B7E;
+  display: flex;
+  padding: 10px 0;
+  color: #6F7B7E;
 }
 
 .aside .main .item.active {
-    background-color: #5a5e5f;
-    margin: 0 -50px;
-    padding-left: 50px;
+  background-color: #5a5e5f;
+  margin: 0 -50px;
+  padding-left: 50px;
 }
 
 .aside .main .item:active,
 .aside .main .item:hover {
-    background-color: #5a5e5f;
-    margin: 0 -50px;
-    padding-left: 50px;
+  background-color: #5a5e5f;
+  margin: 0 -50px;
+  padding-left: 50px;
 }
 
 .aside .main .icon {
-    font-size: 19px;
-    padding-right: 30px;
-    color: #f3f3f3;
+  font-size: 19px;
+  padding-right: 30px;
+  color: #f3f3f3;
 }
 
 .aside .main .name {
-    font-size: 15px;
-    color: #f3f3f3;
-    font-weight: 500;
+  font-size: 15px;
+  color: #f3f3f3;
+  font-weight: 500;
 }
 
 .messages {
-    padding: 40px 20px;
+  padding: 40px 20px;
 }
 
 .message {
-    padding: 40px 20px;
+  padding: 40px 20px;
 }
 
 .content {
-    font-size: 16pt;
-    line-height: 250%;
+  font-size: 16pt;
+  line-height: 250%;
 }
 
 .bordered-row {
-    border-color: #dfe8f1;
-    border-top-width: 1px;
-    border-top-style: dashed;
-    align-items: center;
-    padding-top: .75rem;
+  border-color: #dfe8f1;
+  border-top-width: 1px;
+  border-top-style: dashed;
+  align-items: center;
+  padding-top: .75rem;
 }
