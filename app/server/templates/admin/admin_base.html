@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 {% block header %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
 {% endblock %}
 {% block navigation %}
 <a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
