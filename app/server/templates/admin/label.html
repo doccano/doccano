@@ -1,4 +1,6 @@
-{% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
 
 <div class="card">
   <header class="card-header">
@@ -86,6 +88,7 @@
     </div>
   </div>
 </div>
-{% endblock %} {% block footer %}
+{% endblock %}
+{% block footer %}
 <script type="text/javascript" src="{% static 'bundle/label.js' %}"></script>
 {% endblock %}
