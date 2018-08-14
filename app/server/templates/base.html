@@ -1,80 +1,77 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>doccano - Document Annotation Tool</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>doccano - Document Annotation Tool</title>
 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
-        crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/forum.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/css/swiper.min.css">
-    {% block header %}{% endblock %}
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
+    crossorigin="anonymous">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" crossorigin="anonymous"
+  />
+  <link rel="stylesheet" href="{% static 'css/forum.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/css/swiper.min.css">
+  {% block header %}{% endblock %}
 </head>
 
 <body>
-    <nav class="navbar has-shadow">
-        <div class="container">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="{% url 'index' %}">
-                    <img src="{% static 'images/logo.png' %}" width="32" height="32">
-                    <b>doccano</b>
-                </a>
-                {% block navigation %}{% endblock %}
-            </div>
-            <div id="topNav" class="navbar-menu">
-                <div class="navbar-end">
-                    <a class="navbar-item" href="{% url 'index' %}">
-                        <span>Home</span>
-                    </a>
-                    {% if user.is_authenticated %}
-                    <a class="navbar-item" href="{% url 'projects' %}">
-                        <span>Projects</span>
-                    </a>
-                    {% endif %}
-                    <!--<a class="navbar-item" href="hoge.html">Live Demo</a>-->
-                    <a class="navbar-item" href="https://github.com/chakki-works/doccano">
-                        <span>GitHub</span>
-                    </a>
-                    {% if not user.is_authenticated %}
-                    <a class="navbar-item" href="{% url 'login' %}">
-                        <span>Login</span>
-                    </a>
-                    {% else %}
-                    <a class="navbar-item" href="{% url 'logout' %}">
-                        <span>Logout</span>
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
+  <nav class="navbar has-shadow">
+    <div class="container">
+      <div class="navbar-brand">
+        <a class="navbar-item" href="{% url 'index' %}">
+          <img src="{% static 'images/logo.png' %}" width="32" height="32">
+          <b>doccano</b>
+        </a>
+        {% block navigation %}{% endblock %}
+      </div>
+      <div id="topNav" class="navbar-menu">
+        <div class="navbar-end">
+          <a class="navbar-item" href="{% url 'index' %}">
+            <span>Home</span>
+          </a>
+          {% if user.is_authenticated %}
+          <a class="navbar-item" href="{% url 'projects' %}">
+            <span>Projects</span>
+          </a>
+          {% endif %}
+          <!--<a class="navbar-item" href="hoge.html">Live Demo</a>-->
+          <a class="navbar-item" href="https://github.com/chakki-works/doccano">
+            <span>GitHub</span>
+          </a>
+          {% if not user.is_authenticated %}
+          <a class="navbar-item" href="{% url 'login' %}">
+            <span>Login</span>
+          </a>
+          {% else %}
+          <a class="navbar-item" href="{% url 'logout' %}">
+            <span>Logout</span>
+          </a>
+          {% endif %}
         </div>
-    </nav>
+      </div>
+    </div>
+  </nav>
 
-    {% block content %} {% endblock %}
-
-    {% block footer %}{% endblock %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/js/swiper.min.js"></script>
-    <script>
-    var mySwiper = new Swiper ('.swiper-container', {
-        // Optional parameters
-        loop: true,
-        autoplay: {
-            delay: 5000,
-        },
-        // Navigation arrows
-        navigation: {
+  {% block content %}{% endblock %}
+  
+  {% block footer %}{% endblock %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/js/swiper.min.js"></script>
+  <script>
+    var mySwiper = new Swiper('.swiper-container', {
+      // Optional parameters
+      loop: true,
+      autoplay: {
+        delay: 5000,
+      },
+      // Navigation arrows
+      navigation: {
         nextEl: '.swiper-button-next',
         prevEl: '.swiper-button-prev',
-        },
+      },
     })
-    </script>
+  </script>
 </body>
-
 </html>
