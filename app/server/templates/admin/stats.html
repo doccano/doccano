@@ -1,4 +1,6 @@
-{% extends "admin/admin_base.html" %} {% load static %} {% block content-area %}
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
 
 <div class="columns">
   <div class="column is-12">
@@ -47,8 +49,7 @@
   </div>
 </div>
 
-{% endblock %} {% block footer %}
-<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
-<script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>-->
+{% endblock %}
+{% block footer %}
 <script type="text/javascript" src="{% static 'bundle/stats.js' %}"></script>
 {% endblock %}
