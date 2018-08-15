@@ -54,10 +54,9 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
         try:
             form_data = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
-            reader = csv.reader(form_data)
-            for line in reader:
-                text = line[0]
-                Document(text=text, project=project).save()
+            Document.objects.bulk_create([Document(
+                text=line.strip(),
+                project=project) for line in form_data])
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except:
             return HttpResponseRedirect(reverse('dataset-upload', args=[project.id]))
