@@ -8,7 +8,8 @@ module.exports = {
         'seq2seq': './static/js/seq2seq.js',
         'projects': './static/js/projects.js',
         'stats': './static/js/stats.js',
-        'label': './static/js/label.js'
+        'label': './static/js/label.js',
+        'demo_text_classification': './static/js/demo/demo_text_classification.js'
     },
     output: {
         path: __dirname + '/static/bundle',
