@@ -112,7 +112,7 @@ To import text items, select `Import Data` button in the navigation bar. You sho
 
 <img src="./docs/upload.png" alt="Upload project" width=600>
 
-The text items should be provided in csv format. As of now, it must contain only texts.
+The text items should be provided in txt format. As of now, it must contain only texts. Each line must contain a text:
 
 ```python
 EU rejects German call to boycott British lamb.
