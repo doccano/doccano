@@ -150,3 +150,21 @@ p {
 .card-header-title {
   padding: 1.5rem;
 }
+
+.navbar-link::after {
+  border-color: white;
+}
+
+.navbar-link {
+  color: white;
+}
+
+.navbar-dropdown {
+  background-color: #2a2e2f;
+  border-top: 0;
+}
+
+.navbar-dropdown .navbar-item {
+  color: white;
+
+}
