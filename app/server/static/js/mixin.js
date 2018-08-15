@@ -13,6 +13,7 @@ const annotationMixin = {
       searchQuery: '',
       url: '',
       picked: 'all',
+      count: 0,
     };
   },
 
@@ -48,6 +49,7 @@ const annotationMixin = {
         this.docs = response.data.results;
         this.next = response.data.next;
         this.prev = response.data.previous;
+        this.count = response.data.count;
       });
       this.annotations = [];
       for (let i = 0; i < this.docs.length; i++) {

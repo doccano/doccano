@@ -37,21 +37,25 @@ body {
 
 .aside .main .item {
   display: flex;
-  padding: 10px 0;
+  /*padding: 10px 0;*/
+  padding: 10px 20px 10px 40px;
+  margin: 0 -50px;
   color: #6F7B7E;
 }
 
 .aside .main .item.active {
   background-color: #5a5e5f;
   margin: 0 -50px;
-  padding-left: 50px;
+  /*padding-left: 50px;*/
+  padding-left: 40px;
 }
 
 .aside .main .item:active,
 .aside .main .item:hover {
   background-color: #5a5e5f;
   margin: 0 -50px;
-  padding-left: 50px;
+  /*padding-left: 50px;*/
+  padding-left: 40px;
 }
 
 .aside .main .icon {
@@ -72,11 +76,6 @@ body {
 
 .message {
   padding: 40px 20px;
-}
-
-.progress-bar {
-  margin-bottom: 20px;
-  width: 150px;
 }
 
 .pg {
