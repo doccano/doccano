@@ -85,3 +85,7 @@ class DemoTextClassification(TemplateView):
 
 class DemoNamedEntityRecognition(TemplateView):
     template_name = 'demo/demo_named_entity.html'
+
+
+class DemoTranslation(TemplateView):
+    template_name = 'demo/demo_translation.html'
