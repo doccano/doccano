@@ -50,6 +50,22 @@
           <a class="navbar-item" href="{% url 'index' %}">
             <span>Home</span>
           </a>
+          <div class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">
+              <span>Live Demo</span>
+            </a>
+            <div class="navbar-dropdown">
+              <a href="{% url 'demo-text-classification' %}" class="navbar-item">
+                Sentiment Analysis
+              </a>
+              <a href="{% url 'demo-named-entity-recognition' %}" class="navbar-item">
+                Named Entity Recognition
+              </a>
+              <a href="{% url 'demo-translation' %}" class="navbar-item">
+                Translation
+              </a>
+            </div>
+          </div>
           {% if user.is_authenticated %}
           <a class="navbar-item" href="{% url 'projects' %}">
             <span>Projects</span>

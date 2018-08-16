@@ -77,3 +77,15 @@ class DataDownload(SuperUserMixin, LoginRequiredMixin, View):
             writer.writerows(d.make_dataset())
 
         return response
+
+
+class DemoTextClassification(TemplateView):
+    template_name = 'demo/demo_text_classification.html'
+
+
+class DemoNamedEntityRecognition(TemplateView):
+    template_name = 'demo/demo_named_entity.html'
+
+
+class DemoTranslation(TemplateView):
+    template_name = 'demo/demo_translation.html'

@@ -4,6 +4,7 @@ from rest_framework import routers
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView
 from .views import ProjectsView, DataDownload
+from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     AnnotationList, AnnotationDetail, DocumentList
 
@@ -26,4 +27,7 @@ urlpatterns = [
     path('projects/<int:project_id>/docs/create', DataUpload.as_view(), name='upload'),
     path('projects/<int:project_id>/labels/', LabelView.as_view(), name='label-management'),
     path('projects/<int:project_id>/stats/', StatsView.as_view(), name='stats'),
+    path('demo/text-classification/', DemoTextClassification.as_view(), name='demo-text-classification'),
+    path('demo/named-entity-recognition/', DemoNamedEntityRecognition.as_view(), name='demo-named-entity-recognition'),
+    path('demo/translation/', DemoTranslation.as_view(), name='demo-translation'),
 ]
