@@ -81,3 +81,7 @@ class DataDownload(SuperUserMixin, LoginRequiredMixin, View):
 
 class DemoTextClassification(TemplateView):
     template_name = 'demo/demo_text_classification.html'
+
+
+class DemoNamedEntityRecognition(TemplateView):
+    template_name = 'demo/demo_named_entity.html'
