@@ -168,3 +168,5 @@ p {
   color: white;
 
 }
+
+[v-cloak] { display: none; }

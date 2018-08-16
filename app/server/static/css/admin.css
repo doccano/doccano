@@ -78,3 +78,5 @@
   align-items: center;
   padding-top: .75rem;
 }
+
+[v-cloak] { display: none; }
