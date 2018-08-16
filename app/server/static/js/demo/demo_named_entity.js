@@ -60,6 +60,15 @@ Vue.component('annotator', {
       if (this.startOffset < 0 || this.endOffset < 0) {
         return false;
       }
+      for (let i = 0; i < this.entityPositions.length; i++) {
+        const e = this.entityPositions[i];
+        if ((e.start_offset <= this.startOffset) && (this.startOffset <= e.end_offset)) {
+          return false;
+        }
+        if ((e.start_offset <= this.endOffset) && (this.endOffset <= e.end_offset)) {
+          return false;
+        }
+      }
       return true;
     },
 
