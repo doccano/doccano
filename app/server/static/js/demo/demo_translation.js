@@ -12,34 +12,38 @@ const vm = new Vue({
     editedTodo: null,
     docs: [{
       id: 1,
-      text: 'This is a document for named entity recognition.',
+      text: 'If it had not been for his help, I would have failed.',
     },
     {
       id: 10,
-      text: 'This is a sentence.',
+      text: 'According to this magazine, my favorite actress will marry a jazz musician next spring.',
     },
     {
       id: 11,
-      text: 'This is a sentence.',
+      text: "It's not always possible to eat well when you are traveling in this part of the world.",
     },
     {
       id: 12,
-      text: 'This is a sentence.',
+      text: "It's still early. We should all just chill for a bit.",
     },
     {
       id: 13,
-      text: 'This is a sentence.',
+      text: "She got a master's degree three years ago.",
     },
     {
       id: 13,
-      text: 'This is a sentence.',
+      text: 'We adopted an alternative method.',
     },
     ],
     annotations: [
       [
         {
           id: 1,
-          text: 'hotdog',
+          text: "S'il ne m'avait pas aidé, j'aurais échoué.",
+        },
+        {
+          id: 2,
+          text: "S'il ne m'avait pas aidée, j'aurais échoué.",
         },
       ],
       [],
