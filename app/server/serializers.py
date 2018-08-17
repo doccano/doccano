@@ -65,3 +65,19 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seq2seqAnnotation
         fields = ('id', 'text')
+
+
+class SequenceDocumentSerializer(serializers.ModelSerializer):
+    labels = SequenceAnnotationSerializer(source='seq_annotations', many=True)
+    annotations = serializers.SerializerMethodField()
+
+    def get_annotations(self, obj):
+        request = self.context.get('request')
+        if request:
+            annotations = obj.seq_annotations.filter(user=request.user)
+            serializer = SequenceAnnotationSerializer(annotations.all(), many=True)
+            return serializer.data
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text', 'labels', 'annotations')

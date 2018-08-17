@@ -89,7 +89,9 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
+    from .serializers import SequenceDocumentSerializer
+    # serializer_class = DocumentSerializer
+    serializer_class = SequenceDocumentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
