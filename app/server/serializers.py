@@ -67,17 +67,46 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
         fields = ('id', 'text')
 
 
-class SequenceDocumentSerializer(serializers.ModelSerializer):
-    labels = SequenceAnnotationSerializer(source='seq_annotations', many=True)
+class ClassificationDocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
 
-    def get_annotations(self, obj):
+    def get_annotations(self, instance):
         request = self.context.get('request')
         if request:
-            annotations = obj.seq_annotations.filter(user=request.user)
-            serializer = SequenceAnnotationSerializer(annotations.all(), many=True)
+            annotations = instance.doc_annotations.filter(user=request.user)
+            serializer = DocumentAnnotationSerializer(annotations, many=True)
             return serializer.data
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'labels', 'annotations')
+        fields = ('id', 'text', 'annotations')
+
+
+class SequenceDocumentSerializer(serializers.ModelSerializer):
+    annotations = serializers.SerializerMethodField()
+
+    def get_annotations(self, instance):
+        request = self.context.get('request')
+        if request:
+            annotations = instance.seq_annotations.filter(user=request.user)
+            serializer = SequenceAnnotationSerializer(annotations, many=True)
+            return serializer.data
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text', 'annotations')
+
+
+class Seq2seqDocumentSerializer(serializers.ModelSerializer):
+    annotations = serializers.SerializerMethodField()
+
+    def get_annotations(self, instance):
+        request = self.context.get('request')
+        if request:
+            annotations = instance.seq2seq_annotations.filter(user=request.user)
+            serializer = Seq2seqAnnotationSerializer(annotations, many=True)
+            return serializer.data
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text', 'annotations')
