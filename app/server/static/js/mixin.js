@@ -50,14 +50,12 @@ const annotationMixin = {
         this.next = response.data.next;
         this.prev = response.data.previous;
         this.count = response.data.count;
+        this.annotations = [];
+        for (let i = 0; i < this.docs.length; i++) {
+          const doc = this.docs[i];
+          this.annotations.push(doc.annotations);
+        }
       });
-      this.annotations = [];
-      for (let i = 0; i < this.docs.length; i++) {
-        const docId = this.docs[i].id;
-        await HTTP.get(`docs/${docId}/annotations/`).then((response) => {
-          this.annotations.push(response.data);
-        });
-      }
     },
 
     getState() {

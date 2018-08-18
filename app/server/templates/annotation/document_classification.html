@@ -21,7 +21,7 @@
   <div class="card-content">
     <div class="field is-grouped is-grouped-multiline">
       <div class="control" v-for="(annotation, index) in annotations[pageNumber]">
-        <div class="tags has-addons">
+        <div class="tags has-addons" v-if="id2label[annotation.label]">
           <span class="tag is-medium" v-bind:style="{ color: id2label[annotation.label].text_color, 'background-color': id2label[annotation.label].background_color }">
             [[ id2label[annotation.label].text ]]
             <button class="delete is-small" v-on:click="removeLabel(annotation)"></button>
