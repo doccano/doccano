@@ -84,15 +84,16 @@
       <div class="column is-3">
         <progress class="progress is-inline-block" v-bind:class="progressColor" v-bind:value="achievement" max="100">30%</progress>
       </div>
-      <div class="column is-8">
+      <div class="column is-5">
         <span style="margin-left:10px;"><strong>[[ total - remaining ]]</strong></span>/<span>[[ total ]]</span>
       </div>
-      <div class="column is-1 has-text-right">
+      <div class="column is-4 has-text-right">
         <a class="button" @click="isActive=!isActive">
           <span class="icon">
             <i class="fas fa-book"></i>
           </span>
         </a>
+        {% block auto-labeling %}{% endblock %}
       </div>
     </div>
 

@@ -1,5 +1,12 @@
 {% extends "annotation/annotation_base.html" %}
 {% load static %}
+{% block auto-labeling %}
+<a class="button is-danger" @click="autoLabeling()">
+  <span class="icon">
+    <i class="fas fa-tags"></i>
+  </span>
+</a>
+{% endblock %}
 {% block annotation-area %}
 <div class="card">
   <header class="card-header">

@@ -164,5 +164,12 @@ const vm = new Vue({
         this.annotations[this.pageNumber].push(response.data);
       });
     },
+
+    autoLabeling() {
+      HTTP.get('auto-labeling').then((response) => {
+        Vue.set(this.annotations, this.pageNumber, response.data);
+        //this.annotations[this.pageNumber] = response.data;
+      });
+    },
   },
 });

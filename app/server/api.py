@@ -155,3 +155,118 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
         self.check_object_permissions(self.request, obj)
 
         return obj
+
+
+class AutoLabeling(APIView):
+    permission_classes = (IsAuthenticated, IsProjectUser)
+
+    def get(self, request, *args, **kwargs):
+        """
+        Return a list of predicted entities.
+        """
+        # predict entities.
+        # store predicted entities into db(SequenceAnnotation table).
+        # return predicted entities(as with AnnotationList API):
+        # [
+        #     {
+        #         "id": 14,
+        #         "prob": 0.0,
+        #         "label": 2,
+        #         "start_offset": 23,
+        #         "end_offset": 28
+        #     },
+        #     {
+        #         "id": 13,
+        #         "prob": 0.0,
+        #         "label": 5,
+        #         "start_offset": 10,
+        #         "end_offset": 18
+        #     }
+        # ]
+        res = [
+            {
+                "id": 116,
+                "prob": 0.0,
+                "label": 7,
+                "start_offset": 0,
+                "end_offset": 23
+            },
+            {
+                "id": 119,
+                "prob": 0.0,
+                "label": 8,
+                "start_offset": 121,
+                "end_offset": 138
+            },
+            {
+                "id": 127,
+                "prob": 0.0,
+                "label": 8,
+                "start_offset": 321,
+                "end_offset": 329
+            },
+            {
+                "id": 122,
+                "prob": 0.0,
+                "label": 9,
+                "start_offset": 199,
+                "end_offset": 215
+            },
+            {
+                "id": 128,
+                "prob": 0.0,
+                "label": 9,
+                "start_offset": 350,
+                "end_offset": 371
+            },
+            {
+                "id": 117,
+                "prob": 0.0,
+                "label": 10,
+                "start_offset": 30,
+                "end_offset": 44
+            },
+            {
+                "id": 120,
+                "prob": 0.0,
+                "label": 10,
+                "start_offset": 144,
+                "end_offset": 160
+            },
+            {
+                "id": 121,
+                "prob": 0.0,
+                "label": 10,
+                "start_offset": 165,
+                "end_offset": 181
+            },
+            {
+                "id": 118,
+                "prob": 0.0,
+                "label": 12,
+                "start_offset": 52,
+                "end_offset": 60
+            },
+            {
+                "id": 124,
+                "prob": 0.0,
+                "label": 12,
+                "start_offset": 234,
+                "end_offset": 250
+            },
+            {
+                "id": 126,
+                "prob": 0.0,
+                "label": 12,
+                "start_offset": 294,
+                "end_offset": 315
+            }
+        ]
+        return Response(res)
+
+    def put(self, request, *args, **kwargs):
+        """
+        Train a model.
+        """
+        print('Trained!')
+        return Response([])
