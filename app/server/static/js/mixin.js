@@ -14,6 +14,7 @@ const annotationMixin = {
       url: '',
       picked: 'all',
       count: 0,
+      isActive: false,
     };
   },
 
@@ -102,6 +103,9 @@ const annotationMixin = {
     HTTP.get('labels').then((response) => {
       this.labels = response.data;
     });
+    HTTP.get().then((response) => {
+      this.guideline = response.data.guideline;
+    });
     this.submit();
   },
 
@@ -110,6 +114,12 @@ const annotationMixin = {
       const done = this.total - this.remaining;
       const percentage = Math.round(done / this.total * 100);
       return this.total > 0 ? percentage : 0;
+    },
+
+    compiledMarkdown() {
+      return marked(this.guideline, {
+        sanitize: true,
+      });
     },
 
     id2label() {

@@ -264,4 +264,14 @@ body {
   margin-bottom: -1px;
 }
 
+.modal-card-body-footer {
+  border-bottom: 1px solid #dbdbdb;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.is-vertical-center {
+  align-items: center;
+}
+
 [v-cloak] { display: none; }
