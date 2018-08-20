@@ -79,4 +79,21 @@
   padding-top: .75rem;
 }
 
+#editor {
+  line-height: 100%;
+}
+.editorMarkdown_textarea {
+  width: 100%;
+  height: 100%;
+  resize: none;
+  /*border: none;*/
+  /*border-right: 1px solid #ccc;*/
+  border: 1px solid #dbdbdb;
+  outline: none;
+  /*background-color: #fff;*/
+  font-size: 14px;
+  font-family: 'Monaco', courier, monospace;
+  padding: 20px;
+}
+
 [v-cloak] { display: none; }

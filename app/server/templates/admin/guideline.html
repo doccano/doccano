@@ -1,29 +1,9 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
 {% block header %}
-
-<script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
 <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 {% endblock %}
 {% block content-area %}
-<style>
-  #editor {
-    line-height: 100%;
-  }
-  .editorMarkdown_textarea {
-    width: 100%;
-    height: 100%;
-    resize: none;
-    /*border: none;*/
-    /*border-right: 1px solid #ccc;*/
-    border: 1px solid #dbdbdb;
-    outline: none;
-    /*background-color: #fff;*/
-    font-size: 14px;
-    font-family: 'Monaco', courier, monospace;
-    padding: 20px;
-  }
-</style>
 <div id="editor" class="columns is-gapless">
   <div class="column is-6">
     <textarea class="editorMarkdown_textarea" :value="input" @input="update"></textarea>
@@ -38,24 +18,5 @@
 {% block footer %}
 <script src="https://unpkg.com/marked@0.3.6"></script>
 <script src="https://unpkg.com/lodash@4.16.0"></script>
-<script>
-new Vue({
-  el: '#editor',
-  data: {
-    input: '# hello'
-  },
-  computed: {
-    compiledMarkdown: function () {
-      return marked(this.input, { sanitize: true })
-    }
-  },
-  methods: {
-    update: _.debounce(function (e) {
-      this.input = e.target.value
-    }, 300)
-  }
-})
-</script>
-
-<!--<script src="{% static 'bundle/label.js' %}"></script>-->
+<script src="{% static 'bundle/guideline.js' %}"></script>
 {% endblock %}
