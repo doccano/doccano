@@ -1,0 +1,94 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      Label editor
+    </p>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+
+  <div class="card-content">
+    <div class="has-text-right">
+
+      <div class="field is-grouped is-grouped-multiline has-text-weight-bold" style="padding-bottom:.75rem;">
+        <div class="control" v-for="label in labels">
+          <div class="tags has-addons">
+            <span class="tag is-medium" v-bind:style="{ color: label.text_color, 'background-color': label.background_color }">
+              <button class="delete is-small" style="margin-right:.25rem;margin-left:-.375rem;" @click="removeLabel(label)"></button>
+              [[ label.text ]]
+            </span>
+            <span class="tag is-medium">[[ label.shortcut ]]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-horizontal bordered-row">
+        <label class="label column is-3" style="margin-bottom:0;">Preview</label>
+        <div class="control column is-6">
+          <div class="tags has-addons" style="font-weight:700;">
+            <a class="tag is-medium" v-bind:style="{ color: textColor, backgroundColor: backgroundColor }">
+              [[ labelText ]]
+            </a>
+            <span class="tag is-medium">[[ selectedShortkey ]]</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-horizontal bordered-row">
+        <label class="label column is-3" style="margin-bottom:0;">Label Name</label>
+        <div class="control column is-6">
+          <input class="input" type="text" placeholder="Text input" v-model="labelText">
+        </div>
+      </div>
+
+      <div class="field is-horizontal bordered-row">
+        <label class="label column is-3" style="margin-bottom:0;">Shortcut Key</label>
+        <div class="control column is-6">
+          <div class="select">
+            <select v-model="selectedShortkey">
+              <option disabled value="">Please select one</option>
+              {% for ch in 'abcdefghijklmnopqrstuvwxyz' %}
+              <option>{{ ch }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-horizontal bordered-row">
+
+        <label class="label column is-3" style="margin-bottom:0;">Background Color</label>
+        <div class="control column is-6">
+          <input class="input" type="color" v-model="backgroundColor">
+        </div>
+      </div>
+
+      <div class="field is-horizontal bordered-row">
+        <label class="label column is-3" style="margin-bottom:0;">Text Color</label>
+        <div class="control column is-6">
+          <input class="input" type="color" v-model="textColor">
+        </div>
+      </div>
+
+      <div class="field is-grouped">
+        <div class="control">
+          <button class="button is-primary" @click="addLabel()">Add label</button>
+        </div>
+        <div class="control">
+          <button class="button is-text" @click="reset()">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/label.js' %}"></script>
+{% endblock %}

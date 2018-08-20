@@ -47,6 +47,10 @@ class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/stats.html'
 
 
+class GuidelineView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/guideline.html'
+
+
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_upload.html'
 
