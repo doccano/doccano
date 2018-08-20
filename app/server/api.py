@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
+from .serializers import ProjectSerializer, LabelSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
