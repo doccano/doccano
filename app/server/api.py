@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer
+from .classifiers import NERModel
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -160,29 +161,32 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
 class AutoLabeling(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser)
 
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        serializer_class = project.get_annotation_serializer()
+
+        return serializer_class
+
     def get(self, request, *args, **kwargs):
         """
         Return a list of predicted entities.
         """
-        # predict entities.
-        # store predicted entities into db(SequenceAnnotation table).
-        # return predicted entities(as with AnnotationList API):
-        # [
-        #     {
-        #         "id": 14,
-        #         "prob": 0.0,
-        #         "label": 2,
-        #         "start_offset": 23,
-        #         "end_offset": 28
-        #     },
-        #     {
-        #         "id": 13,
-        #         "prob": 0.0,
-        #         "label": 5,
-        #         "start_offset": 10,
-        #         "end_offset": 18
-        #     }
-        # ]
+        # doc_id = self.kwargs['doc_id']
+        project_id = self.kwargs['project_id']
+        serializer_class = self.get_serializer_class()
+        # text = request.data.get('text')
+        # model = NERModel(model='')
+        # res = model.predict(text)
+
+        # resに期待する出力
+        # [{
+        #    'label': int,
+        #    'start_offset': int,
+        #    'end_offset': int,
+        # }]
+        # 文書d内のアノテーションをすべて削除
+        # serializerを使ってSequenceAnnotationにresの結果を登録
+        # serializer.dataを返却
         res = [
             {
                 "id": 116,
@@ -268,5 +272,8 @@ class AutoLabeling(APIView):
         """
         Train a model.
         """
+        # text = request.data.get('text')
+        # model = NERModel(model='')
+        # model.train()
         print('Trained!')
         return Response([])
