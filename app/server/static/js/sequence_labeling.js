@@ -166,7 +166,8 @@ const vm = new Vue({
     },
 
     autoLabeling() {
-      HTTP.get('auto-labeling').then((response) => {
+      const docId = this.docs[this.pageNumber].id;
+      HTTP.get(`auto-labeling/${docId}/`).then((response) => {
         Vue.set(this.annotations, this.pageNumber, response.data);
         //this.annotations[this.pageNumber] = response.data;
       });

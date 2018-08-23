@@ -161,22 +161,25 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
 class AutoLabeling(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser)
 
-    def get_serializer_class(self):
+    def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        serializer_class = project.get_annotation_serializer()
+        document = project.documents.get(id=self.kwargs['doc_id'])
+        queryset = document.get_annotations()
+        queryset = queryset.filter(user=self.request.user)
 
-        return serializer_class
+        return queryset
 
     def get(self, request, *args, **kwargs):
         """
         Return a list of predicted entities.
         """
-        # doc_id = self.kwargs['doc_id']
-        project_id = self.kwargs['project_id']
-        serializer_class = self.get_serializer_class()
-        # text = request.data.get('text')
+        # doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        # annotations = doc.get_annotations().filter(user=self.request.user)
         # model = NERModel(model='')
-        # res = model.predict(text)
+        # res = model.predict(doc.text)
+        # delete annotations
+        # store predicted result to SeqAnnotation
+        # return res
 
         # resに期待する出力
         # [{
@@ -272,8 +275,22 @@ class AutoLabeling(APIView):
         """
         Train a model.
         """
-        # text = request.data.get('text')
-        # model = NERModel(model='')
-        # model.train()
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        doc = project.documents.get(id=self.kwargs['doc_id'])
+        annotations = doc.get_annotations().filter(user=self.request.user)
+        entities = [(a.start_offset, a.end_offset, a.label.text) for a in annotations]
+        labels = project.labels.all()
+        train_data = [
+            (
+                doc.text,
+                {
+                    'entities': entities
+                }
+            )
+        ]
+        model = NERModel()
+        for label in labels:
+            model.add_label(label.text)
+        model.train(train_data)
         print('Trained!')
         return Response([])
