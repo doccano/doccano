@@ -7,10 +7,11 @@ const annotationMixin = {
       labels: [],
       tmp_docs: [],
       tmp_annotations: [],
-      guideline: '',
+      guideline: 'You can see annotation guideline here.',
       searchQuery: '',
       picked: 'all',
       annotationId: 100,
+      isActive: false,
     };
   },
 
@@ -87,6 +88,12 @@ const annotationMixin = {
 
     count() {
       return this.docs.length;
+    },
+
+    compiledMarkdown() {
+      return marked(this.guideline, {
+        sanitize: true,
+      });
     },
 
     remaining() {
