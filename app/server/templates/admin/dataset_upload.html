@@ -29,9 +29,9 @@
               <label class="radio" style="margin-bottom:10px;">
                 <input type="radio" name="format" checked> Upload a TXT file from your computer
               </label>
-              <div class="file is-small" style="margin-bottom:20px;">
+              <div class="file has-name is-small" style="margin-bottom:20px;">
                 <label class="file-label">
-                  <input class="file-input" type="file" name="csv_file" required>
+                  <input class="file-input" type="file" ref="file" name="csv_file" required v-on:change="handleFileUpload()">
                   <span class="file-cta">
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
@@ -39,6 +39,9 @@
                     <span class="file-label">
                       Select a file…
                     </span>
+                  </span>
+                  <span class="file-name">
+                    [[ file ]]
                   </span>
                 </label>
               </div>
@@ -58,4 +61,7 @@
     </div>
   </div>
 </div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/upload.js' %}"></script>
 {% endblock %}

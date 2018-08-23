@@ -12,7 +12,8 @@ module.exports = {
         'guideline': './static/js/guideline.js',
         'demo_text_classification': './static/js/demo/demo_text_classification.js',
         'demo_named_entity': './static/js/demo/demo_named_entity.js',
-        'demo_translation': './static/js/demo/demo_translation.js'
+        'demo_translation': './static/js/demo/demo_translation.js',
+        'upload': './static/js/upload.js'
     },
     output: {
         path: __dirname + '/static/bundle',
