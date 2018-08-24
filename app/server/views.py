@@ -58,12 +58,18 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
         try:
             form_data = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
-            Document.objects.bulk_create([Document(
-                text=line.strip(),
-                project=project) for line in form_data])
+            if project.is_type_of(Project.SEQUENCE_LABELING):
+                Document.objects.bulk_create([Document(
+                    text=line.strip(),
+                    project=project) for line in form_data])
+            else:
+                reader = csv.reader(form_data)
+                Document.objects.bulk_create([Document(
+                    text=line[0].strip(),
+                    project=project) for line in reader])
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except:
-            return HttpResponseRedirect(reverse('dataset-upload', args=[project.id]))
+            return HttpResponseRedirect(reverse('upload', args=[project.id]))
 
 
 class DataDownload(SuperUserMixin, LoginRequiredMixin, View):
