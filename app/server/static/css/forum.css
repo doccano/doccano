@@ -170,8 +170,9 @@ p {
 
 }
 
-/*---------- SPACING ----------*/
-
+.has-background-royalblue {
+  background-color:royalblue !important;
+}
 
 /* Padding Zero */
 
@@ -438,6 +439,17 @@ p {
 	}
 }
 
+.pbrem075 {
+  padding-bottom: 0.75rem;
+}
+
+.mrrem025 {
+  margin-right: 0.25rem;
+}
+
+.mlrem-0375 {
+  margin-left:-.375rem;
+}
 
 /* Margin Auto */
 

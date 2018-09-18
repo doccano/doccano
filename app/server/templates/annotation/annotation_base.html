@@ -10,7 +10,7 @@
   <aside class="column is-3 aside hero is-fullheight">
     <div>
 
-      <div class="main" style="padding: 20px 20px">
+      <div class="main pr20 pl20">
         <div class="field has-addons">
           <div class="control is-expanded">
             <input class="input" type="text" placeholder="Search document" v-model="searchQuery" @keyup.enter="submit" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
@@ -20,12 +20,12 @@
             <div class="dropdown is-hoverable is-right">
               <div class="dropdown-trigger">
                 <button class="button" aria-haspopup="true" aria-controls="dropdown-menu" style="border-left:none">
-                  <span class="icon has-text-grey" style="padding-right:0;">
+                  <span class="icon has-text-grey pr0">
                     <i class="fas fa-angle-down" aria-hidden="true"></i>
                   </span>
                 </button>
               </div>
-              <div class="dropdown-menu" id="dropdown-menu" role="menu" style="padding-top:0">
+              <div class="dropdown-menu pt0" id="dropdown-menu" role="menu">
                 <div class="dropdown-content">
                   <a class="dropdown-item">
                     <label class="radio">
@@ -49,7 +49,7 @@
         </div>
       </div>
 
-      <div class="main" style="padding:0px 20px;">
+      <div class="main pt0 pb0 pr20 pl20">
         <span>About [[ count ]] results</span>
       </div>
 
@@ -85,7 +85,7 @@
         <progress class="progress is-inline-block" v-bind:class="progressColor" v-bind:value="achievement" max="100">30%</progress>
       </div>
       <div class="column is-8">
-        <span style="margin-left:10px;"><strong>[[ total - remaining ]]</strong></span>/<span>[[ total ]]</span>
+        <span class="ml10"><strong>[[ total - remaining ]]</strong></span>/<span>[[ total ]]</span>
       </div>
       <div class="column is-1 has-text-right">
         <a class="button" @click="isActive=!isActive">
@@ -98,7 +98,7 @@
 
     {% block annotation-area %} {% endblock %}
 
-    <div class="level" style="margin-top:30px;">
+    <div class="level mt30">
       <a class="button level-left" v-on:click="prevPage" v-shortkey="{prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft']}"
         @shortkey="prevPage">
         <span class="icon">

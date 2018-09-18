@@ -26,7 +26,7 @@
   </section>
 
   <div class="container">
-    <div class="columns" style="margin-top:0">
+    <div class="columns mt0">
       <div class="column is-3">
         <aside class="menu">
           <p class="menu-label">
@@ -66,7 +66,7 @@
                 </div>
                 {% endfor %}
               </section>
-              <footer class="modal-card-foot" style="background-color:#dbdbdb !important;padding:20px !important;">
+              <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
                 <button class="button is-primary">Create</button>
                 <button class="button" @click="isActive=!isActive">Cancel</button>
               </footer>
@@ -107,7 +107,7 @@
                   <section class="modal-card-body">
                     Are you sure you want to delete project?
                   </section>
-                  <footer class="modal-card-foot" style="background-color:#dbdbdb !important;padding:20px !important;">
+                  <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
                     <button class="button is-danger" @click="deleteProject(project)">Delete</button>
                     <button class="button" @click="isDelete=!isDelete">Cancel</button>
                   </footer>
@@ -115,7 +115,7 @@
               </div>
               <div class="card-footer">
                 <a v-bind:href="'/projects/' + project.id + '/docs'" class="card-footer-item">Edit</a>
-                <a href="#1" class="card-footer-item has-text-danger" style="font-weight:700" @click="isDelete=!isDelete">Delete</a>
+                <a href="#1" class="card-footer-item has-text-danger has-text-weight-bold" @click="isDelete=!isDelete">Delete</a>
               </div>
               {% endif %}
             </div>
