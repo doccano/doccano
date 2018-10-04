@@ -1,11 +1,12 @@
 dj-database-url==0.5.0
-Django==2.0.5
+Django==2.1.2
 django-filter==1.1.0
 django-heroku==0.3.1
 django-widget-tweaks==1.4.2
 djangorestframework==3.8.2
 djangorestframework-filters==0.10.2
 Faker==0.8.8
+gunicorn==19.9.0
 mixer==6.0.1
 psycopg2==2.7.5
 python-dateutil==2.7.3
