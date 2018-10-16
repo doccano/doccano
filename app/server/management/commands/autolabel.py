@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from server.models import (Document, Project, Label,
                           SequenceAnnotation, User)
-import en_core_web_md
 import string
 
 # if we want to add new labels, decide on some new colors for them
@@ -57,7 +56,7 @@ class Command(BaseCommand):
         print("model loaded")
         project = Project.objects.get(pk=project_id)
         docs = Document.objects.filter(project_id=project_id)
-        docs = docs[:2]
+        docs = docs[:20]
         
         # keep track of next label color, next label shortcut
         labels_created = 0
