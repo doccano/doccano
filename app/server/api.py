@@ -308,7 +308,5 @@ class AnnotationConfirmation(APIView):
         project = get_object_or_404(Project, pk=project_id)
         doc = project.documents.get(id=doc_id)
         annotations = doc.get_annotations().filter(user=self.request.user)
-        for ann in annotations:
-            if not ann.manual:
-                ann.update(manual=True)
+        annotations.update(manual=True)
         return Response([])
