@@ -294,3 +294,21 @@ class AutoLabeling(APIView):
         model.train(train_data)
         print('Trained!')
         return Response([])
+
+
+class AnnotationConfirmation(APIView):
+    """
+    This view is used to turn manual annotations (from autolabel functionality)
+    into reviewed (manual=False) annotations. Currently gets called when
+    the user calls nextPage()
+    """
+    permission_classes = (IsAuthenticated, IsProjectUser)
+
+    def post(self, request, project_id, doc_id):
+        project = get_object_or_404(Project, pk=project_id)
+        doc = project.documents.get(id=doc_id)
+        annotations = doc.get_annotations().filter(user=self.request.user)
+        for ann in annotations:
+            if not ann.manual:
+                ann.update(manual=True)
+        return Response([])
