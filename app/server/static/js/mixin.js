@@ -22,7 +22,7 @@ const annotationMixin = {
     async nextPage() {
       const payload = {};
       const docId = this.docs[this.pageNumber].id
-      HTTP.post(`annotationconfirmation/${docId}/annotations/`, payload).then((response) => {});
+      HTTP.post(`annotationconfirmation/${docId}/`, payload).then((response) => {});
       this.pageNumber += 1;
       if (this.pageNumber === this.docs.length) {
         if (this.next) {
