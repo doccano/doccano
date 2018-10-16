@@ -21,7 +21,7 @@ const annotationMixin = {
   methods: {
     async nextPage() {
       const payload = {};
-      const doc_id = this.docs[this.pageNumber].id
+      const docId = this.docs[this.pageNumber].id
       HTTP.post(`annotationconfirmation/${docId}/annotations/`, payload).then((response) => {});
       this.pageNumber += 1;
       if (this.pageNumber === this.docs.length) {
