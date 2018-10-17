@@ -31,7 +31,38 @@ def load_model(model_str):
         import en_core_web_md
         model_func = en_core_web_md.load()
     if model_str == "seed_data":
-        pass
+        import spacy
+        from spacy.matcher import PhraseMatcher
+        from spacy.tokens import Span
+
+        class EntityMatcher(object):
+            """
+            Matcher with multi-case
+            """
+            def __init__(self, nlp, terms, label):
+                patterns = [nlp(text.lower()) for text in terms]
+                patterns += [nlp(text.upper()) for text in terms]
+                patterns += [nlp(text.title()) for text in terms]
+                self.matcher = PhraseMatcher(nlp.vocab)
+                self.matcher.add(label, None, *patterns)
+                self.name = '{}_matcher'.format(label)
+        
+            def __call__(self, doc):
+                matches = self.matcher(doc)
+                for match_id, start, end in matches:
+                    span = Span(doc, start, end, label=match_id)
+                    doc.ents = list(doc.ents) + [span]
+                return doc
+
+        nlp = spacy.load('en_core_web_md', disable=['ner'])
+        with open("../data/seeds.json", 'r') as f:    
+            seed_data_json = json.loads(f.read())
+        for key in seed_data_json.keys():
+            terms = seed_data_json[key]
+            #terms = spacy_similarity(terms, nlp, num_similar=2)
+            entity_matcher = EntityMatcher(nlp, terms, key)
+            nlp.add_pipe(entity_matcher)
+        model_func = nlp
     return model_func
 
 
