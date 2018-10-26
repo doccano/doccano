@@ -83,6 +83,14 @@ const annotationMixin = {
         this.annotations[this.pageNumber].splice(index, 1);
       });
     },
+
+    deleteDoc() {
+      const docId = this.docs[this.pageNumber].id;
+      HTTP.delete(`docs/${docId}`).then((response) => {
+        this.docs.splice(this.pageNumber, 1);
+        this.annotations.splice(this.pageNumber, 1);
+      });
+    }
   },
 
   watch: {

@@ -99,6 +99,15 @@
     {% block annotation-area %} {% endblock %}
 
     <div class="level mt30">
+      {% if user.is_superuser %}
+        <div>
+          <a class="button level-left" @click="deleteDoc">
+            Delete Document
+          </a>
+        </div>
+      {% endif %}
+    </div>
+    <div class="level mt30">
       <a class="button level-left" v-on:click="prevPage" v-shortkey="{prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft']}"
         @shortkey="prevPage">
         <span class="icon">

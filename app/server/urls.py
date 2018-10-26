@@ -6,7 +6,7 @@ from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, G
 from .views import ProjectsView, DataDownload
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
-    AnnotationList, AnnotationDetail, DocumentList
+    AnnotationList, AnnotationDetail, DocumentList, DeleteDocument
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -20,6 +20,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/', DocumentList.as_view(), name='docs'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/', AnnotationList.as_view(), name='annotations'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>', AnnotationDetail.as_view(), name='ann'),
+    path('api/projects/<int:project_id>/docs/<int:doc_id>', DeleteDocument.as_view(), name='delete-document'),
     path('projects/', ProjectsView.as_view(), name='projects'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
