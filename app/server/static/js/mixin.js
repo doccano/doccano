@@ -87,8 +87,16 @@ const annotationMixin = {
     deleteDoc() {
       const docId = this.docs[this.pageNumber].id;
       HTTP.delete(`docs/${docId}`).then((response) => {
+        // remove the document and its annotations, decrement count
         this.docs.splice(this.pageNumber, 1);
         this.annotations.splice(this.pageNumber, 1);
+        this.count = this.count-1;
+        // if there's a next url, decrement offset=
+        if (this.next){
+          var offset = this.next.match("(\&offset=)(\\d+)");
+          var new_offset = offset[1] + String(parseInt(offset[2])-1)
+          this.next = this.next.replace(offset[0], new_offset);
+        }
       });
     }
   },
