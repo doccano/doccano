@@ -70,6 +70,12 @@ Vue.component('annotator', {
         if ((e.start_offset < this.endOffset) && (this.endOffset < e.end_offset)) {
           return false;
         }
+        if ((this.startOffset < e.start_offset) && (e.start_offset < this.endOffset)) {
+          return false;
+        }
+        if ((this.startOffset < e.end_offset) && (e.end_offset < this.endOffset)) {
+          return false;
+        }
       }
       return true;
     },
