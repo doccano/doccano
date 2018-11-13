@@ -64,10 +64,16 @@ Vue.component('annotator', {
       }
       for (let i = 0; i < this.entityPositions.length; i++) {
         const e = this.entityPositions[i];
-        if ((e.start_offset <= this.startOffset) && (this.startOffset <= e.end_offset)) {
+        if ((e.start_offset <= this.startOffset) && (this.startOffset < e.end_offset)) {
           return false;
         }
-        if ((e.start_offset <= this.endOffset) && (this.endOffset <= e.end_offset)) {
+        if ((e.start_offset < this.endOffset) && (this.endOffset < e.end_offset)) {
+          return false;
+        }
+        if ((this.startOffset < e.start_offset) && (e.start_offset < this.endOffset)) {
+          return false;
+        }
+        if ((this.startOffset < e.end_offset) && (e.end_offset < this.endOffset)) {
           return false;
         }
       }
