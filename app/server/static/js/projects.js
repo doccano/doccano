@@ -11,18 +11,13 @@ const vm = new Vue({
   delimiters: ['[[', ']]'],
   data: {
     items: [],
-    selectedType: 'All',
     isActive: false,
     isDelete: false,
     project: null,
+    selected: 'All Project',
   },
 
   methods: {
-    getProjects() {
-      axios.get(`${baseUrl}/api/projects`).then((response) => {
-        this.items = response.data;
-      });
-    },
 
     deleteProject() {
       axios.delete(`${baseUrl}/api/projects/${this.project.id}/`).then((response) => {
@@ -37,43 +32,35 @@ const vm = new Vue({
       this.isDelete = true;
     },
 
-    updateSelectedType(type) {
-      this.selectedType = type;
+    matchType(projectType) {
+      if (projectType === 'DocumentClassification') {
+        return this.selected === 'Text Classification';
+      }
+      if (projectType === 'SequenceLabeling') {
+        return this.selected === 'Sequence Labeling';
+      }
+      if (projectType === 'Seq2seq') {
+        return this.selected === 'Seq2seq';
+      }
+      return false;
     },
   },
 
   computed: {
-    uniqueProjectTypes() {
-      const types = [];
-      for (let i = 0; i < this.items.length; i++) {
-        const item = this.items[i];
-        types.push(item.project_type);
-      }
-      const uniqueTypes = Array.from(new Set(types));
-
-      return uniqueTypes;
-    },
-
-    filteredProjects() {
-      // filter projects
+    selectedProjects() {
       const projects = [];
-      for (let i = 0; i < this.items.length; i++) {
-        const item = this.items[i];
-        if ((this.selectedType === 'All') || (item.project_type === this.selectedType)) {
+      for (let item of this.items) {
+        if ((this.selected === 'All Project') || this.matchType(item.project_type)) {
           projects.push(item);
         }
       }
-      // create nested projects
-      const nestedProjects = [];
-      for (let i = 0; i < Math.ceil(projects.length / 3); i++) {
-        const p = projects.slice(i * 3, (i + 1) * 3);
-        nestedProjects.push(p);
-      }
-      return nestedProjects;
+      return projects;
     },
   },
 
   created() {
-    this.getProjects();
+    axios.get(`${baseUrl}/api/projects`).then((response) => {
+      this.items = response.data;
+    });
   },
 });
