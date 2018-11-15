@@ -108,14 +108,14 @@
                     Are you sure you want to delete project?
                   </section>
                   <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
-                    <button class="button is-danger" @click="deleteProject(project)">Delete</button>
+                    <button class="button is-danger" @click="deleteProject()">Delete</button>
                     <button class="button" @click="isDelete=!isDelete">Cancel</button>
                   </footer>
                 </div>
               </div>
               <div class="card-footer">
                 <a v-bind:href="'/projects/' + project.id + '/docs'" class="card-footer-item">Edit</a>
-                <a href="#1" class="card-footer-item has-text-danger has-text-weight-bold" @click="isDelete=!isDelete">Delete</a>
+                <a href="#1" class="card-footer-item has-text-danger has-text-weight-bold" @click="setProject(project)">Delete</a>
               </div>
               {% endif %}
             </div>

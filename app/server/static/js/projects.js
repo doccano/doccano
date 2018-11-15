@@ -14,6 +14,7 @@ const vm = new Vue({
     selectedType: 'All',
     isActive: false,
     isDelete: false,
+    project: null,
   },
 
   methods: {
@@ -23,12 +24,17 @@ const vm = new Vue({
       });
     },
 
-    deleteProject(project) {
-      axios.delete(`${baseUrl}/api/projects/${project.id}/`).then((response) => {
+    deleteProject() {
+      axios.delete(`${baseUrl}/api/projects/${this.project.id}/`).then((response) => {
         this.isDelete = false;
-        const index = this.items.indexOf(project);
+        const index = this.items.indexOf(this.project);
         this.items.splice(index, 1);
       });
+    },
+
+    setProject(project) {
+      this.project = project;
+      this.isDelete = true;
     },
 
     updateSelectedType(type) {
