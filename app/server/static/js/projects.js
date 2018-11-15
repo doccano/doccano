@@ -44,6 +44,19 @@ const vm = new Vue({
       }
       return false;
     },
+
+    getDaysAgo(dateStr) {
+      const updatedAt = new Date(dateStr);
+      const currentTm = new Date();
+
+      // difference between days(ms)
+      const msDiff = currentTm.getTime() - updatedAt.getTime();
+
+      // convert daysDiff(ms) to daysDiff(day)
+      const daysDiff = Math.floor(msDiff / (1000 * 60 * 60 * 24));
+
+      return daysDiff;
+    },
   },
 
   computed: {
