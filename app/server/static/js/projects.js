@@ -11,63 +11,69 @@ const vm = new Vue({
   delimiters: ['[[', ']]'],
   data: {
     items: [],
-    selectedType: 'All',
     isActive: false,
     isDelete: false,
+    project: null,
+    selected: 'All Project',
   },
 
   methods: {
-    getProjects() {
-      axios.get(`${baseUrl}/api/projects`).then((response) => {
-        this.items = response.data;
-      });
-    },
 
-    deleteProject(project) {
-      axios.delete(`${baseUrl}/api/projects/${project.id}/`).then((response) => {
+    deleteProject() {
+      axios.delete(`${baseUrl}/api/projects/${this.project.id}/`).then((response) => {
         this.isDelete = false;
-        const index = this.items.indexOf(project);
+        const index = this.items.indexOf(this.project);
         this.items.splice(index, 1);
       });
     },
 
-    updateSelectedType(type) {
-      this.selectedType = type;
+    setProject(project) {
+      this.project = project;
+      this.isDelete = true;
+    },
+
+    matchType(projectType) {
+      if (projectType === 'DocumentClassification') {
+        return this.selected === 'Text Classification';
+      }
+      if (projectType === 'SequenceLabeling') {
+        return this.selected === 'Sequence Labeling';
+      }
+      if (projectType === 'Seq2seq') {
+        return this.selected === 'Seq2seq';
+      }
+      return false;
+    },
+
+    getDaysAgo(dateStr) {
+      const updatedAt = new Date(dateStr);
+      const currentTm = new Date();
+
+      // difference between days(ms)
+      const msDiff = currentTm.getTime() - updatedAt.getTime();
+
+      // convert daysDiff(ms) to daysDiff(day)
+      const daysDiff = Math.floor(msDiff / (1000 * 60 * 60 * 24));
+
+      return daysDiff;
     },
   },
 
   computed: {
-    uniqueProjectTypes() {
-      const types = [];
-      for (let i = 0; i < this.items.length; i++) {
-        const item = this.items[i];
-        types.push(item.project_type);
-      }
-      const uniqueTypes = Array.from(new Set(types));
-
-      return uniqueTypes;
-    },
-
-    filteredProjects() {
-      // filter projects
+    selectedProjects() {
       const projects = [];
-      for (let i = 0; i < this.items.length; i++) {
-        const item = this.items[i];
-        if ((this.selectedType === 'All') || (item.project_type === this.selectedType)) {
+      for (let item of this.items) {
+        if ((this.selected === 'All Project') || this.matchType(item.project_type)) {
           projects.push(item);
         }
       }
-      // create nested projects
-      const nestedProjects = [];
-      for (let i = 0; i < Math.ceil(projects.length / 3); i++) {
-        const p = projects.slice(i * 3, (i + 1) * 3);
-        nestedProjects.push(p);
-      }
-      return nestedProjects;
+      return projects;
     },
   },
 
   created() {
-    this.getProjects();
+    axios.get(`${baseUrl}/api/projects`).then((response) => {
+      this.items = response.data;
+    });
   },
 });
