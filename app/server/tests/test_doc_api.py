@@ -63,35 +63,3 @@ class TestDocAPI(APITestCase):
         response = self.client.get(url, format='json')
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_create_doc_by_admin(self):
-        """
-        Ensure we can create a new document object by admin.
-        """
-        # user = self.create_superuser()
-        # project = self.create_project()
-        # project.users.add(user)
-        #
-        # data = {'text': 'doc', 'labels': []}
-        # url = reverse('docs', args=[project.id])
-        # self.client.login(username=self.username, password=self.password)
-        # response = self.client.post(url, data, format='json')
-        #
-        # self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        # self.assertEqual(Document.objects.count(), 1)
-        # self.assertEqual(Document.objects.get().text, 'doc')
-
-    def test_create_doc_by_user(self):
-        """
-        Ensure we cannot create a new project object by user.
-        """
-        user = self.create_user()
-        project = self.create_project()
-        project.users.add(user)
-
-        data = {'text': 'doc', 'labels': []}
-        url = reverse('docs', args=[project.id])
-        self.client.login(username=self.username, password=self.password)
-        response = self.client.post(url, data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
