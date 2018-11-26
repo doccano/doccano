@@ -55,9 +55,7 @@
       </div>
       <div id="topNav" class="navbar-menu">
         <div class="navbar-end">
-          <a class="navbar-item" href="{% url 'index' %}">
-            <span>Home</span>
-          </a>
+          {% if not user.is_authenticated %}
           <div class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link">
               <span>Live Demo</span>
@@ -74,15 +72,15 @@
               </a>
             </div>
           </div>
+          <a class="navbar-item" href="https://github.com/chakki-works/doccano">
+            <span>GitHub</span>
+          </a>
+          {% endif %}
           {% if user.is_authenticated %}
           <a class="navbar-item" href="{% url 'projects' %}">
             <span>Projects</span>
           </a>
           {% endif %}
-          <!--<a class="navbar-item" href="hoge.html">Live Demo</a>-->
-          <a class="navbar-item" href="https://github.com/chakki-works/doccano">
-            <span>GitHub</span>
-          </a>
           {% if not user.is_authenticated %}
           <a class="navbar-item" href="{% url 'login' %}">
             <span>Login</span>
