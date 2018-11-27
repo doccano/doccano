@@ -1,4 +1,5 @@
 import csv
+import json
 from io import TextIOWrapper
 
 from django.urls import reverse
@@ -56,17 +57,29 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
+        import_format = request.POST['format']
         try:
-            form_data = TextIOWrapper(request.FILES['csv_file'].file, encoding='utf-8')
-            if project.is_type_of(Project.SEQUENCE_LABELING):
-                Document.objects.bulk_create([Document(
-                    text=line.strip(),
-                    project=project) for line in form_data])
-            else:
-                reader = csv.reader(form_data)
-                Document.objects.bulk_create([Document(
-                    text=line[0].strip(),
-                    project=project) for line in reader])
+            if import_format == 'csv':
+                form_data = TextIOWrapper(
+                    request.FILES['file'].file, encoding='utf-8')
+                if project.is_type_of(Project.SEQUENCE_LABELING):
+                    Document.objects.bulk_create([
+                        Document(text=line.strip(), project=project)
+                        for line in form_data
+                    ])
+                else:
+                    reader = csv.reader(form_data)
+                    Document.objects.bulk_create([
+                        Document(text=line[0].strip(), project=project)
+                        for line in reader
+                    ])
+
+            elif import_format == 'json':
+                form_data = request.FILES['file'].file
+                Document.objects.bulk_create([
+                    Document(text=json.loads(entry)['text'], project=project)
+                    for entry in form_data
+                ])
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except:
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
