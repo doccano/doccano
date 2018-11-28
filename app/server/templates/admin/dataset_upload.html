@@ -27,11 +27,12 @@
           <div class="section">
             <div class="control">
               <label class="radio mb10">
-                <input type="radio" name="format" checked> Upload a TXT file from your computer
-              </label>
+                <input type="radio" name="format" value="csv" checked> Upload a TXT file from your computer<br>
+                <input type="radio" name="format" value="json" checked> Upload a JSON file from your computer<br>
+               </label>
               <div class="file has-name is-small mb20">
                 <label class="file-label">
-                  <input class="file-input" type="file" ref="file" name="csv_file" required v-on:change="handleFileUpload()">
+                  <input class="file-input" type="file" ref="file" name="file" required v-on:change="handleFileUpload()">
                   <span class="file-cta">
                     <span class="file-icon">
                       <i class="fas fa-upload"></i>
