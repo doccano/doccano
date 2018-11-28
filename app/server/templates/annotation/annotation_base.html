@@ -5,6 +5,14 @@
 <script src="https://unpkg.com/marked@0.3.6"></script>
 <script src="https://unpkg.com/lodash@4.16.0"></script>
 {% endblock %}
+{% block navigation %}
+<a class="navbar-item" href="{% url 'dataset' view.kwargs.project_id %}">
+  <span class="icon">
+    <i class="fas fa-edit"></i>
+  </span>
+  <b>Edit Data</b>
+</a>
+{% endblock %}
 {% block content %}
 <div class="columns" id="mail-app" v-cloak>
   <aside class="column is-3 aside hero is-fullheight">

@@ -4,6 +4,12 @@
 <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 {% endblock %}
 {% block navigation %}
+<a class="navbar-item" href="{% url 'annotation' view.kwargs.project_id %}">
+  <span class="icon">
+    <i class="fas fa-user-edit"></i>
+  </span>
+  <b>Annotate Data</b>
+</a>
 <a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
   <span class="icon">
     <i class="fas fa-upload"></i>
