@@ -76,10 +76,16 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
             elif import_format == 'json':
                 form_data = request.FILES['file'].file
-                Document.objects.bulk_create([
-                    Document(text=json.loads(entry)['text'], project=project)
-                    for entry in form_data
-                ])
+                if project.is_type_of(Project.SEQUENCE_LABELING):
+                    Document.objects.bulk_create([
+                        Document(text=json.loads(entry)['text'].replace('\n', ''), project=project)
+                        for entry in form_data
+                    ])
+                else:
+                    Document.objects.bulk_create([
+                        Document(text=json.loads(entry)['text'], project=project)
+                        for entry in form_data
+                    ])
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except:
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
