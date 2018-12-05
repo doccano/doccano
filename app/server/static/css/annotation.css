@@ -146,6 +146,10 @@ body {
   padding-right: .5em;
 }
 
+.content .text {
+  white-space: pre-wrap;
+}
+
 :focus {
   outline: 0;
 }
