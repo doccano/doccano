@@ -6,18 +6,19 @@
 <script src="https://unpkg.com/lodash@4.16.0"></script>
 {% endblock %}
 {% block navigation %}
+{% if user.is_superuser %}
 <a class="navbar-item" href="{% url 'dataset' view.kwargs.project_id %}">
   <span class="icon">
     <i class="fas fa-edit"></i>
   </span>
   <b>Edit Data</b>
 </a>
+{% endif %}
 {% endblock %}
 {% block content %}
 <div class="columns" id="mail-app" v-cloak>
   <aside class="column is-3 aside hero is-fullheight">
     <div>
-
       <div class="main pr20 pl20">
         <div class="field has-addons">
           <div class="control is-expanded">
