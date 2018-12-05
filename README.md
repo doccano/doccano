@@ -121,7 +121,9 @@ He lives in Newark, Ohio.
 ...
 ```
 
-Once you select a csv file on your computer, select `Upload` button.
+For a text classification task you can also upload a file in json format. Each line must contain an json object with should at least one field (`text`). Using this option is required if you want to import items which contain new line character. 
+
+Once you select a csv or json file on your computer, select `Upload` button.
 
 ### Define labels
 
