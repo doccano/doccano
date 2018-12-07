@@ -193,3 +193,6 @@ pip-selfcheck.json
 
 /data/raw/*
 /data/sparql/*
+
+# ignore db to avoid merge conflicts
+*.sqlite3
