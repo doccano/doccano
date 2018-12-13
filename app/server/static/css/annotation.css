@@ -150,6 +150,11 @@ body {
   white-space: pre-wrap;
 }
 
+.content .tagged-text {
+  white-space: unset;
+  height: auto;
+}
+
 :focus {
   outline: 0;
 }
