@@ -447,12 +447,9 @@ p {
   padding-bottom: 0.75rem;
 }
 
-.mrrem025 {
-  margin-right: 0.25rem;
-}
-
-.mlrem-0375 {
-  margin-left:-.375rem;
+.tweaked-margin {
+  margin-left: -0.4rem !important;
+  margin-right: 0.3rem !important;
 }
 
 /* Margin Auto */
