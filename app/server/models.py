@@ -150,6 +150,9 @@ class Document(models.Model):
         elif self.project.is_type_of(Project.Seq2seq):
             return self.seq2seq_annotations.all()
 
+    def to_csv(self):
+        return self.make_dataset()
+
     def make_dataset(self):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
             return self.make_dataset_for_classification()
