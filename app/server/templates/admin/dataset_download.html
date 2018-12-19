@@ -23,14 +23,22 @@
           If you import as a JSON with line breaks and download it as CSV, the line breaks will render on the result.
           We recommend you download it as JSON file.
         </p>
-        <form action="{% url 'download_file' view.kwargs.project_id %}" method="get">
-          <a class="control">
-            <button type="submit" class="button is-primary" name="format" value="csv">Download CSV File</button>
-          </a>
-          <a class="control">
-            <button type="submit" class="button is-primary" name="format" value="json">Download JSON File</button>
-          </a>
-        </form>
+          <form action="{% url 'download_file' view.kwargs.project_id %}" method="get">
+            <div class="section">
+              <ul>
+                  <li>
+                    <a class="control">
+                      <button type="submit" class="button is-primary button-margin " name="format" value="csv">Download CSV File</button>
+                    </a>
+                  </li>
+                  <li>
+                  <a class="control">
+                    <button type="submit" class="button is-primary button-margin " name="format" value="json">Download JSON File</button>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </form>
       </div>
     </div>
   </div>
