@@ -104,7 +104,7 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
                 response = self.get_json(filename, docs)
             return response
         except:
-            return HttpResponseRedirect(reverse('download', args=[project.id]))
+            return HttpResponseRedirect(reverse('upload', args=[project.id]))
 
     def get_csv(self, filename, docs):
         response = HttpResponse(content_type='text/csv')
@@ -115,7 +115,13 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
         return response
 
     def get_json(self, filename, docs):
-        pass
+        response = HttpResponse(content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="{}.json"'.format(filename)
+        for d in docs:
+            dump = json.dumps(d.to_json(), ensure_ascii=False)
+            response.write(dump + '\n') # write each json object end with a newline
+        print('dump done')
+        return response
 
 
 class DemoTextClassification(TemplateView):
