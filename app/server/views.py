@@ -104,7 +104,7 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
                 response = self.get_json(filename, docs)
             return response
         except:
-            return HttpResponseRedirect(reverse('upload', args=[project.id]))
+            return HttpResponseRedirect(reverse('download', args=[project.id]))
 
     def get_csv(self, filename, docs):
         response = HttpResponse(content_type='text/csv')
