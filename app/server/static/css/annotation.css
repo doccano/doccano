@@ -147,11 +147,11 @@ body {
 }
 
 .content .text {
-  white-space: pre-wrap;
+  white-space: pre-wrap; /* Rendering newlines for classification and seq2seq tasks */
 }
 
-.content .tagged-text {
-  white-space: unset;
+.content .text-sequence {
+  white-space: normal; /* Not render newlines for sequence labelling */
   height: auto;
 }
 
