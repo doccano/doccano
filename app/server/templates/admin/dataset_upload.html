@@ -19,9 +19,10 @@
         <p>
           <b>To annotate texts, you first need to import a set of text items to annotate it.</b>
         </p>
-        <p>
-          Each line should contain a text.
-        </p>
+        <ul.is-unstyled>
+          <li>TXT file: each line should contain a text.</li>
+          <li>JSON file: each line should contain a json object with at least one key 'text', which contains a text.</li>
+        </ul.is-unstyled>
         <form action="" method="post" enctype="multipart/form-data">
           {% csrf_token %}
           <div class="section">
