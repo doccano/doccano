@@ -20,7 +20,7 @@
           <b>To annotate texts, you first need to import a set of text items to annotate it.</b>
         </p>
         <ul.is-unstyled>
-          <li>TXT file: each line should contain a text.</li>
+          <li>CSV file: file must contain a header with a text column or be one-column csv file.</li>
           <li>JSON file: each line should contain a json object with at least one key 'text', which contains a text.</li>
         </ul.is-unstyled>
         <form action="" method="post" enctype="multipart/form-data">
@@ -28,7 +28,7 @@
           <div class="section">
             <div class="control">
               <label class="radio mb10">
-                <input type="radio" name="format" value="csv" checked> Upload a TXT file from your computer<br>
+                <input type="radio" name="format" value="csv" checked> Upload a CSV file from your computer<br>
                 <input type="radio" name="format" value="json" checked> Upload a JSON file from your computer<br>
                </label>
               <div class="file has-name is-small mb20">
