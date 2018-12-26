@@ -101,6 +101,11 @@ article.post:last-child {
   color: #666;
 }
 
+.button-margin {
+  width: 5cm; /* Set a width for alignment */
+  margin-bottom: 15px;
+}
+
 p {
   font-family: "游ゴシック体", YuGothic, "YuGothic M", sans-serif;
 }

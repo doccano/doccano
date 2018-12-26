@@ -85,20 +85,42 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
 
 
-class DataDownload(SuperUserMixin, LoginRequiredMixin, View):
+class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/dataset_download.html'
+
+
+class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, pk=project_id)
         docs = project.get_documents(is_null=False).distinct()
+        export_format = request.GET.get('format')
         filename = '_'.join(project.name.lower().split())
+        try:
+            if export_format == 'csv':
+                response = self.get_csv(filename, docs)
+            elif export_format == 'json':
+                response = self.get_json(filename, docs)
+            return response
+        except:
+            return HttpResponseRedirect(reverse('download', args=[project.id]))
+
+    def get_csv(self, filename, docs):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
-
         writer = csv.writer(response)
         for d in docs:
-            writer.writerows(d.make_dataset())
+            writer.writerows(d.to_csv())
+        return response
 
+    def get_json(self, filename, docs):
+        response = HttpResponse(content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="{}.json"'.format(filename)
+        for d in docs:
+            dump = json.dumps(d.to_json(), ensure_ascii=False)
+            response.write(dump + '\n') # write each json object end with a newline
+        print('dump done')
         return response
 
 
