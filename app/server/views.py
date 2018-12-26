@@ -16,6 +16,7 @@ from django.contrib import messages
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
 from .models import Document, Project
+from app import settings
 
 logger = logging.getLogger(__name__)
 
@@ -122,8 +123,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             elif import_format == 'json':
                 documents = self.json_to_documents(project, file)
 
-            # TODO: Move to the configuration
-            batch_size = 500
+            batch_size = settings.IMPORT_BATCH_SIZE
             while True:
                 batch = list(it.islice(documents, batch_size))
                 if not batch:
