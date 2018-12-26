@@ -1,6 +1,8 @@
 import csv
 import json
 from io import TextIOWrapper
+import itertools as it
+import logging
 
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -9,11 +11,13 @@ from django.views import View
 from django.views.generic import TemplateView, CreateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
 from .models import Document, Project
 
+logger = logging.getLogger(__name__)
 
 class IndexView(TemplateView):
     template_name = 'index.html'
@@ -55,33 +59,84 @@ class GuidelineView(SuperUserMixin, LoginRequiredMixin, TemplateView):
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_upload.html'
 
+    class ImportFileError(Exception):
+        def __init__(self, message):
+            self.message = message
+
+    def extract_metadata_csv(self, row, text_col, header_without_text):
+        vals_without_text = [val for i,val in enumerate(row) if i != text_col]
+        return json.dumps(dict(zip(header_without_text, vals_without_text)))
+
+    def csv_to_documents(self, project, file, text_key='text'):
+        form_data = TextIOWrapper(file, encoding='utf-8')
+        reader = csv.reader(form_data)
+        
+        maybe_header = next(reader)
+        if maybe_header:
+            if text_key in maybe_header:
+                text_col = maybe_header.index(text_key)
+            elif len(maybe_header) == 1:
+                reader = it.chain([maybe_header], reader)
+                text_col = 0
+            else:
+                raise DataUpload.ImportFileError("CSV must have either a title with \"text\" column or have only one column ")
+
+
+            header_without_text = [title for i,title in enumerate(maybe_header) 
+                                   if i != text_col]
+
+            return (
+                Document(
+                    text=row[text_col], 
+                    metadata=self.extract_metadata_csv(row, text_col, header_without_text),
+                    project=project
+                )
+                for row in reader
+            )
+        else:
+            return []
+
+    def extract_metadata_json(self, entry, text_key):
+        copy = entry.copy()
+        del copy[text_key]
+        return json.dumps(copy)
+
+    def json_to_documents(self, project, file, text_key='text'):            
+        parsed_entries = (json.loads(line) for line in file)
+        
+        return (
+            Document(text=entry['text'], metadata=self.extract_metadata_json(entry, text_key), project=project)
+            for entry in parsed_entries
+        )
+
+
     def post(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
         import_format = request.POST['format']
         try:
+            file = request.FILES['file'].file
+            documents = []
             if import_format == 'csv':
-                form_data = TextIOWrapper(
-                    request.FILES['file'].file, encoding='utf-8')
-                if project.is_type_of(Project.SEQUENCE_LABELING):
-                    Document.objects.bulk_create([
-                        Document(text=line.strip(), project=project)
-                        for line in form_data
-                    ])
-                else:
-                    reader = csv.reader(form_data)
-                    Document.objects.bulk_create([
-                        Document(text=line[0].strip(), project=project)
-                        for line in reader
-                    ])
-
+                documents = self.csv_to_documents(project, file)
+                
             elif import_format == 'json':
-                form_data = request.FILES['file'].file
-                Document.objects.bulk_create([
-                    Document(text=json.loads(entry)['text'], project=project)
-                    for entry in form_data
-                ])
-            return HttpResponseRedirect(reverse('dataset', args=[project.id]))
-        except:
+                documents = self.json_to_documents(project, file)
+
+            # TODO: Move to the configuration
+            batch_size = 500
+            while True:
+                batch = list(it.islice(documents, batch_size))
+                if not batch:
+                    break
+
+                Document.objects.bulk_create(batch, batch_size=batch_size)
+                return HttpResponseRedirect(reverse('dataset', args=[project.id]))
+        except DataUpload.ImportFileError as e:
+            messages.add_message(request, messages.ERROR, e.message)
+            return HttpResponseRedirect(reverse('upload', args=[project.id]))
+        except Exception as e:
+            logger.exception(e)
+            messages.add_message(request, messages.ERROR, 'Something went wrong')
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
 
 
@@ -103,7 +158,9 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
             elif export_format == 'json':
                 response = self.get_json(filename, docs)
             return response
-        except:
+        except Exception as e:
+            logger.exception(e)
+            messages.add_message(request, messages.ERROR, "Something went wrong")
             return HttpResponseRedirect(reverse('download', args=[project.id]))
 
     def get_csv(self, filename, docs):
@@ -120,7 +177,6 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
         for d in docs:
             dump = json.dumps(d.to_json(), ensure_ascii=False)
             response.write(dump + '\n') # write each json object end with a newline
-        print('dump done')
         return response
 
 
