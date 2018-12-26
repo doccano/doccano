@@ -80,8 +80,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 reader = it.chain([maybe_header], reader)
                 text_col = 0
             else:
-                raise DataUpload.ImportFileError("CSV must have either a title with \"text\" column or have only one column ")
-
+                raise DataUpload.ImportFileError("CSV file must have either a title with \"text\" column or have only one column ")
 
             header_without_text = [title for i,title in enumerate(maybe_header) 
                                    if i != text_col]
