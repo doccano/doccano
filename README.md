@@ -115,7 +115,7 @@ After creating a project, you will see the "Import Data" page, or click `Import 
 <img src="./docs/upload.png" alt="Upload project" width=600>
 
 You can upload two types of files:
-- `TXT file`: each line contains a text and no line breaks (`\n`).
+- `CSV file`: file must contain a header with a `text` column or be one-column csv file.
 - `JSON file`: each line contains a JSON object with a `text` key. JSON format supports line breaks rendering.
 
 > Notice: Doccano won't render line breaks in annotation page for sequence labeling task due to the indent problem, but the exported JSON file still contains line breaks.
@@ -134,6 +134,8 @@ He lives in Newark, Ohio.
 {"text": "He lives in Newark, Ohio."}
 ...
 ```
+
+Any other columns (for csv) or keys (for json) are preserved and will be exported in the `metadata` column or key as is.
 
 Once you select a TXT/JSON file on your computer, click `Upload dataset` button. After uploading the dataset file, we will see the `Dataset` page (or click `Dataset` button list in the left bar). This page displays all the documents we uploaded in one project.
 
@@ -156,7 +158,22 @@ After the annotation step, you can download the annotated data. Click the `Edit 
 
 <img src="./docs/export_data.png" alt="Edit label" width=600>
 
-You can export data as CSV file or JSON file by clicking the button. As for the export file format, you can check it here: [Export File Formats](https://github.com/chakki-works/doccano/wiki/Export-File-Formats)
+You can export data as CSV file or JSON file by clicking the button. As for the export file format, you can check it here: [Export File Formats](https://github.com/chakki-works/doccano/wiki/Export-File-Formats). 
+
+Each exported document will have metadata column or key, which will contain
+additional columns or keys from the imported document. The primary use-case for metadata is to allow you to match exported data with other system
+by adding `external_id` to the imported file. For example:
+
+Input file may look like this:
+`import.json`
+```JSON
+{"text": "EU rejects German call to boycott British lamb.", "external_id": 1}
+```
+and the exported file will look like this:
+`output.json`
+```JSON
+{"doc_id": 2023, "text": "EU rejects German call to boycott British lamb.", "labels": ["news"], "username": "root", "metadata": {"external_id": 1}}
+```
 
 ### Tutorial
 
