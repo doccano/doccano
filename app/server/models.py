@@ -172,8 +172,10 @@ class Document(models.Model):
             for i in range(a.start_offset, a.end_offset):
                 if i == a.start_offset:
                     dataset[i][2] = 'B-{}'.format(a.label.text)
-                else:
+                elif i<len(dataset):
                     dataset[i][2] = 'I-{}'.format(a.label.text)
+                else:
+                    ValueError('label index exceeds number of letters in the text')
         return dataset
 
     def make_dataset_for_seq2seq(self):
