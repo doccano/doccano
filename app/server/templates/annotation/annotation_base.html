@@ -82,7 +82,8 @@
         <div class="modal-card">
           <header class="modal-card-head">
             <p class="modal-card-title">Annotation Guideline</p>
-            <button class="delete" aria-label="close" @click="isActive=!isActive"></button>
+            <button class="delete" aria-label="close" @click="isActive=!isActive"
+            style="line-height:1.0em; margin-top: 5px;"></button>
           </header>
           <section class="modal-card-body modal-card-body-footer content"
                    style="line-height:150%"
@@ -94,8 +95,14 @@
       <div class="column is-3">
         <progress class="progress is-inline-block" v-bind:class="progressColor" v-bind:value="achievement" max="100">30%</progress>
       </div>
-      <div class="column is-8">
+      <div class="column is-4">
         <span class="ml10"><strong>[[ total - remaining ]]</strong></span>/<span>[[ total ]]</span>
+      </div>
+      <div class="column is-3">
+        <span v-bind:text="docs[pageNumber].title">
+         <b>id:</b> [[ docs[pageNumber].id ]]
+         <b>title</b> [[ docs[pageNumber].title ]]
+        </span>
       </div>
       <div class="column is-1 has-text-right">
         <a class="button" @click="isActive=!isActive">
@@ -116,6 +123,15 @@
         </span>
         <span>Prev</span>
       </a>
+      <!--
+      <a class="button level-right" v-on:click="nextPage" v-shortkey="{apr: ['enter']}"
+        @shortkey="tagManual">
+        <span>Approve</span>
+        <span class="icon">
+          <i class="fas fa-chevron-down"></i>
+        </span>
+      </a>
+      !-->
 
       <a class="button level-right" v-on:click="nextPage" v-shortkey="{next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright']}"
         @shortkey="nextPage">

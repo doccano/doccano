@@ -129,6 +129,32 @@ He lives in Newark, Ohio.
 
 Once you select a csv file on your computer, select `Upload` button.
 
+### Import pre-annotated JSON files
+
+For sequence labelling, one can import pre-annotated json files structured as
+
+    [
+    {'title': 'doc1',
+    'text': 'EU rejects German call to boycott British lamb.'
+    'seq_annotation':[
+        {'start':0, 'end': 2, 'label': 'place'},
+        {'start':11, 'end': 17, 'label': 'place'},
+        {'start':34, 'end': 41, 'label': 'place'}
+        ]
+    },
+    {'title': 'doc2',
+    ...}
+    ]
+
+That is each document is represented as a dictionary within a list of dictionaries.
+The neccessary component of document dictionary is `'text'`. Optional components are `'seq_annotation'`, 
+which is the sequence annotation per se and `title` (or `id`). The latter will be parsed into metadata field named
+`'title'`. Each item within the `seq_annotation` list must contain three fields:
+
+ 1. `'start' | 's' | 'start_offset'` -- position of a character where the annotation begins
+ 2. `'end'   | 'e' | 'end_offset'  ` -- position of character where the annotation ends
+ 3. `'label' | 'l' ` -- annotation label.
+
 ### Define labels
 
 Now we’ll define your labels. To define your labels, select `Labels` menu. You should see the label editor page:
