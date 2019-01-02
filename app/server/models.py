@@ -141,6 +141,7 @@ class Label(models.Model):
 class Document(models.Model):
     text = models.TextField()
     project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
+    title = models.CharField(max_length=64, blank=True, null=True)
 
     def get_annotations(self):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):

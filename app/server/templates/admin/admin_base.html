@@ -20,7 +20,13 @@
   <span class="icon">
     <i class="fas fa-download"></i>
   </span>
-  <b>Export Data</b>
+  <b>Export to CSV</b>
+</a>
+<a class="navbar-item" href="{% url 'download-json' view.kwargs.project_id %}">
+  <span class="icon">
+    <i class="fas fa-download"></i>
+  </span>
+  <b>Export to JSON</b>
 </a>
 {% endblock %}
 {% block content %}

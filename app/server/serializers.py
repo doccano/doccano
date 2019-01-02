@@ -15,7 +15,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'text')
+        fields = ('id', 'title', 'text', )
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -94,7 +94,7 @@ class SequenceDocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations')
+        fields = ('id', 'title', 'text', 'annotations')
 
 
 class Seq2seqDocumentSerializer(serializers.ModelSerializer):
