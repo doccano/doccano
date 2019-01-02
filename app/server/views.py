@@ -105,7 +105,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         parsed_entries = (json.loads(line) for line in file)
         
         return (
-            Document(text=entry['text'], metadata=self.extract_metadata_json(entry, text_key), project=project)
+            Document(text=entry[text_key], metadata=self.extract_metadata_json(entry, text_key), project=project)
             for entry in parsed_entries
         )
 
