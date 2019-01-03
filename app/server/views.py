@@ -129,7 +129,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                     break
 
                 Document.objects.bulk_create(batch, batch_size=batch_size)
-                return HttpResponseRedirect(reverse('dataset', args=[project.id]))
+            return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
