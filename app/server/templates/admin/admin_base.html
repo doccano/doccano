@@ -64,6 +64,19 @@
     </div>
   </aside>
   <div class="column is-10 messages hero is-fullheight" id="message-feed">
+    {% if messages %}
+      <div>
+        <article class='message is-danger'>
+          <div class='message-body'>
+            <ul>
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </article>
+      </div>
+    {% endif %}
     {% block content-area %}{% endblock %}
   </div>
 </div>

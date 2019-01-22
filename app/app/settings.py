@@ -159,4 +159,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Allow all host headers
 #ALLOWED_HOSTS = ['*']
 
+# Size of the batch for creating documents
+# on the import phase
+IMPORT_BATCH_SIZE = 500
+
 django_heroku.settings(locals())
