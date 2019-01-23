@@ -2,6 +2,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from mixer.backend.django import mixer
+from server.models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
 
 class TestProject(TestCase):
@@ -12,7 +13,7 @@ class TestProject(TestCase):
 
     def test_get_progress(self):
         project = mixer.blend('server.Project')
-        res = project.get_progress()
+        res = project.get_progress(None)
         self.assertEqual(res['total'], 0)
         self.assertEqual(res['remaining'], 0)
 
@@ -23,41 +24,33 @@ class TestLabel(TestCase):
         label = mixer.blend('server.Label')
         mixer.blend('server.Label', shortcut=label.shortcut)
         with self.assertRaises(IntegrityError):
-            mixer.blend('server.Label',
-                        project=label.project,
-                        shortcut=label.shortcut)
+            Label(project=label.project, shortcut=label.shortcut).save()
 
     def test_text_uniqueness(self):
         label = mixer.blend('server.Label')
         mixer.blend('server.Label', text=label.text)
         with self.assertRaises(IntegrityError):
-            mixer.blend('server.Label',
-                        project=label.project,
-                        text=label.text)
+            Label(project=label.project, text=label.text).save()
 
 
 class TestDocumentAnnotation(TestCase):
 
     def test_uniqueness(self):
-        annotation1 = mixer.blend('server.DocumentAnnotation')
+        a = mixer.blend('server.DocumentAnnotation')
         with self.assertRaises(IntegrityError):
-            mixer.blend('server.DocumentAnnotation',
-                        document=annotation1.document,
-                        user=annotation1.user,
-                        label=annotation1.label)
+            DocumentAnnotation(document=a.document, user=a.user, label=a.label).save()
 
 
 class TestSequenceAnnotation(TestCase):
 
     def test_uniqueness(self):
-        annotation1 = mixer.blend('server.SequenceAnnotation')
+        a = mixer.blend('server.SequenceAnnotation')
         with self.assertRaises(IntegrityError):
-            mixer.blend('server.SequenceAnnotation',
-                        document=annotation1.document,
-                        user=annotation1.user,
-                        label=annotation1.label,
-                        start_offset=annotation1.start_offset,
-                        end_offset=annotation1.end_offset)
+            SequenceAnnotation(document=a.document,
+                               user=a.user,
+                               label=a.label,
+                               start_offset=a.start_offset,
+                               end_offset=a.end_offset).save()
 
     def test_position_constraint(self):
         with self.assertRaises(ValidationError):
@@ -68,9 +61,8 @@ class TestSequenceAnnotation(TestCase):
 class TestSeq2seqAnnotation(TestCase):
 
     def test_uniqueness(self):
-        annotation1 = mixer.blend('server.Seq2seqAnnotation')
+        a = mixer.blend('server.Seq2seqAnnotation')
         with self.assertRaises(IntegrityError):
-            mixer.blend('server.Seq2seqAnnotation',
-                        document=annotation1.document,
-                        user=annotation1.user,
-                        text=annotation1.text)
+            Seq2seqAnnotation(document=a.document,
+                              user=a.user,
+                              text=a.text).save()
