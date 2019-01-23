@@ -10,4 +10,7 @@ COPY . /doccano
 
 WORKDIR /doccano
 
+ENV DEBUG="True"
+ENV SECRET_KEY="change-me-in-production"
+
 CMD ["/venv/bin/gunicorn", "--bind=0.0.0.0:80", "--workers=2", "--pythonpath=app", "app.wsgi"]
