@@ -1,0 +1,5 @@
+*
+!app/
+!data/
+!tests/
+!requirements.txt
