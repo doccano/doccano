@@ -1,5 +1,7 @@
 *
 !app/
+app/staticfiles/
+app/db.sqlite3
 !data/
 !tests/
 !tools/

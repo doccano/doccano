@@ -11,5 +11,9 @@ WORKDIR /doccano
 
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
+ENV BIND="0.0.0.0:80"
+ENV WORKERS="2"
 
-CMD ["gunicorn", "--bind=0.0.0.0:80", "--workers=2", "--pythonpath=app", "app.wsgi"]
+EXPOSE 80
+
+CMD ["/doccano/tools/run.sh"]
