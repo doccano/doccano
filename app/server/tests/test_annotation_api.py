@@ -6,120 +6,68 @@ from ..models import *
 
 
 class TestAnnotationAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.username = 'user'
+        cls.password = 'pass'
+        cls.user1 = User.objects.create_user(username=cls.username, password=cls.password)
+        cls.user2 = User.objects.create_user(username='user2', password='pass2')
+        cls.project1 = mixer.blend('server.Project', project_type=Project.DOCUMENT_CLASSIFICATION,
+                                   users=[cls.user1, cls.user2])
+        cls.project2 = mixer.blend('server.Project', project_type=Project.DOCUMENT_CLASSIFICATION,
+                                   users=[cls.user2])
+        cls.doc1 = mixer.blend('server.Document', project=cls.project1)
+        cls.doc2 = mixer.blend('server.Document', project=cls.project1)
+        cls.label = mixer.blend('server.Label', project=cls.project1)
+        cls.annotation1 = mixer.blend('server.DocumentAnnotation', document=cls.doc1, user=cls.user1)
+        cls.annotation2 = mixer.blend('server.DocumentAnnotation', document=cls.doc1, user=cls.user2)
+
     def setUp(self):
-        self.username, self.password = 'user', 'pass'
-
-    def create_user(self):
-        user = User.objects.create_user(username=self.username, password=self.password)
-
-        return user
-
-    def create_superuser(self):
-        user = User.objects.create_superuser(username=self.username,
-                                             password=self.password,
-                                             email='hoge@example.com')
-        return user
-
-    def create_project(self):
-        project = mixer.blend('server.Project')
-
-        return project
-
-    def create_label(self):
-        label = mixer.blend('server.Label')
-
-        return label
-
-    def create_doc(self):
-        doc = mixer.blend('server.Document')
-
-        return doc
-
-    def create_annotation(self):
-        annotation = mixer.blend('server.DocumentAnnotation')
-
-        return annotation
-
-    def test_get_own_annotation(self):
-        """
-        Ensure we can get own annotation objects.
-        """
-        user = self.create_user()
-        project = self.create_project()
-        project.project_type = Project.DOCUMENT_CLASSIFICATION
-        annotation = self.create_annotation()
-        annotation.user = user
-        project.users.add(user)
-        project.documents.add(annotation.document)
-        project.save()
-        annotation.save()
-        url = reverse('annotations', args=[project.id, annotation.document.id])
-
         self.client.login(username=self.username, password=self.password)
-        response = self.client.get(url, format='json')
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIsInstance(response.data, list)
-        self.assertEqual(response.data[0]['id'], annotation.id)
-
-    def test_get_others_annotation(self):
+    def test_fetch_own_annotation(self):
         """
-        Ensure we cannot get others annotation objects.
+        Ensure user can fetch only own annotation.
         """
-        user = self.create_user()
-        project = self.create_project()
-        project.project_type = Project.DOCUMENT_CLASSIFICATION
-        annotation = self.create_annotation()
-        project.users.add(annotation.user)
-        project.documents.add(annotation.document)
-        project.save()
-        annotation.save()
-        url = reverse('annotations', args=[project.id, annotation.document.id])
+        url = reverse('annotations', args=[self.project1.id, self.doc1.id])
+        r = self.client.get(url, format='json')
+        self.assertEqual(r.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(r.data), 1)
+        self.assertEqual(r.data[0]['id'], self.annotation1.id)
 
-        self.client.login(username=self.username, password=self.password)
-        response = self.client.get(url, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_create_annotation(self):
+    def test_fetch_other_projects_annotation(self):
         """
-        Ensure we can create a new annotation object.
+        Ensure user cannot fetch other project's annotation.
         """
-        user = self.create_user()
-        project = self.create_project()
-        doc = self.create_doc()
-        label = self.create_label()
-        project.project_type = Project.DOCUMENT_CLASSIFICATION
-        project.users.add(user)
-        project.documents.add(doc)
-        project.labels.add(label)
+        url = reverse('annotations', args=[self.project2.id, self.doc1.id])
+        r = self.client.get(url, format='json')
+        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
 
-        data = {'label_id': label.id}
-        url = reverse('annotations', args=[project.id, doc.id])
-        self.client.login(username=self.username, password=self.password)
-        response = self.client.post(url, data, format='json')
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(DocumentAnnotation.objects.count(), 1)
+    def test_annotate_doc(self):
+        """
+        Ensure user can annotate a document.
+        """
+        # Try to annotate a empty document(doc2).
+        data = {'label': self.label.id}
+        url = reverse('annotations', args=[self.project1.id, self.doc2.id])
+        r = self.client.post(url, data, format='json')
+        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(self.doc2.doc_annotations.all()), 1)
 
     def test_delete_annotation(self):
         """
-        Ensure we cannot create a new project object by user.
+        Ensure user can delete only own annotation.
         """
-        user = self.create_user()
-        project = self.create_project()
-        project.project_type = Project.DOCUMENT_CLASSIFICATION
-        annotation = self.create_annotation()
-        annotation.user = user
-        project.users.add(annotation.user)
-        project.documents.add(annotation.document)
-        project.save()
-        annotation.save()
+        self.assertEqual(len(self.doc1.doc_annotations.all()), 2)
 
-        url = reverse('ann', args=[project.id, annotation.document.id, annotation.id])
-        self.assertEqual(DocumentAnnotation.objects.count(), 1)
-        self.client.login(username=self.username, password=self.password)
-        response = self.client.delete(url, format='json')
+        # Try to delete own annotation.
+        url = reverse('ann', args=[self.project1.id, self.doc1.id, self.annotation1.id])
+        r = self.client.delete(url, format='json')
+        self.assertEqual(r.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(len(self.doc1.doc_annotations.all()), 1)
 
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(DocumentAnnotation.objects.count(), 0)
+        # Try to delete other's annotation.
+        url = reverse('ann', args=[self.project1.id, self.doc1.id, self.annotation2.id])
+        r = self.client.delete(url, format='json')
+        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
