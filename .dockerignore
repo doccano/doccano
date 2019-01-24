@@ -2,4 +2,5 @@
 !app/
 !data/
 !tests/
+!tools/
 !requirements.txt
