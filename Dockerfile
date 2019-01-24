@@ -10,6 +10,10 @@ COPY . /doccano
 
 WORKDIR /doccano
 
+RUN ["/venv/bin/python", "app/manage.py", "migrate"]
+RUN ["/venv/bin/python", "app/manage.py", "collectstatic"]
+RUN ["/venv/bin/python", "app/manage.py", "test", "server.tests"]
+
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
 
