@@ -49,6 +49,15 @@
           <input class="button is-block is-primary is-middle is-fullwidth" type="submit" value="Login" />
           <input type="hidden" name="next" value="{{ next }}" />
         </form>
+        {% if social_login_enabled %}
+        <div class="is-divider" data-content="OR"></div>
+        {% endif %}
+        {% if github_login %}
+        <a href="{% url 'social:begin' 'github' %}" class="button is-fullwidth is-middle">
+          <span class="icon"><i class="fab fa-github"></i></span>
+          <span>Login with Github</span>
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>
