@@ -5,4 +5,5 @@ app/db.sqlite3
 !data/
 !tests/
 !tools/
+!.flake8
 !requirements.txt
