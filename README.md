@@ -40,26 +40,39 @@ Final demo is one of the sequence to sequence tasks, machine translation. Since 
 
 ## Installation
 
-To install doccano, simply run:
+First of all, you have to clone the repository:
 
 ```bash
-$ git clone https://github.com/chakki-works/doccano.git
-$ cd doccano
-$ pip install -r requirements.txt
-$ cd app
+git clone https://github.com/chakki-works/doccano.git
+cd doccano
+```
+
+To install doccano, there are two options:
+
+**Option1: Build the Docker image**
+
+```bash
+docker build -t doccano:1 .
+```
+
+**Option2: Setup Python environment**
+
+```bash
+pip install -r requirements.txt
+cd app
 ```
 
 First we need to make migration. Run the following command:
 
 ```bash
-$ python manage.py migrate
+python manage.py migrate
 ```
 
 Next we need to create a user who can login to the admin site. Run the following command:
 
 
 ```bash
-$ python manage.py createsuperuser
+python manage.py createsuperuser
 ```
 
 Enter your desired username and press enter.
@@ -88,10 +101,18 @@ Superuser created successfully.
 
 Let’s start the development server and explore it.
 
-If the server is not running start it like so:
+Depending on your installation method, there are two options:
+
+**Option1: Running the Docker image as a Container**
 
 ```bash
-$ python manage.py runserver
+docker run -p 8080:80 doccano:1
+```
+
+**Option2: Running Django development server**
+
+```bash
+python manage.py runserver
 ```
 
 Now, open a Web browser and go to <http://127.0.0.1:8080/login/>. You should see the login screen:
