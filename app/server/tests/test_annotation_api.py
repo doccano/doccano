@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from mixer.backend.django import mixer
-from ..models import *
+from ..models import User, Project
 
 
 class TestAnnotationAPI(APITestCase):

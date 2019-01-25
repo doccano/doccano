@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.test import TestCase, Client
 from rest_framework import status
 from mixer.backend.django import mixer
-from ..models import *
+from ..models import User, Document
 
 
 class TestUpload(TestCase):

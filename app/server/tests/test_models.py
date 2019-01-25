@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from mixer.backend.django import mixer
-from server.models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
 
 class TestProject(TestCase):

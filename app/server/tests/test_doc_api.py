@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from mixer.backend.django import mixer
-from ..models import *
+from ..models import User
 
 
 class TestDocAPI(APITestCase):
@@ -53,7 +53,7 @@ class TestDocAPI(APITestCase):
         """
         Ensure we cannot get label objects by other.
         """
-        user = self.create_user()
+        user = self.create_user()  # noqa: F841
         project = self.create_project()
         doc = self.create_doc()
         project.documents.add(doc)

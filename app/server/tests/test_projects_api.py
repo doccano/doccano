@@ -2,7 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from mixer.backend.django import mixer
-from ..models import *
+from ..models import User, Project
 
 
 class TestProjects(APITestCase):
@@ -14,7 +14,7 @@ class TestProjects(APITestCase):
         cls.super_username = 'super'
         cls.normal_user = User.objects.create_user(username=cls.username, password=cls.password)
         cls.super_user = User.objects.create_superuser(username=cls.super_username,
-                                                  password=cls.password, email='fizz@buzz.com')
+                                                       password=cls.password, email='fizz@buzz.com')
         cls.project1 = mixer.blend('server.Project', project_type=Project.DOCUMENT_CLASSIFICATION,
                                    users=[cls.normal_user, cls.super_user])
         cls.project2 = mixer.blend('server.Project', project_type=Project.DOCUMENT_CLASSIFICATION,
