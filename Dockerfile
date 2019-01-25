@@ -13,6 +13,7 @@ ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
 ENV BIND="0.0.0.0:80"
 ENV WORKERS="2"
+ENV GOOGLE_TRACKING_ID=""
 
 EXPOSE 80
 

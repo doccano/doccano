@@ -80,6 +80,9 @@ TEMPLATES = [
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
+            'libraries': {
+                'analytics': 'server.templatetags.analytics',
+            },
         },
     },
 ]
@@ -180,5 +183,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Size of the batch for creating documents
 # on the import phase
 IMPORT_BATCH_SIZE = 500
+
+GOOGLE_TRACKING_ID = os.getenv('GOOGLE_TRACKING_ID', 'UA-125643874-2')
 
 django_heroku.settings(locals(), test_runner=False)
