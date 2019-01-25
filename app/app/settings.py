@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'server.apps.ServerConfig',
     'widget_tweaks',
     'rest_framework',
-    'django_filters'
+    'django_filters',
 ]
 
 MIDDLEWARE = [
