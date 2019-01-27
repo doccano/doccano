@@ -20,6 +20,7 @@ from app import settings
 
 logger = logging.getLogger(__name__)
 
+
 class IndexView(TemplateView):
     template_name = 'index.html'
 
@@ -65,13 +66,13 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             self.message = message
 
     def extract_metadata_csv(self, row, text_col, header_without_text):
-        vals_without_text = [val for i,val in enumerate(row) if i != text_col]
+        vals_without_text = [val for i, val in enumerate(row) if i != text_col]
         return json.dumps(dict(zip(header_without_text, vals_without_text)))
 
     def csv_to_documents(self, project, file, text_key='text'):
         form_data = TextIOWrapper(file, encoding='utf-8')
         reader = csv.reader(form_data)
-        
+
         maybe_header = next(reader)
         if maybe_header:
             if text_key in maybe_header:
@@ -82,12 +83,12 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             else:
                 raise DataUpload.ImportFileError("CSV file must have either a title with \"text\" column or have only one column ")
 
-            header_without_text = [title for i,title in enumerate(maybe_header) 
+            header_without_text = [title for i, title in enumerate(maybe_header)
                                    if i != text_col]
 
             return (
                 Document(
-                    text=row[text_col], 
+                    text=row[text_col],
                     metadata=self.extract_metadata_csv(row, text_col, header_without_text),
                     project=project
                 )
@@ -101,14 +102,13 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         del copy[text_key]
         return json.dumps(copy)
 
-    def json_to_documents(self, project, file, text_key='text'):            
+    def json_to_documents(self, project, file, text_key='text'):
         parsed_entries = (json.loads(line) for line in file)
-        
+
         return (
             Document(text=entry[text_key], metadata=self.extract_metadata_json(entry, text_key), project=project)
             for entry in parsed_entries
         )
-
 
     def post(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
@@ -118,7 +118,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             documents = []
             if import_format == 'csv':
                 documents = self.csv_to_documents(project, file)
-                
+
             elif import_format == 'json':
                 documents = self.json_to_documents(project, file)
 
@@ -175,7 +175,7 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
         response['Content-Disposition'] = 'attachment; filename="{}.json"'.format(filename)
         for d in docs:
             dump = json.dumps(d.to_json(), ensure_ascii=False)
-            response.write(dump + '\n') # write each json object end with a newline
+            response.write(dump + '\n')  # write each json object end with a newline
         return response
 
 
