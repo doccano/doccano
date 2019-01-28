@@ -102,8 +102,20 @@
     "databaseServerName": "[concat(parameters('appName'),'-state')]",
     "setupScriptName": "[concat(parameters('appName'),'-setup')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
+    "analyticsName": "[concat(parameters('appName'),'-analytics')]"
   },
   "resources": [
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2015-05-01",
+      "name": "[variables('analyticsName')]",
+      "location": "[variables('location')]",
+      "tags": {},
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web"
+      }
+    },
     {
       "apiVersion": "2017-08-01",
       "type": "Microsoft.Web/serverfarms",
@@ -219,6 +231,7 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('databaseServerName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('analyticsName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
       ],
       "properties": {
@@ -230,6 +243,14 @@
             {
               "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
               "value": "false"
+            },
+            {
+              "name": "AZURE_APPINSIGHTS_IKEY",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('analyticsName')), '2014-04-01').InstrumentationKey]"
+            },
+            {
+              "name": "GOOGLE_TRACKING_ID",
+              "value": ""
             },
             {
               "name": "DEBUG",
