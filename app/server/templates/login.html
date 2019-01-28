@@ -49,6 +49,21 @@
           <input class="button is-block is-primary is-middle is-fullwidth" type="submit" value="Login" />
           <input type="hidden" name="next" value="{{ next }}" />
         </form>
+        {% if social_login_enabled %}
+        <div class="is-divider" data-content="OR"></div>
+        {% endif %}
+        {% if github_login %}
+        <a href="{% url 'social:begin' 'github' %}" class="button is-fullwidth mb10">
+          <span class="icon"><i class="fab fa-github"></i></span>
+          <span>Login with Github</span>
+        </a>
+        {% endif %}
+        {% if aad_login %}
+        <a href="{% url 'social:begin' 'azuread-tenant-oauth2' %}" class="button is-fullwidth mb10">
+          <span class="icon"><i class="fab fa-microsoft"></i></span>
+          <span>Login with Active Directory</span>
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>

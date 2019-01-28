@@ -4,6 +4,7 @@ from io import TextIOWrapper
 import itertools as it
 import logging
 
+from django.contrib.auth.views import LoginView as BaseLoginView
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -177,6 +178,21 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
             dump = json.dumps(d.to_json(), ensure_ascii=False)
             response.write(dump + '\n')  # write each json object end with a newline
         return response
+
+
+class LoginView(BaseLoginView):
+    template_name = 'login.html'
+    redirect_authenticated_user = True
+    extra_context = {
+        'github_login': bool(settings.SOCIAL_AUTH_GITHUB_KEY),
+        'aad_login': bool(settings.SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID),
+    }
+
+    def get_context_data(self, **kwargs):
+        context = super(LoginView, self).get_context_data(**kwargs)
+        context['social_login_enabled'] = any(value for key, value in context.items()
+                                              if key.endswith('_login'))
+        return context
 
 
 class DemoTextClassification(TemplateView):
