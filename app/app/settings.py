@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'applicationinsights.django.ApplicationInsightsMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -185,6 +186,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 IMPORT_BATCH_SIZE = 500
 
 GOOGLE_TRACKING_ID = os.getenv('GOOGLE_TRACKING_ID', 'UA-125643874-2')
-AZURE_APPINSIGHTS_IKEY = os.getenv('AZURE_APPINSIGHTS_IKEY')
+
+APPLICATION_INSIGHTS = {
+    'ikey': os.getenv('AZURE_APPINSIGHTS_IKEY'),
+}
 
 django_heroku.settings(locals(), test_runner=False)

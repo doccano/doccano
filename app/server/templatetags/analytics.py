@@ -14,5 +14,5 @@ def google_analytics():
 def azure_appinsights():
     return {
         'DEBUG': settings.DEBUG,
-        'azure_appinsights_ikey': settings.AZURE_APPINSIGHTS_IKEY,
+        'azure_appinsights_ikey': settings.APPLICATION_INSIGHTS['ikey'],
     }
