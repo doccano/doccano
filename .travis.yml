@@ -1,7 +1,15 @@
 language: python
+services:
+  - docker
 python:
   - "3.6"
 install:
   - pip install -r requirements.txt
 script:
   - tools/ci.sh
+deploy:
+  - provider: script
+    script: tools/cd.sh
+    on:
+      repo: chakki-works/doccano
+      tags: true
