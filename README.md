@@ -136,7 +136,7 @@ Depending on your installation method, there are two options:
 **Option1: Running the Docker image as a Container**
 
 ```bash
-docker run -p 8080:80 doccano:1
+docker run -p 8000:80 doccano:1
 ```
 
 **Option2: Running Django development server**
@@ -145,7 +145,7 @@ docker run -p 8080:80 doccano:1
 python manage.py runserver
 ```
 
-Now, open a Web browser and go to <http://127.0.0.1:8080/login/>. You should see the login screen:
+Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see the login screen:
 
 <img src="./docs/login_form.png" alt="Login Form" width=400>
 
