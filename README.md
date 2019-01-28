@@ -35,6 +35,16 @@ Doccano can be deployed to Azure ([Web App for Containers](https://azure.microso
 
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.svg)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchakki-works%2Fdoccano%2Fmaster%2Fazuredeploy.json)
 
+### Heroku
+
+Doccano can be deployed to [Heroku](https://www.heroku.com/) by following these steps:
+
+```bash
+heroku create
+heroku stack:set container
+git push heroku master
+```
+
 ## Features
 
 * Collaborative annotation
