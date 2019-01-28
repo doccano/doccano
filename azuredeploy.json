@@ -102,24 +102,6 @@
     "databaseServerName": "[concat(parameters('appName'),'-state')]",
     "setupScriptName": "[concat(parameters('appName'),'-setup')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
-    "env": [
-      {
-        "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
-        "value": "false"
-      },
-      {
-        "name": "DEBUG",
-        "value": "False"
-      },
-      {
-        "name": "SECRET_KEY",
-        "value": "[parameters('secretKey')]"
-      },
-      {
-        "name": "DATABASE_URL",
-        "value": "[variables('databaseConnectionString')]"
-      }
-    ]
   },
   "resources": [
     {
@@ -199,7 +181,20 @@
                 "[parameters('adminContactEmail')]",
                 "[parameters('adminPassword')]"
               ],
-              "environmentVariables": "[variables('env')]",
+              "environmentVariables": [
+                {
+                  "name": "DEBUG",
+                  "value": "False"
+                },
+                {
+                  "name": "SECRET_KEY",
+                  "value": "[parameters('secretKey')]"
+                },
+                {
+                  "name": "DATABASE_URL",
+                  "value": "[variables('databaseConnectionString')]"
+                }
+              ],
               "resources": {
                 "requests": {
                   "cpu": "1",
@@ -231,7 +226,24 @@
         "siteConfig": {
           "linuxFxVersion": "[concat('DOCKER|', parameters('dockerImageName'))]",
           "alwaysOn": true,
-          "appSettings": "[variables('env')]"
+          "appSettings": [
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "false"
+            },
+            {
+              "name": "DEBUG",
+              "value": "False"
+            },
+            {
+              "name": "SECRET_KEY",
+              "value": "[parameters('secretKey')]"
+            },
+            {
+              "name": "DATABASE_URL",
+              "value": "[variables('databaseConnectionString')]"
+            }
+          ]
         },
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
       }
