@@ -66,12 +66,23 @@ docker build -t doccano:1 .
 
 **Option2: Setup Python environment**
 
+First we need to install the dependencies. Run the following commands:
+
 ```bash
 pip install -r requirements.txt
 cd app
 ```
 
-First we need to make migration. Run the following command:
+Next we need to compile the frontend. Run the following commands:
+
+```bash
+cd server
+npm install
+npm run build
+cd ..
+```
+
+Next we need to make migration. Run the following command:
 
 ```bash
 python manage.py migrate

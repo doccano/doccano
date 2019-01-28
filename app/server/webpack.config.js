@@ -1,7 +1,8 @@
+const process = require('process');
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 module.exports = {
-    mode: 'development',
+    mode: process.env.DEBUG === 'False' ? 'production' : 'development',
     entry: {
         'sequence_labeling': './static/js/sequence_labeling.js',
         'document_classification': './static/js/document_classification.js',
