@@ -2,35 +2,35 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "appName":{
+    "appName": {
       "type": "string",
-      "minLength":  1,
+      "minLength": 1,
       "metadata": {
         "description": "The name for the webapp. Must be globally unique."
       }
     },
-    "secretKey":{
+    "secretKey": {
       "type": "securestring",
-      "minLength":  16,
+      "minLength": 16,
       "metadata": {
         "description": "The value to use as the Django secret key."
       }
     },
-    "adminUserName":{
+    "adminUserName": {
       "type": "string",
-      "minLength":  1,
+      "minLength": 1,
       "metadata": {
         "description": "The user name for the admin account."
       }
     },
-    "adminContactEmail":{
+    "adminContactEmail": {
       "type": "string",
-      "minLength":  1,
+      "minLength": 1,
       "metadata": {
         "description": "The contact email address for the admin account."
       }
     },
-    "adminPassword":{
+    "adminPassword": {
       "type": "securestring",
       "minLength": 16,
       "metadata": {
