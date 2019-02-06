@@ -191,8 +191,9 @@ IMPORT_BATCH_SIZE = 500
 
 GOOGLE_TRACKING_ID = os.getenv('GOOGLE_TRACKING_ID', 'UA-125643874-2')
 
+AZURE_APPINSIGHTS_IKEY = os.getenv('AZURE_APPINSIGHTS_IKEY')
 APPLICATION_INSIGHTS = {
-    'ikey': os.getenv('AZURE_APPINSIGHTS_IKEY'),
+    'ikey': AZURE_APPINSIGHTS_IKEY if AZURE_APPINSIGHTS_IKEY else None,
 }
 
 django_heroku.settings(locals(), test_runner=False)
