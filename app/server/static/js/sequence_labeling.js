@@ -1,10 +1,13 @@
 import Vue from 'vue';
 import annotationMixin from './mixin';
 import HTTP from './http';
+import simpleShortcut from './filter';
 
 Vue.use(require('vue-shortkey'), {
   prevent: ['input', 'textarea'],
 });
+
+Vue.filter('simpleShortcut', simpleShortcut);
 
 Vue.component('annotator', {
   template: '<div @click="setSelectedRange">\
