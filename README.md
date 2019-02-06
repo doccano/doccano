@@ -58,10 +58,10 @@ cd doccano
 
 To install doccano, there are two options:
 
-**Option1: Build the Docker image**
+**Option1: Pull the Docker image**
 
 ```bash
-docker build -t doccano:1 .
+docker pull chakkiworks/doccano
 ```
 
 **Option2: Setup Python environment**
@@ -114,8 +114,16 @@ Depending on your installation method, there are two options:
 
 **Option1: Running the Docker image as a Container**
 
+First, run a Docker container:
+
 ```bash
-docker run -p 8080:80 doccano:1
+docker run -d --name doccano -p 8080:80 chakkiworks/doccano
+```
+
+Then, execute `create-admin.sh` script for creating a superuser.
+
+```bash
+docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
 ```
 
 **Option2: Running Django development server**
