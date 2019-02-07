@@ -16,7 +16,6 @@
 
   <div class="card-content">
     <div class="has-text-right">
-
       <div class="field is-grouped is-grouped-multiline has-text-weight-bold pbrem075">
         <div class="control" v-for="label in labels">
           <div class="tags has-addons">
@@ -24,7 +23,7 @@
               <button class="delete is-small tweaked-margin" @click="removeLabel(label)"></button>
               [[ label.text ]]
             </span>
-            <span class="tag is-medium">[[ label.shortcut ]]</span>
+            <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
           </div>
         </div>
       </div>
@@ -36,23 +35,29 @@
             <a class="tag is-medium" v-bind:style="{ color: textColor, backgroundColor: backgroundColor }">
               [[ labelText ]]
             </a>
-            <span class="tag is-medium">[[ selectedShortkey ]]</span>
+            <span class="tag is-medium"><kbd>[[ combineKeys | simpleShortcut ]]</kbd></span>
           </div>
         </div>
       </div>
 
       <div class="field is-horizontal bordered-row">
-        <label class="label column is-3 mb0">Label Name</label>
+        <div class="column is-3 mb0">
+          <label class="label mb0">Label Name</label>
+          <p class="is-small has-text-grey">required</p>
+        </div>
         <div class="control column is-6">
           <input class="input" type="text" placeholder="Text input" v-model="labelText">
         </div>
       </div>
 
       <div class="field is-horizontal bordered-row">
-        <label class="label column is-3 mb0">Shortcut Key</label>
-        <div class="control column is-6">
+        <div class="column is-3 mb0">
+          <label class="label mb0">Shortcut Key</label>
+          <p class="is-small has-text-grey">optional</p>
+        </div>
+        <div class="control column is-narrow">
           <div class="select">
-            <select v-model="selectedShortkey">
+            <select v-model="selectedKey">
               <option disabled value="">Please select one</option>
               {% for ch in 'abcdefghijklmnopqrstuvwxyz' %}
               <option>{{ ch }}</option>
@@ -60,18 +65,31 @@
             </select>
           </div>
         </div>
+        <div class="is-narrow">
+          <input class="is-checkradio" type="checkbox" id="ctrl" value="ctrl" v-model="checkedKey">
+          <label for="ctrl"><kbd>C: Ctrl</kbd></label>
+        </div>
+        <div class="is-narrow">
+          <input class="is-checkradio" type="checkbox" id="shift" value="shift" v-model="checkedKey">
+          <label for="shift"><kbd>S: Shift</kbd></label>
+        </div>
       </div>
 
       <div class="field is-horizontal bordered-row">
-
-        <label class="label column is-3 mb0">Background Color</label>
+        <div class="column is-3 mb0">
+          <label class="label mb0">Background Color</label>
+          <p class="is-small has-text-grey">optional</p>
+        </div>
         <div class="control column is-6">
           <input class="input" type="color" v-model="backgroundColor">
         </div>
       </div>
 
       <div class="field is-horizontal bordered-row">
-        <label class="label column is-3 mb0">Text Color</label>
+        <div class="column is-3 mb0">
+          <label class="label mb0">Text Color</label>
+          <p class="is-small has-text-grey">optional</p>
+        </div>
         <div class="control column is-6">
           <input class="input" type="color" v-model="textColor">
         </div>

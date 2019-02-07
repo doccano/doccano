@@ -1,10 +1,10 @@
 import json
-import string
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
+from .utils import get_key_choices
 
 
 class Project(models.Model):
@@ -120,11 +120,11 @@ class Project(models.Model):
 
 
 class Label(models.Model):
-    KEY_CHOICES = ((u, c) for u, c in zip(string.ascii_lowercase, string.ascii_lowercase))
+    KEY_CHOICES = get_key_choices()
     COLOR_CHOICES = ()
 
     text = models.CharField(max_length=100)
-    shortcut = models.CharField(max_length=10, choices=KEY_CHOICES)
+    shortcut = models.CharField(max_length=15, blank=True, null=True, choices=KEY_CHOICES)
     project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
     background_color = models.CharField(max_length=7, default='#209cee')
     text_color = models.CharField(max_length=7, default='#ffffff')

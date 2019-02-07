@@ -117,6 +117,14 @@ const annotationMixin = {
         this.annotations[this.pageNumber].splice(index, 1);
       });
     },
+
+    replaceNull(shortcut) {
+      if (shortcut === null) {
+        shortcut = '';
+      }
+      shortcut = shortcut.split(' ');
+      return shortcut;
+    },
   },
 
   watch: {
