@@ -13,6 +13,8 @@ from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer
 
+from classifier.text.text_classifier import run_model_on_file
+
 
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
