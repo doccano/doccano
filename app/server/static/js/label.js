@@ -4,6 +4,13 @@ import simpleShortcut from './filter';
 
 Vue.filter('simpleShortcut', simpleShortcut);
 
+const isLetter = (l) => {
+  const pattern = 'abcdefghijklmnopqrstuvwxyz'
+  if (pattern.indexOf(l.toLowerCase()) !== -1) {
+    return true
+  }
+  return false
+}
 
 const vm = new Vue({
   el: '#mail-app',
@@ -83,10 +90,62 @@ const vm = new Vue({
       this.backgroundColor = '#209cee';
       this.textColor = '#ffffff';
     },
+
+    isSuitableShortcut(char) {
+      let ret = true
+      if (isLetter(char)) {
+        this.labels.forEach((label) => {
+          const shortcut = label.shortcut
+          if (shortcut) {
+            const splittedShortcut = shortcut.split(' ')
+            const letter = splittedShortcut[splittedShortcut.length - 1]
+            if (letter === char) {
+              ret = false
+            }
+          }
+        })
+      } else {
+        ret = false
+      }
+      return ret
+    },
+    findSuitableShortcut(lt) {
+      const words = lt.split(' ')
+      let maxWordLength = 0
+      words.forEach((w) => {
+        if (w.length > maxWordLength) {
+          maxWordLength = w.length
+        }
+      })
+      for (let i = 0; i < maxWordLength; ++i) {
+        for (let k = 0; k < words.length; ++k) {
+          if (i < words[k].length) {
+            const char = words[k].charAt(i).toLowerCase()
+            if (this.isSuitableShortcut(char)) {
+              return char
+            }
+          }
+        }
+      }
+      
+      return null
+    }
   },
   created() {
     HTTP.get('labels').then((response) => {
       this.labels = response.data;
     });
   },
+  watch: {
+    labelText(val) {
+      if (val && val.length) {
+        const sc = this.findSuitableShortcut(val)
+        if (sc) {
+          this.selectedKey = sc
+        }
+      } else if ((!val || !val.length) && this.selectedKey) {
+        this.selectedKey = ''
+      }
+    }
+  }
 });
