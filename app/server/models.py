@@ -143,6 +143,8 @@ class Document(models.Model):
     text = models.TextField()
     project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
     metadata = models.TextField(default='{}')
+    created_date_time = models.DateTimeField(auto_now_add=True)
+    updated_date_time = models.DateTimeField(auto_now=True)
 
     def get_annotations(self):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
@@ -226,6 +228,8 @@ class Annotation(models.Model):
     prob = models.FloatField(default=0.0)
     manual = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_date_time = models.DateTimeField(auto_now_add=True)
+    updated_date_time = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
