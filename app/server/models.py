@@ -124,6 +124,7 @@ class Label(models.Model):
     COLOR_CHOICES = ()
 
     text = models.CharField(max_length=100)
+    comment = models.CharField(max_length=2000, default='')
     shortcut = models.CharField(max_length=15, blank=True, null=True, choices=KEY_CHOICES)
     project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
     background_color = models.CharField(max_length=7, default='#209cee')

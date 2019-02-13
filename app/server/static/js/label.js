@@ -11,6 +11,7 @@ const vm = new Vue({
   data: {
     labels: [],
     labelText: '',
+    labelComment: '',
     selectedKey: '',
     checkedKey: [],
     shortcutKey: '',
@@ -60,6 +61,7 @@ const vm = new Vue({
         shortcut: this.saveKeys,
         background_color: this.backgroundColor,
         text_color: this.textColor,
+        comment: this.labelComment,
       };
       HTTP.post('labels/', payload).then((response) => {
         this.reset();
@@ -77,6 +79,7 @@ const vm = new Vue({
 
     reset() {
       this.labelText = '';
+      this.labelComment = '';
       this.selectedKey = '';
       this.checkedKey = [];
       this.shortcutKey = '';
