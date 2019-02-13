@@ -12,6 +12,27 @@ const isLetter = (l) => {
   return false
 }
 
+const colorPalette = [
+  '#209cee',
+  '#f44336',
+  '#e91e63',
+  '#9c27b0',
+  '#3f51b5',
+  '#2196f3',
+  '#03a9f4',
+  '#00bcd4',
+  '#009688',
+  '#4caf50',
+  '#8bc34a',
+  '#cddc39',
+  '#ffeb3b',
+  '#ffc107',
+  '#ff9800',
+  '#ff5722',
+  '#795548',
+  '#9e9e9e'
+]
+
 const vm = new Vue({
   el: '#mail-app',
   delimiters: ['[[', ']]'],
@@ -69,8 +90,8 @@ const vm = new Vue({
         text_color: this.textColor,
       };
       HTTP.post('labels/', payload).then((response) => {
-        this.reset();
         this.labels.push(response.data);
+        this.reset();
       });
     },
 
@@ -87,7 +108,7 @@ const vm = new Vue({
       this.selectedKey = '';
       this.checkedKey = [];
       this.shortcutKey = '';
-      this.backgroundColor = '#209cee';
+      this.backgroundColor = this.findLabelColor();
       this.textColor = '#ffffff';
     },
 
@@ -130,10 +151,28 @@ const vm = new Vue({
       
       return null
     }
+
+    findLabelColor() {
+      let lastColorIndex;
+      for (let i = this.labels.length - 1; i >= 0; --i) {
+        const label = this.labels[i]
+        const idx = colorPalette.indexOf(label.background_color)
+        if (idx !== -1) {
+          lastColorIndex = idx
+          break
+        }
+      }
+      if (lastColorIndex + 1 < colorPalette.length) {
+        return colorPalette[lastColorIndex + 1]; 
+      } else {
+        return colorPalette[0]
+      } 
+    },
   },
   created() {
     HTTP.get('labels').then((response) => {
       this.labels = response.data;
+      this.backgroundColor = this.findLabelColor()
     });
   },
   watch: {
