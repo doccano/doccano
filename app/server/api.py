@@ -1,19 +1,25 @@
+import csv
+
 from collections import Counter
 from itertools import chain
 
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from django.contrib.auth.models import User
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Project, Label, Document
+from .models import Project, Label, Document, DocumentAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer
 
 from classifier.text.text_classifier import run_model_on_file
+
+OUTPUT_FILE = 'ml_out.csv'
+INPUT_FILE = 'ml_input.csv'
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -46,6 +52,43 @@ class LabelList(generics.ListCreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
 
+
+class RunModelAPI(APIView):
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+
+    def get(self, request, *args, **kwargs):
+        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        docs = [doc for doc in p.documents.all()]
+        doc_labels = [[a.label.id for a in doc.get_annotations()] for doc in docs]
+        doc_ids = [doc.id for doc in docs]
+        doc_texts = [doc.text for doc in docs]
+        with open(INPUT_FILE, 'w') as outfile:
+            wr = csv.writer(outfile, quoting=csv.QUOTE_ALL)
+            wr.writerow(['document_id', 'text', 'label_id'])
+            data = list(zip(doc_ids, doc_texts, doc_labels))
+            for row in data:
+                label_id = None
+                if len(row[2]) > 0:
+                    label_id = row[2][0]
+                wr.writerow([row[0], row[1], label_id])
+        users = User.objects.values()
+        mlm_user = None
+        mlm_id = None
+        mlm_user = User.objects.get(username='MachineLearningModel')
+        if not mlm_user:
+            mlm_user = User.objects.create_user(username='MachineLearningModel',
+                                 password='MachineLearningModel')
+            mlm_id = mlm_user.pk
+        run_model_on_file(INPUT_FILE, OUTPUT_FILE, mlm_id)
+        reader = csv.DictReader(open(OUTPUT_FILE, 'r'))
+        for row in reader:
+            document = Document.objects.get(pk=row['document_id'])
+            label = Label.objects.get(pk=12)
+            da = DocumentAnnotation.create(document, label, mlm_user, row['prob'])
+            print('created', da)
+        response = {'users': users}
+        return Response(response)
 
 class ProjectStatsAPI(APIView):
     pagination_class = None

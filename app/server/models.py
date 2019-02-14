@@ -237,6 +237,11 @@ class DocumentAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user', 'label')
+    
+    @classmethod
+    def create(cls, document, label, user, prob):
+        document_annotation = cls(document=document, label=label, user=user, prob=prob)
+        return document_annotation
 
 
 class SequenceAnnotation(Annotation):

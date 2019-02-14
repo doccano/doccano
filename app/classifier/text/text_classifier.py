@@ -20,11 +20,12 @@ def process_text(x):
 def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
     # nlp = spacy.load("en_core_web_sm")
 
-    df = pd.read_table(input_filename)
+    df = pd.read_csv(input_filename)
 
     # df_labeled = df_labeled[['text', 'label_id']]
     df['text'] = df['text'].apply(process_text)
     df['label'] = df['label_id']
+    
     df = df[ df['text']!='' ]
 
     if method=='w2v':
