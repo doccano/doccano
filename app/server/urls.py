@@ -6,7 +6,7 @@ from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, G
 from .views import ProjectsView, DataDownload, DataDownloadFile
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
-    AnnotationList, AnnotationDetail, DocumentList
+    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -15,6 +15,7 @@ router.register(r'projects', ProjectViewSet)
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
     path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),
+    path('api/projects/<int:project_id>/runmodel/', RunModelAPI.as_view(), name='runmodel-api'),
     path('api/projects/<int:project_id>/labels/', LabelList.as_view(), name='labels'),
     path('api/projects/<int:project_id>/labels/<int:label_id>', LabelDetail.as_view(), name='label'),
     path('api/projects/<int:project_id>/docs/', DocumentList.as_view(), name='docs'),
