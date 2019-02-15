@@ -59,7 +59,7 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
         predictions_probabilities = model.predict_proba(X)
         confidence = np.max(predictions_probabilities, axis=1)
         predictions = np.argmax(predictions_probabilities, axis=1)
-        tmp_df['prediction'] = predictions
+        tmp_df['prediction'] = [model.classes_[v] for v in predictions]
         tmp_df['confidence'] = confidence
         tmp_df['is_error'] = (tmp_df['prediction'] != y)
         return tmp_df

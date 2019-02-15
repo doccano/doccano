@@ -1,4 +1,5 @@
 import csv
+import os
 
 from collections import Counter
 from itertools import chain
@@ -6,6 +7,7 @@ from itertools import chain
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
+from django.http import HttpResponseRedirect
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -80,15 +82,21 @@ class RunModelAPI(APIView):
             mlm_user = User.objects.create_user(username='MachineLearningModel',
                                  password='MachineLearningModel')
             mlm_id = mlm_user.pk
+        else:
+            mlm_id = mlm_user.pk
         run_model_on_file(INPUT_FILE, OUTPUT_FILE, mlm_id)
         reader = csv.DictReader(open(OUTPUT_FILE, 'r'))
+        for da in DocumentAnnotation.objects.filter(user=mlm_user):
+            da.delete()
         for row in reader:
             document = Document.objects.get(pk=row['document_id'])
-            label = Label.objects.get(pk=12)
-            da = DocumentAnnotation.create(document, label, mlm_user, row['prob'])
-            print('created', da)
+            label = Label.objects.get(pk=int(float(row['label_id'])))
+            da = DocumentAnnotation(document=document, label=label, user=mlm_user, prob=row['prob'])
+            da.save()
+        os.remove(INPUT_FILE)
+        os.remove(OUTPUT_FILE)
         response = {'users': users}
-        return Response(response)
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 class ProjectStatsAPI(APIView):
     pagination_class = None
