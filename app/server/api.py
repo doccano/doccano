@@ -66,7 +66,7 @@ class RunModelAPI(APIView):
         doc_labels = [[a.label.id for a in doc.get_annotations()] for doc in docs]
         doc_ids = [doc.id for doc in docs]
         doc_texts = [doc.text for doc in docs]
-        with open(INPUT_FILE, 'w') as outfile:
+        with open(INPUT_FILE, 'w', encoding='utf-8') as outfile:
             wr = csv.writer(outfile, quoting=csv.QUOTE_ALL)
             wr.writerow(['document_id', 'text', 'label_id'])
             data = list(zip(doc_ids, doc_texts, doc_labels))
@@ -86,7 +86,7 @@ class RunModelAPI(APIView):
         else:
             mlm_id = mlm_user.pk
         run_model_on_file(INPUT_FILE, OUTPUT_FILE, mlm_id)
-        reader = csv.DictReader(open(OUTPUT_FILE, 'r'))
+        reader = csv.DictReader(open(OUTPUT_FILE, 'r', encoding='utf-8'))
         for da in DocumentAnnotation.objects.filter(user=mlm_user):
             da.delete()
         for row in reader:
@@ -96,7 +96,6 @@ class RunModelAPI(APIView):
             da.save()
         os.remove(INPUT_FILE)
         os.remove(OUTPUT_FILE)
-        response = {'users': users}
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 class ProjectStatsAPI(APIView):
