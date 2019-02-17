@@ -71,7 +71,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         return json.dumps(dict(zip(header_without_text, vals_without_text)))
 
     def csv_to_documents(self, project, file, text_key='text'):
-        form_data = TextIOWrapper(file, encoding='utf-8')
+        form_data = TextIOWrapper(file, encoding='utf-8', errors='ignore')
         reader = csv.reader(form_data)
 
         maybe_header = next(reader)
@@ -86,7 +86,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
             header_without_text = [title for i, title in enumerate(maybe_header)
                                    if i != text_col]
-
+            fixed_utf = []
             return (
                 Document(
                     text=row[text_col],
@@ -137,6 +137,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         except Exception as e:
             logger.exception(e)
             messages.add_message(request, messages.ERROR, 'Something went wrong')
+            messages.add_message(request, messages.ERROR, e)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
 
 
