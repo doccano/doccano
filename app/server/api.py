@@ -78,8 +78,10 @@ class RunModelAPI(APIView):
         users = User.objects.values()
         mlm_user = None
         mlm_id = None
-        mlm_user = User.objects.get(username='MachineLearningModel')
-        if not mlm_user:
+        try:
+            mlm_user = User.objects.get(username='MachineLearningModel')
+        except User.DoesNotExist:
+            print('User "MachineLearningModel" did not exist. Created it automatically.')
             mlm_user = User.objects.create_user(username='MachineLearningModel',
                                  password='MachineLearningModel')
             mlm_id = mlm_user.pk
@@ -94,8 +96,8 @@ class RunModelAPI(APIView):
             label = Label.objects.get(pk=int(float(row['label_id'])))
             da = DocumentAnnotation(document=document, label=label, user=mlm_user, prob=row['prob'])
             da.save()
-        os.remove(INPUT_FILE)
-        os.remove(OUTPUT_FILE)
+        # os.remove(INPUT_FILE)
+        # os.remove(OUTPUT_FILE)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 class ProjectStatsAPI(APIView):
@@ -153,13 +155,13 @@ class DocumentList(generics.ListCreateAPIView):
         return self.serializer_class
 
     def get_queryset(self):
-        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+        queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
         if not self.request.query_params.get('is_checked'):
             return queryset
 
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         is_null = self.request.query_params.get('is_checked') == 'true'
-        queryset = project.get_documents(is_null).distinct()
+        queryset = project.get_documents(is_null).order_by('doc_annotations__prob').distinct()
 
         return queryset
 
