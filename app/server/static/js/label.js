@@ -1,5 +1,8 @@
 import Vue from 'vue';
 import HTTP from './http';
+import simpleShortcut from './filter';
+
+Vue.filter('simpleShortcut', simpleShortcut);
 
 
 const vm = new Vue({
@@ -8,16 +11,53 @@ const vm = new Vue({
   data: {
     labels: [],
     labelText: '',
-    selectedShortkey: '',
+    selectedKey: '',
+    checkedKey: [],
+    shortcutKey: '',
     backgroundColor: '#209cee',
     textColor: '#ffffff',
   },
 
+  computed: {
+    /**
+      * combineKeys: Combine selectedKey and checkedKey to get shortcutKey
+      * saveKeys: Save null to database if shortcutKey is empty string
+      */
+    combineKeys: function () {
+      this.shortcutKey = '';
+
+      // If checkedKey exits, add it to shortcutKey
+      if (this.checkedKey.length > 0) {
+        this.checkedKey.sort();
+        this.shortcutKey = this.checkedKey.join(' ');
+
+        // If selectedKey exist, add it to shortcutKey
+        if (this.selectedKey.length !== 0) {
+          this.shortcutKey = this.shortcutKey + ' ' + this.selectedKey;
+        }
+      }
+
+      // If only selectedKey exist, assign to shortcutKey
+      if (this.shortcutKey.length === 0 && this.selectedKey.length !== 0) {
+        this.shortcutKey = this.selectedKey;
+      }
+      return this.shortcutKey;
+    },
+
+    saveKeys: function () {
+      this.shortcutKey = this.combineKeys;
+      if (this.shortcutKey === '') {
+        return null;
+      }
+      return this.shortcutKey;
+    },
+  },
+  
   methods: {
     addLabel() {
       const payload = {
         text: this.labelText,
-        shortcut: this.selectedShortkey,
+        shortcut: this.saveKeys,
         background_color: this.backgroundColor,
         text_color: this.textColor,
       };
@@ -37,7 +77,9 @@ const vm = new Vue({
 
     reset() {
       this.labelText = '';
-      this.selectedShortkey = '';
+      this.selectedKey = '';
+      this.checkedKey = [];
+      this.shortcutKey = '';
       this.backgroundColor = '#209cee';
       this.textColor = '#ffffff';
     },

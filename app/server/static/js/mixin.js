@@ -1,5 +1,37 @@
 import HTTP from './http';
 
+const getOffsetFromUrl = function(url) {
+  const offsetMatch = url.match(/[?#].*offset=(\d+)/);
+  if (offsetMatch == null) {
+    return 0;
+  }
+
+  return parseInt(offsetMatch[1], 10);
+};
+
+const storeOffsetInUrl = function(offset) {
+  let href = window.location.href;
+
+  const fragmentStart = href.indexOf('#') + 1;
+  if (fragmentStart === 0) {
+    href += '#offset=' + offset;
+  } else {
+    const prefix = href.substring(0, fragmentStart);
+    const fragment = href.substring(fragmentStart);
+
+    const newFragment = fragment.split('&').map(function(fragmentPart) {
+      const keyValue = fragmentPart.split('=');
+      return keyValue[0] === 'offset'
+        ? 'offset=' + offset
+        : fragmentPart;
+    }).join('&');
+
+    href = prefix + newFragment;
+  }
+
+  window.location.href = href;
+};
+
 const annotationMixin = {
   data() {
     return {
@@ -12,6 +44,7 @@ const annotationMixin = {
       remaining: 0,
       searchQuery: '',
       url: '',
+      offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
       count: 0,
       isActive: false,
@@ -56,6 +89,7 @@ const annotationMixin = {
           const doc = this.docs[i];
           this.annotations.push(doc.annotations);
         }
+        this.offset = getOffsetFromUrl(this.url);
       });
     },
 
@@ -71,7 +105,7 @@ const annotationMixin = {
 
     async submit() {
       const state = this.getState();
-      this.url = `docs/?q=${this.searchQuery}&is_checked=${state}`;
+      this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
       await this.search();
       this.pageNumber = 0;
     },
@@ -82,6 +116,14 @@ const annotationMixin = {
         const index = this.annotations[this.pageNumber].indexOf(annotation);
         this.annotations[this.pageNumber].splice(index, 1);
       });
+    },
+
+    replaceNull(shortcut) {
+      if (shortcut === null) {
+        shortcut = '';
+      }
+      shortcut = shortcut.split(' ');
+      return shortcut;
     },
   },
 
@@ -96,6 +138,10 @@ const annotationMixin = {
         this.total = response.data.total;
         this.remaining = response.data.remaining;
       });
+    },
+
+    offset() {
+      storeOffsetInUrl(this.offset);
     },
   },
 

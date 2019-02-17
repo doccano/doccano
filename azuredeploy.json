@@ -2,35 +2,35 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "appName":{
+    "appName": {
       "type": "string",
-      "minLength":  1,
+      "minLength": 1,
       "metadata": {
         "description": "The name for the webapp. Must be globally unique."
       }
     },
-    "secretKey":{
+    "secretKey": {
       "type": "securestring",
-      "minLength":  16,
+      "minLength": 16,
       "metadata": {
         "description": "The value to use as the Django secret key."
       }
     },
-    "adminUserName":{
+    "adminUserName": {
       "type": "string",
-      "minLength":  1,
+      "minLength": 1,
       "metadata": {
         "description": "The user name for the admin account."
       }
     },
-    "adminContactEmail":{
+    "adminContactEmail": {
       "type": "string",
-      "minLength":  1,
+      "minLength": 1,
       "metadata": {
         "description": "The contact email address for the admin account."
       }
     },
-    "adminPassword":{
+    "adminPassword": {
       "type": "securestring",
       "minLength": 16,
       "metadata": {
@@ -86,7 +86,7 @@
     "dockerImageName": {
       "type": "string",
       "minLength": 1,
-      "defaultValue": "cwolff/doccano:latest",
+      "defaultValue": "chakkiworks/doccano:latest",
       "metadata": {
         "description": "The Docker image to deploy."
       }
@@ -102,26 +102,20 @@
     "databaseServerName": "[concat(parameters('appName'),'-state')]",
     "setupScriptName": "[concat(parameters('appName'),'-setup')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
-    "env": [
-      {
-        "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
-        "value": "false"
-      },
-      {
-        "name": "DEBUG",
-        "value": "False"
-      },
-      {
-        "name": "SECRET_KEY",
-        "value": "[parameters('secretKey')]"
-      },
-      {
-        "name": "DATABASE_URL",
-        "value": "[variables('databaseConnectionString')]"
-      }
-    ]
+    "analyticsName": "[concat(parameters('appName'),'-analytics')]"
   },
   "resources": [
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2015-05-01",
+      "name": "[variables('analyticsName')]",
+      "location": "[variables('location')]",
+      "tags": {},
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web"
+      }
+    },
     {
       "apiVersion": "2017-08-01",
       "type": "Microsoft.Web/serverfarms",
@@ -199,7 +193,20 @@
                 "[parameters('adminContactEmail')]",
                 "[parameters('adminPassword')]"
               ],
-              "environmentVariables": "[variables('env')]",
+              "environmentVariables": [
+                {
+                  "name": "DEBUG",
+                  "value": "False"
+                },
+                {
+                  "name": "SECRET_KEY",
+                  "value": "[parameters('secretKey')]"
+                },
+                {
+                  "name": "DATABASE_URL",
+                  "value": "[variables('databaseConnectionString')]"
+                }
+              ],
               "resources": {
                 "requests": {
                   "cpu": "1",
@@ -224,6 +231,7 @@
       "location": "[variables('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('databaseServerName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('analyticsName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
       ],
       "properties": {
@@ -231,7 +239,32 @@
         "siteConfig": {
           "linuxFxVersion": "[concat('DOCKER|', parameters('dockerImageName'))]",
           "alwaysOn": true,
-          "appSettings": "[variables('env')]"
+          "appSettings": [
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "false"
+            },
+            {
+              "name": "AZURE_APPINSIGHTS_IKEY",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('analyticsName')), '2014-04-01').InstrumentationKey]"
+            },
+            {
+              "name": "GOOGLE_TRACKING_ID",
+              "value": ""
+            },
+            {
+              "name": "DEBUG",
+              "value": "False"
+            },
+            {
+              "name": "SECRET_KEY",
+              "value": "[parameters('secretKey')]"
+            },
+            {
+              "name": "DATABASE_URL",
+              "value": "[variables('databaseConnectionString')]"
+            }
+          ]
         },
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
       }
