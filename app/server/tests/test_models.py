@@ -3,19 +3,90 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from mixer.backend.django import mixer
 from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from ..serializers import ClassificationDocumentSerializer, DocumentAnnotationSerializer
+from ..serializers import SequenceDocumentSerializer, SequenceAnnotationSerializer
+from ..serializers import Seq2seqDocumentSerializer, Seq2seqAnnotationSerializer
 
 
-class TestProject(TestCase):
+class TestTextClassificationProject(TestCase):
 
-    def test_project_type(self):
-        project = mixer.blend('server.Project')
-        project.is_type_of(project.project_type)
+    @classmethod
+    def setUpTestData(cls):
+        cls.project = mixer.blend('server.TextClassificationProject')
 
-    def test_get_progress(self):
-        project = mixer.blend('server.Project')
-        res = project.get_progress(None)
-        self.assertEqual(res['total'], 0)
-        self.assertEqual(res['remaining'], 0)
+    def test_image(self):
+        image_url = self.project.image
+        self.assertTrue(image_url.endswith('.jpg'))
+
+    def test_get_template_name(self):
+        template = self.project.get_template_name()
+        self.assertEqual(template, 'annotation/document_classification.html')
+
+    def test_get_document_serializer(self):
+        serializer = self.project.get_document_serializer()
+        self.assertEqual(serializer, ClassificationDocumentSerializer)
+
+    def test_get_annotation_serializer(self):
+        serializer = self.project.get_annotation_serializer()
+        self.assertEqual(serializer, DocumentAnnotationSerializer)
+
+    def test_get_annotation_class(self):
+        klass = self.project.get_annotation_class()
+        self.assertEqual(klass, DocumentAnnotation)
+
+
+class TestSequenceLabelingProject(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project = mixer.blend('server.SequenceLabelingProject')
+
+    def test_image(self):
+        image_url = self.project.image
+        self.assertTrue(image_url.endswith('.jpg'))
+
+    def test_get_template_name(self):
+        template = self.project.get_template_name()
+        self.assertEqual(template, 'annotation/sequence_labeling.html')
+
+    def test_get_document_serializer(self):
+        serializer = self.project.get_document_serializer()
+        self.assertEqual(serializer, SequenceDocumentSerializer)
+
+    def test_get_annotation_serializer(self):
+        serializer = self.project.get_annotation_serializer()
+        self.assertEqual(serializer, SequenceAnnotationSerializer)
+
+    def test_get_annotation_class(self):
+        klass = self.project.get_annotation_class()
+        self.assertEqual(klass, SequenceAnnotation)
+
+
+class TestSeq2seqProject(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project = mixer.blend('server.Seq2seqProject')
+
+    def test_image(self):
+        image_url = self.project.image
+        self.assertTrue(image_url.endswith('.jpg'))
+
+    def test_get_template_name(self):
+        template = self.project.get_template_name()
+        self.assertEqual(template, 'annotation/seq2seq.html')
+
+    def test_get_document_serializer(self):
+        serializer = self.project.get_document_serializer()
+        self.assertEqual(serializer, Seq2seqDocumentSerializer)
+
+    def test_get_annotation_serializer(self):
+        serializer = self.project.get_annotation_serializer()
+        self.assertEqual(serializer, Seq2seqAnnotationSerializer)
+
+    def test_get_annotation_class(self):
+        klass = self.project.get_annotation_class()
+        self.assertEqual(klass, Seq2seqAnnotation)
 
 
 class TestLabel(TestCase):
@@ -35,6 +106,36 @@ class TestLabel(TestCase):
         mixer.blend('server.Label', text=label.text)
         with self.assertRaises(IntegrityError):
             Label(project=label.project, text=label.text).save()
+
+
+class TestTextClassificationDocument(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.doc = mixer.blend('server.TextClassificationDocument')
+
+    def test_get_annotations(self):
+        self.assertEqual(self.doc.get_annotations().count(), 0)
+
+
+class TestSequenceLabelingDocument(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.doc = mixer.blend('server.SequenceLabelingDocument')
+
+    def test_get_annotations(self):
+        self.assertEqual(self.doc.get_annotations().count(), 0)
+
+
+class TestSeq2seqDocument(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.doc = mixer.blend('server.Seq2seqDocument')
+
+    def test_get_annotations(self):
+        self.assertEqual(self.doc.get_annotations().count(), 0)
 
 
 class TestDocumentAnnotation(TestCase):
