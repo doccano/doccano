@@ -12,6 +12,9 @@ RUN cd /doccano/app/server && npm ci
 COPY requirements.txt /
 RUN pip install --no-cache-dir -r /requirements.txt
 
+COPY requirements_gunicorn.txt /
+RUN pip install --no-cache-dir -r /requirements_gunicorn.txt
+
 COPY app/server/static /doccano/app/server/static/
 COPY app/server/webpack.config.js /doccano/app/server/
 RUN cd /doccano/app/server && DEBUG=False npm run build

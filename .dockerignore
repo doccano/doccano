@@ -9,3 +9,4 @@ app/server/static/bundle/
 !tools/
 !.flake8
 !requirements.txt
+!requirements_gunicorn.txt
