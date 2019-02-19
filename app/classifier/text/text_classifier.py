@@ -20,7 +20,7 @@ def process_text(x):
 def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
     # nlp = spacy.load("en_core_web_sm")
 
-    df = pd.read_csv(input_filename)
+    df = pd.read_csv(input_filename, encoding='latin1')
 
     # df_labeled = df_labeled[['text', 'label_id']]
     df['text'] = df['text'].apply(process_text)
@@ -84,3 +84,7 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
     tmp_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
     return tmp_df
+
+
+if __name__ == '__main__':
+    run_model_on_file(r'C:\develop\code\vendors\honeyfy_doccano\app\server\ml_input.csv', r'C:\develop\code\vendors\honeyfy_doccano\app\server\ml_output.csv', user_id=4)

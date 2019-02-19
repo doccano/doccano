@@ -153,8 +153,7 @@ const vm = new Vue({
       }
       
       return null
-    }
-
+    },
     findLabelColor() {
       let lastColorIndex;
       for (let i = this.labels.length - 1; i >= 0; --i) {
