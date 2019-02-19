@@ -142,6 +142,7 @@ const annotationMixin = {
 
     async submit() {
       const state = this.getState();
+      this.offset = 0;
       this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
       await this.search();
       this.pageNumber = 0;
