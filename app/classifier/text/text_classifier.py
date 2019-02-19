@@ -23,6 +23,7 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
     # nlp = spacy.load("en_core_web_sm")
     print('Reading input file...')
     df = pd.read_csv(input_filename)
+    df = df[ ~pd.isnull(df['text']) ]
 
     # df_labeled = df_labeled[['text', 'label_id']]
     df['text'] = df['text'].apply(process_text)
@@ -37,7 +38,7 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
         df['vec'] = df['text'].apply(lambda x: nlp(x).vector)
 
     vectorizer = CountVectorizer()
-    transformer = TfidfTransformer(smooth_idf=False)
+    transformer = TfidfTransformer(smooth_idf=True)
     vectorizer.fit(df['text'])
 
     if method == 'w2v':
@@ -75,7 +76,7 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
     # model_params = {'bootstrap': True, 'criterion': 'gini', 'max_depth': 16, 'max_features': 'sqrt', 'min_samples_leaf': 16, 'min_samples_split': 16, 'n_estimators': 200}
     # model = RandomForestClassifier(**model_params)
 
-    model = LogisticRegression(verbose=True)
+    model = LogisticRegression(verbose=True, class_weight='balanced')
     model.fit(X_train, y_train)
 
     y_pred = model.predict(X_train)
