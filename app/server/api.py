@@ -21,8 +21,8 @@ from .filters import ExcludeSearchFilter
 
 from classifier.text.text_classifier import run_model_on_file
 
-OUTPUT_FILE = 'ml_out.csv'
-INPUT_FILE = 'ml_input.csv'
+OUTPUT_FILE = 'ml_models/ml_out.csv'
+INPUT_FILE = 'ml_models/ml_input.csv'
 
 
 class ProjectViewSet(viewsets.ModelViewSet):

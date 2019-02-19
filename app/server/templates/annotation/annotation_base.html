@@ -13,13 +13,16 @@
   </span>
   <b>Edit Data</b>
 </a>
-<a class="navbar-item" href="{% url 'runmodel-api' view.kwargs.project_id %}">
+<a class="navbar-item" @click="runModel">
   <span class="icon">
     <i class="fas fa-edit"></i>
   </span>
   <b>Run Model</b>
 </a>
 {% endif %}
+<a class="navbar-item">
+  {{ docs_count }} documents
+</a>
 {% endblock %}
 {% block content %}
 <div class="columns" id="mail-app" v-cloak>
@@ -31,7 +34,6 @@
           <div class="control is-expanded">
             <input class="input" type="text" placeholder="Search document" v-model="searchQuery" @keyup.enter="submit" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
           </div>
-
           <div class="control">
             <div class="dropdown is-hoverable is-right">
               <div class="dropdown-trigger">
@@ -62,6 +64,21 @@
               </div>
             </div>
           </div>
+        </div>
+        <div class="level mt30 documents-pagination">
+          <a class="button level-left" v-on:click="prevDocumentsPage" :disabled="!prev">
+            <span class="icon">
+              <i class="fas fa-chevron-left"></i>
+            </span>
+            <span>Prev</span>
+          </a>
+    
+          <a class="button level-right is-disabled" v-on:click="nextDocumentsPage" :disabled="!next">
+            <span>Next</span>
+            <span class="icon">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </a>
         </div>
       </div>
 
