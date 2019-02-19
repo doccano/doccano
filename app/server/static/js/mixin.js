@@ -32,6 +32,25 @@ const storeOffsetInUrl = function(offset) {
   window.location.href = href;
 };
 
+const syntaxHighlight = (json) => {
+  json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+      var cls = 'number';
+      if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+              cls = 'key';
+          } else {
+              cls = 'string';
+          }
+      } else if (/true|false/.test(match)) {
+          cls = 'boolean';
+      } else if (/null/.test(match)) {
+          cls = 'null';
+      }
+      return '<span class="' + cls + '">' + match + '</span>';
+  });
+}
+
 const annotationMixin = {
   data() {
     return {
@@ -48,6 +67,8 @@ const annotationMixin = {
       picked: 'all',
       count: 0,
       isActive: false,
+      next: null,
+      prev: null,
     };
   },
 
@@ -62,6 +83,22 @@ const annotationMixin = {
         } else {
           this.pageNumber = this.docs.length - 1;
         }
+      }
+    },
+
+    async prevDocumentsPage() {
+      if (this.prev) {
+        this.url = this.prev;
+        await this.search();
+        this.pageNumber = this.docs.length - 1;
+      }
+    },
+
+    async nextDocumentsPage() {
+      if (this.next) {
+        this.url = this.next;
+        await this.search();
+        this.pageNumber = 0;
       }
     },
 
@@ -185,6 +222,17 @@ const annotationMixin = {
         return 'is-warning';
       }
       return 'is-primary';
+    },
+
+    metadataString() {
+      if (this.pageNumber && this.docs[this.pageNumber] && this.docs[this.pageNumber].metadata) {
+        console.log(this.docs[this.pageNumber].metadata)
+        const json = JSON.parse(this.docs[this.pageNumber].metadata)
+        const str = JSON.stringify(json, undefined, 4);
+        return syntaxHighlight(str);
+      }
+
+      return null;
     },
   },
 };
