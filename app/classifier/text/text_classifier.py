@@ -22,7 +22,7 @@ def process_text(x):
 def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
     # nlp = spacy.load("en_core_web_sm")
     print('Reading input file...')
-    df = pd.read_csv(input_filename)
+    df = pd.read_csv(input_filename, encoding='latin1')
     df = df[ ~pd.isnull(df['text']) ]
 
     # df_labeled = df_labeled[['text', 'label_id']]
