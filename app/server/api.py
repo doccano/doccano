@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer
+from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -29,23 +29,27 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return Response(project.get_progress(self.request.user))
 
 
-class LabelList(generics.ListCreateAPIView):
-    queryset = Label.objects.all()
-    serializer_class = LabelSerializer
+class ProjectList(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
-        queryset = self.queryset.filter(project=self.kwargs['project_id'])
-
-        return queryset
+        return self.request.user.projects
 
     def perform_create(self, serializer):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        serializer.save(project=project)
+        serializer.save(user=self.request.user)
 
 
-class ProjectStatsAPI(APIView):
+class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = LabelSerializer
+    lookup_url_kwarg = 'project_id'
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+
+
+class StatisticsAPI(APIView):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
@@ -69,46 +73,61 @@ class ProjectStatsAPI(APIView):
         return Response(response)
 
 
-class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
+class LabelList(generics.ListCreateAPIView):
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
-    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
         queryset = self.queryset.filter(project=self.kwargs['project_id'])
-
         return queryset
 
-    def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-        obj = get_object_or_404(queryset, pk=self.kwargs['label_id'])
-        self.check_object_permissions(self.request, obj)
+    def perform_create(self, serializer):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        serializer.save(project=project)
 
-        return obj
+
+class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Label.objects.all()
+    serializer_class = LabelSerializer
+    lookup_url_kwarg = 'label_id'
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
 
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
-    def get_serializer_class(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = project.get_document_serializer()
-
-        return self.serializer_class
-
     def get_queryset(self):
         queryset = self.queryset.filter(project=self.kwargs['project_id'])
-        if not self.request.query_params.get('is_checked'):
-            return queryset
-
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        is_null = self.request.query_params.get('is_checked') == 'true'
-        queryset = project.get_documents(is_null).distinct()
-
         return queryset
+
+    def perform_create(self, serializer):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        serializer.save(project=project)
+
+    # def create(self, request, *args, **kwargs):
+    #     request.data['project'] = kwargs.get('project_id')
+    #     return super().create(request, args, kwargs)
+
+
+class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
+    lookup_url_kwarg = 'doc_id'
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+
+
+class EntityList(generics.ListCreateAPIView):
+    pass
+
+
+class EntityDetail(generics.RetrieveUpdateDestroyAPIView):
+    pass
 
 
 class AnnotationList(generics.ListCreateAPIView):
