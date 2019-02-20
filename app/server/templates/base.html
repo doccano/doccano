@@ -40,7 +40,7 @@
 </head>
 
 <body>
-  <nav class="navbar has-shadow">
+  <nav class="navbar has-shadow" id="navbar-component">
     <div class="container">
       <div class="navbar-brand">
         <a class="navbar-item" href="{% url 'index' %}">
@@ -83,7 +83,7 @@
           </a>
           {% else %}
           <a class="navbar-item" href="{% url 'logout' %}">
-            <span>Logout</span>
+            <span>Logout {{user}}</span>
           </a>
           {% endif %}
         </div>
@@ -94,6 +94,7 @@
   {% block content %}{% endblock %}
   
   {% block footer %}{% endblock %}
+  <script src="{% static 'bundle/navbar.js' %}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/js/swiper.min.js"></script>
   <script>
     var mySwiper = new Swiper('.swiper-container', {

@@ -148,7 +148,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 5,
+    'PAGE_SIZE': 10,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'SEARCH_PARAM': 'q',
 }
@@ -187,7 +187,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Size of the batch for creating documents
 # on the import phase
-IMPORT_BATCH_SIZE = 500
+IMPORT_BATCH_SIZE = 150
 
 GOOGLE_TRACKING_ID = os.getenv('GOOGLE_TRACKING_ID', 'UA-125643874-2')
 

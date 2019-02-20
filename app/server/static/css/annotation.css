@@ -136,7 +136,7 @@ body {
 
 .content {
   font-size: 16pt;
-  line-height: 250%;
+  line-height: 160%;
 }
 
 .content .tag {
@@ -282,5 +282,18 @@ body {
 .is-vertical-center {
   align-items: center;
 }
+
+.aside .documents-pagination .icon{
+  color: initial;
+  padding-right: initial;
+  font-size: initial;
+}
+
+.metadataViewer pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+.metadataViewer .string { color: green; }
+.metadataViewer .number { color: darkorange; }
+.metadataViewer .boolean { color: blue; }
+.metadataViewer .null { color: magenta; }
+.metadataViewer .key { color: red; }
 
 [v-cloak] { display: none; }

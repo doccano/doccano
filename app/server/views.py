@@ -32,6 +32,12 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return [project.get_template_name()]
 
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
 
 class ProjectsView(LoginRequiredMixin, CreateView):
     form_class = ProjectForm
@@ -46,17 +52,41 @@ class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return project.documents.all()
 
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
 
 class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/label.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
 
 
 class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/stats.html'
 
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
 
 class GuidelineView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/guideline.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
 
 
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
@@ -71,7 +101,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         return json.dumps(dict(zip(header_without_text, vals_without_text)))
 
     def csv_to_documents(self, project, file, text_key='text'):
-        form_data = TextIOWrapper(file, encoding='utf-8')
+        form_data = TextIOWrapper(file, encoding='utf-8', errors='ignore')
         reader = csv.reader(form_data)
 
         maybe_header = next(reader)
@@ -86,7 +116,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
             header_without_text = [title for i, title in enumerate(maybe_header)
                                    if i != text_col]
-
+            fixed_utf = []
             return (
                 Document(
                     text=row[text_col],
@@ -137,11 +167,24 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         except Exception as e:
             logger.exception(e)
             messages.add_message(request, messages.ERROR, 'Something went wrong')
+            messages.add_message(request, messages.ERROR, e)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
+    
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
 
 
 class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_download.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
 
 
 class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):

@@ -83,6 +83,10 @@ class Project(models.Model):
 
         return docs
 
+    def get_docs_count(self):
+        docs = self.documents.all()
+        return len(docs)
+
     def get_document_serializer(self):
         from .serializers import ClassificationDocumentSerializer
         from .serializers import SequenceDocumentSerializer
@@ -124,7 +128,7 @@ class Label(models.Model):
     COLOR_CHOICES = ()
 
     text = models.CharField(max_length=100)
-    comment = models.CharField(max_length=2000, default='')
+    comment = models.CharField(max_length=2000, default='', blank=True)
     shortcut = models.CharField(max_length=15, blank=True, null=True, choices=KEY_CHOICES)
     project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
     background_color = models.CharField(max_length=7, default='#209cee')
@@ -226,7 +230,7 @@ class Document(models.Model):
 
 
 class Annotation(models.Model):
-    prob = models.FloatField(default=0.0)
+    prob = models.FloatField(null=True, blank=True, default=None)
     manual = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_date_time = models.DateTimeField(auto_now_add=True)

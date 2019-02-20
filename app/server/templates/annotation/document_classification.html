@@ -33,6 +33,9 @@
     <div class="content" v-if="docs[pageNumber]">
       <span class="text">[[ docs[pageNumber].text ]]</span>
     </div>
+    <div v-if="metadataString" class="metadataViewer">
+      <pre v-html="metadataString"></pre>
+    </div>
   </div>
 </div>
 {% endblock %}
