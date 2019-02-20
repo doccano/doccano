@@ -28,6 +28,10 @@ class Project(models.Model):
     def get_absolute_url(self):
         return reverse('upload', args=[self.id])
 
+    @property
+    def image(self):
+        return staticfiles_storage.url('images/cats/text_classification.jpg')
+
     def __str__(self):
         return self.name
 

@@ -23,6 +23,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
+        read_only_fields = ('image', 'updated_at')
 
 
 class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):

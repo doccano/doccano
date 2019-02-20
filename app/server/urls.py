@@ -5,11 +5,10 @@ from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView
 from .views import ProjectsView, DataDownload, DataDownloadFile
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
-from .api import ProjectViewSet, LabelList, StatisticsAPI, LabelDetail, \
+from .api import LabelList, StatisticsAPI, LabelDetail, \
     AnnotationList, AnnotationDetail, DocumentList, DocumentDetail, EntityList, EntityDetail, ProjectList, ProjectDetail
 
 router = routers.DefaultRouter()
-#router.register(r'projects', ProjectViewSet)
 
 
 urlpatterns = [

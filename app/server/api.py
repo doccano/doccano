@@ -14,7 +14,7 @@ from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     pagination_class = None
@@ -23,28 +23,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return self.request.user.projects
 
-    @action(methods=['get'], detail=True)
-    def progress(self, request, pk=None):
-        project = self.get_object()
-        return Response(project.get_progress(self.request.user))
-
-
-class ProjectList(generics.ListCreateAPIView):
-    queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
-    pagination_class = None
-    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
-
-    def get_queryset(self):
-        return self.request.user.projects
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+    def create(self, request, *args, **kwargs):
+        request.data['users'] = [self.request.user.id]
+        return super().create(request, args, kwargs)
 
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
-    serializer_class = LabelSerializer
+    serializer_class = ProjectSerializer
     lookup_url_kwarg = 'project_id'
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
@@ -109,10 +95,6 @@ class DocumentList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
-
-    # def create(self, request, *args, **kwargs):
-    #     request.data['project'] = kwargs.get('project_id')
-    #     return super().create(request, args, kwargs)
 
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
