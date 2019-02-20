@@ -32,9 +32,9 @@
     <span v-if="docs[pageNumber]">Item #[[ docs[pageNumber].id ]]. [[ docs[pageNumber].metadata ]]</span>
     <hr style="margin: 0.8rem 0;">
     <div class="content" v-if="docs[pageNumber]">
-        <span class="text">[[ docs[pageNumber].text ]]</span>
+        <p class="text" v-html="docText"></p>
 
-        <pre class="metadata" style="color: #aaa; font-size:0.7em; margin-top:2em; line-height: 1.2em">[[ docs[pageNumber] | json ]]</pre>
+        <!--<pre class="metadata" style="color: #aaa; font-size:0.7em; margin-top:2em; line-height: 1.2em">[[ docs[pageNumber] ]]</pre>-->
     </div>
 
     <div v-if="metadataString" class="metadataViewer">

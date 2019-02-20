@@ -1,6 +1,7 @@
 import json
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -67,7 +68,18 @@ class Project(models.Model):
             if user:
                 docs = docs.exclude(doc_annotations__user=user)
             else:
-                docs = docs.filter(doc_annotations__isnull=is_null)
+                try:
+                    mlm_user = User.objects.get(username='MachineLearningModel')
+                except User.DoesNotExist:
+                    mlm_user = None
+                if(mlm_user):
+                    mlm_docs = docs.filter(Q(doc_annotations__isnull=False) & ~Q(doc_annotations__user=mlm_user))
+                    if not is_null:
+                        docs = mlm_docs
+                    else:
+                        docs = docs.exclude(id__in=mlm_docs)
+                else:
+                    docs = docs.filter(doc_annotations__isnull=is_null)
         elif self.is_type_of(Project.SEQUENCE_LABELING):
             if user:
                 docs = docs.exclude(seq_annotations__user=user)
