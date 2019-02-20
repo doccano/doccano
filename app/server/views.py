@@ -117,6 +117,24 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             header_without_text = [title for i, title in enumerate(maybe_header)
                                    if i != text_col]
             fixed_utf = []
+
+            # result = []
+            # for row in reader:
+            #     try:
+            #         result.append(
+            #             Document(
+            #                 text=row[text_col],
+            #                 metadata=self.extract_metadata_csv(row, text_col, header_without_text),
+            #                 project=project
+            #             )
+            #         )
+            #
+            #     except Exception as e:
+            #         print(str(e))
+            #         print(row)
+            #         print(self.extract_metadata_csv(row, text_col, header_without_text))
+            # return result
+
             return (
                 Document(
                     text=row[text_col],
@@ -124,6 +142,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                     project=project
                 )
                 for row in reader
+                if row!=[] and row!=''
             )
         else:
             return []
@@ -154,12 +173,14 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 documents = self.json_to_documents(project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
+
             while True:
                 batch = list(it.islice(documents, batch_size))
                 if not batch:
                     break
+                Document.objects.bulk_create(batch)
+                # Document.objects.bulk_create(batch, batch_size=batch_size)
 
-                Document.objects.bulk_create(batch, batch_size=batch_size)
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)

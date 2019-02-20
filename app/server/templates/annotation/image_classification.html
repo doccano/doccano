@@ -8,10 +8,10 @@
         <div class="control" v-for="(label, item) in labels">
           <div class="tags has-addons">
             <a class="tag is-medium" v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }" v-on:click="addLabel(label)"
-              v-shortkey.once=" replaceNull(label.shortcut) " @shortkey="addLabel(label)">
+              v-shortkey.once="[ label.shortcut ]" @shortkey="addLabel(label)">
               [[ label.text ]]
             </a>
-            <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
+            <span class="tag is-medium">[[ label.shortcut ]]</span>
           </div>
         </div>
       </div>
@@ -29,16 +29,11 @@
         </div>
       </div>
     </div>
-    <span v-if="docs[pageNumber]">Item #[[ docs[pageNumber].id ]]. [[ docs[pageNumber].metadata ]]</span>
     <hr style="margin: 0.8rem 0;">
     <div class="content" v-if="docs[pageNumber]">
-        <span class="text">[[ docs[pageNumber].text ]]</span>
-
-        <pre class="metadata" style="color: #aaa; font-size:0.7em; margin-top:2em; line-height: 1.2em">[[ docs[pageNumber] | json ]]</pre>
-    </div>
-
-    <div v-if="metadataString" class="metadataViewer">
-      <pre v-html="metadataString"></pre>
+      <span class="text">
+          <img :src="docs[pageNumber].text" width="" />
+      </span>
     </div>
   </div>
 </div>

@@ -171,7 +171,7 @@ class DocumentList(generics.ListCreateAPIView):
 
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         is_null = self.request.query_params.get('is_checked') == 'true'
-        queryset = project.get_documents(is_null).order_by('doc_annotations__prob').distinct()
+        queryset = project.get_documents(is_null).distinct()
 
         return queryset
 
