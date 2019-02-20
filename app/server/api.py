@@ -3,6 +3,7 @@ import os
 
 from collections import Counter
 from itertools import chain
+from itertools import islice
 
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -20,6 +21,8 @@ from .serializers import ProjectSerializer, LabelSerializer
 from .filters import ExcludeSearchFilter
 
 from classifier.text.text_classifier import run_model_on_file
+
+ML_FOLDER = 'ml_models'
 
 OUTPUT_FILE = 'ml_out.csv'
 INPUT_FILE = 'ml_input.csv'
@@ -66,7 +69,9 @@ class RunModelAPI(APIView):
         doc_labels = [[a.label.id for a in doc.get_annotations()] for doc in docs]
         doc_ids = [doc.id for doc in docs]
         doc_texts = [doc.text for doc in docs]
-        with open(INPUT_FILE, 'w', encoding='utf-8') as outfile:
+        if not os.path.isdir(ML_FOLDER):
+            os.makedirs(ML_FOLDER)
+        with open(os.path.join(ML_FOLDER, INPUT_FILE), 'w', encoding='utf-8') as outfile:
             wr = csv.writer(outfile, quoting=csv.QUOTE_ALL)
             wr.writerow(['document_id', 'text', 'label_id'])
             data = list(zip(doc_ids, doc_texts, doc_labels))
@@ -87,15 +92,20 @@ class RunModelAPI(APIView):
             mlm_id = mlm_user.pk
         else:
             mlm_id = mlm_user.pk
-        run_model_on_file(INPUT_FILE, OUTPUT_FILE, mlm_id)
-        reader = csv.DictReader(open(OUTPUT_FILE, 'r', encoding='utf-8'))
-        for da in DocumentAnnotation.objects.filter(user=mlm_user):
-            da.delete()
-        for row in reader:
-            document = Document.objects.get(pk=row['document_id'])
-            label = Label.objects.get(pk=int(float(row['label_id'])))
-            da = DocumentAnnotation(document=document, label=label, user=mlm_user, prob=row['prob'])
-            da.save()
+        run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), mlm_id)
+        
+        reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
+        current_anotations = DocumentAnnotation.objects.filter(user=mlm_user)
+        if current_anotations.exists():
+            current_anotations._raw_delete(current_anotations.db)
+
+        batch_size = 500
+        new_annotations = (DocumentAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), user=mlm_user, prob=row['prob']) for row in reader)
+        while True:
+            batch = list(islice(new_annotations, batch_size))
+            if not batch:
+                break
+            DocumentAnnotation.objects.bulk_create(batch, batch_size)
         # os.remove(INPUT_FILE)
         # os.remove(OUTPUT_FILE)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

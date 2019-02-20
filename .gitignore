@@ -200,5 +200,8 @@ pip-selfcheck.json
 # ignore django generated static files
 app/staticfiles/
 
+# ignore ml models files
+app/ml_models/
+
 # ignore javascript dependencies
 node_modules/

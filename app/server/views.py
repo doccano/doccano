@@ -32,6 +32,12 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return [project.get_template_name()]
 
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
 
 class ProjectsView(LoginRequiredMixin, CreateView):
     form_class = ProjectForm
@@ -46,17 +52,41 @@ class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return project.documents.all()
 
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
 
 class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/label.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
 
 
 class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/stats.html'
 
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
 
 class GuidelineView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/guideline.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
 
 
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
@@ -87,6 +117,24 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             header_without_text = [title for i, title in enumerate(maybe_header)
                                    if i != text_col]
             fixed_utf = []
+
+            # result = []
+            # for row in reader:
+            #     try:
+            #         result.append(
+            #             Document(
+            #                 text=row[text_col],
+            #                 metadata=self.extract_metadata_csv(row, text_col, header_without_text),
+            #                 project=project
+            #             )
+            #         )
+            #
+            #     except Exception as e:
+            #         print(str(e))
+            #         print(row)
+            #         print(self.extract_metadata_csv(row, text_col, header_without_text))
+            # return result
+
             return (
                 Document(
                     text=row[text_col],
@@ -94,6 +142,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                     project=project
                 )
                 for row in reader
+                if row!=[] and row!=''
             )
         else:
             return []
@@ -124,12 +173,14 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 documents = self.json_to_documents(project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
+
             while True:
                 batch = list(it.islice(documents, batch_size))
                 if not batch:
                     break
+                Document.objects.bulk_create(batch)
+                # Document.objects.bulk_create(batch, batch_size=batch_size)
 
-                Document.objects.bulk_create(batch, batch_size=batch_size)
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)
@@ -139,10 +190,22 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             messages.add_message(request, messages.ERROR, 'Something went wrong')
             messages.add_message(request, messages.ERROR, e)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
+    
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
 
 
 class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_download.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
 
 
 class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):

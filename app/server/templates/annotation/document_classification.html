@@ -37,6 +37,9 @@
         <pre class="metadata" style="color: #aaa; font-size:0.7em; margin-top:2em; line-height: 1.2em">[[ docs[pageNumber] | json ]]</pre>
     </div>
 
+    <div v-if="metadataString" class="metadataViewer">
+      <pre v-html="metadataString"></pre>
+    </div>
   </div>
 </div>
 {% endblock %}

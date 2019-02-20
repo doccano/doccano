@@ -79,7 +79,7 @@ class ClassificationDocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations')
+        fields = ('id', 'text', 'annotations', 'metadata')
 
 
 class SequenceDocumentSerializer(serializers.ModelSerializer):

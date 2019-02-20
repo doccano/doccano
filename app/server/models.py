@@ -83,6 +83,10 @@ class Project(models.Model):
 
         return docs
 
+    def get_docs_count(self):
+        docs = self.documents.all()
+        return len(docs)
+
     def get_document_serializer(self):
         from .serializers import ClassificationDocumentSerializer
         from .serializers import SequenceDocumentSerializer
