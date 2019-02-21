@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from mixer.backend.django import mixer
-from ..models import User, Project
+from ..models import User, SequenceAnnotation
 
 
 class TestProjectListAPI(APITestCase):
@@ -365,69 +365,127 @@ class TestDocumentDetailAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
-class TestAnnotationAPI(APITestCase):
+class TestEntityListAPI(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.username = 'user'
-        cls.password = 'pass'
-        cls.user1 = User.objects.create_user(username=cls.username, password=cls.password)
-        cls.user2 = User.objects.create_user(username='user2', password='pass2')
-        cls.project1 = mixer.blend('server.Project', project_type=Project.DOCUMENT_CLASSIFICATION,
-                                   users=[cls.user1, cls.user2])
-        cls.project2 = mixer.blend('server.Project', project_type=Project.DOCUMENT_CLASSIFICATION,
-                                   users=[cls.user2])
-        cls.doc1 = mixer.blend('server.Document', project=cls.project1)
-        cls.doc2 = mixer.blend('server.Document', project=cls.project1)
-        cls.label = mixer.blend('server.Label', project=cls.project1)
-        cls.annotation1 = mixer.blend('server.DocumentAnnotation', document=cls.doc1, user=cls.user1)
-        cls.annotation2 = mixer.blend('server.DocumentAnnotation', document=cls.doc1, user=cls.user2)
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
+                                                      password=cls.non_project_member_pass)
+        label = mixer.blend('server.Label')
 
-    def setUp(self):
-        self.client.login(username=self.username, password=self.password)
+        cls.main_project = mixer.blend('server.Project')
+        cls.main_project.users.add(project_member)
+        cls.main_project.labels.add(label)
+        main_project_doc = mixer.blend('server.Document', project=cls.main_project)
+        mixer.blend('server.SequenceAnnotation', document=main_project_doc)
 
-    def test_fetch_own_annotation(self):
-        """
-        Ensure user can fetch only own annotation.
-        """
-        url = reverse('annotations', args=[self.project1.id, self.doc1.id])
-        r = self.client.get(url, format='json')
-        self.assertEqual(r.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(r.data), 1)
-        self.assertEqual(r.data[0]['id'], self.annotation1.id)
+        sub_project = mixer.blend('server.Project')
+        sub_project_doc = mixer.blend('server.Document', project=sub_project)
+        mixer.blend('server.SequenceAnnotation', document=sub_project_doc)
 
-    def test_fetch_other_projects_annotation(self):
-        """
-        Ensure user cannot fetch other project's annotation.
-        """
-        url = reverse('annotations', args=[self.project2.id, self.doc1.id])
-        r = self.client.get(url, format='json')
-        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
+        cls.url = reverse(viewname='entity_list', args=[cls.main_project.id, main_project_doc.id])
+        cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': label.id}
+        cls.count = SequenceAnnotation.objects.filter(document=main_project_doc).count()
 
-    def test_annotate_doc(self):
-        """
-        Ensure user can annotate a document.
-        """
-        # Try to annotate a empty document(doc2).
-        data = {'label': self.label.id}
-        url = reverse('annotations', args=[self.project1.id, self.doc2.id])
-        r = self.client.post(url, data, format='json')
-        self.assertEqual(r.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(len(self.doc2.doc_annotations.all()), 1)
+    def test_returns_entities_to_project_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_delete_annotation(self):
-        """
-        Ensure user can delete only own annotation.
-        """
-        self.assertEqual(len(self.doc1.doc_annotations.all()), 2)
+    def test_do_not_return_entities_to_non_project_member(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-        # Try to delete own annotation.
-        url = reverse('ann', args=[self.project1.id, self.doc1.id, self.annotation1.id])
-        r = self.client.delete(url, format='json')
-        self.assertEqual(r.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(len(self.doc1.doc_annotations.all()), 1)
+    def test_do_not_return_entities_of_other_projects(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(len(response.data), self.count)
 
-        # Try to delete other's annotation.
-        url = reverse('ann', args=[self.project1.id, self.doc1.id, self.annotation2.id])
-        r = self.client.delete(url, format='json')
-        self.assertEqual(r.status_code, status.HTTP_403_FORBIDDEN)
+    def test_allows_project_member_to_create_entity(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.post(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_disallows_non_project_member_to_create_entity(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.post(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestEntityDetailAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
+                                                      password=cls.non_project_member_pass)
+        label = mixer.blend('server.Label')
+
+        cls.main_project = mixer.blend('server.Project')
+        cls.main_project.users.add(project_member)
+        cls.main_project.labels.add(label)
+        main_project_doc = mixer.blend('server.Document', project=cls.main_project)
+        main_project_entity = mixer.blend('server.SequenceAnnotation', document=main_project_doc)
+
+        sub_project = mixer.blend('server.Project')
+        sub_project_doc = mixer.blend('server.Document', project=sub_project)
+        mixer.blend('server.SequenceAnnotation', document=sub_project_doc)
+
+        cls.url = reverse(viewname='entity_detail', args=[cls.main_project.id,
+                                                          main_project_doc.id,
+                                                          main_project_entity.id])
+        cls.post_data = {'start_offset': 0, 'end_offset': 10}
+        cls.count = SequenceAnnotation.objects.filter(document=main_project_doc).count()
+
+    def test_returns_entity_to_project_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_do_not_return_entity_to_non_project_member(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_project_member_to_update_entity(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.patch(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_disallows_non_project_member_to_update_entity(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.put(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_project_member_to_delete_entity(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_disallows_project_member_to_delete_entity(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

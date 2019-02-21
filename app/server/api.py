@@ -3,15 +3,16 @@ from itertools import chain
 
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets, generics, filters
-from rest_framework.decorators import action
+from rest_framework import generics, filters
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Project, Label, Document
+from .models import SequenceAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
+from .serializers import SequenceAnnotationSerializer
 
 
 class ProjectList(generics.ListCreateAPIView):
@@ -105,11 +106,25 @@ class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class EntityList(generics.ListCreateAPIView):
-    pass
+    queryset = SequenceAnnotation.objects.all()
+    serializer_class = SequenceAnnotationSerializer
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser)
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(document=self.kwargs['doc_id'])
+        return queryset
+
+    def perform_create(self, serializer):
+        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        serializer.save(document=doc, user=self.request.user)
 
 
 class EntityDetail(generics.RetrieveUpdateDestroyAPIView):
-    pass
+    queryset = SequenceAnnotation.objects.all()
+    serializer_class = SequenceAnnotationSerializer
+    lookup_url_kwarg = 'entity_id'
+    permission_classes = (IsAuthenticated, IsProjectUser)
 
 
 class AnnotationList(generics.ListCreateAPIView):
