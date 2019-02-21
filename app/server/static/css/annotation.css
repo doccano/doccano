@@ -296,4 +296,8 @@ body {
 .metadataViewer .null { color: magenta; }
 .metadataViewer .key { color: red; }
 
+span.highlight {
+  background-color: darkorange
+}
+
 [v-cloak] { display: none; }

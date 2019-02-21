@@ -69,6 +69,7 @@ const annotationMixin = {
       isActive: false,
       next: null,
       prev: null,
+      highlightQuery: '',
     };
   },
 
@@ -146,6 +147,12 @@ const annotationMixin = {
       this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
       await this.search();
       this.pageNumber = 0;
+
+      if (this.searchQuery.length) {
+        this.highlightQuery = this.searchQuery;
+      } else {
+        this.highlightQuery = '';
+      }
     },
 
     removeLabel(annotation) {
@@ -227,7 +234,6 @@ const annotationMixin = {
 
     metadataString() {
       if (this.pageNumber && this.docs[this.pageNumber] && this.docs[this.pageNumber].metadata) {
-        console.log(this.docs[this.pageNumber].metadata)
         const json = JSON.parse(this.docs[this.pageNumber].metadata)
         const str = JSON.stringify(json, undefined, 4);
         return syntaxHighlight(str);
@@ -235,6 +241,23 @@ const annotationMixin = {
 
       return null;
     },
+
+    docText() {
+      if(this.highlightQuery.length) {
+        let text = this.docs[this.pageNumber].text;
+        const complexSearchRegex = /^\"(.*)\"\s*\-?(.*$)/;
+        const complexMatches = this.highlightQuery.match(complexSearchRegex)
+        let terms = this.highlightQuery.split(' ');
+        if (complexMatches && complexMatches[1]) {
+          terms = [complexMatches[1]]
+        }
+        terms.forEach((term) => {
+          text = text.replace(new RegExp(term, 'g'), `<span class="highlight">${term}</span>`)
+        });
+        return text
+      }
+      return this.docs[this.pageNumber].text 
+    }
   },
 };
 
