@@ -252,7 +252,7 @@ const annotationMixin = {
           terms = [complexMatches[1]]
         }
         terms.forEach((term) => {
-          text = text.replace(new RegExp(term, 'g'), `<span class="highlight">${term}</span>`)
+          text = text.replace(new RegExp(`(${term})`, 'gi'), `<span class="highlight">$1</span>`)
         });
         return text
       }

@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.db.models import Q
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -167,6 +168,19 @@ class DocumentList(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
         if not self.request.query_params.get('is_checked'):
+            try:
+                mlm_user = User.objects.get(username='MachineLearningModel')
+            except User.DoesNotExist:
+                mlm_user = None
+            if(mlm_user):
+                print('mlm user here')
+                queryset = queryset.filter(doc_annotations__user=mlm_user)
+                queryset = queryset.order_by('doc_annotations__prob')
+                print('mlm docs len', len(queryset))
+                #if not is_null:
+                #    docs = mlm_docs
+                #else:
+                #    docs = docs.exclude(id__in=mlm_docs)
             return queryset
 
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
