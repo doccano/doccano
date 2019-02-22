@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from .api import ProjectList, ProjectDetail
 from .api import LabelList, LabelDetail
@@ -25,3 +26,5 @@ urlpatterns = [
     path('projects/<int:project_id>/docs/<int:doc_id>/entities/<int:entity_id>',
          EntityDetail.as_view(), name='entity_detail'),
 ]
+
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])
