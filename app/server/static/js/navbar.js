@@ -19,6 +19,8 @@ const vm = new Vue({
   data() {
     return {
       modelProcessing: false,
+      showRunModel: false,
+      resultSplitted: ''
     };
   },
   methods: {
@@ -32,13 +34,15 @@ const vm = new Vue({
         type: 'is-info',
         position: 'top-center',
       });
-      axios.get(`${baseUrl}/api/projects/${projectId}/runmodel/`).then(() => {
+      axios.get(`${baseUrl}/api/projects/${projectId}/runmodel/`).then((r) => {
         this.modelProcessing = false;
+        this.showRunModel = true;
         bulmaToast.toast({
           message: 'Successfully ran the model',
           type: 'is-success',
           position: 'top-center',
         });
+        this.resultSplitted = r.data.result.replace(/\n/g, '<br>');
       }).catch(() => {
         this.modelProcessing = false;
         bulmaToast.toast({

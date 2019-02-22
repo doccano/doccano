@@ -237,6 +237,13 @@ class Document(models.Model):
         dataset = {'doc_id': self.id, 'text': self.text, 'sentences': sentences, 'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
 
+    def is_labeled_by(self, user):
+        annotations = self.get_annotations()
+        for a in annotations:
+            if (a.user == user):
+                return True
+        return False
+
     def __str__(self):
         return self.text[:50]
 

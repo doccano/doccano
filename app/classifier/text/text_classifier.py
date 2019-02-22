@@ -79,13 +79,19 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
     model = LogisticRegression(verbose=True, class_weight='balanced')
     model.fit(X_train, y_train)
 
+    result = ''
+
     y_pred = model.predict(X_train)
     print('Performance on train set:')
     print(metrics.classification_report(y_train, y_pred))
+    result = result + 'Performance on train set: \n'
+    result = result + metrics.classification_report(y_train, y_pred)
 
     print('Performance on test set:')
     y_pred = model.predict(X_test)
     print(metrics.classification_report(y_test, y_pred))
+    result = result + '\nPerformance on test set: \n'
+    result = result + metrics.classification_report(y_test, y_pred)
 
     columns=['text', 'label', 'prediction', 'is_error', 'confidence']
     tmp_df = df.copy()
@@ -102,7 +108,7 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
     tmp_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
     print('Done running the model!')
-    return tmp_df
+    return result
 
 
 if __name__ == '__main__':

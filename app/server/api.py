@@ -1,5 +1,6 @@
 import csv
 import os
+import operator
 
 from collections import Counter
 from itertools import chain
@@ -93,7 +94,7 @@ class RunModelAPI(APIView):
             mlm_id = mlm_user.pk
         else:
             mlm_id = mlm_user.pk
-        run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), mlm_id)
+        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), mlm_id)
         
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         current_anotations = DocumentAnnotation.objects.filter(user=mlm_user)
@@ -109,7 +110,7 @@ class RunModelAPI(APIView):
             DocumentAnnotation.objects.bulk_create(batch, batch_size)
         # os.remove(INPUT_FILE)
         # os.remove(OUTPUT_FILE)
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return Response({'result': result})
 
 class ProjectStatsAPI(APIView):
     pagination_class = None
@@ -152,6 +153,8 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+def sort_by_user(a, b):
+    return 1
 
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
@@ -173,14 +176,9 @@ class DocumentList(generics.ListCreateAPIView):
             except User.DoesNotExist:
                 mlm_user = None
             if(mlm_user):
-                print('mlm user here')
                 queryset = queryset.filter(doc_annotations__user=mlm_user)
                 queryset = queryset.order_by('doc_annotations__prob')
-                print('mlm docs len', len(queryset))
-                #if not is_null:
-                #    docs = mlm_docs
-                #else:
-                #    docs = docs.exclude(id__in=mlm_docs)
+                queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user)) 
             return queryset
 
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])

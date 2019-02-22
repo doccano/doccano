@@ -19,6 +19,23 @@
   </span>
   <b>Run Model</b>
 </a>
+
+<!-- Modal card for creating project. -->
+<div class="modal" :class="{ 'is-active': showRunModel }">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title">Run Model Result</p>
+      <button class="delete" aria-label="close" @click="showRunModel=!showRunModel"></button>
+    </header>
+    <form method="post">
+      {% csrf_token %}
+      <section class="modal-card-body" v-if="resultSplitted.length" v-html="resultSplitted">
+      </section>
+    </form>
+  </div>
+</div>
+
 {% endif %}
 <a class="navbar-item">
   {{ docs_count }} documents
