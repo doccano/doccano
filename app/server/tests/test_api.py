@@ -9,56 +9,57 @@ class TestProjectListAPI(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.project_member_name = 'project_member_name'
-        cls.project_member_pass = 'project_member_pass'
-        cls.non_project_member_name = 'non_project_member_name'
-        cls.non_project_member_pass = 'non_project_member_pass'
+        cls.main_project_member_name = 'project_member_name'
+        cls.main_project_member_pass = 'project_member_pass'
+        cls.sub_project_member_name = 'sub_project_member_name'
+        cls.sub_project_member_pass = 'sub_project_member_pass'
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
-        cls.project_member = User.objects.create_user(username=cls.project_member_name,
-                                                      password=cls.project_member_pass)
-        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
-                                                      password=cls.non_project_member_pass)
+        main_project_member = User.objects.create_user(username=cls.main_project_member_name,
+                                                       password=cls.main_project_member_pass)
+        sub_project_member = User.objects.create_user(username=cls.sub_project_member_name,
+                                                      password=cls.sub_project_member_pass)
         # Todo: change super_user to project_admin.
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mixer.blend('server.Project')
-        cls.main_project.users.add(cls.project_member)
-        cls.main_project.users.add(super_user)
-        sub_project = mixer.blend('server.Project')
+
+        cls.main_project = mixer.blend('server.Project', users=[main_project_member])
+        cls.sub_project = mixer.blend('server.Project', users=[sub_project_member])
+
         cls.url = reverse(viewname='project_list')
-        cls.post_data = {'name': 'example', 'project_type': 'Seq2seq',
-                         'description': 'example', 'guideline': 'example'}
+        cls.data = {'name': 'example', 'project_type': 'Seq2seq',
+                    'description': 'example', 'guideline': 'example'}
+        cls.num_project = main_project_member.projects.count()
 
-    def test_returns_projects_to_project_member(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
+    def test_returns_main_project_to_main_project_member(self):
+        self.client.login(username=self.main_project_member_name,
+                          password=self.main_project_member_pass)
         response = self.client.get(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        project = response.data[0]
+        num_project = len(response.data)
+        self.assertEqual(num_project, self.num_project)
+        self.assertEqual(project['id'], self.main_project.id)
 
-    def test_do_not_return_projects_to_non_project_member(self):
-        self.client.login(username=self.non_project_member_name,
-                          password=self.non_project_member_pass)
+    def test_do_not_return_main_project_to_sub_project_member(self):
+        self.client.login(username=self.sub_project_member_name,
+                          password=self.sub_project_member_pass)
         response = self.client.get(self.url, format='json')
-        self.assertEqual(response.data, [])
-
-    def test_do_not_return_other_projects(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(len(response.data), self.project_member.projects.count())
+        project = response.data[0]
+        num_project = len(response.data)
+        self.assertEqual(num_project, self.num_project)
+        self.assertNotEqual(project['id'], self.main_project.id)
 
     def test_allows_superuser_to_create_project(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
-        response = self.client.post(self.url, format='json', data=self.post_data)
+        response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_disallows_project_member_to_create_project(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.post(self.url, format='json', data=self.post_data)
+        self.client.login(username=self.main_project_member_name,
+                          password=self.main_project_member_pass)
+        response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
@@ -80,21 +81,18 @@ class TestProjectDetailAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mixer.blend('server.Project')
-        cls.main_project.users.add(cls.project_member)
-        cls.main_project.users.add(super_user)
-        sub_project = mixer.blend('server.Project')
+        cls.main_project = mixer.blend('server.Project', users=[cls.project_member, super_user])
+        sub_project = mixer.blend('server.Project', users=[non_project_member])
         cls.url = reverse(viewname='project_detail', args=[cls.main_project.id])
-        cls.post_data = {'name': 'example', 'project_type': 'Seq2seq',
-                         'description': 'example', 'guideline': 'example'}
+        cls.data = {'description': 'lorem'}
 
-    def test_returns_project_to_project_member(self):
+    def test_returns_main_project_detail_to_main_project_member(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.data['id'], self.main_project.id)
 
-    def test_do_not_return_project_to_non_project_member(self):
+    def test_do_not_return_main_project_to_sub_project_member(self):
         self.client.login(username=self.non_project_member_name,
                           password=self.non_project_member_pass)
         response = self.client.get(self.url, format='json')
@@ -103,13 +101,13 @@ class TestProjectDetailAPI(APITestCase):
     def test_allows_superuser_to_update_project(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
-        response = self.client.patch(self.url, format='json', data={'description': 'lorem'})
-        self.assertEqual(response.data['description'], 'lorem')
+        response = self.client.patch(self.url, format='json', data=self.data)
+        self.assertEqual(response.data['description'], self.data['description'])
 
     def test_disallows_project_member_to_update_project(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
-        response = self.client.put(self.url, format='json', data={'description': 'lorem'})
+        response = self.client.patch(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_allows_superuser_to_delete_project(self):
@@ -143,14 +141,13 @@ class TestLabelListAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mixer.blend('server.Project')
-        cls.main_project.users.add(project_member)
-        cls.main_project.users.add(super_user)
-        mixer.blend('server.Label', project=cls.main_project)
-        sub_project = mixer.blend('server.Project')
+        cls.main_project = mixer.blend('server.Project', users=[project_member, super_user])
+        cls.main_project_label = mixer.blend('server.Label', project=cls.main_project)
+
+        sub_project = mixer.blend('server.Project', users=[non_project_member])
         mixer.blend('server.Label', project=sub_project)
         cls.url = reverse(viewname='label_list', args=[cls.main_project.id])
-        cls.post_data = {'text': 'example'}
+        cls.data = {'text': 'example'}
 
     def test_returns_labels_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -168,18 +165,21 @@ class TestLabelListAPI(APITestCase):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
         response = self.client.get(self.url, format='json')
-        self.assertEqual(len(response.data), self.main_project.labels.count())
+        label = response.data[0]
+        num_labels = len(response.data)
+        self.assertEqual(num_labels, len(self.main_project.labels.all()))
+        self.assertEqual(label['id'], self.main_project_label.id)
 
     def test_allows_superuser_to_create_label(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
-        response = self.client.post(self.url, format='json', data=self.post_data)
+        response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_disallows_project_member_to_create_label(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
-        response = self.client.post(self.url, format='json', data=self.post_data)
+        response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
@@ -201,12 +201,10 @@ class TestLabelDetailAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.label = mixer.blend('server.Label')
-        project = mixer.blend('server.Project')
-        project.labels.add(cls.label)
-        project.users.add(project_member)
-        project.users.add(super_user)
+        project = mixer.blend('server.Project', users=[project_member, super_user])
+        cls.label = mixer.blend('server.Label', project=project)
         cls.url = reverse(viewname='label_detail', args=[project.id, cls.label.id])
+        cls.data = {'text': 'example'}
 
     def test_returns_label_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -223,13 +221,13 @@ class TestLabelDetailAPI(APITestCase):
     def test_allows_superuser_to_update_label(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
-        response = self.client.patch(self.url, format='json', data={'text': 'example'})
-        self.assertEqual(response.data['text'], 'example')
+        response = self.client.patch(self.url, format='json', data=self.data)
+        self.assertEqual(response.data['text'], self.data['text'])
 
     def test_disallows_project_member_to_update_label(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
-        response = self.client.put(self.url, format='json', data={'text': 'example'})
+        response = self.client.patch(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_allows_superuser_to_delete_label(self):
@@ -263,14 +261,14 @@ class TestDocumentListAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mixer.blend('server.Project')
-        cls.main_project.users.add(project_member)
-        cls.main_project.users.add(super_user)
+
+        cls.main_project = mixer.blend('server.Project', users=[project_member, super_user])
         mixer.blend('server.Document', project=cls.main_project)
-        sub_project = mixer.blend('server.Project')
+
+        sub_project = mixer.blend('server.Project', users=[non_project_member])
         mixer.blend('server.Document', project=sub_project)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
-        cls.post_data = {'text': 'example'}
+        cls.data = {'text': 'example'}
 
     def test_returns_docs_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -293,13 +291,13 @@ class TestDocumentListAPI(APITestCase):
     def test_allows_superuser_to_create_doc(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
-        response = self.client.post(self.url, format='json', data=self.post_data)
+        response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_disallows_project_member_to_create_doc(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
-        response = self.client.post(self.url, format='json', data=self.post_data)
+        response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
@@ -321,12 +319,10 @@ class TestDocumentDetailAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.doc = mixer.blend('server.Document')
-        project = mixer.blend('server.Project')
-        project.documents.add(cls.doc)
-        project.users.add(project_member)
-        project.users.add(super_user)
+        project = mixer.blend('server.Project', users=[project_member, super_user])
+        cls.doc = mixer.blend('server.Document', project=project)
         cls.url = reverse(viewname='doc_detail', args=[project.id, cls.doc.id])
+        cls.data = {'text': 'example'}
 
     def test_returns_doc_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -343,13 +339,13 @@ class TestDocumentDetailAPI(APITestCase):
     def test_allows_superuser_to_update_doc(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
-        response = self.client.patch(self.url, format='json', data={'text': 'example'})
-        self.assertEqual(response.data['text'], 'example')
+        response = self.client.patch(self.url, format='json', data=self.data)
+        self.assertEqual(response.data['text'], self.data['text'])
 
     def test_disallows_project_member_to_update_doc(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
-        response = self.client.put(self.url, format='json', data={'text': 'example'})
+        response = self.client.patch(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_allows_superuser_to_delete_doc(self):
@@ -371,27 +367,31 @@ class TestEntityListAPI(APITestCase):
     def setUpTestData(cls):
         cls.project_member_name = 'project_member_name'
         cls.project_member_pass = 'project_member_pass'
+        cls.another_project_member_name = 'another_project_member_name'
+        cls.another_project_member_pass = 'another_project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
+        another_project_member = User.objects.create_user(username=cls.another_project_member_name,
+                                                          password=cls.another_project_member_pass)
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
-        label = mixer.blend('server.Label')
 
-        cls.main_project = mixer.blend('server.Project')
-        cls.main_project.users.add(project_member)
-        cls.main_project.labels.add(label)
-        main_project_doc = mixer.blend('server.Document', project=cls.main_project)
-        mixer.blend('server.SequenceAnnotation', document=main_project_doc)
+        main_project = mixer.blend('server.Project', users=[project_member, another_project_member])
+        main_project_label = mixer.blend('server.Label', project=main_project)
+        main_project_doc = mixer.blend('server.Document', project=main_project)
+        mixer.blend('server.SequenceAnnotation', document=main_project_doc, user=project_member)
+        mixer.blend('server.SequenceAnnotation', document=main_project_doc, user=another_project_member)
 
-        sub_project = mixer.blend('server.Project')
+        sub_project = mixer.blend('server.Project', users=[non_project_member])
         sub_project_doc = mixer.blend('server.Document', project=sub_project)
         mixer.blend('server.SequenceAnnotation', document=sub_project_doc)
 
-        cls.url = reverse(viewname='entity_list', args=[cls.main_project.id, main_project_doc.id])
-        cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': label.id}
-        cls.count = SequenceAnnotation.objects.filter(document=main_project_doc).count()
+        cls.url = reverse(viewname='entity_list', args=[main_project.id, main_project_doc.id])
+        cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': main_project_label.id}
+        cls.num_entity_of_project_member = SequenceAnnotation.objects.filter(document=main_project_doc,
+                                                                             user=project_member).count()
 
     def test_returns_entities_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -405,11 +405,11 @@ class TestEntityListAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_do_not_return_entities_of_other_projects(self):
+    def test_do_not_return_entities_of_another_project_member(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
         response = self.client.get(self.url, format='json')
-        self.assertEqual(len(response.data), self.count)
+        self.assertEqual(len(response.data), self.num_entity_of_project_member)
 
     def test_allows_project_member_to_create_entity(self):
         self.client.login(username=self.project_member_name,
@@ -430,29 +430,35 @@ class TestEntityDetailAPI(APITestCase):
     def setUpTestData(cls):
         cls.project_member_name = 'project_member_name'
         cls.project_member_pass = 'project_member_pass'
+        cls.another_project_member_name = 'another_project_member_name'
+        cls.another_project_member_pass = 'another_project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
+        another_project_member = User.objects.create_user(username=cls.another_project_member_name,
+                                                          password=cls.another_project_member_pass)
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
-        label = mixer.blend('server.Label')
 
-        cls.main_project = mixer.blend('server.Project')
-        cls.main_project.users.add(project_member)
-        cls.main_project.labels.add(label)
-        main_project_doc = mixer.blend('server.Document', project=cls.main_project)
-        main_project_entity = mixer.blend('server.SequenceAnnotation', document=main_project_doc)
+        main_project = mixer.blend('server.Project', users=[project_member, another_project_member])
+        main_project_doc = mixer.blend('server.Document', project=main_project)
+        main_project_entity = mixer.blend('server.SequenceAnnotation',
+                                          document=main_project_doc, user=project_member)
+        another_entity = mixer.blend('server.SequenceAnnotation',
+                                     document=main_project_doc, user=another_project_member)
 
-        sub_project = mixer.blend('server.Project')
+        sub_project = mixer.blend('server.Project', users=[non_project_member])
         sub_project_doc = mixer.blend('server.Document', project=sub_project)
         mixer.blend('server.SequenceAnnotation', document=sub_project_doc)
 
-        cls.url = reverse(viewname='entity_detail', args=[cls.main_project.id,
+        cls.url = reverse(viewname='entity_detail', args=[main_project.id,
                                                           main_project_doc.id,
                                                           main_project_entity.id])
+        cls.another_url = reverse(viewname='entity_detail', args=[main_project.id,
+                                                                  main_project_doc.id,
+                                                                  another_entity.id])
         cls.post_data = {'start_offset': 0, 'end_offset': 10}
-        cls.count = SequenceAnnotation.objects.filter(document=main_project_doc).count()
 
     def test_returns_entity_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -466,6 +472,12 @@ class TestEntityDetailAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_do_not_return_entity_by_another_project_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.another_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
     def test_allows_project_member_to_update_entity(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
@@ -475,7 +487,13 @@ class TestEntityDetailAPI(APITestCase):
     def test_disallows_non_project_member_to_update_entity(self):
         self.client.login(username=self.non_project_member_name,
                           password=self.non_project_member_pass)
-        response = self.client.put(self.url, format='json', data=self.post_data)
+        response = self.client.patch(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_project_member_to_update_entity_of_another_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.patch(self.another_url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_allows_project_member_to_delete_entity(self):
@@ -488,4 +506,10 @@ class TestEntityDetailAPI(APITestCase):
         self.client.login(username=self.non_project_member_name,
                           password=self.non_project_member_pass)
         response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_project_member_to_delete_entity_of_another_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.delete(self.another_url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

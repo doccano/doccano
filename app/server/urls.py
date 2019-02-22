@@ -5,8 +5,11 @@ from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView
 from .views import ProjectsView, DataDownload, DataDownloadFile
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
-from .api import LabelList, StatisticsAPI, LabelDetail, \
-    AnnotationList, AnnotationDetail, DocumentList, DocumentDetail, EntityList, EntityDetail, ProjectList, ProjectDetail
+from .api import ProjectList, ProjectDetail
+from .api import LabelList, LabelDetail
+from .api import DocumentList, DocumentDetail
+from .api import EntityList, EntityDetail
+from .api import StatisticsAPI
 
 router = routers.DefaultRouter()
 
@@ -29,10 +32,6 @@ urlpatterns = [
          EntityList.as_view(), name='entity_list'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/entities/<int:entity_id>/',
          EntityDetail.as_view(), name='entity_detail'),
-    path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/',
-         AnnotationList.as_view(), name='annotations'),
-    path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>',
-         AnnotationDetail.as_view(), name='ann'),
     path('projects/', ProjectsView.as_view(), name='projects'),
     path('projects/<int:project_id>/download',
          DataDownload.as_view(), name='download'),
