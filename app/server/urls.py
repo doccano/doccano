@@ -2,10 +2,10 @@ from django.urls import path
 from rest_framework import routers
 
 from .views import IndexView
-from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView
+from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView, SettingsView
 from .views import ProjectsView, DataDownload, DataDownloadFile
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
-from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
+from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, ProjectDetail, \
     AnnotationList, AnnotationDetail, DocumentList, RunModelAPI
 
 router = routers.DefaultRouter()
@@ -14,6 +14,7 @@ router.register(r'projects', ProjectViewSet)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
+    path('api/projects/<int:project_id>', ProjectDetail.as_view(), name='project-api'),
     path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),
     path('api/projects/<int:project_id>/runmodel/', RunModelAPI.as_view(), name='runmodel-api'),
     path('api/projects/<int:project_id>/labels/', LabelList.as_view(), name='labels'),
@@ -30,6 +31,7 @@ urlpatterns = [
     path('projects/<int:project_id>/labels/', LabelView.as_view(), name='label-management'),
     path('projects/<int:project_id>/stats/', StatsView.as_view(), name='stats'),
     path('projects/<int:project_id>/guideline/', GuidelineView.as_view(), name='guideline'),
+    path('projects/<int:project_id>/settings/', SettingsView.as_view(), name='settings'),
     path('demo/text-classification/', DemoTextClassification.as_view(), name='demo-text-classification'),
     path('demo/named-entity-recognition/', DemoNamedEntityRecognition.as_view(), name='demo-named-entity-recognition'),
     path('demo/translation/', DemoTranslation.as_view(), name='demo-translation'),

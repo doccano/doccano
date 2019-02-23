@@ -70,6 +70,9 @@ const annotationMixin = {
       next: null,
       prev: null,
       highlightQuery: '',
+      last: null,
+      first: null,
+      limit: 0,
     };
   },
 
@@ -87,6 +90,14 @@ const annotationMixin = {
       }
     },
 
+    async firstDocumentsPage() {
+      if (this.first) {
+        this.url = this.first;
+        await this.search();
+        this.pageNumber = this.docs.length - 1;
+      }
+    },
+
     async prevDocumentsPage() {
       if (this.prev) {
         this.url = this.prev;
@@ -100,6 +111,14 @@ const annotationMixin = {
         this.url = this.next;
         await this.search();
         this.pageNumber = 0;
+      }
+    },
+
+    async lastDocumentsPage() {
+      if (this.last) {
+        this.url = this.last;
+        await this.search();
+        this.pageNumber = this.docs.length - 1;
       }
     },
 
@@ -122,6 +141,14 @@ const annotationMixin = {
         this.next = response.data.next;
         this.prev = response.data.previous;
         this.count = response.data.count;
+        const limitMatches = this.next? this.next.match(/limit=(\d+)/) : this.prev.match(/limit=(\d+)/)
+        this.limit = Number.parseInt(limitMatches[1], 10)
+        const offsetMatches = this.next? this.next.match(/(offset=\d+)/) : this.prev.match(/(offset=\d+)/)
+        const lastOffset = Math.floor(this.count / this.limit) * this.limit
+
+        this.first = this.next ? this.next.replace(offsetMatches[1], 'offset=0') : this.prev.replace(offsetMatches[1], 'offset=0')
+        this.last = this.next ? this.next.replace(offsetMatches[1], `offset=${lastOffset}`) : this.prev.replace(offsetMatches[1], `offset=${lastOffset}`)
+        
         this.annotations = [];
         for (let i = 0; i < this.docs.length; i++) {
           const doc = this.docs[i];
@@ -257,6 +284,17 @@ const annotationMixin = {
         return text
       }
       return this.docs[this.pageNumber].text 
+    },
+
+    currentPage() {
+      if (this.offset && this.limit) {
+        return this.offset / this.limit
+      }
+      return 0
+    },
+
+    lastPage() {
+      return Math.floor(this.count / this.limit)
     }
   },
 };

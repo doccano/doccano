@@ -37,7 +37,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
-        return self.request.user.projects
+        queryset = self.request.user.projects
+        return queryset
 
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
@@ -135,6 +136,15 @@ class ProjectStatsAPI(APIView):
 
         return Response(response)
 
+class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+        return queryset
+
 
 class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Label.objects.all()
@@ -153,9 +163,6 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
-def sort_by_user(a, b):
-    return 1
-
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     filter_backends = (DjangoFilterBackend, ExcludeSearchFilter, filters.OrderingFilter)
@@ -169,16 +176,18 @@ class DocumentList(generics.ListCreateAPIView):
         return self.serializer_class
 
     def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
         if not self.request.query_params.get('is_checked'):
-            try:
-                mlm_user = User.objects.get(username='MachineLearningModel')
-            except User.DoesNotExist:
-                mlm_user = None
-            if(mlm_user):
-                queryset = queryset.filter(doc_annotations__user=mlm_user)
-                queryset = queryset.order_by('doc_annotations__prob')
-                queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user)) 
+            if (project.use_machine_model_sort):
+                try:
+                    mlm_user = User.objects.get(username='MachineLearningModel')
+                except User.DoesNotExist:
+                    mlm_user = None
+                if(mlm_user):
+                    queryset = queryset.filter(doc_annotations__user=mlm_user)
+                    queryset = queryset.order_by('doc_annotations__prob')
+                    queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user)) 
             return queryset
 
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])

@@ -83,9 +83,16 @@
           </div>
         </div>
         <div class="level mt30 documents-pagination">
+            <a class="button level-left" v-on:click="firstDocumentsPage" :disabled="currentPage == 0">
+              <span class="icon">
+                <i class="fas fa-angle-double-left"></i>
+              </span>
+              <span>First</span>
+            </a>
+
           <a class="button level-left" v-on:click="prevDocumentsPage" :disabled="!prev">
             <span class="icon">
-              <i class="fas fa-chevron-left"></i>
+              <i class="fas fa-angle-left"></i>
             </span>
             <span>Prev</span>
           </a>
@@ -93,9 +100,16 @@
           <a class="button level-right is-disabled" v-on:click="nextDocumentsPage" :disabled="!next">
             <span>Next</span>
             <span class="icon">
-              <i class="fas fa-chevron-right"></i>
+              <i class="fas fa-angle-right"></i>
             </span>
           </a>
+
+          <a class="button level-left" v-on:click="lastDocumentsPage" :disabled="currentPage == lastPage">
+              <span class="icon">
+                <i class="fas fa-angle-double-right"></i>
+              </span>
+              <span>Last</span>
+            </a>
         </div>
       </div>
 
