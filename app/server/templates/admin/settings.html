@@ -1,0 +1,41 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="columns">
+  <div class="column is-12">
+    <div class="card">
+      <header class="card-header">
+        <p class="card-header-title">
+          Project settings
+        </p>
+        <a href="#" class="card-header-icon" aria-label="more options">
+          <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+        </a>
+      </header>
+      <div class="card-content columns">
+        <div class="column is-12">
+            <label class="checkbox">
+                <input type="checkbox" v-model="projectSettings.use_machine_model_sort">
+                Show document according to probability field of automatic model
+            </label>
+
+            <div class="field">
+                <div class="control">
+                    <button class="button is-primary" @click="submit">
+                        Save
+                    </button>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/settings.js' %}"></script>
+{% endblock %}

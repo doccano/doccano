@@ -26,6 +26,7 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     users = models.ManyToManyField(User, related_name='projects')
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
+    use_machine_model_sort = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('upload', args=[self.id])
@@ -236,6 +237,13 @@ class Document(models.Model):
         username = annotations[0].user.username
         dataset = {'doc_id': self.id, 'text': self.text, 'sentences': sentences, 'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
+
+    def is_labeled_by(self, user):
+        annotations = self.get_annotations()
+        for a in annotations:
+            if (a.user == user):
+                return True
+        return False
 
     def __str__(self):
         return self.text[:50]

@@ -1,5 +1,6 @@
 import csv
 import os
+import operator
 
 from collections import Counter
 from itertools import chain
@@ -9,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
+from django.db.models import Q
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -35,7 +37,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
-        return self.request.user.projects
+        queryset = self.request.user.projects
+        return queryset
 
     @action(methods=['get'], detail=True)
     def progress(self, request, pk=None):
@@ -92,7 +95,7 @@ class RunModelAPI(APIView):
             mlm_id = mlm_user.pk
         else:
             mlm_id = mlm_user.pk
-        run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), mlm_id)
+        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), mlm_id)
         
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         current_anotations = DocumentAnnotation.objects.filter(user=mlm_user)
@@ -108,7 +111,7 @@ class RunModelAPI(APIView):
             DocumentAnnotation.objects.bulk_create(batch, batch_size)
         # os.remove(INPUT_FILE)
         # os.remove(OUTPUT_FILE)
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+        return Response({'result': result})
 
 class ProjectStatsAPI(APIView):
     pagination_class = None
@@ -133,6 +136,15 @@ class ProjectStatsAPI(APIView):
 
         return Response(response)
 
+class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+        return queryset
+
 
 class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Label.objects.all()
@@ -151,7 +163,6 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
-
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     filter_backends = (DjangoFilterBackend, ExcludeSearchFilter, filters.OrderingFilter)
@@ -165,8 +176,18 @@ class DocumentList(generics.ListCreateAPIView):
         return self.serializer_class
 
     def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
         if not self.request.query_params.get('is_checked'):
+            if (project.use_machine_model_sort):
+                try:
+                    mlm_user = User.objects.get(username='MachineLearningModel')
+                except User.DoesNotExist:
+                    mlm_user = None
+                if(mlm_user):
+                    queryset = queryset.filter(doc_annotations__user=mlm_user)
+                    queryset = queryset.order_by('doc_annotations__prob')
+                    queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user)) 
             return queryset
 
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
