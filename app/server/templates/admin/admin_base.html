@@ -43,6 +43,12 @@
           </span>
           <span class="name">Labels</span>
         </a>
+        <a href="{% url 'labelers' view.kwargs.project_id %}" class="item">
+            <span class="icon">
+              <i class="fa fa-star"></i>
+            </span>
+            <span class="name">Labelers</span>
+          </a>
         <a href="{% url 'stats' view.kwargs.project_id %}" class="item">
           <span class="icon">
             <i class="fas fa-signal"></i>

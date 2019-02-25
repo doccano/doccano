@@ -11,6 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.db.models import Q
+from django.db import connection
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -60,6 +61,34 @@ class LabelList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
+
+class LabelersList(APIView):
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+
+    def get(self, request, *args, **kwargs):
+        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        users = []
+        cursor = connection.cursor()
+        for user in p.users.all():
+            cursor.execute("SELECT count(*), created_date_time FROM server_documentannotation WHERE user_id = %s ORDER BY created_date_time DESC", [user.pk])
+            row = cursor.fetchone()
+            print(row)
+            count = row[0]
+
+            users.append({
+                'name': user.username,
+                'count' : count
+            })
+        #users = [user.username for user in p.users.all()]
+        #docs = [doc for doc in p.documents.all()]
+        #nested_users = [[a.user.username for a in doc.get_annotations()] for doc in docs]
+
+        #user_count = Counter(chain(*nested_users))
+        #user_data = [user_count[name] for name in users]
+
+        response = {'users': users}
+        return Response(response)
 
 
 class RunModelAPI(APIView):

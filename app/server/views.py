@@ -71,6 +71,15 @@ class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
         return context
 
 
+class LabelersView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/labelers.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
 class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/stats.html'
 
