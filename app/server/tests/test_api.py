@@ -563,3 +563,31 @@ class TestSearch(APITestCase):
         docs = Document.objects.filter(project=self.main_project).order_by('-created_at').values()
         for d1, d2 in zip(response.data['results'], docs):
             self.assertEqual(d1['id'], d2['id'])
+
+
+class TestFilter(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        cls.main_project = mixer.blend('server.Project', users=[project_member])
+        cls.label1 = mixer.blend('server.Label', project=cls.main_project)
+        cls.label2 = mixer.blend('server.Label', project=cls.main_project)
+        doc1 = mixer.blend('server.Document', project=cls.main_project)
+        doc2 = mixer.blend('server.Document', project=cls.main_project)
+        mixer.blend('server.SequenceAnnotation', document=doc1, user=project_member, label=cls.label1)
+        mixer.blend('server.SequenceAnnotation', document=doc2, user=project_member, label=cls.label2)
+        cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
+        cls.params = {'seq_annotations__label__id': cls.label1.id}
+
+    def test_can_filter_by_label(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json', data=self.params)
+        docs = Document.objects.filter(project=self.main_project,
+                                       seq_annotations__label__id=self.label1.id).values()
+        for d1, d2 in zip(response.data['results'], docs):
+            self.assertEqual(d1['id'], d2['id'])

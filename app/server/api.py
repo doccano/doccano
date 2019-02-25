@@ -88,6 +88,7 @@ class DocumentList(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
     ordering_fields = ('created_at', 'updated_at')
+    filter_fields = ('doc_annotations__label__id', 'seq_annotations__label__id')
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
