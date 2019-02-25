@@ -27,5 +27,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
     path('api-auth/', include('rest_framework.urls')),
-    re_path(r'^(?P<version>(v1))/', include('server.api_urls')),
+    path('v1/', include('server.api_urls')),
 ]
