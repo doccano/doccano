@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from mixer.backend.django import mixer
-from ..models import User, SequenceAnnotation
+from ..models import User, SequenceAnnotation, Document
 
 
 class TestProjectListAPI(APITestCase):
@@ -513,3 +513,53 @@ class TestEntityDetailAPI(APITestCase):
                           password=self.project_member_pass)
         response = self.client.delete(self.another_url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestSearch(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
+                                                      password=cls.non_project_member_pass)
+
+        cls.main_project = mixer.blend('server.Project', users=[project_member])
+        cls.search_term = 'example'
+        mixer.blend('server.Document', text=cls.search_term, project=cls.main_project)
+        mixer.blend('server.Document', text='Lorem', project=cls.main_project)
+
+        sub_project = mixer.blend('server.Project', users=[non_project_member])
+        mixer.blend('server.Document', text=cls.search_term, project=sub_project)
+        cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
+        cls.data = {'q': cls.search_term}
+
+    def test_can_filter_doc_by_term(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json', data=self.data)
+        count = Document.objects.filter(text__contains=self.search_term,
+                                        project=self.main_project).count()
+        self.assertEqual(response.data['count'], count)
+
+    def test_can_order_doc_by_created_at_ascending(self):
+        params = {'ordering': 'created_at'}
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json', data=params)
+        docs = Document.objects.filter(project=self.main_project).order_by('created_at').values()
+        for d1, d2 in zip(response.data['results'], docs):
+            self.assertEqual(d1['id'], d2['id'])
+
+    def test_can_order_doc_by_created_at_descending(self):
+        params = {'ordering': '-created_at'}
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json', data=params)
+        docs = Document.objects.filter(project=self.main_project).order_by('-created_at').values()
+        for d1, d2 in zip(response.data['results'], docs):
+            self.assertEqual(d1['id'], d2['id'])
