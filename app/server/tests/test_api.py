@@ -530,8 +530,12 @@ class TestSearch(APITestCase):
 
         cls.main_project = mixer.blend('server.Project', users=[project_member])
         cls.search_term = 'example'
-        mixer.blend('server.Document', text=cls.search_term, project=cls.main_project)
-        mixer.blend('server.Document', text='Lorem', project=cls.main_project)
+        doc1 = mixer.blend('server.Document', text=cls.search_term, project=cls.main_project)
+        doc2 = mixer.blend('server.Document', text='Lorem', project=cls.main_project)
+        label1 = mixer.blend('server.Label', project=cls.main_project)
+        label2 = mixer.blend('server.Label', project=cls.main_project)
+        mixer.blend('server.SequenceAnnotation', document=doc1, user=project_member, label=label1)
+        mixer.blend('server.SequenceAnnotation', document=doc2, user=project_member, label=label2)
 
         sub_project = mixer.blend('server.Project', users=[non_project_member])
         mixer.blend('server.Document', text=cls.search_term, project=sub_project)
@@ -561,6 +565,24 @@ class TestSearch(APITestCase):
                           password=self.project_member_pass)
         response = self.client.get(self.url, format='json', data=params)
         docs = Document.objects.filter(project=self.main_project).order_by('-created_at').values()
+        for d1, d2 in zip(response.data['results'], docs):
+            self.assertEqual(d1['id'], d2['id'])
+
+    def test_can_order_doc_by_annotation_updated_at_ascending(self):
+        params = {'ordering': 'seq_annotations__updated_at'}
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json', data=params)
+        docs = Document.objects.filter(project=self.main_project).order_by('seq_annotations__updated_at').values()
+        for d1, d2 in zip(response.data['results'], docs):
+            self.assertEqual(d1['id'], d2['id'])
+
+    def test_can_order_doc_by_annotation_updated_at_descending(self):
+        params = {'ordering': '-seq_annotations__updated_at'}
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json', data=params)
+        docs = Document.objects.filter(project=self.main_project).order_by('-seq_annotations__updated_at').values()
         for d1, d2 in zip(response.data['results'], docs):
             self.assertEqual(d1['id'], d2['id'])
 
