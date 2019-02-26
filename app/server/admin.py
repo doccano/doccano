@@ -8,13 +8,6 @@ from import_export.admin import ImportExportModelAdmin, ImportExportMixin
 
 class DocumentAdmin(ImportExportMixin, admin.ModelAdmin):
     resource_class = DocumentResource
-
-
-class DocumentAnnotationAdmin(ImportExportMixin, admin.ModelAdmin):
-    resource_class = DocumentAnnotationResource
-
-
-class DocumentActionAdmin(admin.ModelAdmin):
     model = Document
     actions = ['delete_model']
 
@@ -26,12 +19,16 @@ class DocumentActionAdmin(admin.ModelAdmin):
     def delete_model(self, request, obj):
         for o in obj.all():
             o.delete()
-    delete_model.short_description = 'Delete selected Docements'
+    delete_model.short_description = 'Delete selected Docs'
+
+
+class DocumentAnnotationAdmin(ImportExportMixin, admin.ModelAdmin):
+    resource_class = DocumentAnnotationResource
 
 
 admin.site.register(DocumentAnnotation, DocumentAnnotationAdmin)
 admin.site.register(SequenceAnnotation)
 admin.site.register(Seq2seqAnnotation)
 admin.site.register(Label)
-admin.site.register(Document, DocumentAdmin, DocumentActionAdmin)
+admin.site.register(Document, DocumentAdmin)
 admin.site.register(Project)
