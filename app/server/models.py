@@ -140,9 +140,15 @@ class Label(models.Model):
 
 
 class Document(models.Model):
+    id = models.AutoField(primary_key=True)
+    external_id = models.CharField(unique=True, null=True, db_index=True, max_length=256)
     text = models.TextField()
     project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
     metadata = models.TextField(default='{}')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.id2 = []
 
     def get_annotations(self):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):

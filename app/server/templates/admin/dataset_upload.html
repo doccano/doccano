@@ -1,7 +1,8 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
+
 {% block content-area %}
-<div class="columns">
+<div class="columns" xmlns:v-on="http://www.w3.org/1999/xhtml">
   <div class="column is-12">
 
     <div class="card">
@@ -27,26 +28,40 @@
           {% csrf_token %}
           <div class="section">
             <div class="control">
+              <label class="radio">
+                <input type="radio" name="format" v-on:change="uncheckAnnotationImport()" v-model="uploadFormat" value="csv"> Upload a CSV file from your computer<br>
+              </label>
+            </div>
+            <div class="control">
               <label class="radio mb10">
-                <input type="radio" name="format" value="csv" checked> Upload a CSV file from your computer<br>
-                <input type="radio" name="format" value="json" checked> Upload a JSON file from your computer<br>
-               </label>
-              <div class="file has-name is-small mb20">
-                <label class="file-label">
-                  <input class="file-input" type="file" ref="file" name="file" required v-on:change="handleFileUpload()">
-                  <span class="file-cta">
-                    <span class="file-icon">
-                      <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="file-label">
-                      Select a file…
-                    </span>
+                <input type="radio" name="format" v-model="uploadFormat" value="json"> Upload a JSON file from your computer<br>
+              </label>
+            </div>
+            <div class="control">
+              <label class="checkbox">
+                <input type="checkbox" v-model="updateExisting" name="update_existing"> Update existing data<br>
+              </label>
+            </div>
+            <div class="control mb20">
+              <label class="checkbox">
+                <input type="checkbox" v-model="importAnnotations" :disabled="uploadFormat === 'csv'" name="import_annotations"> Import annotations<br>
+              </label>
+            </div>
+            <div class="control file has-name is-small mb20">
+              <label class="file-label">
+                <input class="file-input" type="file" ref="file" name="file" required v-on:change="handleFileUpload()">
+                <span class="file-cta">
+                  <span class="file-icon">
+                    <i class="fas fa-upload"></i>
                   </span>
-                  <span class="file-name">
-                    [[ file ]]
+                  <span class="file-label">
+                    Select a file…
                   </span>
-                </label>
-              </div>
+                </span>
+                <span class="file-name">
+                  [[ file ]]
+                </span>
+              </label>
             </div>
           </div>
 

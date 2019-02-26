@@ -136,7 +136,8 @@ body {
 
 .content {
   font-size: 16pt;
-  line-height: 250%;
+  line-height: 110%;
+  white-space: pre-line;
 }
 
 .content .tag {
@@ -151,7 +152,7 @@ body {
 }
 
 .content .text-sequence {
-  white-space: normal; /* Not render newlines for sequence labelling */
+  white-space: pre-wrap;
   height: auto;
 }
 
