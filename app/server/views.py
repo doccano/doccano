@@ -179,6 +179,12 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         """
 
         doc_it = self.load_json_file(file, ignore_id=ignore_ids)
+        label_map = {}
+
+        def __get_label(l):
+            if l not in label_map:
+                label_map[l] = Label.objects.get_or_create(project=project, text=l)[0]
+            return label_map[l]
 
         while True:
             batch = list(it.islice(doc_it, batch_size))
@@ -202,8 +208,8 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                         # Delete existing annotations for this document before inserting new ones
                         DocumentAnnotation.objects.filter(document=doc).delete()
                         DocumentAnnotation.objects.bulk_create(
-                            (DocumentAnnotation(document=doc, user=user, label=Label.objects.get_or_create(
-                                project=project, text=label)[0]) for label in source['labels']))
+                            (DocumentAnnotation(document=doc, user=user, label=__get_label(label))
+                                for label in source['labels']))
 
                     # Sequence annotations found
                     elif project.is_type_of(Project.SEQUENCE_LABELING) and 'entities' in source:
@@ -217,10 +223,9 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                                                     user=user,
                                                     start_offset=annotation[0],
                                                     end_offset=annotation[1],
-                                                    label=Label.objects.get_or_create(
-                                                        project=project, text=annotation[2])[0])
+                                                    label=__get_label(annotation[2]))
                                  for annotation in source['entities']))
-                        except ValueError:
+                        except (TypeError, KeyError, IndexError):
                             raise DataUpload.ImportFileError("JSON error: entities must be triples of (int, int, str).")
 
                     # Sequence2Sequence annotations found
@@ -230,9 +235,8 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                             raise DataUpload.ImportFileError("JSON error: 'sentences' must be a list.")
 
                         Seq2seqAnnotation.objects.filter(document=doc).delete()
-                        Seq2seqAnnotation.objects.bulk_create(
-                            (Seq2seqAnnotation(document=doc, user=user, text=sentence)
-                             for sentence in source['sentences']))
+                        Seq2seqAnnotation.objects.bulk_create((Seq2seqAnnotation(document=doc, user=user, text=sentence)
+                                                               for sentence in source['sentences']))
 
     def extract_metadata(self, entry, special_keys, metadata_key='metadata'):
         copy = entry.copy()
