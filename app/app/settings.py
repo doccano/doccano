@@ -121,7 +121,7 @@ DATABASES = {
         'USER': 'doccano',
         'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
         'HOST': 'doccano.pg.research.gongio.net',
-        'PORT': os.getenv('POSTGRES_PORT', cast=int, default=5432),
+        'PORT': 5432,
         'CONN_MAX_AGE': 60
     }
 }
