@@ -1,13 +1,17 @@
 from collections import Counter
 from itertools import chain
 
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, filters
+from rest_framework import generics, filters, status
+from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser
 
+from .exceptions import CoNLLParseException
 from .models import Project, Label, Document
 from .models import SequenceAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity
@@ -129,3 +133,66 @@ class EntityDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SequenceAnnotationSerializer
     lookup_url_kwarg = 'entity_id'
     permission_classes = (IsAuthenticated, IsProjectUser, IsMyEntity)
+
+
+class CoNLLFileUploadAPI(APIView):
+    """Uploads CoNLL format file.
+
+    The file format is tab-separated values.
+    A blank line is required at the end of a sentence.
+    For example:
+    ```
+    EU	B-ORG
+    rejects	O
+    German	B-MISC
+    call	O
+    to	O
+    boycott	O
+    British	B-MISC
+    lamb	O
+    .	O
+
+    Peter	B-PER
+    Blackburn	I-PER
+    ...
+    ```
+    """
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def post(self, request, *args, **kwargs):
+        if 'file' not in request.FILES:
+            raise ParseError('Empty content')
+        self.handle_uploaded_file(request.FILES['file'])
+        return Response(status=status.HTTP_201_CREATED)
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        for words in self.parse(file):
+            sent = self.words_to_sent(words)
+            data = {'text': sent}
+            serializer = DocumentSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(project=project)
+
+    def words_to_sent(self, words):
+        return ' '.join(words)
+
+    def parse(self, file):
+        words, tags = [], []
+        for i, line in enumerate(file, start=1):
+            line = line.decode('utf-8')
+            line = line.strip()
+            if line:
+                try:
+                    word, tag = line.split('\t')
+                except ValueError:
+                    raise CoNLLParseException(line_num=i, line=line)
+                words.append(word)
+                tags.append(tag)
+            else:
+                yield words
+                words, tags = [], []
+        if len(words) > 0:
+            yield words

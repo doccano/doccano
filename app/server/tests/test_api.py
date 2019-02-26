@@ -1,8 +1,11 @@
+import os
+
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from mixer.backend.django import mixer
 from ..models import User, SequenceAnnotation, Document
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
 
 class TestProjectListAPI(APITestCase):
@@ -613,3 +616,52 @@ class TestFilter(APITestCase):
                                        seq_annotations__label__id=self.label1.id).values()
         for d1, d2 in zip(response.data['results'], docs):
             self.assertEqual(d1['id'], d2['id'])
+
+
+class TestUploader(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        # Todo: change super_user to project_admin.
+        super_user = User.objects.create_superuser(username=cls.super_user_name,
+                                                   password=cls.super_user_pass,
+                                                   email='fizz@buzz.com')
+        cls.main_project = mixer.blend('server.Project', users=[project_member, super_user])
+
+    def test_can_upload_conll_format_file(self):
+        self.assertEqual(Document.objects.count(), 0)
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        filename = 'conll.tsv'
+        with open(os.path.join(DATA_DIR, filename)) as f:
+            url = reverse(viewname='conll_uploader', args=[self.main_project.id])
+            response = self.client.post(url, data={'file': f})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Document.objects.count(), 3)
+
+    def test_cannot_upload_wrong_conll_format_file(self):
+        self.assertEqual(Document.objects.count(), 0)
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        filename = 'conll_wrong.tsv'
+        with open(os.path.join(DATA_DIR, filename)) as f:
+            url = reverse(viewname='conll_uploader', args=[self.main_project.id])
+            response = self.client.post(url, data={'file': f})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(Document.objects.count(), 0)
+
+    def test_cannot_upload_wrong_filename(self):
+        self.assertEqual(Document.objects.count(), 0)
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        filename = 'conll.tsv'
+        with open(os.path.join(DATA_DIR, filename)) as f:
+            url = reverse(viewname='conll_uploader', args=[self.main_project.id])
+            response = self.client.post(url, data={'fizz': f})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
