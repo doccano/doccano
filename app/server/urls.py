@@ -3,7 +3,7 @@ from rest_framework import routers
 
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView, SettingsView
-from .views import ProjectsView, DataDownload, DataDownloadFile
+from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, ProjectDetail, \
     AnnotationList, AnnotationDetail, DocumentList, RunModelAPI
@@ -25,6 +25,9 @@ urlpatterns = [
     path('projects/', ProjectsView.as_view(), name='projects'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
     path('projects/<int:project_id>/download_file', DataDownloadFile.as_view(), name='download_file'),
+    path('projects/<int:project_id>/export_docs', DocumentExport.as_view(), name='export_docs'),
+    path('projects/<int:project_id>/export_annotations', DocumentAnnotationExport.as_view(), name='export_annotations'),
+    path('projects/<int:project_id>/export_labels', LabelExport.as_view(), name='export_labels'),
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
     path('projects/<int:project_id>/docs/', DatasetView.as_view(), name='dataset'),
     path('projects/<int:project_id>/docs/create', DataUpload.as_view(), name='upload'),

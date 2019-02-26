@@ -14,9 +14,11 @@ from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
+from .resources import DocumentResource, DocumentAnnotationResource, LabelResource
+
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
-from .models import Document, Project
+from .models import Document, Project, DocumentAnnotation, Label
 from app import settings
 
 logger = logging.getLogger(__name__)
@@ -95,6 +97,7 @@ class SettingsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         context = super().get_context_data(**kwargs)
         context['project'] = project
+        context['docs_count'] = project.get_docs_count()
         return context
 
 
@@ -216,6 +219,40 @@ class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         context['docs_count'] = project.get_docs_count()
         return context
 
+
+class DocumentExport(SuperUserMixin, LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        queryset = Document.objects.filter(project=project)
+        dataset = DocumentResource().export(queryset)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}_documents.csv"'.format(project)
+        response.write(dataset.csv)
+        return response
+
+class DocumentAnnotationExport(SuperUserMixin, LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project_docs = Document.objects.filter(project=project)
+        queryset = DocumentAnnotation.objects.filter(document__in=project_docs)
+        dataset = DocumentAnnotationResource().export(queryset)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}_annotations.csv"'.format(project)
+        response.write(dataset.csv)
+        return response
+
+class LabelExport(SuperUserMixin, LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        queryset = Label.objects.filter(project=project)
+        dataset = LabelResource().export(queryset)
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}_labels.csv"'.format(project)
+        response.write(dataset.csv)
+        return response
 
 class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
 
