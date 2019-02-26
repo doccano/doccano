@@ -6,6 +6,7 @@ const vm = new Vue({
   delimiters: ['[[', ']]'],
   data: {
     labelers: {},
+    matrix: null
   },
 
   computed: {
@@ -16,6 +17,7 @@ const vm = new Vue({
   created() {
     HTTP.get('labelers').then((response) => {
       this.labelers = response.data.users;
+      this.matrix = response.data.matrix;
     });
   },
   watch: {

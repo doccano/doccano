@@ -9,6 +9,7 @@ module.exports = {
         'projects': './static/js/projects.js',
         'stats': './static/js/stats.js',
         'label': './static/js/label.js',
+        'labels_admin': './static/js/labels_admin.js',
         'labelers': './static/js/labelers.js',
         'guideline': './static/js/guideline.js',
         'demo_text_classification': './static/js/demo/demo_text_classification.js',

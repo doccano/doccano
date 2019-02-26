@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./static/js/labelers.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./static/js/labels_admin.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -464,15 +464,15 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var axio
 
 /***/ }),
 
-/***/ "./static/js/labelers.js":
-/*!*******************************!*\
-  !*** ./static/js/labelers.js ***!
-  \*******************************/
+/***/ "./static/js/labels_admin.js":
+/*!***********************************!*\
+  !*** ./static/js/labels_admin.js ***!
+  \***********************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ \"./node_modules/vue/dist/vue.esm.js\");\n/* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./http */ \"./static/js/http.js\");\n\n\n\nconst vm = new vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\n  el: '#mail-app',\n  delimiters: ['[[', ']]'],\n  data: {\n    labelers: {},\n    matrix: null\n  },\n\n  computed: {\n  },\n  \n  methods: {\n  },\n  created() {\n    _http__WEBPACK_IMPORTED_MODULE_1__[\"default\"].get('labelers').then((response) => {\n      this.labelers = response.data.users;\n      this.matrix = response.data.matrix;\n    });\n  },\n  watch: {\n  }\n});\n\n\n//# sourceURL=webpack:///./static/js/labelers.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ \"./node_modules/vue/dist/vue.esm.js\");\n/* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./http */ \"./static/js/http.js\");\n\n\n\nvue__WEBPACK_IMPORTED_MODULE_0__[\"default\"].component('th-sortable', {\n  props: ['label', 'field', 'value'],\n  template: `\n  <th @click=\"toggleSort\">\n    {{ label }}\n    <span class=\"icon\" v-if=\"value.field == field && value.order == 'asc'\">\n      <i class=\"fas fa-sort-up\" aria-hidden=\"true\"></i>\n    </span>\n    <span class=\"icon\" v-if=\"value.field == field && value.order == 'desc'\">\n      <i class=\"fas fa-sort-down\" aria-hidden=\"true\"></i>\n    </span>\n  </th>`,\n  data() {\n    return {\n    };\n  },\n  methods: {\n    toggleSort() {\n      if (this.value && this.value.field === this.field) {\n        if (this.value.order === 'asc') {\n          this.$emit('input', { field: this.field, order: 'desc' })\n        } else {\n          this.$emit('input', {})\n        }\n      } else {\n        this.$emit('input', { field: this.field, order: 'asc' })\n      }\n    }\n  }\n});\n\nconst vm = new vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\n  el: '#mail-app',\n  delimiters: ['[[', ']]'],\n  data: {\n    tableRows: [],\n    sort: {}\n  },\n\n  computed: {\n    filteredTableRows() {\n      let listClone = this.tableRows.slice()\n      if (this.sort && this.sort.field) {\n        listClone = listClone.sort((a, b) => {\n          const fieldA = a[this.sort.field]\n          const fieldB = b[this.sort.field]\n          const order = this.sort.order === 'desc' ? -1 : 1\n\n          if (fieldA > fieldB) {\n            return order\n          } else if(fieldA < fieldB) {\n            return -1 * order\n          }\n\n          return 0\n        })\n      }\n\n\n      return listClone;\n    }\n  },\n  \n  methods: {\n    formTableRows(dataframe) {\n      const length = dataframe.doc_ids.length;\n      for (let i = 0; i < length; i++) {\n        const row = {}\n        row.documentId = dataframe.doc_ids[i];\n        row.labelersCount = dataframe.labelers_count[i];\n        row.agreementsPercent = dataframe.agreements_percent[i];\n        row.topLabel = dataframe.top_label[i];\n        row.lastAnnotationDate = dataframe.last_annotation_date[i];\n        row.docText = dataframe.doc_text[i];\n        this.tableRows.push(row)\n      }\n    }\n  },\n  created() {\n    _http__WEBPACK_IMPORTED_MODULE_1__[\"default\"].get('labels_admin').then((response) => {\n      this.formTableRows(response.data.dataframe)\n    });\n  },\n  watch: {\n  }\n});\n\n\n//# sourceURL=webpack:///./static/js/labels_admin.js?");
 
 /***/ })
 

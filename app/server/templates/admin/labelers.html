@@ -28,11 +28,15 @@
           <tbody>
               <tr v-for="(user, index) in labelers" :key="index">
                   <td>[[ user.name ]]</td>
-                  <td></td>
+                  <td>[[ user.last_date ]]</td>
                   <td>[[ user.count ]]</td>
+                  <td>[[ user.truth_agreement ]]</td>
+                  <td>[[ user.labelers_agreement ]]</td>
               </tr>
           </tbody>
       </table>
+
+      <img v-if="matrix" :src="matrix" />
   </div>
 </div>
 {% endblock %}
