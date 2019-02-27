@@ -154,7 +154,7 @@ class Document(models.Model):
                 start_mapping[cursor] = ind
                 cursor += len(text[ind].encode('utf-16-le')) // 2
                 end_mapping[cursor] = ind
-            for a in annotations
+            for a in annotations:
                 assert(a.start_offset in start_mapping)
                 a.start_offset = start_mapping[a.start_offset]
                 assert(a.end_offset in end_mapping)
