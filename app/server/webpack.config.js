@@ -17,7 +17,8 @@ module.exports = {
         'demo_translation': './static/js/demo/demo_translation.js',
         'upload': './static/js/upload.js',
         'navbar': './static/js/navbar.js',
-        'settings': './static/js/settings.js'
+        'settings': './static/js/settings.js',
+        'dataset': './static/js/dataset.js'
     },
     output: {
         path: __dirname + '/static/bundle',

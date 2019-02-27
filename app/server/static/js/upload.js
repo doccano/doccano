@@ -10,7 +10,6 @@ const vm = new Vue({
 
   methods: {
     handleFileUpload() {
-      console.log(this.$refs.file.files);
       this.file = this.$refs.file.files[0].name;
     },
   },

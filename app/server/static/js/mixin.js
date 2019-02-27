@@ -73,6 +73,8 @@ const annotationMixin = {
       last: null,
       first: null,
       limit: 0,
+      explainMode: false,
+      docExplanation: '',
     };
   },
 
@@ -197,6 +199,14 @@ const annotationMixin = {
       shortcut = shortcut.split(' ');
       return shortcut;
     },
+
+    getExplanation(id) {
+      HTTP.get(`docs/${id}/explanation`).then((response) => {
+        if (response.data) {
+          this.docExplanation = response.data.document
+        }
+      });
+    }
   },
 
   watch: {
@@ -215,16 +225,45 @@ const annotationMixin = {
     offset() {
       storeOffsetInUrl(this.offset);
     },
+
+    explainMode(val) {
+      if (val) {
+        localStorage.setItem('doccano_explainMode', true)
+        const doc = this.docs[this.pageNumber]
+        this.getExplanation(doc.id)
+      } else {
+        localStorage.removeItem('doccano_explainMode')
+      }
+    },
+
+    pageNumber(val) {
+      if (this.explainMode) {
+        const doc = this.docs[val]
+        this.getExplanation(doc.id)
+      }
+    }
   },
 
-  created() {
+  async created() {
     HTTP.get('labels').then((response) => {
       this.labels = response.data;
     });
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
     });
-    this.submit();
+    await this.submit();
+
+    if (localStorage) {
+      const explainMode = localStorage.getItem('doccano_explainMode')
+      if (explainMode) {
+        this.explainMode = true
+      }
+    }
+
+    if (this.explainMode) {
+      const doc = this.docs[0]
+      this.getExplanation(doc.id)
+    }
   },
 
   computed: {
@@ -270,8 +309,13 @@ const annotationMixin = {
     },
 
     docText() {
+      let text = this.docs[this.pageNumber].text;
+
+      if (this.explainMode && this.docExplanation) {
+        text = this.docExplanation
+      }
+
       if(this.highlightQuery.length) {
-        let text = this.docs[this.pageNumber].text;
         const complexSearchRegex = /^\"(.*)\"\s*\-?(.*$)/;
         const complexMatches = this.highlightQuery.match(complexSearchRegex)
         let terms = this.highlightQuery.split(' ');
@@ -281,9 +325,9 @@ const annotationMixin = {
         terms.forEach((term) => {
           text = text.replace(new RegExp(`(${term})`, 'gi'), `<span class="highlight">$1</span>`)
         });
-        return text
       }
-      return this.docs[this.pageNumber].text 
+      
+      return text
     },
 
     currentPage() {

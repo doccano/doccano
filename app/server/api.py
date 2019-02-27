@@ -196,6 +196,17 @@ class ProjectStatsAPI(APIView):
 
         return Response(response)
 
+class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get(self, request, *args, **kwargs):
+        d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        doc_text_splited = d.text.split(' ')
+        doc_text_splited[0] = '<span class="has-background-primary">' + doc_text_splited[0] + '</span>'
+        response = {'document': ' '.join(doc_text_splited)}
+        return Response(response)
+
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
@@ -255,7 +266,6 @@ class DocumentList(generics.ListCreateAPIView):
         queryset = project.get_documents(is_null).distinct()
 
         return queryset
-
 
 class AnnotationList(generics.ListCreateAPIView):
     pagination_class = None

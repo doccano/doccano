@@ -204,15 +204,17 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 documents = self.json_to_documents(project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
-
+            docs_len = 0
             while True:
                 batch = list(it.islice(documents, batch_size))
                 if not batch:
                     break
                 Document.objects.bulk_create(batch)
+                docs_len += len(batch)
                 # Document.objects.bulk_create(batch, batch_size=batch_size)
-
-            return HttpResponseRedirect(reverse('dataset', args=[project.id]))
+            url = reverse('dataset', args=[project.id])
+            url += '?docs_count=' + str(docs_len)
+            return HttpResponseRedirect(url)
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
