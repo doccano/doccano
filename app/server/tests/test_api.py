@@ -633,35 +633,51 @@ class TestUploader(APITestCase):
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
         cls.main_project = mixer.blend('server.Project', users=[project_member, super_user])
+        cls.conll_url = reverse(viewname='conll_uploader', args=[cls.main_project.id])
+        cls.csv_url = reverse(viewname='csv_uploader', args=[cls.main_project.id])
+        cls.json_url = reverse(viewname='json_uploader', args=[cls.main_project.id])
+        cls.plain_url = reverse(viewname='plain_uploader', args=[cls.main_project.id])
+
+    def setUp(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+
+    def upload_test_helper(self, filename, url, expected_status):
+        with open(os.path.join(DATA_DIR, filename)) as f:
+            response = self.client.post(url, data={'file': f})
+        self.assertEqual(response.status_code, expected_status)
 
     def test_can_upload_conll_format_file(self):
-        self.assertEqual(Document.objects.count(), 0)
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        filename = 'conll.tsv'
-        with open(os.path.join(DATA_DIR, filename)) as f:
-            url = reverse(viewname='conll_uploader', args=[self.main_project.id])
-            response = self.client.post(url, data={'file': f})
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(Document.objects.count(), 3)
+        self.upload_test_helper(filename='example.valid.conll',
+                                url=self.conll_url,
+                                expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_wrong_conll_format_file(self):
-        self.assertEqual(Document.objects.count(), 0)
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        filename = 'conll_wrong.tsv'
-        with open(os.path.join(DATA_DIR, filename)) as f:
-            url = reverse(viewname='conll_uploader', args=[self.main_project.id])
-            response = self.client.post(url, data={'file': f})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(Document.objects.count(), 0)
+        self.upload_test_helper(filename='example.invalid.conll',
+                                url=self.conll_url,
+                                expected_status=status.HTTP_400_BAD_REQUEST)
 
-    def test_cannot_upload_wrong_filename(self):
-        self.assertEqual(Document.objects.count(), 0)
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        filename = 'conll.tsv'
-        with open(os.path.join(DATA_DIR, filename)) as f:
-            url = reverse(viewname='conll_uploader', args=[self.main_project.id])
-            response = self.client.post(url, data={'fizz': f})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+    def test_can_upload_csv_with_label(self):
+        self.upload_test_helper(filename='example.valid.2.csv',
+                                url=self.csv_url,
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
+        self.upload_test_helper(filename='example.invalid.1.csv',
+                                url=self.csv_url,
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_upload_csv_file_has_too_many_columns(self):
+        self.upload_test_helper(filename='example.invalid.2.csv',
+                                url=self.csv_url,
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_can_upload_jsonl(self):
+        self.upload_test_helper(filename='example.jsonl',
+                                url=self.json_url,
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_plain_text(self):
+        self.upload_test_helper(filename='example.txt',
+                                url=self.plain_url,
+                                expected_status=status.HTTP_201_CREATED)

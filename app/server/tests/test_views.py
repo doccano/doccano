@@ -11,8 +11,8 @@ class TestUpload(TestCase):
     def setUp(self):
         self.username, self.password = 'user', 'pass'
         self.client = Client()
-        self.csv_path = os.path.join(os.path.dirname(__file__), 'data/test.csv')
-        self.json_path = os.path.join(os.path.dirname(__file__), 'data/test.jsonl')
+        self.csv_path = os.path.join(os.path.dirname(__file__), 'data/example.valid.1.csv')
+        self.json_path = os.path.join(os.path.dirname(__file__), 'data/example.jsonl')
 
     def create_user(self):
         user = User.objects.create_user(username=self.username, password=self.password)

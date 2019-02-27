@@ -1,3 +1,6 @@
+import csv
+import io
+import json
 from collections import Counter
 from itertools import chain
 
@@ -11,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 
-from .exceptions import CoNLLParseException
+from .exceptions import FileParseException
 from .models import Project, Label, Document
 from .models import SequenceAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity
@@ -135,7 +138,26 @@ class EntityDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsMyEntity)
 
 
-class CoNLLFileUploadAPI(APIView):
+class TextUploadAPI(APIView):
+    """Base API for text upload."""
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def post(self, request, *args, **kwargs):
+        if 'file' not in request.FILES:
+            raise ParseError('Empty content')
+        self.handle_uploaded_file(request.FILES['file'])
+        return Response(status=status.HTTP_201_CREATED)
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file):
+        raise NotImplementedError()
+
+    def parse(self, file):
+        raise NotImplementedError()
+
+
+class CoNLLFileUploadAPI(TextUploadAPI):
     """Uploads CoNLL format file.
 
     The file format is tab-separated values.
@@ -157,14 +179,6 @@ class CoNLLFileUploadAPI(APIView):
     ...
     ```
     """
-    parser_classes = (MultiPartParser,)
-    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
-
-    def post(self, request, *args, **kwargs):
-        if 'file' not in request.FILES:
-            raise ParseError('Empty content')
-        self.handle_uploaded_file(request.FILES['file'])
-        return Response(status=status.HTTP_201_CREATED)
 
     @transaction.atomic
     def handle_uploaded_file(self, file):
@@ -188,7 +202,7 @@ class CoNLLFileUploadAPI(APIView):
                 try:
                     word, tag = line.split('\t')
                 except ValueError:
-                    raise CoNLLParseException(line_num=i, line=line)
+                    raise FileParseException(line_num=i, line=line)
                 words.append(word)
                 tags.append(tag)
             else:
@@ -196,3 +210,95 @@ class CoNLLFileUploadAPI(APIView):
                 words, tags = [], []
         if len(words) > 0:
             yield words
+
+
+class PlainTextUploadAPI(TextUploadAPI):
+    """Uploads plain text.
+
+    The file format is as follows:
+    ```
+    EU rejects German call to boycott British lamb.
+    President Obama is speaking at the White House.
+    ...
+    ```
+    """
+    @transaction.atomic
+    def handle_uploaded_file(self, file):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        for text in self.parse(file):
+            data = {'text': text}
+            serializer = DocumentSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(project=project)
+
+    def parse(self, file):
+        file = io.TextIOWrapper(file, encoding='utf-8')
+        for i, line in enumerate(file, start=1):
+            yield line.strip()
+
+
+class CSVUploadAPI(TextUploadAPI):
+    """Uploads csv file.
+
+    The file format is comma separated values.
+    Column names are required at the top of a file.
+    For example:
+    ```
+    text, label(optional)
+    "EU rejects German call to boycott British lamb.",
+    "President Obama is speaking at the White House.",
+    "He lives in Newark, Ohio.",
+    ...
+    ```
+    """
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        for text, label in self.parse(file):
+            data = {'text': text}
+            serializer = DocumentSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(project=project)
+
+    def parse(self, file):
+        file = io.TextIOWrapper(file, encoding='utf-8')
+        reader = csv.reader(file)
+        columns = None
+        for i, row in enumerate(reader, start=1):
+            if i == 1:                           # skip header
+                columns = row
+                continue
+            elif len(row) == len(columns) == 2:  # text with a label
+                text, label = row
+                yield text, label
+            else:
+                raise FileParseException(line_num=i, line=row)
+
+
+class JSONLUploadAPI(TextUploadAPI):
+    """Uploads jsonl file.
+
+    The file format is as follows:
+    ```
+    {"text": "example1"}
+    {"text": "example2"}
+    ...
+    ```
+    """
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        for data in self.parse(file):
+            serializer = DocumentSerializer(data=data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(project=project)
+
+    def parse(self, file):
+        for i, line in enumerate(file, start=1):
+            try:
+                j = json.loads(line)
+                yield j
+            except json.decoder.JSONDecodeError:
+                raise FileParseException(line_num=i, line=line)

@@ -3,10 +3,6 @@ from rest_framework.exceptions import APIException
 
 
 class FileParseException(APIException):
-    pass
-
-
-class CoNLLParseException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'Invalid file format, line {}: {}'
     default_code = 'invalid'
