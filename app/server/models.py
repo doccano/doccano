@@ -148,7 +148,18 @@ class Document(models.Model):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
             return self.doc_annotations.all()
         elif self.project.is_type_of(Project.SEQUENCE_LABELING):
-            return self.seq_annotations.all()
+            annotations = self.seq_annotations.all()
+            start_mapping, end_mapping, cursor = dict(), dict(), 0
+            for ind in range(len(self.text)):
+                start_mapping[cursor] = ind
+                cursor += len(text[ind].encode('utf-16-le')) // 2
+                end_mapping[cursor] = ind
+            for a in annotations
+                assert(a.start_offset in start_mapping)
+                a.start_offset = start_mapping[a.start_offset]
+                assert(a.end_offset in end_mapping)
+                a.end_offset = end_mapping[a.end_offset]
+            return annotations
         elif self.project.is_type_of(Project.Seq2seq):
             return self.seq2seq_annotations.all()
 
