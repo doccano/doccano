@@ -134,7 +134,7 @@ class RunModelAPI(APIView):
         doc_texts = [doc.text for doc in docs]
         if not os.path.isdir(ML_FOLDER):
             os.makedirs(ML_FOLDER)
-        with open(os.path.join(ML_FOLDER, INPUT_FILE), 'w', encoding='utf-8') as outfile:
+        with open(os.path.join(ML_FOLDER, INPUT_FILE), 'w', encoding='utf-8', newline='') as outfile:
             wr = csv.writer(outfile, quoting=csv.QUOTE_ALL)
             wr.writerow(['document_id', 'text', 'label_id'])
             data = list(zip(doc_ids, doc_texts, doc_labels))
