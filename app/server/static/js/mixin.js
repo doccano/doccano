@@ -1,35 +1,43 @@
 import HTTP from './http';
 
 const getOffsetFromUrl = function(url) {
-  const offsetMatch = url.match(/[?#].*offset=(\d+)/);
-  if (offsetMatch == null) {
-    return 0;
+  if (!url) {
+    return 0
   }
 
-  return parseInt(offsetMatch[1], 10);
+  const params = new URLSearchParams(url);
+  const offset = params.get('offset')
+
+  if (!offset) {
+    return 0
+  }
+
+  return parseInt(offset, 10);
+};
+
+const getSearchQuery = function(url) {
+  if (!url) {
+    return ''
+  }
+
+  const params = new URLSearchParams(url);
+  const search = params.get('search')
+
+  if (!search) {
+    return ''
+  }
+
+  return search;
+}
+
+const setQueryStringParameter = (name, value) => {
+  const params = new URLSearchParams(location.search);
+  params.set(name, value);
+  window.history.pushState({}, "", decodeURIComponent(`${location.pathname}?${params}`));
 };
 
 const storeOffsetInUrl = function(offset) {
-  let href = window.location.href;
-
-  const fragmentStart = href.indexOf('#') + 1;
-  if (fragmentStart === 0) {
-    href += '#offset=' + offset;
-  } else {
-    const prefix = href.substring(0, fragmentStart);
-    const fragment = href.substring(fragmentStart);
-
-    const newFragment = fragment.split('&').map(function(fragmentPart) {
-      const keyValue = fragmentPart.split('=');
-      return keyValue[0] === 'offset'
-        ? 'offset=' + offset
-        : fragmentPart;
-    }).join('&');
-
-    href = prefix + newFragment;
-  }
-
-  window.location.href = href;
+  setQueryStringParameter('offset', offset)
 };
 
 const syntaxHighlight = (json) => {
@@ -63,7 +71,7 @@ const annotationMixin = {
       remaining: 0,
       searchQuery: '',
       url: '',
-      offset: getOffsetFromUrl(window.location.href),
+      offset: 0,
       picked: 'all',
       count: 0,
       isActive: false,
@@ -137,26 +145,35 @@ const annotationMixin = {
       }
     },
 
-    async search() {
+    async search(setOffset = true) {
       await HTTP.get(this.url).then((response) => {
         this.docs = response.data.results;
         this.next = response.data.next;
         this.prev = response.data.previous;
         this.count = response.data.count;
-        const limitMatches = this.next? this.next.match(/limit=(\d+)/) : this.prev.match(/limit=(\d+)/)
-        this.limit = Number.parseInt(limitMatches[1], 10)
-        const offsetMatches = this.next? this.next.match(/(offset=\d+)/) : this.prev.match(/(offset=\d+)/)
-        const lastOffset = Math.floor(this.count / this.limit) * this.limit
+        if (this.next || this.prev) {
+          const limitMatches = this.next? this.next.match(/limit=(\d+)/) : this.prev.match(/limit=(\d+)/)
+          this.limit = Number.parseInt(limitMatches[1], 10)
+          const offsetMatches = this.next? this.next.match(/(offset=\d+)/) : this.prev.match(/(offset=\d+)/)
+          const lastOffset = Math.floor(this.count / this.limit) * this.limit
 
-        this.first = this.next ? this.next.replace(offsetMatches[1], 'offset=0') : this.prev.replace(offsetMatches[1], 'offset=0')
-        this.last = this.next ? this.next.replace(offsetMatches[1], `offset=${lastOffset}`) : this.prev.replace(offsetMatches[1], `offset=${lastOffset}`)
+          this.first = this.next ? this.next.replace(offsetMatches[1], 'offset=0') : this.prev.replace(offsetMatches[1], 'offset=0')
+          this.last = this.next ? this.next.replace(offsetMatches[1], `offset=${lastOffset}`) : this.prev.replace(offsetMatches[1], `offset=${lastOffset}`)
+        } else {
+          this.first = 0
+          this.last = 0
+        }
+        
         
         this.annotations = [];
         for (let i = 0; i < this.docs.length; i++) {
           const doc = this.docs[i];
           this.annotations.push(doc.annotations);
         }
-        this.offset = getOffsetFromUrl(this.url);
+        
+        if (setOffset) {
+          this.offset = getOffsetFromUrl(this.url);
+        }
       });
     },
 
@@ -174,8 +191,15 @@ const annotationMixin = {
       const state = this.getState();
       this.offset = 0;
       this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
+      setQueryStringParameter('search', this.searchQuery)
+      
       await this.search();
       this.pageNumber = 0;
+
+      if (this.explainMode) {
+        const doc = this.docs[0]
+        this.getExplanation(doc.id)
+      }
 
       if (this.searchQuery.length) {
         this.highlightQuery = this.searchQuery;
@@ -206,6 +230,14 @@ const annotationMixin = {
           this.docExplanation = response.data.document
         }
       });
+    },
+
+    async popState() {
+      const offset = getOffsetFromUrl(location.search)
+      const searchQuery = getSearchQuery(location.search)
+      const state = this.getState();
+      this.url = `docs/?q=${searchQuery}&is_checked=${state}&offset=${offset}`;
+      await this.search(false);
     }
   },
 
@@ -245,13 +277,17 @@ const annotationMixin = {
   },
 
   async created() {
+    this.offset = getOffsetFromUrl(location.search)
+    this.searchQuery = getSearchQuery(location.search)
     HTTP.get('labels').then((response) => {
       this.labels = response.data;
     });
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
     });
-    await this.submit();
+    const state = this.getState();
+    this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
+    await this.search();
 
     if (localStorage) {
       const explainMode = localStorage.getItem('doccano_explainMode')
@@ -264,6 +300,12 @@ const annotationMixin = {
       const doc = this.docs[0]
       this.getExplanation(doc.id)
     }
+
+    window.addEventListener('popstate', this.popState)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('popstate', this.popState)
   },
 
   computed: {
