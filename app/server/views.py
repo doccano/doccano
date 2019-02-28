@@ -71,6 +71,25 @@ class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
         return context
 
 
+class LabelersView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/labelers.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
+
+class LabelAdminView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/labels_admin.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        return context
+
 class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/stats.html'
 
@@ -185,15 +204,17 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 documents = self.json_to_documents(project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
-
+            docs_len = 0
             while True:
                 batch = list(it.islice(documents, batch_size))
                 if not batch:
                     break
                 Document.objects.bulk_create(batch)
+                docs_len += len(batch)
                 # Document.objects.bulk_create(batch, batch_size=batch_size)
-
-            return HttpResponseRedirect(reverse('dataset', args=[project.id]))
+            url = reverse('dataset', args=[project.id])
+            url += '?docs_count=' + str(docs_len)
+            return HttpResponseRedirect(url)
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))

@@ -1,0 +1,45 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      Labelers
+    </p>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+
+  <div class="card-content">
+      <table class="table">
+          <thead>
+              <tr>
+                  <th>Labeler name</th>
+                  <th>Last annotation</th>
+                  <th># of annotations made</th>
+                  <th>Agreement with truth</th>
+                  <th>Agreement with other labelers</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr v-for="(user, index) in labelers" :key="index">
+                  <td>[[ user.name ]]</td>
+                  <td>[[ user.last_date ]]</td>
+                  <td>[[ user.count ]]</td>
+                  <td>[[ user.truth_agreement ]]</td>
+                  <td>[[ user.labelers_agreement ]]</td>
+              </tr>
+          </tbody>
+      </table>
+
+      <img v-if="matrix" :src="matrix" />
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/labelers.js' %}"></script>
+{% endblock %}
