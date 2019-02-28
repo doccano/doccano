@@ -38,7 +38,8 @@ class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
 
 
 class DocumentAnnotationSerializer(serializers.ModelSerializer):
-    label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
+    # label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
 
     class Meta:
         model = DocumentAnnotation
@@ -50,7 +51,8 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
 
 
 class SequenceAnnotationSerializer(serializers.ModelSerializer):
-    label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
+    #label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
 
     class Meta:
         model = SequenceAnnotation

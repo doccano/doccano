@@ -1,0 +1,3 @@
+{"text": "example", "labels": ["positive"]}
+{"text": "example", "labels": ["positive", "negative"]}
+{"text": "example", "labels": ["negative"]}

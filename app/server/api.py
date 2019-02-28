@@ -17,9 +17,11 @@ from rest_framework.parsers import MultiPartParser
 from .exceptions import FileParseException
 from .models import Project, Label, Document
 from .models import SequenceAnnotation
+from .models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
-from .serializers import SequenceAnnotationSerializer
+from .serializers import SequenceAnnotationSerializer, DocumentAnnotationSerializer, Seq2seqAnnotationSerializer
+from .utils import extract_label
 
 
 class ProjectList(generics.ListCreateAPIView):
@@ -146,18 +148,62 @@ class TextUploadAPI(APIView):
     def post(self, request, *args, **kwargs):
         if 'file' not in request.FILES:
             raise ParseError('Empty content')
-        self.handle_uploaded_file(request.FILES['file'])
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        handler = self.decide_handler(request.data['format'], project.project_type)
+        handler.handle_uploaded_file(request.FILES['file'], project, self.request.user)
         return Response(status=status.HTTP_201_CREATED)
 
+    def decide_handler(self, format, project_type):
+        if format == 'plain':
+            return PlainTextHandler()
+        elif format == 'conll' and project_type:
+            return CoNLLHandler()
+        elif format == 'csv':
+            if project_type == DOCUMENT_CLASSIFICATION:
+                return CSVClassificationHandler()
+            elif project_type == SEQ2SEQ:
+                return CSVSeq2seqHandler()
+        elif format == 'json':
+            if project_type == DOCUMENT_CLASSIFICATION:
+                return JsonClassificationHandler()
+            elif project_type == SEQUENCE_LABELING:
+                return JsonLabelingHandler()
+            elif project_type == SEQ2SEQ:
+                return JsonSeq2seqHandler()
+        raise ValueError('format {} is invalid.'.format(format))
+
+
+class FileHandler(object):
+    annotation_serializer = None
+
     @transaction.atomic
-    def handle_uploaded_file(self, file):
+    def handle_uploaded_file(self, file, project, user):
         raise NotImplementedError()
 
     def parse(self, file):
         raise NotImplementedError()
 
+    def save_doc(self, data, project):
+        serializer = DocumentSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        doc = serializer.save(project=project)
+        return doc
 
-class CoNLLFileUploadAPI(TextUploadAPI):
+    def save_label(self, data, project):
+        label = Label.objects.filter(project=project, **data).first()
+        serializer = LabelSerializer(label, data=data)
+        serializer.is_valid(raise_exception=True)
+        label = serializer.save(project=project)
+        return label
+
+    def save_annotation(self, data, doc, user):
+        serializer = self.annotation_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        annotation = serializer.save(document=doc, user=user)
+        return annotation
+
+
+class CoNLLHandler(FileHandler):
     """Uploads CoNLL format file.
 
     The file format is tab-separated values.
@@ -179,19 +225,22 @@ class CoNLLFileUploadAPI(TextUploadAPI):
     ...
     ```
     """
+    annotation_serializer = SequenceAnnotationSerializer
 
     @transaction.atomic
-    def handle_uploaded_file(self, file):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        for words in self.parse(file):
-            sent = self.words_to_sent(words)
-            data = {'text': sent}
-            serializer = DocumentSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(project=project)
-
-    def words_to_sent(self, words):
-        return ' '.join(words)
+    def handle_uploaded_file(self, file, project, user):
+        for words, tags in self.parse(file):
+            start_offset = 0
+            sent = ' '.join(words)
+            doc = self.save_doc({'text': sent}, project)
+            for word, tag in zip(words, tags):
+                label = extract_label(tag)
+                label = self.save_label({'text': label}, project)
+                data = {'start_offset': start_offset,
+                        'end_offset': start_offset + len(word),
+                        'label': label.id}
+                start_offset += len(word) + 1
+                self.save_annotation(data, doc, user)
 
     def parse(self, file):
         words, tags = [], []
@@ -206,13 +255,13 @@ class CoNLLFileUploadAPI(TextUploadAPI):
                 words.append(word)
                 tags.append(tag)
             else:
-                yield words
+                yield words, tags
                 words, tags = [], []
         if len(words) > 0:
-            yield words
+            yield words, tags
 
 
-class PlainTextUploadAPI(TextUploadAPI):
+class PlainTextHandler(FileHandler):
     """Uploads plain text.
 
     The file format is as follows:
@@ -223,13 +272,9 @@ class PlainTextUploadAPI(TextUploadAPI):
     ```
     """
     @transaction.atomic
-    def handle_uploaded_file(self, file):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+    def handle_uploaded_file(self, file, project, user):
         for text in self.parse(file):
-            data = {'text': text}
-            serializer = DocumentSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(project=project)
+            self.save_doc({'text': text}, project)
 
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
@@ -237,30 +282,20 @@ class PlainTextUploadAPI(TextUploadAPI):
             yield line.strip()
 
 
-class CSVUploadAPI(TextUploadAPI):
+class CSVHandler(FileHandler):
     """Uploads csv file.
 
     The file format is comma separated values.
     Column names are required at the top of a file.
     For example:
     ```
-    text, label(optional)
-    "EU rejects German call to boycott British lamb.",
-    "President Obama is speaking at the White House.",
-    "He lives in Newark, Ohio.",
+    text, label
+    "EU rejects German call to boycott British lamb.",Politics
+    "President Obama is speaking at the White House.",Politics
+    "He lives in Newark, Ohio.",Other
     ...
     ```
     """
-
-    @transaction.atomic
-    def handle_uploaded_file(self, file):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        for text, label in self.parse(file):
-            data = {'text': text}
-            serializer = DocumentSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(project=project)
-
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
         reader = csv.reader(file)
@@ -276,7 +311,28 @@ class CSVUploadAPI(TextUploadAPI):
                 raise FileParseException(line_num=i, line=row)
 
 
-class JSONLUploadAPI(TextUploadAPI):
+class CSVClassificationHandler(CSVHandler):
+    annotation_serializer = DocumentAnnotationSerializer
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file, project, user):
+        for text, label in self.parse(file):
+            doc = self.save_doc({'text': text}, project)
+            label = self.save_label({'text': label}, project)
+            self.save_annotation({'label': label.id}, doc, user)
+
+
+class CSVSeq2seqHandler(CSVHandler):
+    annotation_serializer = Seq2seqAnnotationSerializer
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file, project, user):
+        for text, label in self.parse(file):
+            doc = self.save_doc({'text': text}, project)
+            self.save_annotation({'text': label}, doc, user)
+
+
+class JsonHandler(FileHandler):
     """Uploads jsonl file.
 
     The file format is as follows:
@@ -286,15 +342,6 @@ class JSONLUploadAPI(TextUploadAPI):
     ...
     ```
     """
-
-    @transaction.atomic
-    def handle_uploaded_file(self, file):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        for data in self.parse(file):
-            serializer = DocumentSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(project=project)
-
     def parse(self, file):
         for i, line in enumerate(file, start=1):
             try:
@@ -302,3 +349,65 @@ class JSONLUploadAPI(TextUploadAPI):
                 yield j
             except json.decoder.JSONDecodeError:
                 raise FileParseException(line_num=i, line=line)
+
+
+class JsonClassificationHandler(JsonHandler):
+    """Upload jsonl for text classification.
+
+    The format is as follows:
+    ```
+    {"text": "Python is awesome!", "labels": ["positive"]}
+    ...
+    ```
+    """
+    annotation_serializer = DocumentAnnotationSerializer
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file, project, user):
+        for data in self.parse(file):
+            doc = self.save_doc(data, project)
+            for label in data['labels']:
+                label = self.save_label({'text': label}, project)
+                self.save_annotation({'label': label.id}, doc, user)
+
+
+class JsonLabelingHandler(JsonHandler):
+    """Upload jsonl for sequence labeling.
+
+    The format is as follows:
+    ```
+    {"text": "Python is awesome!", "entities": [[0, 6, "Product"],]}
+    ...
+    ```
+    """
+    annotation_serializer = SequenceAnnotationSerializer
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file, project, user):
+        for data in self.parse(file):
+            doc = self.save_doc(data, project)
+            for start_offset, end_offset, label in data['entities']:
+                label = self.save_label({'text': label}, project)
+                data = {'label': label.id,
+                        'start_offset': start_offset,
+                        'end_offset': end_offset}
+                self.save_annotation(data, doc, user)
+
+
+class JsonSeq2seqHandler(JsonHandler):
+    """Upload jsonl for seq2seq.
+
+    The format is as follows:
+    ```
+    {"text": "Hello, World!", "labels": ["こんにちは、世界!"]}
+    ...
+    ```
+    """
+    annotation_serializer = Seq2seqAnnotationSerializer
+
+    @transaction.atomic
+    def handle_uploaded_file(self, file, project, user):
+        for data in self.parse(file):
+            doc = self.save_doc(data, project)
+            for label in data['labels']:
+                self.save_annotation({'text': label}, doc, user)

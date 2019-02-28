@@ -6,17 +6,17 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from .utils import get_key_choices
 
 
+DOCUMENT_CLASSIFICATION = 'DocumentClassification'
+SEQUENCE_LABELING = 'SequenceLabeling'
+SEQ2SEQ = 'Seq2seq'
+PROJECT_CHOICES = (
+    (DOCUMENT_CLASSIFICATION, 'document classification'),
+    (SEQUENCE_LABELING, 'sequence labeling'),
+    (SEQ2SEQ, 'sequence to sequence'),
+)
+
+
 class Project(models.Model):
-    DOCUMENT_CLASSIFICATION = 'DocumentClassification'
-    SEQUENCE_LABELING = 'SequenceLabeling'
-    SEQ2SEQ = 'Seq2seq'
-
-    PROJECT_CHOICES = (
-        (DOCUMENT_CLASSIFICATION, 'document classification'),
-        (SEQUENCE_LABELING, 'sequence labeling'),
-        (SEQ2SEQ, 'sequence to sequence'),
-    )
-
     name = models.CharField(max_length=100)
     description = models.TextField()
     guideline = models.TextField()
