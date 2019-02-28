@@ -24,6 +24,11 @@
             "description": "Google Analytics tracking id.",
             "required": false,
             "value": ""
+        },
+        "DEBUG": {
+            "description": "Debug mode or not.",
+            "required": false,
+            "value": "False"
         }
     },
     "scripts": {
