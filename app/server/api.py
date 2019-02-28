@@ -91,19 +91,20 @@ class RunModelAPI(APIView):
         except User.DoesNotExist:
             print('User "MachineLearningModel" did not exist. Created it automatically.')
             mlm_user = User.objects.create_user(username='MachineLearningModel',
-                                 password='MachineLearningModel')
+                                                password='MachineLearningModel')
             mlm_id = mlm_user.pk
         else:
             mlm_id = mlm_user.pk
         result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), mlm_id)
-        
+
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         current_anotations = DocumentAnnotation.objects.filter(user=mlm_user)
         if current_anotations.exists():
             current_anotations._raw_delete(current_anotations.db)
 
         batch_size = 500
-        new_annotations = (DocumentAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), user=mlm_user, prob=row['prob']) for row in reader)
+        new_annotations = (DocumentAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(
+            pk=int(float(row['label_id']))), user=mlm_user, prob=row['prob']) for row in reader)
         while True:
             batch = list(islice(new_annotations, batch_size))
             if not batch:
@@ -112,6 +113,7 @@ class RunModelAPI(APIView):
         # os.remove(INPUT_FILE)
         # os.remove(OUTPUT_FILE)
         return Response({'result': result})
+
 
 class ProjectStatsAPI(APIView):
     pagination_class = None
@@ -135,6 +137,7 @@ class ProjectStatsAPI(APIView):
                     'user': {'users': users, 'data': user_data}}
 
         return Response(response)
+
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
@@ -163,6 +166,7 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     filter_backends = (DjangoFilterBackend, ExcludeSearchFilter, filters.OrderingFilter)
@@ -187,7 +191,7 @@ class DocumentList(generics.ListCreateAPIView):
                 if(mlm_user):
                     queryset = queryset.filter(doc_annotations__user=mlm_user)
                     queryset = queryset.order_by('doc_annotations__prob')
-                    queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user)) 
+                    queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user))
             return queryset
 
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -241,3 +245,18 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
         self.check_object_permissions(self.request, obj)
 
         return obj
+
+
+class SuggestedTerms(generics.ListAPIView):
+    queryset = Document.objects.all()
+    permission_classes = (IsAuthenticated, IsProjectUser)
+
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = project.get_document_serializer()
+
+        return self.serializer_class
+
+    def get_object(self):
+
+        return self.queryset

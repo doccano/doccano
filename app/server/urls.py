@@ -6,7 +6,7 @@ from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, G
 from .views import ProjectsView, DataDownload, DataDownloadFile
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, ProjectDetail, \
-    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI
+    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, SuggestedTerms
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -21,7 +21,9 @@ urlpatterns = [
     path('api/projects/<int:project_id>/labels/<int:label_id>', LabelDetail.as_view(), name='label'),
     path('api/projects/<int:project_id>/docs/', DocumentList.as_view(), name='docs'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/', AnnotationList.as_view(), name='annotations'),
-    path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>', AnnotationDetail.as_view(), name='ann'),
+    path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>',
+         AnnotationDetail.as_view(), name='ann'),
+    path('api/projects/<int:project_id>/suggested/', SuggestedTerms.as_view(), name='suggested'),
     path('projects/', ProjectsView.as_view(), name='projects'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
     path('projects/<int:project_id>/download_file', DataDownloadFile.as_view(), name='download_file'),
