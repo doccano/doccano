@@ -37,7 +37,11 @@ Doccano can be deployed to Azure ([Web App for Containers](https://azure.microso
 
 ### Heroku
 
-Doccano can be deployed to [Heroku](https://www.heroku.com/) by following these steps:
+Doccano can be deployed to [Heroku](https://www.heroku.com/) by clicking on the button below:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+Of course, you can deploy doccano by using [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli).
 
 ```bash
 heroku create

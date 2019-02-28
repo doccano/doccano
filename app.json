@@ -1,0 +1,50 @@
+{
+    "name": "doccano",
+    "description": "Open source text annotation tool for machine learning practitioner.",
+    "keywords": ["Python", "Machine Learning", "Annotation"],
+    "website": "https://doccano.herokuapp.com/",
+    "repository": "https://github.com/chakki-works/doccano",
+    "logo": "https://github.com/chakki-works/doccano/wiki/images/doccano.png",
+    "success_url": "/",
+    "env": {
+        "ADMIN_USER_NAME": {
+            "description": "The user name for the admin account."
+        },
+        "ADMIN_CONTACT_EMAIL": {
+            "description": "The contact email address for the admin account."
+        },
+        "ADMIN_PASSWORD": {
+            "description": "The password for the admin account."
+        },
+        "SECRET_KEY": {
+            "description": "The value to use as the Django secret key.",
+            "generator": "secret"
+        },
+        "GOOGLE_TRACKING_ID": {
+            "description": "Google Analytics tracking id.",
+            "required": false,
+            "value": ""
+        },
+        "DEBUG": {
+            "description": "Debug mode or not.",
+            "required": false,
+            "value": "False"
+        }
+    },
+    "scripts": {
+        "postdeploy": "sh tools/heroku.sh deploy"
+    },
+    "addons": [
+        {
+            "plan": "heroku-postgresql:hobby-dev"
+        }
+    ],
+    "buildpacks": [
+        {
+            "url": "heroku/nodejs"
+        },
+        {
+            "url": "heroku/python"
+        }
+    ]
+}
