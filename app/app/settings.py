@@ -10,16 +10,15 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
+from os import path
 
-import os
 import django_heroku
 import dj_database_url
-
 from environs import Env
 
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Build paths inside the project like this: path.join(BASE_DIR, ...)
+BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 
 env = Env()
 env.read_env(BASE_DIR, recurse=False)
@@ -73,7 +72,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'server/templates')],
+        'DIRS': [path.join(BASE_DIR, 'server/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -92,7 +91,7 @@ TEMPLATES = [
 ]
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'server/static'),
+    path.join(BASE_DIR, 'server/static'),
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -118,7 +117,7 @@ SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = env('OAUTH_AAD_TENANT', None)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
