@@ -84,14 +84,14 @@
         </div>
         <div class="level mt30 documents-pagination">
             <a class="button level-left" v-on:click="firstDocumentsPage" :disabled="currentPage == 0">
-              <span class="icon">
+              <span class="icon" title="First">
                 <i class="fas fa-angle-double-left"></i>
               </span>
               <span>First</span>
             </a>
 
           <a class="button level-left" v-on:click="prevDocumentsPage" :disabled="!prev">
-            <span class="icon">
+            <span class="icon" title="Prev">
               <i class="fas fa-angle-left"></i>
             </span>
             <span>Prev</span>
@@ -99,16 +99,16 @@
     
           <a class="button level-right is-disabled" v-on:click="nextDocumentsPage" :disabled="!next">
             <span>Next</span>
-            <span class="icon">
+            <span class="icon" title="Next">
               <i class="fas fa-angle-right"></i>
             </span>
           </a>
 
           <a class="button level-left" v-on:click="lastDocumentsPage" :disabled="currentPage == lastPage">
-              <span class="icon">
+              <span>Last</span>
+              <span class="icon" title="Last">
                 <i class="fas fa-angle-double-right"></i>
               </span>
-              <span>Last</span>
             </a>
         </div>
       </div>
@@ -135,7 +135,7 @@
         <div class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">Annotation Guideline</p>
+            <p class="modal-card-title">Annotation Guidelines</p>
             <button class="delete" aria-label="close" @click="isActive=!isActive"></button>
           </header>
           <section class="modal-card-body modal-card-body-footer content"

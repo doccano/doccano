@@ -18,7 +18,7 @@ from .resources import DocumentResource, DocumentAnnotationResource, LabelResour
 
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
-from .models import Document, Project, DocumentAnnotation, Label
+from .models import Document, Project, DocumentAnnotation, Label, User
 from app import settings
 
 logger = logging.getLogger(__name__)
@@ -68,6 +68,16 @@ class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         context = super().get_context_data(**kwargs)
         context['docs_count'] = project.get_docs_count()
+        return context
+
+
+class UserView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/user.html'
+
+    def get_context_data(self, **kwargs):
+        user = get_object_or_404(User, pk=self.kwargs['user_id'])
+        context = super().get_context_data(**kwargs)
+        # context['docs_count'] = user.get_docs_count()
         return context
 
 

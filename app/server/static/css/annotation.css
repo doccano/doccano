@@ -301,3 +301,11 @@ span.highlight {
 }
 
 [v-cloak] { display: none; }
+
+
+
+@media screen and (min-width: 769px), print {
+    .modal-card, .modal-content {
+        min-width: 90%;
+    }
+}
