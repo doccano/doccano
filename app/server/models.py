@@ -63,6 +63,32 @@ class Project(models.Model):
 
         return template_name
 
+    def get_mlm_user(self):
+        try:
+            mlm_user = User.objects.get(username='MachineLearningModel')
+        except User.DoesNotExist:
+            mlm_user = None
+        return mlm_user
+
+    def get_documents_annotated_by_human_user(self):
+        docs = self.documents.all()
+        if (self.get_mlm_user()):
+            docs = docs.filter(Q(doc_annotations__isnull=False) & ~Q(doc_annotations__user=mlm_user))
+        else:
+            docs = docs.filter(doc_annotations__isnull=False)
+        return docs
+
+    def get_documents_not_annotated_by_human_user(self, user_ids=[]):
+        docs = self.documents.all()
+        users = User.objects.all().filter(id!=[])
+        docs = docs.exclude(doc_annotations__isnull=False) # exclude documents that have annotations
+        if (self.get_mlm_user()):
+            docs = docs.filter(Q(doc_annotations__isnull=True) | Q(doc_annotations__user=mlm_user))
+        else:
+            docs = docs.filter(doc_annotations__isnull=False)
+        return docs
+
+
     def get_documents(self, is_null=True, user=None):
         docs = self.documents.all()
         if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):

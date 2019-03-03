@@ -37,6 +37,15 @@
           </span>
           <span class="name">Dataset</span>
         </a>
+        <a href="{% url 'guideline' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fas fa-book"></i>
+          </span>
+          <span class="name">Guideline</span>
+        </a>
+
+        <hr style="margin: 0;">
+
         <a href="{% url 'label-management' view.kwargs.project_id %}" class="item">
           <span class="icon">
             <i class="fa fa-star"></i>
@@ -47,7 +56,7 @@
           <span class="icon">
             <i class="fa fa-star"></i>
           </span>
-          <span class="name">Labels Admin</span>
+          <span class="name">Labeled Documents</span>
         </a>
         <a href="{% url 'labelers' view.kwargs.project_id %}" class="item">
             <span class="icon">
@@ -60,12 +69,6 @@
             <i class="fas fa-signal"></i>
           </span>
           <span class="name">Statistics</span>
-        </a>
-        <a href="{% url 'guideline' view.kwargs.project_id %}" class="item">
-          <span class="icon">
-            <i class="fas fa-book"></i>
-          </span>
-          <span class="name">Guideline</span>
         </a>
         <a href="{% url 'settings' view.kwargs.project_id %}" class="item">
           <span class="icon">
