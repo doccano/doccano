@@ -189,6 +189,7 @@ class Document(models.Model):
     metadata = models.TextField(default='{}')
     created_date_time = models.DateTimeField(auto_now_add=True)
     updated_date_time = models.DateTimeField(auto_now=True)
+    priority = models.IntegerField(null=True)
 
     def get_annotations(self):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
@@ -247,21 +248,24 @@ class Document(models.Model):
         annotations = self.get_annotations()
         labels = [a.label.text for a in annotations]
         username = annotations[0].user.username
-        dataset = {'doc_id': self.id, 'text': self.text, 'labels': labels, 'username': username, 'metadata': json.loads(self.metadata)}
+        dataset = {'doc_id': self.id, 'text': self.text, 'labels': labels,
+                   'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
 
     def make_dataset_for_sequence_labeling_json(self):
         annotations = self.get_annotations()
         entities = [(a.start_offset, a.end_offset, a.label.text) for a in annotations]
         username = annotations[0].user.username
-        dataset = {'doc_id': self.id, 'text': self.text, 'entities': entities, 'username': username, 'metadata': json.loads(self.metadata)}
+        dataset = {'doc_id': self.id, 'text': self.text, 'entities': entities,
+                   'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
 
     def make_dataset_for_seq2seq_json(self):
         annotations = self.get_annotations()
         sentences = [a.text for a in annotations]
         username = annotations[0].user.username
-        dataset = {'doc_id': self.id, 'text': self.text, 'sentences': sentences, 'username': username, 'metadata': json.loads(self.metadata)}
+        dataset = {'doc_id': self.id, 'text': self.text, 'sentences': sentences,
+                   'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
 
     def is_labeled_by(self, user):
