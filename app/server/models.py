@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
+from polymorphic.models import PolymorphicModel
 from .utils import get_key_choices
 
 
@@ -16,7 +17,7 @@ PROJECT_CHOICES = (
 )
 
 
-class Project(models.Model):
+class Project(PolymorphicModel):
     name = models.CharField(max_length=100)
     description = models.TextField()
     guideline = models.TextField()
@@ -37,9 +38,6 @@ class Project(models.Model):
 
 
 class TextClassificationProject(Project):
-
-    class Meta:
-        proxy = True
 
     @property
     def image(self):
@@ -62,9 +60,6 @@ class TextClassificationProject(Project):
 
 class SequenceLabelingProject(Project):
 
-    class Meta:
-        proxy = True
-
     @property
     def image(self):
         return staticfiles_storage.url('images/cats/sequence_labeling.jpg')
@@ -85,9 +80,6 @@ class SequenceLabelingProject(Project):
 
 
 class Seq2seqProject(Project):
-
-    class Meta:
-        proxy = True
 
     @property
     def image(self):

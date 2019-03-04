@@ -1,6 +1,8 @@
 from rest_framework import serializers
+from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import Label, Project, Document
+from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
 
@@ -24,6 +26,15 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
         read_only_fields = ('image', 'updated_at')
+
+
+class ProjectPolymorphicSerializer(PolymorphicSerializer):
+    model_serializer_mapping = {
+        Project: ProjectSerializer,
+        TextClassificationProject: ProjectSerializer,
+        SequenceLabelingProject: ProjectSerializer,
+        Seq2seqProject: ProjectSerializer
+    }
 
 
 class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):

@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from mixer.backend.django import mixer
+from model_mommy import mommy
 from ..models import User, SequenceAnnotation, Document, Label, Seq2seqAnnotation, DocumentAnnotation
 from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 from ..api import CoNLLHandler, CSVClassificationHandler, CSVSeq2seqHandler
@@ -31,12 +32,13 @@ class TestProjectListAPI(APITestCase):
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
 
-        cls.main_project = mixer.blend('server.Project', users=[main_project_member])
-        cls.sub_project = mixer.blend('server.Project', users=[sub_project_member])
+        cls.main_project = mommy.make('server.Project', users=[main_project_member])
+        cls.sub_project = mommy.make('server.Project', users=[sub_project_member])
 
         cls.url = reverse(viewname='project_list')
-        cls.data = {'name': 'example', 'project_type': 'Seq2seq',
-                    'description': 'example', 'guideline': 'example'}
+        cls.data = {'name': 'example', 'project_type': 'DocumentClassification',
+                    'description': 'example', 'guideline': 'example',
+                    'resourcetype': 'TextClassificationProject'}
         cls.num_project = main_project_member.projects.count()
 
     def test_returns_main_project_to_main_project_member(self):
@@ -88,8 +90,8 @@ class TestProjectDetailAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mixer.blend('server.Project', users=[cls.project_member, super_user])
-        sub_project = mixer.blend('server.Project', users=[non_project_member])
+        cls.main_project = mommy.make('server.Project', users=[cls.project_member, super_user])
+        sub_project = mommy.make('server.Project', users=[non_project_member])
         cls.url = reverse(viewname='project_detail', args=[cls.main_project.id])
         cls.data = {'description': 'lorem'}
 
@@ -148,11 +150,11 @@ class TestLabelListAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mixer.blend('server.Project', users=[project_member, super_user])
-        cls.main_project_label = mixer.blend('server.Label', project=cls.main_project)
+        cls.main_project = mommy.make('server.Project', users=[project_member, super_user])
+        cls.main_project_label = mommy.make('server.Label', project=cls.main_project)
 
-        sub_project = mixer.blend('server.Project', users=[non_project_member])
-        mixer.blend('server.Label', project=sub_project)
+        sub_project = mommy.make('server.Project', users=[non_project_member])
+        mommy.make('server.Label', project=sub_project)
         cls.url = reverse(viewname='label_list', args=[cls.main_project.id])
         cls.data = {'text': 'example'}
 
@@ -208,8 +210,8 @@ class TestLabelDetailAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        project = mixer.blend('server.Project', users=[project_member, super_user])
-        cls.label = mixer.blend('server.Label', project=project)
+        project = mommy.make('server.Project', users=[project_member, super_user])
+        cls.label = mommy.make('server.Label', project=project)
         cls.url = reverse(viewname='label_detail', args=[project.id, cls.label.id])
         cls.data = {'text': 'example'}
 
@@ -269,11 +271,11 @@ class TestDocumentListAPI(APITestCase):
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
 
-        cls.main_project = mixer.blend('server.Project', users=[project_member, super_user])
-        mixer.blend('server.Document', project=cls.main_project)
+        cls.main_project = mommy.make('server.Project', users=[project_member, super_user])
+        mommy.make('server.Document', project=cls.main_project)
 
-        sub_project = mixer.blend('server.Project', users=[non_project_member])
-        mixer.blend('server.Document', project=sub_project)
+        sub_project = mommy.make('server.Project', users=[non_project_member])
+        mommy.make('server.Document', project=sub_project)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
         cls.data = {'text': 'example'}
 
@@ -326,8 +328,8 @@ class TestDocumentDetailAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        project = mixer.blend('server.Project', users=[project_member, super_user])
-        cls.doc = mixer.blend('server.Document', project=project)
+        project = mommy.make('server.Project', users=[project_member, super_user])
+        cls.doc = mommy.make('server.Document', project=project)
         cls.url = reverse(viewname='doc_detail', args=[project.id, cls.doc.id])
         cls.data = {'text': 'example'}
 
@@ -385,15 +387,15 @@ class TestEntityListAPI(APITestCase):
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
 
-        main_project = mixer.blend('server.Project', users=[project_member, another_project_member])
-        main_project_label = mixer.blend('server.Label', project=main_project)
-        main_project_doc = mixer.blend('server.Document', project=main_project)
-        mixer.blend('server.SequenceAnnotation', document=main_project_doc, user=project_member)
-        mixer.blend('server.SequenceAnnotation', document=main_project_doc, user=another_project_member)
+        main_project = mommy.make('server.Project', users=[project_member, another_project_member])
+        main_project_label = mommy.make('server.Label', project=main_project)
+        main_project_doc = mommy.make('server.Document', project=main_project)
+        mommy.make('server.SequenceAnnotation', document=main_project_doc, user=project_member)
+        mommy.make('server.SequenceAnnotation', document=main_project_doc, user=another_project_member)
 
-        sub_project = mixer.blend('server.Project', users=[non_project_member])
-        sub_project_doc = mixer.blend('server.Document', project=sub_project)
-        mixer.blend('server.SequenceAnnotation', document=sub_project_doc)
+        sub_project = mommy.make('server.Project', users=[non_project_member])
+        sub_project_doc = mommy.make('server.Document', project=sub_project)
+        mommy.make('server.SequenceAnnotation', document=sub_project_doc)
 
         cls.url = reverse(viewname='entity_list', args=[main_project.id, main_project_doc.id])
         cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': main_project_label.id}
@@ -448,16 +450,16 @@ class TestEntityDetailAPI(APITestCase):
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
 
-        main_project = mixer.blend('server.Project', users=[project_member, another_project_member])
-        main_project_doc = mixer.blend('server.Document', project=main_project)
-        main_project_entity = mixer.blend('server.SequenceAnnotation',
+        main_project = mommy.make('server.Project', users=[project_member, another_project_member])
+        main_project_doc = mommy.make('server.Document', project=main_project)
+        main_project_entity = mommy.make('server.SequenceAnnotation',
                                           document=main_project_doc, user=project_member)
-        another_entity = mixer.blend('server.SequenceAnnotation',
+        another_entity = mommy.make('server.SequenceAnnotation',
                                      document=main_project_doc, user=another_project_member)
 
-        sub_project = mixer.blend('server.Project', users=[non_project_member])
-        sub_project_doc = mixer.blend('server.Document', project=sub_project)
-        mixer.blend('server.SequenceAnnotation', document=sub_project_doc)
+        sub_project = mommy.make('server.Project', users=[non_project_member])
+        sub_project_doc = mommy.make('server.Document', project=sub_project)
+        mommy.make('server.SequenceAnnotation', document=sub_project_doc)
 
         cls.url = reverse(viewname='entity_detail', args=[main_project.id,
                                                           main_project_doc.id,
@@ -535,17 +537,17 @@ class TestSearch(APITestCase):
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
 
-        cls.main_project = mixer.blend('server.Project', users=[project_member])
+        cls.main_project = mommy.make('server.Project', users=[project_member])
         cls.search_term = 'example'
-        doc1 = mixer.blend('server.Document', text=cls.search_term, project=cls.main_project)
-        doc2 = mixer.blend('server.Document', text='Lorem', project=cls.main_project)
-        label1 = mixer.blend('server.Label', project=cls.main_project)
-        label2 = mixer.blend('server.Label', project=cls.main_project)
-        mixer.blend('server.SequenceAnnotation', document=doc1, user=project_member, label=label1)
-        mixer.blend('server.SequenceAnnotation', document=doc2, user=project_member, label=label2)
+        doc1 = mommy.make('server.Document', text=cls.search_term, project=cls.main_project)
+        doc2 = mommy.make('server.Document', text='Lorem', project=cls.main_project)
+        label1 = mommy.make('server.Label', project=cls.main_project)
+        label2 = mommy.make('server.Label', project=cls.main_project)
+        mommy.make('server.SequenceAnnotation', document=doc1, user=project_member, label=label1)
+        mommy.make('server.SequenceAnnotation', document=doc2, user=project_member, label=label2)
 
-        sub_project = mixer.blend('server.Project', users=[non_project_member])
-        mixer.blend('server.Document', text=cls.search_term, project=sub_project)
+        sub_project = mommy.make('server.Project', users=[non_project_member])
+        mommy.make('server.Document', text=cls.search_term, project=sub_project)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
         cls.data = {'q': cls.search_term}
 
@@ -602,13 +604,13 @@ class TestFilter(APITestCase):
         cls.project_member_pass = 'project_member_pass'
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
-        cls.main_project = mixer.blend('server.Project', users=[project_member])
-        cls.label1 = mixer.blend('server.Label', project=cls.main_project)
-        cls.label2 = mixer.blend('server.Label', project=cls.main_project)
-        doc1 = mixer.blend('server.Document', project=cls.main_project)
-        doc2 = mixer.blend('server.Document', project=cls.main_project)
-        mixer.blend('server.SequenceAnnotation', document=doc1, user=project_member, label=cls.label1)
-        mixer.blend('server.SequenceAnnotation', document=doc2, user=project_member, label=cls.label2)
+        cls.main_project = mommy.make('server.Project', users=[project_member])
+        cls.label1 = mommy.make('server.Label', project=cls.main_project)
+        cls.label2 = mommy.make('server.Label', project=cls.main_project)
+        doc1 = mommy.make('server.Document', project=cls.main_project)
+        doc2 = mommy.make('server.Document', project=cls.main_project)
+        mommy.make('server.SequenceAnnotation', document=doc1, user=project_member, label=cls.label1)
+        mommy.make('server.SequenceAnnotation', document=doc2, user=project_member, label=cls.label2)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
         cls.params = {'seq_annotations__label__id': cls.label1.id}
 
@@ -632,9 +634,9 @@ class TestUploader(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.classification_project = mixer.blend('server.Project', users=[super_user], project_type=DOCUMENT_CLASSIFICATION)
-        cls.labeling_project = mixer.blend('server.Project', users=[super_user], project_type=SEQUENCE_LABELING)
-        cls.seq2seq_project = mixer.blend('server.Project', users=[super_user], project_type=SEQ2SEQ)
+        cls.classification_project = mommy.make('server.Project', users=[super_user], project_type=DOCUMENT_CLASSIFICATION)
+        cls.labeling_project = mommy.make('server.Project', users=[super_user], project_type=SEQUENCE_LABELING)
+        cls.seq2seq_project = mommy.make('server.Project', users=[super_user], project_type=SEQ2SEQ)
         cls.classification_url = reverse(viewname='doc_uploader', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_uploader', args=[cls.labeling_project.id])
         cls.seq2seq_url = reverse(viewname='doc_uploader', args=[cls.seq2seq_project.id])
@@ -719,7 +721,7 @@ class TestFileHandler(APITestCase):
         cls.super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                        password=cls.super_user_pass,
                                                        email='fizz@buzz.com')
-        cls.project = mixer.blend('server.Project', users=[cls.super_user])
+        cls.project = mommy.make('server.Project', users=[cls.super_user])
 
     def handler_test_helper(self, filename, handler):
         with open(os.path.join(DATA_DIR, filename), mode='rb') as f:

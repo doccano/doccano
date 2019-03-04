@@ -21,12 +21,13 @@ from .models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 from .serializers import SequenceAnnotationSerializer, DocumentAnnotationSerializer, Seq2seqAnnotationSerializer
+from .serializers import ProjectPolymorphicSerializer
 from .utils import extract_label
 
 
 class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectPolymorphicSerializer
     pagination_class = None
     permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
 
