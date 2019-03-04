@@ -16,6 +16,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.db.models import Q
+from django.db.models import Case, When
 from django.db import connection
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
@@ -23,7 +24,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Project, Label, Document, DocumentAnnotation
+from .models import Project, Label, Document, DocumentAnnotation, DocumentMLMAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer
 from .filters import ExcludeSearchFilter
@@ -143,32 +144,18 @@ class RunModelAPI(APIView):
                 if len(row[2]) > 0:
                     label_id = row[2][0]
                 wr.writerow([row[0], row[1], label_id])
-        users = User.objects.values()
-        mlm_user = None
-        mlm_id = None
-        try:
-            mlm_user = User.objects.get(username='MachineLearningModel')
-        except User.DoesNotExist:
-            print('User "MachineLearningModel" did not exist. Created it automatically.')
-            mlm_user = User.objects.create_user(username='MachineLearningModel',
-                                 password='MachineLearningModel')
-            mlm_id = mlm_user.pk
-        else:
-            mlm_id = mlm_user.pk
-        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), mlm_id)
+        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), 0)
         
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
-        current_anotations = DocumentAnnotation.objects.filter(user=mlm_user)
-        if current_anotations.exists():
-            current_anotations._raw_delete(current_anotations.db)
+        DocumentMLMAnnotation.objects.all().delete()
 
         batch_size = 500
-        new_annotations = (DocumentAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), user=mlm_user, prob=row['prob']) for row in reader)
+        new_annotations = (DocumentMLMAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), prob=row['prob']) for row in reader)
         while True:
             batch = list(islice(new_annotations, batch_size))
             if not batch:
                 break
-            DocumentAnnotation.objects.bulk_create(batch, batch_size)
+            DocumentMLMAnnotation.objects.bulk_create(batch, batch_size)
         # os.remove(INPUT_FILE)
         # os.remove(OUTPUT_FILE)
         return Response({'result': result})
@@ -251,14 +238,12 @@ class DocumentList(generics.ListCreateAPIView):
         queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
         if not self.request.query_params.get('is_checked'):
             if (project.use_machine_model_sort):
-                try:
-                    mlm_user = User.objects.get(username='MachineLearningModel')
-                except User.DoesNotExist:
-                    mlm_user = None
-                if(mlm_user):
-                    queryset = queryset.filter(doc_annotations__user=mlm_user)
-                    queryset = queryset.order_by('doc_annotations__prob')
-                    queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user)) 
+                mlm_annotations = DocumentMLMAnnotation.objects.all()
+                mlm_annotations = mlm_annotations.order_by('prob')
+                mlm_id_list = [x.id for x in mlm_annotations]
+                preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(mlm_id_list)])
+                queryset = Document.objects.filter(pk__in=mlm_id_list).order_by(preserved)
+                queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user))
             return queryset
 
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])

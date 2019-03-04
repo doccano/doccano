@@ -289,6 +289,14 @@ class Annotation(models.Model):
     class Meta:
         abstract = True
 
+class AnnotationExternal(models.Model):
+    prob = models.FloatField(null=True, blank=True, default=None)
+    created_date_time = models.DateTimeField(auto_now_add=True)
+    updated_date_time = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
 
 class DocumentAnnotation(Annotation):
     document = models.ForeignKey(Document, related_name='doc_annotations', on_delete=models.CASCADE)
@@ -296,6 +304,20 @@ class DocumentAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user', 'label')
+
+class DocumentMLMAnnotation(AnnotationExternal):
+    document = models.ForeignKey(Document, related_name='doc_mlm_annotations', on_delete=models.CASCADE)
+    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('document', 'label')
+
+class DocumentGoldAnnotation(AnnotationExternal):
+    document = models.ForeignKey(Document, related_name='doc_gold_annotations', on_delete=models.CASCADE)
+    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('document', 'label')
 
 
 class SequenceAnnotation(Annotation):
