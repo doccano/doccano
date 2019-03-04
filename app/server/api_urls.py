@@ -5,6 +5,7 @@ from .api import ProjectList, ProjectDetail
 from .api import LabelList, LabelDetail
 from .api import DocumentList, DocumentDetail
 from .api import EntityList, EntityDetail
+from .api import AnnotationList, AnnotationDetail
 from .api import TextUploadAPI
 from .api import StatisticsAPI
 
@@ -26,6 +27,10 @@ urlpatterns = [
          EntityList.as_view(), name='entity_list'),
     path('projects/<int:project_id>/docs/<int:doc_id>/entities/<int:entity_id>',
          EntityDetail.as_view(), name='entity_detail'),
+    path('projects/<int:project_id>/docs/<int:doc_id>/annotations',
+         AnnotationList.as_view(), name='annotation_list'),
+    path('projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>',
+         AnnotationDetail.as_view(), name='annotation_detail'),
     path('projects/<int:project_id>/docs/upload',
          TextUploadAPI.as_view(), name='doc_uploader')
 ]

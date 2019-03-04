@@ -524,6 +524,161 @@ class TestEntityDetailAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
+class TestAnnotationListAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.another_project_member_name = 'another_project_member_name'
+        cls.another_project_member_pass = 'another_project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        another_project_member = User.objects.create_user(username=cls.another_project_member_name,
+                                                          password=cls.another_project_member_pass)
+        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
+                                                      password=cls.non_project_member_pass)
+
+        main_project = mommy.make('server.SequenceLabelingProject', users=[project_member, another_project_member])
+        main_project_label = mommy.make('server.Label', project=main_project)
+        main_project_doc = mommy.make('server.Document', project=main_project)
+        mommy.make('server.SequenceAnnotation', document=main_project_doc, user=project_member)
+        mommy.make('server.SequenceAnnotation', document=main_project_doc, user=another_project_member)
+
+        sub_project = mommy.make('server.SequenceLabelingProject', users=[non_project_member])
+        sub_project_doc = mommy.make('server.Document', project=sub_project)
+        mommy.make('server.SequenceAnnotation', document=sub_project_doc)
+
+        cls.url = reverse(viewname='annotation_list', args=[main_project.id, main_project_doc.id])
+        cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': main_project_label.id}
+        cls.num_entity_of_project_member = SequenceAnnotation.objects.filter(document=main_project_doc,
+                                                                             user=project_member).count()
+
+    def test_returns_annotations_to_project_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_do_not_return_annotations_to_non_project_member(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_do_not_return_annotations_of_another_project_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(len(response.data), self.num_entity_of_project_member)
+
+    def test_allows_project_member_to_create_annotation(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.post(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_disallows_non_project_member_to_create_annotation(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.post(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestAnnotationDetailAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.another_project_member_name = 'another_project_member_name'
+        cls.another_project_member_pass = 'another_project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        another_project_member = User.objects.create_user(username=cls.another_project_member_name,
+                                                          password=cls.another_project_member_pass)
+        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
+                                                      password=cls.non_project_member_pass)
+
+        main_project = mommy.make('server.SequenceLabelingProject',
+                                  users=[project_member, another_project_member])
+        main_project_doc = mommy.make('server.Document', project=main_project)
+        main_project_entity = mommy.make('server.SequenceAnnotation',
+                                         document=main_project_doc, user=project_member)
+        another_entity = mommy.make('server.SequenceAnnotation',
+                                    document=main_project_doc, user=another_project_member)
+
+        sub_project = mommy.make('server.SequenceLabelingProject', users=[non_project_member])
+        sub_project_doc = mommy.make('server.Document', project=sub_project)
+        mommy.make('server.SequenceAnnotation', document=sub_project_doc)
+
+        cls.url = reverse(viewname='annotation_detail', args=[main_project.id,
+                                                              main_project_doc.id,
+                                                              main_project_entity.id])
+        cls.another_url = reverse(viewname='annotation_detail', args=[main_project.id,
+                                                                      main_project_doc.id,
+                                                                      another_entity.id])
+        cls.post_data = {'start_offset': 0, 'end_offset': 10}
+
+    def test_returns_annotation_to_project_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_do_not_return_annotation_to_non_project_member(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_do_not_return_annotation_by_another_project_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.another_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_project_member_to_update_annotation(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.patch(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_disallows_non_project_member_to_update_annotation(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.patch(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_project_member_to_update_annotation_of_another_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.patch(self.another_url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_project_member_to_delete_annotation(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_disallows_project_member_to_delete_annotation(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_project_member_to_delete_annotation_of_another_member(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.delete(self.another_url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
 class TestSearch(APITestCase):
 
     @classmethod

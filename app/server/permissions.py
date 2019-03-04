@@ -36,3 +36,15 @@ class SuperUserMixin(UserPassesTestMixin):
 
     def test_func(self):
         return self.request.user.is_superuser
+
+
+class IsOwnAnnotation(BasePermission):
+
+    def has_permission(self, request, view):
+        project_id = view.kwargs.get('project_id')
+        annotation_id = view.kwargs.get('annotation_id')
+        project = get_object_or_404(Project, pk=project_id)
+        model = project.get_annotation_class()
+        annotation = model.objects.filter(id=annotation_id, user=request.user)
+
+        return annotation.exists()

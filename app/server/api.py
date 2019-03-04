@@ -17,7 +17,7 @@ from rest_framework.parsers import MultiPartParser
 from .exceptions import FileParseException
 from .models import Project, Label, Document
 from .models import SequenceAnnotation
-from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity
+from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 from .serializers import SequenceAnnotationSerializer, DocumentAnnotationSerializer, Seq2seqAnnotationSerializer
 from .serializers import ProjectPolymorphicSerializer
@@ -138,6 +138,42 @@ class EntityDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = SequenceAnnotationSerializer
     lookup_url_kwarg = 'entity_id'
     permission_classes = (IsAuthenticated, IsProjectUser, IsMyEntity)
+
+
+class AnnotationList(generics.ListCreateAPIView):
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser)
+
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = project.get_annotation_serializer()
+        return self.serializer_class
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        model = project.get_annotation_class()
+        self.queryset = model.objects.filter(document=self.kwargs['doc_id'], user=self.request.user)
+        return self.queryset
+
+    def perform_create(self, serializer):
+        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        serializer.save(document=doc, user=self.request.user)
+
+
+class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
+    lookup_url_kwarg = 'annotation_id'
+    permission_classes = (IsAuthenticated, IsProjectUser, IsOwnAnnotation)
+
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = project.get_annotation_serializer()
+        return self.serializer_class
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        model = project.get_annotation_class()
+        self.queryset = model.objects.all()
+        return self.queryset
 
 
 class TextUploadAPI(APIView):
