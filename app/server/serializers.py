@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 
@@ -14,10 +15,22 @@ class LabelSerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    annotations = serializers.SerializerMethodField()
+
+    def get_annotations(self, instance):
+        request = self.context.get('request')
+        view = self.context.get('view', None)
+        if request and view:
+            project = get_object_or_404(Project, pk=view.kwargs['project_id'])
+            model = project.get_annotation_class()
+            serializer = project.get_annotation_serializer()
+            annotations = model.objects.filter(user=request.user, document=instance.id)
+            serializer = serializer(annotations, many=True)
+            return serializer.data
 
     class Meta:
         model = Document
-        fields = ('id', 'text')
+        fields = ('id', 'text', 'annotations')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -79,48 +92,3 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seq2seqAnnotation
         fields = ('id', 'text')
-
-
-class ClassificationDocumentSerializer(serializers.ModelSerializer):
-    annotations = serializers.SerializerMethodField()
-
-    def get_annotations(self, instance):
-        request = self.context.get('request')
-        if request:
-            annotations = instance.doc_annotations.filter(user=request.user)
-            serializer = DocumentAnnotationSerializer(annotations, many=True)
-            return serializer.data
-
-    class Meta:
-        model = Document
-        fields = ('id', 'text', 'annotations')
-
-
-class SequenceDocumentSerializer(serializers.ModelSerializer):
-    annotations = serializers.SerializerMethodField()
-
-    def get_annotations(self, instance):
-        request = self.context.get('request')
-        if request:
-            annotations = instance.seq_annotations.filter(user=request.user)
-            serializer = SequenceAnnotationSerializer(annotations, many=True)
-            return serializer.data
-
-    class Meta:
-        model = Document
-        fields = ('id', 'text', 'annotations')
-
-
-class Seq2seqDocumentSerializer(serializers.ModelSerializer):
-    annotations = serializers.SerializerMethodField()
-
-    def get_annotations(self, instance):
-        request = self.context.get('request')
-        if request:
-            annotations = instance.seq2seq_annotations.filter(user=request.user)
-            serializer = Seq2seqAnnotationSerializer(annotations, many=True)
-            return serializer.data
-
-    class Meta:
-        model = Document
-        fields = ('id', 'text', 'annotations')

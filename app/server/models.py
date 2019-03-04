@@ -46,10 +46,6 @@ class TextClassificationProject(Project):
     def get_template_name(self):
         return 'annotation/document_classification.html'
 
-    def get_document_serializer(self):
-        from .serializers import ClassificationDocumentSerializer
-        return ClassificationDocumentSerializer
-
     def get_annotation_serializer(self):
         from .serializers import DocumentAnnotationSerializer
         return DocumentAnnotationSerializer
@@ -67,10 +63,6 @@ class SequenceLabelingProject(Project):
     def get_template_name(self):
         return 'annotation/sequence_labeling.html'
 
-    def get_document_serializer(self):
-        from .serializers import SequenceDocumentSerializer
-        return SequenceDocumentSerializer
-
     def get_annotation_serializer(self):
         from .serializers import SequenceAnnotationSerializer
         return SequenceAnnotationSerializer
@@ -87,10 +79,6 @@ class Seq2seqProject(Project):
 
     def get_template_name(self):
         return 'annotation/seq2seq.html'
-
-    def get_document_serializer(self):
-        from .serializers import Seq2seqDocumentSerializer
-        return Seq2seqDocumentSerializer
 
     def get_annotation_serializer(self):
         from .serializers import Seq2seqAnnotationSerializer

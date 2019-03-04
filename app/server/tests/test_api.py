@@ -271,10 +271,10 @@ class TestDocumentListAPI(APITestCase):
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
 
-        cls.main_project = mommy.make('server.Project', users=[project_member, super_user])
+        cls.main_project = mommy.make('server.TextClassificationProject', users=[project_member, super_user])
         mommy.make('server.Document', project=cls.main_project)
 
-        sub_project = mommy.make('server.Project', users=[non_project_member])
+        sub_project = mommy.make('server.TextClassificationProject', users=[non_project_member])
         mommy.make('server.Document', project=sub_project)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
         cls.data = {'text': 'example'}
@@ -328,7 +328,7 @@ class TestDocumentDetailAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        project = mommy.make('server.Project', users=[project_member, super_user])
+        project = mommy.make('server.TextClassificationProject', users=[project_member, super_user])
         cls.doc = mommy.make('server.Document', project=project)
         cls.url = reverse(viewname='doc_detail', args=[project.id, cls.doc.id])
         cls.data = {'text': 'example'}
@@ -537,7 +537,7 @@ class TestSearch(APITestCase):
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
 
-        cls.main_project = mommy.make('server.Project', users=[project_member])
+        cls.main_project = mommy.make('server.TextClassificationProject', users=[project_member])
         cls.search_term = 'example'
         doc1 = mommy.make('server.Document', text=cls.search_term, project=cls.main_project)
         doc2 = mommy.make('server.Document', text='Lorem', project=cls.main_project)
@@ -546,7 +546,7 @@ class TestSearch(APITestCase):
         mommy.make('server.SequenceAnnotation', document=doc1, user=project_member, label=label1)
         mommy.make('server.SequenceAnnotation', document=doc2, user=project_member, label=label2)
 
-        sub_project = mommy.make('server.Project', users=[non_project_member])
+        sub_project = mommy.make('server.TextClassificationProject', users=[non_project_member])
         mommy.make('server.Document', text=cls.search_term, project=sub_project)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
         cls.data = {'q': cls.search_term}
@@ -604,7 +604,7 @@ class TestFilter(APITestCase):
         cls.project_member_pass = 'project_member_pass'
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
-        cls.main_project = mommy.make('server.Project', users=[project_member])
+        cls.main_project = mommy.make('server.TextClassificationProject', users=[project_member])
         cls.label1 = mommy.make('server.Label', project=cls.main_project)
         cls.label2 = mommy.make('server.Label', project=cls.main_project)
         doc1 = mommy.make('server.Document', project=cls.main_project)

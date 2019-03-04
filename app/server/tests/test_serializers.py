@@ -1,11 +1,7 @@
 from django.test import TestCase
 from mixer.backend.django import mixer
 from ..serializers import LabelSerializer
-
-from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
-from ..serializers import ClassificationDocumentSerializer, DocumentAnnotationSerializer
-from ..serializers import SequenceDocumentSerializer, SequenceAnnotationSerializer
-from ..serializers import Seq2seqDocumentSerializer, Seq2seqAnnotationSerializer
+from ..serializers import Seq2seqAnnotationSerializer
 
 
 class TestLabelSerializer(TestCase):

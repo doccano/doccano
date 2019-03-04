@@ -3,9 +3,9 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from mixer.backend.django import mixer
 from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
-from ..serializers import ClassificationDocumentSerializer, DocumentAnnotationSerializer
-from ..serializers import SequenceDocumentSerializer, SequenceAnnotationSerializer
-from ..serializers import Seq2seqDocumentSerializer, Seq2seqAnnotationSerializer
+from ..serializers import DocumentAnnotationSerializer
+from ..serializers import SequenceAnnotationSerializer
+from ..serializers import Seq2seqAnnotationSerializer
 
 
 class TestTextClassificationProject(TestCase):
@@ -21,10 +21,6 @@ class TestTextClassificationProject(TestCase):
     def test_get_template_name(self):
         template = self.project.get_template_name()
         self.assertEqual(template, 'annotation/document_classification.html')
-
-    def test_get_document_serializer(self):
-        serializer = self.project.get_document_serializer()
-        self.assertEqual(serializer, ClassificationDocumentSerializer)
 
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
@@ -49,10 +45,6 @@ class TestSequenceLabelingProject(TestCase):
         template = self.project.get_template_name()
         self.assertEqual(template, 'annotation/sequence_labeling.html')
 
-    def test_get_document_serializer(self):
-        serializer = self.project.get_document_serializer()
-        self.assertEqual(serializer, SequenceDocumentSerializer)
-
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
         self.assertEqual(serializer, SequenceAnnotationSerializer)
@@ -75,10 +67,6 @@ class TestSeq2seqProject(TestCase):
     def test_get_template_name(self):
         template = self.project.get_template_name()
         self.assertEqual(template, 'annotation/seq2seq.html')
-
-    def test_get_document_serializer(self):
-        serializer = self.project.get_document_serializer()
-        self.assertEqual(serializer, Seq2seqDocumentSerializer)
 
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
