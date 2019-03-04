@@ -32,8 +32,8 @@ class TestProjectListAPI(APITestCase):
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
 
-        cls.main_project = mommy.make('server.Project', users=[main_project_member])
-        cls.sub_project = mommy.make('server.Project', users=[sub_project_member])
+        cls.main_project = mommy.make('server.TextClassificationProject', users=[main_project_member])
+        cls.sub_project = mommy.make('server.TextClassificationProject', users=[sub_project_member])
 
         cls.url = reverse(viewname='project_list')
         cls.data = {'name': 'example', 'project_type': 'DocumentClassification',
@@ -90,8 +90,8 @@ class TestProjectDetailAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mommy.make('server.Project', users=[cls.project_member, super_user])
-        sub_project = mommy.make('server.Project', users=[non_project_member])
+        cls.main_project = mommy.make('server.TextClassificationProject', users=[cls.project_member, super_user])
+        sub_project = mommy.make('server.TextClassificationProject', users=[non_project_member])
         cls.url = reverse(viewname='project_detail', args=[cls.main_project.id])
         cls.data = {'description': 'lorem'}
 
@@ -634,9 +634,11 @@ class TestUploader(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
-        cls.classification_project = mommy.make('server.Project', users=[super_user], project_type=DOCUMENT_CLASSIFICATION)
-        cls.labeling_project = mommy.make('server.Project', users=[super_user], project_type=SEQUENCE_LABELING)
-        cls.seq2seq_project = mommy.make('server.Project', users=[super_user], project_type=SEQ2SEQ)
+        cls.classification_project = mommy.make('server.TextClassificationProject',
+                                                users=[super_user], project_type=DOCUMENT_CLASSIFICATION)
+        cls.labeling_project = mommy.make('server.SequenceLabelingProject',
+                                          users=[super_user], project_type=SEQUENCE_LABELING)
+        cls.seq2seq_project = mommy.make('server.Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
         cls.classification_url = reverse(viewname='doc_uploader', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_uploader', args=[cls.labeling_project.id])
         cls.seq2seq_url = reverse(viewname='doc_uploader', args=[cls.seq2seq_project.id])

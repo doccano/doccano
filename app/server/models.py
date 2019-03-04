@@ -19,8 +19,8 @@ PROJECT_CHOICES = (
 
 class Project(PolymorphicModel):
     name = models.CharField(max_length=100)
-    description = models.TextField()
-    guideline = models.TextField()
+    description = models.TextField(default='')
+    guideline = models.TextField(default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     users = models.ManyToManyField(User, related_name='projects')
@@ -31,7 +31,19 @@ class Project(PolymorphicModel):
 
     @property
     def image(self):
-        return staticfiles_storage.url('images/cats/text_classification.jpg')
+        raise NotImplementedError()
+
+    def get_template_name(self):
+        raise NotImplementedError()
+
+    def get_annotation_serializer(self):
+        raise NotImplementedError()
+
+    def get_annotation_class(self):
+        raise NotImplementedError()
+
+    def get_upload_handler(self, format):
+        raise NotImplementedError
 
     def __str__(self):
         return self.name
@@ -53,6 +65,16 @@ class TextClassificationProject(Project):
     def get_annotation_class(self):
         return DocumentAnnotation
 
+    def get_upload_handler(self, format):
+        from .api import PlainTextHandler, CSVClassificationHandler, JsonClassificationHandler
+        if format == 'plain':
+            return PlainTextHandler()
+        elif format == 'csv':
+            return CSVClassificationHandler()
+        elif format == 'json':
+            return JsonClassificationHandler()
+        raise ValueError('format {} is invalid.'.format(format))
+
 
 class SequenceLabelingProject(Project):
 
@@ -70,6 +92,16 @@ class SequenceLabelingProject(Project):
     def get_annotation_class(self):
         return SequenceAnnotation
 
+    def get_upload_handler(self, format):
+        from .api import PlainTextHandler, CoNLLHandler, JsonLabelingHandler
+        if format == 'plain':
+            return PlainTextHandler()
+        elif format == 'conll':
+            return CoNLLHandler()
+        elif format == 'json':
+            return JsonLabelingHandler()
+        raise ValueError('format {} is invalid.'.format(format))
+
 
 class Seq2seqProject(Project):
 
@@ -86,6 +118,16 @@ class Seq2seqProject(Project):
 
     def get_annotation_class(self):
         return Seq2seqAnnotation
+
+    def get_upload_handler(self, format):
+        from .api import PlainTextHandler, CSVSeq2seqHandler, JsonSeq2seqHandler
+        if format == 'plain':
+            return PlainTextHandler()
+        elif format == 'csv':
+            return CSVSeq2seqHandler()
+        elif format == 'json':
+            return JsonSeq2seqHandler()
+        raise ValueError('format {} is invalid.'.format(format))
 
 
 class Label(models.Model):

@@ -17,7 +17,6 @@ from rest_framework.parsers import MultiPartParser
 from .exceptions import FileParseException
 from .models import Project, Label, Document
 from .models import SequenceAnnotation
-from .models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 from .serializers import SequenceAnnotationSerializer, DocumentAnnotationSerializer, Seq2seqAnnotationSerializer
@@ -150,28 +149,9 @@ class TextUploadAPI(APIView):
         if 'file' not in request.FILES:
             raise ParseError('Empty content')
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        handler = self.decide_handler(request.data['format'], project.project_type)
+        handler = project.get_upload_handler(request.data['format'])
         handler.handle_uploaded_file(request.FILES['file'], project, self.request.user)
         return Response(status=status.HTTP_201_CREATED)
-
-    def decide_handler(self, format, project_type):
-        if format == 'plain':
-            return PlainTextHandler()
-        elif format == 'conll' and project_type:
-            return CoNLLHandler()
-        elif format == 'csv':
-            if project_type == DOCUMENT_CLASSIFICATION:
-                return CSVClassificationHandler()
-            elif project_type == SEQ2SEQ:
-                return CSVSeq2seqHandler()
-        elif format == 'json':
-            if project_type == DOCUMENT_CLASSIFICATION:
-                return JsonClassificationHandler()
-            elif project_type == SEQUENCE_LABELING:
-                return JsonLabelingHandler()
-            elif project_type == SEQ2SEQ:
-                return JsonSeq2seqHandler()
-        raise ValueError('format {} is invalid.'.format(format))
 
 
 class FileHandler(object):

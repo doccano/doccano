@@ -41,12 +41,36 @@ class ProjectSerializer(serializers.ModelSerializer):
         read_only_fields = ('image', 'updated_at')
 
 
+class TextClassificationProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TextClassificationProject
+        fields = '__all__'
+        read_only_fields = ('image', 'updated_at', 'users')
+
+
+class SequenceLabelingProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SequenceLabelingProject
+        fields = '__all__'
+        read_only_fields = ('image', 'updated_at', 'users')
+
+
+class Seq2seqProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Seq2seqProject
+        fields = '__all__'
+        read_only_fields = ('image', 'updated_at', 'users')
+
+
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
     model_serializer_mapping = {
         Project: ProjectSerializer,
-        TextClassificationProject: ProjectSerializer,
-        SequenceLabelingProject: ProjectSerializer,
-        Seq2seqProject: ProjectSerializer
+        TextClassificationProject: TextClassificationProjectSerializer,
+        SequenceLabelingProject: SequenceLabelingProjectSerializer,
+        Seq2seqProject: Seq2seqProjectSerializer
     }
 
 
