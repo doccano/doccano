@@ -19,14 +19,14 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     def get_annotations(self, instance):
         request = self.context.get('request')
-        view = self.context.get('view', None)
-        if request and view:
-            project = get_object_or_404(Project, pk=view.kwargs['project_id'])
-            model = project.get_annotation_class()
-            serializer = project.get_annotation_serializer()
-            annotations = model.objects.filter(user=request.user, document=instance.id)
-            serializer = serializer(annotations, many=True)
-            return serializer.data
+        project = instance.project
+        model = project.get_annotation_class()
+        serializer = project.get_annotation_serializer()
+        annotations = model.objects.filter(document=instance.id)
+        if request:
+            annotations = annotations.filter(user=request.user)
+        serializer = serializer(annotations, many=True)
+        return serializer.data
 
     class Meta:
         model = Document
@@ -91,7 +91,8 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DocumentAnnotation
-        fields = ('id', 'prob', 'label')
+        fields = ('id', 'prob', 'label', 'user')
+        read_only_fields = ('user', )
 
     def create(self, validated_data):
         annotation = DocumentAnnotation.objects.create(**validated_data)
@@ -104,7 +105,8 @@ class SequenceAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SequenceAnnotation
-        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset')
+        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user')
+        read_only_fields = ('user',)
 
     def create(self, validated_data):
         annotation = SequenceAnnotation.objects.create(**validated_data)
@@ -115,4 +117,5 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seq2seqAnnotation
-        fields = ('id', 'text')
+        fields = ('id', 'text', 'user')
+        read_only_fields = ('user',)

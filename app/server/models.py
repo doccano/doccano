@@ -3,6 +3,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
+from rest_framework.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 from .utils import get_key_choices
 
@@ -43,7 +44,7 @@ class Project(PolymorphicModel):
         raise NotImplementedError()
 
     def get_upload_handler(self, format):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def __str__(self):
         return self.name
@@ -68,12 +69,12 @@ class TextClassificationProject(Project):
     def get_upload_handler(self, format):
         from .api import PlainTextHandler, CSVClassificationHandler, JsonClassificationHandler
         if format == 'plain':
-            return PlainTextHandler()
+            return PlainTextHandler(self)
         elif format == 'csv':
-            return CSVClassificationHandler()
+            return CSVClassificationHandler(self)
         elif format == 'json':
-            return JsonClassificationHandler()
-        raise ValueError('format {} is invalid.'.format(format))
+            return JsonClassificationHandler(self)
+        raise ValidationError('format {} is invalid.'.format(format))
 
 
 class SequenceLabelingProject(Project):
@@ -95,12 +96,12 @@ class SequenceLabelingProject(Project):
     def get_upload_handler(self, format):
         from .api import PlainTextHandler, CoNLLHandler, JsonLabelingHandler
         if format == 'plain':
-            return PlainTextHandler()
+            return PlainTextHandler(self)
         elif format == 'conll':
-            return CoNLLHandler()
+            return CoNLLHandler(self)
         elif format == 'json':
-            return JsonLabelingHandler()
-        raise ValueError('format {} is invalid.'.format(format))
+            return JsonLabelingHandler(self)
+        raise ValidationError('format {} is invalid.'.format(format))
 
 
 class Seq2seqProject(Project):
@@ -122,12 +123,12 @@ class Seq2seqProject(Project):
     def get_upload_handler(self, format):
         from .api import PlainTextHandler, CSVSeq2seqHandler, JsonSeq2seqHandler
         if format == 'plain':
-            return PlainTextHandler()
+            return PlainTextHandler(self)
         elif format == 'csv':
-            return CSVSeq2seqHandler()
+            return CSVSeq2seqHandler(self)
         elif format == 'json':
-            return JsonSeq2seqHandler()
-        raise ValueError('format {} is invalid.'.format(format))
+            return JsonSeq2seqHandler(self)
+        raise ValidationError('format {} is invalid.'.format(format))
 
 
 class Label(models.Model):

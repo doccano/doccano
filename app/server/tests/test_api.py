@@ -3,7 +3,6 @@ import os
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from mixer.backend.django import mixer
 from model_mommy import mommy
 from ..models import User, SequenceAnnotation, Document, Label, Seq2seqAnnotation, DocumentAnnotation
 from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
@@ -826,7 +825,7 @@ class TestUploader(APITestCase):
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_seq2seq_csv(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(url=self.seq2seq_url,
                                 filename='example.valid.2.csv',
                                 format='csv',
                                 expected_status=status.HTTP_201_CREATED)
@@ -882,11 +881,11 @@ class TestFileHandler(APITestCase):
 
     def handler_test_helper(self, filename, handler):
         with open(os.path.join(DATA_DIR, filename), mode='rb') as f:
-            handler.handle_uploaded_file(f, self.project, self.super_user)
+            handler.handle_uploaded_file(f, self.super_user)
 
     def test_conll_handler(self):
         self.handler_test_helper(filename='example.valid.conll',
-                                 handler=CoNLLHandler())
+                                 handler=CoNLLHandler(self.project))
         self.assertEqual(Document.objects.count(), 3)
         self.assertEqual(Label.objects.count(), 3)  # LOC, PER, O
         self.assertEqual(SequenceAnnotation.objects.count(), 20)  # num of annotation line
@@ -894,40 +893,108 @@ class TestFileHandler(APITestCase):
     def test_conll_invalid_handler(self):
         with self.assertRaises(FileParseException):
             self.handler_test_helper(filename='example.invalid.conll',
-                                     handler=CoNLLHandler())
+                                     handler=CoNLLHandler(self.project))
         self.assertEqual(Document.objects.count(), 0)
         self.assertEqual(Label.objects.count(), 0)
         self.assertEqual(SequenceAnnotation.objects.count(), 0)
 
     def test_csv_classification_handler(self):
         self.handler_test_helper(filename='example.valid.2.csv',
-                                 handler=CSVClassificationHandler())
+                                 handler=CSVClassificationHandler(self.project))
         self.assertEqual(Document.objects.count(), 3)
         self.assertEqual(Label.objects.count(), 2)
         self.assertEqual(DocumentAnnotation.objects.count(), 3)
 
     def test_csv_seq2seq_handler(self):
         self.handler_test_helper(filename='example.valid.2.csv',
-                                 handler=CSVSeq2seqHandler())
+                                 handler=CSVSeq2seqHandler(self.project))
         self.assertEqual(Document.objects.count(), 3)
         self.assertEqual(Seq2seqAnnotation.objects.count(), 3)
 
     def test_json_classification_handler(self):
         self.handler_test_helper(filename='example.classification.jsonl',
-                                 handler=JsonClassificationHandler())
+                                 handler=JsonClassificationHandler(self.project))
         self.assertEqual(Document.objects.count(), 3)
         self.assertEqual(Label.objects.count(), 2)
         self.assertEqual(DocumentAnnotation.objects.count(), 4)
 
     def test_json_labeling_handler(self):
         self.handler_test_helper(filename='example.labeling.jsonl',
-                                 handler=JsonLabelingHandler())
+                                 handler=JsonLabelingHandler(self.project))
         self.assertEqual(Document.objects.count(), 3)
         self.assertEqual(Label.objects.count(), 3)
         self.assertEqual(SequenceAnnotation.objects.count(), 4)
 
     def test_json_seq2seq_handler(self):
         self.handler_test_helper(filename='example.seq2seq.jsonl',
-                                 handler=JsonSeq2seqHandler())
+                                 handler=JsonSeq2seqHandler(self.project))
         self.assertEqual(Document.objects.count(), 3)
         self.assertEqual(Seq2seqAnnotation.objects.count(), 4)
+
+
+class TestDownloader(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        # Todo: change super_user to project_admin.
+        super_user = User.objects.create_superuser(username=cls.super_user_name,
+                                                   password=cls.super_user_pass,
+                                                   email='fizz@buzz.com')
+        cls.classification_project = mommy.make('server.TextClassificationProject',
+                                                users=[super_user], project_type=DOCUMENT_CLASSIFICATION)
+        cls.labeling_project = mommy.make('server.SequenceLabelingProject',
+                                          users=[super_user], project_type=SEQUENCE_LABELING)
+        cls.seq2seq_project = mommy.make('server.Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
+        cls.classification_url = reverse(viewname='doc_downloader', args=[cls.classification_project.id])
+        cls.labeling_url = reverse(viewname='doc_downloader', args=[cls.labeling_project.id])
+        cls.seq2seq_url = reverse(viewname='doc_downloader', args=[cls.seq2seq_project.id])
+
+    def setUp(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+
+    def download_test_helper(self, url, format, expected_status):
+        response = self.client.get(url, data={'q': format})
+        self.assertEqual(response.status_code, expected_status)
+
+    def test_can_upload_conll_format_file(self):
+        self.download_test_helper(url=self.labeling_url,
+                                  format='conll',
+                                  expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_can_download_classification_csv(self):
+        self.download_test_helper(url=self.classification_url,
+                                  format='csv',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_cannot_download_labeling_csv(self):
+        self.download_test_helper(url=self.labeling_url,
+                                  format='csv',
+                                  expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_can_download_seq2seq_csv(self):
+        self.download_test_helper(url=self.seq2seq_url,
+                                  format='csv',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_can_download_classification_jsonl(self):
+        self.download_test_helper(url=self.classification_url,
+                                  format='json',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_can_download_labeling_jsonl(self):
+        self.download_test_helper(url=self.labeling_url,
+                                  format='json',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_can_download_seq2seq_jsonl(self):
+        self.download_test_helper(url=self.seq2seq_url,
+                                  format='json',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_can_download_plain_text(self):
+        self.download_test_helper(url=self.classification_url,
+                                  format='plain',
+                                  expected_status=status.HTTP_400_BAD_REQUEST)

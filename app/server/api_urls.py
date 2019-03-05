@@ -6,7 +6,7 @@ from .api import LabelList, LabelDetail
 from .api import DocumentList, DocumentDetail
 from .api import EntityList, EntityDetail
 from .api import AnnotationList, AnnotationDetail
-from .api import TextUploadAPI
+from .api import TextUploadAPI, TextDownloadAPI
 from .api import StatisticsAPI
 
 
@@ -32,7 +32,9 @@ urlpatterns = [
     path('projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>',
          AnnotationDetail.as_view(), name='annotation_detail'),
     path('projects/<int:project_id>/docs/upload',
-         TextUploadAPI.as_view(), name='doc_uploader')
+         TextUploadAPI.as_view(), name='doc_uploader'),
+    path('projects/<int:project_id>/docs/download',
+         TextDownloadAPI.as_view(), name='doc_downloader')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])

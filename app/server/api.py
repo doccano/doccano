@@ -5,10 +5,11 @@ from collections import Counter
 from itertools import chain
 
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, filters, status
-from rest_framework.exceptions import ParseError
+from rest_framework.exceptions import ParseError, ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -186,31 +187,50 @@ class TextUploadAPI(APIView):
             raise ParseError('Empty content')
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         handler = project.get_upload_handler(request.data['format'])
-        handler.handle_uploaded_file(request.FILES['file'], project, self.request.user)
+        handler.handle_uploaded_file(request.FILES['file'], self.request.user)
         return Response(status=status.HTTP_201_CREATED)
+
+
+class TextDownloadAPI(APIView):
+    """API for text download."""
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get(self, request, *args, **kwargs):
+        project_id = self.kwargs['project_id']
+        format = request.query_params.get('q')
+        project = get_object_or_404(Project, pk=project_id)
+        handler = project.get_upload_handler(format)
+        response = handler.render()
+        return response
 
 
 class FileHandler(object):
     annotation_serializer = None
 
+    def __init__(self, project):
+        self.project = project
+
     @transaction.atomic
-    def handle_uploaded_file(self, file, project, user):
+    def handle_uploaded_file(self, file, user):
         raise NotImplementedError()
 
     def parse(self, file):
         raise NotImplementedError()
 
-    def save_doc(self, data, project):
+    def render(self):
+        raise NotImplementedError()
+
+    def save_doc(self, data):
         serializer = DocumentSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        doc = serializer.save(project=project)
+        doc = serializer.save(project=self.project)
         return doc
 
-    def save_label(self, data, project):
-        label = Label.objects.filter(project=project, **data).first()
+    def save_label(self, data):
+        label = Label.objects.filter(project=self.project, **data).first()
         serializer = LabelSerializer(label, data=data)
         serializer.is_valid(raise_exception=True)
-        label = serializer.save(project=project)
+        label = serializer.save(project=self.project)
         return label
 
     def save_annotation(self, data, doc, user):
@@ -245,14 +265,14 @@ class CoNLLHandler(FileHandler):
     annotation_serializer = SequenceAnnotationSerializer
 
     @transaction.atomic
-    def handle_uploaded_file(self, file, project, user):
+    def handle_uploaded_file(self, file, user):
         for words, tags in self.parse(file):
             start_offset = 0
             sent = ' '.join(words)
-            doc = self.save_doc({'text': sent}, project)
+            doc = self.save_doc({'text': sent})
             for word, tag in zip(words, tags):
                 label = extract_label(tag)
-                label = self.save_label({'text': label}, project)
+                label = self.save_label({'text': label})
                 data = {'start_offset': start_offset,
                         'end_offset': start_offset + len(word),
                         'label': label.id}
@@ -277,6 +297,9 @@ class CoNLLHandler(FileHandler):
         if len(words) > 0:
             yield words, tags
 
+    def render(self):
+        raise ValidationError("This project type doesn't support CoNLL format.")
+
 
 class PlainTextHandler(FileHandler):
     """Uploads plain text.
@@ -289,14 +312,17 @@ class PlainTextHandler(FileHandler):
     ```
     """
     @transaction.atomic
-    def handle_uploaded_file(self, file, project, user):
+    def handle_uploaded_file(self, file, user):
         for text in self.parse(file):
-            self.save_doc({'text': text}, project)
+            self.save_doc({'text': text})
 
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
         for i, line in enumerate(file, start=1):
             yield line.strip()
+
+    def render(self):
+        raise ValidationError("You cannot download plain text. Please specify csv or json.")
 
 
 class CSVHandler(FileHandler):
@@ -327,26 +353,57 @@ class CSVHandler(FileHandler):
             else:
                 raise FileParseException(line_num=i, line=row)
 
+    def render(self):
+        raise NotImplementedError()
+
 
 class CSVClassificationHandler(CSVHandler):
     annotation_serializer = DocumentAnnotationSerializer
 
     @transaction.atomic
-    def handle_uploaded_file(self, file, project, user):
+    def handle_uploaded_file(self, file, user):
         for text, label in self.parse(file):
-            doc = self.save_doc({'text': text}, project)
-            label = self.save_label({'text': label}, project)
+            doc = self.save_doc({'text': text})
+            label = self.save_label({'text': label})
             self.save_annotation({'label': label.id}, doc, user)
+
+    def render(self):
+        queryset = self.project.documents.all()
+        serializer = DocumentSerializer(queryset, many=True)
+        filename = '_'.join(self.project.name.lower().split())
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+        writer = csv.writer(response)
+        writer.writerow(['id', 'text', 'label', 'user'])
+        for d in serializer.data:
+            for a in d['annotations']:
+                row = [d['id'], d['text'], a['label'], a['user']]
+                writer.writerow(row)
+        return response
 
 
 class CSVSeq2seqHandler(CSVHandler):
     annotation_serializer = Seq2seqAnnotationSerializer
 
     @transaction.atomic
-    def handle_uploaded_file(self, file, project, user):
+    def handle_uploaded_file(self, file, user):
         for text, label in self.parse(file):
-            doc = self.save_doc({'text': text}, project)
+            doc = self.save_doc({'text': text})
             self.save_annotation({'text': label}, doc, user)
+
+    def render(self):
+        queryset = self.project.documents.all()
+        serializer = DocumentSerializer(queryset, many=True)
+        filename = '_'.join(self.project.name.lower().split())
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+        writer = csv.writer(response)
+        writer.writerow(['id', 'text', 'label', 'user'])
+        for d in serializer.data:
+            for a in d['annotations']:
+                row = [d['id'], d['text'], a['text'], a['user']]
+                writer.writerow(row)
+        return response
 
 
 class JsonHandler(FileHandler):
@@ -367,6 +424,17 @@ class JsonHandler(FileHandler):
             except json.decoder.JSONDecodeError:
                 raise FileParseException(line_num=i, line=line)
 
+    def render(self):
+        queryset = self.project.documents.all()
+        serializer = DocumentSerializer(queryset, many=True)
+        filename = '_'.join(self.project.name.lower().split())
+        response = HttpResponse(content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="{}.jsonl"'.format(filename)
+        for d in serializer.data:
+            dump = json.dumps(d, ensure_ascii=False)
+            response.write(dump + '\n')
+        return response
+
 
 class JsonClassificationHandler(JsonHandler):
     """Upload jsonl for text classification.
@@ -380,11 +448,11 @@ class JsonClassificationHandler(JsonHandler):
     annotation_serializer = DocumentAnnotationSerializer
 
     @transaction.atomic
-    def handle_uploaded_file(self, file, project, user):
+    def handle_uploaded_file(self, file, user):
         for data in self.parse(file):
-            doc = self.save_doc(data, project)
+            doc = self.save_doc(data)
             for label in data['labels']:
-                label = self.save_label({'text': label}, project)
+                label = self.save_label({'text': label})
                 self.save_annotation({'label': label.id}, doc, user)
 
 
@@ -400,11 +468,11 @@ class JsonLabelingHandler(JsonHandler):
     annotation_serializer = SequenceAnnotationSerializer
 
     @transaction.atomic
-    def handle_uploaded_file(self, file, project, user):
+    def handle_uploaded_file(self, file, user):
         for data in self.parse(file):
-            doc = self.save_doc(data, project)
+            doc = self.save_doc(data)
             for start_offset, end_offset, label in data['entities']:
-                label = self.save_label({'text': label}, project)
+                label = self.save_label({'text': label})
                 data = {'label': label.id,
                         'start_offset': start_offset,
                         'end_offset': end_offset}
@@ -423,8 +491,8 @@ class JsonSeq2seqHandler(JsonHandler):
     annotation_serializer = Seq2seqAnnotationSerializer
 
     @transaction.atomic
-    def handle_uploaded_file(self, file, project, user):
+    def handle_uploaded_file(self, file, user):
         for data in self.parse(file):
-            doc = self.save_doc(data, project)
+            doc = self.save_doc(data)
             for label in data['labels']:
                 self.save_annotation({'text': label}, doc, user)
