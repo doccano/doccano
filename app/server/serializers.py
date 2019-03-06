@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 
@@ -30,7 +29,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations')
+        fields = ('id', 'text', 'annotations', 'meta')
 
 
 class ProjectSerializer(serializers.ModelSerializer):

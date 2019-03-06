@@ -354,19 +354,44 @@ class CSVHandler(FileHandler):
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
         reader = csv.reader(file)
-        columns = None
-        for i, row in enumerate(reader, start=1):
-            if i == 1:                           # skip header
-                columns = row
-                continue
-            elif len(row) == len(columns) == 2:  # text with a label
-                text, label = row
-                yield text, label
+        columns = next(reader)
+        for i, row in enumerate(reader, start=2):
+            if len(row) == len(columns) and len(row) >= 2:
+                text, label = row[:2]
+                meta = json.dumps(dict(zip(columns[2:], row[2:])))
+                data = {'text': text, 'meta': meta}
+                yield data, label
             else:
                 raise FileParseException(line_num=i, line=row)
 
     def render(self):
-        raise NotImplementedError()
+        queryset = self.project.documents.all()
+        serializer = DocumentSerializer(queryset, many=True)
+        filename = '_'.join(self.project.name.lower().split())
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+        writer = csv.writer(response)
+        columns = ['id', 'text', 'label', 'user']
+        meta_keys = self.get_meta_keys(serializer.data)
+        columns.extend(meta_keys)
+        writer.writerow(columns)
+        for d in serializer.data:
+            meta = json.loads(d['meta'])
+            for a in d['annotations']:
+                row = self.make_row(d, a)
+                row.extend([meta[k] for k in meta_keys])
+                writer.writerow(row)
+        return response
+
+    def get_meta_keys(self, data):
+        if len(data):
+            meta = json.loads(data[0]['meta'])
+            return sorted(meta.keys())
+        else:
+            return []
+
+    def make_row(self, doc, annotation):
+        raise NotImplementedError('Please implement in subclass.')
 
 
 class CSVClassificationHandler(CSVHandler):
@@ -374,24 +399,14 @@ class CSVClassificationHandler(CSVHandler):
 
     @transaction.atomic
     def handle_uploaded_file(self, file, user):
-        for text, label in self.parse(file):
-            doc = self.save_doc({'text': text})
+        for data, label in self.parse(file):
+            doc = self.save_doc(data)
             label = self.save_label({'text': label})
             self.save_annotation({'label': label.id}, doc, user)
 
-    def render(self):
-        queryset = self.project.documents.all()
-        serializer = DocumentSerializer(queryset, many=True)
-        filename = '_'.join(self.project.name.lower().split())
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
-        writer = csv.writer(response)
-        writer.writerow(['id', 'text', 'label', 'user'])
-        for d in serializer.data:
-            for a in d['annotations']:
-                row = [d['id'], d['text'], a['label'], a['user']]
-                writer.writerow(row)
-        return response
+    def make_row(self, doc, annotation):
+        row = [doc['id'], doc['text'], annotation['label'], annotation['user']]
+        return row
 
 
 class CSVSeq2seqHandler(CSVHandler):
@@ -399,23 +414,13 @@ class CSVSeq2seqHandler(CSVHandler):
 
     @transaction.atomic
     def handle_uploaded_file(self, file, user):
-        for text, label in self.parse(file):
-            doc = self.save_doc({'text': text})
+        for data, label in self.parse(file):
+            doc = self.save_doc(data)
             self.save_annotation({'text': label}, doc, user)
 
-    def render(self):
-        queryset = self.project.documents.all()
-        serializer = DocumentSerializer(queryset, many=True)
-        filename = '_'.join(self.project.name.lower().split())
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
-        writer = csv.writer(response)
-        writer.writerow(['id', 'text', 'label', 'user'])
-        for d in serializer.data:
-            for a in d['annotations']:
-                row = [d['id'], d['text'], a['text'], a['user']]
-                writer.writerow(row)
-        return response
+    def make_row(self, doc, annotation):
+        row = [doc['id'], doc['text'], annotation['text'], annotation['user']]
+        return row
 
 
 class JsonHandler(FileHandler):
@@ -431,7 +436,9 @@ class JsonHandler(FileHandler):
     def parse(self, file):
         for i, line in enumerate(file, start=1):
             try:
-                yield json.loads(line)
+                j = json.loads(line)
+                j['meta'] = json.dumps(j.get('meta', {}))
+                yield j
             except json.decoder.JSONDecodeError:
                 raise FileParseException(line_num=i, line=line)
 
@@ -442,6 +449,7 @@ class JsonHandler(FileHandler):
         response = HttpResponse(content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="{}.jsonl"'.format(filename)
         for d in serializer.data:
+            d['meta'] = json.loads(d['meta'])
             dump = json.dumps(d, ensure_ascii=False)
             response.write(dump + '\n')
         return response
