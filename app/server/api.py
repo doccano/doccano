@@ -53,22 +53,34 @@ class StatisticsAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        labels = [label.text for label in p.labels.all()]
-        users = [user.username for user in p.users.all()]
-        docs = [doc for doc in p.documents.all()]
-        nested_labels = [[a.label.text for a in doc.get_annotations()] for doc in docs]
-        nested_users = [[a.user.username for a in doc.get_annotations()] for doc in docs]
-
-        label_count = Counter(chain(*nested_labels))
-        label_data = [label_count[name] for name in labels]
-
-        user_count = Counter(chain(*nested_users))
-        user_data = [user_count[name] for name in users]
-
-        response = {'label': {'labels': labels, 'data': label_data},
-                    'user': {'users': users, 'data': user_data}}
-
+        label_count, user_count = self.label_per_data(p)
+        progress = self.progress(project=p)
+        response = dict()
+        response['label'] = label_count
+        response['user'] = user_count
+        response.update(progress)
         return Response(response)
+
+    def progress(self, project):
+        total = project.documents.count()
+        remaining = 0
+        annotation_class = project.get_annotation_class()
+        for d in project.documents.all():
+            count = annotation_class.objects.filter(document=d).count()
+            if count == 0:
+                remaining += 1
+        return {'total': total, 'remaining': remaining}
+
+    def label_per_data(self, project):
+        label_count = Counter()
+        user_count = Counter()
+        annotation_class = project.get_annotation_class()
+        for doc in project.documents.all():
+            annotations = annotation_class.objects.filter(document=doc.id)
+            for a in annotations:
+                label_count[a.label.text] += 1
+                user_count[a.user.username] += 1
+        return label_count, user_count
 
 
 class LabelList(generics.ListCreateAPIView):

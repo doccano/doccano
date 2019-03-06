@@ -1019,3 +1019,45 @@ class TestDownloader(APITestCase):
         self.download_test_helper(url=self.classification_url,
                                   format='plain',
                                   expected_status=status.HTTP_400_BAD_REQUEST)
+
+
+class TestStatisticsAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        # Todo: change super_user to project_admin.
+        super_user = User.objects.create_superuser(username=cls.super_user_name,
+                                                   password=cls.super_user_pass,
+                                                   email='fizz@buzz.com')
+
+        main_project = mommy.make('server.TextClassificationProject', users=[super_user])
+        doc1 = mommy.make('server.Document', project=main_project)
+        doc2 = mommy.make('server.Document', project=main_project)
+        mommy.make('DocumentAnnotation', document=doc1)
+        cls.url = reverse(viewname='statistics', args=[main_project.id])
+        cls.doc = Document.objects.filter(project=main_project)
+
+    def test_returns_exact_progress(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.get(self.url, format='json')
+        total = self.doc.count()
+        remaining = self.doc.filter(doc_annotations__isnull=True).count()
+        self.assertEqual(response.data['total'], total)
+        self.assertEqual(response.data['remaining'], remaining)
+
+    def test_returns_user_count(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertIn('label', response.data)
+        self.assertIsInstance(response.data['label'], dict)
+
+    def test_returns_label_count(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertIn('user', response.data)
+        self.assertIsInstance(response.data['user'], dict)
