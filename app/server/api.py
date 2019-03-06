@@ -2,7 +2,6 @@ import csv
 import io
 import json
 from collections import Counter
-from itertools import chain
 
 from django.db import transaction
 from django.http import HttpResponse
@@ -432,8 +431,7 @@ class JsonHandler(FileHandler):
     def parse(self, file):
         for i, line in enumerate(file, start=1):
             try:
-                j = json.loads(line)
-                yield j
+                yield json.loads(line)
             except json.decoder.JSONDecodeError:
                 raise FileParseException(line_num=i, line=line)
 
@@ -464,7 +462,7 @@ class JsonClassificationHandler(JsonHandler):
     def handle_uploaded_file(self, file, user):
         for data in self.parse(file):
             doc = self.save_doc(data)
-            for label in data['labels']:
+            for label in data.get('labels', []):
                 label = self.save_label({'text': label})
                 self.save_annotation({'label': label.id}, doc, user)
 
@@ -474,7 +472,7 @@ class JsonLabelingHandler(JsonHandler):
 
     The format is as follows:
     ```
-    {"text": "Python is awesome!", "entities": [[0, 6, "Product"],]}
+    {"text": "Python is awesome!", "labels": [[0, 6, "Product"],]}
     ...
     ```
     """
@@ -484,7 +482,7 @@ class JsonLabelingHandler(JsonHandler):
     def handle_uploaded_file(self, file, user):
         for data in self.parse(file):
             doc = self.save_doc(data)
-            for start_offset, end_offset, label in data['entities']:
+            for start_offset, end_offset, label in data.get('labels', []):
                 label = self.save_label({'text': label})
                 data = {'label': label.id,
                         'start_offset': start_offset,
@@ -507,5 +505,5 @@ class JsonSeq2seqHandler(JsonHandler):
     def handle_uploaded_file(self, file, user):
         for data in self.parse(file):
             doc = self.save_doc(data)
-            for label in data['labels']:
+            for label in data.get('labels', []):
                 self.save_annotation({'text': label}, doc, user)
