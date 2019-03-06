@@ -164,33 +164,6 @@ class Document(models.Model):
         return self.text[:50]
 
 
-class TextClassificationDocument(Document):
-
-    class Meta:
-        proxy = True
-
-    def get_annotations(self):
-        return self.doc_annotations.all()
-
-
-class SequenceLabelingDocument(Document):
-
-    class Meta:
-        proxy = True
-
-    def get_annotations(self):
-        return self.seq_annotations.all()
-
-
-class Seq2seqDocument(Document):
-
-    class Meta:
-        proxy = True
-
-    def get_annotations(self):
-        return self.seq2seq_annotations.all()
-
-
 class Annotation(models.Model):
     prob = models.FloatField(default=0.0)
     manual = models.BooleanField(default=False)
@@ -203,7 +176,7 @@ class Annotation(models.Model):
 
 
 class DocumentAnnotation(Annotation):
-    document = models.ForeignKey(TextClassificationDocument, related_name='doc_annotations', on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, related_name='doc_annotations', on_delete=models.CASCADE)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
 
     class Meta:
@@ -211,7 +184,7 @@ class DocumentAnnotation(Annotation):
 
 
 class SequenceAnnotation(Annotation):
-    document = models.ForeignKey(SequenceLabelingDocument, related_name='seq_annotations', on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, related_name='seq_annotations', on_delete=models.CASCADE)
     label = models.ForeignKey(Label, on_delete=models.CASCADE)
     start_offset = models.IntegerField()
     end_offset = models.IntegerField()
@@ -225,7 +198,7 @@ class SequenceAnnotation(Annotation):
 
 
 class Seq2seqAnnotation(Annotation):
-    document = models.ForeignKey(Seq2seqDocument, related_name='seq2seq_annotations', on_delete=models.CASCADE)
+    document = models.ForeignKey(Document, related_name='seq2seq_annotations', on_delete=models.CASCADE)
     text = models.TextField()
 
     class Meta:
