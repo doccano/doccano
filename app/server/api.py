@@ -16,6 +16,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 
 from .exceptions import FileParseException
+from .filters import DocumentFilter
 from .models import Project, Label, Document
 from .models import SequenceAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity, IsOwnAnnotation
@@ -98,8 +99,8 @@ class DocumentList(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
     ordering_fields = ('created_at', 'updated_at', 'doc_annotations__updated_at',
-                       'seq_annotations__updated_at')
-    filter_fields = ('doc_annotations__label__id', 'seq_annotations__label__id')
+                       'seq_annotations__updated_at', 'seq2seq_annotations__updated_at')
+    filter_class = DocumentFilter
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):

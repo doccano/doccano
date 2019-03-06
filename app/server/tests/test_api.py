@@ -758,11 +758,12 @@ class TestFilter(APITestCase):
         cls.project_member_pass = 'project_member_pass'
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
-        cls.main_project = mommy.make('server.TextClassificationProject', users=[project_member])
+        cls.main_project = mommy.make('server.SequenceLabelingProject', users=[project_member])
         cls.label1 = mommy.make('server.Label', project=cls.main_project)
         cls.label2 = mommy.make('server.Label', project=cls.main_project)
         doc1 = mommy.make('server.Document', project=cls.main_project)
         doc2 = mommy.make('server.Document', project=cls.main_project)
+        doc3 = mommy.make('server.Document', project=cls.main_project)
         mommy.make('server.SequenceAnnotation', document=doc1, user=project_member, label=cls.label1)
         mommy.make('server.SequenceAnnotation', document=doc2, user=project_member, label=cls.label2)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
@@ -774,6 +775,26 @@ class TestFilter(APITestCase):
         response = self.client.get(self.url, format='json', data=self.params)
         docs = Document.objects.filter(project=self.main_project,
                                        seq_annotations__label__id=self.label1.id).values()
+        for d1, d2 in zip(response.data['results'], docs):
+            self.assertEqual(d1['id'], d2['id'])
+
+    def test_can_filter_doc_with_annotation(self):
+        params = {'seq_annotations__isnull': False}
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json', data=params)
+        docs = Document.objects.filter(project=self.main_project, seq_annotations__isnull=False).values()
+        self.assertEqual(response.data['count'], docs.count())
+        for d1, d2 in zip(response.data['results'], docs):
+            self.assertEqual(d1['id'], d2['id'])
+
+    def test_can_filter_doc_without_anotation(self):
+        params = {'seq_annotations__isnull': True}
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json', data=params)
+        docs = Document.objects.filter(project=self.main_project, seq_annotations__isnull=True).values()
+        self.assertEqual(response.data['count'], docs.count())
         for d1, d2 in zip(response.data['results'], docs):
             self.assertEqual(d1['id'], d2['id'])
 
