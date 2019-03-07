@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAdminUser
 
-from .models import Project, SequenceAnnotation
+from .models import Project
 
 
 class IsProjectUser(BasePermission):
@@ -22,14 +22,6 @@ class IsAdminUserAndWriteOnly(BasePermission):
             return True
 
         return IsAdminUser().has_permission(request, view)
-
-
-class IsMyEntity(BasePermission):
-
-    def has_permission(self, request, view):
-        entity_id = view.kwargs.get('entity_id')
-        entity = get_object_or_404(SequenceAnnotation, pk=entity_id)
-        return entity.user == request.user
 
 
 class SuperUserMixin(UserPassesTestMixin):

@@ -17,8 +17,7 @@ from rest_framework.parsers import MultiPartParser
 from .exceptions import FileParseException
 from .filters import DocumentFilter
 from .models import Project, Label, Document
-from .models import SequenceAnnotation
-from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsMyEntity, IsOwnAnnotation
+from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 from .serializers import SequenceAnnotationSerializer, DocumentAnnotationSerializer, Seq2seqAnnotationSerializer
 from .serializers import ProjectPolymorphicSerializer
@@ -128,29 +127,6 @@ class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = DocumentSerializer
     lookup_url_kwarg = 'doc_id'
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
-
-
-class EntityList(generics.ListCreateAPIView):
-    queryset = SequenceAnnotation.objects.all()
-    serializer_class = SequenceAnnotationSerializer
-    pagination_class = None
-    permission_classes = (IsAuthenticated, IsProjectUser)
-
-    def get_queryset(self):
-        queryset = self.queryset.filter(document=self.kwargs['doc_id'],
-                                        user=self.request.user)
-        return queryset
-
-    def perform_create(self, serializer):
-        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
-        serializer.save(document=doc, user=self.request.user)
-
-
-class EntityDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SequenceAnnotation.objects.all()
-    serializer_class = SequenceAnnotationSerializer
-    lookup_url_kwarg = 'entity_id'
-    permission_classes = (IsAuthenticated, IsProjectUser, IsMyEntity)
 
 
 class AnnotationList(generics.ListCreateAPIView):
