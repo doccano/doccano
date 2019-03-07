@@ -14,7 +14,7 @@ const vm = new Vue({
   },
   mixins: [annotationMixin],
   directives: {
-    'todo-focus': function(el, binding) {
+    'todo-focus': function (el, binding) {
       if (binding.value) {
         el.focus();
       }
@@ -32,7 +32,7 @@ const vm = new Vue({
       const payload = {
         text: value,
       };
-      HTTP.post(`docs/${docId}/annotations/`, payload).then((response) => {
+      HTTP.post(`docs/${docId}/annotations`, payload).then((response) => {
         this.annotations[this.pageNumber].push(response.data);
       });
 
@@ -70,6 +70,13 @@ const vm = new Vue({
     cancelEdit(todo) {
       this.editedTodo = null;
       todo.text = this.beforeEditCache;
+    },
+
+    async submit() {
+      const state = this.getState();
+      this.url = `docs?q=${this.searchQuery}&seq2seq_annotations__isnull=${state}&offset=${this.offset}`;
+      await this.search();
+      this.pageNumber = 0;
     },
   },
 });

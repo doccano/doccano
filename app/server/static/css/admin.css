@@ -96,4 +96,9 @@
   padding: 20px;
 }
 
+.code-block {
+  padding: 0;
+  background-color: inherit;
+}
+
 [v-cloak] { display: none; }

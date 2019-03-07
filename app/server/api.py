@@ -25,9 +25,8 @@ class ProjectList(generics.ListCreateAPIView):
     def get_queryset(self):
         return self.request.user.projects
 
-    def create(self, request, *args, **kwargs):
-        request.data['users'] = [self.request.user.id]
-        return super().create(request, args, kwargs)
+    def perform_create(self, serializer):
+        serializer.save(users=[self.request.user])
 
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -162,11 +161,11 @@ class TextUploadAPI(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
 
     def post(self, request, *args, **kwargs):
-        if 'file' not in request.FILES:
+        if 'file' not in request.data:
             raise ParseError('Empty content')
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         handler = project.get_file_handler(request.data['format'])
-        handler.handle_uploaded_file(request.FILES['file'], self.request.user)
+        handler.handle_uploaded_file(request.data['file'], self.request.user)
         return Response(status=status.HTTP_201_CREATED)
 
 

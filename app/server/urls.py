@@ -2,17 +2,15 @@ from django.urls import path
 
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView
-from .views import ProjectsView, DataDownload, DataDownloadFile
+from .views import ProjectsView, DataDownload
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
 
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
     path('projects/', ProjectsView.as_view(), name='projects'),
-    path('projects/<int:project_id>/download',
+    path('projects/<int:project_id>/docs/download',
          DataDownload.as_view(), name='download'),
-    path('projects/<int:project_id>/download_file',
-         DataDownloadFile.as_view(), name='download_file'),
     path('projects/<int:project_id>/',
          ProjectView.as_view(), name='annotation'),
     path('projects/<int:project_id>/docs/',

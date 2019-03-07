@@ -44,7 +44,7 @@ class TextClassificationProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TextClassificationProject
-        fields = '__all__'
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
         read_only_fields = ('image', 'updated_at', 'users')
 
 
@@ -52,7 +52,7 @@ class SequenceLabelingProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SequenceLabelingProject
-        fields = '__all__'
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
         read_only_fields = ('image', 'updated_at', 'users')
 
 
@@ -60,7 +60,7 @@ class Seq2seqProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seq2seqProject
-        fields = '__all__'
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
         read_only_fields = ('image', 'updated_at', 'users')
 
 
