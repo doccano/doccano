@@ -6,8 +6,8 @@ from rest_framework.test import APITestCase
 from model_mommy import mommy
 from ..models import User, SequenceAnnotation, Document, Label, Seq2seqAnnotation, DocumentAnnotation
 from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
-from ..api import CoNLLHandler, CSVClassificationHandler, CSVSeq2seqHandler
-from ..api import JsonClassificationHandler, JsonLabelingHandler, JsonSeq2seqHandler
+from ..utils import CoNLLHandler, CSVClassificationHandler, CSVSeq2seqHandler
+from ..utils import JsonClassificationHandler, JsonLabelingHandler, JsonSeq2seqHandler
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 

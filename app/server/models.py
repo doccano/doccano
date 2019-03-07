@@ -1,3 +1,5 @@
+import string
+
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.urls import reverse
@@ -5,8 +7,6 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from rest_framework.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
-from .utils import get_key_choices
-
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -16,6 +16,16 @@ PROJECT_CHOICES = (
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
 )
+
+
+def get_key_choices():
+    selectKey, shortKey = [c for c in string.ascii_lowercase], [c for c in string.ascii_lowercase]
+    checkKey = 'ctrl shift'
+    shortKey += [ck + ' ' + sk for ck in checkKey.split() for sk in selectKey]
+    shortKey += [checkKey + ' ' + sk for sk in selectKey]
+    shortKey += ['']
+    KEY_CHOICES = ((u, c) for u, c in zip(shortKey, shortKey))
+    return KEY_CHOICES
 
 
 class Project(PolymorphicModel):
@@ -67,7 +77,9 @@ class TextClassificationProject(Project):
         return DocumentAnnotation
 
     def get_file_handler(self, format):
-        from .api import PlainTextHandler, CSVClassificationHandler, JsonClassificationHandler
+        from .utils import JsonClassificationHandler
+        from .utils import CSVClassificationHandler
+        from .utils import PlainTextHandler
         if format == 'plain':
             return PlainTextHandler(self)
         elif format == 'csv':
@@ -94,7 +106,9 @@ class SequenceLabelingProject(Project):
         return SequenceAnnotation
 
     def get_file_handler(self, format):
-        from .api import PlainTextHandler, CoNLLHandler, JsonLabelingHandler
+        from .utils import JsonLabelingHandler
+        from .utils import PlainTextHandler
+        from .utils import CoNLLHandler
         if format == 'plain':
             return PlainTextHandler(self)
         elif format == 'conll':
@@ -121,7 +135,9 @@ class Seq2seqProject(Project):
         return Seq2seqAnnotation
 
     def get_file_handler(self, format):
-        from .api import PlainTextHandler, CSVSeq2seqHandler, JsonSeq2seqHandler
+        from .utils import JsonSeq2seqHandler
+        from .utils import CSVSeq2seqHandler
+        from .utils import PlainTextHandler
         if format == 'plain':
             return PlainTextHandler(self)
         elif format == 'csv':
