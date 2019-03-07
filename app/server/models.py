@@ -43,7 +43,7 @@ class Project(PolymorphicModel):
     def get_annotation_class(self):
         raise NotImplementedError()
 
-    def get_upload_handler(self, format):
+    def get_file_handler(self, format):
         raise NotImplementedError()
 
     def __str__(self):
@@ -66,7 +66,7 @@ class TextClassificationProject(Project):
     def get_annotation_class(self):
         return DocumentAnnotation
 
-    def get_upload_handler(self, format):
+    def get_file_handler(self, format):
         from .api import PlainTextHandler, CSVClassificationHandler, JsonClassificationHandler
         if format == 'plain':
             return PlainTextHandler(self)
@@ -93,7 +93,7 @@ class SequenceLabelingProject(Project):
     def get_annotation_class(self):
         return SequenceAnnotation
 
-    def get_upload_handler(self, format):
+    def get_file_handler(self, format):
         from .api import PlainTextHandler, CoNLLHandler, JsonLabelingHandler
         if format == 'plain':
             return PlainTextHandler(self)
@@ -120,7 +120,7 @@ class Seq2seqProject(Project):
     def get_annotation_class(self):
         return Seq2seqAnnotation
 
-    def get_upload_handler(self, format):
+    def get_file_handler(self, format):
         from .api import PlainTextHandler, CSVSeq2seqHandler, JsonSeq2seqHandler
         if format == 'plain':
             return PlainTextHandler(self)

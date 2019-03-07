@@ -174,7 +174,7 @@ class TextUploadAPI(APIView):
         if 'file' not in request.FILES:
             raise ParseError('Empty content')
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        handler = project.get_upload_handler(request.data['format'])
+        handler = project.get_file_handler(request.data['format'])
         handler.handle_uploaded_file(request.FILES['file'], self.request.user)
         return Response(status=status.HTTP_201_CREATED)
 
@@ -187,7 +187,7 @@ class TextDownloadAPI(APIView):
         project_id = self.kwargs['project_id']
         format = request.query_params.get('q')
         project = get_object_or_404(Project, pk=project_id)
-        handler = project.get_upload_handler(format)
+        handler = project.get_file_handler(format)
         response = handler.render()
         return response
 
