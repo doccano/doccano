@@ -1,8 +1,6 @@
 import csv
 import os
 import operator
-import nltk
-import simplejson
 import gensim.downloader as api
 
 from collections import Counter
@@ -14,7 +12,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.db.models import Q
-from django.views.decorators.http import require_http_methods
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -27,8 +24,6 @@ from .serializers import ProjectSerializer, LabelSerializer, Word2vecSerializer
 from .filters import ExcludeSearchFilter
 
 from classifier.text.text_classifier import run_model_on_file
-
-from gensim.models import KeyedVectors
 
 
 ML_FOLDER = "ml_models"
