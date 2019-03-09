@@ -2,12 +2,11 @@ import logging
 
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .permissions import SuperUserMixin
-from .forms import ProjectForm
 from .models import Project
 from app import settings
 
@@ -51,11 +50,17 @@ class GuidelineView(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
 
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
-    template_name = 'admin/dataset_upload.html'
+
+    def get_template_names(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return [project.get_upload_template()]
 
 
 class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
-    template_name = 'admin/dataset_download.html'
+
+    def get_template_names(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return [project.get_download_template()]
 
 
 class LoginView(BaseLoginView):

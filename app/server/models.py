@@ -46,6 +46,12 @@ class Project(PolymorphicModel):
     def get_template_name(self):
         raise NotImplementedError()
 
+    def get_upload_template(self):
+        raise NotImplementedError()
+
+    def get_download_template(self):
+        raise NotImplementedError()
+
     def get_annotation_serializer(self):
         raise NotImplementedError()
 
@@ -67,6 +73,12 @@ class TextClassificationProject(Project):
 
     def get_template_name(self):
         return 'annotation/document_classification.html'
+
+    def get_upload_template(self):
+        return 'admin/upload/text_classification.html'
+
+    def get_download_template(self):
+        return 'admin/download/text_classification.html'
 
     def get_annotation_serializer(self):
         from .serializers import DocumentAnnotationSerializer
@@ -97,6 +109,12 @@ class SequenceLabelingProject(Project):
     def get_template_name(self):
         return 'annotation/sequence_labeling.html'
 
+    def get_upload_template(self):
+        return 'admin/upload/sequence_labeling.html'
+
+    def get_download_template(self):
+        return 'admin/download/sequence_labeling.html'
+
     def get_annotation_serializer(self):
         from .serializers import SequenceAnnotationSerializer
         return SequenceAnnotationSerializer
@@ -125,6 +143,12 @@ class Seq2seqProject(Project):
 
     def get_template_name(self):
         return 'annotation/seq2seq.html'
+
+    def get_upload_template(self):
+        return 'admin/upload/seq2seq.html'
+
+    def get_download_template(self):
+        return 'admin/download/seq2seq.html'
 
     def get_annotation_serializer(self):
         from .serializers import Seq2seqAnnotationSerializer
