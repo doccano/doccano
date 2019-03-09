@@ -14,6 +14,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.db.models import Q
+from django.views.decorators.http import require_http_methods
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -295,13 +296,16 @@ class SuggestedTerms(generics.ListAPIView):
 
     def get_queryset(self):
         w = self.request.GET.get("word", "")
-        result = self.model.most_similar(negative=[w], topn=10)
-        queryset = "{}: {:.4f}".format(*result[0])
+        queryset = self.model.most_similar(positive=[w])
+        print(queryset)
 
         return queryset
 
     def get_object(self):
-        queryset = self.filter_queryset(self.get_queryset())
-        obj = get_object_or_404(queryset)
+        queryset = self.get_queryset()
+        return queryset
 
-        return obj
+    def get(self, request, *args, **kwargs):
+        response = self.get_object()
+
+        return Response(response)
