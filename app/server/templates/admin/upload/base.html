@@ -27,7 +27,7 @@
           <div class="file has-name is-primary">
             <label class="file-label">
               <input class="file-input" type="file" ref="file" name="file" required v-on:change="upload()">
-              <span class="file-cta">
+              <span class="file-cta button" v-bind:class="{'is-loading': isLoading}">
                 <span class="file-icon">
                   <i class="fas fa-upload"></i>
                 </span>

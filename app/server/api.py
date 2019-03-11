@@ -2,18 +2,23 @@ from collections import Counter
 
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Count
 from rest_framework import generics, filters, status
-from rest_framework.exceptions import ParseError
+from rest_framework.exceptions import ParseError, ValidationError
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
+from rest_framework_csv.renderers import CSVRenderer
 
 from .filters import DocumentFilter
 from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 from .serializers import ProjectPolymorphicSerializer
+from .utils import CSVParser, JSONParser, PlainTextParser, CoNLLParser
+from .utils import JSONLRenderer
+from .utils import JSONPainter, CSVPainter
 
 
 class ProjectList(generics.ListCreateAPIView):
@@ -51,24 +56,23 @@ class StatisticsAPI(APIView):
         return Response(response)
 
     def progress(self, project):
-        total = project.documents.count()
-        remaining = 0
+        docs = project.documents
         annotation_class = project.get_annotation_class()
-        for d in project.documents.all():
-            count = annotation_class.objects.filter(document=d).count()
-            if count == 0:
-                remaining += 1
+        total = docs.count()
+        done = annotation_class.objects.filter(document_id__in=docs.all()).\
+            aggregate(Count('document', distinct=True))['document__count']
+        remaining = total - done
         return {'total': total, 'remaining': remaining}
 
     def label_per_data(self, project):
         label_count = Counter()
         user_count = Counter()
         annotation_class = project.get_annotation_class()
-        for doc in project.documents.all():
-            annotations = annotation_class.objects.filter(document=doc.id)
-            for a in annotations:
-                label_count[a.label.text] += 1
-                user_count[a.user.username] += 1
+        docs = project.documents.all()
+        annotations = annotation_class.objects.filter(document_id__in=docs.all())
+        for d in annotations.values('label__text', 'user__username').annotate(Count('label'), Count('user')):
+            label_count[d['label__text']] += d['label__count']
+            user_count[d['user__username']] += d['user__count']
         return label_count, user_count
 
 
@@ -132,8 +136,13 @@ class AnnotationList(generics.ListCreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         model = project.get_annotation_class()
-        self.queryset = model.objects.filter(document=self.kwargs['doc_id'], user=self.request.user)
+        self.queryset = model.objects.filter(document=self.kwargs['doc_id'],
+                                             user=self.request.user)
         return self.queryset
+
+    def create(self, request, *args, **kwargs):
+        request.data['document'] = self.kwargs['doc_id']
+        return super().create(request, args, kwargs)
 
     def perform_create(self, serializer):
         doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
@@ -164,18 +173,41 @@ class TextUploadAPI(APIView):
         if 'file' not in request.data:
             raise ParseError('Empty content')
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        handler = project.get_file_handler(request.data['format'])
-        handler.handle_uploaded_file(request.data['file'], self.request.user)
+        parser = self.select_parser(request.data['format'])
+        data = parser.parse(request.data['file'])
+        storage = project.get_storage(data)
+        storage.save(self.request.user)
         return Response(status=status.HTTP_201_CREATED)
+
+    def select_parser(self, format):
+        if format == 'plain':
+            return PlainTextParser()
+        elif format == 'csv':
+            return CSVParser()
+        elif format == 'json':
+            return JSONParser()
+        elif format == 'conll':
+            return CoNLLParser()
+        else:
+            raise ValidationError('format {} is invalid.'.format(format))
 
 
 class TextDownloadAPI(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+    renderer_classes = (CSVRenderer, JSONLRenderer)
 
     def get(self, request, *args, **kwargs):
-        project_id = self.kwargs['project_id']
         format = request.query_params.get('q')
-        project = get_object_or_404(Project, pk=project_id)
-        handler = project.get_file_handler(format)
-        response = handler.render()
-        return response
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        documents = project.documents.all()
+        painter = self.select_painter(format)
+        data = painter.paint(documents)
+        return Response(data)
+
+    def select_painter(self, format):
+        if format == 'csv':
+            return CSVPainter()
+        elif format == 'json':
+            return JSONPainter()
+        else:
+            raise ValidationError('format {} is invalid.'.format(format))

@@ -87,34 +87,29 @@ class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
 class DocumentAnnotationSerializer(serializers.ModelSerializer):
     # label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
     label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
 
     class Meta:
         model = DocumentAnnotation
-        fields = ('id', 'prob', 'label', 'user')
+        fields = ('id', 'prob', 'label', 'user', 'document')
         read_only_fields = ('user', )
-
-    def create(self, validated_data):
-        annotation = DocumentAnnotation.objects.create(**validated_data)
-        return annotation
 
 
 class SequenceAnnotationSerializer(serializers.ModelSerializer):
     #label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
     label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
 
     class Meta:
         model = SequenceAnnotation
-        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user')
+        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user', 'document')
         read_only_fields = ('user',)
-
-    def create(self, validated_data):
-        annotation = SequenceAnnotation.objects.create(**validated_data)
-        return annotation
 
 
 class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
+    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
 
     class Meta:
         model = Seq2seqAnnotation
-        fields = ('id', 'text', 'user')
+        fields = ('id', 'text', 'user', 'document')
         read_only_fields = ('user',)

@@ -58,7 +58,7 @@ class Project(PolymorphicModel):
     def get_annotation_class(self):
         raise NotImplementedError()
 
-    def get_file_handler(self, format):
+    def get_storage(self, data):
         raise NotImplementedError()
 
     def __str__(self):
@@ -87,17 +87,9 @@ class TextClassificationProject(Project):
     def get_annotation_class(self):
         return DocumentAnnotation
 
-    def get_file_handler(self, format):
-        from .utils import JsonClassificationHandler
-        from .utils import CSVClassificationHandler
-        from .utils import PlainTextHandler
-        if format == 'plain':
-            return PlainTextHandler(self)
-        elif format == 'csv':
-            return CSVClassificationHandler(self)
-        elif format == 'json':
-            return JsonClassificationHandler(self)
-        raise ValidationError('format {} is invalid.'.format(format))
+    def get_storage(self, data):
+        from .utils import ClassificationStorage
+        return ClassificationStorage(data, self)
 
 
 class SequenceLabelingProject(Project):
@@ -122,17 +114,9 @@ class SequenceLabelingProject(Project):
     def get_annotation_class(self):
         return SequenceAnnotation
 
-    def get_file_handler(self, format):
-        from .utils import JsonLabelingHandler
-        from .utils import PlainTextHandler
-        from .utils import CoNLLHandler
-        if format == 'plain':
-            return PlainTextHandler(self)
-        elif format == 'conll':
-            return CoNLLHandler(self)
-        elif format == 'json':
-            return JsonLabelingHandler(self)
-        raise ValidationError('format {} is invalid.'.format(format))
+    def get_storage(self, data):
+        from .utils import SequenceLabelingStorage
+        return SequenceLabelingStorage(data, self)
 
 
 class Seq2seqProject(Project):
@@ -157,17 +141,9 @@ class Seq2seqProject(Project):
     def get_annotation_class(self):
         return Seq2seqAnnotation
 
-    def get_file_handler(self, format):
-        from .utils import JsonSeq2seqHandler
-        from .utils import CSVSeq2seqHandler
-        from .utils import PlainTextHandler
-        if format == 'plain':
-            return PlainTextHandler(self)
-        elif format == 'csv':
-            return CSVSeq2seqHandler(self)
-        elif format == 'json':
-            return JsonSeq2seqHandler(self)
-        raise ValidationError('format {} is invalid.'.format(format))
+    def get_storage(self, data):
+        from .utils import Seq2seqStorage
+        return Seq2seqStorage(data, self)
 
 
 class Label(models.Model):
