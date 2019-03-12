@@ -16,6 +16,7 @@ const vm = new Vue({
     shortcutKey: '',
     backgroundColor: '#209cee',
     textColor: '#ffffff',
+    messages: [],
   },
 
   computed: {
@@ -52,7 +53,7 @@ const vm = new Vue({
       return this.shortcutKey;
     },
   },
-  
+
   methods: {
     addLabel() {
       const payload = {
@@ -61,7 +62,7 @@ const vm = new Vue({
         background_color: this.backgroundColor,
         text_color: this.textColor,
       };
-      HTTP.post('labels/', payload).then((response) => {
+      HTTP.post('labels', payload).then((response) => {
         this.reset();
         this.labels.push(response.data);
       });

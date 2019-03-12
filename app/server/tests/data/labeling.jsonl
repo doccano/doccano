@@ -1,0 +1,3 @@
+{"text": "example", "labels": [[0, 1, "LOC"], [0, 2, "ORG"]], "meta": {"wikiPageID": 1}}
+{"text": "example", "labels": [[0, 1, "LOC"]], "meta": {"wikiPageID": 2}}
+{"text": "example", "labels": [[0, 1, "PER"]], "meta": {"wikiPageID": 3}}

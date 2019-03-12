@@ -170,9 +170,16 @@ const vm = new Vue({
 
     addLabel(annotation) {
       const docId = this.docs[this.pageNumber].id;
-      HTTP.post(`docs/${docId}/annotations/`, annotation).then((response) => {
+      HTTP.post(`docs/${docId}/annotations`, annotation).then((response) => {
         this.annotations[this.pageNumber].push(response.data);
       });
+    },
+
+    async submit() {
+      const state = this.getState();
+      this.url = `docs?q=${this.searchQuery}&seq_annotations__isnull=${state}&offset=${this.offset}`;
+      await this.search();
+      this.pageNumber = 0;
     },
   },
 });

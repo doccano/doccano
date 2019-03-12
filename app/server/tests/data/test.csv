@@ -1,3 +1,0 @@
-AAA
-BBB
-CCC
