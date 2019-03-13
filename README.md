@@ -60,6 +60,7 @@ git push heroku master
 
 * Python 3.6+
 * Django 2.1.7+
+* Node.js 8.0+
 * Google Chrome(highly recommended)
 
 ## Installation
