@@ -2,10 +2,11 @@ import Vue from 'vue';
 import HTTP from './http';
 
 const vm = new Vue({
-  el: '#editor',
+  el: '#mail-app',
   data: {
-    input: '# hello',
+    input: '',
     project: Object,
+    messages: [],
   },
 
   computed: {
@@ -24,10 +25,12 @@ const vm = new Vue({
   },
 
   methods: {
-    update: _.debounce(function(e) {
+    update: _.debounce(function (e) {
       this.input = e.target.value;
-      this.project.guideline = this.input;
-      HTTP.put('', this.project).then((response) => {
+      const payload = {
+        'guideline': this.input
+      };
+      HTTP.patch('', payload).then((response) => {
         this.project = response.data;
       });
     }, 300),

@@ -26,6 +26,13 @@ const vm = new Vue({
       return false;
     },
 
+    async submit() {
+      const state = this.getState();
+      this.url = `docs?q=${this.searchQuery}&doc_annotations__isnull=${state}&offset=${this.offset}`;
+      await this.search();
+      this.pageNumber = 0;
+    },
+
     async addLabel(label) {
       const a = this.isIn(label);
       if (a) {
@@ -35,7 +42,7 @@ const vm = new Vue({
         const payload = {
           label: label.id,
         };
-        await HTTP.post(`docs/${docId}/annotations/`, payload).then((response) => {
+        await HTTP.post(`docs/${docId}/annotations`, payload).then((response) => {
           this.annotations[this.pageNumber].push(response.data);
         });
       }

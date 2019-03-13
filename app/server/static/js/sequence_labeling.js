@@ -16,7 +16,7 @@ Vue.component('annotator', {
                          v-if="id2label[r.label]"\
                          v-bind:class="{tag: id2label[r.label].text_color}"\
                          v-bind:style="{ color: id2label[r.label].text_color, backgroundColor: id2label[r.label].background_color }"\
-                    >{{ text.slice(r.start_offset, r.end_offset) }}<button class="delete is-small"\
+                    >{{ [...text].slice(r.start_offset, r.end_offset).join(\'\') }}<button class="delete is-small"\
                                          v-if="id2label[r.label].text_color"\
                                          @click="removeLabel(r)"></button></span>\
                </div>',
@@ -41,15 +41,15 @@ Vue.component('annotator', {
         const preSelectionRange = range.cloneRange();
         preSelectionRange.selectNodeContents(this.$el);
         preSelectionRange.setEnd(range.startContainer, range.startOffset);
-        start = preSelectionRange.toString().length;
-        end = start + range.toString().length;
+        start = [...preSelectionRange.toString()].length;
+        end = start + [...range.toString()].length;
       } else if (document.selection && document.selection.type !== 'Control') {
         const selectedTextRange = document.selection.createRange();
         const preSelectionTextRange = document.body.createTextRange();
         preSelectionTextRange.moveToElementText(this.$el);
         preSelectionTextRange.setEndPoint('EndToStart', selectedTextRange);
-        start = preSelectionTextRange.text.length;
-        end = start + selectedTextRange.text.length;
+        start = [...preSelectionTextRange.text].length;
+        end = start + [...selectedTextRange.text].length;
       }
       this.startOffset = start;
       this.endOffset = end;
@@ -170,9 +170,16 @@ const vm = new Vue({
 
     addLabel(annotation) {
       const docId = this.docs[this.pageNumber].id;
-      HTTP.post(`docs/${docId}/annotations/`, annotation).then((response) => {
+      HTTP.post(`docs/${docId}/annotations`, annotation).then((response) => {
         this.annotations[this.pageNumber].push(response.data);
       });
+    },
+
+    async submit() {
+      const state = this.getState();
+      this.url = `docs?q=${this.searchQuery}&seq_annotations__isnull=${state}&offset=${this.offset}`;
+      await this.search();
+      this.pageNumber = 0;
     },
   },
 });

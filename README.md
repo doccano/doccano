@@ -52,13 +52,14 @@ git push heroku master
 ## Features
 
 * Collaborative annotation
-* Language independent
+* Multi-Language support
+* Emoji :smile: support
 * (future) Auto labeling
 
 ## Requirements
 
 * Python 3.6+
-* django 2.0.5+
+* Django 2.1.7+
 * Google Chrome(highly recommended)
 
 ## Installation

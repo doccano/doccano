@@ -1,6 +1,6 @@
 import HTTP from './http';
 
-const getOffsetFromUrl = function(url) {
+const getOffsetFromUrl = function (url) {
   const offsetMatch = url.match(/[?#].*offset=(\d+)/);
   if (offsetMatch == null) {
     return 0;
@@ -9,7 +9,7 @@ const getOffsetFromUrl = function(url) {
   return parseInt(offsetMatch[1], 10);
 };
 
-const storeOffsetInUrl = function(offset) {
+const storeOffsetInUrl = function (offset) {
   let href = window.location.href;
 
   const fragmentStart = href.indexOf('#') + 1;
@@ -19,7 +19,7 @@ const storeOffsetInUrl = function(offset) {
     const prefix = href.substring(0, fragmentStart);
     const fragment = href.substring(fragmentStart);
 
-    const newFragment = fragment.split('&').map(function(fragmentPart) {
+    const newFragment = fragment.split('&').map(function (fragmentPart) {
       const keyValue = fragmentPart.split('=');
       return keyValue[0] === 'offset'
         ? 'offset=' + offset
@@ -105,7 +105,7 @@ const annotationMixin = {
 
     async submit() {
       const state = this.getState();
-      this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
+      this.url = `docs?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
       await this.search();
       this.pageNumber = 0;
     },
@@ -134,7 +134,7 @@ const annotationMixin = {
 
     annotations() {
       // fetch progress info.
-      HTTP.get('progress').then((response) => {
+      HTTP.get('statistics').then((response) => {
         this.total = response.data.total;
         this.remaining = response.data.remaining;
       });
