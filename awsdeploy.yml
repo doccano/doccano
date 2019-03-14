@@ -1,0 +1,169 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: AWS CloudFormation Template for doccano.
+Resources:
+  AppSG:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'for the app nodes that allow ssh, http and docker ports'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '22'
+          ToPort: '22'
+          CidrIp: 0.0.0.0/0
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 116a7f7b-14c5-489a-a3c8-faf276be7ab0
+  App:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-0ac019f4fcb7cb7e6
+      KeyName: !Ref KeyName
+      SecurityGroups:
+        - !Ref AppSG
+      UserData: !Base64 
+        'Fn::Join':
+          - ''
+          - - |
+              #!/usr/bin/env bash
+            - |
+              sudo apt update
+            - >
+              sudo apt install -y apt-transport-https ca-certificates curl
+              software-properties-common
+            - >
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo
+              apt-key add -
+            - >
+              sudo add-apt-repository "deb [arch=amd64]
+              https://download.docker.com/linux/ubuntu bionic stable"
+            - |
+              sudo apt update
+            - |
+              apt-cache policy docker-ce
+            - |
+              sudo apt install -y docker-ce
+            - |
+              sudo usermod -aG docker ${USER}
+            - |
+              touch /env.list
+            - sudo tee -a /env.list <<< ADMIN=
+            - !Ref AdminUserName
+            - |+
+
+            - sudo tee -a /env.list <<< EMAIL=
+            - !Ref AdminEmail
+            - |+
+
+            - sudo tee -a /env.list <<< PASSWORD=
+            - !Ref AdminPassword
+            - |+
+
+            - sudo tee -a /env.list <<< DEBUG=
+            - !Ref Debug
+            - |+
+
+            - sudo tee -a /env.list <<< SECRET_KEY=
+            - !Ref SecretKey
+            - |+
+
+            - |
+              set -a
+            - |
+              source /env.list
+            - |
+              set +a
+            - |
+              sudo docker pull chakkiworks/doccano:latest
+            - >
+              sudo docker run -d --name doccano --env-file /env.list -p 80:80
+              chakkiworks/doccano:latest
+            - >
+              sudo docker exec doccano tools/create-admin.sh ${ADMIN} ${EMAIL}
+              ${PASSWORD}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 3547c02e-5393-4b26-a9af-6f00dc2cbcdb
+Metadata:
+  'AWS::CloudFormation::Designer':
+    116a7f7b-14c5-489a-a3c8-faf276be7ab0:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 60
+        'y': 210
+      z: 1
+      embeds: []
+    3547c02e-5393-4b26-a9af-6f00dc2cbcdb:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 180
+        'y': 210
+      z: 1
+      embeds: []
+      isassociatedwith:
+        - 116a7f7b-14c5-489a-a3c8-faf276be7ab0
+Parameters:
+  InstanceType:
+    Description: Server EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t1.micro
+      - t2.micro
+      - t2.small
+      - t2.medium
+    ConstraintDescription: must be a valid EC2 instance type.
+  KeyName:
+    Description: Name of an EC2 KeyPair to enable SSH access to the instance.
+    Type: 'AWS::EC2::KeyPair::KeyName'
+    ConstraintDescription: must be the name of an existing EC2 KeyPair.
+  AdminUserName:
+    Description: The admin account user name
+    Type: String
+    MinLength: 1
+    MaxLength: 16
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9]*'
+  AdminEmail:
+    Default: admin@gmail.com
+    Description: The admin account user email
+    Type: String
+    AllowedPattern: '^[\x20-\x45]?[\w-\+]+(\.[\w]+)*@[\w-]+(\.[\w]+)*(\.[a-z]{2,})$'
+  AdminPassword:
+    Description: The admin account password
+    Type: String
+    NoEcho: true
+    MinLength: 1
+    MaxLength: 16
+    AllowedPattern: '^[a-zA-Z0-9]*$'
+  Debug:
+    Default: 'False'
+    AllowedValues:
+      - 'False'
+      - 'True'
+    Description: Debug mode or not
+    Type: String
+    AllowedPattern: '^[a-zA-Z0-9]*$'
+  SecretKey:
+    Default: zICc59rlKXmlFRpG
+    Description: Secret key for Django
+    Type: String
+    AllowedPattern: '^[a-zA-Z0-9]*$'
+Outputs:
+  PublicDNS:
+    Value: !GetAtt 
+      - App
+      - PublicDnsName
+    Description: Newly created server DNS address
+
