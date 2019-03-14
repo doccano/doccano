@@ -181,8 +181,8 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             labels_set = []
             count = 0
             for row in reader:
-                label_obj = Label.objects.filter(text__exact=row[label_col]).first()
-                document_obj = Document.objects.filter(text__exact=row[text_col]).first()
+                label_obj = Label.objects.filter(text__exact=row[label_col], project=project).first()
+                document_obj = Document.objects.filter(text__exact=row[text_col], project=project).first()
                 if (label_obj and document_obj):
                     labels_set.append([label_obj, document_obj])
                 else:
