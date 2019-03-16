@@ -1,0 +1,44 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      Labeled Documents
+    </p>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+  <div class="card-content">
+      <table class="table">
+          <thead>
+              <tr>
+                  <th is="th-sortable" label="Document ID" v-model="sort" field="documentId"></th>
+                  <th is="th-sortable" label="Number of labelers" v-model="sort" field="labelersCount"></th>
+                  <th is="th-sortable" label="% Agreement" v-model="sort" field="agreementsPercent"></th>
+                  <th is="th-sortable" label="Top label" v-model="sort" field="topLabel"></th>
+                  <th is="th-sortable" label="Date of last annotation" v-model="sort" field="lastAnnotationDate"></th>
+                  <th is="th-sortable" label="Document text" v-model="sort" field="docText"></th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr v-for="(row, index) in filteredTableRows" :key="index">
+                  <td>[[ row.documentId ]]</td>
+                  <td>[[ row.labelersCount ]]</td>
+                  <td>[[ row.agreementsPercent ]]</td>
+                  <td>[[ row.topLabel ]]</td>
+                  <td>[[ row.lastAnnotationDate ]]</td>
+                  <td>[[ row.docText ]]</td>
+              </tr>
+          </tbody>
+      </table>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/labels_admin.js' %}"></script>
+{% endblock %}

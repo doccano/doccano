@@ -63,6 +63,32 @@ class Project(models.Model):
 
         return template_name
 
+    def get_mlm_user(self):
+        try:
+            mlm_user = User.objects.get(username='MachineLearningModel')
+        except User.DoesNotExist:
+            mlm_user = None
+        return mlm_user
+
+    def get_documents_annotated_by_human_user(self):
+        docs = self.documents.all()
+        if (self.get_mlm_user()):
+            docs = docs.filter(Q(doc_annotations__isnull=False) & ~Q(doc_annotations__user=mlm_user))
+        else:
+            docs = docs.filter(doc_annotations__isnull=False)
+        return docs
+
+    def get_documents_not_annotated_by_human_user(self, user_ids=[]):
+        docs = self.documents.all()
+        users = User.objects.all().filter(id!=[])
+        docs = docs.exclude(doc_annotations__isnull=False) # exclude documents that have annotations
+        if (self.get_mlm_user()):
+            docs = docs.filter(Q(doc_annotations__isnull=True) | Q(doc_annotations__user=mlm_user))
+        else:
+            docs = docs.filter(doc_annotations__isnull=False)
+        return docs
+
+
     def get_documents(self, is_null=True, user=None):
         docs = self.documents.all()
         if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):
@@ -163,6 +189,7 @@ class Document(models.Model):
     metadata = models.TextField(default='{}')
     created_date_time = models.DateTimeField(auto_now_add=True)
     updated_date_time = models.DateTimeField(auto_now=True)
+    priority = models.IntegerField(null=True)
 
     def get_annotations(self):
         if self.project.is_type_of(Project.DOCUMENT_CLASSIFICATION):
@@ -221,21 +248,24 @@ class Document(models.Model):
         annotations = self.get_annotations()
         labels = [a.label.text for a in annotations]
         username = annotations[0].user.username
-        dataset = {'doc_id': self.id, 'text': self.text, 'labels': labels, 'username': username, 'metadata': json.loads(self.metadata)}
+        dataset = {'doc_id': self.id, 'text': self.text, 'labels': labels,
+                   'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
 
     def make_dataset_for_sequence_labeling_json(self):
         annotations = self.get_annotations()
         entities = [(a.start_offset, a.end_offset, a.label.text) for a in annotations]
         username = annotations[0].user.username
-        dataset = {'doc_id': self.id, 'text': self.text, 'entities': entities, 'username': username, 'metadata': json.loads(self.metadata)}
+        dataset = {'doc_id': self.id, 'text': self.text, 'entities': entities,
+                   'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
 
     def make_dataset_for_seq2seq_json(self):
         annotations = self.get_annotations()
         sentences = [a.text for a in annotations]
         username = annotations[0].user.username
-        dataset = {'doc_id': self.id, 'text': self.text, 'sentences': sentences, 'username': username, 'metadata': json.loads(self.metadata)}
+        dataset = {'doc_id': self.id, 'text': self.text, 'sentences': sentences,
+                   'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
 
     def is_labeled_by(self, user):

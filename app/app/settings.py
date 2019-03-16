@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'social_django',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -115,6 +116,16 @@ SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = os.getenv('OAUTH_AAD_TENANT')
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
+    'posgres': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'doccano',
+        'USER': 'doccano',
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': 'doccano.pg.research.gongio.net',
+        'PORT': 5432,
+        'CONN_MAX_AGE': 60
+    },
+
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),

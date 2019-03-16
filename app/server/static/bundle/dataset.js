@@ -81,10 +81,21 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./static/js/upload.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./static/js/dataset.js");
 /******/ })
 /************************************************************************/
 /******/ ({
+
+/***/ "./node_modules/bulma-toast/dist/bulma-toast.min.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/bulma-toast/dist/bulma-toast.min.js ***!
+  \**********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("/*!\n * bulma-toast 1.5.0 \n * (c) 2018-present @rfoel <rafaelfr@outlook.com> \n * Released under the MIT License.\n */\n(function(a,b){ true?b(exports):undefined})(this,function(a){'use strict';function b(){g={noticesTopLeft:i.createElement('div'),noticesTopRight:i.createElement('div'),noticesBottomLeft:i.createElement('div'),noticesBottomRight:i.createElement('div'),noticesTopCenter:i.createElement('div'),noticesBottomCenter:i.createElement('div'),noticesCenter:i.createElement('div')};for(let a in g.noticesTopLeft.setAttribute('style',`${'width:100%;z-index:99999;position:fixed;pointer-events:none;display:flex;flex-direction:column;padding:15px;'}left:0;top:0;text-align:left;align-items:flex-start;`),g.noticesTopRight.setAttribute('style',`${'width:100%;z-index:99999;position:fixed;pointer-events:none;display:flex;flex-direction:column;padding:15px;'}right:0;top:0;text-align:right;align-items:flex-end;`),g.noticesBottomLeft.setAttribute('style',`${'width:100%;z-index:99999;position:fixed;pointer-events:none;display:flex;flex-direction:column;padding:15px;'}left:0;bottom:0;text-align:left;align-items:flex-start;`),g.noticesBottomRight.setAttribute('style',`${'width:100%;z-index:99999;position:fixed;pointer-events:none;display:flex;flex-direction:column;padding:15px;'}right:0;bottom:0;text-align:right;align-items:flex-end;`),g.noticesTopCenter.setAttribute('style',`${'width:100%;z-index:99999;position:fixed;pointer-events:none;display:flex;flex-direction:column;padding:15px;'}top:0;left:0;right:0;text-align:center;align-items:center;`),g.noticesBottomCenter.setAttribute('style',`${'width:100%;z-index:99999;position:fixed;pointer-events:none;display:flex;flex-direction:column;padding:15px;'}bottom:0;left:0;right:0;text-align:center;align-items:center;`),g.noticesCenter.setAttribute('style',`${'width:100%;z-index:99999;position:fixed;pointer-events:none;display:flex;flex-direction:column;padding:15px;'}top:0;left:0;right:0;bottom:0;flex-flow:column;justify-content:center;align-items:center;`),g)i.body.appendChild(g[a]);h={\"top-left\":g.noticesTopLeft,\"top-right\":g.noticesTopRight,\"top-center\":g.noticesTopCenter,\"bottom-left\":g.noticesBottomLeft,\"bottom-right\":g.noticesBottomRight,\"bottom-center\":g.noticesBottomCenter,center:g.noticesCenter},f=!0}function c(a){f||b();let c=Object.assign({},e,a);const d=new j(c),g=h[c.position]||h[e.position];g.appendChild(d.element)}function d(a){for(let b in g){let a=g[b];a.parentNode.removeChild(a)}i=a,b()}const e={message:'Your message here',duration:2e3,position:'top-right',closeOnClick:!0,opacity:1};let f=!1,g={},h={},i=document;class j{constructor(a){this.element=i.createElement('div'),this.opacity=a.opacity,this.type=a.type,this.animate=a.animate,this.dismissible=a.dismissible,this.closeOnClick=a.closeOnClick,this.message=a.message,this.duration=a.duration,this.pauseOnHover=a.pauseOnHover;let b=`width:auto;pointer-events:auto;display:inline-flex;opacity:${this.opacity};`,c=['notification'];if(this.type&&c.push(this.type),this.animate&&this.animate.in&&(c.push(`animated ${this.animate.in}`),this.onAnimationEnd(()=>this.element.classList.remove(this.animate.in))),this.element.classList=c.join(' '),this.dismissible){let a=i.createElement('button');a.className='delete',a.addEventListener('click',()=>{this.destroy()}),this.element.insertAdjacentElement('afterbegin',a)}else b+='padding: 1.25rem 1.5rem';this.closeOnClick&&this.element.addEventListener('click',()=>{this.destroy()}),this.element.setAttribute('style',b),'string'==typeof this.message?this.element.insertAdjacentHTML('beforeend',this.message):this.element.appendChild(this.message);const d=new k(()=>{this.destroy()},this.duration);this.pauseOnHover&&(this.element.addEventListener('mouseover',()=>{d.pause()}),this.element.addEventListener('mouseout',()=>{d.resume()}))}destroy(){this.animate&&this.animate.out?(this.element.classList.add(this.animate.out),this.onAnimationEnd(()=>this.element.remove())):this.element.remove()}onAnimationEnd(a=()=>{}){const b={animation:'animationend',OAnimation:'oAnimationEnd',MozAnimation:'mozAnimationEnd',WebkitAnimation:'webkitAnimationEnd'};for(const c in b)if(this.element.style[c]!==void 0){this.element.addEventListener(b[c],()=>a());break}}}class k{constructor(a,b){this.timer,this.start,this.remaining=b,this.callback=a,this.resume()}pause(){window.clearTimeout(this.timer),this.remaining-=new Date-this.start}resume(){this.start=new Date,window.clearTimeout(this.timer),this.timer=window.setTimeout(this.callback,this.remaining)}}a.toast=c,a.setDoc=d,Object.defineProperty(a,'__esModule',{value:!0})});\n\n\n//# sourceURL=webpack:///./node_modules/bulma-toast/dist/bulma-toast.min.js?");
+
+/***/ }),
 
 /***/ "./node_modules/process/browser.js":
 /*!*****************************************!*\
@@ -142,15 +153,15 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 
 /***/ }),
 
-/***/ "./static/js/upload.js":
-/*!*****************************!*\
-  !*** ./static/js/upload.js ***!
-  \*****************************/
+/***/ "./static/js/dataset.js":
+/*!******************************!*\
+  !*** ./static/js/dataset.js ***!
+  \******************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ \"./node_modules/vue/dist/vue.esm.js\");\n\r\n\r\n\r\nconst vm = new vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\r\n  el: '#mail-app',\r\n  delimiters: ['[[', ']]'],\r\n  data: {\r\n    file: '',\r\n  },\r\n\r\n  methods: {\r\n    handleFileUpload() {\r\n      this.file = this.$refs.file.files[0].name;\r\n    },\r\n  },\r\n});\r\n\n\n//# sourceURL=webpack:///./static/js/upload.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ \"./node_modules/vue/dist/vue.esm.js\");\n/* harmony import */ var bulma_toast__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! bulma-toast */ \"./node_modules/bulma-toast/dist/bulma-toast.min.js\");\n/* harmony import */ var bulma_toast__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(bulma_toast__WEBPACK_IMPORTED_MODULE_1__);\n\r\n\r\n\r\nconst removeUrlParam = (name) => {\r\n\tconst [ head, tail ] = location.href.split( '?' );\r\n\tlocation.href = head + '?' + tail.replace( new RegExp( `&${name}=[^&]*|${name}=[^&]*&` ), '' );\r\n}\r\n\r\nconst vm = new vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\r\n  el: '#mail-app',\r\n  delimiters: ['[[', ']]'],\r\n  mounted () {\r\n    const urlParams = new URLSearchParams(window.location.search);\r\n    const docsCount = urlParams.get('docs_count');\r\n    if (docsCount && Number.parseInt(docsCount, 10)) {\r\n        bulma_toast__WEBPACK_IMPORTED_MODULE_1__[\"toast\"]({\r\n            message: `Successfully imported ${docsCount} records.`,\r\n            type: 'is-success',\r\n            position: 'top-center',\r\n        });\r\n    }\r\n    window.history.replaceState(null, null, window.location.pathname);\r\n  }\r\n});\r\n\n\n//# sourceURL=webpack:///./static/js/dataset.js?");
 
 /***/ })
 

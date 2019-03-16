@@ -37,9 +37,9 @@
 </div>
 
 {% endif %}
-<a class="navbar-item">
+<div class="navbar-item">
   {{ docs_count }} documents
-</a>
+</div>
 {% endblock %}
 {% block content %}
 <div class="columns" id="mail-app" v-cloak>
@@ -152,8 +152,14 @@
       <div class="column is-3">
         <progress class="progress is-inline-block" v-bind:class="progressColor" v-bind:value="achievement" max="100">30%</progress>
       </div>
-      <div class="column is-8">
+      <div class="column is-4">
         <span class="ml10"><strong>[[ total - remaining ]]</strong></span>/<span>[[ total ]]</span>
+      </div>
+      <div class="column is-4">
+        <div class="field">
+          <input id="switchExample" type="checkbox" name="switchExample" class="switch is-success" v-model="explainMode" checked="checked">
+          <label for="switchExample">Explain mode</label>
+        </div>
       </div>
       <div class="column is-1 has-text-right">
         <a class="button" @click="isActive=!isActive">

@@ -206,4 +206,6 @@ app/ml_models/
 
 # ignore javascript dependencies
 node_modules/
-.vscode/settings.json
+
+# vscode
+.vscode/
