@@ -300,4 +300,10 @@ span.highlight {
   background-color: darkorange
 }
 
+.suggestions-list {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+}
+
 [v-cloak] { display: none; }

@@ -73,6 +73,7 @@ const annotationMixin = {
       last: null,
       first: null,
       limit: 0,
+      suggestions: []
     };
   },
 
@@ -158,6 +159,33 @@ const annotationMixin = {
       });
     },
 
+    searchChange: _.debounce(function(e) {
+      this.suggestions = []
+      if (this.searchQuery.length > 2) {
+        const splittedQuery = this.searchQuery.trim().split(' ')
+        const lastWord = splittedQuery[splittedQuery.length - 1]
+        this.getSuggestions(lastWord)
+      }
+    }, 500),
+
+    async getSuggestions(word) {
+      const res = await HTTP.get(`suggested/?word=${word}`)
+      if (res && res.data) {
+        this.suggestions = res.data
+      }
+    },
+
+    async submitSuggestion(s) {
+      const suggestion = s[0]
+      if (this.searchQuery[this.searchQuery.length - 1] === ' ') {
+        this.searchQuery += suggestion
+      } else {
+        this.searchQuery += ` ${suggestion}`
+      }
+      this.suggestions = []
+      await this.getSuggestions(suggestion)
+    },
+
     getState() {
       if (this.picked === 'all') {
         return '';
@@ -171,6 +199,7 @@ const annotationMixin = {
     async submit() {
       const state = this.getState();
       this.offset = 0;
+      this.suggestions = []
       this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
       await this.search();
       this.pageNumber = 0;

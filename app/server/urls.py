@@ -23,7 +23,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/', AnnotationList.as_view(), name='annotations'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>',
          AnnotationDetail.as_view(), name='ann'),
-    path('projects/<int:project_id>/suggested/', SuggestedTerms.as_view(), name='suggested'),
+    path('api/projects/<int:project_id>/suggested/', SuggestedTerms.as_view(), name='suggested'),
     path('projects/', ProjectsView.as_view(), name='projects'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
     path('projects/<int:project_id>/download_file', DataDownloadFile.as_view(), name='download_file'),
