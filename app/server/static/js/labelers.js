@@ -6,23 +6,13 @@ const vm = new Vue({
   delimiters: ['[[', ']]'],
   data: {
     labelers: {},
-    matrix: null
+    matrix: null,
+    usersAgreement: {}
   },
 
   computed: {
-    agreementTable() {
-      const data = []
-      let header = []
-      for (let key in this.matrix) {
-        header.push(key)
-        data.push(this.matrix[key])
-      }
-
-      header = header.map((th) => {
-        const labeler = this.labelers.find((l) => +l.id === +th)
-        return labeler.name
-      })
-      return { data, header }
+    matrixSrc() {
+      return `data:image/png;base64, ${this.matrix}`
     }
   },
   
@@ -32,6 +22,7 @@ const vm = new Vue({
     HTTP.get('labelers').then((response) => {
       this.labelers = response.data.users;
       this.matrix = response.data.matrix;
+      this.usersAgreement = response.data.users_agreement
     });
   },
   watch: {

@@ -18,6 +18,7 @@
       <table class="table">
           <thead>
               <tr>
+                  <th>User id</th>
                   <th>Labeler name</th>
                   <th>Last annotation</th>
                   <th># of annotations made</th>
@@ -27,34 +28,17 @@
           </thead>
           <tbody>
               <tr v-for="(user, index) in labelers" :key="index">
+                  <td>[[ user.id ]]</td>
                   <td>[[ user.name ]]</td>
                   <td>[[ user.last_date ]]</td>
                   <td>[[ user.count ]]</td>
                   <td>[[ user.truth_agreement ]]</td>
-                  <td>[[ user.labelers_agreement ]]</td>
+                  <td>[[ usersAgreement[user.id] ]]</td>
               </tr>
           </tbody>
       </table>
 
-
-      <table class="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th v-for="(user, index) in agreementTable.header" :key="index">
-              [[ user ]]
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(data, index) in agreementTable.data" :key="index">
-            <th>[[ agreementTable.header[index] ]]</th>
-            <td v-for="(val, dataIndex) in data" :key="dataIndex">
-              [[ val ]]
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <img v-if="matrix" :src="matrixSrc"/>
   </div>
 </div>
 {% endblock %}
