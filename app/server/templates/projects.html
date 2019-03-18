@@ -33,29 +33,38 @@
         <p class="modal-card-title">Create Project</p>
         <button class="delete" aria-label="close" @click="isActive=!isActive"></button>
       </header>
-      <form method="post">
-        {% csrf_token %}
-        <section class="modal-card-body">
-          {% for hidden_field in form.hidden_fields %}
-          {{ hidden_field }}
-          {% endfor %}
-          {% for field in form.visible_fields %}
-          <div class="field">
-            {{ field.label_tag }}
-            <div class="control">
-              {% render_field field class="input select-height" %}
-            </div>
-            {% if field.help_text %}
-            <small class="form-text text-muted">{{ field.help_text }}</small>
-            {% endif %}
+      <section class="modal-card-body">
+        <div class="field">
+          <label class="label">Project Name</label>
+          <div class="control">
+            <input class="input" type="text" required placeholder="Project name" v-model="projectName">
           </div>
-          {% endfor %}
-        </section>
-        <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
-          <button class="button is-primary">Create</button>
-          <button class="button" @click="isActive=!isActive">Cancel</button>
-        </footer>
-      </form>
+          <p class="help is-danger">[[ projectNameError ]]</p>
+        </div>
+        <div class="field">
+          <label class="label">Description</label>
+          <div class="control">
+            <textarea class="textarea" required placeholder="Project description" v-model="description"></textarea>
+          </div>
+          <p class="help is-danger">[[ descriptionError ]]</p>
+        </div>
+        <div class="field">
+          <label class="label">Project Type</label>
+          <div class="control">
+            <select name="project_type" required v-model='projectType'>
+              <option value="" selected="selected">---------</option>
+              <option value="DocumentClassification">document classification</option>
+              <option value="SequenceLabeling">sequence labeling</option>
+              <option value="Seq2seq">sequence to sequence</option>
+            </select>
+          </div>
+          <p class="help is-danger">[[ projectTypeError ]]</p>
+        </div>
+      </section>
+      <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
+        <button class="button is-primary" @click="create()">Create</button>
+        <button class="button" @click="isActive=!isActive">Cancel</button>
+      </footer>
     </div>
   </div>
 

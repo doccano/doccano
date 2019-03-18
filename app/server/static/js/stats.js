@@ -57,16 +57,19 @@ const vm = new Vue({
     labelData: null,
     userData: null,
     progressData: null,
+    messages: [],
   },
 
   methods: {
-    makeData(data, labels, label) {
+    makeData(object, label) {
+      const labels = Object.keys(object);
+      const counts = Object.values(object);
       const res = {
         labels: labels,
         datasets: [{
           label: label,
           backgroundColor: '#00d1b2',
-          data: data,
+          data: counts,
         }],
       };
       return res;
@@ -74,11 +77,9 @@ const vm = new Vue({
   },
 
   created() {
-    HTTP.get('stats').then((response) => {
-      this.labelData = this.makeData(response.data.label.data, response.data.label.labels, 'Label stats');
-      this.userData = this.makeData(response.data.user.data, response.data.user.users, 'User stats');
-    });
-    HTTP.get('progress').then((response) => {
+    HTTP.get('statistics').then((response) => {
+      this.labelData = this.makeData(response.data.label, 'Label stats');
+      this.userData = this.makeData(response.data.user, 'User stats');
       const complete = response.data.total - response.data.remaining;
       const incomplete = response.data.remaining;
       this.progressData = {
@@ -93,5 +94,6 @@ const vm = new Vue({
         ],
       };
     });
+
   },
 });

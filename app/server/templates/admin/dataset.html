@@ -54,27 +54,29 @@
     <li>
       <a class="pagination-link is-current" aria-label="Goto page {{ i }}">{{ i }}</a>
     </li>
-    {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
-    <li>
+    {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %} <li>
       <a href="?page={{ i }}" class="pagination-link" aria-label="Goto page {{ i }}">{{ i }}</a>
-    </li>
-    {% endif %}
-    {% endfor %}
-    {% if page_obj.has_next %}
-    <li>
-      <a class="pagination-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
-    </li>
-    {% else %}
-    <li class="pagination-link" disabled><span>&raquo;</span></li>
-    {% endif %}
-    {% if page_obj.number == paginator.num_pages %}
-    <li class="pagination-link" disabled><span>⇥</span></li>
-    {% else %}
-    <li>
-      <a class="pagination-link" href="?page={{ paginator.num_pages }}">⇥</a>
-    </li>
-    {% endif %}
+      </li>
+      {% endif %}
+      {% endfor %}
+      {% if page_obj.has_next %}
+      <li>
+        <a class="pagination-link" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+      </li>
+      {% else %}
+      <li class="pagination-link" disabled><span>&raquo;</span></li>
+      {% endif %}
+      {% if page_obj.number == paginator.num_pages %}
+      <li class="pagination-link" disabled><span>⇥</span></li>
+      {% else %}
+      <li>
+        <a class="pagination-link" href="?page={{ paginator.num_pages }}">⇥</a>
+      </li>
+      {% endif %}
   </ul>
 </nav>
 {% endif %}
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/dataset.js' %}"></script>
 {% endblock %}

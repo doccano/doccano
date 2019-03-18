@@ -2,6 +2,9 @@
 {% load static %}
 {% block header %}
 <link rel="stylesheet" href="{% static 'css/admin.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/vs2015.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 {% block navigation %}
 <a class="navbar-item" href="{% url 'annotation' view.kwargs.project_id %}">
@@ -64,19 +67,15 @@
     </div>
   </aside>
   <div class="column is-10 messages hero is-fullheight" id="message-feed">
-    {% if messages %}
-      <div>
-        <article class='message is-danger'>
-          <div class='message-body'>
-            <ul>
-              {% for message in messages %}
-                <li>{{ message }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-        </article>
-      </div>
-    {% endif %}
+    <div v-if="messages.length > 0">
+      <article class='message is-danger'>
+        <div class='message-body'>
+          <ul>
+            <li v-for="message in messages">[[ message ]]</li>
+          </ul>
+        </div>
+      </article>
+    </div>
     {% block content-area %}{% endblock %}
   </div>
 </div>

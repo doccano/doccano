@@ -37,7 +37,11 @@ Doccano can be deployed to Azure ([Web App for Containers](https://azure.microso
 
 ### Heroku
 
-Doccano can be deployed to [Heroku](https://www.heroku.com/) by following these steps:
+Doccano can be deployed to [Heroku](https://www.heroku.com/) by clicking on the button below:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+Of course, you can deploy doccano by using [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli).
 
 ```bash
 heroku create
@@ -48,13 +52,15 @@ git push heroku master
 ## Features
 
 * Collaborative annotation
-* Language independent
+* Multi-Language support
+* Emoji :smile: support
 * (future) Auto labeling
 
 ## Requirements
 
 * Python 3.6+
-* django 2.0.5+
+* Django 2.1.7+
+* Node.js 8.0+
 * Google Chrome(highly recommended)
 
 ## Installation
