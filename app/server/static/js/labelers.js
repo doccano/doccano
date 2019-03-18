@@ -10,6 +10,20 @@ const vm = new Vue({
   },
 
   computed: {
+    agreementTable() {
+      const data = []
+      let header = []
+      for (let key in this.matrix) {
+        header.push(key)
+        data.push(this.matrix[key])
+      }
+
+      header = header.map((th) => {
+        const labeler = this.labelers.find((l) => +l.id === +th)
+        return labeler.name
+      })
+      return { data, header }
+    }
   },
   
   methods: {

@@ -10,6 +10,9 @@ from itertools import chain
 from itertools import islice
 
 import pandas as pd
+import numpy as np
+import scipy as sp
+from io import StringIO
 
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -27,6 +30,8 @@ from .models import Project, Label, Document, DocumentAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer
 from .filters import ExcludeSearchFilter
+
+from sklearn.metrics import cohen_kappa_score
 
 
 from classifier.text.text_classifier import run_model_on_file
@@ -75,30 +80,143 @@ class LabelersListAPI(APIView):
         return 'data:image/gif;base64,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'
     
     def get_truth_agreement(self, user):
+        cursor = connection.cursor()
+
         return 42
 
-    def get_labelers_agreement(self, user):
+    def get_labelers_agreement(self):
         return 42
+
+    def find_most_common_labeling(self, labelers_df):
+        '''
+        :param labelers_df: a df in which each column is a labeler and each row a sample
+        :return: a pd.Series of the most abundant label for each sample
+        '''
+        def most_common_label(x):
+            return x.value_counts().index[0]
+        return labelers_df.apply(most_common_label, axis=1)
+
+
+    def calc_agreement(self, labelers_df, y):
+        '''
+        :param labelers_df: a df in which each column is a labeler and each row a sample
+        :param y: the name of the column to which we want to test the agreement
+        :return: a pd.Series of the labelers agreement prop with the chosen column
+        '''
+        labeler_cols = [c for c in labelers_df.columns if c!=y]
+        def calc_agreement_row(x):
+            values = x[labeler_cols]
+            true_y = x[y]
+            return (values==true_y).mean()
+        return labelers_df.apply(calc_agreement_row, axis=1)
+
+
+    def calc_entropy(self, labelers_df):
+        '''
+        :param labelers_df: a df in which each column is a labeler and each row a sample
+        :return: a pd.Series of the entropy score of each samples
+        '''
+        classes = np.unique(labelers_df)
+        return labelers_df.apply(lambda x: sp.stats.entropy([list(x).count(c) for c in classes]), axis=1)
+
+
+    def add_agreement_columns(self, labelers_df, y=None):
+        '''
+        :param labelers_df: a df in which each column is a labeler and each row a sample
+        :param y: the "true" labels column name
+        :return: the labelers_df with 3 or 4 new columns
+        '''
+        df_copy = labelers_df.copy()
+        cols = df_copy.columns
+        if y!=None:
+            df_copy['true_agreement_prop'] = self.calc_agreement(df_copy[cols], y)
+        df_copy['most_common'] = self.find_most_common_labeling(df_copy[cols])
+        df_copy['most_common_agreement_prop'] = self.calc_agreement(df_copy[list(cols) + ['most_common']], 'most_common')
+        df_copy['entropy'] = self.calc_entropy(df_copy[cols])
+        return df_copy
+    
+    def create_kappa_comparison_df(self, labelers_df, filter_double_score=False):
+        '''
+        :param labelers_df: a df in which each column is a labeler and each row a sample
+        :param filter_double_score: does the resulted df should contained doubled score(full table) or only keep one side
+            and a single score for each pair
+        :return: comparison_df - a cohen kappa distance matrix of the labelers
+        '''
+        col_list = list(labelers_df.columns)
+        comparison_df = pd.DataFrame(index=col_list,columns=col_list)
+        for name1 in col_list:
+            for name2 in col_list:
+                set1 = labelers_df[name1].astype('str')
+                set2 = labelers_df[name2].astype('str')
+                score = cohen_kappa_score(set1, set2)
+                comparison_df.loc[name1, name2] = score
+                comparison_df.loc[name2, name1] = score
+                if filter_double_score:
+                    comparison_df.loc[name2,name1] = None
+
+        return comparison_df.astype('float64')
 
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
         users = []
         cursor = connection.cursor()
-        for user in p.users.all():
-            cursor.execute("SELECT count(*), created_date_time FROM server_documentannotation WHERE user_id = %s ORDER BY created_date_time DESC", [user.pk])
-            row = cursor.fetchone()
-            count = row[0]
-            last_date = row[1]
 
+        agreement_csv = 'user_id,document_id,label_id\n'
+
+        users_agreement_query = '''SELECT
+            server_documentannotation.user_id,
+            server_documentannotation.document_id,
+            server_documentannotation.label_id
+            FROM auth_user
+            LEFT JOIN server_documentannotation ON auth_user.id = server_documentannotation.user_id
+            LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+            WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
+        cursor.execute(users_agreement_query)
+        for row in cursor.fetchall():
+            agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
+        pandas_csv = StringIO(agreement_csv)
+        df = pd.read_csv(pandas_csv)
+        pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
+        agreement = self.create_kappa_comparison_df(pivot_table)
+
+        gold_labels_query = '''SELECT
+            server_documentgoldannotation.document_id,
+            server_documentgoldannotation.label_id
+            FROM server_documentgoldannotation
+            LEFT JOIN server_document ON server_documentgoldannotation.document_id = server_document.id
+            WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
+        cursor.execute(gold_labels_query)
+
+        for row in cursor.fetchall():
+            print(row)
+
+        users_query = '''SELECT
+            server_documentannotation.user_id,
+            auth_user.email,
+            auth_user.username,
+            auth_user.first_name,
+            auth_user.last_name,
+            auth_user.last_login,
+            MAX(server_documentannotation.updated_date_time) as last_annotation,
+            COUNT(DISTINCT server_documentannotation.document_id) AS num_documents_reviewed,
+            COUNT(server_documentannotation.id) AS num_annotations
+            FROM auth_user
+            LEFT JOIN server_documentannotation ON auth_user.id = server_documentannotation.user_id
+            LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+            WHERE server_document.project_id = ''' + str(self.kwargs['project_id']) + ' GROUP BY user_id'
+        cursor.execute(users_query)
+        users = []
+        for row in cursor.fetchall():
             users.append({
-                'name': user.username,
-                'count' : count,
-                'last_date' : last_date.strftime("%Y-%m-%d %H:%M:%S"),
-                'truth_agreement': self.get_truth_agreement(user),
-                'labelers_agreement': self.get_labelers_agreement(user)
+                'id': row[0],
+                'name': row[2],
+                'count': row[8],
+                'last_date': row[6],
+                'truth_agreement': self.get_truth_agreement(),
+                'labelers_agreement': self.get_labelers_agreement()
             })
 
-        response = {'users': users, 'matrix': self.render_agreement_matrix()}
+        response = {'users': users, 'matrix': agreement}
         return Response(response)
 
 class LabelAdminAPI(APIView):

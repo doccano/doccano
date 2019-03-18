@@ -36,7 +36,25 @@
           </tbody>
       </table>
 
-      <img v-if="matrix" :src="matrix" />
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th v-for="(user, index) in agreementTable.header" :key="index">
+              [[ user ]]
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(data, index) in agreementTable.data" :key="index">
+            <th>[[ agreementTable.header[index] ]]</th>
+            <td v-for="(val, dataIndex) in data" :key="dataIndex">
+              [[ val ]]
+            </td>
+          </tr>
+        </tbody>
+      </table>
   </div>
 </div>
 {% endblock %}
