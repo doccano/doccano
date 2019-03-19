@@ -95,7 +95,7 @@ class LabelersListAPI(APIView):
         users = []
         cursor = connection.cursor()
 
-        agreement_csv = 'user_id,document_id,label_id\n'
+        agreement_csv = 'user_id,document_id,label_id,true_label_id\n'
 
         users_agreement_query = '''SELECT
             server_documentannotation.user_id,
@@ -106,16 +106,10 @@ class LabelersListAPI(APIView):
             LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
             WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
         cursor.execute(users_agreement_query)
+        agreement_array = []
         for row in cursor.fetchall():
-            agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
-        pandas_csv = StringIO(agreement_csv)
-        df = pd.read_csv(pandas_csv)
-        pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
-        agreement = create_kappa_comparison_df(pivot_table)
-
-        users_agreement = rank_labelers(agreement)
-
-        print(agreement_csv)
+            agreement_array.append([row[0], row[1], row[2]])
+            #agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
 
         gold_labels_query = '''SELECT
             server_documentgoldannotation.document_id,
@@ -124,6 +118,21 @@ class LabelersListAPI(APIView):
             LEFT JOIN server_document ON server_documentgoldannotation.document_id = server_document.id
             WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
         cursor.execute(gold_labels_query)
+        for row in cursor.fetchall():
+            for ar in agreement_array:
+                if (ar[1] == row[0]):
+                    ar.append(row[1])
+        for row in agreement_array:
+            if len(row) > 3:
+                agreement_csv += '%s,%s,%s,%s\n' % (row[0], row[1], row[2], row[3])
+            else:
+                agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
+        pandas_csv = StringIO(agreement_csv)
+        df = pd.read_csv(pandas_csv)
+        pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
+        agreement = create_kappa_comparison_df(pivot_table)
+
+        users_agreement = rank_labelers(agreement)
 
         users_query = '''SELECT
             server_documentannotation.user_id,
@@ -157,7 +166,9 @@ class LabelersListAPI(APIView):
         fig_bytes.seek(0)
         base64b = base64.b64encode(fig_bytes.read())
 
-        add_agreement_columns(pivot_table)
+        agreement_truth = add_agreement_columns(pivot_table, 'true_label_id')
+
+        print(agreement_truth)
 
         response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.to_dict()}
         return Response(response)

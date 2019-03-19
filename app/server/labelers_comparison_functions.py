@@ -85,8 +85,8 @@ def calc_agreement(labelers_df, y):
     '''
     labeler_cols = [c for c in labelers_df.columns if c!=y]
     def calc_agreement_row(x):
-        values = x[labeler_cols]
-        true_y = x[y]
+        values = x.loc[labeler_cols]
+        true_y = x.loc[y]
         return (values==true_y).mean()
     return labelers_df.apply(calc_agreement_row, axis=1)
 
