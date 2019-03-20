@@ -1,6 +1,7 @@
 import csv
 import os
 import operator
+import gensim.downloader as api
 
 from random import randint
 import datetime
@@ -26,7 +27,7 @@ from rest_framework.views import APIView
 
 from .models import Project, Label, Document, DocumentAnnotation, DocumentMLMAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer
+from .serializers import ProjectSerializer, LabelSerializer, Word2vecSerializer
 from .filters import ExcludeSearchFilter
 
 
@@ -146,7 +147,7 @@ class RunModelAPI(APIView):
                     label_id = row[2][0]
                 wr.writerow([row[0], row[1], label_id])
         result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), 0)
-        
+
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
 
@@ -238,6 +239,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     filter_backends = (DjangoFilterBackend, ExcludeSearchFilter, filters.OrderingFilter)
@@ -317,15 +319,36 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SuggestedTerms(generics.ListAPIView):
-    queryset = Document.objects.all()
+    """API endpoint to return suggested terms
+
+    Endpoint is:
+    /projects/<:id>/suggested/?word=<word_to_cmpare>
+    endpoint should return list of suggested words
+    """
+
     permission_classes = (IsAuthenticated, IsProjectUser)
+    # In the load section we can pass both link or filename
+    # model = api.load("glove-wiki-gigaword-100")
 
-    def get_serializer_class(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = project.get_document_serializer()
+    class DummyWV:
+        def most_similar(self, words_list):
+            return [w[::-1] for w in words_list]
 
-        return self.serializer_class
+    model = DummyWV()
+    serializer_class = Word2vecSerializer
+
+
+    def get_queryset(self):
+        w = self.request.GET.get("word", "")
+        queryset = self.model.most_similar(positive=[w])
+        # print(queryset)
+        return queryset
 
     def get_object(self):
+        queryset = self.get_queryset()
+        return queryset
 
-        return self.queryset
+    def get(self, request, *args, **kwargs):
+        response = self.get_object()
+
+        return Response(response)
