@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    <span v-if="docs[pageNumber]">Item #[[ docs[pageNumber].id ]]. [[ docs[pageNumber].metadata ]]</span>
+    {#      <span v-if="docs[pageNumber]">Item #[[ docs[pageNumber].id ]]. [[ docs[pageNumber].metadata ]]</span>#}
     <hr style="margin: 0.8rem 0;">
     <div class="content" v-if="docs[pageNumber]">
         <p class="text" v-html="docText"></p>

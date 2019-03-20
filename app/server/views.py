@@ -191,8 +191,22 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             labels_set = []
             count = 0
             for row in reader:
-                label_obj = Label.objects.filter(text__exact=row[label_col], project=project).first()
-                document_obj = Document.objects.filter(text__exact=row[text_col], project=project).first()
+                if row[text_col]=='':
+                    continue
+                label_obj = Label.objects.filter(text__exact=row[label_col], project=project)
+                if len(label_obj)>1:
+                    errors.append('Found multiple labels with text "{}"'.format(row[label_col]))
+                    continue
+                else:
+                    label_obj = label_obj.first()
+
+                document_obj = Document.objects.filter(text__exact=row[text_col], project=project)
+                if len(document_obj) > 1:
+                    errors.append('Found multiple documents with text "{}"'.format(row[text_col]))
+                    continue
+                else:
+                    document_obj = document_obj.first()
+
                 if (label_obj and document_obj):
                     labels_set.append([label_obj, document_obj])
                 else:
@@ -200,7 +214,8 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                         errors.append('Label "' + row[label_col] + '" is not found')
                     if (not document_obj):
                         errors.append('Document with text "' + row[text_col] + '" is not found')
-                    raise DataUpload.ImportFileError('\n'.join(errors))
+            if len(errors):
+                raise DataUpload.ImportFileError('Encoutered {} errors: \n\n{}'.format(len(errors), '\n\n'.join(errors)) )
 
             return (
                 DocumentGoldAnnotation(

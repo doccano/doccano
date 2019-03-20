@@ -130,7 +130,8 @@ class RunModelAPI(APIView):
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
         docs = [doc for doc in p.documents.all()]
-        doc_labels = [[a.label.id for a in doc.get_annotations()] for doc in docs]
+        # doc_labels = [[a.label.id for a in doc.get_annotations()] for doc in docs]
+        doc_labels = [[a.label.id for a in doc.doc_gold_annotations.all()] for doc in docs]
         doc_ids = [doc.id for doc in docs]
         doc_texts = [doc.text for doc in docs]
         if not os.path.isdir(ML_FOLDER):
@@ -254,10 +255,11 @@ class DocumentList(generics.ListCreateAPIView):
         queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
         if not self.request.query_params.get('is_checked'):
             if (project.use_machine_model_sort):
-                mlm_annotations = DocumentMLMAnnotation.objects.all()
-                mlm_annotations = mlm_annotations.order_by('prob')
+                mlm_annotations = DocumentMLMAnnotation.objects.all().order_by('prob')
                 mlm_id_list = [x.id for x in mlm_annotations]
+                # mlm_id_list = [x.document_id for x in mlm_annotations]
                 preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(mlm_id_list)])
+                # queryset = Document.objects.filter(pk__in=mlm_id_list)
                 queryset = Document.objects.filter(pk__in=mlm_id_list).order_by(preserved)
                 queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user))
             return queryset
