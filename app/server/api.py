@@ -240,7 +240,7 @@ class DocumentList(generics.ListCreateAPIView):
             if (project.use_machine_model_sort):
                 mlm_annotations = DocumentMLMAnnotation.objects.all()
                 mlm_annotations = mlm_annotations.order_by('prob')
-                mlm_id_list = [x.id for x in mlm_annotations]
+                mlm_id_list = [x.document_id for x in mlm_annotations]
                 preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(mlm_id_list)])
                 queryset = Document.objects.filter(pk__in=mlm_id_list).order_by(preserved)
                 queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user))
