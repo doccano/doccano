@@ -45,11 +45,15 @@
 <div class="columns" id="mail-app" v-cloak>
   <aside class="column is-3 aside hero is-fullheight">
     <div>
-
       <div class="main pr20 pl20">
         <div class="field has-addons">
           <div class="control is-expanded">
-            <input class="input" type="text" placeholder="Search document" v-model="searchQuery" @keyup.enter="submit" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
+            <input class="input" type="text" placeholder="Search document" v-model="searchQuery" @keyup.enter="submit" @input="searchChange" @click="suggestions = []" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
+            <div class="suggestions-list list is-hoverable" v-if="suggestions.length" v-cloak>
+              <a class="list-item" v-for="(e, idx) in suggestions" @click="submitSuggestion(e)">
+                [[ e[0] ]]
+              </a>
+            </div>
           </div>
           <div class="control">
             <div class="dropdown is-hoverable is-right">
