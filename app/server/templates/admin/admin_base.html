@@ -41,7 +41,7 @@
           <span class="icon">
             <i class="fas fa-book"></i>
           </span>
-          <span class="name">Guideline</span>
+          <span class="name">Guidelines</span>
         </a>
 
         <hr style="margin: 0;">
@@ -92,11 +92,11 @@
       <div>
         <article class='message is-danger'>
           <div class='message-body'>
-            <ul>
+            <div>
               {% for message in messages %}
-                <li>{{ message }}</li>
+                <pre>{{ message }}</pre>
               {% endfor %}
-            </ul>
+            </div>
           </div>
         </article>
       </div>
