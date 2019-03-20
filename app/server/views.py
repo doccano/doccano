@@ -18,7 +18,7 @@ from .resources import DocumentResource, DocumentAnnotationResource, LabelResour
 
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
-from .models import Document, Project, DocumentAnnotation, Label
+from .models import Document, Project, DocumentAnnotation, Label, DocumentGoldAnnotation, User
 from app import settings
 
 logger = logging.getLogger(__name__)
@@ -68,6 +68,16 @@ class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         context = super().get_context_data(**kwargs)
         context['docs_count'] = project.get_docs_count()
+        return context
+
+
+class UserView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/user.html'
+
+    def get_context_data(self, **kwargs):
+        user = get_object_or_404(User, pk=self.kwargs['user_id'])
+        context = super().get_context_data(**kwargs)
+        # context['docs_count'] = user.get_docs_count()
         return context
 
 
@@ -149,23 +159,6 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                                    if i != text_col]
             fixed_utf = []
 
-            # result = []
-            # for row in reader:
-            #     try:
-            #         result.append(
-            #             Document(
-            #                 text=row[text_col],
-            #                 metadata=self.extract_metadata_csv(row, text_col, header_without_text),
-            #                 project=project
-            #             )
-            #         )
-            #
-            #     except Exception as e:
-            #         print(str(e))
-            #         print(row)
-            #         print(self.extract_metadata_csv(row, text_col, header_without_text))
-            # return result
-
             return (
                 Document(
                     text=row[text_col],
@@ -174,6 +167,62 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 )
                 for row in reader
                 if row!=[] and row!=''
+            )
+        else:
+            return []
+
+    def labeled_csv_to_labels(self, project, file, text_key='text', label_key='label'):
+        form_data = TextIOWrapper(file, encoding='utf-8', errors='ignore')
+        reader = csv.reader(form_data, quotechar='"', delimiter=',',
+                     quoting=csv.QUOTE_ALL, skipinitialspace=True)
+
+        maybe_header = next(reader)
+        if maybe_header:
+            if (text_key in maybe_header and label_key in maybe_header):
+                text_col = maybe_header.index(text_key)
+                label_col = maybe_header.index(label_key)
+            elif len(maybe_header) == 2:
+                reader = it.chain([maybe_header], reader)
+                text_col = 0
+                label_col = 1
+            else:
+                raise DataUpload.ImportFileError("CSV file must have either a title with \"text\" column and \"label\" column or have two columns ")
+            errors = []
+            labels_set = []
+            count = 0
+            for row in reader:
+                if row[text_col]=='':
+                    continue
+                label_obj = Label.objects.filter(text__exact=row[label_col], project=project)
+                if len(label_obj)>1:
+                    errors.append('Found multiple labels with text "{}"'.format(row[label_col]))
+                    continue
+                else:
+                    label_obj = label_obj.first()
+
+                document_obj = Document.objects.filter(text__exact=row[text_col], project=project)
+                if len(document_obj) > 1:
+                    errors.append('Found multiple documents with text "{}"'.format(row[text_col]))
+                    continue
+                else:
+                    document_obj = document_obj.first()
+
+                if (label_obj and document_obj):
+                    labels_set.append([label_obj, document_obj])
+                else:
+                    if (not label_obj):
+                        errors.append('Label "' + row[label_col] + '" is not found')
+                    if (not document_obj):
+                        errors.append('Document with text "' + row[text_col] + '" is not found')
+            if len(errors):
+                raise DataUpload.ImportFileError('Encoutered {} errors: \n\n{}'.format(len(errors), '\n\n'.join(errors)) )
+
+            return (
+                DocumentGoldAnnotation(
+                    label=label[0],
+                    document=label[1]
+                )
+                for label in labels_set
             )
         else:
             return []
@@ -197,24 +246,38 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         try:
             file = request.FILES['file'].file
             documents = []
+            true_labels = []
             if import_format == 'csv':
                 documents = self.csv_to_documents(project, file)
-
             elif import_format == 'json':
                 documents = self.json_to_documents(project, file)
+            elif import_format == 'csv_labeled':
+                true_labels = self.labeled_csv_to_labels(project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
-            docs_len = 0
-            while True:
-                batch = list(it.islice(documents, batch_size))
-                if not batch:
-                    break
-                Document.objects.bulk_create(batch)
-                docs_len += len(batch)
-                # Document.objects.bulk_create(batch, batch_size=batch_size)
-            url = reverse('dataset', args=[project.id])
-            url += '?docs_count=' + str(docs_len)
-            return HttpResponseRedirect(url)
+
+            if (import_format == 'csv' or import_format == 'json'):
+                docs_len = 0
+                while True:
+                    batch = list(it.islice(documents, batch_size))
+                    if not batch:
+                        break
+                    docs_len += len(batch)
+                    Document.objects.bulk_create(batch, batch_size=batch_size)
+                url = reverse('dataset', args=[project.id])
+                url += '?docs_count=' + str(docs_len)
+                return HttpResponseRedirect(url)
+            elif (import_format == 'csv_labeled'):
+                labels_len = 0
+                while True:
+                    batch = list(it.islice(true_labels, batch_size))
+                    if not batch:
+                        break
+                    labels_len += len(batch)
+                    DocumentGoldAnnotation.objects.bulk_create(batch, batch_size=batch_size)
+                url = reverse('dataset', args=[project.id])
+                url += '?true_labels_count=' + str(labels_len)
+                return HttpResponseRedirect(url)
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))

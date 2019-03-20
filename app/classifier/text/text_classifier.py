@@ -19,7 +19,7 @@ def process_text(x):
     # lowercase
     return x.lower().strip()
 
-def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
+def run_model_on_file(input_filename, output_filename, user_id, label_id=None, method='bow'):
     # nlp = spacy.load("en_core_web_sm")
     print('Reading input file...')
     df = pd.read_csv(input_filename, encoding='latin1')
@@ -67,7 +67,16 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
         tmp_df['is_error'] = (tmp_df['prediction'] != y)
         return tmp_df
 
-    X, y = df_to_matrix(df[ ~pd.isnull(df['label']) ])
+
+    if label_id:
+        df_labeled = df[ df['label'] == label_id ]
+        df_labeled = pd.concat( [df_labeled, df[ df['label'] != label_id ].sample( df_labeled.shape[0] ) ] )
+        df_labeled.loc[ df_labeled['label'] != label_id, 'label'] = 0
+
+    else:
+        df_labeled = df[~pd.isnull(df['label'])]
+
+    X, y = df_to_matrix(df_labeled)
     y = y.values
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
@@ -112,4 +121,4 @@ def run_model_on_file(input_filename, output_filename, user_id, method='bow'):
 
 
 if __name__ == '__main__':
-    run_model_on_file('../../ml_input.csv', '../../ml_out_manual.csv', user_id=2)
+    run_model_on_file('../../ml_models/ml_input.csv', '../../ml_models/ml_out_manual.csv', user_id=2, label_id=None )

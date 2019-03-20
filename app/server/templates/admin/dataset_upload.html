@@ -20,8 +20,11 @@
           <b>To annotate texts, you first need to import a set of text items to annotate it.</b>
         </p>
         <ul.is-unstyled>
-          <li>CSV file: file must contain a header with a text column or be one-column csv file.</li>
-          <li>JSON file: each line should contain a json object with at least one key 'text', which contains a text.</li>
+            <li>CSV file: file must contain a header with a text column or be one-column csv file.</li>
+            <li>JSON file: each line should contain a json object with at least one key 'text', which contains a text.</li>
+            <li>Labeled CSV file: file must contain a header with a "text" column and a "label" column. <br>
+                The values in the "text" column should exactly match the text of one of existing documents in the database. <br>
+                The values in the "label" column should match exactly the text of one of the existing labels.</li>
         </ul.is-unstyled>
         <form action="" method="post" enctype="multipart/form-data">
           {% csrf_token %}
@@ -30,6 +33,7 @@
               <label class="radio mb10">
                 <input type="radio" name="format" value="csv" checked> Upload a CSV file from your computer<br>
                 <input type="radio" name="format" value="json" checked> Upload a JSON file from your computer<br>
+                <input type="radio" name="format" value="csv_labeled" checked> Upload a labeled CSV file from your computer<br>
                </label>
               <div class="file has-name is-small mb20">
                 <label class="file-label">
