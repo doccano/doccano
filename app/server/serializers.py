@@ -114,3 +114,10 @@ class Seq2seqDocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
         fields = ('id', 'text', 'annotations')
+
+
+class Word2vecSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = ('id',)

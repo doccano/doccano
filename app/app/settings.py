@@ -116,6 +116,16 @@ SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = os.getenv('OAUTH_AAD_TENANT')
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
 DATABASES = {
+    'posgres_local': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'doccano',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': 5432,
+        'CONN_MAX_AGE': 60
+    },
+
     'posgres': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'doccano',
@@ -126,12 +136,12 @@ DATABASES = {
         'CONN_MAX_AGE': 60
     },
 
-    'default': {
+    'sqlite': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    },
 }
-
+DATABASES['default'] = DATABASES['posgres_local']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -198,9 +208,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Size of the batch for creating documents
 # on the import phase
-IMPORT_BATCH_SIZE = 150
+IMPORT_BATCH_SIZE = 500
 
-GOOGLE_TRACKING_ID = os.getenv('GOOGLE_TRACKING_ID', 'UA-125643874-2')
+GOOGLE_TRACKING_ID = os.getenv('GOOGLE_TRACKING_ID', 'UA-123456789-9')
 
 AZURE_APPINSIGHTS_IKEY = os.getenv('AZURE_APPINSIGHTS_IKEY')
 APPLICATION_INSIGHTS = {

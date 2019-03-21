@@ -45,11 +45,15 @@
 <div class="columns" id="mail-app" v-cloak>
   <aside class="column is-3 aside hero is-fullheight">
     <div>
-
       <div class="main pr20 pl20">
         <div class="field has-addons">
           <div class="control is-expanded">
-            <input class="input" type="text" placeholder="Search document" v-model="searchQuery" @keyup.enter="submit" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
+            <input class="input" type="text" placeholder="Search document" v-model="searchQuery" @keyup.enter="submit" @input="searchChange" @click="suggestions = []" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
+            <div class="suggestions-list list is-hoverable" v-if="suggestions.length" v-cloak>
+              <a class="list-item" v-for="(e, idx) in suggestions" @click="submitSuggestion(e)">
+                [[ e[0] ]]
+              </a>
+            </div>
           </div>
           <div class="control">
             <div class="dropdown is-hoverable is-right">
@@ -84,14 +88,14 @@
         </div>
         <div class="level mt30 documents-pagination">
             <a class="button level-left" v-on:click="firstDocumentsPage" :disabled="currentPage == 0">
-              <span class="icon">
+              <span class="icon" title="First">
                 <i class="fas fa-angle-double-left"></i>
               </span>
               <span>First</span>
             </a>
 
           <a class="button level-left" v-on:click="prevDocumentsPage" :disabled="!prev">
-            <span class="icon">
+            <span class="icon" title="Prev">
               <i class="fas fa-angle-left"></i>
             </span>
             <span>Prev</span>
@@ -99,16 +103,16 @@
     
           <a class="button level-right is-disabled" v-on:click="nextDocumentsPage" :disabled="!next">
             <span>Next</span>
-            <span class="icon">
+            <span class="icon" title="Next">
               <i class="fas fa-angle-right"></i>
             </span>
           </a>
 
           <a class="button level-left" v-on:click="lastDocumentsPage" :disabled="currentPage == lastPage">
-              <span class="icon">
+              <span>Last</span>
+              <span class="icon" title="Last">
                 <i class="fas fa-angle-double-right"></i>
               </span>
-              <span>Last</span>
             </a>
         </div>
       </div>
@@ -135,7 +139,7 @@
         <div class="modal-background"></div>
         <div class="modal-card">
           <header class="modal-card-head">
-            <p class="modal-card-title">Annotation Guideline</p>
+            <p class="modal-card-title">Annotation Guidelines</p>
             <button class="delete" aria-label="close" @click="isActive=!isActive"></button>
           </header>
           <section class="modal-card-body modal-card-body-footer content"

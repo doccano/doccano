@@ -300,4 +300,18 @@ span.highlight {
   background-color: darkorange
 }
 
+.suggestions-list {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+}
+
 [v-cloak] { display: none; }
+
+
+
+@media screen and (min-width: 769px), print {
+    .modal-card, .modal-content {
+        min-width: 90%;
+    }
+}

@@ -1,6 +1,7 @@
 import csv
 import os
 import operator
+import gensim.downloader as api
 
 from random import randint
 import datetime
@@ -26,7 +27,7 @@ from rest_framework.views import APIView
 
 from .models import Project, Label, Document, DocumentAnnotation, DocumentMLMAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer
+from .serializers import ProjectSerializer, LabelSerializer, Word2vecSerializer
 from .filters import ExcludeSearchFilter
 
 
@@ -129,27 +130,42 @@ class RunModelAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        docs = [doc for doc in p.documents.all()]
-        doc_labels = [[a.label.id for a in doc.get_annotations()] for doc in docs]
-        doc_ids = [doc.id for doc in docs]
-        doc_texts = [doc.text for doc in docs]
+        cursor = connection.cursor()
+
+        doc_annotations_query = '''SELECT
+            server_document.id,
+            server_document.text,
+            server_documentannotation.label_id
+            FROM
+            server_document
+            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id
+            WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
+
+        doc_annotations_gold_query = '''SELECT
+            server_document.id,
+            server_document.text,
+            server_documentgoldannotation.label_id
+            FROM
+            server_document
+            LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_document.id
+            WHERE server_document.project_id =''' + str(self.kwargs['project_id'])
+        
         if not os.path.isdir(ML_FOLDER):
             os.makedirs(ML_FOLDER)
         with open(os.path.join(ML_FOLDER, INPUT_FILE), 'w', encoding='utf-8', newline='') as outfile:
             wr = csv.writer(outfile, quoting=csv.QUOTE_ALL)
             wr.writerow(['document_id', 'text', 'label_id'])
-            data = list(zip(doc_ids, doc_texts, doc_labels))
-            for row in data:
+            cursor.execute(doc_annotations_query)
+            for row in cursor.fetchall():
                 label_id = None
-                if len(row[2]) > 0:
-                    label_id = row[2][0]
-                wr.writerow([row[0], row[1], label_id])
+                wr.writerow([row[0], row[1], row[2]])
+
         result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), 0)
-        
+
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
 
-        batch_size = 500
+        batch_size = 1000
         new_annotations = (DocumentMLMAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), prob=row['prob']) for row in reader)
         while True:
             batch = list(islice(new_annotations, batch_size))
@@ -221,6 +237,23 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = LabelSerializer
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get_queryset(self):
+        queryset = self.queryset
+        return queryset
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs['user_id'])
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
+
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
     filter_backends = (DjangoFilterBackend, ExcludeSearchFilter, filters.OrderingFilter)
@@ -238,10 +271,10 @@ class DocumentList(generics.ListCreateAPIView):
         queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
         if not self.request.query_params.get('is_checked'):
             if (project.use_machine_model_sort):
-                mlm_annotations = DocumentMLMAnnotation.objects.all()
-                mlm_annotations = mlm_annotations.order_by('prob')
-                mlm_id_list = [x.id for x in mlm_annotations]
+                mlm_annotations = DocumentMLMAnnotation.objects.all().order_by('prob')
+                mlm_id_list = [x.document_id for x in mlm_annotations]
                 preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(mlm_id_list)])
+                # queryset = Document.objects.filter(pk__in=mlm_id_list)
                 queryset = Document.objects.filter(pk__in=mlm_id_list).order_by(preserved)
                 queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user))
             return queryset
@@ -296,3 +329,39 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
         self.check_object_permissions(self.request, obj)
 
         return obj
+
+
+class SuggestedTerms(generics.ListAPIView):
+    """API endpoint to return suggested terms
+
+    Endpoint is:
+    /projects/<:id>/suggested/?word=<word_to_cmpare>
+    endpoint should return list of suggested words
+    """
+
+    permission_classes = (IsAuthenticated, IsProjectUser)
+    # In the load section we can pass both link or filename
+    # model = api.load("glove-wiki-gigaword-100")
+
+    class DummyWV:
+        def most_similar(self, words_list):
+            return [w[::-1] for w in words_list]
+
+    model = DummyWV()
+    serializer_class = Word2vecSerializer
+
+
+    def get_queryset(self):
+        w = self.request.GET.get("word", "")
+        queryset = self.model.most_similar(positive=[w])
+        # print(queryset)
+        return queryset
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        response = self.get_object()
+
+        return Response(response)
