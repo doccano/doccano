@@ -19,6 +19,7 @@ from django.http import HttpResponseRedirect
 from django.db.models import Q
 from django.db.models import Case, When
 from django.db import connection
+from django.db.models.expressions import RawSQL
 from rest_framework import viewsets, generics, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -202,9 +203,11 @@ class ProjectStatsAPI(APIView):
 class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
-
-    class_weights = pd.read_csv(os.path.abspath('ml_models/ml_logistic_regression_weights.csv'), header=None,
-                names=['term', 'weight']).set_index('term')['weight']
+    class_weights = None
+    if (os.path.isfile('ml_models/ml_logistic_regression_weights.csv')):
+        class_weights = pd.read_csv(os.path.abspath('ml_models/ml_logistic_regression_weights.csv'), header=None,
+                    names=['term', 'weight']).set_index('term')['weight']
+        
 
     def get(self, request, *args, **kwargs):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
@@ -212,14 +215,15 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
         format_str_positive = '<span class="has-background-success">{}</span>'
         format_str_negative = '<span class="has-background-danger">{}</span>'
         text = []
-        for w in doc_text_splited:
-            weight = self.class_weights.get(w.lower().replace(',','').replace('.',''), 0)
-            if weight < -0.2:
-                text.append(format_str_negative.format(w))
-            elif weight > 0.2:
-                text.append(format_str_positive.format(w))
-            else:
-                text.append(w)
+        if self.class_weights:
+            for w in doc_text_splited:
+                weight = self.class_weights.get(w.lower().replace(',','').replace('.',''), 0)
+                if weight < -0.2:
+                    text.append(format_str_negative.format(w))
+                elif weight > 0.2:
+                    text.append(format_str_positive.format(w))
+                else:
+                    text.append(w)
         response = {'document': ' '.join(text)}
         # doc_text_splited = [w if np.abs(self.class_weights.get(w,0))<0.2 else format_str.format(w) for w in doc_text_splited]
         # doc_text_splited[0] = '<span class="has-background-primary">' + doc_text_splited[0] + '</span>'
@@ -273,7 +277,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class DocumentList(generics.ListCreateAPIView):
     queryset = Document.objects.all()
-    filter_backends = (DjangoFilterBackend, ExcludeSearchFilter, filters.OrderingFilter)
+    filter_backends = (ExcludeSearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     search_fields = ('text', )
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
@@ -285,29 +289,15 @@ class DocumentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
-        if not self.request.query_params.get('is_checked'):
-            if (project.use_machine_model_sort):
-                if True:
-                    doc_annotations_query = '''SELECT
-                        server_document.* 
-                        FROM server_document
-                        LEFT JOIN server_documentmlmannotation ON server_documentmlmannotation.document_id = server_document.id
-                        WHERE server_document.project_id = {}
-                        ORDER BY server_documentmlmannotation.prob ASC'''.format( self.kwargs['project_id'])
-                    return Document.objects.raw(doc_annotations_query)
+        queryset = self.queryset
+        if self.request.query_params.get('is_checked'):
+            is_null = self.request.query_params.get('is_checked') == 'true'
+            queryset = project.get_documents(is_null).distinct()
 
-                mlm_annotations = DocumentMLMAnnotation.objects.all().order_by('prob')
-                mlm_id_list = [x.document_id for x in mlm_annotations]
-                preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(mlm_id_list)])
-                # queryset = Document.objects.filter(pk__in=mlm_id_list)
-                queryset = Document.objects.filter(pk__in=mlm_id_list).order_by(preserved)
-                queryset = sorted(queryset, key=lambda x: x.is_labeled_by(self.request.user))
-            return queryset
-
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        is_null = self.request.query_params.get('is_checked') == 'true'
-        queryset = project.get_documents(is_null).distinct()
+        if (project.use_machine_model_sort):
+            queryset = queryset.order_by('doc_mlm_annotations__prob').filter(project=self.kwargs['project_id'])
+        else:
+            queryset = queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
 
         return queryset
 
