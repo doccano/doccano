@@ -174,7 +174,7 @@ class RunModelAPI(APIView):
             DocumentMLMAnnotation.objects.bulk_create(batch, batch_size)
         # os.remove(INPUT_FILE)
         # os.remove(OUTPUT_FILE)
-        return Response({'result': result})
+        return Response({'result': '<pre>'+result+'</pre>'})
 
 class ProjectStatsAPI(APIView):
     pagination_class = None
@@ -203,12 +203,29 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
 
+    class_weights = pd.read_csv(os.path.abspath('ml_models/ml_logistic_regression_weights.csv'), header=None,
+                names=['term', 'weight']).set_index('term')['weight']
+
     def get(self, request, *args, **kwargs):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         doc_text_splited = d.text.split(' ')
-        doc_text_splited[0] = '<span class="has-background-primary">' + doc_text_splited[0] + '</span>'
-        response = {'document': ' '.join(doc_text_splited)}
+        format_str_positive = '<span class="has-background-success">{}</span>'
+        format_str_negative = '<span class="has-background-danger">{}</span>'
+        text = []
+        for w in doc_text_splited:
+            weight = self.class_weights.get(w.lower().replace(',','').replace('.',''), 0)
+            if weight < -0.2:
+                text.append(format_str_negative.format(w))
+            elif weight > 0.2:
+                text.append(format_str_positive.format(w))
+            else:
+                text.append(w)
+        response = {'document': ' '.join(text)}
+        # doc_text_splited = [w if np.abs(self.class_weights.get(w,0))<0.2 else format_str.format(w) for w in doc_text_splited]
+        # doc_text_splited[0] = '<span class="has-background-primary">' + doc_text_splited[0] + '</span>'
+        # response = {'document': ' '.join(doc_text_splited)}
         return Response(response)
+
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
@@ -271,6 +288,15 @@ class DocumentList(generics.ListCreateAPIView):
         queryset = self.queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
         if not self.request.query_params.get('is_checked'):
             if (project.use_machine_model_sort):
+                if True:
+                    doc_annotations_query = '''SELECT
+                        server_document.* 
+                        FROM server_document
+                        LEFT JOIN server_documentmlmannotation ON server_documentmlmannotation.document_id = server_document.id
+                        WHERE server_document.project_id = {}
+                        ORDER BY server_documentmlmannotation.prob ASC'''.format( self.kwargs['project_id'])
+                    return Document.objects.raw(doc_annotations_query)
+
                 mlm_annotations = DocumentMLMAnnotation.objects.all().order_by('prob')
                 mlm_id_list = [x.document_id for x in mlm_annotations]
                 preserved = Case(*[When(pk=pk, then=pos) for pos, pk in enumerate(mlm_id_list)])

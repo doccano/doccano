@@ -40,7 +40,8 @@ def run_model_on_file(input_filename, output_filename, user_id, label_id=None, m
         nlp = spacy.load("en_core_web_sm")
         df['vec'] = df['text'].apply(lambda x: nlp(x).vector)
 
-    vectorizer = CountVectorizer(stop_words='english', strip_accents='ascii', max_features=5000, ngram_range=(1,2))
+    # vectorizer = CountVectorizer(stop_words='english', strip_accents='ascii', max_features=5000, ngram_range=(1,2))
+    vectorizer = CountVectorizer(stop_words='english', strip_accents='ascii', max_features=5000)
     transformer = TfidfTransformer(smooth_idf=True)
     vectorizer.fit(df['text'])
 
