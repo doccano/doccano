@@ -5,6 +5,7 @@
   "scripts": {
     "start": "cross-env HOT_RELOAD=1 DEBUG=1 webpack-dev-server",
     "build": "webpack",
+    "lint": "eslint --max-warnings=0 static/js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

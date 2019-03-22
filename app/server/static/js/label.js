@@ -5,7 +5,7 @@ import simpleShortcut from './filter';
 Vue.filter('simpleShortcut', simpleShortcut);
 
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   data: {
@@ -24,7 +24,7 @@ const vm = new Vue({
       * combineKeys: Combine selectedKey and checkedKey to get shortcutKey
       * saveKeys: Save null to database if shortcutKey is empty string
       */
-    combineKeys: function () {
+    combineKeys: () => {
       this.shortcutKey = '';
 
       // If checkedKey exits, add it to shortcutKey
@@ -45,7 +45,7 @@ const vm = new Vue({
       return this.shortcutKey;
     },
 
-    saveKeys: function () {
+    saveKeys: () => {
       this.shortcutKey = this.combineKeys;
       if (this.shortcutKey === '') {
         return null;
@@ -70,7 +70,7 @@ const vm = new Vue({
 
     removeLabel(label) {
       const labelId = label.id;
-      HTTP.delete(`labels/${labelId}`).then((response) => {
+      HTTP.delete(`labels/${labelId}`).then(() => {
         const index = this.labels.indexOf(label);
         this.labels.splice(index, 1);
       });

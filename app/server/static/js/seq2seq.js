@@ -5,7 +5,7 @@ import HTTP from './http';
 Vue.use(require('vue-shortkey'));
 
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   data: {
@@ -14,7 +14,7 @@ const vm = new Vue({
   },
   mixins: [annotationMixin],
   directives: {
-    'todo-focus': function (el, binding) {
+    'todo-focus': (el, binding) => {
       if (binding.value) {
         el.focus();
       }
@@ -41,7 +41,7 @@ const vm = new Vue({
 
     removeTodo(todo) {
       const docId = this.docs[this.pageNumber].id;
-      HTTP.delete(`docs/${docId}/annotations/${todo.id}`).then((response) => {
+      HTTP.delete(`docs/${docId}/annotations/${todo.id}`).then(() => {
         const index = this.annotations[this.pageNumber].indexOf(todo);
         this.annotations[this.pageNumber].splice(index, 1);
       });
@@ -63,7 +63,7 @@ const vm = new Vue({
       }
       const docId = this.docs[this.pageNumber].id;
       HTTP.put(`docs/${docId}/annotations/${todo.id}`, todo).then((response) => {
-        console.log(response);
+        console.log(response); // eslint-disable-line no-console
       });
     },
 

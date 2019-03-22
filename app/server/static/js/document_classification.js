@@ -10,7 +10,7 @@ Vue.use(require('vue-shortkey'), {
 Vue.filter('simpleShortcut', simpleShortcut);
 
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   mixins: [annotationMixin],

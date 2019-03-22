@@ -4,7 +4,7 @@ import annotationMixin from './demo_mixin';
 Vue.use(require('vue-shortkey'));
 
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   data: {
@@ -55,7 +55,7 @@ const vm = new Vue({
   },
   mixins: [annotationMixin],
   directives: {
-    'todo-focus': function(el, binding) {
+    'todo-focus': (el, binding) => {
       if (binding.value) {
         el.focus();
       }

@@ -1,10 +1,7 @@
 export default function simpleShortcut(shortcut) {
-  if (shortcut === null) {
-    shortcut = '';
-  } else {
-    shortcut = shortcut.replace('ctrl', 'C');
-    shortcut = shortcut.replace('shift', 'S');
-    shortcut = shortcut.split(' ').join('-');
-  }
-  return shortcut;
+  let simplified = shortcut === null ? '' : shortcut;
+  simplified = simplified.replace('ctrl', 'C');
+  simplified = simplified.replace('shift', 'S');
+  simplified = simplified.split(' ').join('-');
+  return simplified;
 }

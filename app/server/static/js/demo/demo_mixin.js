@@ -1,3 +1,5 @@
+/* global marked:readonly */
+
 const annotationMixin = {
   data() {
     return {
@@ -113,7 +115,7 @@ const annotationMixin = {
     },
 
     id2label() {
-      let id2label = {};
+      const id2label = {};
       for (let i = 0; i < this.labels.length; i++) {
         const label = this.labels[i];
         id2label[label.id] = label;

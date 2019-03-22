@@ -10,16 +10,16 @@ Vue.use(require('vue-shortkey'), {
 Vue.filter('simpleShortcut', simpleShortcut);
 
 Vue.component('annotator', {
-  template: '<div @click="setSelectedRange">\
-                    <span class="text-sequence"\
-                         v-for="r in chunks"\
-                         v-if="id2label[r.label]"\
-                         v-bind:class="{tag: id2label[r.label].text_color}"\
-                         v-bind:style="{ color: id2label[r.label].text_color, backgroundColor: id2label[r.label].background_color }"\
-                    >{{ [...text].slice(r.start_offset, r.end_offset).join(\'\') }}<button class="delete is-small"\
-                                         v-if="id2label[r.label].text_color"\
-                                         @click="removeLabel(r)"></button></span>\
-               </div>',
+  template: '<div @click="setSelectedRange">'
+          + '       <span class="text-sequence"'
+          + '            v-for="r in chunks"'
+          + '            v-if="id2label[r.label]"'
+          + '            v-bind:class="{tag: id2label[r.label].text_color}"'
+          + '            v-bind:style="{ color: id2label[r.label].text_color, backgroundColor: id2label[r.label].background_color }"'
+          + '       >{{ [...text].slice(r.start_offset, r.end_offset).join(\'\') }}<button class="delete is-small"'
+          + '                            v-if="id2label[r.label].text_color"'
+          + '                            @click="removeLabel(r)"></button></span>'
+          + '  </div>',
   props: {
     labels: Array, // [{id: Integer, color: String, text: String}]
     text: String,
@@ -33,7 +33,7 @@ Vue.component('annotator', {
   },
 
   methods: {
-    setSelectedRange(e) {
+    setSelectedRange() {
       let start;
       let end;
       if (window.getSelection) {
@@ -53,7 +53,7 @@ Vue.component('annotator', {
       }
       this.startOffset = start;
       this.endOffset = end;
-      console.log(start, end);
+      console.log(start, end); // eslint-disable-line no-console
     },
 
     validRange() {
@@ -144,7 +144,7 @@ Vue.component('annotator', {
     },
 
     id2label() {
-      let id2label = {};
+      const id2label = {};
       // default value;
       id2label[-1] = {
         text_color: '',
@@ -159,7 +159,7 @@ Vue.component('annotator', {
   },
 });
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   mixins: [annotationMixin],
