@@ -9,6 +9,33 @@ from sklearn.linear_model import LogisticRegression
 
 import re
 
+
+def df_to_matrix(df, method='bow'):
+    if method == 'w2v':
+        X = np.array([np.array(x) for x in df['vec'].values])
+        if 'label' in df.columns:
+            y = df['label'].values
+        else:
+            y = [None] * len(df)
+        return X, y
+
+    else:
+        X = vectorizer.transform(df['text'])
+        # df['vec'] = transformer.fit_transform(df['vec'])
+        y = df['label']
+        return X, y
+
+def run_model(tmp_df, model):
+    X, y = df_to_matrix(tmp_df)
+    predictions_probabilities = model.predict_proba(X)
+    confidence = np.max(predictions_probabilities, axis=1)
+    predictions = np.argmax(predictions_probabilities, axis=1)
+    tmp_df['prediction'] = [model.classes_[v] for v in predictions]
+    tmp_df['confidence'] = confidence
+    tmp_df['is_error'] = (tmp_df['prediction'] != y)
+    return tmp_df
+
+
 def process_text(x):
     # remove non-english characters
     x.replace('company', '').replace('noncompany', '')
@@ -28,7 +55,7 @@ def run_model_on_file(input_filename, output_filename, user_id, label_id=None, m
     # df_labeled = df_labeled[['text', 'label_id']]
     df['text'] = df['text'].apply(process_text)
     df['label'] = df['label_id']
-    
+
     df = df[ df['text']!='' ]
 
     if method=='w2v':
@@ -40,32 +67,6 @@ def run_model_on_file(input_filename, output_filename, user_id, label_id=None, m
     vectorizer = CountVectorizer()
     transformer = TfidfTransformer(smooth_idf=True)
     vectorizer.fit(df['text'])
-
-    if method == 'w2v':
-        def df_to_matrix(df):
-            X = np.array([np.array(x) for x in df['vec'].values])
-            if 'label' in df.columns:
-                y = df['label'].values
-            else:
-                y = [None] * len(df)
-            return X,y
-
-    else:
-        def df_to_matrix(df):
-            X = vectorizer.transform(df['text'])
-            # df['vec'] = transformer.fit_transform(df['vec'])
-            y = df['label']
-            return X,y
-
-    def run_model(tmp_df):
-        X, y = df_to_matrix(tmp_df)
-        predictions_probabilities = model.predict_proba(X)
-        confidence = np.max(predictions_probabilities, axis=1)
-        predictions = np.argmax(predictions_probabilities, axis=1)
-        tmp_df['prediction'] = [model.classes_[v] for v in predictions]
-        tmp_df['confidence'] = confidence
-        tmp_df['is_error'] = (tmp_df['prediction'] != y)
-        return tmp_df
 
 
     if label_id:
@@ -118,6 +119,9 @@ def run_model_on_file(input_filename, output_filename, user_id, label_id=None, m
 
     print('Done running the model!')
     return result
+
+def run_model_on_example():
+    df['text'] = df['text'].apply(process_text)
 
 
 if __name__ == '__main__':

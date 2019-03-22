@@ -131,8 +131,8 @@ class RunModelAPI(APIView):
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
         docs = [doc for doc in p.documents.all()]
-        # doc_labels = [[a.label.id for a in doc.get_annotations()] for doc in docs]
-        doc_labels = [[a.label.id for a in doc.doc_gold_annotations.all()] for doc in docs]
+        doc_labels = [[a.label.id for a in doc.get_annotations()] for doc in docs]
+        # doc_labels = [[a.label.id for a in doc.doc_gold_annotations.all()] for doc in docs]
         doc_ids = [doc.id for doc in docs]
         doc_texts = [doc.text for doc in docs]
         if not os.path.isdir(ML_FOLDER):
