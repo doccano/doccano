@@ -1,5 +1,6 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block content-area %}
 <div class="columns">
   <div class="column is-12">
@@ -24,5 +25,5 @@
 </div>
 {% endblock %}
 {% block footer %}
-<script src="{% static 'bundle/upload.js' %}"></script>
+{% render_bundle 'upload' 'js' %}
 {% endblock %}

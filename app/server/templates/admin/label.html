@@ -1,5 +1,6 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block content-area %}
 
 <div class="card">
@@ -108,5 +109,5 @@
 </div>
 {% endblock %}
 {% block footer %}
-<script src="{% static 'bundle/label.js' %}"></script>
+{% render_bundle 'label' 'js' %}
 {% endblock %}
