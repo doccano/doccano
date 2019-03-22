@@ -17,10 +17,14 @@ RUN pip install -r /requirements.txt \
 COPY app/server/static /doccano/app/server/static/
 COPY app/server/webpack.config.js /doccano/app/server/
 RUN cd /doccano/app/server \
- && DEBUG=False npm run build \
- && rm -rf node_modules/
+ && DEBUG=False npm run build
 
 COPY . /doccano
+
+RUN cd /doccano \
+ && tools/ci.sh
+
+RUN rm -rf /doccano/app/server/node_modules/
 
 FROM python:${PYTHON_VERSION}-slim AS runtime
 

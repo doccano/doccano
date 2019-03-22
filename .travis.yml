@@ -1,18 +1,10 @@
-language: python
+language: minimal
 
 services:
   - docker
 
-python:
-  - "3.6"
-
-cache: pip
-
-install:
-  - pip install -r requirements.txt
-
 script:
-  - tools/ci.sh
+  - docker build .
 
 deploy:
   - provider: script
