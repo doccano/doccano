@@ -208,7 +208,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Size of the batch for creating documents
 # on the import phase
-IMPORT_BATCH_SIZE = 25
+IMPORT_BATCH_SIZE = 500
 
 GOOGLE_TRACKING_ID = os.getenv('GOOGLE_TRACKING_ID', 'UA-123456789-9')
 
