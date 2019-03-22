@@ -208,9 +208,6 @@ class LabelAdminAPI(APIView):
             labels_csv += '%s,%s,%s,%s,%s\n' % (row[0], row[1], row[2], row[3], row[4])
         pandas_csv = StringIO(labels_csv)
         df = pd.read_csv(pandas_csv)
-        print(labels_csv)
-
-
         z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False]).groupby(['document_id']).agg({
         'label_id': [('top_label', lambda x: x.iloc[0])],
         'num_labelers': [('agreement', lambda x: x.iloc[0] / sum(x)),
