@@ -371,6 +371,7 @@ const annotationMixin = {
 
     metadataString() {
       if (this.pageNumber && this.docs[this.pageNumber] && this.docs[this.pageNumber].metadata) {
+        console.log(this.docs[this.pageNumber]);
         const json = JSON.parse(this.docs[this.pageNumber].metadata)
         const str = JSON.stringify(json, undefined, 4);
         return syntaxHighlight(str);

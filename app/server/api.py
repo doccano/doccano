@@ -311,7 +311,7 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
         format_str_positive = '<span class="has-background-success">{}</span>'
         format_str_negative = '<span class="has-background-danger">{}</span>'
         text = []
-        if self.class_weights:
+        if self.class_weights is not None:
             for w in doc_text_splited:
                 weight = self.class_weights.get(w.lower().replace(',','').replace('.',''), 0)
                 if weight < -0.2:
@@ -391,7 +391,7 @@ class DocumentList(generics.ListCreateAPIView):
             queryset = project.get_documents(is_null).distinct()
 
         if (project.use_machine_model_sort):
-            queryset = queryset.order_by('doc_mlm_annotations__prob').filter(project=self.kwargs['project_id'])
+            queryset = queryset.order_by('doc_mlm_annotations__prob').filter(project=self.kwargs['project_id']).exclude(doc_mlm_annotations__prob__isnull=True)
         else:
             queryset = queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
 

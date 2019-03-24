@@ -10,6 +10,13 @@
   </span>
   <b>Annotate Data</b>
 </a>
+<a class="navbar-item" @click="runModel">
+  <span class="icon">
+    <i class="fas fa-robot"></i>
+  </span>
+  <b>Run Model</b>
+</a>
+
 <a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
   <span class="icon">
     <i class="fas fa-upload"></i>
