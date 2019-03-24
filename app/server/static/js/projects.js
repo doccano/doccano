@@ -48,6 +48,9 @@ const vm = new Vue({
       if (projectType === 'Seq2seq') {
         return this.selected === 'Seq2seq';
       }
+      if (projectType === 'Speech2text') {
+        return this.selected === 'Speech2text';
+      }
       return false;
     },
 
@@ -101,6 +104,9 @@ const vm = new Vue({
       }
       if (this.projectType === 'Seq2seq') {
         return 'Seq2seqProject';
+      }
+      if (this.projectType === 'Speech2text') {
+        return 'Speech2textProject';
       }
       return '';
     },

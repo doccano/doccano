@@ -10,10 +10,12 @@ from polymorphic.models import PolymorphicModel
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
+SPEECH2TEXT = 'Speech2text'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
+    (SPEECH2TEXT, 'speech to text'),
 )
 
 
@@ -146,6 +148,33 @@ class Seq2seqProject(Project):
         return Seq2seqStorage(data, self)
 
 
+class Speech2textProject(Project):
+
+    @property
+    def image(self):
+        return staticfiles_storage.url('images/cats/seq2seq.jpg')
+
+    def get_template_name(self):
+        return 'annotation/speech2text.html'
+
+    def get_upload_template(self):
+        return 'admin/upload/speech2text.html'
+
+    def get_download_template(self):
+        return 'admin/download/speech2text.html'
+
+    def get_annotation_serializer(self):
+        from .serializers import Speech2textAnnotationSerializer
+        return Speech2textAnnotationSerializer
+
+    def get_annotation_class(self):
+        return Speech2textAnnotation
+
+    def get_storage(self, data):
+        from .utils import Speech2textStorage
+        return Speech2textStorage(data, self)
+
+
 class Label(models.Model):
     KEY_CHOICES = get_key_choices()
     COLOR_CHOICES = ()
@@ -214,6 +243,13 @@ class SequenceAnnotation(Annotation):
 
 class Seq2seqAnnotation(Annotation):
     document = models.ForeignKey(Document, related_name='seq2seq_annotations', on_delete=models.CASCADE)
+    text = models.TextField()
+
+    class Meta:
+        unique_together = ('document', 'user', 'text')
+
+class Speech2textAnnotation(Annotation):
+    document = models.ForeignKey(Document, related_name='speech2text_annotations', on_delete=models.CASCADE)
     text = models.TextField()
 
     class Meta:

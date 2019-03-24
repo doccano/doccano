@@ -3,10 +3,11 @@ from rest_framework.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from model_mommy import mommy
 
-from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, Speech2textAnnotation
 from ..serializers import DocumentAnnotationSerializer
 from ..serializers import SequenceAnnotationSerializer
 from ..serializers import Seq2seqAnnotationSerializer
+from ..serializers import Speech2textAnnotationSerializer
 
 
 class TestTextClassificationProject(TestCase):

@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from model_mommy import mommy
 from ..models import User, SequenceAnnotation, Document
-from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
+from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
 from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
@@ -659,9 +659,11 @@ class TestUploader(APITestCase):
         cls.labeling_project = mommy.make('server.SequenceLabelingProject',
                                           users=[super_user], project_type=SEQUENCE_LABELING)
         cls.seq2seq_project = mommy.make('server.Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
+        cls.speech2text_project = mommy.make('server.Speech2textProject', users=[super_user], project_type=SPEECH2TEXT)
+
         cls.classification_url = reverse(viewname='doc_uploader', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_uploader', args=[cls.labeling_project.id])
-        cls.seq2seq_url = reverse(viewname='doc_uploader', args=[cls.seq2seq_project.id])
+        cls.speech2text_url = reverse(viewname='doc_uploader', args=[cls.speech2text_project.id])
 
     def setUp(self):
         self.client.login(username=self.super_user_name,
@@ -696,6 +698,12 @@ class TestUploader(APITestCase):
                                 format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_speech2text_csv(self):
+        self.upload_test_helper(url=self.speech2text_url,
+                                filename='example.csv',
+                                format='csv',
+                                expected_status=status.HTTP_201_CREATED)
+
     def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
         self.upload_test_helper(url=self.classification_url,
                                 filename='example.invalid.1.csv',
@@ -725,6 +733,13 @@ class TestUploader(APITestCase):
                                 filename='seq2seq.jsonl',
                                 format='json',
                                 expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_speech2text_jsonl(self):
+         self.upload_test_helper(url=self.speech2text_url,
+                                filename='speech2text.jsonl',
+                                format='json',
+                                expected_status=status.HTTP_201_CREATED)
+
 
     def test_can_upload_plain_text(self):
         self.upload_test_helper(url=self.classification_url,
@@ -767,6 +782,9 @@ class TestParser(APITestCase):
     def test_give_seq2seq_data_to_csv_parser(self):
         self.parser_helper(filename='example.csv', parser=CSVParser())
 
+    def test_give_speech2text_data_to_csv_parser(self):
+        self.parser_helper(filename='example.csv', parser=CSVParser())
+
     def test_give_classification_data_to_json_parser(self):
         self.parser_helper(filename='classification.jsonl', parser=JSONParser())
 
@@ -775,6 +793,9 @@ class TestParser(APITestCase):
 
     def test_give_seq2seq_data_to_json_parser(self):
         self.parser_helper(filename='seq2seq.jsonl', parser=JSONParser())
+
+    def test_give_speech2text_data_to_json_parser(self):
+        self.parser_helper(filename='speech2text.jsonl', parser=JSONParser())
 
     def test_give_data_without_label_to_json_parser(self):
         self.parser_helper(filename='example.jsonl', parser=JSONParser(), include_label=False)
@@ -795,9 +816,11 @@ class TestDownloader(APITestCase):
         cls.labeling_project = mommy.make('server.SequenceLabelingProject',
                                           users=[super_user], project_type=SEQUENCE_LABELING)
         cls.seq2seq_project = mommy.make('server.Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
+        cls.speech2text_project = mommy.make('server.Speech2textProject', users=[super_user], project_type=SPEECH2TEXT)
         cls.classification_url = reverse(viewname='doc_downloader', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_downloader', args=[cls.labeling_project.id])
         cls.seq2seq_url = reverse(viewname='doc_downloader', args=[cls.seq2seq_project.id])
+        cls.speech2text_url = reverse(viewname='doc_downloader', args=[cls.speech2text_project.id])
 
     def setUp(self):
         self.client.login(username=self.super_user_name,
@@ -827,6 +850,11 @@ class TestDownloader(APITestCase):
                                   format='csv',
                                   expected_status=status.HTTP_200_OK)
 
+    def test_can_download_speech2text_csv(self):
+        self.download_test_helper(url=self.speech2text_url,
+                                  format='csv',
+                                  expected_status=status.HTTP_200_OK)
+
     def test_can_download_classification_jsonl(self):
         self.download_test_helper(url=self.classification_url,
                                   format='json',
@@ -839,6 +867,11 @@ class TestDownloader(APITestCase):
 
     def test_can_download_seq2seq_jsonl(self):
         self.download_test_helper(url=self.seq2seq_url,
+                                  format='json',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_can_download_speech2text_jsonl(self):
+        self.download_test_helper(url=self.speech2text_url,
                                   format='json',
                                   expected_status=status.HTTP_200_OK)
 

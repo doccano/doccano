@@ -16,7 +16,7 @@ from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
 from .serializers import ProjectPolymorphicSerializer
-from .utils import CSVParser, JSONParser, PlainTextParser, CoNLLParser
+from .utils import CSVParser, JSONParser, PlainTextParser, CoNLLParser, AUDIOParser
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
@@ -104,7 +104,8 @@ class DocumentList(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
     ordering_fields = ('created_at', 'updated_at', 'doc_annotations__updated_at',
-                       'seq_annotations__updated_at', 'seq2seq_annotations__updated_at')
+                       'seq_annotations__updated_at', 'seq2seq_annotations__updated_at',
+                       'speech2text_annotations__updated_at')
     filter_class = DocumentFilter
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
@@ -188,6 +189,8 @@ class TextUploadAPI(APIView):
             return JSONParser()
         elif format == 'conll':
             return CoNLLParser()
+        elif format == 'audio':
+            return AUDIOParser()
         else:
             raise ValidationError('format {} is invalid.'.format(format))
 

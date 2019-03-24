@@ -1,0 +1,9 @@
+{% extends "admin/upload/base.html" %}
+{% load static %}
+{% block select-format-area %}
+<label class="radio">
+  <input type="radio" name="format" value="audio" :checked="format=='audio'" v-model="format">
+  AUDIO
+</label>
+{% endblock %}
+

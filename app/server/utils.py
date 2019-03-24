@@ -13,7 +13,7 @@ from app.settings import IMPORT_BATCH_SIZE
 from .exceptions import FileParseException
 from .models import Label
 from .serializers import DocumentSerializer, LabelSerializer
-
+import base64
 
 def extract_label(tag):
     ptn = re.compile(r'(B|I|E|S)-(.+)')
@@ -243,6 +243,35 @@ class Seq2seqStorage(BaseStorage):
         return annotations
 
 
+class Speech2textStorage(BaseStorage):
+    """Store audio base64 and file name for speech2text.
+
+    The format is as follows:
+    {"text": "file_name|base64audio"}
+    ...
+    """
+    @transaction.atomic
+    def save(self, user):
+        for text in self.data:
+            self.save_doc(text)
+
+    def make_annotations(self, docs, labels):
+        """Make list of annotation obj for serializer.
+
+        Example:
+            >>> docs = ["<Document: a>", "<Document: b>"]
+            >>> labels = [["Hello!"], ["How are you?", "What's up?"]]
+            >>> self.make_annotations(docs, labels)
+            [{"document": 1, "text": "Hello"}, {"document": 2, "text": "How are you?"}
+            {"document": 2, "text": "What's up?"}]
+        """
+        annotations = []
+        for doc, texts in zip(docs, labels):
+            for text in texts:
+                annotations.append({'document': doc.id, 'text': text})
+        return annotations
+
+
 class FileParser(object):
 
     def parse(self, file):
@@ -380,6 +409,21 @@ class CSVParser(FileParser):
                 raise FileParseException(line_num=i, line=row)
         if data:
             yield data
+
+
+class AUDIOParser(FileParser):
+    """Uploads audio file.
+    """
+    def parse(self, file):
+        #import base64
+        #yield [{'text': file._get_name()+"|"+str(base64.b64decode(file.open().read()))} ]
+        import os
+        from django.core.files.storage import default_storage   
+        from django.core.files.base import ContentFile
+        from django.conf import settings
+        path = default_storage.save('/doccano/app/staticfiles/'+file._get_name(), ContentFile(file.read()))
+        tmp_file = os.path.join(settings.MEDIA_ROOT, path)
+        yield [{'text': file._get_name()} ]
 
 
 class JSONParser(FileParser):

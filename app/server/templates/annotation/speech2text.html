@@ -1,0 +1,55 @@
+{% extends "annotation/annotation_base.html" %}
+{% load static %}
+{% block annotation-area %}
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}" />
+<!-- wavesurfer.js -->
+<script src="https://unpkg.com/wavesurfer.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.regions.min.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.min.js"></script>
+<script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js"></script>
+
+<!-- App -->
+<script src="{% static 'js/trivia.js' %}"></script>
+
+<p id="subtitle" class="text-center text-info">&nbsp;</p>
+
+<!-- audio --> 
+<div id="wave-timeline"></div>
+
+
+<div class="content" v-if="docs[pageNumber]">
+<div id="waveform" ref="waveform"></div>
+</div>
+
+<button @click="togglePlayPause">Play / Pause</button>
+
+ 
+<form role="form" name="edit" style="opacity: 0; transition: opacity 300ms linear; margin: 30px 0;">
+<div class="form-group">
+    <label for="start">Start</label>
+    <input class="form-control" id="start" name="start" />
+</div>
+
+<div class="form-group">
+    <label for="end">End</label>
+    <input class="form-control" id="end" name="end" />
+</div>
+
+<div class="form-group">
+    <label for="note">Note</label>
+    <textarea id="note" class="form-control" rows="3" name="note"></textarea>
+</div>
+
+<button type="submit" class="btn btn-success btn-block">Save</button>
+<center><i>or</i></center>
+<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete</button>
+</form>
+
+
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/speech2text.js' %}"></script>
+
+
+{% endblock %}
