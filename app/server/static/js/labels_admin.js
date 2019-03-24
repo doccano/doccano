@@ -15,6 +15,7 @@ Vue.component('th-sortable', {
   </th>`,
   data() {
     return {
+      labels: []
     };
   },
   methods: {
@@ -66,23 +67,32 @@ const vm = new Vue({
   
   methods: {
     formTableRows(dataframe) {
-      const length = dataframe.doc_ids.length;
+      const length = dataframe.document_id.length;
       for (let i = 0; i < length; i++) {
         const row = {}
-        row.documentId = dataframe.doc_ids[i];
-        row.labelersCount = dataframe.labelers_count[i];
-        row.agreementsPercent = dataframe.agreements_percent[i];
-        row.topLabel = dataframe.top_label[i];
+        row.documentId = dataframe.document_id[i];
+        row.labelersCount = dataframe.num_labelers[i];
+        row.agreementsPercent = dataframe.agreement[i];
+        row.topLabel = this.labelNameById(dataframe.top_label[i]);
         row.lastAnnotationDate = dataframe.last_annotation_date[i];
-        row.docText = dataframe.doc_text[i];
+        row.docText = '';
         this.tableRows.push(row)
       }
+    },
+    labelNameById(id) {
+      const label = this.labels.find((l) => +l.id === +id)
+      if (label) {
+        return label.text
+      }
+
+      return ''
     }
   },
-  created() {
-    HTTP.get('labels_admin').then((response) => {
-      this.formTableRows(response.data.dataframe)
-    });
+  async created() {
+    const la = await HTTP.get('labels_admin')
+    const labels = await HTTP.get('labels')
+    this.labels = labels.data
+    this.formTableRows(la.data.dataframe)
   },
   watch: {
   }
