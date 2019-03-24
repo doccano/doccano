@@ -421,7 +421,7 @@ class AUDIOParser(FileParser):
         from django.core.files.storage import default_storage   
         from django.core.files.base import ContentFile
         from django.conf import settings
-        path = default_storage.save('/doccano/app/staticfiles/'+file._get_name(), ContentFile(file.read()))
+        path = default_storage.save('app/staticfiles/'+file._get_name(), ContentFile(file.read()))
         tmp_file = os.path.join(settings.MEDIA_ROOT, path)
         yield [{'text': file._get_name()} ]
 

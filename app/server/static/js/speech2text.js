@@ -11,6 +11,7 @@ const vm = new Vue({
   delimiters: ['[[', ']]'],
   data: {
      wavesurfer: null,
+     localStorage: {},
   },
   mixins: [annotationMixin],
   directives: {},
@@ -55,17 +56,19 @@ const vm = new Vue({
               color: me.randomColor(0.1)
           });
 
-          if (me.localStorage.regions) {
-              me.loadRegions(JSON.parse(me.localStorage.regions));
-          }else {
-            me.loadRegions(
-                me.extractRegions(
-                    me.wavesurfer.backend.getPeaks(512),
-                    me.wavesurfer.getDuration()
-                )
-            );
-
+          if (me.annotations[me.pageNumber][0]) {
+              console.log(me.annotations[me.pageNumber]);
+               me.loadRegions(JSON.parse(me.annotations[me.pageNumber][0].text));
           }
+          // else {
+          //   me.loadRegions(
+          //       me.extractRegions(
+          //           me.wavesurfer.backend.getPeaks(512),
+          //           me.wavesurfer.getDuration()
+          //       )
+          //   );
+
+          // }
 
 
 
@@ -81,7 +84,7 @@ const vm = new Vue({
         this.wavesurfer.on('region-updated', this.saveRegions);
         this.wavesurfer.on('region-removed', this.saveRegions);
 
-        this.wavesurfer.on('region-in', this.showNote);
+        //this.wavesurfer.on('region-in', this.showNote);
 
         this.wavesurfer.on('region-play', function(region) {
           region.once('out', function() {
@@ -90,12 +93,12 @@ const vm = new Vue({
           });
         });
     },
-    showNote(region) {
-        if (!showNote.el) {
-            showNote.el = document.querySelector('#subtitle');
-        }
-        showNote.el.textContent = region.data.note || '–';
-    },
+    // showNote(region) {
+    //     if (!showNote.el) {
+    //         showNote.el = document.querySelector('#subtitle');
+    //     }
+    //     showNote.el.textContent = region.data.note || '–';
+    // },
 
     editAnnotation(region) {
       var form = document.forms.edit;
@@ -121,6 +124,14 @@ const vm = new Vue({
       form.dataset.region = region.id;
     },
 
+    deleteRegion(){
+      var form = document.forms.edit;
+      var regionId = form.dataset.region;
+      if (regionId) {
+          this.wavesurfer.regions.list[regionId].remove();
+          form.reset();
+      }
+    },
     saveRegions() {
       var me = this;
       this.localStorage.regions = JSON.stringify(
@@ -135,6 +146,19 @@ const vm = new Vue({
           })
       );
     },
+
+    async saveAnnotations(){
+      const docId = this.docs[this.pageNumber].id;
+      const payload = {
+          text: this.localStorage.regions,
+        };
+      await HTTP.post(`docs/${docId}/annotations`, payload).then((response) => {
+        this.annotations[this.pageNumber].push(response.data);
+      });
+
+    },
+
+
     randomColor(alpha) {
       return (
           'rgba(' +
@@ -150,78 +174,33 @@ const vm = new Vue({
 
     loadRegions(regions) {
       var me = this;
-      this.regions.forEach(function(region) {
+      this.localStorage.regions = regions;
+      regions.forEach(function(region) {
         region.color = me.randomColor(0.1);
         me.wavesurfer.addRegion(region);
     });
     },
     togglePlayPause(){
       this.wavesurfer.playPause();
+      /* Toggle play/pause buttons. */
+      var playButton = document.querySelector('#play');
+      var pauseButton = document.querySelector('#pause');
+      this.wavesurfer.on('play', function() {
+          playButton.style.display = 'none';
+          pauseButton.style.display = '';
+      });
+      this.wavesurfer.on('pause', function() {
+          playButton.style.display = '';
+          pauseButton.style.display = 'none';
+      });
     },
 
-    extractRegions(peaks, duration) {
-      // Silence params
-      var minValue = 0.0015;
-      var minSeconds = 0.25;
-
-      var length = peaks.length;
-      var coef = duration / length;
-      var minLen = minSeconds / coef;
-
-      // Gather silence indeces
-      var silences = [];
-      Array.prototype.forEach.call(peaks, function(val, index) {
-          if (Math.abs(val) <= minValue) {
-              silences.push(index);
-          }
-      });
-
-      // Cluster silence values
-      var clusters = [];
-      silences.forEach(function(val, index) {
-          if (clusters.length && val == silences[index - 1] + 1) {
-              clusters[clusters.length - 1].push(val);
-          } else {
-              clusters.push([val]);
-          }
-      });
-
-      // Filter silence clusters by minimum length
-      var fClusters = clusters.filter(function(cluster) {
-          return cluster.length >= minLen;
-      });
-
-      // Create regions on the edges of silences
-      var regions = fClusters.map(function(cluster, index) {
-          var next = fClusters[index + 1];
-          return {
-              start: cluster[cluster.length - 1],
-              end: next ? next[0] : length - 1
-          };
-      });
-
-      // Add an initial region if the audio doesn't start with silence
-      var firstCluster = fClusters[0];
-      if (firstCluster && firstCluster[0] != 0) {
-          regions.unshift({
-              start: 0,
-              end: firstCluster[firstCluster.length - 1]
-          });
-      }
-
-      // Filter regions by minimum length
-      var fRegions = regions.filter(function(reg) {
-          return reg.end - reg.start >= minLen;
-      });
-
-      // Return time-based regions
-      return fRegions.map(function(reg) {
-          return {
-              start: Math.round(reg.start * coef * 10) / 10,
-              end: Math.round(reg.end * coef * 10) / 10
-          };
-      });
-  },
+    // async submit() {
+    //   const state = this.getState();
+    //   this.url = `docs?q=${this.searchQuery}&speech2text_annotations__isnull=${state}&offset=${this.offset}`;
+    //   await this.search();
+    //   this.pageNumber = 0;
+    // },
 
 
   },

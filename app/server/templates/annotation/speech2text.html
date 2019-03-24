@@ -9,8 +9,6 @@
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.minimap.min.js"></script>
 <script src="https://unpkg.com/wavesurfer.js/dist/plugin/wavesurfer.timeline.min.js"></script>
 
-<!-- App -->
-<script src="{% static 'js/trivia.js' %}"></script>
 
 <p id="subtitle" class="text-center text-info">&nbsp;</p>
 
@@ -22,7 +20,33 @@
 <div id="waveform" ref="waveform"></div>
 </div>
 
-<button @click="togglePlayPause">Play / Pause</button>
+<div class="row" style="margin: 30px 0">
+	<div class="col-sm-8">
+	    <p>
+	        Click on a region to enter an annotation.<br />
+	        Shift-click plays a region in a loop.
+	    </p>
+	</div>
+
+	<div class="col-sm-2">
+	    <button class="btn btn-primary btn-block" @click="togglePlayPause">
+	        <span id="play">
+	            <i class="glyphicon glyphicon-play"></i>
+	            Play
+	        </span>
+
+	        <span id="pause" style="display: none">
+	            <i class="glyphicon glyphicon-pause"></i>
+	            Pause
+	        </span>
+	    </button>
+	</div>
+
+</div>
+
+<a href="{% url 'dataset' view.kwargs.project_id %}">
+<button @click="saveAnnotations">Done</button>
+</a>
 
  
 <form role="form" name="edit" style="opacity: 0; transition: opacity 300ms linear; margin: 30px 0;">
@@ -38,12 +62,12 @@
 
 <div class="form-group">
     <label for="note">Note</label>
-    <textarea id="note" class="form-control" rows="3" name="note"></textarea>
+    <textarea ref="note" id="note" class="form-control" rows="3" name="note"></textarea>
 </div>
 
 <button type="submit" class="btn btn-success btn-block">Save</button>
 <center><i>or</i></center>
-<button type="button" class="btn btn-danger btn-block" data-action="delete-region">Delete</button>
+<button type="button" class="btn btn-danger btn-block" @click="deleteRegion">Delete</button>
 </form>
 
 
