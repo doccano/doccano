@@ -56,9 +56,8 @@ const vm = new Vue({
               color: me.randomColor(0.1)
           });
 
-          if (me.annotations[me.pageNumber][0]) {
-              console.log(me.annotations[me.pageNumber]);
-               me.loadRegions(JSON.parse(me.annotations[me.pageNumber][0].text));
+          if (me.annotations[me.pageNumber]) {
+               me.loadRegions(me.annotations[me.pageNumber]); 
           }
           // else {
           //   me.loadRegions(
@@ -172,8 +171,15 @@ const vm = new Vue({
       );
     },
 
-    loadRegions(regions) {
+    loadRegions(regionstext) {
       var me = this;
+
+      var regions = []
+
+      for (var i = 0; i < regionstext.length; i++) {
+        regions.push(...JSON.parse(regionstext[i].text));
+      }
+
       this.localStorage.regions = regions;
       regions.forEach(function(region) {
         region.color = me.randomColor(0.1);
