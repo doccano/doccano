@@ -387,10 +387,13 @@ const annotationMixin = {
       }
 
       if(this.highlightQuery.length) {
-        const complexSearchRegex = /^\"(.*)\"\s*\-?(.*$)/;
+        const complexSearchRegex = /^\"(.*)\"\s*(\-)?(.*$)/;
         const complexMatches = this.highlightQuery.match(complexSearchRegex)
         let terms = this.highlightQuery.split(' ');
-        if (complexMatches && complexMatches[1]) {
+        console.log(complexMatches)
+        if (complexMatches && complexMatches[1] && complexMatches[3]) {
+          terms = [complexMatches[1], complexMatches[3]]
+        } else if (complexMatches && complexMatches[1]) {
           terms = [complexMatches[1]]
         }
         terms.forEach((term) => {

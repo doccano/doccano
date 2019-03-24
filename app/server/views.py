@@ -227,6 +227,75 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         else:
             return []
 
+    def users_labeled_csv_to_labels(self, project, file, text_key='text', label_key='label', user_key="user"):
+        form_data = TextIOWrapper(file, encoding='utf-8', errors='ignore')
+        reader = csv.reader(form_data, quotechar='"', delimiter=',',
+                     quoting=csv.QUOTE_ALL, skipinitialspace=True)
+
+        maybe_header = next(reader)
+        if maybe_header:
+            if (text_key in maybe_header and label_key in maybe_header and user_key in maybe_header):
+                text_col = maybe_header.index(text_key)
+                label_col = maybe_header.index(label_key)
+                user_col = maybe_header.index(user_key)
+            elif len(maybe_header) == 3:
+                reader = it.chain([maybe_header], reader)
+                text_col = 0
+                label_col = 1
+                user_col = 2
+            else:
+                raise DataUpload.ImportFileError("CSV file must have either a title with \"text\" column and \"label\" column and \"user\" column or have three columns ")
+            errors = []
+            labels_set = []
+            count = 0
+            for row in reader:
+                if row[text_col]=='':
+                    continue
+                label_obj = Label.objects.filter(text__exact=row[label_col], project=project)
+                if len(label_obj)>1:
+                    errors.append('Found multiple labels with text "{}"'.format(row[label_col]))
+                    continue
+                else:
+                    label_obj = label_obj.first()
+
+                document_obj = Document.objects.filter(text__exact=row[text_col], project=project)
+                if len(document_obj) > 1:
+                    errors.append('Found multiple documents with text "{}"'.format(row[text_col]))
+                    continue
+                else:
+                    document_obj = document_obj.first()
+
+                user_obj = User.objects.filter(username__exact=row[user_col])
+
+                if len(user_obj) > 1:
+                    errors.append('Found multiple users with name "{}"'.format(row[user_col]))
+                    continue
+                else:
+                    user_obj = user_obj.first()
+
+                if (label_obj and document_obj and user_obj):
+                    labels_set.append([label_obj, document_obj, user_obj])
+                else:
+                    if (not label_obj):
+                        errors.append('Label "' + row[label_col] + '" is not found')
+                    if (not document_obj):
+                        errors.append('Document with text "' + row[text_col] + '" is not found')
+                    if (not user_obj):
+                        errors.append('User with name "' + row[user_col] + '" is not found')
+            if len(errors):
+                raise DataUpload.ImportFileError('Encoutered {} errors: \n\n{}'.format(len(errors), '\n\n'.join(errors)) )
+
+            return (
+                DocumentAnnotation(
+                    label=label[0],
+                    document=label[1],
+                    user=label[2]
+                )
+                for label in labels_set
+            )
+        else:
+            return []
+
     def extract_metadata_json(self, entry, text_key):
         copy = entry.copy()
         del copy[text_key]
@@ -247,12 +316,15 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             file = request.FILES['file'].file
             documents = []
             true_labels = []
+            users_lsbels = []
             if import_format == 'csv':
                 documents = self.csv_to_documents(project, file)
             elif import_format == 'json':
                 documents = self.json_to_documents(project, file)
             elif import_format == 'csv_labeled':
                 true_labels = self.labeled_csv_to_labels(project, file)
+            elif import_format == "csv_labeled_users":
+                users_lsbels = self.users_labeled_csv_to_labels(project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
 
@@ -278,6 +350,18 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 url = reverse('dataset', args=[project.id])
                 url += '?true_labels_count=' + str(labels_len)
                 return HttpResponseRedirect(url)
+            elif (import_format == "csv_labeled_users"):
+                labels_len = 0
+                while True:
+                    batch = list(it.islice(users_lsbels, batch_size))
+                    if not batch:
+                        break
+                    labels_len += len(batch)
+                    DocumentAnnotation.objects.bulk_create(batch, batch_size=batch_size)
+                url = reverse('dataset', args=[project.id])
+                url += '?users_labels_count=' + str(labels_len)
+                
+
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
