@@ -1,8 +1,12 @@
 const process = require('process');
+const BundleTracker = require('webpack-bundle-tracker');
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
+const devMode = process.env.DEBUG !== 'False';
+const hotReload = process.env.HOT_RELOAD === '1';
+
 module.exports = {
-    mode: process.env.DEBUG === 'False' ? 'production' : 'development',
+    mode: devMode ? 'development' : 'production',
     entry: {
         'sequence_labeling': './static/js/sequence_labeling.js',
         'document_classification': './static/js/document_classification.js',
@@ -18,8 +22,15 @@ module.exports = {
         'dataset': './static/js/dataset.js',
     },
     output: {
+        publicPath: hotReload ? 'http://localhost:8080/' : '',
         path: __dirname + '/static/bundle',
         filename: '[name].js'
+    },
+    devtool: devMode ? 'cheap-eval-source-map' : 'source-map',
+    devServer: {
+        hot: true,
+        quiet: false,
+        headers: { 'Access-Control-Allow-Origin': '*' }
     },
     module: {
         rules: [
@@ -30,6 +41,7 @@ module.exports = {
         ]
     },
     plugins: [
+        new BundleTracker({ filename: './webpack-stats.json' }),
         new VueLoaderPlugin()
     ],
     resolve: {

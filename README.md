@@ -98,13 +98,13 @@ pip install -r requirements.txt
 cd app
 ```
 
-Next we need to compile the frontend. Run the following commands:
+Next we need to start the webpack server so that the frontend gets compiled continuously.
+Run the following commands in a new shell:
 
 ```bash
 cd server
 npm install
-npm run build
-cd ..
+npm start
 ```
 
 Next we need to make migration. Run the following command:

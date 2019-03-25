@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django_filters',
     'social_django',
     'polymorphic',
+    'webpack_loader',
 ]
 
 MIDDLEWARE = [
@@ -96,6 +97,17 @@ STATICFILES_DIRS = [
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'bundle/',
+        'STATS_FILE': path.join(BASE_DIR, 'server', 'webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': [r'.*\.hot-update.js', r'.+\.map']
+    }
+}
 
 WSGI_APPLICATION = 'app.wsgi.application'
 

@@ -1,5 +1,6 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block content-area %}
 <div class="card">
   <header class="card-header">
@@ -78,5 +79,5 @@
 {% endif %}
 {% endblock %}
 {% block footer %}
-<script src="{% static 'bundle/dataset.js' %}"></script>
+{% render_bundle 'dataset' 'js' %}
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends "annotation/annotation_base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block annotation-area %}
 <div class="card">
   <header class="card-header">
@@ -26,5 +27,5 @@
 </div>
 {% endblock %}
 {% block footer %}
-<script src="{% static 'bundle/demo_named_entity.js' %}"></script>
+{% render_bundle 'demo_named_entity' 'js' %}
 {% endblock %}
