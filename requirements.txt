@@ -4,7 +4,7 @@ Django==2.1.7
 django-filter==2.0.0
 django-heroku==0.3.1
 django-webpack-loader==0.6.0
-django-widget-tweaks==1.4.2
+django-widget-tweaks==1.4.3
 django-polymorphic==2.0.3
 django-rest-polymorphic==0.1.8
 djangorestframework==3.8.2
