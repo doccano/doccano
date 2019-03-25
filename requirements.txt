@@ -12,7 +12,7 @@ djangorestframework-csv==2.1.0
 djangorestframework-filters==0.10.2
 environs==4.1.0
 djangorestframework-xml==1.4.0
-Faker==0.8.8
+Faker==1.0.4
 flake8==3.6.0
 gunicorn==19.9.0
 mixer==6.1.3
