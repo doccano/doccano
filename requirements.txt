@@ -9,7 +9,7 @@ django-polymorphic==2.0.3
 django-rest-polymorphic==0.1.8
 djangorestframework==3.8.2
 djangorestframework-csv==2.1.0
-djangorestframework-filters==0.10.2
+djangorestframework-filters==0.11.1
 environs==4.1.0
 djangorestframework-xml==1.4.0
 Faker==0.8.8
