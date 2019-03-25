@@ -227,7 +227,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         else:
             return []
 
-    def users_labeled_csv_to_labels(self, project, file, text_key='text', label_key='label', user_key="user"):
+    def users_labeled_csv_to_labels(self, project, file, text_key='text', label_key='label', user_key='user'):
         form_data = TextIOWrapper(file, encoding='utf-8', errors='ignore')
         reader = csv.reader(form_data, quotechar='"', delimiter=',',
                      quoting=csv.QUOTE_ALL, skipinitialspace=True)
