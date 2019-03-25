@@ -1,5 +1,6 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block header %}
 <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 {% endblock %}
@@ -18,5 +19,5 @@
 {% block footer %}
 <script src="https://unpkg.com/marked@0.3.6"></script>
 <script src="https://unpkg.com/lodash@4.16.0"></script>
-<script src="{% static 'bundle/guideline.js' %}"></script>
+{% render_bundle 'guideline' 'js' %}
 {% endblock %}

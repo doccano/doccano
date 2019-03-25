@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% load widget_tweaks %}
 {% block content %}
 <div id="projects_root" v-cloak>
@@ -150,5 +151,5 @@
 </div>
 {% endblock %}
 {% block footer %}
-<script src="{% static 'bundle/projects.js' %}"></script>
+{% render_bundle 'projects' 'js' %}
 {% endblock %}
