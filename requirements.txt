@@ -7,7 +7,7 @@ django-webpack-loader==0.6.0
 django-widget-tweaks==1.4.2
 django-polymorphic==2.0.3
 django-rest-polymorphic==0.1.8
-djangorestframework==3.8.2
+djangorestframework==3.9.2
 djangorestframework-csv==2.1.0
 djangorestframework-filters==0.10.2
 environs==4.1.0
