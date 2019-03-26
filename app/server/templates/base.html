@@ -46,6 +46,11 @@
         <a class="navbar-item" href="{% url 'index' %}">
           <img src="{% static 'images/logo.png' %}" width="32" height="32">
           <b>doccano</b>
+          <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="topNav">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+          </a>
         </a>
         {% block navigation %}{% endblock %}
       </div>
@@ -108,6 +113,9 @@
         prevEl: '.swiper-button-prev',
       },
     })
+
+    document.querySelector('.navbar-burger').addEventListener('click', () =>
+      document.getElementById('topNav').classList.toggle('is-active'))
   </script>
 </body>
 </html>
