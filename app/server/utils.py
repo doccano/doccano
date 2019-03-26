@@ -373,7 +373,7 @@ class PlainTextParser(FileParser):
         while True:
             batch = list(itertools.islice(file, IMPORT_BATCH_SIZE))
             if not batch:
-                raise StopIteration
+                break
             yield [{'text': line.strip()} for line in batch]
 
 

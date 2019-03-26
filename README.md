@@ -104,7 +104,8 @@ Run the following commands in a new shell:
 ```bash
 cd server
 npm install
-npm start
+npm run build
+# npm start  # for developers
 ```
 
 Next we need to make migration. Run the following command:
