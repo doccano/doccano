@@ -27,7 +27,7 @@
               </tr>
           </thead>
           <tbody>
-              <tr v-for="(user, index) in labelers" :key="index">
+              <tr v-for="(user, index) in labelers" :key="index" @click="goToUser(user)" style="cursor:pointer">
                   <td>[[ user.id ]]</td>
                   <td>[[ user.name ]]</td>
                   <td>[[ user.last_date ]]</td>

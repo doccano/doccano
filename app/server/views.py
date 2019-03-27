@@ -1,8 +1,10 @@
 import csv
 import json
-from io import TextIOWrapper
+from io import TextIOWrapper, StringIO
 import itertools as it
 import logging
+import datetime
+import pandas as pd
 
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.urls import reverse
@@ -13,6 +15,7 @@ from django.views.generic import TemplateView, CreateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.db import connection
 
 from .resources import DocumentResource, DocumentAnnotationResource, LabelResource
 
@@ -98,6 +101,47 @@ class LabelAdminView(SuperUserMixin, LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         context = super().get_context_data(**kwargs)
         context['docs_count'] = project.get_docs_count()
+        return context
+
+class UserInfoView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/user_info.html'
+
+    def get_context_data(self, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+        context['docs_count'] = project.get_docs_count()
+        cursor = connection.cursor()
+        annots_sql = '''SELECT server_documentannotation.document_id,
+            server_documentannotation.label_id,
+            server_documentannotation.user_id,
+            server_documentannotation.created_date_time,
+            server_documentannotation.updated_date_time
+            FROM server_documentannotation
+            LEFT JOIN server_document ON server_document.id = server_documentannotation.document_id
+            WHERE server_document.project_id = %s AND server_documentannotation.user_id = % s''' % (self.kwargs['project_id'], self.kwargs['user_id'])
+        cursor.execute(annots_sql)
+        annots_csv = 'user_id,created_date_time,updated_date_time\n'
+        for row in cursor.fetchall():
+            annots_csv += '%s,%s,%s\n' % (row[2], row[3], row[4])
+        pandas_csv = StringIO(annots_csv)
+        df = pd.read_csv(pandas_csv, parse_dates=['created_date_time', 'updated_date_time'])
+        df = df.sort_values(['user_id', 'created_date_time'])
+        users_sessions = pd.DataFrame()
+        users_speed = {}
+        TH_TIMEOUT_SESSION = 15
+        for user_id in df['user_id'].unique():
+            d = df[df['user_id'] == user_id]
+            d['session'] = d['created_date_time'] - d['created_date_time'].shift()
+            d['session'] = (d['session'] > datetime.timedelta(minutes=TH_TIMEOUT_SESSION)).cumsum()
+            single_user_sessions = d.groupby('session')['created_date_time'].agg([('count', lambda x: len(x) - 1),
+                                                                    ('start_datetime', lambda x: x.iloc[0]),
+                                                                    ('end_datetime', lambda x: x.iloc[-1]),
+                                                                    ('timediff', lambda x: x.iloc[-1] - x.iloc[0])
+                                                        ])
+            single_user_sessions['user_id'] = user_id
+            users_speed[user_id] = sum(single_user_sessions['timediff'].dt.seconds) / sum(single_user_sessions['count'].astype(int))
+            users_sessions = pd.concat([users_sessions, single_user_sessions])
+        context['user_speed'] = users_speed[self.kwargs['user_id']]
         return context
 
 class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):

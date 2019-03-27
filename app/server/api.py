@@ -220,6 +220,11 @@ class LabelAdminAPI(APIView):
         response = {'dataframe': z}
         return Response(response)
 
+class UserInfo(APIView):
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+    def get(self, request, *args, **kwargs):
+        return Response({})
 
 class RunModelAPI(APIView):
     pagination_class = None
