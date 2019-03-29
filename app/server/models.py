@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
@@ -15,16 +15,6 @@ PROJECT_CHOICES = (
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
 )
-
-
-def get_key_choices():
-    selectKey, shortKey = [c for c in string.ascii_lowercase], [c for c in string.ascii_lowercase]
-    checkKey = 'ctrl shift'
-    shortKey += [ck + ' ' + sk for ck in checkKey.split() for sk in selectKey]
-    shortKey += [checkKey + ' ' + sk for sk in selectKey]
-    shortKey += ['']
-    KEY_CHOICES = ((u, c) for u, c in zip(shortKey, shortKey))
-    return KEY_CHOICES
 
 
 class Project(PolymorphicModel):
@@ -147,11 +137,18 @@ class Seq2seqProject(Project):
 
 
 class Label(models.Model):
-    KEY_CHOICES = get_key_choices()
-    COLOR_CHOICES = ()
+    PREFIX_KEYS = (
+        ('ctrl', 'ctrl'),
+        ('shift', 'shift'),
+        ('ctrl shift', 'ctrl shift')
+    )
+    SUFFIX_KEYS = (
+        (c, c) for c in string.ascii_lowercase
+    )
 
     text = models.CharField(max_length=100)
-    shortcut = models.CharField(max_length=15, blank=True, null=True, choices=KEY_CHOICES)
+    prefix_key = models.CharField(max_length=10, blank=True, null=True, choices=PREFIX_KEYS)
+    suffix_key = models.CharField(max_length=1, blank=True, null=True, choices=SUFFIX_KEYS)
     project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
     background_color = models.CharField(max_length=7, default='#209cee')
     text_color = models.CharField(max_length=7, default='#ffffff')
@@ -161,10 +158,23 @@ class Label(models.Model):
     def __str__(self):
         return self.text
 
+    def clean(self):
+        # Don't allow shortcut key not to have a suffix key.
+        if self.prefix_key and not self.suffix_key:
+            raise ValidationError('Shortcut key may not have a suffix key.')
+        super().clean()
+
+    def validate_unique(self, exclude=None):
+        # Don't allow to save same shortcut key when prefix_key is null.
+        if Label.objects.exclude(id=self.id).filter(suffix_key=self.suffix_key,
+                                                    prefix_key__isnull=True).exists():
+            raise ValidationError('Duplicate key.')
+        super().validate_unique(exclude)
+
     class Meta:
         unique_together = (
             ('project', 'text'),
-            ('project', 'shortcut')
+            ('project', 'prefix_key', 'suffix_key')
         )
 
 
