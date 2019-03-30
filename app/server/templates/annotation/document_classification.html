@@ -42,6 +42,23 @@
     </div>
   </div>
 </div>
+
+<div class="card" style="margin-top: 2rem;">
+<header class="card-footer">
+    <p class="card-header-title">
+      Metadata search
+    </p>
+    <a href="#" style="text-decoration: none;" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+
+  <div class="card-content">
+    <metadata-search :metadata="metadataKeys" @metadatasearch="metadataSearch"></metadata-search>
+  </div>
+</div>
 {% endblock %}
 {% block footer %}
 <script src="{% static 'bundle/document_classification.js' %}"></script>

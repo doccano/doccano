@@ -1,4 +1,78 @@
 import HTTP from './http';
+import Vue from 'vue';
+
+Vue.component('metadata-search', {
+  props: ['metadata'],
+  template: `<div>
+  <div class="field is-horizontal" v-for="(rule, index) in rules" :key="index">
+    <div class="field-body">
+      <div class="field is-narrow">
+        <div class="control">
+          <div class="select">
+            <select v-model="rule.field">
+              <option v-for="(key, index) in metadata" :value="key" :key="index">
+                {{ key }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field is-narrow">
+        <div class="control">
+          <div class="select">
+            <select  v-model="rule.comparator">
+              <option v-for="comparator in comparators" :value="comparator.value" :key="comparator.value">
+                {{ comparator.text }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <input class="input" type="text" placeholder="Value" v-model="rule.search">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <div class="control">
+      <button class="button is-link" @click="search" :disabled="checkDisabled">Search</button>
+    </div>
+  </div>
+  </div>
+  `,
+  data() {
+    return {
+      comparators: [
+        {text: "==", value: 'eq'},
+        {text: "<=", value: 'leq'},
+        {text: "<", value: 'lt'},
+        {text: ">=", value: 'geq'},
+        {text: ">", value: 'gt'}
+      ],
+      rules: [
+        {field: '', comparator: 'eq', search: ''}
+      ]
+    };
+  },
+  methods: {
+    search() {
+      this.$emit('metadatasearch', this.rules)
+    }
+  },
+  computed: {
+    checkDisabled() {
+      let ret = false
+      this.rules.forEach((r) => {
+        if (!r.field.length || !r.search.length) {
+          ret = true
+        }
+      })
+      return ret
+    }
+  }
+});
 
 const getOffsetFromUrl = function(url) {
   if (!url) {
@@ -84,6 +158,9 @@ const annotationMixin = {
       suggestions: [],
       explainMode: false,
       docExplanation: '',
+      metadataAll: [],
+      metadataKeys: [],
+      metadataRules: []
     };
   },
 
@@ -219,15 +296,15 @@ const annotationMixin = {
       const state = this.getState();
       this.offset = 0;
       this.suggestions = []
-      this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
-      setQueryStringParameter('search', this.searchQuery)
-      
+      this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}&rules=${JSON.stringify(this.metadataRules)}`;
       await this.search();
       this.pageNumber = 0;
 
       if (this.explainMode) {
         const doc = this.docs[0]
-        this.getExplanation(doc.id)
+        if (doc) {
+          this.getExplanation(doc.id)
+        }
       }
 
       if (this.searchQuery.length) {
@@ -265,8 +342,13 @@ const annotationMixin = {
       const offset = getOffsetFromUrl(location.search)
       const searchQuery = getSearchQuery(location.search)
       const state = this.getState();
-      this.url = `docs/?q=${searchQuery}&is_checked=${state}&offset=${offset}`;
+      this.url = `docs/?q=${searchQuery}&is_checked=${state}&offset=${offset}&rules=${JSON.stringify(this.metadataRules)}`;
       await this.search(false);
+    },
+
+    async metadataSearch(rules) {
+      this.metadataRules = rules
+      await this.submit()
     }
   },
 
@@ -313,6 +395,20 @@ const annotationMixin = {
     });
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
+    });
+    HTTP.get('metadata').then((response) => {
+      response.data.metadata.forEach((m) => {
+        try {
+          const data = JSON.parse(m);
+          Object.keys(data).forEach((k) => {
+            if (!this.metadataKeys.includes(k)) {
+              this.metadataKeys.push(k);
+            }
+          })
+        } catch (e) {
+          console.log('Wrong metadata format')
+        }
+      })
     });
     const state = this.getState();
     this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
@@ -369,13 +465,19 @@ const annotationMixin = {
       return 'is-primary';
     },
 
+    currentDoc() {
+      if (this.pageNumber >= 0) {
+        return this.docs[this.pageNumber];
+      }
+      return null;
+    },
+
     metadataString() {
-      if (this.pageNumber && this.docs[this.pageNumber] && this.docs[this.pageNumber].metadata) {
-        const json = JSON.parse(this.docs[this.pageNumber].metadata)
+      if (this.currentDoc && this.currentDoc.metadata) {
+        const json = JSON.parse(this.currentDoc.metadata)
         const str = JSON.stringify(json, undefined, 4);
         return syntaxHighlight(str);
       }
-
       return null;
     },
 
@@ -390,7 +492,6 @@ const annotationMixin = {
         const complexSearchRegex = /^\"(.*)\"\s*(\-)?(.*$)/;
         const complexMatches = this.highlightQuery.match(complexSearchRegex)
         let terms = this.highlightQuery.split(' ');
-        console.log(complexMatches)
         if (complexMatches && complexMatches[1] && complexMatches[3]) {
           terms = [complexMatches[1], complexMatches[3]]
         } else if (complexMatches && complexMatches[1]) {

@@ -6,6 +6,8 @@ import gensim.downloader as api
 from random import randint
 import datetime
 
+import json
+
 from collections import Counter
 from itertools import chain
 from itertools import islice
@@ -391,6 +393,7 @@ class DocumentList(generics.ListCreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         queryset = self.queryset
+
         if self.request.query_params.get('is_checked'):
             is_null = self.request.query_params.get('is_checked') == 'true'
             queryset = project.get_documents(is_null).distinct()
@@ -400,7 +403,47 @@ class DocumentList(generics.ListCreateAPIView):
         else:
             queryset = queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
 
+        if (self.request.query_params.get('rules')):
+            result = []
+            rules = json.loads(self.request.query_params['rules'])
+            if (len(rules) > 0):
+                rule = rules[0]
+                for doc in Document.objects.all():
+                    should_append = False
+                    metatext = getattr(doc, 'metadata')
+                    metadata = json.loads(metatext)
+                    if (metadata.get(rule['field'])):
+                        if (rule['comparator'] == 'eq' and metadata[rule['field']] == rule['search']):
+                            should_append = True
+                        elif (rule['comparator'] == 'leq' and metadata[rule['field']] <= rule['search']):
+                            should_append = True
+                        elif (rule['comparator'] == 'lt' and metadata[rule['field']] < rule['search']):
+                            should_append = True
+                        elif (rule['comparator'] == 'geq' and metadata[rule['field']] >= rule['search']):
+                            should_append = True
+                        elif (rule['comparator'] == 'gt' and metadata[rule['field']] > rule['search']):
+                            should_append = True
+                    if (should_append):
+                        result.append(doc.id)
+                queryset = queryset.filter(id__in=result)
+
         return queryset
+
+class MetadataAPI(APIView):
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+
+    def get(self, request, *args, **kwargs):
+        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+
+        query = '''SELECT DISTINCT metadata FROM server_document WHERE server_document.project_id = %d''' % (self.kwargs['project_id'])
+        cursor = connection.cursor()
+        cursor.execute(query)
+        metadata = []
+        for row in cursor.fetchall():
+            metadata.append(row[0])
+        
+        response = {'metadata': metadata}
+        return Response(response)
 
 class AnnotationList(generics.ListCreateAPIView):
     pagination_class = None

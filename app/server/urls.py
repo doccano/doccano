@@ -6,7 +6,7 @@ from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, G
 from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport, UserInfoView
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, ProjectDetail, UserInfo, \
-    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, LabelersListAPI, LabelAdminAPI, DocumentExplainAPI, SuggestedTerms
+    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, LabelersListAPI, LabelAdminAPI, DocumentExplainAPI, SuggestedTerms, MetadataAPI
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -18,6 +18,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),
     path('api/projects/<int:project_id>/runmodel/', RunModelAPI.as_view(), name='runmodel-api'),
     path('api/projects/<int:project_id>/labels/', LabelList.as_view(), name='labels'),
+    path('api/projects/<int:project_id>/metadata/', MetadataAPI.as_view(), name='metadata'),
     path('api/projects/<int:project_id>/labels_admin/', LabelAdminAPI.as_view(), name='labels-api'),
     path('api/projects/<int:project_id>/labelers/', LabelersListAPI.as_view(), name='labelers-api'),
     path('api/projects/<int:project_id>/users/<int:user_id>', UserInfo.as_view(), name='user-api'),
