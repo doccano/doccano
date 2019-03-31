@@ -17,6 +17,9 @@ const vm = new Vue({
   },
   
   methods: {
+    goToUser(user) {
+      window.location.href = `${window.location.href}${user.id}`
+    }
   },
   created() {
     HTTP.get('labelers').then((response) => {

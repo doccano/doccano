@@ -28,15 +28,15 @@ const vm = new Vue({
           type: 'is-success',
           position: 'top-center',
       });
+    }
     
-      if (usersLabelsCount && Number.parseInt(usersLabelsCount, 10)) {
-        bulmaToast.toast({
-            message: `Successfully imported ${usersLabelsCount} users labels.`,
-            type: 'is-success',
-            position: 'top-center',
-        });
-    
-  }
+    if (usersLabelsCount && Number.parseInt(usersLabelsCount, 10)) {
+      bulmaToast.toast({
+          message: `Successfully imported ${usersLabelsCount} users labels.`,
+          type: 'is-success',
+          position: 'top-center',
+      });
+    } 
 
     window.history.replaceState(null, null, window.location.pathname);
   }

@@ -3,10 +3,10 @@ from rest_framework import routers
 
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView, SettingsView, LabelersView, LabelAdminView
-from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport
+from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport, UserInfoView
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
-from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, ProjectDetail, \
-    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, LabelersListAPI, LabelAdminAPI, DocumentExplainAPI, SuggestedTerms
+from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, ProjectDetail, UserInfo, \
+    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, LabelersListAPI, LabelAdminAPI, DocumentExplainAPI, SuggestedTerms, MetadataAPI
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -18,8 +18,10 @@ urlpatterns = [
     path('api/projects/<int:project_id>/stats/', ProjectStatsAPI.as_view(), name='stats-api'),
     path('api/projects/<int:project_id>/runmodel/', RunModelAPI.as_view(), name='runmodel-api'),
     path('api/projects/<int:project_id>/labels/', LabelList.as_view(), name='labels'),
+    path('api/projects/<int:project_id>/metadata/', MetadataAPI.as_view(), name='metadata'),
     path('api/projects/<int:project_id>/labels_admin/', LabelAdminAPI.as_view(), name='labels-api'),
     path('api/projects/<int:project_id>/labelers/', LabelersListAPI.as_view(), name='labelers-api'),
+    path('api/projects/<int:project_id>/users/<int:user_id>', UserInfo.as_view(), name='user-api'),
     path('api/projects/<int:project_id>/labels/<int:label_id>', LabelDetail.as_view(), name='label'),
     path('api/projects/<int:project_id>/docs/', DocumentList.as_view(), name='docs'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/', AnnotationList.as_view(), name='annotations'),
@@ -38,6 +40,7 @@ urlpatterns = [
     path('projects/<int:project_id>/labels/', LabelView.as_view(), name='label-management'),
     path('projects/<int:project_id>/labels_admin/', LabelAdminView.as_view(), name='labels-admin'),
     path('projects/<int:project_id>/users/', LabelersView.as_view(), name='labelers'),
+    path('projects/<int:project_id>/users/<int:user_id>', UserInfoView.as_view(), name='user-info-view'),
     path('projects/<int:project_id>/stats/', StatsView.as_view(), name='stats'),
     path('projects/<int:project_id>/guideline/', GuidelineView.as_view(), name='guideline'),
     path('projects/<int:project_id>/settings/', SettingsView.as_view(), name='settings'),
