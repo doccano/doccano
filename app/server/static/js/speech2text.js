@@ -18,6 +18,10 @@ const vm = new Vue({
 
   updated () {
     this.$nextTick(() => {
+      if (this.wavesurfer){
+        this.wavesurfer.destroy();
+      }
+      
       this.wavesurfer = WaveSurfer.create({
         container: '#waveform',
         height: 100,

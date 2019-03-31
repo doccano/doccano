@@ -129,5 +129,5 @@ class Speech2textAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Speech2textAnnotation
-        fields = ('id', 'text', 'user', 'document')
+        fields = ('id', 'prob', 'text', 'user', 'document')
         read_only_fields = ('user',)
