@@ -78,6 +78,28 @@ class TestSeq2seqProject(TestCase):
         klass = self.project.get_annotation_class()
         self.assertEqual(klass, Seq2seqAnnotation)
 
+class TestSpeech2textProject(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project = mommy.make('server.Speech2textProject')
+
+    def test_image(self):
+        image_url = self.project.image
+        self.assertTrue(image_url.endswith('.jpg'))
+
+    def test_get_template_name(self):
+        template = self.project.get_template_name()
+        self.assertEqual(template, 'annotation/speech2text.html')
+
+    def test_get_annotation_serializer(self):
+        serializer = self.project.get_annotation_serializer()
+        self.assertEqual(serializer, Speech2textAnnotationSerializer)
+
+    def test_get_annotation_class(self):
+        klass = self.project.get_annotation_class()
+        self.assertEqual(klass, Speech2textAnnotation)
+
 
 class TestLabel(TestCase):
 
@@ -129,5 +151,14 @@ class TestSeq2seqAnnotation(TestCase):
         a = mommy.make('server.Seq2seqAnnotation')
         with self.assertRaises(IntegrityError):
             Seq2seqAnnotation(document=a.document,
+                              user=a.user,
+                              text=a.text).save()
+
+class TestSpeech2textAnnotation(TestCase):
+
+    def test_uniqueness(self):
+        a = mommy.make('server.Speech2textAnnotation')
+        with self.assertRaises(IntegrityError):
+            Speech2textAnnotation(document=a.document,
                               user=a.user,
                               text=a.text).save()
