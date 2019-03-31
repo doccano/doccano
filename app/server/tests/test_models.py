@@ -154,11 +154,3 @@ class TestSeq2seqAnnotation(TestCase):
                               user=a.user,
                               text=a.text).save()
 
-class TestSpeech2textAnnotation(TestCase):
-
-    def test_uniqueness(self):
-        a = mommy.make('server.Speech2textAnnotation')
-        with self.assertRaises(IntegrityError):
-            Speech2textAnnotation(document=a.document,
-                              user=a.user,
-                              text=a.text).save()
