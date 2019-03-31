@@ -800,6 +800,7 @@ class TestDownloader(APITestCase):
         cls.speech2text_project = mommy.make('server.Speech2textProject', users=[super_user], project_type=SPEECH2TEXT)
         cls.classification_url = reverse(viewname='doc_downloader', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_downloader', args=[cls.labeling_project.id])
+        cls.seq2seq_url = reverse(viewname='doc_downloader', args=[cls.seq2seq_project.id])
         cls.speech2text_url = reverse(viewname='doc_downloader', args=[cls.speech2text_project.id])
 
     def setUp(self):
