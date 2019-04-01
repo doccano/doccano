@@ -19,7 +19,7 @@ const vm = new Vue({
   updated () {
     this.$nextTick(() => {
       if (this.wavesurfer){
-        this.wavesurfer.destroy(); // not destroy but remove regions and wave 
+        this.wavesurfer.destroy(); 
       }
       
       this.wavesurfer = WaveSurfer.create({
@@ -63,17 +63,6 @@ const vm = new Vue({
           if (me.annotations[me.pageNumber]) {
                me.loadRegions(me.annotations[me.pageNumber]); 
           }
-          // else {
-          //   me.loadRegions(
-          //       me.extractRegions(
-          //           me.wavesurfer.backend.getPeaks(512),
-          //           me.wavesurfer.getDuration()
-          //       )
-          //   );
-
-          // }
-
-
 
         });
 
@@ -87,8 +76,6 @@ const vm = new Vue({
         this.wavesurfer.on('region-updated', this.saveRegions);
         this.wavesurfer.on('region-removed', this.saveRegions);
 
-        //this.wavesurfer.on('region-in', this.showNote);
-
         this.wavesurfer.on('region-play', function(region) {
           region.once('out', function() {
               me.wavesurfer.play(region.start);
@@ -96,12 +83,6 @@ const vm = new Vue({
           });
         });
     },
-    // showNote(region) {
-    //     if (!showNote.el) {
-    //         showNote.el = document.querySelector('#subtitle');
-    //     }
-    //     showNote.el.textContent = region.data.note || '–';
-    // },
 
     editAnnotation(region) {
       var form = document.forms.edit;
@@ -202,14 +183,6 @@ const vm = new Vue({
           pauseButton.style.display = 'none';
       });
     },
-
-    // async submit() {
-    //   const state = this.getState();
-    //   this.url = `docs?q=${this.searchQuery}&speech2text_annotations__isnull=${state}&offset=${this.offset}`;
-    //   await this.search();
-    //   this.pageNumber = 0;
-    // },
-
 
   },
 });

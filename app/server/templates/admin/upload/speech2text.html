@@ -3,7 +3,11 @@
 {% block select-format-area %}
 <label class="radio">
   <input type="radio" name="format" value="audio" checked :checked="format=='audio'" v-model="format">
-  AUDIO
+  MP3
+</label>
+<label class="radio">
+  <input type="radio" name="format" value="audio" checked :checked="format=='audio'" v-model="format">
+  WAV
 </label>
 {% endblock %}
 
