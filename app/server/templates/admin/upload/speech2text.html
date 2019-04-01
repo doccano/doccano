@@ -2,7 +2,7 @@
 {% load static %}
 {% block select-format-area %}
 <label class="radio">
-  <input type="radio" name="format" value="audio" :checked="format=='audio'" v-model="format">
+  <input type="radio" name="format" value="audio" checked :checked="format=='audio'" v-model="format">
   AUDIO
 </label>
 {% endblock %}

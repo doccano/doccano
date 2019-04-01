@@ -15,10 +15,6 @@
         <h2 class="subtitle">Upload a file to annotate text.</h2>
 
         <div class="control">
-          <label class="radio">
-            <input type="radio" name="format" value="plain" :checked="format=='plain'" v-model="format">
-            Plain
-          </label>
           {% block select-format-area %}{% endblock %}
         </div>
 

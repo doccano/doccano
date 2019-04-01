@@ -19,7 +19,7 @@ const vm = new Vue({
   updated () {
     this.$nextTick(() => {
       if (this.wavesurfer){
-        this.wavesurfer.destroy();
+        this.wavesurfer.destroy(); // not destroy but remove regions and wave 
       }
       
       this.wavesurfer = WaveSurfer.create({
@@ -156,7 +156,7 @@ const vm = new Vue({
           text: this.localStorage.regions,
         };
       await HTTP.post(`docs/${docId}/annotations`, payload).then((response) => {
-        this.annotations[this.pageNumber].push(response.data);
+        this.annotations[this.pageNumber] = response.data;
       });
 
     },
@@ -178,17 +178,15 @@ const vm = new Vue({
     loadRegions(regionstext) {
       var me = this;
 
-      var regions = []
-
-      for (var i = 0; i < regionstext.length; i++) {
-        regions.push(...JSON.parse(regionstext[i].text));
-      }
+      var regions = JSON.parse(regionstext[regionstext.length-1].text);
 
       this.localStorage.regions = regions;
+
       regions.forEach(function(region) {
         region.color = me.randomColor(0.1);
         me.wavesurfer.addRegion(region);
     });
+
     },
     togglePlayPause(){
       this.wavesurfer.playPause();

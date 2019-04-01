@@ -2,6 +2,10 @@
 {% load static %}
 {% block select-format-area %}
 <label class="radio">
+  <input type="radio" name="format" value="plain" :checked="format=='plain'" v-model="format">
+  Plain
+</label>
+<label class="radio">
   <input type="radio" name="format" value="csv" :checked="format=='csv'" v-model="format">
   CSV
 </label>

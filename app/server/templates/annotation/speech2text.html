@@ -24,7 +24,8 @@
 	<div class="col-sm-8">
 	    <p>
 	        Click on a region to enter an annotation.<br />
-	        Shift-click plays a region in a loop.
+	        Shift-click plays a region in a loop. <br/>
+	        Click on Done to save the annotations.
 	    </p>
 	</div>
 
@@ -42,12 +43,20 @@
 	    </button>
 	</div>
 
+	<div class="col-sm-2">
+	<a style="text-decoration:none" href="{% url 'dataset' view.kwargs.project_id %}">
+		<button class="btn btn-info btn-block" @click="saveAnnotations">
+			<span >
+				<i class="glyphicon glyphicon-floppy-disk"></i>
+				Done
+			</span>
+		</button>
+	</a>
+	</div>
+
 </div>
 
-<a href="{% url 'dataset' view.kwargs.project_id %}">
-<button @click="saveAnnotations">Done</button>
-</a>
-
+<br><br><br>
  
 <form role="form" name="edit" style="opacity: 0; transition: opacity 300ms linear; margin: 30px 0;">
 <div class="form-group">
