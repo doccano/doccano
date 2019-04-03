@@ -242,8 +242,8 @@ class RunModelAPI(APIView):
             server_documentannotation.label_id
             FROM
             server_document
-            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id
-            WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
+            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id AND server_documentannotation.user_id = %s
+            WHERE server_document.project_id = %s''' % (str(request.user.id), str(self.kwargs['project_id']))
 
         doc_annotations_gold_query = '''SELECT
             server_document.id,
