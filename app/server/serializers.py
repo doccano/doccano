@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
+from rest_framework.exceptions import ValidationError
+
 
 from .models import Label, Project, Document
 from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
@@ -8,9 +10,30 @@ from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
 class LabelSerializer(serializers.ModelSerializer):
 
+    def validate(self, attrs):
+        if 'prefix_key' not in attrs and 'suffix_key' not in attrs:
+            return super().validate(attrs)
+
+        prefix_key = attrs['prefix_key']
+        suffix_key = attrs['suffix_key']
+
+        # In the case of user don't set any shortcut key.
+        if prefix_key is None and suffix_key is None:
+            return super().validate(attrs)
+
+        # Don't allow shortcut key not to have a suffix key.
+        if prefix_key and not suffix_key:
+            raise ValidationError('Shortcut key may not have a suffix key.')
+
+        # Don't allow to save same shortcut key when prefix_key is null.
+        if Label.objects.filter(suffix_key=suffix_key,
+                                prefix_key__isnull=True).exists():
+            raise ValidationError('Duplicate key.')
+        return super().validate(attrs)
+
     class Meta:
         model = Label
-        fields = ('id', 'text', 'shortcut', 'background_color', 'text_color')
+        fields = ('id', 'text', 'prefix_key', 'suffix_key', 'background_color', 'text_color')
 
 
 class DocumentSerializer(serializers.ModelSerializer):

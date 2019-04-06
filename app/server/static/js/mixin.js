@@ -125,6 +125,14 @@ const annotationMixin = {
       shortcut = shortcut.split(' ');
       return shortcut;
     },
+
+    shortcutKey(label) {
+      let shortcut = label.suffix_key;
+      if (label.prefix_key) {
+        shortcut = `${label.prefix_key} ${shortcut}`;
+      }
+      return shortcut;
+    },
   },
 
   watch: {
