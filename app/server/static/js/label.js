@@ -10,62 +10,56 @@ const vm = new Vue({ // eslint-disable-line no-unused-vars
   delimiters: ['[[', ']]'],
   data: {
     labels: [],
-    labelText: '',
-    selectedKey: '',
-    checkedKey: [],
-    shortcutKey: '',
-    backgroundColor: '#209cee',
-    textColor: '#ffffff',
+    newLabel: null,
+    editedLabel: null,
     messages: [],
   },
 
-  computed: {
-    /**
-      * combineKeys: Combine selectedKey and checkedKey to get shortcutKey
-      * saveKeys: Save null to database if shortcutKey is empty string
-      */
-    combineKeys: () => {
-      this.shortcutKey = '';
-
-      // If checkedKey exits, add it to shortcutKey
-      if (this.checkedKey.length > 0) {
-        this.checkedKey.sort();
-        this.shortcutKey = this.checkedKey.join(' ');
-
-        // If selectedKey exist, add it to shortcutKey
-        if (this.selectedKey.length !== 0) {
-          this.shortcutKey = this.shortcutKey + ' ' + this.selectedKey;
-        }
-      }
-
-      // If only selectedKey exist, assign to shortcutKey
-      if (this.shortcutKey.length === 0 && this.selectedKey.length !== 0) {
-        this.shortcutKey = this.selectedKey;
-      }
-      return this.shortcutKey;
-    },
-
-    saveKeys: () => {
-      this.shortcutKey = this.combineKeys;
-      if (this.shortcutKey === '') {
-        return null;
-      }
-      return this.shortcutKey;
-    },
-  },
-
   methods: {
+    generateColor() {
+      const color = (Math.random() * 0xFFFFFF | 0).toString(16); // eslint-disable-line no-bitwise
+      const randomColor = '#' + ('000000' + color).slice(-6);
+      return randomColor;
+    },
+
+    blackOrWhite(hexcolor) {
+      const r = parseInt(hexcolor.substr(1, 2), 16);
+      const g = parseInt(hexcolor.substr(3, 2), 16);
+      const b = parseInt(hexcolor.substr(5, 2), 16);
+      return ((((r * 299) + (g * 587) + (b * 114)) / 1000) < 128) ? '#ffffff' : '#000000';
+    },
+
+    setColor(label) {
+      const bgColor = this.generateColor();
+      const textColor = this.blackOrWhite(bgColor);
+      label.background_color = bgColor;
+      label.text_color = textColor;
+    },
+
+    shortcutKey(label) {
+      let shortcut = label.suffix_key;
+      if (label.prefix_key) {
+        shortcut = `${label.prefix_key} ${shortcut}`;
+      }
+      return shortcut;
+    },
+
+    sortLabels() {
+      return this.labels.sort((a, b) => ((a.text < b.text) ? -1 : 1));
+    },
+
     addLabel() {
-      const payload = {
-        text: this.labelText,
-        shortcut: this.saveKeys,
-        background_color: this.backgroundColor,
-        text_color: this.textColor,
-      };
-      HTTP.post('labels', payload).then((response) => {
-        this.reset();
-        this.labels.push(response.data);
-      });
+      HTTP.post('labels', this.newLabel)
+        .then((response) => {
+          this.cancelCreate();
+          this.labels.push(response.data);
+          this.sortLabels();
+          this.messages = [];
+        })
+        .catch((error) => {
+          console.log(error); // eslint-disable-line no-console
+          this.messages.push('You cannot use same label name or shortcut key.');
+        });
     },
 
     removeLabel(label) {
@@ -76,18 +70,54 @@ const vm = new Vue({ // eslint-disable-line no-unused-vars
       });
     },
 
-    reset() {
-      this.labelText = '';
-      this.selectedKey = '';
-      this.checkedKey = [];
-      this.shortcutKey = '';
-      this.backgroundColor = '#209cee';
-      this.textColor = '#ffffff';
+    createLabel() {
+      this.newLabel = {
+        text: '',
+        prefix_key: null,
+        suffix_key: null,
+        background_color: '#209cee',
+        text_color: '#ffffff',
+      };
+    },
+
+    cancelCreate() {
+      this.newLabel = null;
+    },
+
+    editLabel(label) {
+      this.beforeEditCache = Object.assign({}, label);
+      this.editedLabel = label;
+    },
+
+    doneEdit(label) {
+      if (!this.editedLabel) {
+        return;
+      }
+      this.editedLabel = null;
+      label.text = label.text.trim();
+      if (!label.text) {
+        this.removeLabel(label);
+      }
+      HTTP.patch(`labels/${label.id}`, label)
+        .then(() => {
+          this.sortLabels();
+          this.messages = [];
+        })
+        .catch((error) => {
+          console.log(error); // eslint-disable-line no-console
+          this.messages.push('You cannot use same label name or shortcut key.');
+        });
+    },
+
+    cancelEdit(label) {
+      this.editedLabel = null;
+      Object.assign(label, this.beforeEditCache);
     },
   },
   created() {
     HTTP.get('labels').then((response) => {
       this.labels = response.data;
+      this.sortLabels();
     });
   },
 });

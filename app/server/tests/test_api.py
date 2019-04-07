@@ -183,6 +183,17 @@ class TestLabelListAPI(APITestCase):
         response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_can_create_multiple_labels_without_shortcut_key(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        labels = [
+            {'text': 'Ruby', 'prefix_key': None, 'suffix_key': None},
+            {'text': 'PHP', 'prefix_key': None, 'suffix_key': None}
+        ]
+        for label in labels:
+            response = self.client.post(self.url, format='json', data=label)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
     def test_disallows_project_member_to_create_label(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)

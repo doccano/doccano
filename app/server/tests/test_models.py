@@ -1,5 +1,5 @@
 from django.test import TestCase
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from model_mommy import mommy
 
@@ -80,21 +80,50 @@ class TestSeq2seqProject(TestCase):
 
 class TestLabel(TestCase):
 
-    def test_shortcut_uniqueness(self):
-        label = mommy.make('server.Label', shortcut='a')
-        mommy.make('server.Label', shortcut=label.shortcut)
-        with self.assertRaises(IntegrityError):
-            Label(project=label.project, shortcut=label.shortcut).save()
-
-    def test_create_none_shortcut(self):
-        label = mommy.make('server.Label', shortcut=None)
-        self.assertEqual(label.shortcut, None)
-
     def test_text_uniqueness(self):
         label = mommy.make('server.Label')
         mommy.make('server.Label', text=label.text)
         with self.assertRaises(IntegrityError):
             Label(project=label.project, text=label.text).save()
+
+    def test_keys_uniqueness(self):
+        label = mommy.make('server.Label', prefix_key='ctrl', suffix_key='a')
+        with self.assertRaises(IntegrityError):
+            Label(project=label.project,
+                  text='example',
+                  prefix_key=label.prefix_key,
+                  suffix_key=label.suffix_key).save()
+
+    def test_suffix_key_uniqueness(self):
+        label = mommy.make('server.Label', prefix_key=None, suffix_key='a')
+        with self.assertRaises(ValidationError):
+            Label(project=label.project,
+                  text='example',
+                  prefix_key=label.prefix_key,
+                  suffix_key=label.suffix_key).full_clean()
+
+    def test_cannot_add_label_only_prefix_key(self):
+        project = mommy.make('server.Project')
+        label = Label(project=project,
+                      text='example',
+                      prefix_key='ctrl')
+        with self.assertRaises(ValidationError):
+            label.clean()
+
+    def test_can_add_label_only_suffix_key(self):
+        project = mommy.make('server.Project')
+        label = Label(project=project,
+                      text='example',
+                      suffix_key='a')
+        label.full_clean()
+
+    def test_can_add_label_suffix_key_with_prefix_key(self):
+        project = mommy.make('server.Project')
+        label = Label(project=project,
+                      text='example',
+                      prefix_key='ctrl',
+                      suffix_key='a')
+        label.full_clean()
 
 
 class TestDocumentAnnotation(TestCase):
