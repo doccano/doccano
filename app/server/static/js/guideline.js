@@ -1,7 +1,10 @@
+/* global _:readonly */
+/* global marked:readonly */
+
 import Vue from 'vue';
 import HTTP from './http';
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   data: {
     input: '',
@@ -25,10 +28,10 @@ const vm = new Vue({
   },
 
   methods: {
-    update: _.debounce(function (e) {
+    update: _.debounce((e) => {
       this.input = e.target.value;
       const payload = {
-        'guideline': this.input
+        guideline: this.input,
       };
       HTTP.patch('', payload).then((response) => {
         this.project = response.data;

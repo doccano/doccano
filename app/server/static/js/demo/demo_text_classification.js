@@ -6,7 +6,7 @@ Vue.use(require('vue-shortkey'), {
 });
 
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   mixins: [annotationMixin],
@@ -88,7 +88,7 @@ const vm = new Vue({
           label: label.id,
         };
         this.annotations[this.pageNumber].push(annotation);
-        console.log(this.annotations);
+        console.log(this.annotations); // eslint-disable-line no-console
       }
     },
   },

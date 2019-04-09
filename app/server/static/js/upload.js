@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import HTTP from './http';
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   data: {
@@ -16,7 +16,7 @@ const vm = new Vue({
     upload() {
       this.isLoading = true;
       this.file = this.$refs.file.files[0];
-      let formData = new FormData();
+      const formData = new FormData();
       formData.append('file', this.file);
       formData.append('format', this.format);
       HTTP.post('docs/upload',
@@ -27,7 +27,7 @@ const vm = new Vue({
           },
         })
         .then((response) => {
-          console.log(response);
+          console.log(response); // eslint-disable-line no-console
           this.messages = [];
           window.location = window.location.pathname.split('/').slice(0, -1).join('/');
         })
@@ -42,7 +42,7 @@ const vm = new Vue({
     },
 
     download() {
-      let headers = {};
+      const headers = {};
       if (this.format === 'csv') {
         headers.Accept = 'text/csv; charset=utf-8';
         headers['Content-Type'] = 'text/csv; charset=utf-8';
@@ -62,7 +62,7 @@ const vm = new Vue({
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'file.' + this.format); //or any other extension
+        link.setAttribute('download', 'file.' + this.format); // or any other extension
         document.body.appendChild(link);
         link.click();
       }).catch((error) => {

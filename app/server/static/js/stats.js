@@ -2,7 +2,7 @@ import { HorizontalBar, mixins, Doughnut } from 'vue-chartjs';
 import Vue from 'vue';
 import HTTP from './http';
 
-const { reactiveProp, reactiveData } = mixins;
+const { reactiveProp } = mixins;
 
 Vue.component('line-chart', {
   extends: HorizontalBar,
@@ -50,7 +50,7 @@ Vue.component('doughnut-chart', {
   },
 });
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   data: {
@@ -94,6 +94,5 @@ const vm = new Vue({
         ],
       };
     });
-
   },
 });

@@ -5,7 +5,7 @@ import simpleShortcut from './filter';
 Vue.filter('simpleShortcut', simpleShortcut);
 
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   data: {
@@ -17,8 +17,8 @@ const vm = new Vue({
 
   methods: {
     generateColor() {
-      const color = (Math.random() * 0xFFFFFF | 0).toString(16);
-      const randomColor = "#" + ("000000" + color).slice(-6);
+      const color = (Math.random() * 0xFFFFFF | 0).toString(16); // eslint-disable-line no-bitwise
+      const randomColor = '#' + ('000000' + color).slice(-6);
       return randomColor;
     },
 
@@ -57,14 +57,14 @@ const vm = new Vue({
           this.messages = [];
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error); // eslint-disable-line no-console
           this.messages.push('You cannot use same label name or shortcut key.');
         });
     },
 
     removeLabel(label) {
       const labelId = label.id;
-      HTTP.delete(`labels/${labelId}`).then((response) => {
+      HTTP.delete(`labels/${labelId}`).then(() => {
         const index = this.labels.indexOf(label);
         this.labels.splice(index, 1);
       });
@@ -99,12 +99,12 @@ const vm = new Vue({
         this.removeLabel(label);
       }
       HTTP.patch(`labels/${label.id}`, label)
-        .then((response) => {
+        .then(() => {
           this.sortLabels();
           this.messages = [];
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error); // eslint-disable-line no-console
           this.messages.push('You cannot use same label name or shortcut key.');
         });
     },

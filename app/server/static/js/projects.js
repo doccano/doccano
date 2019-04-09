@@ -6,7 +6,7 @@ axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 const baseUrl = window.location.href.split('/').slice(0, 3).join('/');
 
 
-const vm = new Vue({
+const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#projects_root',
   delimiters: ['[[', ']]'],
   data: {
@@ -26,7 +26,7 @@ const vm = new Vue({
   methods: {
 
     deleteProject() {
-      axios.delete(`${baseUrl}/v1/projects/${this.project.id}`).then((response) => {
+      axios.delete(`${baseUrl}/v1/projects/${this.project.id}`).then(() => {
         this.isDelete = false;
         const index = this.items.indexOf(this.project);
         this.items.splice(index, 1);
@@ -108,13 +108,7 @@ const vm = new Vue({
 
   computed: {
     selectedProjects() {
-      const projects = [];
-      for (let item of this.items) {
-        if ((this.selected === 'All Project') || this.matchType(item.project_type)) {
-          projects.push(item);
-        }
-      }
-      return projects;
+      return this.items.filter(item => this.selected === 'All Project' || this.matchType(item.project_type));
     },
   },
 

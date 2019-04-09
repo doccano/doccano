@@ -1,6 +1,8 @@
+/* global marked:readonly */
+
 import HTTP from './http';
 
-const getOffsetFromUrl = function (url) {
+const getOffsetFromUrl = (url) => {
   const offsetMatch = url.match(/[?#].*offset=(\d+)/);
   if (offsetMatch == null) {
     return 0;
@@ -9,7 +11,7 @@ const getOffsetFromUrl = function (url) {
   return parseInt(offsetMatch[1], 10);
 };
 
-const storeOffsetInUrl = function (offset) {
+const storeOffsetInUrl = (offset) => {
   let href = window.location.href;
 
   const fragmentStart = href.indexOf('#') + 1;
@@ -19,7 +21,7 @@ const storeOffsetInUrl = function (offset) {
     const prefix = href.substring(0, fragmentStart);
     const fragment = href.substring(fragmentStart);
 
-    const newFragment = fragment.split('&').map(function (fragmentPart) {
+    const newFragment = fragment.split('&').map((fragmentPart) => {
       const keyValue = fragmentPart.split('=');
       return keyValue[0] === 'offset'
         ? 'offset=' + offset
@@ -112,7 +114,7 @@ const annotationMixin = {
 
     removeLabel(annotation) {
       const docId = this.docs[this.pageNumber].id;
-      HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then((response) => {
+      HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then(() => {
         const index = this.annotations[this.pageNumber].indexOf(annotation);
         this.annotations[this.pageNumber].splice(index, 1);
       });
@@ -177,7 +179,7 @@ const annotationMixin = {
     },
 
     id2label() {
-      let id2label = {};
+      const id2label = {};
       for (let i = 0; i < this.labels.length; i++) {
         const label = this.labels[i];
         id2label[label.id] = label;
