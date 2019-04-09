@@ -1,4 +1,4 @@
-/* global marked:readonly */
+import * as marked from 'marked';
 
 const annotationMixin = {
   data() {

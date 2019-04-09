@@ -7,7 +7,7 @@
 {% block content-area %}
 <div id="editor" class="columns is-gapless">
   <div class="column is-6">
-    <textarea class="editorMarkdown_textarea" :value="input" @input="update"></textarea>
+    <textarea class="editorMarkdown_textarea" :value="input" v-debounce="update"></textarea>
   </div>
   <div class="column is-6 has-background-white" style="border-right: 1px solid #dbdbdb;border-top: 1px solid #dbdbdb; border-bottom: 1px solid #dbdbdb">
     <div class="content pt20 pb20 pr20 pl20" style="line-height: 150%">
@@ -17,7 +17,5 @@
 </div>
 {% endblock %}
 {% block footer %}
-<script src="https://unpkg.com/marked@0.3.6"></script>
-<script src="https://unpkg.com/lodash@4.16.0"></script>
 {% render_bundle 'guideline' 'js' %}
 {% endblock %}
