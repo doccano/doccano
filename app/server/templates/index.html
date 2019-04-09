@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/css/swiper.min.css">
+{% endblock %}
+
 {% block content %}
 <section class="hero" style="background-color:#2a2e2f">
   <div class="container">
@@ -207,4 +212,22 @@
     </div>
   </div>
 </footer>
+{% endblock %}
+
+{% block footer %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/js/swiper.min.js"></script>
+<script>
+  new Swiper('.swiper-container', {
+    // Optional parameters
+    loop: true,
+    autoplay: {
+      delay: 5000,
+    },
+    // Navigation arrows
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
+  })
+</script>
 {% endblock %}
