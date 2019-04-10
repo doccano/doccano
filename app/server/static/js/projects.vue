@@ -195,33 +195,14 @@
 
 <script>
 import axios from 'axios';
+import { title, daysAgo } from './filter';
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 const baseUrl = window.location.href.split('/').slice(0, 3).join('/');
 
 export default {
-  filters: {
-    title: (value) => {
-      const string = (value || '').toString();
-      return string.charAt(0).toUpperCase() + string.slice(1);
-    },
-
-    daysAgo: (dateStr) => {
-      const updatedAt = new Date(dateStr);
-      const currentTm = new Date();
-
-      // difference between days(ms)
-      const msDiff = currentTm.getTime() - updatedAt.getTime();
-
-      // convert daysDiff(ms) to daysDiff(day)
-      const daysDiff = Math.floor(msDiff / (1000 * 60 * 60 * 24));
-
-      return daysDiff === 1
-        ? `${daysDiff} day ago`
-        : `${daysDiff} days ago`;
-    },
-  },
+  filters: { title, daysAgo },
 
   props: {
     username: {

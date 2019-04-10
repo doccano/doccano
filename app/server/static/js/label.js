@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import HTTP from './http';
-import simpleShortcut from './filter';
+import { simpleShortcut } from './filter';
 
 Vue.filter('simpleShortcut', simpleShortcut);
 
