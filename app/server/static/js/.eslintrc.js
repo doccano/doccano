@@ -9,6 +9,7 @@ module.exports = {
   },
   extends: [
     "airbnb-base",
+    "plugin:vue/base",
   ],
   rules: {
     "no-new": "off",

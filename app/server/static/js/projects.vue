@@ -32,14 +32,16 @@
         <div class="field">
           <label class="label">Project Name</label>
           <div class="control">
-            <input class="input" type="text" required placeholder="Project name" v-model="projectName">
+            <input class="input" type="text" required placeholder="Project name"
+              v-model="projectName">
           </div>
           <p class="help is-danger">{{ projectNameError }}</p>
         </div>
         <div class="field">
           <label class="label">Description</label>
           <div class="control">
-            <textarea class="textarea" required placeholder="Project description" v-model="description"></textarea>
+            <textarea class="textarea" required placeholder="Project description"
+              v-model="description"></textarea>
           </div>
           <p class="help is-danger">{{ descriptionError }}</p>
         </div>
@@ -114,19 +116,30 @@
                     <div class="dataset-item__main is-vertical">
                       <div class="dataset-item__main-title">
                         <div class="dataset-item__main-title-link dataset-item__link">
-                          <a :href="'/projects/' + project.id" class="has-text-black">{{ project.name }}</a>
+                          <a :href="'/projects/' + project.id" class="has-text-black">
+                            {{ project.name }}
+                          </a>
                         </div>
                       </div>
                       <div class="dataset-item__main-subtitle">
                         {{ project.description }}
                       </div>
                       <div class="dataset-item__main-info">
-                        <span class="dataset-item__main-update">updated <span>{{ project.updated_at | daysAgo }}</span></span></div>
+                        <span class="dataset-item__main-update">
+                          updated <span>{{ project.updated_at | daysAgo }}</span>
+                        </span>
+                      </div>
                     </div>
                   </td>
-                  <td class="is-vertical"><span class="tag is-normal">{{ project.project_type }}</span></td>
-                  <td v-if="isSuperuser" class="is-vertical"><a :href="'/projects/' + project.id + '/docs'">Edit</a></td>
-                  <td v-if="isSuperuser" class="is-vertical"><a class="has-text-danger" @click="setProject(project)">Delete</a></td>
+                  <td class="is-vertical">
+                    <span class="tag is-normal">{{ project.project_type }}</span>
+                  </td>
+                  <td v-if="isSuperuser" class="is-vertical">
+                    <a :href="'/projects/' + project.id + '/docs'">Edit</a>
+                  </td>
+                  <td v-if="isSuperuser" class="is-vertical">
+                    <a class="has-text-danger" @click="setProject(project)">Delete</a>
+                  </td>
                 </tr>
               </tbody>
             </table>

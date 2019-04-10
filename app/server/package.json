@@ -5,7 +5,7 @@
   "scripts": {
     "start": "cross-env HOT_RELOAD=1 DEBUG=1 webpack-dev-server",
     "build": "webpack",
-    "lint": "eslint --max-warnings=0 static/js",
+    "lint": "eslint --max-warnings=0 'static/js/**/*.{js,vue}'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -21,11 +21,13 @@
     "vue-shortkey": "^3.1.6"
   },
   "devDependencies": {
+    "babel-eslint": "^10.0.1",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.1",
     "eslint": "^5.3.0",
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-vue": "^5.2.2",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^4.12.0",
     "webpack-bundle-tracker": "^0.4.2-beta",
