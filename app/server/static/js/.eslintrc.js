@@ -11,6 +11,7 @@ module.exports = {
     "airbnb-base",
   ],
   rules: {
+    "no-new": "off",
     "no-param-reassign": "off",
     "no-plusplus": "off",
     "object-shorthand": "off",
