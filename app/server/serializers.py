@@ -1,9 +1,17 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import Label, Project, Document
 from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = get_user_model()
+        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_superuser')
 
 
 class LabelSerializer(serializers.ModelSerializer):

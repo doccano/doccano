@@ -14,11 +14,19 @@ from rest_framework_csv.renderers import CSVRenderer
 from .filters import DocumentFilter
 from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer
+from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer
 from .utils import CSVParser, JSONParser, PlainTextParser, CoNLLParser
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
+
+
+class Me(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        serializer = UserSerializer(request.user, context={'request': request})
+        return Response(serializer.data)
 
 
 class ProjectList(generics.ListCreateAPIView):
