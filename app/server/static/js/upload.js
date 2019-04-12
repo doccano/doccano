@@ -33,12 +33,22 @@ const vm = new Vue({ // eslint-disable-line no-unused-vars
         })
         .catch((error) => {
           this.isLoading = false;
-          if ('detail' in error.response.data) {
-            this.messages.push(error.response.data.detail);
-          } else if ('text' in error.response.data) {
-            this.messages = error.response.data.text;
-          }
+          this.handleError(error);
         });
+    },
+
+    handleError(error) {
+      const problems = Array.isArray(error.response.data)
+        ? error.response.data
+        : [error.response.data];
+
+      problems.forEach((problem) => {
+        if ('detail' in problem) {
+          this.messages.push(problem.detail);
+        } else if ('text' in problem) {
+          this.messages = problem.text;
+        }
+      });
     },
 
     download() {
@@ -66,11 +76,7 @@ const vm = new Vue({ // eslint-disable-line no-unused-vars
         document.body.appendChild(link);
         link.click();
       }).catch((error) => {
-        if ('detail' in error.response.data) {
-          this.messages.push(error.response.data.detail);
-        } else if ('text' in error.response.data) {
-          this.messages = error.response.data.text;
-        }
+        this.handleError(error);
       });
     },
   },
