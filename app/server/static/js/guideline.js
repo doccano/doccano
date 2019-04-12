@@ -1,8 +1,9 @@
-/* global _:readonly */
-/* global marked:readonly */
-
+import * as marked from 'marked';
 import Vue from 'vue';
+import vueDebounce from 'vue-debounce';
 import HTTP from './http';
+
+Vue.use(vueDebounce);
 
 const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
@@ -28,15 +29,15 @@ const vm = new Vue({ // eslint-disable-line no-unused-vars
   },
 
   methods: {
-    update: _.debounce((e) => {
-      this.input = e.target.value;
+    update(value) {
+      this.input = value;
       const payload = {
         guideline: this.input,
       };
       HTTP.patch('', payload).then((response) => {
         this.project = response.data;
       });
-    }, 300),
+    },
   },
 
 });

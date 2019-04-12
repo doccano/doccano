@@ -1,5 +1,4 @@
-/* global marked:readonly */
-
+import * as marked from 'marked';
 import HTTP from './http';
 
 const getOffsetFromUrl = (url) => {
