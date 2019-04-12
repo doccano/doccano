@@ -7,7 +7,12 @@ const { reactiveProp } = mixins;
 Vue.component('line-chart', {
   extends: HorizontalBar,
   mixins: [reactiveProp],
-  props: ['chartData'],
+  props: {
+    chartData: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data() {
     return {
       options: {
@@ -36,7 +41,12 @@ Vue.component('line-chart', {
 Vue.component('doughnut-chart', {
   extends: Doughnut,
   mixins: [reactiveProp],
-  props: ['chartData'],
+  props: {
+    chartData: {
+      type: Object,
+      default: () => {},
+    },
+  },
   data() {
     return {
       options: {
@@ -60,22 +70,6 @@ const vm = new Vue({ // eslint-disable-line no-unused-vars
     messages: [],
   },
 
-  methods: {
-    makeData(object, label) {
-      const labels = Object.keys(object);
-      const counts = Object.values(object);
-      const res = {
-        labels: labels,
-        datasets: [{
-          label: label,
-          backgroundColor: '#00d1b2',
-          data: counts,
-        }],
-      };
-      return res;
-    },
-  },
-
   created() {
     HTTP.get('statistics').then((response) => {
       this.labelData = this.makeData(response.data.label, 'Label stats');
@@ -94,5 +88,21 @@ const vm = new Vue({ // eslint-disable-line no-unused-vars
         ],
       };
     });
+  },
+
+  methods: {
+    makeData(object, label) {
+      const labels = Object.keys(object);
+      const counts = Object.values(object);
+      const res = {
+        labels: labels,
+        datasets: [{
+          label: label,
+          backgroundColor: '#00d1b2',
+          data: counts,
+        }],
+      };
+      return res;
+    },
   },
 });
