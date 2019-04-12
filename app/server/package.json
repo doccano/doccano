@@ -28,6 +28,8 @@
     "eslint-config-airbnb-base": "^13.0.0",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-vue": "^5.2.2",
+    "pug": "^2.0.3",
+    "pug-plain-loader": "^1.0.0",
     "vue-template-compiler": "^2.5.16",
     "webpack": "^4.12.0",
     "webpack-bundle-tracker": "^0.4.2-beta",

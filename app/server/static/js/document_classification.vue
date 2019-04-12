@@ -1,0 +1,84 @@
+<template lang="pug">
+extends ./annotation.pug
+
+block annotation-area
+  div.card
+    header.card-header
+      div.card-header-title.has-background-royalblue(style="padding: 1.5rem;")
+        div.field.is-grouped.is-grouped-multiline
+          div.control(v-for="label in labels")
+            div.tags.has-addons
+              a.tag.is-medium(
+                :style="{ \
+                  color: label.text_color, \
+                  backgroundColor: label.background_color \
+                }",
+                @click="addLabel(label)",
+                v-shortkey.once="replaceNull(shortcutKey(label))",
+                @shortkey="addLabel(label)"
+              ) {{ label.text }}
+              span.tag.is-medium
+                kbd {{ shortcutKey(label) | simpleShortcut }}
+
+    div.card-content
+      div.field.is-grouped.is-grouped-multiline
+        div.control(v-for="annotation in annotations[pageNumber]")
+          div.tags.has-addons(v-if="id2label[annotation.label]")
+            span.tag.is-medium(
+              :style="{ \
+                color: id2label[annotation.label].text_color, \
+                backgroundColor: id2label[annotation.label].background_color \
+              }"
+            ) {{ id2label[annotation.label].text }}
+              button.delete.is-small(@click="removeLabel(annotation)")
+
+      hr(style="margin: 0.8rem 0;")
+      div.content(v-if="docs[pageNumber]")
+        span.text {{ docs[pageNumber].text }}
+</template>
+
+<script>
+import annotationMixin from './mixin';
+import HTTP from './http';
+import { simpleShortcut } from './filter';
+
+export default {
+  filters: { simpleShortcut },
+
+  mixins: [annotationMixin],
+
+  methods: {
+    isIn(label) {
+      for (let i = 0; i < this.annotations[this.pageNumber].length; i++) {
+        const a = this.annotations[this.pageNumber][i];
+        if (a.label === label.id) {
+          return a;
+        }
+      }
+      return false;
+    },
+
+    async submit() {
+      const state = this.getState();
+      this.url = `docs?q=${this.searchQuery}&doc_annotations__isnull=${state}&offset=${this.offset}`;
+      await this.search();
+      this.pageNumber = 0;
+    },
+
+    async addLabel(label) {
+      const a = this.isIn(label);
+      if (a) {
+        this.removeLabel(a);
+      } else {
+        const docId = this.docs[this.pageNumber].id;
+        const payload = {
+          label: label.id,
+        };
+        await HTTP.post(`docs/${docId}/annotations`, payload).then((response) => {
+          this.annotations[this.pageNumber].push(response.data);
+        });
+      }
+    },
+  },
+};
+</script>
