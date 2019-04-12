@@ -6,12 +6,5 @@ new Vue({
 
   components: { Projects },
 
-  data: {
-    djangoContext: {
-      username: JSON.parse(document.getElementById('django.username').textContent),
-      isSuperuser: JSON.parse(document.getElementById('django.is_superuser').textContent),
-    },
-  },
-
-  template: '<Projects v-bind="djangoContext" />',
+  template: '<Projects />',
 });

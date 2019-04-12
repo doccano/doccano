@@ -204,17 +204,6 @@ const baseUrl = window.location.href.split('/').slice(0, 3).join('/');
 export default {
   filters: { title, daysAgo },
 
-  props: {
-    username: {
-      type: String,
-      required: true,
-    },
-    isSuperuser: {
-      type: Boolean,
-      default: false,
-    },
-  },
-
   data: () => ({
     items: [],
     isActive: false,
@@ -227,6 +216,8 @@ export default {
     descriptionError: '',
     projectTypeError: '',
     projectNameError: '',
+    username: '',
+    isSuperuser: false,
   }),
 
   computed: {
@@ -236,8 +227,13 @@ export default {
   },
 
   created() {
-    axios.get(`${baseUrl}/v1/projects`).then((response) => {
-      this.items = response.data;
+    Promise.all([
+      axios.get(`${baseUrl}/v1/projects`),
+      axios.get(`${baseUrl}/v1/me`),
+    ]).then(([projects, me]) => {
+      this.items = projects.data;
+      this.username = me.data.username;
+      this.isSuperuser = me.data.is_superuser;
     });
   },
 

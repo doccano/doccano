@@ -6,7 +6,5 @@
 <div id="projects_root"></div>
 {% endblock %}
 {% block footer %}
-{{ user.get_username | json_script:"django.username" }}
-{{ user.is_superuser | json_script:"django.is_superuser" }}
 {% render_bundle 'projects' 'js' %}
 {% endblock %}
