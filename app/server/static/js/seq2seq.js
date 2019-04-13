@@ -7,18 +7,22 @@ Vue.use(require('vue-shortkey'));
 
 const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
+
   delimiters: ['[[', ']]'],
-  data: {
-    newTodo: '',
-    editedTodo: null,
-  },
-  mixins: [annotationMixin],
+
   directives: {
     'todo-focus': (el, binding) => {
       if (binding.value) {
         el.focus();
       }
     },
+  },
+
+  mixins: [annotationMixin],
+
+  data: {
+    newTodo: '',
+    editedTodo: null,
   },
 
   methods: {

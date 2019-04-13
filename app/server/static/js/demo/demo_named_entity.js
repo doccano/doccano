@@ -6,24 +6,71 @@ Vue.use(require('vue-shortkey'), {
 });
 
 Vue.component('annotator', {
-  template: '<div @click="setSelectedRange">'
-          + '       <span v-for="r in chunks"'
-          + '            v-bind:class="{tag: id2label[r.label].text_color}"'
-          + '            v-bind:style="{ color: id2label[r.label].text_color, backgroundColor: id2label[r.label].background_color }"'
-          + '       >{{ text.slice(r.start_offset, r.end_offset) }}<button class="delete is-small"'
-          + '                            v-if="id2label[r.label].text_color"'
-          + '                            @click="removeLabel(r)"></button></span>'
-          + '  </div>',
   props: {
-    labels: Array, // [{id: Integer, color: String, text: String}]
-    text: String,
-    entityPositions: Array, // [{'startOffset': 10, 'endOffset': 15, 'label_id': 1}]
+    labels: {
+      type: Array, // [{id: Integer, color: String, text: String}]
+      default: () => [],
+    },
+    text: {
+      type: String,
+      default: '',
+    },
+    entityPositions: {
+      type: Array, // [{'startOffset': 10, 'endOffset': 15, 'label_id': 1}]
+      default: () => [],
+    },
   },
+
   data() {
     return {
       startOffset: 0,
       endOffset: 0,
     };
+  },
+
+  computed: {
+    sortedEntityPositions() {
+      /* eslint-disable vue/no-side-effects-in-computed-properties */
+      this.entityPositions = this.entityPositions.sort((a, b) => a.start_offset - b.start_offset);
+      return this.entityPositions;
+      /* eslint-enable vue/no-side-effects-in-computed-properties */
+    },
+
+    chunks() {
+      const res = [];
+      let left = 0;
+      for (let i = 0; i < this.sortedEntityPositions.length; i++) {
+        const e = this.sortedEntityPositions[i];
+        const l = this.makeLabel(left, e.start_offset);
+        res.push(l);
+        res.push(e);
+        left = e.end_offset;
+      }
+      const l = this.makeLabel(left, this.text.length);
+      res.push(l);
+
+      return res;
+    },
+
+    id2label() {
+      const id2label = {};
+      // default value;
+      id2label[-1] = {
+        text_color: '',
+        background_color: '',
+      };
+      for (let i = 0; i < this.labels.length; i++) {
+        const label = this.labels[i];
+        id2label[label.id] = label;
+      }
+      return id2label;
+    },
+  },
+
+  watch: {
+    entityPositions() {
+      this.resetRange();
+    },
   },
 
   methods: {
@@ -103,48 +150,14 @@ Vue.component('annotator', {
     },
   },
 
-  watch: {
-    entityPositions() {
-      this.resetRange();
-    },
-  },
-
-  computed: {
-    sortedEntityPositions() {
-      this.entityPositions = this.entityPositions.sort((a, b) => a.start_offset - b.start_offset);
-      return this.entityPositions;
-    },
-
-    chunks() {
-      const res = [];
-      let left = 0;
-      for (let i = 0; i < this.sortedEntityPositions.length; i++) {
-        const e = this.sortedEntityPositions[i];
-        const l = this.makeLabel(left, e.start_offset);
-        res.push(l);
-        res.push(e);
-        left = e.end_offset;
-      }
-      const l = this.makeLabel(left, this.text.length);
-      res.push(l);
-
-      return res;
-    },
-
-    id2label() {
-      const id2label = {};
-      // default value;
-      id2label[-1] = {
-        text_color: '',
-        background_color: '',
-      };
-      for (let i = 0; i < this.labels.length; i++) {
-        const label = this.labels[i];
-        id2label[label.id] = label;
-      }
-      return id2label;
-    },
-  },
+  template: '<div @click="setSelectedRange">'
+          + '       <span v-for="r in chunks"'
+          + '            v-bind:class="{tag: id2label[r.label].text_color}"'
+          + '            v-bind:style="{ color: id2label[r.label].text_color, backgroundColor: id2label[r.label].background_color }"'
+          + '       >{{ text.slice(r.start_offset, r.end_offset) }}<button class="delete is-small"'
+          + '                            v-if="id2label[r.label].text_color"'
+          + '                            @click="removeLabel(r)"></button></span>'
+          + '  </div>',
 });
 
 const vm = new Vue({ // eslint-disable-line no-unused-vars

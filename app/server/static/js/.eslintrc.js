@@ -9,7 +9,7 @@ module.exports = {
   },
   extends: [
     "airbnb-base",
-    "plugin:vue/base",
+    "plugin:vue/recommended",
   ],
   rules: {
     "no-new": "off",
@@ -18,6 +18,6 @@ module.exports = {
     "object-shorthand": "off",
     "prefer-destructuring": "off",
     "prefer-template": "off",
+    "vue/max-attributes-per-line": 3,
   },
 };
-// https://travishorn.com/setting-up-eslint-on-vs-code-with-airbnb-javascript-style-guide-6eb78a535ba6

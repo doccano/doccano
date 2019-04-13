@@ -7,12 +7,21 @@ Vue.filter('simpleShortcut', simpleShortcut);
 
 const vm = new Vue({ // eslint-disable-line no-unused-vars
   el: '#mail-app',
+
   delimiters: ['[[', ']]'],
+
   data: {
     labels: [],
     newLabel: null,
     editedLabel: null,
     messages: [],
+  },
+
+  created() {
+    HTTP.get('labels').then((response) => {
+      this.labels = response.data;
+      this.sortLabels();
+    });
   },
 
   methods: {
@@ -113,11 +122,5 @@ const vm = new Vue({ // eslint-disable-line no-unused-vars
       this.editedLabel = null;
       Object.assign(label, this.beforeEditCache);
     },
-  },
-  created() {
-    HTTP.get('labels').then((response) => {
-      this.labels = response.data;
-      this.sortLabels();
-    });
   },
 });
