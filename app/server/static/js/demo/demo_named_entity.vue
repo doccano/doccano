@@ -4,30 +4,30 @@ extends ../annotation.pug
 block annotation-area
   div.card
     header.card-header
-      div.card-header-title.has-background-royalblue(style="padding:1.5rem;")
+      div.card-header-title.has-background-royalblue(style="padding: 1.5rem;")
         div.field.is-grouped.is-grouped-multiline
           div.control(v-for="label in labels")
             div.tags.has-addons
               a.tag.is-medium(
-                :style="{ \
+                v-shortkey.once="[ label.shortcut ]"
+                v-bind:style="{ \
                   color: label.text_color, \
                   backgroundColor: label.background_color \
-                }",
-                @click="annotate(label.id)",
-                v-shortkey.once="[ label.shortcut ]",
-                @shortkey="annotate(label.id)"
+                }"
+                v-on:click="annotate(label.id)"
+                v-on:shortkey="annotate(label.id)"
               ) {{ label.text }}
               span.tag.is-medium {{ label.shortcut }}
 
     div.card-content
       div.content(v-if="docs[pageNumber] && annotations[pageNumber]")
         annotator(
-          ref="annotator",
-          :labels="labels",
-          :entity-positions="annotations[pageNumber]",
-          :text="docs[pageNumber].text",
-          @remove-label="removeLabel",
-          @add-label="addLabel"
+          v-bind:labels="labels"
+          v-bind:entity-positions="annotations[pageNumber]"
+          v-bind:text="docs[pageNumber].text"
+          v-on:remove-label="removeLabel"
+          v-on:add-label="addLabel"
+          ref="annotator"
         )
 </template>
 

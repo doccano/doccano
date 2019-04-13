@@ -1,14 +1,14 @@
 <template lang="pug">
   div(@click="setSelectedRange")
     span.text-sequence(
-      v-for="r in chunksWithLabel",
-      :class="{ tag: id2label[r.label].text_color }",
-      :style="{ \
+      v-for="r in chunksWithLabel"
+      v-bind:class="{ tag: id2label[r.label].text_color }"
+      v-bind:style="{ \
         color: id2label[r.label].text_color, \
         backgroundColor: id2label[r.label].background_color \
-      }",
+      }"
     ) {{ [...text].slice(r.start_offset, r.end_offset).join('') }}
-      button.delete.is-small(v-if="id2label[r.label].text_color", @click="removeLabel(r)")
+      button.delete.is-small(v-if="id2label[r.label].text_color", v-on:click="removeLabel(r)")
 </template>
 
 <script>

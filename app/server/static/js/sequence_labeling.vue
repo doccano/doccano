@@ -9,13 +9,13 @@ block annotation-area
           div.control(v-for="label in labels")
             div.tags.has-addons
               a.tag.is-medium(
-                :style="{ \
+                v-shortkey.once="replaceNull(shortcutKey(label))"
+                v-bind:style="{ \
                   color: label.text_color, \
                   backgroundColor: label.background_color \
-                }",
-                @click="annotate(label.id)",
-                v-shortkey.once="replaceNull(shortcutKey(label))",
-                @shortkey="annotate(label.id)"
+                }"
+                v-on:click="annotate(label.id)"
+                v-on:shortkey="annotate(label.id)"
               ) {{ label.text }}
               span.tag.is-medium
                 kbd {{ shortcutKey(label) | simpleShortcut }}
@@ -23,12 +23,12 @@ block annotation-area
     div.card-content
       div.content(v-if="docs[pageNumber] && annotations[pageNumber]")
         annotator(
-          ref="annotator",
-          :labels="labels",
-          :entity-positions="annotations[pageNumber]",
-          :text="docs[pageNumber].text",
-          @remove-label="removeLabel",
-          @add-label="addLabel"
+          v-bind:labels="labels"
+          v-bind:entity-positions="annotations[pageNumber]"
+          v-bind:text="docs[pageNumber].text"
+          v-on:remove-label="removeLabel"
+          v-on:add-label="addLabel"
+          ref="annotator"
         )
 </template>
 

@@ -10,30 +10,30 @@ block annotation-area
   section.todoapp
     header.header
       input.textarea.new-todo(
-        type="text",
-        placeholder="What is your response?",
-        v-model="newTodo",
-        @keyup.enter="addTodo"
+        v-model="newTodo"
+        v-on:keyup.enter="addTodo"
+        type="text"
+        placeholder="What is your response?"
       )
 
     section.main(v-cloak="")
       ul.todo-list
         li.todo(
-          v-for="todo in annotations[pageNumber]",
-          :key="todo.id",
-          :class="{ editing: todo == editedTodo }"
+          v-for="todo in annotations[pageNumber]"
+          v-bind:key="todo.id"
+          v-bind:class="{ editing: todo == editedTodo }"
         )
           div.view
-            label(@dblclick="editTodo(todo)") {{ todo.text }}
-            button.delete.destroy.is-large(@click="removeTodo(todo)")
+            label(v-on:dblclick="editTodo(todo)") {{ todo.text }}
+            button.delete.destroy.is-large(v-on:click="removeTodo(todo)")
 
           input.textarea.edit(
-            type="text",
-            v-model="todo.text",
-            v-todo-focus="todo == editedTodo",
-            @blur="doneEdit(todo)",
-            @keyup.enter="doneEdit(todo)",
-            @keyup.esc="cancelEdit(todo)"
+            v-model="todo.text"
+            v-todo-focus="todo == editedTodo"
+            v-on:blur="doneEdit(todo)"
+            v-on:keyup.enter="doneEdit(todo)"
+            v-on:keyup.esc="cancelEdit(todo)"
+            type="text"
           )
 </template>
 

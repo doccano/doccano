@@ -9,12 +9,13 @@ block annotation-area
           div.control(v-for="label in labels")
             div.tags.has-addons
               a.tag.is-medium(
-                :style="{ \
+                v-shortkey.once="[ label.shortcut ]"
+                v-bind:style="{ \
                   color: label.text_color, \
                   backgroundColor: label.background_color \
-                }",
-                @click="addLabel(label)",
-                v-shortkey.once="[ label.shortcut ]" @shortkey="addLabel(label)"
+                }"
+                v-on:click="addLabel(label)"
+                v-on:shortkey="addLabel(label)"
               ) {{ label.text }}
               span.tag.is-medium {{ label.shortcut }}
 
@@ -23,12 +24,12 @@ block annotation-area
         div.control(v-for="annotation in annotations[pageNumber]")
           div.tags.has-addons
             span.tag.is-medium(
-              :style="{ \
+              v-bind:style="{ \
                 color: id2label[annotation.label].text_color, \
                 backgroundColor: id2label[annotation.label].background_color \
               }"
             ) {{ id2label[annotation.label].text }}
-              button.delete.is-small(@click="removeLabel(annotation)")
+              button.delete.is-small(v-on:click="removeLabel(annotation)")
 
       hr(style="margin: 0.8rem 0;")
       div.content(v-if="docs[pageNumber]") {{ docs[pageNumber].text }}
