@@ -18,10 +18,13 @@ class IndexView(TemplateView):
 
 
 class ProjectView(LoginRequiredMixin, TemplateView):
+    template_name = 'annotation.html'
 
-    def get_template_names(self):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return [project.get_template_name()]
+        context['bundle_name'] = project.get_bundle_name()
+        return context
 
 
 class ProjectsView(LoginRequiredMixin, TemplateView):
@@ -79,12 +82,21 @@ class LoginView(BaseLoginView):
 
 
 class DemoTextClassification(TemplateView):
-    template_name = 'demo/demo_text_classification.html'
+    template_name = 'annotation.html'
+    extra_context = {
+        'bundle_name': 'demo_text_classification',
+    }
 
 
 class DemoNamedEntityRecognition(TemplateView):
-    template_name = 'demo/demo_named_entity.html'
+    template_name = 'annotation.html'
+    extra_context = {
+        'bundle_name': 'demo_named_entity',
+    }
 
 
 class DemoTranslation(TemplateView):
-    template_name = 'demo/demo_translation.html'
+    template_name = 'annotation.html'
+    extra_context = {
+        'bundle_name': 'demo_translation',
+    }

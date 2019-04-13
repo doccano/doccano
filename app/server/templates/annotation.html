@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block header %}
 <link rel="stylesheet" href="{% static 'css/annotation.css' %}">
 {% endblock %}
@@ -15,4 +16,7 @@
 {% endblock %}
 {% block content %}
 <div id="mail-app"></div>
+{% endblock %}
+{% block footer %}
+{% render_bundle bundle_name 'js' %}
 {% endblock %}
