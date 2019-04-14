@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{% static 'css/annotation.css' %}">
 {% endblock %}
 {% block navigation %}
-{% if user.is_superuser %}
+{% if user.is_superuser and 'project_id' in view.kwargs %}
 <a class="navbar-item" href="{% url 'dataset' view.kwargs.project_id %}">
   <span class="icon">
     <i class="fas fa-edit"></i>
