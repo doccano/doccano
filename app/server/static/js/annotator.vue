@@ -58,7 +58,7 @@ export default {
     },
 
     chunksWithLabel() {
-      return this.chunks().filter(r => this.id2label[r.label]);
+      return this.chunks.filter(r => this.id2label[r.label]);
     },
 
     id2label() {
