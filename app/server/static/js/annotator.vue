@@ -7,7 +7,7 @@
         color: id2label[r.label].text_color, \
         backgroundColor: id2label[r.label].background_color \
       }"
-    ) {{ [...text].slice(r.start_offset, r.end_offset).join('') }}
+    ) {{ textPart(r) }}
       button.delete.is-small(v-if="id2label[r.label].text_color", v-on:click="removeLabel(r)")
 </template>
 
@@ -137,6 +137,10 @@ export default {
     resetRange() {
       this.startOffset = 0;
       this.endOffset = 0;
+    },
+
+    textPart(r) {
+      return [...this.text].slice(r.start_offset, r.end_offset).join('');
     },
 
     addLabel(labelId) {
