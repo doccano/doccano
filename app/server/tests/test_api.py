@@ -152,8 +152,10 @@ class TestLabelListAPI(APITestCase):
         cls.main_project_label = mommy.make('server.Label', project=cls.main_project)
 
         sub_project = mommy.make('server.Project', users=[non_project_member])
+        other_project = mommy.make('server.Project', users=[super_user])
         mommy.make('server.Label', project=sub_project)
         cls.url = reverse(viewname='label_list', args=[cls.main_project.id])
+        cls.other_url = reverse(viewname='label_list', args=[other_project.id])
         cls.data = {'text': 'example'}
 
     def test_returns_labels_to_project_member(self):
@@ -193,6 +195,15 @@ class TestLabelListAPI(APITestCase):
         for label in labels:
             response = self.client.post(self.url, format='json', data=label)
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_can_create_same_label_in_multiple_projects(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        label = {'text': 'LOC', 'prefix_key': None, 'suffix_key': 'l'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(self.other_url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_disallows_project_member_to_create_label(self):
         self.client.login(username=self.project_member_name,
