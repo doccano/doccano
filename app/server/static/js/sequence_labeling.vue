@@ -39,7 +39,7 @@ block annotation-area
 </style>
 
 <script>
-import annotationMixin from './mixin';
+import { annotationMixin } from './mixin';
 import Annotator from './annotator.vue';
 import HTTP from './http';
 import { simpleShortcut } from './filter';

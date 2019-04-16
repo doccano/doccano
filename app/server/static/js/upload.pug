@@ -1,0 +1,42 @@
+div.columns(v-cloak="")
+  div.column.is-12
+    messages(v-bind:messages="messages")
+
+    div.card
+      header.card-header
+        p.card-header-title File Uploader
+
+      div.card-content
+        h2.subtitle Upload a file to annotate text.
+
+        div.control(style="margin-bottom: 1em;")
+          label.radio
+            input(
+              v-model="format"
+              v-bind:checked="format == 'plain'"
+              type="radio"
+              name="format"
+              value="plain"
+            )
+            | Plain
+
+          block select-format-area
+
+        block example-format-area
+
+        div.control(style="margin-top: 1em;")
+          div.file.has-name.is-primary
+            label.file-label
+              input.file-input(
+                v-on:change="upload()"
+                type="file"
+                ref="file"
+                name="file"
+                required
+              )
+              span.file-cta.button(v-bind:class="{'is-loading': isLoading}")
+                span.file-icon
+                  i.fas.fa-upload
+                span.file-label Select a file…
+
+              span.file-name {{ file.name }}

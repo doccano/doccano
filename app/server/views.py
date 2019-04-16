@@ -32,7 +32,7 @@ class ProjectsView(LoginRequiredMixin, TemplateView):
 
 
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
-    template_name = 'admin/dataset.html'
+    template_name = 'dataset.html'
     paginate_by = 5
 
     def get_queryset(self):
@@ -41,29 +41,44 @@ class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
 
 
 class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
-    template_name = 'admin/label.html'
+    template_name = 'admin.html'
+    extra_context = {
+        'bundle_name': 'label'
+    }
 
 
 class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
-    template_name = 'admin/stats.html'
+    template_name = 'admin.html'
+    extra_context = {
+        'bundle_name': 'stats'
+    }
 
 
 class GuidelineView(SuperUserMixin, LoginRequiredMixin, TemplateView):
-    template_name = 'admin/guideline.html'
+    template_name = 'admin.html'
+    extra_context = {
+        'bundle_name': 'guideline'
+    }
 
 
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin.html'
 
-    def get_template_names(self):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return [project.get_upload_template()]
+        context['bundle_name'] = project.get_bundle_name_upload()
+        return context
 
 
 class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin.html'
 
-    def get_template_names(self):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return [project.get_download_template()]
+        context['bundle_name'] = project.get_bundle_name_download()
+        return context
 
 
 class LoginView(BaseLoginView):

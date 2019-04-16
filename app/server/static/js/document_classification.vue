@@ -48,7 +48,7 @@ hr {
 </style>
 
 <script>
-import annotationMixin from './mixin';
+import { annotationMixin } from './mixin';
 import HTTP from './http';
 import { simpleShortcut } from './filter';
 

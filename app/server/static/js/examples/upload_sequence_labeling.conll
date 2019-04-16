@@ -1,0 +1,12 @@
+EU	B-ORG
+rejects	O
+German	B-MISC
+call	O
+to	O
+boycott	O
+British	B-MISC
+lamb	O
+.	O
+
+Peter	B-PER
+Blackburn	I-PER
