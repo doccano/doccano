@@ -14,6 +14,7 @@
     "axios": "^0.18.0",
     "chart.js": "^2.7.2",
     "marked": "^0.3.19",
+    "swiper": "^4.3.3",
     "vue": "^2.5.16",
     "vue-chartjs": "^3.4.0",
     "vue-debounce": "^1.1.0",

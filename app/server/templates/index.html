@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 
 {% block header %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/css/swiper.min.css">
@@ -215,19 +216,5 @@
 {% endblock %}
 
 {% block footer %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/js/swiper.min.js"></script>
-<script>
-  new Swiper('.swiper-container', {
-    // Optional parameters
-    loop: true,
-    autoplay: {
-      delay: 5000,
-    },
-    // Navigation arrows
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    },
-  })
-</script>
+{% render_bundle 'index' 'js' %}
 {% endblock %}

@@ -8,6 +8,7 @@ const hotReload = process.env.HOT_RELOAD === '1';
 module.exports = {
     mode: devMode ? 'development' : 'production',
     entry: {
+        'index': './static/js/index.js',
         'sequence_labeling': './static/js/sequence_labeling.js',
         'document_classification': './static/js/document_classification.js',
         'seq2seq': './static/js/seq2seq.js',
