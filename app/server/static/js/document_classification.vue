@@ -4,7 +4,7 @@ extends ./annotation.pug
 block annotation-area
   div.card
     header.card-header
-      div.card-header-title.has-background-royalblue(style="padding: 1.5rem;")
+      div.card-header-title.has-background-royalblue
         div.field.is-grouped.is-grouped-multiline
           div.control(v-for="label in labels")
             div.tags.has-addons
@@ -32,10 +32,20 @@ block annotation-area
             ) {{ id2label[annotation.label].text }}
               button.delete.is-small(v-on:click="removeLabel(annotation)")
 
-      hr(style="margin: 0.8rem 0;")
+      hr
       div.content(v-if="docs[pageNumber]")
         span.text {{ docs[pageNumber].text }}
 </template>
+
+<style scoped>
+hr {
+  margin: 0.8rem 0;
+}
+
+.card-header-title {
+  padding: 1.5rem;
+}
+</style>
 
 <script>
 import annotationMixin from './mixin';

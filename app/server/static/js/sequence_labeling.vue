@@ -4,7 +4,7 @@ extends ./annotation.pug
 block annotation-area
   div.card
     header.card-header
-      div.card-header-title.has-background-royalblue(style="padding: 1.5rem;")
+      div.card-header-title.has-background-royalblue
         div.field.is-grouped.is-grouped-multiline
           div.control(v-for="label in labels")
             div.tags.has-addons
@@ -31,6 +31,12 @@ block annotation-area
           ref="annotator"
         )
 </template>
+
+<style scoped>
+.card-header-title {
+  padding: 1.5rem;
+}
+</style>
 
 <script>
 import annotationMixin from './mixin';
