@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
-from os import path
+from os import path, environ
 
 import django_heroku
 import dj_database_url
@@ -129,8 +129,12 @@ SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = env('OAUTH_AAD_TENANT', None)
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': environ.get('DATABASE_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': environ.get('DATABASE_NAME', path.join(BASE_DIR, 'db.sqlite3')),
+        'PORT': environ.get('DATABASE_PORT'),
+        'USER': environ.get('DATABASE_USER'),
+        'HOST': environ.get('DATABASE_HOST'),
+        'PASSWORD': environ.get('DATABASE_PASS'),
     }
 }
 
