@@ -345,7 +345,8 @@ class PlainTextParser(FileParser):
             batch = list(itertools.islice(file, IMPORT_BATCH_SIZE))
             if not batch:
                 break
-            yield [{'text': line.strip()} for line in batch]
+            lines = [line.strip() for line in batch]
+            yield [{'text': line} for line in lines if line]
 
 
 class CSVParser(FileParser):

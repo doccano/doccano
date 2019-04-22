@@ -754,6 +754,12 @@ class TestUploader(APITestCase):
                                 format='plain',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_plain_text_with_empty_lines(self):
+        self.upload_test_helper(url=self.classification_url,
+                                filename='example.empty.txt',
+                                format='plain',
+                                expected_status=status.HTTP_201_CREATED)
+
     def test_can_upload_data_without_label(self):
         self.upload_test_helper(url=self.classification_url,
                                 filename='example.jsonl',
