@@ -15,6 +15,7 @@ from os import path
 import django_heroku
 import dj_database_url
 from environs import Env
+from furl import furl
 
 
 # Build paths inside the project like this: path.join(BASE_DIR, ...)
@@ -195,7 +196,11 @@ LOGIN_REDIRECT_URL = '/projects/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Change 'default' database configuration with $DATABASE_URL.
-DATABASES['default'].update(dj_database_url.config(conn_max_age=500, ssl_require=True))
+DATABASES['default'].update(dj_database_url.config(
+    env='DATABASE_URL',
+    conn_max_age=500,
+    ssl_require='sslmode' not in furl(env('DATABASE_URL', '')).args,
+))
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
