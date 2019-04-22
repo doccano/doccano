@@ -198,7 +198,7 @@ LOGOUT_REDIRECT_URL = '/'
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(
     env='DATABASE_URL',
-    conn_max_age=500,
+    conn_max_age=env.int('DATABASE_CONN_MAX_AGE', 500),
     ssl_require='sslmode' not in furl(env('DATABASE_URL', '')).args,
 ))
 
