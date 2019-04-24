@@ -4,6 +4,10 @@
 <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 {% endblock %}
 {% block content-area %}
+    <h1 class="title">Project Guidelines</h1>
+    <div>
+        <p>Use the left panel to write guidelines for labelers using Markdown. It will be available for the labelers during annotation. You can include text, links, images and other elements from the <a href="https://www.markdownguide.org/basic-syntax" target="_blank">markdown language</a>.</p>
+    </div>
 <div id="editor" class="columns is-gapless">
   <div class="column is-6">
     <textarea class="editorMarkdown_textarea" :value="input" @input="update"></textarea>

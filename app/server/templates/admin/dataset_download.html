@@ -38,6 +38,20 @@
               </ul>
             </div>
           </form>
+
+          <div class="section">
+            <div class="buttons">
+                <a class="button is-primary" href="{% url 'export_docs' view.kwargs.project_id %}" target="_blank">
+                    Export project documents
+                </a>
+                <a class="button is-primary" href="{% url 'export_annotations' view.kwargs.project_id %}" target="_blank">
+                    Export project annotations
+                </a>
+                <a class="button is-primary" href="{% url 'export_labels' view.kwargs.project_id %}" target="_blank">
+                    Export project labels
+                </a>
+            </div>
+          </div>
       </div>
     </div>
   </div>
