@@ -387,16 +387,19 @@ class JSONParser(FileParser):
 
     def parse(self, file):
         data = []
+
         for i, line in enumerate(file, start=1):
             if len(data) >= IMPORT_BATCH_SIZE:
                 yield data
                 data = []
+
             try:
                 j = json.loads(line)
                 j['meta'] = json.dumps(j.get('meta', {}))
                 data.append(j)
             except json.decoder.JSONDecodeError:
                 raise FileParseException(line_num=i, line=line)
+
         if data:
             yield data
 
