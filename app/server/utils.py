@@ -393,6 +393,10 @@ class JSONParser(FileParser):
                 yield data
                 data = []
 
+            line = line.strip()
+            if not line:
+                continue
+
             try:
                 j = json.loads(line)
                 j['meta'] = json.dumps(j.get('meta', {}))

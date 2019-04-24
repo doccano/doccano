@@ -766,6 +766,12 @@ class TestUploader(APITestCase):
                                 format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_json_data_with_empty_lines(self):
+        self.upload_test_helper(url=self.classification_url,
+                                filename='example.empty.jsonl',
+                                format='json',
+                                expected_status=status.HTTP_201_CREATED)
+
 
 class TestParser(APITestCase):
 
