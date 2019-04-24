@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from .models import Label, Project, Document
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, DocumentMLMAnnotation
 
 
 class LabelSerializer(serializers.ModelSerializer):
@@ -51,6 +51,17 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
         annotation = DocumentAnnotation.objects.create(**validated_data)
         return annotation
 
+class DocumentMLMAnnotationSerializer(serializers.ModelSerializer):
+    label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
+
+    class Meta:
+        model = DocumentMLMAnnotation
+        fields = ('id', 'prob', 'label')
+
+    def create(self, validated_data):
+        annotation = DocumentMLMAnnotation.objects.create(**validated_data)
+        return annotation
+
 
 class SequenceAnnotationSerializer(serializers.ModelSerializer):
     label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
@@ -73,6 +84,7 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
 
 class ClassificationDocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
+    mlm_annotations = serializers.SerializerMethodField()
 
     def get_annotations(self, instance):
         request = self.context.get('request')
@@ -81,9 +93,16 @@ class ClassificationDocumentSerializer(serializers.ModelSerializer):
             serializer = DocumentAnnotationSerializer(annotations, many=True)
             return serializer.data
 
+    def get_mlm_annotations(self, instance):
+        request = self.context.get('request')
+        if request:
+            annotations = instance.doc_mlm_annotations
+            serializer = DocumentMLMAnnotationSerializer(annotations, many=True)
+            return serializer.data
+
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations', 'metadata')
+        fields = ('id', 'text', 'annotations', 'metadata', 'mlm_annotations')
 
 
 class SequenceDocumentSerializer(serializers.ModelSerializer):

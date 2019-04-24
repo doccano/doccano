@@ -40,6 +40,17 @@
     <div v-if="metadataString" class="metadataViewer">
       <pre v-html="metadataString"></pre>
     </div>
+
+    {% if user.is_superuser %}
+      <div v-if="predictedLabel">
+          <p>Predicted with probability <b>[[ predictedLabel.prob ]]</b>:</p>
+          <div v-if="predictedLabel.label" class="tags has-addons">
+            <a class="tag is-medium" v-bind:style="{ color: predictedLabel.label.text_color, backgroundColor: predictedLabel.label.background_color }">
+              [[ predictedLabel.label.text ]]
+            </a>
+          </div>
+      </div>
+    {% endif %}
   </div>
 </div>
 

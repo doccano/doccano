@@ -205,18 +205,20 @@ class LabelAdminAPI(APIView):
             GROUP BY document_id, label_id, server_document.text''' % (self.kwargs['project_id'])
         cursor = connection.cursor()
         cursor.execute(query)
-        labels_csv = 'document_id,label_id,num_labelers,last_annotation_date,snippet'
+        labels_csv = 'document_id,label_id,num_labelers,last_annotation_date,snippet\n'
         for row in cursor.fetchall():
-            labels_csv += '%s,%s,%s,%s,%s\n' % (row[0], row[1], row[2], row[3], row[4])
+            labels_csv += '%s,%s,%s,%s,"%s"\n' % (row[0], row[1], row[2], row[3], row[4])
         pandas_csv = StringIO(labels_csv)
         df = pd.read_csv(pandas_csv)
+        print(labels_csv)
         z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False]).groupby(['document_id']).agg({
         'label_id': [('top_label', lambda x: x.iloc[0])],
         'num_labelers': [('agreement', lambda x: x.iloc[0] / sum(x)),
             ('num_labelers', lambda x: sum(x))],
         'last_annotation_date': [('last_annotation_date', lambda x: x.max())],
+        'snippet': [('snippet', lambda x: x.max())],
         })
-        
+        print(z)
         z.columns = [c[1] for c in z.columns]
         z = z.reset_index()
         response = {'dataframe': z}
@@ -242,8 +244,8 @@ class RunModelAPI(APIView):
             server_documentannotation.label_id
             FROM
             server_document
-            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id
-            WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
+            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id AND server_documentannotation.user_id = %s
+            WHERE server_document.project_id = %s''' % (str(request.user.id), str(self.kwargs['project_id']))
 
         doc_annotations_gold_query = '''SELECT
             server_document.id,
