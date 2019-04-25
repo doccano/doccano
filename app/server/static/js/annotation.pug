@@ -1,0 +1,119 @@
+div.columns(v-cloak="")
+  aside.column.is-3.aside.hero.is-fullheight
+    div
+
+      div.main.pr20.pl20
+        div.field.has-addons
+          div.control.is-expanded
+            input.input(
+              v-model="searchQuery"
+              v-on:keyup.enter="submit"
+              type="text"
+              placeholder="Search document"
+              style="border-right: none; box-shadow: none; -webkit-box-shadow: none;"
+            )
+
+          div.control
+            div.dropdown.is-hoverable.is-right
+              div.dropdown-trigger
+                button.button(
+                  aria-haspopup="true"
+                  aria-controls="dropdown-menu"
+                  style="border-left: none"
+                )
+                  span.icon.has-text-grey.pr0
+                    i.fas.fa-angle-down(aria-hidden="true")
+
+              div.dropdown-menu.pt0#dropdown-menu(role="menu")
+                div.dropdown-content
+                  a.dropdown-item
+                    label.radio
+                      input(
+                        v-model="picked"
+                        type="radio"
+                        value="all"
+                        checked=""
+                      )
+                      | All
+                  a.dropdown-item
+                    label.radio
+                      input(
+                        v-model="picked"
+                        type="radio"
+                        value="active"
+                      )
+                      | Active
+                  a.dropdown-item
+                    label.radio
+                      input(
+                        v-model="picked"
+                        type="radio"
+                        value="completed"
+                      )
+                      | Completed
+
+      div.main.pt0.pb0.pr20.pl20
+        span About {{ count }} results
+
+      div.main
+        a.item(
+          v-for="(doc, index) in docs"
+          v-bind:class="{ active: index == pageNumber }"
+          v-bind:data-preview-id="index"
+          v-on:click="pageNumber = index"
+          href="#"
+        )
+          span.icon
+            i.fa.fa-check(v-show="annotations[index] && annotations[index].length")
+          span.name {{ doc.text.slice(0, 60) }}...
+
+  div.column.is-7.is-offset-1.message.hero.is-fullheight#message-pane
+
+    div.modal(v-bind:class="{ 'is-active': isActive }")
+      div.modal-background
+      div.modal-card
+        header.modal-card-head
+          p.modal-card-title Annotation Guideline
+          button.delete(v-on:click="isActive = !isActive", aria-label="close")
+        section.modal-card-body.modal-card-body-footer.content(
+          v-html="compiledMarkdown"
+          style="line-height: 150%"
+        )
+
+    div.columns.is-multiline.is-gapless.is-mobile.is-vertical-center
+      div.column.is-3
+        progress.progress.is-inline-block(
+          v-bind:class="progressColor"
+          v-bind:value="achievement"
+          max="100"
+        ) 30%
+      div.column.is-8
+        span.ml10
+          strong {{ total - remaining }}
+        | /
+        span {{ total }}
+      div.column.is-1.has-text-right
+        a.button(v-on:click="isActive = !isActive")
+          span.icon
+            i.fas.fa-book
+
+    block annotation-area
+
+    div.level.mt30
+      a.button.level-left(
+        v-shortkey="{ prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft'] }"
+        v-on:click="prevPage"
+        v-on:shortkey="prevPage"
+      )
+        span.icon
+          i.fas.fa-chevron-left
+        span Prev
+
+      a.button.level-right(
+        v-shortkey="{ next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright'] }"
+        v-on:click="nextPage"
+        v-on:shortkey="nextPage"
+      )
+        span Next
+        span.icon
+          i.fas.fa-chevron-right

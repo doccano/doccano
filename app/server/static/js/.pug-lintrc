@@ -1,0 +1,7 @@
+{
+  "extends": "clock",
+  "disallowIdLiterals": null,
+  "disallowSpacesInsideAttributeBrackets": null,
+  "validateAttributeQuoteMarks": "\"",
+  "validateDivTags": null
+}

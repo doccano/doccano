@@ -33,7 +33,7 @@ class Project(PolymorphicModel):
     def image(self):
         raise NotImplementedError()
 
-    def get_template_name(self):
+    def get_bundle_name(self):
         raise NotImplementedError()
 
     def get_upload_template(self):
@@ -61,8 +61,8 @@ class TextClassificationProject(Project):
     def image(self):
         return staticfiles_storage.url('images/cats/text_classification.jpg')
 
-    def get_template_name(self):
-        return 'annotation/document_classification.html'
+    def get_bundle_name(self):
+        return 'document_classification'
 
     def get_upload_template(self):
         return 'admin/upload/text_classification.html'
@@ -88,8 +88,8 @@ class SequenceLabelingProject(Project):
     def image(self):
         return staticfiles_storage.url('images/cats/sequence_labeling.jpg')
 
-    def get_template_name(self):
-        return 'annotation/sequence_labeling.html'
+    def get_bundle_name(self):
+        return 'sequence_labeling'
 
     def get_upload_template(self):
         return 'admin/upload/sequence_labeling.html'
@@ -115,8 +115,8 @@ class Seq2seqProject(Project):
     def image(self):
         return staticfiles_storage.url('images/cats/seq2seq.jpg')
 
-    def get_template_name(self):
-        return 'annotation/seq2seq.html'
+    def get_bundle_name(self):
+        return 'seq2seq'
 
     def get_upload_template(self):
         return 'admin/upload/seq2seq.html'
