@@ -19,9 +19,9 @@ class TestTextClassificationProject(TestCase):
         image_url = self.project.image
         self.assertTrue(image_url.endswith('.jpg'))
 
-    def test_get_template_name(self):
-        template = self.project.get_template_name()
-        self.assertEqual(template, 'annotation/document_classification.html')
+    def test_get_bundle_name(self):
+        template = self.project.get_bundle_name()
+        self.assertEqual(template, 'document_classification')
 
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
@@ -42,9 +42,9 @@ class TestSequenceLabelingProject(TestCase):
         image_url = self.project.image
         self.assertTrue(image_url.endswith('.jpg'))
 
-    def test_get_template_name(self):
-        template = self.project.get_template_name()
-        self.assertEqual(template, 'annotation/sequence_labeling.html')
+    def test_get_bundle_name(self):
+        template = self.project.get_bundle_name()
+        self.assertEqual(template, 'sequence_labeling')
 
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
@@ -65,9 +65,9 @@ class TestSeq2seqProject(TestCase):
         image_url = self.project.image
         self.assertTrue(image_url.endswith('.jpg'))
 
-    def test_get_template_name(self):
-        template = self.project.get_template_name()
-        self.assertEqual(template, 'annotation/seq2seq.html')
+    def test_get_bundle_name(self):
+        template = self.project.get_bundle_name()
+        self.assertEqual(template, 'seq2seq')
 
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
