@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import DemoTextClassification from './demo_text_classification.vue';
+import DemoTextClassification from '../../demo/demo_text_classification.vue';
 
 Vue.use(require('vue-shortkey'), {
   prevent: ['input', 'textarea'],

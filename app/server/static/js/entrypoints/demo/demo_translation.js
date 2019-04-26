@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import DemoTranslation from './demo_translation.vue';
+import DemoTranslation from '../../demo/demo_translation.vue';
 
 Vue.use(require('vue-shortkey'));
 

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Seq2Seq from './seq2seq.vue';
+import Seq2Seq from '../../seq2seq.vue';
 
 Vue.use(require('vue-shortkey'));
 
