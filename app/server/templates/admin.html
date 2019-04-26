@@ -1,10 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% load render_bundle from webpack_loader %}
 {% block header %}
 <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/vs2015.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
 {% endblock %}
 {% block navigation %}
 <a class="navbar-item" href="{% url 'annotation' view.kwargs.project_id %}">
@@ -27,7 +26,7 @@
 </a>
 {% endblock %}
 {% block content %}
-<div class="columns mr0" id="mail-app" v-cloak>
+<div class="columns mr0">
   <aside class="column is-2 aside">
     <div>
       <div class="main">
@@ -67,16 +66,15 @@
     </div>
   </aside>
   <div class="column is-10 messages hero is-fullheight" id="message-feed">
-    <div v-if="messages.length > 0">
-      <article class='message is-danger'>
-        <div class='message-body'>
-          <ul>
-            <li v-for="message in messages">[[ message ]]</li>
-          </ul>
-        </div>
-      </article>
+    <div id="mail-app">
+      {% block content-area %}{% endblock %}
     </div>
-    {% block content-area %}{% endblock %}
   </div>
 </div>
+{% endblock %}
+
+{% block footer %}
+{% if bundle_name %}
+{% render_bundle bundle_name 'js' %}
+{% endif %}
 {% endblock %}

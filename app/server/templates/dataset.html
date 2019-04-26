@@ -1,6 +1,4 @@
-{% extends "admin/admin_base.html" %}
-{% load static %}
-{% load render_bundle from webpack_loader %}
+{% extends "admin.html" %}
 {% block content-area %}
 <div class="card">
   <header class="card-header">
@@ -77,7 +75,4 @@
   </ul>
 </nav>
 {% endif %}
-{% endblock %}
-{% block footer %}
-{% render_bundle 'dataset' 'js' %}
 {% endblock %}

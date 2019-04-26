@@ -36,10 +36,10 @@ class Project(PolymorphicModel):
     def get_bundle_name(self):
         raise NotImplementedError()
 
-    def get_upload_template(self):
+    def get_bundle_name_upload(self):
         raise NotImplementedError()
 
-    def get_download_template(self):
+    def get_bundle_name_download(self):
         raise NotImplementedError()
 
     def get_annotation_serializer(self):
@@ -64,11 +64,11 @@ class TextClassificationProject(Project):
     def get_bundle_name(self):
         return 'document_classification'
 
-    def get_upload_template(self):
-        return 'admin/upload/text_classification.html'
+    def get_bundle_name_upload(self):
+        return 'upload_text_classification'
 
-    def get_download_template(self):
-        return 'admin/download/text_classification.html'
+    def get_bundle_name_download(self):
+        return 'download_text_classification'
 
     def get_annotation_serializer(self):
         from .serializers import DocumentAnnotationSerializer
@@ -91,11 +91,11 @@ class SequenceLabelingProject(Project):
     def get_bundle_name(self):
         return 'sequence_labeling'
 
-    def get_upload_template(self):
-        return 'admin/upload/sequence_labeling.html'
+    def get_bundle_name_upload(self):
+        return 'upload_sequence_labeling'
 
-    def get_download_template(self):
-        return 'admin/download/sequence_labeling.html'
+    def get_bundle_name_download(self):
+        return 'download_sequence_labeling'
 
     def get_annotation_serializer(self):
         from .serializers import SequenceAnnotationSerializer
@@ -118,11 +118,11 @@ class Seq2seqProject(Project):
     def get_bundle_name(self):
         return 'seq2seq'
 
-    def get_upload_template(self):
-        return 'admin/upload/seq2seq.html'
+    def get_bundle_name_upload(self):
+        return 'upload_seq2seq'
 
-    def get_download_template(self):
-        return 'admin/download/seq2seq.html'
+    def get_bundle_name_download(self):
+        return 'download_seq2seq'
 
     def get_annotation_serializer(self):
         from .serializers import Seq2seqAnnotationSerializer
