@@ -8,7 +8,11 @@ script:
 
 deploy:
   - provider: script
-    script: tools/cd.sh
+    script: tools/cd.sh travis-${TRAVIS_BUILD_NUMBER}
     on:
-      repo: chakki-works/doccano
+      branch: master
+
+  - provider: script
+    script: tools/cd.sh ${TRAVIS_TAG}
+    on:
       tags: true
