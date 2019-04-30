@@ -25,11 +25,11 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-0ac019f4fcb7cb7e6
+      ImageId: ami-06397100adf427136
       KeyName: !Ref KeyName
       SecurityGroups:
         - !Ref AppSG
-      UserData: !Base64 
+      UserData: !Base64
         'Fn::Join':
           - ''
           - - |
@@ -162,8 +162,7 @@ Parameters:
     AllowedPattern: '^[a-zA-Z0-9]*$'
 Outputs:
   PublicDNS:
-    Value: !GetAtt 
+    Value: !GetAtt
       - App
       - PublicDnsName
     Description: Newly created server DNS address
-
