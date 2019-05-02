@@ -213,12 +213,11 @@ class LabelAdminAPI(APIView):
         print(labels_csv)
         z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False]).groupby(['document_id']).agg({
         'label_id': [('top_label', lambda x: x.iloc[0])],
-        'num_labelers': [('agreement', lambda x: x.iloc[0] / sum(x)),
+        'num_labelers': [('agreement', lambda x: round((x.iloc[0] / sum(x) * 100), 2)),
             ('num_labelers', lambda x: sum(x))],
         'last_annotation_date': [('last_annotation_date', lambda x: x.max())],
         'snippet': [('snippet', lambda x: x.max())],
         })
-        print(z)
         z.columns = [c[1] for c in z.columns]
         z = z.reset_index()
         response = {'dataframe': z}
