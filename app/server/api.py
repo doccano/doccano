@@ -308,9 +308,11 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
     class_weights = None
+    has_weights = False
     if (os.path.isfile('ml_models/ml_logistic_regression_weights.csv')):
         class_weights = pd.read_csv(os.path.abspath('ml_models/ml_logistic_regression_weights.csv'), header=None,
                     names=['term', 'weight']).set_index('term')['weight']
+        has_weights = True
         
 
     def get(self, request, *args, **kwargs):
@@ -319,7 +321,7 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
         format_str_positive = '<span class="has-background-success">{}</span>'
         format_str_negative = '<span class="has-background-danger">{}</span>'
         text = []
-        if self.class_weights:
+        if self.has_weights:
             for w in doc_text_splited:
                 weight = self.class_weights.get(w.lower().replace(',','').replace('.',''), 0)
                 if weight < -0.2:
