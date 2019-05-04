@@ -362,6 +362,29 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
         return obj
 
+
+class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Document.objects.all()
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = project.get_document_serializer()
+
+        return self.serializer_class
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+
+        return queryset
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs['doc_id'])
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = LabelSerializer
