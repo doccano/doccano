@@ -225,6 +225,7 @@ const annotationMixin = {
     },
 
     async search(setOffset = true) {
+      console.log('search')
       await HTTP.get(this.url).then((response) => {
         this.docs = response.data.results;
         this.next = response.data.next;
