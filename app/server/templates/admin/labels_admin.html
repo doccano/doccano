@@ -27,7 +27,7 @@
           </thead>
           <tbody>
               <tr v-for="(row, index) in filteredTableRows" :key="index">
-                  <td>[[ row.documentId ]]</td>
+                  <td><a :href="getUrl('{% url 'annotation' view.kwargs.project_id %}', row.documentId)">[[ row.documentId ]]</a></td>
                   <td>[[ row.labelersCount ]]</td>
                   <td>[[ row.agreementsPercent ]]</td>
                   <td>[[ row.topLabel ]]</td>

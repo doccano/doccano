@@ -45,6 +45,7 @@ const vm = new Vue({
     shortcutKey: '',
     backgroundColor: '#209cee',
     textColor: '#ffffff',
+    labelId: null
   },
 
   computed: {
@@ -97,6 +98,41 @@ const vm = new Vue({
       });
     },
 
+    saveLabel() {
+      const payload = {
+        text: this.labelText,
+        shortcut: this.saveKeys,
+        background_color: this.backgroundColor,
+        text_color: this.textColor,
+        comment: this.labelComment
+      };
+      HTTP.put(`labels/${this.labelId}`, payload).then((response) => {
+        Vue.set(this.labels, this.labels.findIndex((l) => l.id === response.data.id), response.data)
+      });
+    },
+
+    setLabel(label) {
+      this.reset()
+      this.labelText = label.text
+      this.backgroundColor = label.background_color
+      this.textColor = label.text_color
+      this.labelComment = label.comment
+      this.labelId = label.id
+
+      if (label.shortcut) {
+        const splited = label.shortcut.split(' ')
+        if (splited.length === 1) {
+          this.selectedKey = label.shortcut
+        } else {
+          this.selectedKey = splited[splited.length - 1]
+
+          for (let i = 0; i < splited.length -1; ++i) {
+            this.checkedKey.push(splited[i])
+          }
+        }
+      }
+    },
+
     removeLabel(label) {
       const labelId = label.id;
       HTTP.delete(`labels/${labelId}`).then((response) => {
@@ -113,6 +149,7 @@ const vm = new Vue({
       this.shortcutKey = '';
       this.backgroundColor = this.findLabelColor();
       this.textColor = '#ffffff';
+      this.labelId = null
     },
 
     isSuitableShortcut(char) {
@@ -155,13 +192,12 @@ const vm = new Vue({
       return null
     },
     findLabelColor() {
-      let lastColorIndex;
+      let lastColorIndex = -1;
       for (let i = this.labels.length - 1; i >= 0; --i) {
         const label = this.labels[i]
         const idx = colorPalette.indexOf(label.background_color)
-        if (idx !== -1) {
+        if (idx !== -1 && idx > lastColorIndex) {
           lastColorIndex = idx
-          break
         }
       }
       if (lastColorIndex + 1 < colorPalette.length) {
@@ -170,23 +206,21 @@ const vm = new Vue({
         return colorPalette[0]
       } 
     },
+    setShortcut() {
+      if (this.labelText && this.labelText.length) {
+        const sc = this.findSuitableShortcut(this.labelText)
+        if (sc) {
+          this.selectedKey = sc
+        }
+      } else if ((!this.labelText || !this.labelText.length) && this.selectedKey) {
+        this.selectedKey = ''
+      }
+    }
   },
   created() {
     HTTP.get('labels').then((response) => {
       this.labels = response.data;
       this.backgroundColor = this.findLabelColor()
     });
-  },
-  watch: {
-    labelText(val) {
-      if (val && val.length) {
-        const sc = this.findSuitableShortcut(val)
-        if (sc) {
-          this.selectedKey = sc
-        }
-      } else if ((!val || !val.length) && this.selectedKey) {
-        this.selectedKey = ''
-      }
-    }
   }
 });
