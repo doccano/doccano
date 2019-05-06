@@ -7,6 +7,9 @@
     <p class="card-header-title">
       Labeled Documents
     </p>
+    <div class="section section--small-padding">
+      <a href="{% url 'download_labels_admin' view.kwargs.project_id %}" class="button is-primary button-margin ">Download CSV</a>
+    </div>
     <a href="#" class="card-header-icon" aria-label="more options">
       <span class="icon">
         <i class="fas fa-angle-down" aria-hidden="true"></i>

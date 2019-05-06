@@ -49,6 +49,10 @@ class ProjectsView(LoginRequiredMixin, CreateView):
     template_name = 'projects.html'
 
 
+class UsersAdminView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'users.html'
+
+
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
     template_name = 'admin/dataset.html'
     paginate_by = 5
@@ -82,7 +86,6 @@ class UserView(SuperUserMixin, LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         # context['docs_count'] = user.get_docs_count()
         return context
-
 
 class LabelersView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/labelers.html'
@@ -501,6 +504,54 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
             response.write(dump + '\n')  # write each json object end with a newline
         return response
 
+class LabelsAdminDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+
+        query = '''SELECT document_id,
+                label_id,
+                COUNT(DISTINCT user_id) AS num_labelers,
+                MAX(server_documentannotation.created_date_time) AS last_annotation_date,
+                substr(server_document."text", 0, 60) AS document_text
+            FROM server_documentannotation
+            LEFT JOIN server_document ON server_document.id = server_documentannotation.document_id
+            LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+            WHERE server_document.project_id = %d
+            GROUP BY document_id, label_id, server_document.text''' % (self.kwargs['project_id'])
+        cursor = connection.cursor()
+        cursor.execute(query)
+        labels_csv = 'document_id,label_id,num_labelers,last_annotation_date,snippet\n'
+        for row in cursor.fetchall():
+            labels_csv += '%s,%s,%s,%s,"%s"\n' % (row[0], row[1], row[2], row[3], row[4])
+        pandas_csv = StringIO(labels_csv)
+        df = pd.read_csv(pandas_csv)
+        z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False]).groupby(['document_id']).agg({
+        'label_id': [('top_label', lambda x: x.iloc[0])],
+        'num_labelers': [('agreement', lambda x: round((x.iloc[0] / sum(x) * 100), 2)),
+            ('num_labelers', lambda x: sum(x))],
+        'last_annotation_date': [('last_annotation_date', lambda x: x.max())],
+        'snippet': [('snippet', lambda x: x.max())],
+        })
+        z.columns = [c[1] for c in z.columns]
+        data = z.reset_index()
+        spl = p.name.lower().split()
+        spl.append('labels')
+        print(spl)
+        filename = '_'.join(spl)
+        try:
+            response = self.get_csv(filename, data)
+            return response
+        except Exception as e:
+            logger.exception(e)
+            messages.add_message(request, messages.ERROR, "Something went wrong")
+            return HttpResponseRedirect(reverse('labels_admin', args=[project.id]))
+
+    def get_csv(self, filename, data):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+        response.write(data.to_csv())
+        return response
 
 class LoginView(BaseLoginView):
     template_name = 'login.html'
