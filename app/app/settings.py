@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import sys
 import django_heroku
 import dj_database_url
 
@@ -142,6 +143,19 @@ DATABASES = {
     },
 }
 DATABASES['default'] = DATABASES['posgres_local']
+
+if "test" in sys.argv:
+    DATABASES = {    
+         'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'doccano',
+            'USER': 'postgres',
+            'PASSWORD': 'admin',
+            'HOST': 'localhost',
+            'PORT': 5432,
+            'CONN_MAX_AGE': 60
+        }  
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators

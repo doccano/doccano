@@ -120,6 +120,7 @@ def run_model_on_file(input_filename, output_filename, user_id, project_id, labe
     tmp_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
     class_weights = pd.Series({term: weight for term, weight in zip (vectorizer.get_feature_names(), model.coef_[0])})
+    project_id = 999
     class_weights.to_csv(os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id))
 
     print('Done running the model!')

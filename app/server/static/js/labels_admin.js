@@ -87,6 +87,9 @@ const vm = new Vue({
       }
 
       return ''
+    },
+    getUrl(base, docId) {
+      return `${base}#document=${docId}`
     }
   },
   async created() {

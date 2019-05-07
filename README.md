@@ -221,6 +221,11 @@ We prepared a NER annotation tutorial, which can help you have a better understa
 
 I hope you are having a great day!
 
+## Running tests
+```bash
+python manage.py test server.tests
+```
+
 ## Contribution
 
 As with any software, doccano is under continuous development. If you have requests for features, please file an issue describing your request. Also, if you want to see work towards a specific feature, feel free to contribute by working towards it. The standard procedure is to fork the repository, add a feature, fix a bug, then file a pull request that your changes are to be merged into the main repository and included in the next release.

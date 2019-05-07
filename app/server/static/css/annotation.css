@@ -297,7 +297,15 @@ body {
 .metadataViewer .key { color: red; }
 
 span.highlight {
-  background-color: darkorange
+  background-color: rgb(255, 140, 0)
+}
+
+span.has-background-success > span.highlight {
+  background-color: rgba(255, 140, 0, 0.1);
+}
+
+span.has-background-danger > span.highlight {
+  background-color: rgba(255, 140, 0, 0.1);
 }
 
 .suggestions-list {

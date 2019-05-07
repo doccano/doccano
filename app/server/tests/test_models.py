@@ -44,6 +44,19 @@ class TestDocumentAnnotation(TestCase):
         with self.assertRaises(IntegrityError):
             DocumentAnnotation(document=a.document, user=a.user, label=a.label).save()
 
+class TestDocumentMLMAnnotation(TestCase):
+
+    def test_uniqueness(self):
+        a = mixer.blend('server.DocumentMLMAnnotation')
+        with self.assertRaises(IntegrityError):
+            DocumentAnnotation(document=a.document, label=a.label).save()
+
+class TestDocumentGoldAnnotation(TestCase):
+    
+    def test_uniqueness(self):
+        a = mixer.blend('server.DocumentGoldAnnotation')
+        with self.assertRaises(IntegrityError):
+            DocumentAnnotation(document=a.document, label=a.label).save()
 
 class TestSequenceAnnotation(TestCase):
 

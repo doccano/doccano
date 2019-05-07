@@ -216,15 +216,15 @@ class LabelAdminAPI(APIView):
             .agg({
                 'label_id': [('top_label', lambda x: x.iloc[0])],
                 'num_labelers': [
-                    ('agreement', lambda x: x.iloc[0] / sum(x)),
-                    ('num_labelers', lambda x: sum(x))
+                    ('agreement', lambda x: round( x.iloc[0] / sum(x)) ),
+                    ('num_labelers', lambda x: sum(x)),
                 ],
                 'last_annotation_date': [
                     ('last_annotation_date', lambda x: x.max())
                 ],
                 'snippet': [('snippet', lambda x: x.iloc[0])]
         })
-        
+
         z.columns = [c[1] for c in z.columns]
         z = z.reset_index()
         response = {'dataframe': z}
@@ -318,18 +318,19 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
     class_weights = None
     filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
+    has_weights = False
     if (os.path.isfile(filename)):
-        class_weights = pd.read_csv(os.path.abspath(filename),
-                                    header=None,
-                                    names=['term', 'weight']).set_index('term')['weight']
-
+        class_weights = pd.read_csv(os.path.abspath(filename), header=None,
+                    names=['term', 'weight']).set_index('term')['weight']
+        has_weights = True
+        
     def get(self, request, *args, **kwargs):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         doc_text_splited = d.text.split(' ')
         format_str_positive = '<span class="has-background-success">{}</span>'
         format_str_negative = '<span class="has-background-danger">{}</span>'
         text = []
-        if self.class_weights is not None:
+        if self.has_weights:
             for w in doc_text_splited:
                 weight = self.class_weights.get(w.lower().replace(',','').replace('.',''), 0)
                 if weight < -0.2:
@@ -368,6 +369,29 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
     def get_object(self):
         queryset = self.filter_queryset(self.get_queryset())
         obj = get_object_or_404(queryset, pk=self.kwargs['label_id'])
+        self.check_object_permissions(self.request, obj)
+
+        return obj
+
+
+class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Document.objects.all()
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = project.get_document_serializer()
+
+        return self.serializer_class
+
+    def get_queryset(self):
+        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+
+        return queryset
+
+    def get_object(self):
+        queryset = self.filter_queryset(self.get_queryset())
+        obj = get_object_or_404(queryset, pk=self.kwargs['doc_id'])
         self.check_object_permissions(self.request, obj)
 
         return obj

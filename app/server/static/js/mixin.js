@@ -160,7 +160,8 @@ const annotationMixin = {
       docExplanation: '',
       metadataAll: [],
       metadataKeys: [],
-      metadataRules: []
+      metadataRules: [],
+      docFromLink: null
     };
   },
 
@@ -224,6 +225,7 @@ const annotationMixin = {
     },
 
     async search(setOffset = true) {
+      console.log('search')
       await HTTP.get(this.url).then((response) => {
         this.docs = response.data.results;
         this.next = response.data.next;
@@ -251,6 +253,15 @@ const annotationMixin = {
         
         if (setOffset) {
           this.offset = getOffsetFromUrl(this.url);
+        }
+
+        if (this.offset === 0 && this.docFromLink) {
+          const docIdx = this.docs.findIndex((d) => d.id === this.docFromLink.id)
+          if (docIdx === -1) {
+            this.docs.unshift(this.docFromLink)
+          } else {
+            this.pageNumber = docIdx
+          }
         }
       });
     },
@@ -410,10 +421,22 @@ const annotationMixin = {
         }
       })
     });
+
+    if (location.hash && location.hash.length) {
+      if (location.hash.indexOf('#document=') !== -1) {
+        try {
+          const docResp = await HTTP.get(`docs/${location.hash.replace('#document=', '')}`)
+          this.docFromLink = docResp.data
+        } catch(e) {
+          this.docFromLink = null
+        }
+      }
+    }
+
     const state = this.getState();
     this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
     await this.search();
-
+    
     if (localStorage) {
       const explainMode = localStorage.getItem('doccano_explainMode')
       if (explainMode) {

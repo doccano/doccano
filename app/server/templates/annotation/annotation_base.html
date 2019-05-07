@@ -122,7 +122,7 @@
       </div>
 
       <div class="main">
-        <a href="#" class="item" v-for="(doc, index) in docs" v-bind:class="{ active: index == pageNumber }" v-on:click="pageNumber = index"
+        <a class="item" v-for="(doc, index) in docs" v-bind:class="{ active: index == pageNumber }" v-on:click="pageNumber = index"
           v-bind:data-preview-id="index"
           :key="index">
           <span class="icon">
