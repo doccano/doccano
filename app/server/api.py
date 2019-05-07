@@ -134,6 +134,7 @@ class LabelersListAPI(APIView):
                 agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
         pandas_csv = StringIO(agreement_csv)
         df = pd.read_csv(pandas_csv)
+        df.to_csv('temp_agreement.csv')
         pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
         agreement = create_kappa_comparison_df(pivot_table)
 
@@ -240,7 +241,8 @@ class RunModelAPI(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get(self, request, *args, **kwargs):
-        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project_id = self.kwargs['project_id']
+        p = get_object_or_404(Project, pk=project_id)
         cursor = connection.cursor()
 
         doc_annotations_query = '''SELECT
@@ -249,8 +251,8 @@ class RunModelAPI(APIView):
             server_documentannotation.label_id
             FROM
             server_document
-            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id
-            WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
+            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id AND server_documentannotation.user_id = %s
+            WHERE server_document.project_id = %s''' % (str(request.user.id), str(self.kwargs['project_id']))
 
         doc_annotations_gold_query = '''SELECT
             server_document.id,
@@ -271,7 +273,7 @@ class RunModelAPI(APIView):
                 label_id = None
                 wr.writerow([row[0], row[1], row[2]])
 
-        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), 0)
+        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=0, project_id=project_id)
 
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
@@ -311,13 +313,15 @@ class ProjectStatsAPI(APIView):
         return Response(response)
 
 class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
+    project_id = 999 # TODO: Change this to the actual current project
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
     class_weights = None
-    if (os.path.isfile('ml_models/ml_logistic_regression_weights.csv')):
-        class_weights = pd.read_csv(os.path.abspath('ml_models/ml_logistic_regression_weights.csv'), header=None,
-                    names=['term', 'weight']).set_index('term')['weight']
-        
+    filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
+    if (os.path.isfile(filename)):
+        class_weights = pd.read_csv(os.path.abspath(filename),
+                                    header=None,
+                                    names=['term', 'weight']).set_index('term')['weight']
 
     def get(self, request, *args, **kwargs):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])

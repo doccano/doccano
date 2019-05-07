@@ -22,7 +22,7 @@ def process_text(x):
     return x.lower().strip()
 
 
-def run_model_on_file(input_filename, output_filename, user_id, label_id=None, method='bow'):
+def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow'):
     # nlp = spacy.load("en_core_web_sm")
     print('Reading input file...')
     df = pd.read_csv(input_filename, encoding='latin1')
@@ -120,11 +120,11 @@ def run_model_on_file(input_filename, output_filename, user_id, label_id=None, m
     tmp_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
     class_weights = pd.Series({term: weight for term, weight in zip (vectorizer.get_feature_names(), model.coef_[0])})
-    class_weights.to_csv(os.path.dirname(input_filename)+'/ml_logistic_regression_weights.csv')
+    class_weights.to_csv(os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id))
 
     print('Done running the model!')
     return result
 
 
 if __name__ == '__main__':
-    run_model_on_file('../../ml_models/ml_input.csv', '../../ml_models/ml_out_manual.csv', user_id=2, label_id=None)
+    run_model_on_file('../../ml_models/ml_input.csv', '../../ml_models/ml_out_manual.csv', project_id=9999, user_id=2, label_id=None)

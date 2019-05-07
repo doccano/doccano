@@ -4,6 +4,9 @@
 <div class="card">
   <header class="card-header">
     <div class="card-header-title has-background-royalblue" style="padding:1.5rem;">
+        <span class="card-header-text">
+            Available labels:
+        </span>
       <div class="field is-grouped is-grouped-multiline">
         <div class="control" v-for="(label, item) in labels">
           <div class="tags has-addons">
@@ -40,14 +43,25 @@
     <div v-if="metadataString" class="metadataViewer">
       <pre v-html="metadataString"></pre>
     </div>
+
+    {% if user.is_superuser %}
+      <div v-if="predictedLabel">
+          <p>Predicted with probability <b>[[ predictedLabel.prob ]]</b>:</p>
+          <div v-if="predictedLabel.label" class="tags has-addons">
+            <a class="tag is-medium" v-bind:style="{ color: predictedLabel.label.text_color, backgroundColor: predictedLabel.label.background_color }">
+              [[ predictedLabel.label.text ]]
+            </a>
+          </div>
+      </div>
+    {% endif %}
   </div>
 </div>
 
 <div class="card" style="margin-top: 2rem;">
 <header class="card-footer">
-    <p class="card-header-title">
-      Metadata search
-    </p>
+    <div class="card-header-title">
+        Metadata search
+    </div>
     <a href="#" style="text-decoration: none;" class="card-header-icon" aria-label="more options">
       <span class="icon">
         <i class="fas fa-angle-down" aria-hidden="true"></i>
@@ -56,6 +70,7 @@
   </header>
 
   <div class="card-content">
+    <p>Use this panel to filter documents based on their properties.</p>
     <metadata-search :metadata="metadataKeys" @metadatasearch="metadataSearch"></metadata-search>
   </div>
 </div>

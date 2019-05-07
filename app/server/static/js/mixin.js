@@ -514,6 +514,20 @@ const annotationMixin = {
 
     lastPage() {
       return Math.floor(this.count / this.limit)
+    },
+
+
+    predictedLabel() {
+      if (this.currentDoc && this.currentDoc.mlm_annotations && this.currentDoc.mlm_annotations.length) {
+        const pred = this.currentDoc.mlm_annotations[0]
+        const label = this.labels.find((l) => l.id === pred.label)
+        const { prob } = pred
+        return {
+          label,
+          prob
+        }
+      }
+      return null
     }
   },
 };
