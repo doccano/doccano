@@ -220,3 +220,7 @@ APPLICATION_INSIGHTS = {
 }
 
 django_heroku.settings(locals(), test_runner=False)
+
+# work-around for dj-database-url: explicitly disable ssl for sqlite
+if DATABASES['default'].get('ENGINE') == 'django.db.backends.sqlite3':
+    DATABASES['default'].get('OPTIONS', {}).pop('sslmode', None)
