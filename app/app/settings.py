@@ -219,7 +219,9 @@ APPLICATION_INSIGHTS = {
     'ikey': AZURE_APPINSIGHTS_IKEY if AZURE_APPINSIGHTS_IKEY else None,
 }
 
-django_heroku.settings(locals(), test_runner=False)
+# work-around for django-heroku: don't overwrite sslmode outside of heroku
+if env.bool('IS_HEROKU', True):
+    django_heroku.settings(locals(), test_runner=False)
 
 # work-around for dj-database-url: explicitly disable ssl for sqlite
 if DATABASES['default'].get('ENGINE') == 'django.db.backends.sqlite3':
