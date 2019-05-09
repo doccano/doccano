@@ -33,7 +33,6 @@ RUN pip install --no-cache-dir /deps/*.whl
 
 COPY --from=builder /doccano /doccano
 
-ENV IS_HEROKU="False"
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
 ENV PORT="80"

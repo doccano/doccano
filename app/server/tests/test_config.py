@@ -17,8 +17,7 @@ class TestDatabaseUrl(TestCase):
             self._assert_sslmode_is(None)
 
     def test_sslmode_can_be_set_via_database_url(self):
-        with setenv('DATABASE_URL', 'pgsql://u:p@h/d?sslmode=disabled'), \
-             setenv('IS_HEROKU', 'False'):
+        with setenv('DATABASE_URL', 'pgsql://u:p@h/d?sslmode=disabled'):
             self._assert_sslmode_is('disabled')
 
     def _assert_sslmode_is(self, expected):
