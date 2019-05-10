@@ -16,9 +16,13 @@ class TestDatabaseUrl(TestCase):
         with setenv('DATABASE_URL', 'sqlite:///some/path'):
             self._assert_sslmode_is(None)
 
-    def test_sslmode_can_be_set_via_database_url(self):
+    def test_sslmode_can_be_disabled_via_database_url(self):
         with setenv('DATABASE_URL', 'pgsql://u:p@h/d?sslmode=disabled'):
             self._assert_sslmode_is('disabled')
+
+    def test_sslmode_can_be_required_via_database_url(self):
+        with setenv('DATABASE_URL', 'pgsql://u:p@h/d?sslmode=require'):
+            self._assert_sslmode_is('require')
 
     def _assert_sslmode_is(self, expected):
         reload(settings)
