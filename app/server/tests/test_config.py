@@ -17,8 +17,8 @@ class TestDatabaseUrl(TestCase):
             self._assert_sslmode_is(None)
 
     def test_sslmode_can_be_disabled_via_database_url(self):
-        with setenv('DATABASE_URL', 'pgsql://u:p@h/d?sslmode=disabled'):
-            self._assert_sslmode_is('disabled')
+        with setenv('DATABASE_URL', 'pgsql://u:p@h/d?sslmode=disable'):
+            self._assert_sslmode_is('disable')
 
     def test_sslmode_can_be_required_via_database_url(self):
         with setenv('DATABASE_URL', 'pgsql://u:p@h/d?sslmode=require'):
