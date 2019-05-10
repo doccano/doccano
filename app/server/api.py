@@ -12,6 +12,7 @@ from collections import Counter
 from itertools import chain
 from itertools import islice
 
+import matplotlib.pyplot as plt
 import seaborn as sns
 import base64
 
@@ -135,6 +136,7 @@ class LabelersListAPI(APIView):
         pandas_csv = StringIO(agreement_csv)
         df = pd.read_csv(pandas_csv)
         df.to_csv('temp_agreement.csv')
+        df = df.drop_duplicates(['document_id', 'user_id'])
         pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
         agreement = create_kappa_comparison_df(pivot_table)
 
@@ -179,6 +181,9 @@ class LabelersListAPI(APIView):
         fig.savefig(fig_bytes, format='png')
         fig_bytes.seek(0)
         base64b = base64.b64encode(fig_bytes.read())
+        fig_bytes.close()
+        plt.clf()
+
 
         #agreement_truth = add_agreement_columns(pivot_table, 'true_label_id')
 

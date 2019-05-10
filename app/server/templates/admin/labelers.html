@@ -19,7 +19,7 @@
           <thead>
               <tr>
                   <th>User id</th>
-                  <th>Labeler name</th>
+                  <th>Name</th>
                   <th>Last annotation</th>
                   <th># of annotations made</th>
                   <th>Agreement with truth</th>
@@ -27,8 +27,8 @@
               </tr>
           </thead>
           <tbody>
-              <tr v-for="(user, index) in labelers" :key="index" @click="goToUser(user)" style="cursor:pointer">
-                  <td>[[ user.id ]]</td>
+              <tr v-for="(user, index) in labelers" :key="index">
+                  <td><a title="Click to view user details" @click="goToUser(user)">[[ user.id ]]</a></td>
                   <td>[[ user.name ]]</td>
                   <td>[[ user.last_date ]]</td>
                   <td>[[ user.count ]]</td>
