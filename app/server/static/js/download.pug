@@ -19,4 +19,5 @@ div.columns(v-cloak="")
           style="margin-top: 1em;"
           type="submit"
           v-on:click="download()"
+          v-bind:class="{'is-loading': isLoading}"
         ) Download
