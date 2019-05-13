@@ -109,6 +109,20 @@ div.columns(v-cloak="")
           i.fas.fa-chevron-left
         span Prev
 
+      div.level-item
+        div.field.has-addons
+          p.control
+            label.button.is-static#offset-page-input-label Page:
+          p.control
+            input.input.has-text-centered(
+              aria-labelledby="offset-page-input-label"
+              type="number"
+              v-bind:min="firstOffsetPage"
+              v-bind:max="lastOffsetPage"
+              v-bind:value="currentOffsetPage"
+              v-on:change="goToOffsetPage"
+            )
+
       a.button.level-right(
         v-shortkey="{ next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright'] }"
         v-on:click="nextPage"

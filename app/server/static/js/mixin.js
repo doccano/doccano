@@ -1,4 +1,5 @@
 import * as marked from 'marked';
+import clamp from 'lodash.clamp';
 import hljs from 'highlight.js';
 import HTTP from './http';
 import Messages from './messages.vue';
@@ -136,6 +137,14 @@ export const annotationMixin = {
       }
       return shortcut;
     },
+
+    async goToOffsetPage(event) {
+      const newPage = clamp(event.target.value, this.firstOffsetPage, this.lastOffsetPage);
+
+      this.offset = (newPage - 1) * this.itemsPerPage;
+
+      await this.submit();
+    },
   },
 
   watch: {
@@ -169,6 +178,20 @@ export const annotationMixin = {
   computed: {
     itemsPerPage() {
       return this.docs.length;
+    },
+
+    currentOffsetPage() {
+      const offset = this.offset / this.itemsPerPage + 1;
+      return Number.isFinite(offset) ? offset : 1;
+    },
+
+    firstOffsetPage() {
+      return 1;
+    },
+
+    lastOffsetPage() {
+      const lastPage = Math.floor(this.count / this.itemsPerPage);
+      return Number.isFinite(lastPage) ? lastPage : 1;
     },
 
     achievement() {
