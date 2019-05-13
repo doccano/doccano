@@ -1,4 +1,4 @@
-# doccano
+# Doccano - Effective annotation of text, image and audio using Active Learning and Guided Search
 
 [![Build Status](https://travis-ci.org/chakki-works/doccano.svg?branch=master)](https://travis-ci.org/chakki-works/doccano)
 
