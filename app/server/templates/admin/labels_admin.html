@@ -4,14 +4,12 @@
 
 <div class="card">
   <header class="card-header">
-    <p class="card-header-title">
-      Labeled Documents
-    </p>
+    <div class="card-header-title">
+      <h1 class="title">Labeled Documents</h1>
+      {#<p>The table below diplays labeled documents. Click on column names to sort.</p>#}
+    </div>
     <div class="section section--small-padding">
       <a href="{% url 'download_labels_admin' view.kwargs.project_id %}" class="button is-primary button-margin ">Download CSV</a>
-    <div class="card-header-title">
-        <h1 class="title">Labeled Documents</h1>
-        {#<p>The table below diplays labeled documents. Click on column names to sort.</p>#}
     </div>
     <a href="#" class="card-header-icon" aria-label="more options">
       <span class="icon">
@@ -35,9 +33,9 @@
               <tr v-for="(row, index) in filteredTableRows" :key="index">
                   <td><a :href="getUrl('{% url 'annotation' view.kwargs.project_id %}', row.documentId)">[[ row.documentId ]]</a></td>
                   <td>[[ row.labelersCount ]]</td>
-                  <td>[[ row.agreementsPercent ]]</td>
+                  <td>[[ row.agreementsPercent | toPercent ]]</td>
                   <td>[[ row.topLabel ]]</td>
-                  <td>[[ row.lastAnnotationDate ]]</td>
+                  <td>[[ row.lastAnnotationDate | parseDate ]]</td>
                   <td>[[ row.snippet ]]</td>
               </tr>
           </tbody>
