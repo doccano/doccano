@@ -225,7 +225,6 @@ const annotationMixin = {
     },
 
     async search(setOffset = true) {
-      console.log('search')
       await HTTP.get(this.url).then((response) => {
         this.docs = response.data.results;
         this.next = response.data.next;
@@ -236,9 +235,10 @@ const annotationMixin = {
           this.limit = Number.parseInt(limitMatches[1], 10)
           const offsetMatches = this.next? this.next.match(/(offset=\d+)/) : this.prev.match(/(offset=\d+)/)
           const lastOffset = Math.floor(this.count / this.limit) * this.limit
-
-          this.first = this.next ? this.next.replace(offsetMatches[1], 'offset=0') : this.prev.replace(offsetMatches[1], 'offset=0')
-          this.last = this.next ? this.next.replace(offsetMatches[1], `offset=${lastOffset}`) : this.prev.replace(offsetMatches[1], `offset=${lastOffset}`)
+          if (offsetMatches && offsetMatches.length > 1) {
+            this.first = this.next ? this.next.replace(offsetMatches[1], 'offset=0') : this.prev.replace(offsetMatches[1], 'offset=0')
+            this.last = this.next ? this.next.replace(offsetMatches[1], `offset=${lastOffset}`) : this.prev.replace(offsetMatches[1], `offset=${lastOffset}`)
+          }
         } else {
           this.first = 0
           this.last = 0

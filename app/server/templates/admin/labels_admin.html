@@ -25,6 +25,8 @@
                   <th is="th-sortable" label="Number of labelers" v-model="sort" field="labelersCount"></th>
                   <th is="th-sortable" label="% Agreement" v-model="sort" field="agreementsPercent"></th>
                   <th is="th-sortable" label="Top label" v-model="sort" field="topLabel"></th>
+                  <th is="th-sortable" label="Ground truth" v-model="sort" field="groundTruth"></th>
+                  <th is="th-sortable" label="% Model confidence" v-model="sort" field="modelConfidence"></th>
                   <th is="th-sortable" label="Date of last annotation" v-model="sort" field="lastAnnotationDate"></th>
                   <th is="th-sortable" label="Document text" v-model="sort" field="docText"></th>
               </tr>
@@ -35,6 +37,8 @@
                   <td>[[ row.labelersCount ]]</td>
                   <td>[[ row.agreementsPercent | toPercent ]]</td>
                   <td>[[ row.topLabel ]]</td>
+                  <td>[[ row.groundTruth ]]</td>
+                  <td>[[ row.modelConfidence | toPercent ]]</td>
                   <td>[[ row.lastAnnotationDate | parseDate ]]</td>
                   <td>[[ row.snippet ]]</td>
               </tr>
