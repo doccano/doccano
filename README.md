@@ -39,18 +39,21 @@ In Sequence-to-sequence (aka seq2seq) models you provide text that matches the o
 
 ## Features
 
-* Collaborative annotation
+* Provides collaborative annotation of multiple labelers, with user authentication
 * Language independent
-* Active learning
-* Guided search - filter results by matching text (e.g. a search for `"i will share" –screen` will return only documents with exact match of "i will share" and without the word "screen"). This allows fast labeling of documents with very high probability of belonging to a certain class.
-* Admin reports about labels and labelers
+* Fits a wide variety of project types, and can be easily extended
+* Supports annotation of large datasets (1M records)
+* Includes admin reports about labels and labelers
   * View each labeler’s performance on ground truth
   * Retrain low-performing labelers
   * Identify unclear guidelines
   * Calculate inter-rater agreement (loosely associated with a limit to model performance)
   * Compute the labeling speed of each labeler
   * Estimate effort required to create a certain dataset size
-* Filter records according to metadata
+* Fast creation of training datasets, using:
+  * Active learning - a Machine Learning model is trained based on existing annotations. Labelers are then served records with low model confidence first, and can view the predicted class for faster affirmation/rejection.
+  * Guided search - filter results by matching text (e.g. a search for `"i will share" –screen` will return only documents with exact match of "i will share" and without the word "screen"). This allows fast labeling of documents with very high probability of belonging to a certain class.
+  * Filter records according to metadata
 * Export of annotations to CSV
 * Explain mode, highlighting words & phrases that might indicate a certain class, for faster annotation
 * Increased productivity using keyboard shortcuts
@@ -70,12 +73,6 @@ See [this page](INSTALLATION.md).
 
 ## Usage
 See [this page](usage.md).
-
-### Tutorial
-
-We prepared a NER annotation tutorial, which can help you have a better understanding of doccano. Please first read the README page, and then take the tutorial. [A Tutorial For Sequence Labeling Project](https://github.com/gong-io/doccano/wiki/A-Tutorial-For-Sequence-Labeling-Project).
-
-I hope you are having a great day!
 
 ## Contribution
 
