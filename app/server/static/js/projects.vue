@@ -90,7 +90,7 @@
                             div.dataset-item__main-title
                               div.dataset-item__main-title-link.dataset-item__link
                                 a.has-text-black(v-bind:href="'/projects/' + project.id")
-                                | {{ project.name }}
+                                  | {{ project.name }}
 
                             div.dataset-item__main-subtitle {{ project.description }}
                             div.dataset-item__main-info
