@@ -301,11 +301,13 @@ span.highlight {
 }
 
 span.has-background-success > span.highlight {
-  background-color: rgba(255, 140, 0, 0.1);
+  border-bottom: 3px solid rgb(255, 140, 0);
+  background-color: initial;
 }
 
 span.has-background-danger > span.highlight {
-  background-color: rgba(255, 140, 0, 0.1);
+  border-bottom: 3px solid rgb(255, 140, 0);
+  background-color: initial;
 }
 
 .suggestions-list {

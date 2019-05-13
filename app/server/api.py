@@ -194,21 +194,25 @@ class LabelAdminAPI(APIView):
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
 
-        query = '''SELECT document_id,
-                label_id,
+        query = '''SELECT server_documentannotation.document_id,
+                server_documentannotation.label_id,
                 COUNT(DISTINCT user_id) AS num_labelers,
                 MAX(server_documentannotation.created_date_time) AS last_annotation_date,
-                substr(server_document."text", 0, 60) AS document_text
+                substr(server_document.text, 0, 60) AS document_text,
+				server_documentgoldannotation.label_id as ground_truth,
+				server_documentmlmannotation.prob as model_confidence
             FROM server_documentannotation
             LEFT JOIN server_document ON server_document.id = server_documentannotation.document_id
+			LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_documentannotation.document_id
+			LEFT JOIN server_documentmlmannotation ON server_documentmlmannotation.document_id = server_documentannotation.document_id
             LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
             WHERE server_document.project_id = %d
-            GROUP BY document_id, label_id, server_document.text''' % (self.kwargs['project_id'])
+            GROUP BY server_documentannotation.document_id, server_documentannotation.label_id, server_document.text, server_documentgoldannotation.label_id, server_documentmlmannotation.prob''' % (self.kwargs['project_id'])
         cursor = connection.cursor()
         cursor.execute(query)
-        labels_csv = 'document_id,label_id,num_labelers,last_annotation_date,snippet\n'
+        labels_csv = 'document_id,label_id,ground_truth,model_confidence,num_labelers,last_annotation_date,snippet\n'
         for row in cursor.fetchall():
-            labels_csv += '%s,%s,%s,%s,"%s"\n' % (row[0], row[1], row[2], row[3], row[4])
+            labels_csv += '%s,%s,%s,%s,%s,%s,"%s"\n' % (row[0], row[1], row[5], row[6], row[2], row[3], row[4])
         pandas_csv = StringIO(labels_csv)
         df = pd.read_csv(pandas_csv)
         z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False])\
@@ -222,7 +226,9 @@ class LabelAdminAPI(APIView):
                 'last_annotation_date': [
                     ('last_annotation_date', lambda x: x.max())
                 ],
-                'snippet': [('snippet', lambda x: x.iloc[0])]
+                'snippet': [('snippet', lambda x: x.iloc[0])],
+                'ground_truth': [('ground_truth', lambda x: x.iloc[0])],
+                'model_confidence': [('model_confidence', lambda x: x.iloc[0])],
         })
 
         z.columns = [c[1] for c in z.columns]

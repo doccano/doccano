@@ -5,8 +5,11 @@
 <div class="card">
   <header class="card-header">
     <div class="card-header-title">
-        <h1 class="title">Labeled Documents</h1>
-{#        <p>The table below diplays labeled documents. Click on column names to sort.</p>#}
+      <h1 class="title">Labeled Documents</h1>
+      {#<p>The table below diplays labeled documents. Click on column names to sort.</p>#}
+    </div>
+    <div class="section section--small-padding">
+      <a href="{% url 'download_labels_admin' view.kwargs.project_id %}" class="button is-primary button-margin ">Download CSV</a>
     </div>
     <a href="#" class="card-header-icon" aria-label="more options">
       <span class="icon">
@@ -22,6 +25,8 @@
                   <th is="th-sortable" label="Number of labelers" v-model="sort" field="labelersCount"></th>
                   <th is="th-sortable" label="% Agreement" v-model="sort" field="agreementsPercent"></th>
                   <th is="th-sortable" label="Top label" v-model="sort" field="topLabel"></th>
+                  <th is="th-sortable" label="Ground truth" v-model="sort" field="groundTruth"></th>
+                  <th is="th-sortable" label="% Model confidence" v-model="sort" field="modelConfidence"></th>
                   <th is="th-sortable" label="Date of last annotation" v-model="sort" field="lastAnnotationDate"></th>
                   <th is="th-sortable" label="Document text" v-model="sort" field="docText"></th>
               </tr>
@@ -30,9 +35,11 @@
               <tr v-for="(row, index) in filteredTableRows" :key="index">
                   <td><a :href="getUrl('{% url 'annotation' view.kwargs.project_id %}', row.documentId)">[[ row.documentId ]]</a></td>
                   <td>[[ row.labelersCount ]]</td>
-                  <td>[[ row.agreementsPercent ]]</td>
+                  <td>[[ row.agreementsPercent | toPercent ]]</td>
                   <td>[[ row.topLabel ]]</td>
-                  <td>[[ row.lastAnnotationDate ]]</td>
+                  <td>[[ row.groundTruth ]]</td>
+                  <td>[[ row.modelConfidence | toPercent ]]</td>
+                  <td>[[ row.lastAnnotationDate | parseDate ]]</td>
                   <td>[[ row.snippet ]]</td>
               </tr>
           </tbody>

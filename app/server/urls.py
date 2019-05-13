@@ -4,7 +4,7 @@ from rest_framework import routers
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView, SettingsView, LabelersView, LabelAdminView
 from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport, UserInfoView
-from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
+from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation, LabelsAdminDownloadFile, UsersAdminView
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, DocumentDetail, ProjectDetail, UserInfo, \
     AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, LabelersListAPI, LabelAdminAPI, DocumentExplainAPI, SuggestedTerms, MetadataAPI
 
@@ -30,8 +30,10 @@ urlpatterns = [
     path('api/projects/<int:project_id>/docs/<int:doc_id>/explanation/', DocumentExplainAPI.as_view(), name='document_explain'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>', AnnotationDetail.as_view(), name='ann'),
     path('projects/', ProjectsView.as_view(), name='projects'),
+    #path('users_admin/', UsersAdminView.as_view(), name='users_admin'),
     path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
     path('projects/<int:project_id>/download_file', DataDownloadFile.as_view(), name='download_file'),
+    path('projects/<int:project_id>/download_labels_admin', LabelsAdminDownloadFile.as_view(), name='download_labels_admin'),
     path('projects/<int:project_id>/export_docs', DocumentExport.as_view(), name='export_docs'),
     path('projects/<int:project_id>/export_annotations', DocumentAnnotationExport.as_view(), name='export_annotations'),
     path('projects/<int:project_id>/export_labels', LabelExport.as_view(), name='export_labels'),

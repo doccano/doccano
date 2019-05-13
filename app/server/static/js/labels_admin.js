@@ -1,6 +1,11 @@
 import Vue from 'vue';
 import HTTP from './http';
 
+import { toPercent, parseDate } from './filters'
+
+Vue.filter('toPercent', toPercent)
+Vue.filter('parseDate', parseDate)
+
 Vue.component('th-sortable', {
   props: ['label', 'field', 'value'],
   template: `
@@ -74,6 +79,8 @@ const vm = new Vue({
         row.labelersCount = dataframe.num_labelers[i];
         row.agreementsPercent = dataframe.agreement[i];
         row.topLabel = this.labelNameById(dataframe.top_label[i]);
+        row.groundTruth = this.labelNameById(dataframe.ground_truth[i]);
+        row.modelConfidence = dataframe.model_confidence[i];
         row.lastAnnotationDate = dataframe.last_annotation_date[i];
         row.docText = dataframe.snippet[i];
         row.snippet = dataframe.snippet[i];
