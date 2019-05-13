@@ -134,6 +134,7 @@ class LabelersListAPI(APIView):
                 agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
         pandas_csv = StringIO(agreement_csv)
         df = pd.read_csv(pandas_csv)
+        df.to_csv('temp_agreement.csv')
         pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
         agreement = create_kappa_comparison_df(pivot_table)
 
@@ -210,13 +211,20 @@ class LabelAdminAPI(APIView):
             labels_csv += '%s,%s,%s,%s,"%s"\n' % (row[0], row[1], row[2], row[3], row[4])
         pandas_csv = StringIO(labels_csv)
         df = pd.read_csv(pandas_csv)
-        z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False]).groupby(['document_id']).agg({
-        'label_id': [('top_label', lambda x: x.iloc[0])],
-        'num_labelers': [('agreement', lambda x: round((x.iloc[0] / sum(x) * 100), 2)),
-            ('num_labelers', lambda x: sum(x))],
-        'last_annotation_date': [('last_annotation_date', lambda x: x.max())],
-        'snippet': [('snippet', lambda x: x.max())],
+        z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False])\
+            .groupby(['document_id'])\
+            .agg({
+                'label_id': [('top_label', lambda x: x.iloc[0])],
+                'num_labelers': [
+                    ('agreement', lambda x: round( x.iloc[0] / sum(x)) ),
+                    ('num_labelers', lambda x: sum(x)),
+                ],
+                'last_annotation_date': [
+                    ('last_annotation_date', lambda x: x.max())
+                ],
+                'snippet': [('snippet', lambda x: x.iloc[0])]
         })
+
         z.columns = [c[1] for c in z.columns]
         z = z.reset_index()
         response = {'dataframe': z}
@@ -233,7 +241,8 @@ class RunModelAPI(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get(self, request, *args, **kwargs):
-        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project_id = self.kwargs['project_id']
+        p = get_object_or_404(Project, pk=project_id)
         cursor = connection.cursor()
 
         doc_annotations_query = '''SELECT
@@ -264,7 +273,7 @@ class RunModelAPI(APIView):
                 label_id = None
                 wr.writerow([row[0], row[1], row[2]])
 
-        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), 0)
+        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=0, project_id=project_id)
 
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
@@ -304,16 +313,17 @@ class ProjectStatsAPI(APIView):
         return Response(response)
 
 class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
+    project_id = 999 # TODO: Change this to the actual current project
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
     class_weights = None
+    filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
     has_weights = False
-    if (os.path.isfile('ml_models/ml_logistic_regression_weights.csv')):
-        class_weights = pd.read_csv(os.path.abspath('ml_models/ml_logistic_regression_weights.csv'), header=None,
+    if (os.path.isfile(filename)):
+        class_weights = pd.read_csv(os.path.abspath(filename), header=None,
                     names=['term', 'weight']).set_index('term')['weight']
         has_weights = True
         
-
     def get(self, request, *args, **kwargs):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         doc_text_splited = d.text.split(' ')
@@ -424,7 +434,7 @@ class DocumentList(generics.ListCreateAPIView):
             queryset = project.get_documents(is_null).distinct()
 
         if (project.use_machine_model_sort):
-            queryset = queryset.order_by('doc_mlm_annotations__prob').filter(project=self.kwargs['project_id'])
+            queryset = queryset.order_by('doc_mlm_annotations__prob').filter(project=self.kwargs['project_id']).exclude(doc_mlm_annotations__prob__isnull=True)
         else:
             queryset = queryset.order_by('doc_annotations__prob').filter(project=self.kwargs['project_id'])
 
@@ -463,9 +473,10 @@ class MetadataAPI(APIView):
         query = '''SELECT DISTINCT metadata FROM server_document WHERE server_document.project_id = %d''' % (self.kwargs['project_id'])
         cursor = connection.cursor()
         cursor.execute(query)
-        metadata = []
-        for row in cursor.fetchall():
-            metadata.append(row[0])
+        metadata = [row[0] for row in cursor.fetchall()]
+        # metadata = []
+        # for row in cursor.fetchall():
+        #     metadata.append(row[0])
         
         response = {'metadata': metadata}
         return Response(response)

@@ -75,6 +75,7 @@ const vm = new Vue({
         row.agreementsPercent = dataframe.agreement[i];
         row.topLabel = this.labelNameById(dataframe.top_label[i]);
         row.lastAnnotationDate = dataframe.last_annotation_date[i];
+        row.docText = dataframe.snippet[i];
         row.snippet = dataframe.snippet[i];
         this.tableRows.push(row)
       }

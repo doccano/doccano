@@ -325,3 +325,10 @@ span.has-background-danger > span.highlight {
         min-width: 90%;
     }
 }
+
+
+.card-header-title.has-background-royalblue .card-header-text {
+    color: white;
+    font-weight: normal;
+    margin-right: .5em;
+}
