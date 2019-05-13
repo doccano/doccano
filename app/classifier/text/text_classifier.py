@@ -111,10 +111,20 @@ def run_model_on_file(input_filename, output_filename, user_id, project_id, labe
     print('Running the model on the entire dataset...')
     tmp_df = run_model(df)
 
+    bootstrap = 1
+    bootstrap_threshold = 0.9
+    if bootstrap:
+        tmp_df = tmp_df[ tmp_df['confidence'] >= bootstrap_threshold ]
+        X, y = df_to_matrix(df_labeled)
+        y = y.values
+        model.fit(X, y)
+        tmp_df = run_model(df)
+
     tmp_df['user_id'] = user_id
     tmp_df = tmp_df.rename({'confidence': 'prob',
                             'id': 'document_id'}, axis=1)
     tmp_df['label_id'] = tmp_df['prediction']
+
     # save to CSV file
     print('Saving output...')
     tmp_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)

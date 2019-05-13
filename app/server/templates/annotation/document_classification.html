@@ -31,6 +31,20 @@
           </span>
         </div>
       </div>
+
+      {% if user.is_superuser %}
+          <div v-if="predictedLabel">
+
+              <div v-if="predictedLabel.label" class="tags has-addons">
+                  <p>Predicted
+                <a class="tag is-medium" v-bind:style="{ color: predictedLabel.label.text_color, backgroundColor: predictedLabel.label.background_color }">
+                  [[ predictedLabel.label.text ]]
+                </a>
+                      with probability <b>[[ predictedLabel.prob ]]</b>:</p>
+              </div>
+          </div>
+      {% endif %}
+
     </div>
     {#      <span v-if="docs[pageNumber]">Item #[[ docs[pageNumber].id ]]. [[ docs[pageNumber].metadata ]]</span>#}
     <hr style="margin: 0.8rem 0;">
@@ -44,16 +58,6 @@
       <pre v-html="metadataString"></pre>
     </div>
 
-    {% if user.is_superuser %}
-      <div v-if="predictedLabel">
-          <p>Predicted with probability <b>[[ predictedLabel.prob ]]</b>:</p>
-          <div v-if="predictedLabel.label" class="tags has-addons">
-            <a class="tag is-medium" v-bind:style="{ color: predictedLabel.label.text_color, backgroundColor: predictedLabel.label.background_color }">
-              [[ predictedLabel.label.text ]]
-            </a>
-          </div>
-      </div>
-    {% endif %}
   </div>
 </div>
 
