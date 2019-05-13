@@ -11,11 +11,11 @@
   <span class="icon">
     <i class="fas fa-edit"></i>
   </span>
-  <b>Edit Data</b>
+  <b>Edit</b>
 </a>
-<a class="navbar-item" @click="runModel">
+<a class="navbar-item" @click="runModel" title="Train a Machine Learning model to classify documents based on the documents that were already annotated">
   <span class="icon">
-    <i class="fas fa-edit"></i>
+    <i class="fas fa-robot"></i>
   </span>
   <b>Run Model</b>
 </a>
@@ -73,7 +73,7 @@
                   </a>
                   <a class="dropdown-item">
                     <label class="radio">
-                      <input type="radio" value="active" v-model="picked"> Active
+                      <input type="radio" value="active" v-model="picked"> Unannotated
                     </label>
                   </a>
                   <a class="dropdown-item">
@@ -108,7 +108,7 @@
             </span>
           </a>
 
-          <a class="button level-left" v-on:click="lastDocumentsPage" :disabled="currentPage == lastPage">
+          <a class="button level-left" v-on:click="lastDocumentsPage" :disabled="currentPage==lastPage">
               <span>Last</span>
               <span class="icon" title="Last">
                 <i class="fas fa-angle-double-right"></i>
@@ -122,8 +122,9 @@
       </div>
 
       <div class="main">
-        <a href="#" class="item" v-for="(doc, index) in docs" v-bind:class="{ active: index == pageNumber }" v-on:click="pageNumber = index"
-          v-bind:data-preview-id="index">
+        <a class="item" v-for="(doc, index) in docs" v-bind:class="{ active: index == pageNumber }" v-on:click="pageNumber = index"
+          v-bind:data-preview-id="index"
+          :key="index">
           <span class="icon">
             <i class="fa fa-check" v-show="annotations[index] && annotations[index].length"></i>
           </span>
@@ -153,16 +154,16 @@
         <progress class="progress is-inline-block" v-bind:class="progressColor" v-bind:value="achievement" max="100">30%</progress>
       </div>
       <div class="column is-4">
-        <span class="ml10"><strong>[[ total - remaining ]]</strong></span>/<span>[[ total ]]</span>
+        <span class="ml10" title="documents annotated"><strong>[[ total - remaining ]]</strong></span>/<span title="total documents">[[ total ]]</span>
       </div>
       <div class="column is-4">
-        <div class="field">
+        <div class="field" title="Highlight words and phrases that contribute the most to the prediction of the machine">
           <input id="switchExample" type="checkbox" name="switchExample" class="switch is-success" v-model="explainMode" checked="checked">
           <label for="switchExample">Explain mode</label>
         </div>
       </div>
       <div class="column is-1 has-text-right">
-        <a class="button" @click="isActive=!isActive">
+        <a class="button" @click="isActive=!isActive" title="Annotation guidelines">
           <span class="icon">
             <i class="fas fa-book"></i>
           </span>

@@ -19,7 +19,7 @@
         <div class="column is-12">
             <label class="checkbox">
                 <input type="checkbox" v-model="projectSettings.use_machine_model_sort">
-                Show document according to probability field of automatic model
+                Annotate documents according to the confidence level of the automatic Machine Learning model
             </label>
 
             <div class="field">
@@ -31,22 +31,6 @@
             </div>
         </div>
 
-      </div>
-
-      <div class="card-content">
-        <div class="section">
-          <div class="buttons">
-              <a class="button is-primary" href="{% url 'export_docs' view.kwargs.project_id %}" target="_blank">
-                  Export project documents
-              </a>
-              <a class="button is-primary" href="{% url 'export_annotations' view.kwargs.project_id %}" target="_blank">
-                  Export project annotations
-              </a>
-              <a class="button is-primary" href="{% url 'export_labels' view.kwargs.project_id %}" target="_blank">
-                  Export project labels
-              </a>
-          </div>
-        </div>
       </div>
     </div>
   </div>

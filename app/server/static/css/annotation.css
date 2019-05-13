@@ -297,7 +297,17 @@ body {
 .metadataViewer .key { color: red; }
 
 span.highlight {
-  background-color: darkorange
+  background-color: rgb(255, 140, 0)
+}
+
+span.has-background-success > span.highlight {
+  border-bottom: 3px solid rgb(255, 140, 0);
+  background-color: initial;
+}
+
+span.has-background-danger > span.highlight {
+  border-bottom: 3px solid rgb(255, 140, 0);
+  background-color: initial;
 }
 
 .suggestions-list {
@@ -314,4 +324,11 @@ span.highlight {
     .modal-card, .modal-content {
         min-width: 90%;
     }
+}
+
+
+.card-header-title.has-background-royalblue .card-header-text {
+    color: white;
+    font-weight: normal;
+    margin-right: .5em;
 }

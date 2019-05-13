@@ -23,7 +23,7 @@ class ExcludeSearchFilter(BaseFilterBackend):
     search_title = _('Search')
     search_description = _('A search term.')
 
-    complex_search_regex = r'^\"(.*)\"\s*\-?(.*$)'
+    complex_search_regex = r'^\"(.*)\"\s*(\-)?(.*$)'
 
     def get_search_terms(self, request):
         """
@@ -36,10 +36,13 @@ class ExcludeSearchFilter(BaseFilterBackend):
         }
         params = request.query_params.get(self.search_param, '')
         complex_search_result = re.search(self.complex_search_regex, params)
+        print(complex_search_result)
         if (complex_search_result):
-            if (complex_search_result.group(1) and complex_search_result.group(2)):
+            if (complex_search_result.group(1) and complex_search_result.group(2) and complex_search_result.group(3)):
                 ret['terms'] = [complex_search_result.group(1)]
                 ret['exclude'] = complex_search_result.group(2)
+            elif (complex_search_result.group(1) and not complex_search_result.group(2) and complex_search_result.group(3)):
+                ret['terms'] = [complex_search_result.group(1), complex_search_result.group(3)]
             else:
                 ret['terms'] = [complex_search_result.group(1)]
         else:

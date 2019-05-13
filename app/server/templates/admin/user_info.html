@@ -1,0 +1,23 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      User Info
+    </p>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+
+  <div class="card-content">
+      <p><b>Labeling speed: </b> {{ user_speed }}</p>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+{% endblock %}

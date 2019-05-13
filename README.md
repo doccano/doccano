@@ -239,6 +239,11 @@ We prepared a NER annotation tutorial, which can help you have a better understa
 
 I hope you are having a great day!
 
+## Running tests
+```bash
+python manage.py test server.tests
+```
+
 ## Contribution
 
 Doccano is under continuous development, in both [the original project](https://github.com/chakki-works/doccano) and this fork made by Gong.io. As a mature company that works at scale, we at [Gong.io](https://gong.io) developed many features on top of the original project, to support scalability, better maintanence and faster annotation. We continue active development according to our needs and issues and requests arising from the open-source community at this fork.

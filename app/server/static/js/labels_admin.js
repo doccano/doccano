@@ -1,6 +1,11 @@
 import Vue from 'vue';
 import HTTP from './http';
 
+import { toPercent, parseDate } from './filters'
+
+Vue.filter('toPercent', toPercent)
+Vue.filter('parseDate', parseDate)
+
 Vue.component('th-sortable', {
   props: ['label', 'field', 'value'],
   template: `
@@ -15,6 +20,7 @@ Vue.component('th-sortable', {
   </th>`,
   data() {
     return {
+      labels: []
     };
   },
   methods: {
@@ -66,23 +72,38 @@ const vm = new Vue({
   
   methods: {
     formTableRows(dataframe) {
-      const length = dataframe.doc_ids.length;
+      const length = dataframe.document_id.length;
       for (let i = 0; i < length; i++) {
         const row = {}
-        row.documentId = dataframe.doc_ids[i];
-        row.labelersCount = dataframe.labelers_count[i];
-        row.agreementsPercent = dataframe.agreements_percent[i];
-        row.topLabel = dataframe.top_label[i];
+        row.documentId = dataframe.document_id[i];
+        row.labelersCount = dataframe.num_labelers[i];
+        row.agreementsPercent = dataframe.agreement[i];
+        row.topLabel = this.labelNameById(dataframe.top_label[i]);
+        row.groundTruth = this.labelNameById(dataframe.ground_truth[i]);
+        row.modelConfidence = dataframe.model_confidence[i];
         row.lastAnnotationDate = dataframe.last_annotation_date[i];
-        row.docText = dataframe.doc_text[i];
+        row.docText = dataframe.snippet[i];
+        row.snippet = dataframe.snippet[i];
         this.tableRows.push(row)
       }
+    },
+    labelNameById(id) {
+      const label = this.labels.find((l) => +l.id === +id)
+      if (label) {
+        return label.text
+      }
+
+      return ''
+    },
+    getUrl(base, docId) {
+      return `${base}#document=${docId}`
     }
   },
-  created() {
-    HTTP.get('labels_admin').then((response) => {
-      this.formTableRows(response.data.dataframe)
-    });
+  async created() {
+    const la = await HTTP.get('labels_admin')
+    const labels = await HTTP.get('labels')
+    this.labels = labels.data
+    this.formTableRows(la.data.dataframe)
   },
   watch: {
   }

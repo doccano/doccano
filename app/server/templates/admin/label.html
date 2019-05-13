@@ -18,12 +18,13 @@
     <div class="has-text-right">
       <div class="field is-grouped is-grouped-multiline has-text-weight-bold pbrem075">
         <div class="control" v-for="label in labels">
-          <div class="tags has-addons">
-            <span class="tag is-medium" v-bind:style="{ color: label.text_color, 'background-color': label.background_color }">
-              <button class="delete is-small tweaked-margin" @click="removeLabel(label)"></button>
-              [[ label.text ]]
-            </span>
-            <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
+          <div class="tags has-addons" @click="setLabel(label)" style="cursor:pointer;">
+              <span class="tag is-medium" v-bind:style="{ color: label.text_color, 'background-color': label.background_color }">
+                <button class="delete is-small tweaked-margin" @click.stop.prevent="removeLabel(label)"></button>
+                [[ label.text ]]
+              </span>
+              <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
+            </a>
           </div>
         </div>
       </div>
@@ -46,7 +47,7 @@
           <p class="is-small has-text-grey">required</p>
         </div>
         <div class="control column is-6">
-          <input class="input" type="text" placeholder="Text input" v-model="labelText">
+          <input class="input" type="text" placeholder="Text input" v-model="labelText" @input="setShortcut">
         </div>
       </div>
 
@@ -107,7 +108,8 @@
 
       <div class="field is-grouped">
         <div class="control">
-          <button class="button is-primary" @click="addLabel()">Add label</button>
+          <button class="button is-primary" @click="saveLabel()" v-if="labelId">Save label</button>
+          <button class="button is-primary" @click="addLabel()" v-else>Add label</button>
         </div>
         <div class="control">
           <button class="button is-text" @click="reset()">Reset</button>
