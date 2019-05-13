@@ -57,13 +57,13 @@ export const annotationMixin = {
   methods: {
     async nextPage() {
       this.pageNumber += 1;
-      if (this.pageNumber === this.docs.length) {
+      if (this.pageNumber === this.itemsPerPage) {
         if (this.next) {
           this.url = this.next;
           await this.search();
           this.pageNumber = 0;
         } else {
-          this.pageNumber = this.docs.length - 1;
+          this.pageNumber = this.itemsPerPage - 1;
         }
       }
     },
@@ -74,7 +74,7 @@ export const annotationMixin = {
         if (this.prev) {
           this.url = this.prev;
           await this.search();
-          this.pageNumber = this.docs.length - 1;
+          this.pageNumber = this.itemsPerPage - 1;
         } else {
           this.pageNumber = 0;
         }
@@ -88,7 +88,7 @@ export const annotationMixin = {
         this.prev = response.data.previous;
         this.count = response.data.count;
         this.annotations = [];
-        for (let i = 0; i < this.docs.length; i++) {
+        for (let i = 0; i < this.itemsPerPage; i++) {
           const doc = this.docs[i];
           this.annotations.push(doc.annotations);
         }
@@ -167,6 +167,10 @@ export const annotationMixin = {
   },
 
   computed: {
+    itemsPerPage() {
+      return this.docs.length;
+    },
+
     achievement() {
       const done = this.total - this.remaining;
       const percentage = Math.round(done / this.total * 100);
