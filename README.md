@@ -42,19 +42,28 @@ In Sequence-to-sequence (aka seq2seq) models you provide text that matches the o
 * Collaborative annotation
 * Language independent
 * Active learning
-* Guided search - filter results by matching text
+* Guided search - filter results by matching text (e.g. a search for `"i will share" –screen` will return only documents with exact match of "i will share" and without the word "screen"). This allows fast labeling of documents with very high probability of belonging to a certain class.
 * Admin reports about labels and labelers
-* Easy labeler evaluation
+  * View each labeler’s performance on ground truth
+  * Retrain low-performing labelers
+  * Identify unclear guidelines
+  * Calculate inter-rater agreement (loosely associated with a limit to model performance)
+  * Compute the labeling speed of each labeler
+  * Estimate effort required to create a certain dataset size
 * Filter records according to metadata
 * Export of annotations to CSV
 * Explain mode, highlighting words & phrases that might indicate a certain class, for faster annotation
 * Increased productivity using keyboard shortcuts
 
-## Requirements
+## Technological Stack
+Doccano is built in Django, a popular Python framework for web apps. This makes it easy for data scientists to:
+- plug ML code in PyTorch, Tensorflow etc.
+- perform computations and aggregations in Pandas
+- display images created using Matplotlib / Seaborn etc.
 
-* Python 3.6+
-* django 2.0.5+
-* Google Chrome (recommended)
+Doccano uses a SQL-database to store data. By default it works with SQLite, but for serious applications we recommend Postgres. The docker version of Doccano includes a Posgres server set. If you choose to install Doccano yourself, you should also install Posgres.
+
+Doccano also uses Vue.js, which offers simple & powerful templating of HTML pages. This means you can easily add your own project types for annotation of specific tasks.
 
 ## Installation and Deployment
 See [this page](INSTALLATION.md).
