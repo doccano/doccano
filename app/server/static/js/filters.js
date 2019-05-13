@@ -1,5 +1,5 @@
 export const toPercent = (val) => {
-    return parseFloat(val * 100).toFixed(2)
+    return parseFloat(val * 100).toFixed(2) + '%'
 }
 
 const addZero = (str) => {

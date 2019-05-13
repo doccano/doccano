@@ -3,6 +3,11 @@ import annotationMixin from './mixin';
 import HTTP from './http';
 import simpleShortcut from './filter';
 
+import { toPercent, parseDate } from './filters'
+
+Vue.filter('toPercent', toPercent)
+Vue.filter('parseDate', parseDate)
+
 Vue.use(require('vue-shortkey'), {
   prevent: ['input', 'textarea'],
 });

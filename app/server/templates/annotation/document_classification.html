@@ -1,7 +1,8 @@
 {% extends "annotation/annotation_base.html" %}
 {% load static %}
 {% block annotation-area %}
-<div class="card">
+
+    <div class="card">
   <header class="card-header">
     <div class="card-header-title has-background-royalblue" style="padding:1.5rem;">
         <span class="card-header-text">
@@ -40,7 +41,7 @@
                 <a class="tag is-medium" v-bind:style="{ color: predictedLabel.label.text_color, backgroundColor: predictedLabel.label.background_color }">
                   [[ predictedLabel.label.text ]]
                 </a>
-                      with probability <b>[[ predictedLabel.prob ]]</b>:</p>
+                      with probability <b>[[ predictedLabel.prob | toPercent ]]</b>:</p>
               </div>
           </div>
       {% endif %}
@@ -80,5 +81,5 @@
 </div>
 {% endblock %}
 {% block footer %}
-<script src="{% static 'bundle/document_classification.js' %}"></script>
+    <script src="{% static 'bundle/document_classification.js' %}"></script>
 {% endblock %}
