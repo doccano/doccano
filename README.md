@@ -10,11 +10,13 @@ Doccano prompts labelers to annotate examples that would most likely improve mod
 
 Doccano allows for the integration of the work of multiple labelers, and provides administrative tools to for evaluating the performance of each labeler as well as inter-labeler agreement. It further combines the labelers annotations to create a joint gold standard.
 
+## Presentation
+We presented Doccano at the [2019 Data Science Summit](https://www.aidatasciencesummit.com/). Slides are available [here](https://docs.google.com/presentation/d/12T0AzfMb_0ikfxP4ZA2eaGaVyx9w45PoFKC6oSF2dVU/edit?usp=sharing).
+
 ## Video
 ((((EMBED A VIDEO SHOWING HOW DOCCANO WORKS))))
 
 ## Demo
-
 You can play with an online demo version of Doccano [here](http://doccano.herokuapp.com).
 
 ## Use Cases
