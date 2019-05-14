@@ -276,7 +276,8 @@ const annotationMixin = {
     }, 500),
 
     async getSuggestions(word) {
-      const res = await HTTP.get(`suggested/?word=${word}`)
+      // const res = await HTTP.get(`suggested/?word=${word}`)
+      const res = 0
       if (res && res.data) {
         this.suggestions = res.data
       }
@@ -496,7 +497,7 @@ const annotationMixin = {
     },
 
     metadataString() {
-      if (this.currentDoc && this.currentDoc.metadata) {
+      if (this.currentDoc && this.currentDoc.metadata && this.currentDoc.metadata!='{}') {
         const json = JSON.parse(this.currentDoc.metadata)
         const str = JSON.stringify(json, undefined, 4);
         return syntaxHighlight(str);

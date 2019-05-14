@@ -33,6 +33,8 @@ const vm = new Vue({
         message: 'Processing...',
         type: 'is-info',
         position: 'top-center',
+        duration: 6000,
+        animate: { in: 'fadeIn', out: 'fadeOut' }
       });
       axios.get(`${baseUrl}/api/projects/${projectId}/runmodel/`).then((r) => {
         this.modelProcessing = false;

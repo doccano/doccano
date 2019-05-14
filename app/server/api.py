@@ -1,7 +1,7 @@
 import csv
 import os
 import operator
-import gensim.downloader as api
+# import gensim.downloader as api
 
 from random import randint
 import datetime
@@ -12,6 +12,7 @@ from collections import Counter
 from itertools import chain
 from itertools import islice
 
+import matplotlib.pyplot as plt
 import seaborn as sns
 import base64
 
@@ -140,8 +141,10 @@ class LabelersListAPI(APIView):
             else:
                 agreement_csv += '%s,%s,%s, 0\n' % (row[0], row[1], row[2])
         pandas_csv = StringIO(agreement_csv)
+
         df = pd.read_csv(pandas_csv)
         df.to_csv('temp_agreement.csv')
+        df = df.drop_duplicates(['document_id', 'user_id'])
         pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
         agreement = create_kappa_comparison_df(pivot_table)
 
@@ -171,6 +174,7 @@ class LabelersListAPI(APIView):
             INNER JOIN da ON auth_user.id = da.user_id''' % (self.kwargs['project_id'])
         cursor.execute(users_query)
         users = []
+
         for row in cursor.fetchall():
             users.append({
                 'id': row[0],
@@ -186,14 +190,14 @@ class LabelersListAPI(APIView):
         fig.savefig(fig_bytes, format='png')
         fig_bytes.seek(0)
         base64b = base64.b64encode(fig_bytes.read())
+        fig_bytes.close()
+        plt.clf()
 
         #agreement_truth = add_agreement_columns(pivot_table, 'true_label_id')
 
         #print(agreement_truth)
 
-
-
-        response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.to_dict(), 'truth_agreement': truth_agreement}
+        response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.fillna(1).to_dict()}
         return Response(response)
 
 class LabelAdminAPI(APIView):

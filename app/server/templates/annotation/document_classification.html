@@ -1,7 +1,8 @@
 {% extends "annotation/annotation_base.html" %}
 {% load static %}
 {% block annotation-area %}
-<div class="card">
+
+    <div class="card">
   <header class="card-header">
     <div class="card-header-title has-background-royalblue" style="padding:1.5rem;">
         <span class="card-header-text">
@@ -32,6 +33,20 @@
         </div>
       </div>
     </div>
+
+    {% if user.is_superuser %}
+      <div v-if="predictedLabel">
+          <div v-if="predictedLabel.label" class="tags has-addons">
+              <p>Predicted
+                <a class="tag is-medium" v-bind:style="{ color: predictedLabel.label.text_color, backgroundColor: predictedLabel.label.background_color }">
+                    [[ predictedLabel.label.text ]]
+                </a>
+                with probability <b>[[ predictedLabel.prob | toPercent ]]</b></p>
+          </div>
+      </div>
+    {% endif %}
+
+
     {#      <span v-if="docs[pageNumber]">Item #[[ docs[pageNumber].id ]]. [[ docs[pageNumber].metadata ]]</span>#}
     <hr style="margin: 0.8rem 0;">
     <div class="content" v-if="docs[pageNumber]">
@@ -40,20 +55,10 @@
         <!--<pre class="metadata" style="color: #aaa; font-size:0.7em; margin-top:2em; line-height: 1.2em">[[ docs[pageNumber] ]]</pre>-->
     </div>
 
-    <div v-if="metadataString" class="metadataViewer">
+    <div v-if="metadataString & metadataString!='{}'" class="metadataViewer">
       <pre v-html="metadataString"></pre>
     </div>
 
-    {% if user.is_superuser %}
-      <div v-if="predictedLabel">
-          <p>Predicted with probability <b>[[ predictedLabel.prob ]]</b>:</p>
-          <div v-if="predictedLabel.label" class="tags has-addons">
-            <a class="tag is-medium" v-bind:style="{ color: predictedLabel.label.text_color, backgroundColor: predictedLabel.label.background_color }">
-              [[ predictedLabel.label.text ]]
-            </a>
-          </div>
-      </div>
-    {% endif %}
   </div>
 </div>
 
@@ -76,5 +81,5 @@
 </div>
 {% endblock %}
 {% block footer %}
-<script src="{% static 'bundle/document_classification.js' %}"></script>
+    <script src="{% static 'bundle/document_classification.js' %}"></script>
 {% endblock %}
