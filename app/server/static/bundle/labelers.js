@@ -452,6 +452,18 @@ eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn th
 
 /***/ }),
 
+/***/ "./static/js/filters.js":
+/*!******************************!*\
+  !*** ./static/js/filters.js ***!
+  \******************************/
+/*! exports provided: toPercent, parseDate */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"toPercent\", function() { return toPercent; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"parseDate\", function() { return parseDate; });\nconst toPercent = (val) => {\n    return parseFloat(val * 100).toFixed(2)\n}\n\nconst addZero = (str) => {\n    return ('0'+str).substr(-2)\n}\n\nconst parseDate = (date) => {\n    const dateParsed = new Date(date)\n    return dateParsed.getFullYear() + \"/\" + (dateParsed.getMonth() + 1) + \"/\" + dateParsed.getDate() + \" \" + addZero(dateParsed.getHours()) + \":\" + addZero(dateParsed.getMinutes()) + \":\" + addZero(dateParsed.getSeconds()) \n}\n\n//# sourceURL=webpack:///./static/js/filters.js?");
+
+/***/ }),
+
 /***/ "./static/js/http.js":
 /*!***************************!*\
   !*** ./static/js/http.js ***!
@@ -472,7 +484,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var axio
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ \"./node_modules/vue/dist/vue.esm.js\");\n/* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./http */ \"./static/js/http.js\");\n\n\n\nconst vm = new vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\n  el: '#mail-app',\n  delimiters: ['[[', ']]'],\n  data: {\n    labelers: {},\n    matrix: null,\n    usersAgreement: {}\n  },\n\n  computed: {\n    matrixSrc() {\n      return `data:image/png;base64, ${this.matrix}`\n    }\n  },\n  \n  methods: {\n    goToUser(user) {\n      window.location.href = `${window.location.href}${user.id}`\n    }\n  },\n  created() {\n    _http__WEBPACK_IMPORTED_MODULE_1__[\"default\"].get('labelers').then((response) => {\n      this.labelers = response.data.users;\n      this.matrix = response.data.matrix;\n      this.usersAgreement = response.data.users_agreement\n    });\n  },\n  watch: {\n  }\n});\n\n\n//# sourceURL=webpack:///./static/js/labelers.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ \"./node_modules/vue/dist/vue.esm.js\");\n/* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./http */ \"./static/js/http.js\");\n/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./filters */ \"./static/js/filters.js\");\n\n\n\n\n\nvue__WEBPACK_IMPORTED_MODULE_0__[\"default\"].filter('toPercent', _filters__WEBPACK_IMPORTED_MODULE_2__[\"toPercent\"])\n\nconst vm = new vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\n  el: '#mail-app',\n  delimiters: ['[[', ']]'],\n  data: {\n    labelers: {},\n    matrix: null,\n    usersAgreement: {}\n  },\n\n  computed: {\n    matrixSrc() {\n      return `data:image/png;base64, ${this.matrix}`\n    }\n  },\n  \n  methods: {\n    goToUser(user) {\n      window.location.href = `${window.location.href}${user.id}`\n    }\n  },\n  created() {\n    _http__WEBPACK_IMPORTED_MODULE_1__[\"default\"].get('labelers').then((response) => {\n      this.labelers = response.data.users;\n      this.matrix = response.data.matrix;\n      this.usersAgreement = response.data.users_agreement\n    });\n  },\n  watch: {\n  }\n});\n\n\n//# sourceURL=webpack:///./static/js/labelers.js?");
 
 /***/ })
 

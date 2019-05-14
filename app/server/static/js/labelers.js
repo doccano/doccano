@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import HTTP from './http';
 
+import { toPercent } from './filters'
+
+Vue.filter('toPercent', toPercent)
+
 const vm = new Vue({
   el: '#mail-app',
   delimiters: ['[[', ']]'],
