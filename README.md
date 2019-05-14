@@ -1,4 +1,4 @@
-# doccano
+# Doccano - Effective annotation of text, image and audio using Active Learning and Guided Search
 
 [![Build Status](https://travis-ci.org/chakki-works/doccano.svg?branch=master)](https://travis-ci.org/chakki-works/doccano)
 
@@ -10,11 +10,13 @@ Doccano prompts labelers to annotate examples that would most likely improve mod
 
 Doccano allows for the integration of the work of multiple labelers, and provides administrative tools to for evaluating the performance of each labeler as well as inter-labeler agreement. It further combines the labelers annotations to create a joint gold standard.
 
+## Presentation
+We presented Doccano at the [2019 Data Science Summit](https://www.aidatasciencesummit.com/). Slides are available [here](https://docs.google.com/presentation/d/12T0AzfMb_0ikfxP4ZA2eaGaVyx9w45PoFKC6oSF2dVU/edit?usp=sharing).
+
 ## Video
 ((((EMBED A VIDEO SHOWING HOW DOCCANO WORKS))))
 
 ## Demo
-
 You can play with an online demo version of Doccano [here](http://doccano.herokuapp.com).
 
 ## Use Cases
@@ -37,207 +39,42 @@ In Sequence-to-sequence (aka seq2seq) models you provide text that matches the o
 
 ![Machine Translation](./docs/translation.gif)
 
-## Deployment
-
-### Azure
-
-Doccano can be deployed to Azure ([Web App for Containers](https://azure.microsoft.com/en-us/services/app-service/containers/) +
-[PostgreSQL database](https://azure.microsoft.com/en-us/services/postgresql/)) by clicking on the button below:
-
-[![Deploy to Azure](https://azuredeploy.net/deploybutton.svg)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fgong-io%2Fdoccano%2Fmaster%2Fazuredeploy.json)
-
 ## Features
 
-* Collaborative annotation
+* Provides collaborative annotation of multiple labelers, with user authentication
 * Language independent
-* Active learning
-* Guided search - filter results by matching text
-* Admin reports about labels and labelers
-* Easy labeler evaluation
-* Filter records according to metadata
+* Fits a wide variety of project types, and can be easily extended
+* Supports annotation of large datasets (1M records)
+* Includes admin reports about labels and labelers
+  * View each labeler’s performance on ground truth
+  * Retrain low-performing labelers
+  * Identify unclear guidelines
+  * Calculate inter-rater agreement (loosely associated with a limit to model performance)
+  * Compute the labeling speed of each labeler
+  * Estimate effort required to create a certain dataset size
+* Fast creation of training datasets, using:
+  * Active learning - a Machine Learning model is trained based on existing annotations. Labelers are then served records with low model confidence first, and can view the predicted class for faster affirmation/rejection.
+  * Guided search - filter results by matching text (e.g. a search for `"i will share" –screen` will return only documents with exact match of "i will share" and without the word "screen"). This allows fast labeling of documents with very high probability of belonging to a certain class.
+  * Filter records according to metadata
 * Export of annotations to CSV
 * Explain mode, highlighting words & phrases that might indicate a certain class, for faster annotation
 * Increased productivity using keyboard shortcuts
 
-## Requirements
+## Technological Stack
+Doccano is built in Django, a popular Python framework for web apps. This makes it easy for data scientists to:
+- plug ML code in PyTorch, Tensorflow etc.
+- perform computations and aggregations in Pandas
+- display images created using Matplotlib / Seaborn etc.
 
-* Python 3.6+
-* django 2.0.5+
-* Google Chrome (recommended)
+Doccano uses a SQL-database to store data. By default it works with SQLite, but for serious applications we recommend Postgres. The docker version of Doccano includes a Posgres server set. If you choose to install Doccano yourself, you should also install Posgres.
 
-## Installation
+Doccano also uses Vue.js, which offers simple & powerful templating of HTML pages. This means you can easily add your own project types for annotation of specific tasks.
 
-First of all, you have to clone the repository:
-
-```bash
-git clone https://github.com/gong-io/doccano.git
-cd doccano
-```
-
-To install doccano, there are two options:
-
-**Option1: Pull the Docker image**
-
-```bash
-docker pull gong-io/doccano
-```
-
-**Option2: Setup Python environment**
-
-```bash
-pip install -r requirements.txt
-cd app
-```
-
-First we need to make migration. Run the following command:
-
-```bash
-python manage.py migrate
-```
-
-Next we need to create a user who can login to the admin site. Run the following command:
-
-
-```bash
-python manage.py createsuperuser
-```
-
-Enter your desired username and press enter.
-
-```bash
-Username: admin
-```
-
-You will then be prompted for your desired email address:
-
-```bash
-Email address: admin@example.com
-```
-
-The final step is to enter your password. You will be asked to enter your password twice, the second time as a confirmation of the first.
-
-```bash
-Password: **********
-Password (again): *********
-Superuser created successfully.
-```
+## Installation, Deployment and Tests
+See [this page](INSTALLATION.md).
 
 ## Usage
-
-### Start the development server
-
-Let’s start the development server and explore it.
-
-Depending on your installation method, there are two options:
-
-**Option1: Running the Docker image as a Container**
-
-First, run a Docker container:
-
-```bash
-docker run -d --name doccano -p 8080:80 chakkiworks/doccano
-```
-
-Then, execute `create-admin.sh` script for creating a superuser.
-
-```bash
-docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
-```
-
-**Option2: Running Django development server**
-
-```bash
-python manage.py runserver
-```
-
-Now, open a Web browser and go to <http://127.0.0.1:8080/login/>. You should see the login screen:
-
-<img src="./docs/login_form.png" alt="Login Form" width=400>
-
-### Create a project
-
-Now, try logging in with the superuser account you created in the previous step. You should see the doccano project list page:
-
-<img src="./docs/projects.png" alt="projects" width=600>
-
-There is no project created yet. To create your project, make sure you’re in the project list page and select `Create Project` button. You should see the following screen:
-
-<img src="./docs/create_project.png" alt="Project Creation" width=400>
-
-In this step, you can select three project types: text classificatioin, sequence labeling and sequence to sequence. You should select a type with your purpose.
-
-### Import Data
-
-After creating a project, you will see the "Import Data" page, or click `Import Data` button in the navigation bar. You should see the following screen:
-
-<img src="./docs/upload.png" alt="Upload project" width=600>
-
-You can upload two types of files:
-- `CSV file`: file must contain a header with a `text` column or be one-column csv file.
-- `JSON file`: each line contains a JSON object with a `text` key. JSON format supports line breaks rendering.
-
-> Notice: Doccano won't render line breaks in annotation page for sequence labeling task due to the indent problem, but the exported JSON file still contains line breaks.
-
-`example.txt` (or `example.csv`)
-```python
-EU rejects German call to boycott British lamb.
-President Obama is speaking at the White House.
-He lives in Newark, Ohio.
-...
-```
-`example.json`
-```JSON
-{"text": "EU rejects German call to boycott British lamb."}
-{"text": "President Obama is speaking at the White House."}
-{"text": "He lives in Newark, Ohio."}
-...
-```
-
-Any other columns (for csv) or keys (for json) are preserved and will be exported in the `metadata` column or key as is.
-
-Once you select a TXT/JSON file on your computer, click `Upload dataset` button. After uploading the dataset file, we will see the `Dataset` page (or click `Dataset` button list in the left bar). This page displays all the documents we uploaded in one project.
-
-### Define labels
-
-Click `Labels` button in left bar to define your own labels. You should see the label editor page. In label editor page, you can create labels by specifying label text, shortcut key, background color and text color.
-
-<img src="./docs/label_editor.png" alt="Edit label" width=600>
-
-
-### Annotation
-
-Now, you are ready to annotate the texts. Just click the `Annotate Data` button in the navigation bar, you can start to annotate the documents you uploaded.
-
-<img src="./docs/annotation.png" alt="Edit label" width=600>
-
-### Export Data
-
-After the annotation step, you can download the annotated data. Click the `Edit data` button in navigation bar, and then click `Export Data`. You should see below screen:
-
-<img src="./docs/export_data.png" alt="Edit label" width=600>
-
-You can export data as CSV file or JSON file by clicking the button. As for the export file format, you can check it here: [Export File Formats](https://github.com/gong-io/doccano/wiki/Export-File-Formats). 
-
-Each exported document will have metadata column or key, which will contain
-additional columns or keys from the imported document. The primary use-case for metadata is to allow you to match exported data with other system
-by adding `external_id` to the imported file. For example:
-
-Input file may look like this:
-`import.json`
-```JSON
-{"text": "EU rejects German call to boycott British lamb.", "external_id": 1}
-```
-and the exported file will look like this:
-`output.json`
-```JSON
-{"doc_id": 2023, "text": "EU rejects German call to boycott British lamb.", "labels": ["news"], "username": "root", "metadata": {"external_id": 1}}
-```
-
-### Tutorial
-
-We prepared a NER annotation tutorial, which can help you have a better understanding of doccano. Please first read the README page, and then take the tutorial. [A Tutorial For Sequence Labeling Project](https://github.com/gong-io/doccano/wiki/A-Tutorial-For-Sequence-Labeling-Project).
-
-I hope you are having a great day!
+See [this page](usage.md).
 
 ## Running tests
 ```bash
@@ -245,13 +82,7 @@ python manage.py test server.tests
 ```
 
 ## Contribution
-
-Doccano is under continuous development, in both [the original project](https://github.com/chakki-works/doccano) and this fork made by Gong.io. As a mature company that works at scale, we at [Gong.io](https://gong.io) developed many features on top of the original project, to support scalability, better maintanence and faster annotation. We continue active development according to our needs and issues and requests arising from the open-source community at this fork.
-
-If you have requests for features, please file an issue describing your request. Also, if you want to see work towards a specific feature, feel free to contribute by working towards it. The standard procedure is to fork the repository, add a feature, fix a bug, then file a pull request that your changes are to be merged into the main repository and included in the next release.
-
-Here are some tips that might help - [How to Contribute to the Doccano Project](https://github.com/chakki-works/doccano/wiki/How-to-Contribute-to-Doccano-Project)
-
+See [this page](CONTRIBUTING.md).
 
 ## Contact
 
