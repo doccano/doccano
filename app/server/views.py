@@ -145,6 +145,34 @@ class UserInfoView(SuperUserMixin, LoginRequiredMixin, TemplateView):
             users_speed[user_id] = sum(single_user_sessions['timediff'].dt.seconds) / sum(single_user_sessions['count'].astype(int))
             users_sessions = pd.concat([users_sessions, single_user_sessions])
         context['user_speed'] = users_speed[self.kwargs['user_id']]
+
+        user_query = ''' 
+        WITH da as (
+            SELECT MAX(server_documentannotation.updated_date_time) as last_annotation FROM server_documentannotation WHERE server_documentannotation.user_id = %s
+        ),
+        ut as(SELECT email, id, username FROM auth_user WHERE auth_user.id = %s),
+        pt as(
+            SELECT server_project.name as project_name, server_project.id as project_id
+            FROM server_project
+            INNER JOIN server_project_users
+            ON server_project_users.project_id = server_project.id
+            WHERE server_project_users.user_id = %s
+        )
+
+        SELECT ut.id, ut.email, ut.username, da.last_annotation,  pt.project_id, pt.project_name FROM da, ut, pt
+        '''  % (self.kwargs['user_id'], self.kwargs['user_id'], self.kwargs['user_id'])
+
+        cursor.execute(user_query)
+        rows = cursor.fetchall()
+        context['user_id'] = rows[0][0]
+        context['user_email'] = rows[0][1]
+        context['user_name'] = rows[0][2]
+        context['last_annotation'] = rows[0][3]
+
+        projects = []
+        for row in rows:
+            projects.append({'id': row[4],'name': row[5]})
+        context['projects'] = projects
         return context
 
 class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
