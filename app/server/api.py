@@ -127,11 +127,18 @@ class LabelersListAPI(APIView):
             for ar in agreement_array:
                 if (ar[1] == row[0]):
                     ar.append(row[1])
+        truth_agreement = {}
         for row in agreement_array:
             if len(row) > 3:
+                print(row[3])
                 agreement_csv += '%s,%s,%s,%s\n' % (row[0], row[1], row[2], row[3])
+                if (not truth_agreement.get(row[0])):
+                    truth_agreement[row[0]] = {'right': 0, 'total': 0}
+                if (row[2] == row[3]):
+                    truth_agreement[row[0]]['right'] += 1
+                truth_agreement[row[0]]['total'] += 1
             else:
-                agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
+                agreement_csv += '%s,%s,%s, 0\n' % (row[0], row[1], row[2])
         pandas_csv = StringIO(agreement_csv)
         df = pd.read_csv(pandas_csv)
         df.to_csv('temp_agreement.csv')
@@ -184,7 +191,9 @@ class LabelersListAPI(APIView):
 
         #print(agreement_truth)
 
-        response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.to_dict()}
+
+
+        response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.to_dict(), 'truth_agreement': truth_agreement}
         return Response(response)
 
 class LabelAdminAPI(APIView):

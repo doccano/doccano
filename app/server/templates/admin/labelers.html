@@ -23,7 +23,7 @@
                   <th>Last annotation</th>
                   <th># of annotations made</th>
                   <th>Agreement with truth</th>
-                  <th>Agreement with other labelers</th>
+                  <th>% Agreement with other labelers</th>
               </tr>
           </thead>
           <tbody>
@@ -33,7 +33,7 @@
                   <td>[[ user.last_date ]]</td>
                   <td>[[ user.count ]]</td>
                   <td>[[ user.truth_agreement ]]</td>
-                  <td>[[ usersAgreement[user.id] ]]</td>
+                  <td>[[ usersAgreement[user.id] | toPercent ]]</td>
               </tr>
           </tbody>
       </table>
