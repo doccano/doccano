@@ -61,7 +61,7 @@
 
   </div>
 </div>
-
+{% if project.enable_metadata_search %}
 <div class="card" style="margin-top: 2rem;">
 <header class="card-footer">
     <div class="card-header-title">
@@ -79,6 +79,7 @@
     <metadata-search :metadata="metadataKeys" @metadatasearch="metadataSearch"></metadata-search>
   </div>
 </div>
+{% endif %}
 {% endblock %}
 {% block footer %}
     <script src="{% static 'bundle/document_classification.js' %}"></script>

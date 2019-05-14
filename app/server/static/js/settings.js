@@ -6,7 +6,9 @@ const vm = new Vue({
   delimiters: ['[[', ']]'],
   data: {
     projectSettings: {
-        use_machine_model_sort: false
+        use_machine_model_sort: false,
+        show_ml_model_prediction: false,
+        enable_metadata_search: false
     }
   },
 

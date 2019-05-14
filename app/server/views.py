@@ -41,6 +41,7 @@ class ProjectView(LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         context = super().get_context_data(**kwargs)
         context['docs_count'] = project.get_docs_count()
+        context['project'] = project
         return context
 
 
