@@ -138,7 +138,10 @@ class LabelersListAPI(APIView):
         df = pd.read_csv(pandas_csv)
         df.to_csv('temp_agreement.csv')
         df = df.drop_duplicates(['document_id', 'user_id'])
+
         pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
+        pivot_table = pd.merge(left=pivot_table, right=df.set_index('document_id')[['true_label_id']], left_index=True, right_index=True)
+        agreement_df = add_agreement_columns(pivot_table, 'true_label_id')
         agreement = create_kappa_comparison_df(pivot_table)
 
         users_agreement = rank_labelers(agreement)
@@ -169,15 +172,16 @@ class LabelersListAPI(APIView):
         users = []
 
         for row in cursor.fetchall():
+            user_id = row[0]
             users.append({
-                'id': row[0],
+                'id': user_id,
                 'name': row[2],
                 'count': row[8],
                 'last_date': row[6],
-                'truth_agreement': self.get_truth_agreement()
+                'truth_agreement': df[ (df.user_id==user_id) & (df.label_id==df.true_label_id) ].shape[0] / df[ df.user_id==user_id ].shape[0]
             })
 
-        sns_plot = sns.heatmap(agreement, annot=True)
+        sns_plot = sns.heatmap(agreement.rename({'true_label_id': 'Truth'}, axis=1), annot=True)
         fig = sns_plot.get_figure()
         fig_bytes = BytesIO()
         fig.savefig(fig_bytes, format='png')
@@ -185,10 +189,6 @@ class LabelersListAPI(APIView):
         base64b = base64.b64encode(fig_bytes.read())
         fig_bytes.close()
         plt.clf()
-
-        #agreement_truth = add_agreement_columns(pivot_table, 'true_label_id')
-
-        #print(agreement_truth)
 
         response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.fillna(1).to_dict()}
         return Response(response)
