@@ -126,9 +126,7 @@ class ExcludeSearchFilter(BaseFilterBackend):
             return ''
 
         term = self.get_search_terms(request)
-        print('term')
-        print(term)
-        term = term[0] if len(term) else ''
+        term = term['terms'] if term else ''
         context = {
             'param': self.search_param,
             'term': term

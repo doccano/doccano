@@ -108,7 +108,7 @@ def add_agreement_columns(labelers_df,y=None):
     '''
     df_copy = labelers_df.copy()
     cols = df_copy.columns
-    if y!=None:
+    if y != None:
         df_copy['true_agreement_prop'] = calc_agreement(df_copy[cols], y)
     df_copy['most_common'] = find_most_common_labeling(df_copy[cols])
     df_copy['most_common_agreement_prop'] = calc_agreement(df_copy[list(cols) + ['most_common']], 'most_common')
