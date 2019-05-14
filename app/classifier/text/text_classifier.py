@@ -1,124 +1,107 @@
 import numpy as np
 import pandas as pd
-from sklearn import metrics
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
+from app.classifier.model import BaseClassifier
+from app.classifier.text.text_pipeline import TextPipeline
+import logging
 
-import re
+logger = logging.getLogger('text classifier')
 
-def process_text(x):
-    # remove non-english characters
-    x.replace('company', '').replace('noncompany', '')
-    x = re.sub("[^a-zA-Z]"," ",x)
-    # remove punctuation marks
-    x = re.sub("\.,\?\!","",x)
-    x = re.sub("[ ]+"," ",x)
-    # lowercase
-    return x.lower().strip()
 
-def run_model_on_file(input_filename, output_filename, user_id, label_id=None, method='bow'):
-    # nlp = spacy.load("en_core_web_sm")
-    print('Reading input file...')
-    df = pd.read_csv(input_filename, encoding='latin1')
-    df = df[ ~pd.isnull(df['text']) ]
+class TextClassifier(BaseClassifier):
+    @classmethod
+    def load(cls, filename):
+        # super loads only the model
+        classifier, offset = super().load(filename)
 
-    # df_labeled = df_labeled[['text', 'label_id']]
-    df['text'] = df['text'].apply(process_text)
-    df['label'] = df['label_id']
-    
-    df = df[ df['text']!='' ]
+        # inherited class loads the pipeline
+        try:
+            processing_pipeline = TextPipeline.load(filename, offset)
+        except EOFError:
+            logger.warning('EOF reached when trying to load pipeline')
+            processing_pipeline = None
+        classifier.processing_pipeline = processing_pipeline
+        return classifier
 
-    if method=='w2v':
-        import spacy
-        # from spacy.lang.en.stop_words import STOP_WORDS
-        nlp = spacy.load("en_core_web_sm")
-        df['vec'] = df['text'].apply(lambda x: nlp(x).vector)
+    @property
+    def important_features(self, NUM_TOP_FEATURES=None, plot=False):
+        try:
+            importances = self._model.feature_importances_
+        except:
+            importances = self._model.coef_[0]
 
-    vectorizer = CountVectorizer()
-    transformer = TfidfTransformer(smooth_idf=True)
-    vectorizer.fit(df['text'])
+        indices = np.argsort(abs(importances))
 
-    if method == 'w2v':
-        def df_to_matrix(df):
-            X = np.array([np.array(x) for x in df['vec'].values])
-            if 'label' in df.columns:
-                y = df['label'].values
-            else:
-                y = [None] * len(df)
-            return X,y
+        if isinstance(NUM_TOP_FEATURES, int):
+            indices = indices[-NUM_TOP_FEATURES:]
 
-    else:
-        def df_to_matrix(df):
-            X = vectorizer.transform(df['text'])
-            # df['vec'] = transformer.fit_transform(df['vec'])
-            y = df['label']
-            return X,y
+        result = [(self.features[id], importances[id]) for id in indices]
 
-    def run_model(tmp_df):
-        X, y = df_to_matrix(tmp_df)
-        predictions_probabilities = model.predict_proba(X)
+        if plot:
+            import matplotlib.pyplot as plt
+            plt.figure(figsize=(10, 15))
+            plt.title('Feature Importances')
+            plt.barh(range(len(result)), [importance for name, importance in result], color='b', align='center')
+            plt.yticks(range(len(result)), [name for name, importance in result])
+            plt.xlabel('Relative Importance')
+            plt.show()
+
+        return result
+
+    def set_preprocessor(self, pipeline, **processing_params):
+        self.processing_pipeline = TextPipeline(pipeline, **processing_params)
+
+    def run_on_file(self, input_filename, output_filename, user_id, label_id=None, pipeline=None, **processing_params):
+        print('Reading input file...')
+        df = pd.read_csv(input_filename, encoding='latin1')
+        df = df[~pd.isnull(df['text'])]
+
+        print('Pre-processing text and extracting features...')
+        self.set_preprocessor(pipeline, **processing_params)
+
+        if label_id:
+            df_labeled = df[df['label'] == label_id]
+            df_labeled = pd.concat([df_labeled, df[df['label'] != label_id].sample(df_labeled.shape[0])])
+            df_labeled.loc[df_labeled['label'] != label_id, 'label'] = 0
+        else:
+            df_labeled = df[~pd.isnull(df['label'])]
+
+        X = self.pre_process(df_labeled, fit=True)
+        if 'label' not in df_labeled.columns:
+            raise RuntimeError("column 'label' not found")
+        else:
+            y = df_labeled['label'].values
+
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
+
+        print('Training the model...')
+        self.fit(X_train, y_train)
+
+        print('Performance on train set:')
+        _, evaluation_text = self.evaluate(X_train, y_train)
+        result = 'Performance on train set: \n' + evaluation_text
+
+        print('Performance on test set:')
+        _, evaluation_text = self.evaluate(X_test, y_test)
+        result = result + '\nPerformance on test set: \n' + evaluation_text
+
+        print('Running the model on the entire dataset...')
+        output_df = df.copy()
+        output_df['label'] = None
+        predictions_probabilities = self.predict_proba(X)
         confidence = np.max(predictions_probabilities, axis=1)
         predictions = np.argmax(predictions_probabilities, axis=1)
-        tmp_df['prediction'] = [model.classes_[v] for v in predictions]
-        tmp_df['confidence'] = confidence
-        tmp_df['is_error'] = (tmp_df['prediction'] != y)
-        return tmp_df
+        output_df['prediction'] = [self._model.classes_[v] for v in predictions]
+        output_df['confidence'] = confidence
+        output_df['is_error'] = (output_df['prediction'] != y)
 
+        output_df['user_id'] = user_id
+        output_df = output_df.rename({'confidence': 'prob',
+                                      'id': 'document_id'}, axis=1)
+        output_df['label_id'] = output_df['prediction']
 
-    if label_id:
-        df_labeled = df[ df['label'] == label_id ]
-        df_labeled = pd.concat( [df_labeled, df[ df['label'] != label_id ].sample( df_labeled.shape[0] ) ] )
-        df_labeled.loc[ df_labeled['label'] != label_id, 'label'] = 0
+        print('Saving output...')
+        output_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
-    else:
-        df_labeled = df[~pd.isnull(df['label'])]
-
-    X, y = df_to_matrix(df_labeled)
-    y = y.values
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
-
-    print('Training the model...')
-
-    # model_params = {'bootstrap': True, 'criterion': 'gini', 'max_depth': 16, 'max_features': 'sqrt', 'min_samples_leaf': 16, 'min_samples_split': 16, 'n_estimators': 200}
-    # model = RandomForestClassifier(**model_params)
-
-    model = LogisticRegression(verbose=True, class_weight='balanced')
-    model.fit(X_train, y_train)
-
-    result = ''
-
-    y_pred = model.predict(X_train)
-    print('Performance on train set:')
-    print(metrics.classification_report(y_train, y_pred))
-    result = result + 'Performance on train set: \n'
-    result = result + metrics.classification_report(y_train, y_pred)
-
-    print('Performance on test set:')
-    y_pred = model.predict(X_test)
-    print(metrics.classification_report(y_test, y_pred))
-    result = result + '\nPerformance on test set: \n'
-    result = result + metrics.classification_report(y_test, y_pred)
-
-    columns=['text', 'label', 'prediction', 'is_error', 'confidence']
-    tmp_df = df.copy()
-    tmp_df['label'] = None
-    print('Running the model on the entire dataset...')
-    tmp_df = run_model(df)
-
-    tmp_df['user_id'] = user_id
-    tmp_df = tmp_df.rename({'confidence': 'prob',
-                            'id': 'document_id'}, axis=1)
-    tmp_df['label_id'] = tmp_df['prediction']
-    # save to CSV file
-    print('Saving output...')
-    tmp_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
-
-    print('Done running the model!')
-    return result
-
-
-if __name__ == '__main__':
-    run_model_on_file('../../ml_models/ml_input.csv', '../../ml_models/ml_out_manual.csv', user_id=2, label_id=None )
+        print('Done running the model!')
+        return result
