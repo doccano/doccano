@@ -437,6 +437,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* WEBPACK VAR INJECTION */(f
 
 /***/ }),
 
+/***/ "./E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/filters.js":
+/*!*******************************************************************************!*\
+  !*** E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/filters.js ***!
+  \*******************************************************************************/
+/*! exports provided: toPercent, parseDate */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"toPercent\", function() { return toPercent; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"parseDate\", function() { return parseDate; });\nconst toPercent = (val) => {\r\n    const result = parseFloat(val * 100).toFixed(2)\r\n    if (isNaN(result)) {\r\n        return result\r\n    } else {\r\n        return result + '%'\r\n    }\r\n}\r\n\r\nconst addZero = (str) => {\r\n    return ('0'+str).substr(-2)\r\n}\r\n\r\nconst parseDate = (date) => {\r\n    const dateParsed = new Date(date)\r\n    return dateParsed.getFullYear() + \"/\" + (dateParsed.getMonth() + 1) + \"/\" + dateParsed.getDate() + \" \" + addZero(dateParsed.getHours()) + \":\" + addZero(dateParsed.getMinutes()) + \":\" + addZero(dateParsed.getSeconds()) \r\n}\n\n//# sourceURL=webpack:///E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/filters.js?");
+
+/***/ }),
+
 /***/ "./E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/http.js":
 /*!****************************************************************************!*\
   !*** E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/http.js ***!
@@ -457,7 +469,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var axio
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ \"./E:/develop/code/vendors/honeyfy_doccano/app/server/node_modules/vue/dist/vue.esm.js\");\n/* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./http */ \"./E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/http.js\");\n\r\n\r\n\r\nconst vm = new vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\r\n  el: '#mail-app',\r\n  delimiters: ['[[', ']]'],\r\n  data: {\r\n    labelers: {},\r\n    matrix: null,\r\n    usersAgreement: {}\r\n  },\r\n\r\n  computed: {\r\n    matrixSrc() {\r\n      return `data:image/png;base64, ${this.matrix}`\r\n    }\r\n  },\r\n  \r\n  methods: {\r\n    goToUser(user) {\r\n      window.location.href = `${window.location.href}${user.id}`\r\n    }\r\n  },\r\n  created() {\r\n    _http__WEBPACK_IMPORTED_MODULE_1__[\"default\"].get('labelers').then((response) => {\r\n      this.labelers = response.data.users;\r\n      this.matrix = response.data.matrix;\r\n      this.usersAgreement = response.data.users_agreement\r\n    });\r\n  },\r\n  watch: {\r\n  }\r\n});\r\n\n\n//# sourceURL=webpack:///E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/labelers.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ \"./E:/develop/code/vendors/honeyfy_doccano/app/server/node_modules/vue/dist/vue.esm.js\");\n/* harmony import */ var _http__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./http */ \"./E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/http.js\");\n/* harmony import */ var _filters__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./filters */ \"./E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/filters.js\");\n\r\n\r\n\r\n\r\n\r\nvue__WEBPACK_IMPORTED_MODULE_0__[\"default\"].filter('toPercent', _filters__WEBPACK_IMPORTED_MODULE_2__[\"toPercent\"])\r\nvue__WEBPACK_IMPORTED_MODULE_0__[\"default\"].filter('parseDate', _filters__WEBPACK_IMPORTED_MODULE_2__[\"parseDate\"])\r\n\r\nconst vm = new vue__WEBPACK_IMPORTED_MODULE_0__[\"default\"]({\r\n  el: '#mail-app',\r\n  delimiters: ['[[', ']]'],\r\n  data: {\r\n    labelers: {},\r\n    matrix: null,\r\n    usersAgreement: {}\r\n  },\r\n\r\n  computed: {\r\n    matrixSrc() {\r\n      return `data:image/png;base64, ${this.matrix}`\r\n    }\r\n  },\r\n  \r\n  methods: {\r\n    goToUser(user) {\r\n      window.location.href = `${window.location.href}${user.id}`\r\n    }\r\n  },\r\n  created() {\r\n    _http__WEBPACK_IMPORTED_MODULE_1__[\"default\"].get('labelers').then((response) => {\r\n      this.labelers = response.data.users;\r\n      this.matrix = response.data.matrix;\r\n      this.usersAgreement = response.data.users_agreement\r\n    });\r\n  },\r\n  watch: {\r\n  }\r\n});\r\n\n\n//# sourceURL=webpack:///E:/develop/code/vendors/honeyfy_doccano/app/server/static/js/labelers.js?");
 
 /***/ })
 

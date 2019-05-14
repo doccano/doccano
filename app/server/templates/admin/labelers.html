@@ -32,7 +32,7 @@
               <tr v-for="(user, index) in labelers" :key="index">
                   <td><a title="Click to view user details" @click="goToUser(user)">[[ user.id ]]</a></td>
                   <td>[[ user.name ]]</td>
-                  <td>[[ user.last_date ]]</td>
+                  <td>[[ user.last_date | parseDate ]]</td>
                   <td>[[ user.count ]]</td>
                   <td>[[ user.truth_agreement ]]</td>
                   <td>[[ usersAgreement[user.id] | toPercent ]]</td>

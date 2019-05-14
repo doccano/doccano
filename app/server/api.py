@@ -1,7 +1,7 @@
 import csv
 import os
 import operator
-import gensim.downloader as api
+# import gensim.downloader as api
 
 from random import randint
 import datetime
@@ -134,6 +134,7 @@ class LabelersListAPI(APIView):
             else:
                 agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
         pandas_csv = StringIO(agreement_csv)
+
         df = pd.read_csv(pandas_csv)
         df.to_csv('temp_agreement.csv')
         df = df.drop_duplicates(['document_id', 'user_id'])
@@ -166,6 +167,7 @@ class LabelersListAPI(APIView):
             INNER JOIN da ON auth_user.id = da.user_id''' % (self.kwargs['project_id'])
         cursor.execute(users_query)
         users = []
+
         for row in cursor.fetchall():
             users.append({
                 'id': row[0],
@@ -184,12 +186,11 @@ class LabelersListAPI(APIView):
         fig_bytes.close()
         plt.clf()
 
-
         #agreement_truth = add_agreement_columns(pivot_table, 'true_label_id')
 
         #print(agreement_truth)
 
-        response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.to_dict()}
+        response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.fillna(1).to_dict()}
         return Response(response)
 
 class LabelAdminAPI(APIView):

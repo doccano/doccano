@@ -276,7 +276,8 @@ const annotationMixin = {
     }, 500),
 
     async getSuggestions(word) {
-      const res = await HTTP.get(`suggested/?word=${word}`)
+      // const res = await HTTP.get(`suggested/?word=${word}`)
+      const res = 0
       if (res && res.data) {
         this.suggestions = res.data
       }
