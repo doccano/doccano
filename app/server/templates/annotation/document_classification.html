@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    {% if user.is_superuser %}
+    {% if user.is_superuser and project.show_ml_model_prediction %}
       <div v-if="predictedLabel">
           <div v-if="predictedLabel.label" class="tags has-addons">
               <p>Predicted
