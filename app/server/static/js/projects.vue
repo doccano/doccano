@@ -1,196 +1,110 @@
-<template>
-  <div v-cloak>
-    <section class="hero project-image">
-      <div class="container">
-        <div class="columns">
-          <div class="column is-10 is-offset-1">
-            <h1 class="title is-1 has-text-white">
-              Hello, {{ username | title }}.
-            </h1>
-            <h2 class="subtitle is-4 has-text-white">
-              I hope you are having a great day!
-            </h2>
-            <p v-if="isSuperuser">
-              <a class="button is-medium is-primary" @click="isActive=!isActive">
-                Create Project
-              </a>
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
+<template lang="pug">
+  div(v-cloak="")
+    section.hero.project-image
+      div.container
+        div.columns
+          div.column.is-10.is-offset-1
 
-    <!-- Modal card for creating project. -->
-    <div class="modal" :class="{ 'is-active': isActive }">
-      <div class="modal-background" />
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">
-            Create Project
-          </p>
-          <button class="delete" aria-label="close" @click="isActive=!isActive" />
-        </header>
-        <section class="modal-card-body">
-          <div class="field">
-            <label class="label">
-              Project Name
-            </label>
-            <div class="control">
-              <input v-model="projectName" class="input" type="text" required
-                     placeholder="Project name"
-              >
-            </div>
-            <p class="help is-danger">
-              {{ projectNameError }}
-            </p>
-          </div>
-          <div class="field">
-            <label class="label">Description</label>
-            <div class="control">
-              <textarea v-model="description" class="textarea" required
-                        placeholder="Project description"
-              />
-            </div>
-            <p class="help is-danger">
-              {{ descriptionError }}
-            </p>
-          </div>
-          <div class="field">
-            <label class="label">
-              Project Type
-            </label>
-            <div class="control">
-              <select v-model="projectType" name="project_type" required>
-                <option value="" selected="selected">
-                  ---------
-                </option>
-                <option value="DocumentClassification">
-                  document classification
-                </option>
-                <option value="SequenceLabeling">
-                  sequence labeling
-                </option>
-                <option value="Seq2seq">
-                  sequence to sequence
-                </option>
-              </select>
-            </div>
-            <p class="help is-danger">
-              {{ projectTypeError }}
-            </p>
-          </div>
-        </section>
-        <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
-          <button class="button is-primary" @click="create()">
-            Create
-          </button>
-          <button class="button" @click="isActive=!isActive">
-            Cancel
-          </button>
-        </footer>
-      </div>
-    </div>
+            h1.title.is-1.has-text-white Hello, {{ username | title }}.
+            h2.subtitle.is-4.has-text-white I hope you are having a great day!
 
-    <div class="modal" :class="{ 'is-active': isDelete }">
-      <div class="modal-background" />
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">
-            Delete Project
-          </p>
-          <button class="delete" aria-label="close" @click="isDelete=!isDelete" />
-        </header>
-        <section class="modal-card-body">
-          Are you sure you want to delete project?
-        </section>
-        <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
-          <button class="button is-danger" @click="deleteProject()">
-            Delete
-          </button>
-          <button class="button" @click="isDelete=!isDelete">
-            Cancel
-          </button>
-        </footer>
-      </div>
-    </div>
+            p(v-if="isSuperuser")
+              a.button.is-medium.is-primary(v-on:click="isActive = !isActive") Create Project
 
-    <section class="hero">
-      <div class="container">
-        <div class="columns">
-          <div class="column is-10 is-offset-1">
-            <div class="card events-card">
-              <header class="card-header">
-                <p class="card-header-title">
-                  {{ items.length }} Projects
-                </p>
-                <div class="field card-header-icon">
-                  <div class="control">
-                    <div class="select">
-                      <select v-model="selected">
-                        <option selected>
-                          All Project
-                        </option>
-                        <option>
-                          Text Classification
-                        </option>
-                        <option>
-                          Sequence Labeling
-                        </option>
-                        <option>
-                          Seq2seq
-                        </option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </header>
-              <div class="card-table">
-                <div class="content">
-                  <table class="table is-fullwidth">
-                    <tbody>
-                      <tr v-for="project in selectedProjects" :key="project.id">
-                        <td class="pl15r">
-                          <div class="thumbnail-wrapper is-vertical">
-                            <img class="project-thumbnail" :src="project.image">
-                          </div>
-                          <div class="dataset-item__main is-vertical">
-                            <div class="dataset-item__main-title">
-                              <div class="dataset-item__main-title-link dataset-item__link">
-                                <a :href="'/projects/' + project.id" class="has-text-black">
-                                  {{ project.name }}
-                                </a>
-                              </div>
-                            </div>
-                            <div class="dataset-item__main-subtitle">
-                              {{ project.description }}
-                            </div>
-                            <div class="dataset-item__main-info">
-                              <span class="dataset-item__main-update">
-                                updated <span>{{ project.updated_at | daysAgo }}</span>
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td class="is-vertical">
-                          <span class="tag is-normal">{{ project.project_type }}</span>
-                        </td>
-                        <td v-if="isSuperuser" class="is-vertical">
-                          <a :href="'/projects/' + project.id + '/docs'">Edit</a>
-                        </td>
-                        <td v-if="isSuperuser" class="is-vertical">
-                          <a class="has-text-danger" @click="setProject(project)">Delete</a>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </div>
+    div.modal(v-bind:class="{ 'is-active': isActive }")
+      div.modal-background
+      div.modal-card
+        header.modal-card-head
+          p.modal-card-title Create Project
+          button.delete(aria-label="close", v-on:click="isActive = !isActive")
+
+        section.modal-card-body
+          div.field
+            label.label Project Name
+            div.control
+              input.input(v-model="projectName", type="text", required, placeholder="Project name")
+            p.help.is-danger {{ projectNameError }}
+
+          div.field
+            label.label Description
+            div.control
+              textarea.textarea(v-model="description", required, placeholder="Project description")
+            p.help.is-danger {{ descriptionError }}
+
+          div.field
+            label.label Project Type
+
+            div.control
+              select(v-model="projectType", name="project_type", required)
+                option(value="", selected="selected") ---------
+                option(value="DocumentClassification") document classification
+                option(value="SequenceLabeling") sequence labeling
+                option(value="Seq2seq") sequence to sequence
+            p.help.is-danger {{ projectTypeError }}
+
+        footer.modal-card-foot.pt20.pb20.pr20.pl20.has-background-white-ter
+          button.button.is-primary(v-on:click="create()") Create
+          button.button(v-on:click="isActive = !isActive") Cancel
+
+    div.modal(v-bind:class="{ 'is-active': isDelete }")
+      div.modal-background
+      div.modal-card
+        header.modal-card-head
+          p.modal-card-title Delete Project
+          button.delete(aria-label="close", v-on:click="isDelete = !isDelete")
+        section.modal-card-body Are you sure you want to delete project?
+        footer.modal-card-foot.pt20.pb20.pr20.pl20.has-background-white-ter
+          button.button.is-danger(v-on:click="deleteProject()") Delete
+          button.button(v-on:click="isDelete = !isDelete") Cancel
+
+    section.hero
+      div.container
+        div.columns
+          div.column.is-10.is-offset-1
+            div.card.events-card
+              header.card-header
+                p.card-header-title {{ items.length }} Projects
+
+                div.field.card-header-icon
+                  div.control
+                    div.select
+                      select(v-model="selected")
+                        option(selected) All Project
+                        option Text Classification
+                        option Sequence Labeling
+                        option Seq2seq
+
+              div.card-table
+                div.content
+                  table.table.is-fullwidth
+                    tbody
+                      tr(v-for="project in selectedProjects", v-bind:key="project.id")
+                        td.pl15r
+                          div.thumbnail-wrapper.is-vertical
+                            img.project-thumbnail(
+                              v-bind:src="project.image"
+                              alt="Project thumbnail"
+                            )
+
+                          div.dataset-item__main.is-vertical
+                            div.dataset-item__main-title
+                              div.dataset-item__main-title-link.dataset-item__link
+                                a.has-text-black(v-bind:href="'/projects/' + project.id")
+                                  | {{ project.name }}
+
+                            div.dataset-item__main-subtitle {{ project.description }}
+                            div.dataset-item__main-info
+                              span.dataset-item__main-update updated
+                                span {{ project.updated_at | daysAgo }}
+
+                        td.is-vertical
+                          span.tag.is-normal {{ project.project_type }}
+
+                        td.is-vertical(v-if="isSuperuser")
+                          a(v-bind:href="'/projects/' + project.id + '/docs'") Edit
+
+                        td.is-vertical(v-if="isSuperuser")
+                          a.has-text-danger(v-on:click="setProject(project)") Delete
 </template>
 
 <script>
