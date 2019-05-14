@@ -1,5 +1,10 @@
 export const toPercent = (val) => {
-    return parseFloat(val * 100).toFixed(2) + '%'
+    const result = parseFloat(val * 100).toFixed(2)
+    if (isNaN(result)) {
+        return result
+    } else {
+        return result + '%'
+    }
 }
 
 const addZero = (str) => {

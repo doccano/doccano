@@ -48,7 +48,7 @@
       <div class="main pr20 pl20">
         <div class="field has-addons">
           <div class="control is-expanded">
-            <input class="input" type="text" placeholder="Search document" v-model="searchQuery" @keyup.enter="submit" @input="searchChange" @click="suggestions = []" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
+            <input class="input" type="text" placeholder="Search documents..." v-model="searchQuery" @keyup.enter="submit" @input="searchChange" @click="suggestions = []" style="border-right:none;box-shadow: none;-webkit-box-shadow: none;">
             <div class="suggestions-list list is-hoverable" v-if="suggestions.length" v-cloak>
               <a class="list-item" v-for="(e, idx) in suggestions" @click="submitSuggestion(e)">
                 [[ e[0] ]]
@@ -78,7 +78,7 @@
                   </a>
                   <a class="dropdown-item">
                     <label class="radio">
-                      <input type="radio" value="completed" v-model="picked"> Completed
+                      <input type="radio" value="completed" v-model="picked"> Annotated
                     </label>
                   </a>
                 </div>
@@ -174,16 +174,22 @@
     {% block annotation-area %} {% endblock %}
 
     <div class="level mt30">
-      <a class="button level-left" v-on:click="prevPage" v-shortkey="{prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft']}"
-        @shortkey="prevPage">
+      <a class="button level-left"
+         title="Move to the previous record. You can also use the left arrow key as a keyboard shortcut"
+         v-on:click="prevPage"
+         v-shortkey="{prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft']}"
+         @shortkey="prevPage">
         <span class="icon">
           <i class="fas fa-chevron-left"></i>
         </span>
         <span>Prev</span>
       </a>
 
-      <a class="button level-right" v-on:click="nextPage" v-shortkey="{next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright']}"
-        @shortkey="nextPage">
+      <a class="button level-right"
+         title="Move to the next record. You can also use the right arrow key as a keyboard shortcut"
+         v-on:click="nextPage"
+         v-shortkey="{next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright']}"
+         @shortkey="nextPage">
         <span>Next</span>
         <span class="icon">
           <i class="fas fa-chevron-right"></i>

@@ -1,6 +1,11 @@
 import Vue from 'vue';
 import HTTP from './http';
 
+import { toPercent, parseDate } from './filters'
+
+Vue.filter('toPercent', toPercent)
+Vue.filter('parseDate', parseDate)
+
 const vm = new Vue({
   el: '#mail-app',
   delimiters: ['[[', ']]'],
