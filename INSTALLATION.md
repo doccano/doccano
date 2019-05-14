@@ -64,3 +64,10 @@ Password: **********
 Password (again): *********
 Superuser created successfully.
 ```
+
+
+## Tests
+Doccano includes a suite of tests. 
+
+To run tests:
+[[TODO: Write this section]]
