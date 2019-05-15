@@ -1,5 +1,7 @@
 import * as marked from 'marked';
 import hljs from 'highlight.js';
+import VueJsonPretty from 'vue-json-pretty';
+import isEmpty from 'lodash.isempty';
 import HTTP from './http';
 import Messages from './messages.vue';
 
@@ -36,6 +38,8 @@ const storeOffsetInUrl = (offset) => {
 };
 
 export const annotationMixin = {
+  components: { VueJsonPretty },
+
   data() {
     return {
       pageNumber: 0,
@@ -50,6 +54,7 @@ export const annotationMixin = {
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
       count: 0,
+      isMetadataActive: false,
       isAnnotationGuidelineActive: false,
     };
   },
@@ -177,6 +182,20 @@ export const annotationMixin = {
       return marked(this.guideline, {
         sanitize: true,
       });
+    },
+
+    documentMetadata() {
+      const document = this.docs[this.pageNumber];
+      if (document == null || document.meta == null) {
+        return null;
+      }
+
+      const metadata = JSON.parse(document.meta);
+      if (isEmpty(metadata)) {
+        return null;
+      }
+
+      return metadata;
     },
 
     id2label() {
