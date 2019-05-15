@@ -254,6 +254,7 @@ export const uploadMixin = {
     },
 
     download() {
+      this.isLoading = true;
       const headers = {};
       if (this.format === 'csv') {
         headers.Accept = 'text/csv; charset=utf-8';
@@ -276,8 +277,10 @@ export const uploadMixin = {
         link.href = url;
         link.setAttribute('download', 'file.' + this.format); // or any other extension
         document.body.appendChild(link);
+        this.isLoading = false;
         link.click();
       }).catch((error) => {
+        this.isLoading = false;
         this.handleError(error);
       });
     },
