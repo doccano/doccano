@@ -6,8 +6,14 @@ const vm = new Vue({
   delimiters: ['[[', ']]'],
   data: {
     projectSettings: {
-        use_machine_model_sort: false
-    }
+        use_machine_model_sort: false,
+        show_ml_model_prediction: false,
+        enable_metadata_search: false,
+        name: '',
+        description: '',
+        users: []
+    },
+    users: []
   },
 
   methods: {
@@ -22,9 +28,17 @@ const vm = new Vue({
       }
   },
 
-  created() {
-    HTTP.get('').then((response) => {
-        this.setProjectSettings(response.data);
-    });
+  async created() {
+    const project = await HTTP.get('')
+    this.setProjectSettings(project.data);
+
+    const users = await HTTP.get('users');
+    this.users = users.data;
   },
+
+  computed: {
+    submitDisabled () {
+      return this.projectSettings.name.length === 0 || this.projectSettings.name.length > 100 || this.projectSettings.description.length === 0 || this.projectSettings.description.length > 500 || this.projectSettings.users.length === 0 
+    }
+  }
 });

@@ -21,6 +21,29 @@
         <div class="column is-12">
             <div class="content-99999">
                 <div class="field">
+                  <label class="label">Project name</label>
+                  <div class="control">
+                    <input class="input" type="text" maxlength="100" placeholder="Project name" v-model="projectSettings.name">
+                  </div>
+                </div>  
+
+                <div class="field">
+                  <label class="label">Project description</label>
+                  <div class="control">
+                    <textarea class="textarea" rows="2" placeholder="Project description" v-model="projectSettings.description"></textarea>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label">Assigned users</label>
+                  <div class="control">
+                    <select multiple="multiple" class="input select-height" v-model="projectSettings.users">
+                      <option v-for="user in users" :value="user.id" :key="user.id">[[ user.username ]]</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field">
                     <label class="checkbox">
                         <input type="checkbox" v-model="projectSettings.use_machine_model_sort">
                         Annotate documents according to the confidence level of the automatic Machine Learning model
@@ -45,7 +68,7 @@
 
                 <div class="field">
                     <div class="control">
-                        <button class="button is-primary" @click="submit">
+                        <button class="button is-primary" @click="submit" :disabled="submitDisabled">
                             Save
                         </button>
                     </div>

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from django.contrib.auth.models import User
 from .models import Label, Project, Document
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, DocumentMLMAnnotation
 
@@ -18,11 +18,17 @@ class DocumentSerializer(serializers.ModelSerializer):
         fields = ('id', 'text')
 
 
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'username')
+
 class ProjectSerializer(serializers.ModelSerializer):
     progress = serializers.SerializerMethodField()
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at', 'use_machine_model_sort', 'progress')
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at', 'use_machine_model_sort', 'progress', 'enable_metadata_search', 'show_ml_model_prediction')
 
     def get_progress(self, obj):
         request = self.context.get('request')
