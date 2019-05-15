@@ -1,5 +1,5 @@
 from rest_framework import serializers
-
+from django.contrib.auth.models import User
 from .models import Label, Project, Document
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, DocumentMLMAnnotation
 
@@ -17,6 +17,12 @@ class DocumentSerializer(serializers.ModelSerializer):
         model = Document
         fields = ('id', 'text')
 
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'username')
 
 class ProjectSerializer(serializers.ModelSerializer):
     progress = serializers.SerializerMethodField()

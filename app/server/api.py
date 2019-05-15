@@ -37,7 +37,7 @@ from rest_framework.views import APIView
 
 from .models import Project, Label, Document, DocumentAnnotation, DocumentMLMAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer, Word2vecSerializer
+from .serializers import ProjectSerializer, LabelSerializer, Word2vecSerializer, UserSerializer
 from .filters import ExcludeSearchFilter
 
 from .labelers_comparison_functions import create_kappa_comparison_df, rank_labelers, add_agreement_columns
@@ -81,6 +81,12 @@ class LabelList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
 class LabelersListAPI(APIView):
     pagination_class = None
