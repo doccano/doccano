@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import spacy
+# import spacy
 from nltk.tokenize import WordPunctTokenizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
@@ -9,7 +9,7 @@ import logging
 
 logger = logging.getLogger('text processing functions')
 
-default_nlp = spacy.load("en_core_web_md", disable=['parser', 'tagger', 'ner'])
+# default_nlp = spacy.load("en_core_web_md", disable=['parser', 'tagger', 'ner'])
 
 """ ########################
     Text processing functions
@@ -74,7 +74,8 @@ def get_word_embeddings(X, col=None, **params):
     if 'nlp' in params.keys():
         nlp = params['nlp']
     else:
-        nlp = default_nlp
+        raise Exception
+        # nlp = default_nlp
 
     if col not in X.columns:
         logger.warning('attempted to compute word vector features with non-existent column %s' % col)

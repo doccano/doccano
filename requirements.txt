@@ -41,7 +41,6 @@ numpy==1.16.2
 oauthlib==3.0.1
 panda==0.3.1
 pandas==0.24.1
-pkg-resources==0.0.0
 psycopg2==2.7.5
 pycodestyle==2.4.0
 pycparser==2.19

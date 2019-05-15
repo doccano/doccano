@@ -2,8 +2,8 @@ import os
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from app.classifier.model import BaseClassifier
-from app.classifier.text.text_pipeline import TextPipeline
+from classifier.model import BaseClassifier
+from classifier.text.text_pipeline import TextPipeline
 import logging
 
 logger = logging.getLogger('text classifier')

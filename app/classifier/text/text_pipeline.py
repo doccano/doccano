@@ -1,5 +1,5 @@
 import dill
-from app.classifier.text.processing_functions import proc_name_mapping
+from classifier.text.processing_functions import proc_name_mapping
 
 
 class TextPipeline:
