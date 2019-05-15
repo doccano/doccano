@@ -50,7 +50,7 @@ export const annotationMixin = {
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
       count: 0,
-      isActive: false,
+      isAnnotationGuidelineActive: false,
     };
   },
 
