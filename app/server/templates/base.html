@@ -46,7 +46,7 @@
       <div class="navbar-brand">
         <a class="navbar-item" href="{% url 'index' %}">
           <img src="{% static 'images/logo.png' %}" width="32" height="32">
-          <b>doccano</b>
+          <b>Doccano</b>
         </a>
         {% block navigation %}{% endblock %}
       </div>
@@ -77,6 +77,9 @@
           <a class="navbar-item" href="{% url 'projects' %}">
             <span>Projects</span>
           </a>
+          <!--<a class="navbar-item" href="">
+            <span>Users</span>
+          </a>-->
           {% endif %}
           {% if not user.is_authenticated %}
           <a class="navbar-item" href="{% url 'login' %}">

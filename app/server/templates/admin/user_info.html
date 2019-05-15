@@ -1,0 +1,46 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="card">
+  <header class="card-header">
+    <div class="card-header-title">
+        <h1 class="title">
+            User Info - [[ username ]]
+        </h1>
+
+    </div>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+
+  <div class="card-content">
+      <div class="content">
+      <dl>
+          <dt>User ID</dt>
+          <dd></dd>
+
+          <dt>User name</dt>
+          <dd></dd>
+
+          <dt>Email</dt>
+          <dd></dd>
+
+          <dt>Labeling speed</dt>
+          <dd>{{ user_speed }}</dd>
+
+          <dt>Last annotation</dt>
+          <dd></dd>
+
+          <dt>Projects assigned</dt>
+          <dd></dd>
+      </dl>
+      </div>
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+{% endblock %}

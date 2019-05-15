@@ -4,9 +4,11 @@
 
 <div class="card">
   <header class="card-header">
-    <p class="card-header-title">
-      Labelers
-    </p>
+    <div class="card-header-title">
+        <h1 class="title">
+            Labelers
+        </h1>
+    </div>
     <a href="#" class="card-header-icon" aria-label="more options">
       <span class="icon">
         <i class="fas fa-angle-down" aria-hidden="true"></i>
@@ -18,7 +20,8 @@
       <table class="table">
           <thead>
               <tr>
-                  <th>Labeler name</th>
+                  <th>User id</th>
+                  <th>Name</th>
                   <th>Last annotation</th>
                   <th># of annotations made</th>
                   <th>Agreement with truth</th>
@@ -27,16 +30,17 @@
           </thead>
           <tbody>
               <tr v-for="(user, index) in labelers" :key="index">
+                  <td><a title="Click to view user details" @click="goToUser(user)">[[ user.id ]]</a></td>
                   <td>[[ user.name ]]</td>
-                  <td>[[ user.last_date ]]</td>
+                  <td>[[ user.last_date | parseDate ]]</td>
                   <td>[[ user.count ]]</td>
-                  <td>[[ user.truth_agreement ]]</td>
-                  <td>[[ user.labelers_agreement ]]</td>
+                  <td>[[ user.truth_agreement | toPercent ]]</td>
+                  <td>[[ usersAgreement[user.id] | toPercent ]]</td>
               </tr>
           </tbody>
       </table>
 
-      <img v-if="matrix" :src="matrix" />
+      <img v-if="matrix" :src="matrixSrc"/>
   </div>
 </div>
 {% endblock %}

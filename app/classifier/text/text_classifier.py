@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -102,6 +103,10 @@ class TextClassifier(BaseClassifier):
 
         print('Saving output...')
         output_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
+
+        class_weights = pd.Series({term: weight for term, weight in zip(self.columns_, self._model.coef_[0])})
+        project_id = 999
+        class_weights.to_csv(os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id))
 
         print('Done running the model!')
         return result
