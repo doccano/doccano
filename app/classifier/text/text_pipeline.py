@@ -10,7 +10,6 @@ class TextPipeline:
 
         # processing functions to apply for feature creation
         self.pipeline = pipeline
-        self.pipeline.append(('drop columns', {'drop_cols': ['label']}))
         self.transform_params = None
 
     def fit_transform(self, X):
