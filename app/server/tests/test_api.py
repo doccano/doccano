@@ -747,8 +747,9 @@ class TestUploader(APITestCase):
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(self.classification_labels_url, expected_labels=[
-            {'text': 'positive'},
-            {'text': 'negative'},
+            {'text': 'positive', 'suffix_key': 'p', 'prefix_key': None},
+            {'text': 'negative', 'suffix_key': 'n', 'prefix_key': None},
+            {'text': 'neutral', 'suffix_key': 'n', 'prefix_key': 'ctrl'},
         ])
 
     def test_can_upload_labeling_jsonl(self):
@@ -758,9 +759,9 @@ class TestUploader(APITestCase):
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(self.labeling_labels_url, expected_labels=[
-            {'text': 'LOC'},
-            {'text': 'ORG'},
-            {'text': 'PER'},
+            {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
+            {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
+            {'text': 'PER', 'suffix_key': 'p', 'prefix_key': None},
         ])
 
     def test_can_upload_seq2seq_jsonl(self):

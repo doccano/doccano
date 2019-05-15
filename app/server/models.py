@@ -142,7 +142,7 @@ class Label(models.Model):
         ('shift', 'shift'),
         ('ctrl shift', 'ctrl shift')
     )
-    SUFFIX_KEYS = (
+    SUFFIX_KEYS = tuple(
         (c, c) for c in string.ascii_lowercase
     )
 
