@@ -166,5 +166,5 @@ class BaseClassifier:
 
         return y_pred, evaluation_result_str
 
-    def run_on_file(self, input_filename, output_filename, user_id, label_id=None, pipeline=None):
+    def run_on_file(self, input_filename, output_filename, user_id, project_id, label_id=None, pipeline=None):
         pass

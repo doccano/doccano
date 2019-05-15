@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from app.classifier.model import BaseClassifier
 from app.classifier.text.text_pipeline import TextPipeline
+from sklearn.linear_model import LogisticRegression
 import logging
 
 logger = logging.getLogger('text classifier')
@@ -52,7 +53,7 @@ class TextClassifier(BaseClassifier):
     def set_preprocessor(self, pipeline):
         self.processing_pipeline = TextPipeline(pipeline)
 
-    def run_on_file(self, input_filename, output_filename, user_id, label_id=None, pipeline=None):
+    def run_on_file(self, input_filename, output_filename, user_id, project_id, label_id=None, pipeline=None):
         print('Reading input file...')
         df = pd.read_csv(input_filename, encoding='latin1')
         df = df[~pd.isnull(df['text'])]
@@ -106,3 +107,21 @@ class TextClassifier(BaseClassifier):
 
         print('Done running the model!')
         return result
+
+
+def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow'):
+    # rf = RandomForestClassifier(verbose=True, class_weight='balanced')
+    lr = LogisticRegression(verbose=True, class_weight='balanced')
+    clf = TextClassifier(model=lr)
+    # pipeline functions are applied sequentially by order of appearance
+    pipeline = [('base processing', {'col': 'text', 'new_col': 'processed_text'}),
+                ('bag of words', {'col': 'processed_text', 'min_df': 1, 'max_df': 1., 'binary': True,
+                                  'stop_words': 'english', 'strip_accents': 'ascii', 'max_features': 5000}),
+                ('drop columns', {'drop_cols': ['label', 'text', 'processed_text']})]
+
+    result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id, pipeline=pipeline)
+    return result
+
+
+if __name__ == '__main__':
+    run_model_on_file('../../ml_models/ml_input.csv', '../../ml_models/ml_out_manual.csv', project_id=9999, user_id=2, label_id=None)
