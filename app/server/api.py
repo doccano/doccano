@@ -37,7 +37,7 @@ from rest_framework.views import APIView
 
 from .models import Project, Label, Document, DocumentAnnotation, DocumentMLMAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
-from .serializers import ProjectSerializer, LabelSerializer, Word2vecSerializer
+from .serializers import ProjectSerializer, LabelSerializer, Word2vecSerializer, UserSerializer
 from .filters import ExcludeSearchFilter
 
 from .labelers_comparison_functions import create_kappa_comparison_df, rank_labelers, add_agreement_columns
@@ -81,6 +81,12 @@ class LabelList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
+
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
 class LabelersListAPI(APIView):
     pagination_class = None
@@ -128,11 +134,18 @@ class LabelersListAPI(APIView):
             for ar in agreement_array:
                 if (ar[1] == row[0]):
                     ar.append(row[1])
+        truth_agreement = {}
         for row in agreement_array:
             if len(row) > 3:
+                print(row[3])
                 agreement_csv += '%s,%s,%s,%s\n' % (row[0], row[1], row[2], row[3])
+                if (not truth_agreement.get(row[0])):
+                    truth_agreement[row[0]] = {'right': 0, 'total': 0}
+                if (row[2] == row[3]):
+                    truth_agreement[row[0]]['right'] += 1
+                truth_agreement[row[0]]['total'] += 1
             else:
-                agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
+                agreement_csv += '%s,%s,%s, 0\n' % (row[0], row[1], row[2])
         pandas_csv = StringIO(agreement_csv)
 
         df = pd.read_csv(pandas_csv)
