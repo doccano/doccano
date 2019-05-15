@@ -4,6 +4,8 @@ import itertools
 import json
 import re
 from collections import defaultdict
+from math import floor
+from random import random
 
 from django.db import transaction
 from rest_framework.renderers import JSONRenderer
@@ -101,6 +103,11 @@ class BaseStorage(object):
                 serializer_label['prefix_key'] = shortkey[1]
                 existing_shortkeys.add(shortkey)
 
+            background_color = cls.generate_color()
+            text_color = cls.black_or_white(background_color)
+            serializer_label['background_color'] = background_color
+            serializer_label['text_color'] = text_color
+
             serializer_labels.append(serializer_label)
 
         return serializer_labels
@@ -128,6 +135,21 @@ class BaseStorage(object):
                 return shortkey
 
         return None
+
+    @classmethod
+    def generate_color(cls):
+        """Port of `label.vue:generateColor`."""
+        color = hex(int(floor(random() * 0xFFFFFF)))[2:]
+        random_color = '#' + ('000000' + color)[-6:]
+        return random_color
+
+    @classmethod
+    def black_or_white(cls, hexcolor):
+        """Port of `label.vue:blackOrWhite`."""
+        r = int(hexcolor[1:3], 16)
+        g = int(hexcolor[3:5], 16)
+        b = int(hexcolor[5:7], 16)
+        return '#ffffff' if (((r * 299) + (g * 587) + (b * 114)) / 1000) < 128 else '#000000'
 
     def update_saved_labels(self, saved, new):
         """Update saved labels.
