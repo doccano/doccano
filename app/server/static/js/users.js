@@ -79,7 +79,7 @@ const vm = new Vue({
   },
 
   mounted() {
-    if (this.$refs.formError.value) {
+    if (this.$refs.formError.value === 'true') {
       this.isActive = true
     }
   }
