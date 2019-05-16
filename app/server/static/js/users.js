@@ -74,5 +74,13 @@ const vm = new Vue({
     axios.get(`${baseUrl}/api/users/`).then((response) => {
       this.items = response.data;
     });
+
+    
   },
+
+  mounted() {
+    if (this.$refs.formError.value === 'true') {
+      this.isActive = true
+    }
+  }
 });
