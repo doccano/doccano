@@ -108,39 +108,6 @@ npm run build
 # npm start  # for developers
 ```
 
-Next we need to make migration. Run the following command:
-
-```bash
-python manage.py migrate
-```
-
-Next we need to create a user who can login to the admin site. Run the following command:
-
-
-```bash
-python manage.py createsuperuser
-```
-
-Enter your desired username and press enter.
-
-```bash
-Username: admin
-```
-
-You will then be prompted for your desired email address:
-
-```bash
-Email address: admin@example.com
-```
-
-The final step is to enter your password. You will be asked to enter your password twice, the second time as a confirmation of the first.
-
-```bash
-Password: **********
-Password (again): *********
-Superuser created successfully.
-```
-
 ## Usage
 
 ### Start the development server
@@ -164,6 +131,20 @@ docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
 ```
 
 **Option2: Running Django development server**
+
+Before running, we need to make migration. Run the following command:
+
+```bash
+python manage.py migrate
+```
+
+Next we need to create a user who can login to the admin site. Run the following command:
+
+```bash
+python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+```
+
+Finally, to start the server, run the following command:
 
 ```bash
 python manage.py runserver
