@@ -81,9 +81,9 @@ git clone https://github.com/chakki-works/doccano.git
 cd doccano
 ```
 
-To install doccano, there are two options:
+To install doccano, there are three options:
 
-**Option1: Pull the Docker image**
+**Option1: Pull the production Docker image**
 
 ```bash
 docker pull chakkiworks/doccano
@@ -106,6 +106,12 @@ cd server
 npm install
 npm run build
 # npm start  # for developers
+```
+
+**Option3: Pull the development Docker-Compose images**
+
+```bash
+docker-compose pull
 ```
 
 ## Usage
@@ -148,6 +154,14 @@ Finally, to start the server, run the following command:
 
 ```bash
 python manage.py runserver
+```
+
+**Option3: Running the development Docker-Compose stack**
+
+We can use docker-compose to set up the webpack server, django server, database, etc. all in one command:
+
+```bash
+docker-compose up
 ```
 
 Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see the login screen:
