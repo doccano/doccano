@@ -97,7 +97,7 @@
     "databaseSkuTier": "GeneralPurpose",
     "databaseSkuFamily": "Gen5",
     "databaseSkuName": "[concat('GP_', variables('databaseSkuFamily'), '_', parameters('databaseCores'))]",
-    "databaseConnectionString": "[concat('pgsql://', parameters('adminUserName'), '@', variables('databaseServerName'), ':', parameters('adminPassword'), '@', variables('databaseServerName'), '.postgres.database.azure.com:5432/', parameters('databaseName'))]",
+    "databaseConnectionString": "[concat('pgsql://', parameters('adminUserName'), '%40', variables('databaseServerName'), ':', parameters('adminPassword'), '@', variables('databaseServerName'), '.postgres.database.azure.com:5432/', parameters('databaseName'))]",
     "databaseVersion": "9.6",
     "databaseServerName": "[concat(parameters('appName'),'-state')]",
     "setupScriptName": "[concat(parameters('appName'),'-setup')]",
