@@ -1,0 +1,15 @@
+[report]
+omit =
+  app/app/wsgi.py
+  app/classifier/*
+  app/server/migrations/*
+  app/server/templatetags/*
+  app/server/tests/*
+
+exclude_lines =
+  pragma: no cover
+  if __name__ == .__main__.
+  def __str__
+  raise NotImplementedError
+
+fail_under = 90
