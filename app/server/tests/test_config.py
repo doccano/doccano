@@ -29,12 +29,10 @@ class TestDatabaseUrl(TestCase):
             self._assert_user_is('user@host')
 
     def _assert_sslmode_is(self, expected):
-        reload(settings)
         actual = settings.DATABASES['default'].get('OPTIONS', {}).get('sslmode')
         self.assertEqual(actual, expected)
 
     def _assert_user_is(self, expected):
-        reload(settings)
         actual = settings.DATABASES['default'].get('USER', '')
         self.assertEqual(actual, expected)
 
@@ -42,6 +40,7 @@ class TestDatabaseUrl(TestCase):
 @contextmanager
 def setenv(key, value):
     environ[key] = value
+    reload(settings)
     yield
     del environ[key]
 
