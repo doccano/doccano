@@ -121,19 +121,6 @@ class ExcludeSearchFilter(BaseFilterBackend):
             queryset = queryset.exclude(reduce(operator.and_, exclude_conditions))
         return queryset
 
-    def to_html(self, request, queryset, view):
-        if not getattr(view, 'search_fields', None):
-            return ''
-
-        term = self.get_search_terms(request)
-        term = term['terms'] if term else ''
-        context = {
-            'param': self.search_param,
-            'term': term
-        }
-        template = loader.get_template(self.template)
-        return template.render(context)
-
     def get_schema_fields(self, view):
         assert coreapi is not None, 'coreapi must be installed to use `get_schema_fields()`'
         assert coreschema is not None, 'coreschema must be installed to use `get_schema_fields()`'
