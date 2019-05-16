@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from classifier.model import BaseClassifier
 from classifier.text.text_pipeline import TextPipeline
+from sklearn.linear_model import LogisticRegression
 import logging
 
 logger = logging.getLogger('text classifier')
@@ -49,16 +50,16 @@ class TextClassifier(BaseClassifier):
 
         return result
 
-    def set_preprocessor(self, pipeline, **processing_params):
-        self.processing_pipeline = TextPipeline(pipeline, **processing_params)
+    def set_preprocessor(self, pipeline):
+        self.processing_pipeline = TextPipeline(pipeline)
 
-    def run_on_file(self, input_filename, output_filename, user_id, label_id=None, pipeline=None, **processing_params):
+    def run_on_file(self, input_filename, output_filename, user_id, project_id, label_id=None, pipeline=None):
         print('Reading input file...')
         df = pd.read_csv(input_filename, encoding='latin1')
         df = df[~pd.isnull(df['text'])]
 
         print('Pre-processing text and extracting features...')
-        self.set_preprocessor(pipeline, **processing_params)
+        self.set_preprocessor(pipeline)
 
         if label_id:
             df_labeled = df[df['label'] == label_id]
@@ -87,26 +88,40 @@ class TextClassifier(BaseClassifier):
         result = result + '\nPerformance on test set: \n' + evaluation_text
 
         print('Running the model on the entire dataset...')
-        output_df = df.copy()
-        output_df['label'] = None
-        predictions_probabilities = self.predict_proba(X)
-        confidence = np.max(predictions_probabilities, axis=1)
-        predictions = np.argmax(predictions_probabilities, axis=1)
-        output_df['prediction'] = [self._model.classes_[v] for v in predictions]
-        output_df['confidence'] = confidence
-        output_df['is_error'] = (output_df['prediction'] != y)
+        df_cpy = df.copy()
+        df_cpy['label'] = None
+        X = self.pre_process(df_cpy, fit=False)
+        prediction_df = self.get_prediction_df(X, y=df['label'])
 
-        output_df['user_id'] = user_id
-        output_df = output_df.rename({'confidence': 'prob',
-                                      'id': 'document_id'}, axis=1)
-        output_df['label_id'] = output_df['prediction']
+        prediction_df['user_id'] = user_id
+        prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)  # 'id': 'document_id'
+        prediction_df['label_id'] = prediction_df['prediction']
 
         print('Saving output...')
-        output_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
+        prediction_df[['label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)  # 'document_id'
 
-        class_weights = pd.Series({term: weight for term, weight in zip(self.columns_, self._model.coef_[0])})
+        class_weights = pd.Series({term: weight for (term, weight) in self.important_features})
         project_id = 999
-        class_weights.to_csv(os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id))
+        class_weights_filename = os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
+        class_weights.to_csv(class_weights_filename, header=False)
 
         print('Done running the model!')
         return result
+
+
+def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow'):
+    # rf = RandomForestClassifier(verbose=True, class_weight='balanced')
+    lr = LogisticRegression(verbose=True, class_weight='balanced')
+    clf = TextClassifier(model=lr)
+    # pipeline functions are applied sequentially by order of appearance
+    pipeline = [('base processing', {'col': 'text', 'new_col': 'processed_text'}),
+                ('bag of words', {'col': 'processed_text', 'min_df': 1, 'max_df': 1., 'binary': True,
+                                  'stop_words': 'english', 'strip_accents': 'ascii', 'max_features': 5000}),
+                ('drop columns', {'drop_cols': ['label', 'text', 'processed_text']})]
+
+    result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id, pipeline=pipeline)
+    return result
+
+
+if __name__ == '__main__':
+    run_model_on_file('../../ml_models/ml_input.csv', '../../ml_models/ml_out_manual.csv', project_id=9999, user_id=2, label_id=None)

@@ -1,9 +1,11 @@
 """
-Baseline model.
+Base class for classifier.
 """
 
 import dill
 import logging
+import numpy as np
+import pandas as pd
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import classification_report, confusion_matrix
@@ -29,7 +31,7 @@ class BaseClassifier:
         self.set_params(params)
 
     def __getstate__(self):
-        """Return state values to be pickled. feature maker can't be pickled directly"""
+        """Return state values to be pickled. processing pipeline can't be pickled directly"""
         odict = self.__dict__.copy()
         if 'processing_pipeline' in odict:
             del odict['processing_pipeline']
@@ -78,7 +80,7 @@ class BaseClassifier:
             self._model.set_params(**{k: v})
         return self
 
-    def set_preprocessor(self, pipeline, **processing_params):
+    def set_preprocessor(self, pipeline):
         pass
 
     def pre_process(self, X, fit):
@@ -135,22 +137,34 @@ class BaseClassifier:
         results = precision_recall_fscore_support(y, predictions, average='macro')
         return results
 
+    def get_prediction_df(self, X, y=None):
+        predictions_probabilities = self.predict_proba(X)
+        confidence = np.max(predictions_probabilities, axis=1)
+        predictions = np.argmax(predictions_probabilities, axis=1)
+
+        prediction_df = pd.DataFrame({'prediction': [self._model.classes_[v] for v in predictions],
+                                      'confidence': confidence})
+        if y is not None:
+            prediction_df['is_error'] = prediction_df['prediction'].values != y
+
+        return prediction_df
+
     def evaluate(self, X, y):
-        evaluation_result = ''
+        evaluation_result_str = ''
         y_pred = self._model.predict(X)
 
         print(classification_report(y, y_pred))
-        evaluation_result = evaluation_result + classification_report(y, y_pred)
+        evaluation_result_str = evaluation_result_str + classification_report(y, y_pred)
 
         results = precision_recall_fscore_support(y, y_pred, average='macro')
         print("Precision: {:.3}, Recall: {:.3},  F1 Score: {:.3}\n".format(results[0], results[1], results[2]))
-        evaluation_result = evaluation_result + "\nPrecision: {:.3}, Recall: {:.3},  F1 Score: {:.3}\n".format(results[0], results[1], results[2])
+        evaluation_result_str = evaluation_result_str + "\nPrecision: {:.3}, Recall: {:.3},  F1 Score: {:.3}\n".format(results[0], results[1], results[2])
 
         conf_mat = confusion_matrix(y, y_pred)
         print(conf_mat)
-        evaluation_result = evaluation_result + conf_mat
+        evaluation_result_str = evaluation_result_str + str(conf_mat)
 
-        return y_pred, evaluation_result
+        return y_pred, evaluation_result_str
 
-    def run_on_file(self, input_filename, output_filename, user_id, label_id=None, pipeline=None, **processing_params):
+    def run_on_file(self, input_filename, output_filename, user_id, project_id, label_id=None, pipeline=None):
         pass
