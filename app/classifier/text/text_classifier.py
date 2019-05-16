@@ -62,17 +62,17 @@ class TextClassifier(BaseClassifier):
         self.set_preprocessor(pipeline)
 
         if label_id:
-            df_labeled = df[df['label'] == label_id]
-            df_labeled = pd.concat([df_labeled, df[df['label'] != label_id].sample(df_labeled.shape[0])])
-            df_labeled.loc[df_labeled['label'] != label_id, 'label'] = 0
+            df_labeled = df[df['label_id'] == label_id]
+            df_labeled = pd.concat([df_labeled, df[df['label_id'] != label_id].sample(df_labeled.shape[0])])
+            df_labeled.loc[df_labeled['label_id'] != label_id, 'label_id'] = 0
         else:
-            df_labeled = df[~pd.isnull(df['label'])]
+            df_labeled = df[~pd.isnull(df['label_id'])]
 
         X = self.pre_process(df_labeled, fit=True)
-        if 'label' not in df_labeled.columns:
-            raise RuntimeError("column 'label' not found")
+        if 'label_id' not in df_labeled.columns:
+            raise RuntimeError("column 'label_id' not found")
         else:
-            y = df_labeled['label'].values
+            y = df_labeled['label_id'].values
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 
@@ -89,9 +89,9 @@ class TextClassifier(BaseClassifier):
 
         print('Running the model on the entire dataset...')
         df_cpy = df.copy()
-        df_cpy['label'] = None
+        df_cpy['label_id'] = None
         X = self.pre_process(df_cpy, fit=False)
-        prediction_df = self.get_prediction_df(X, y=df['label'])
+        prediction_df = self.get_prediction_df(X, y=df['label_id'])
 
         prediction_df['user_id'] = user_id
         prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)  # 'id': 'document_id'
@@ -117,7 +117,7 @@ def run_model_on_file(input_filename, output_filename, user_id, project_id, labe
     pipeline = [('base processing', {'col': 'text', 'new_col': 'processed_text'}),
                 ('bag of words', {'col': 'processed_text', 'min_df': 1, 'max_df': 1., 'binary': True,
                                   'stop_words': 'english', 'strip_accents': 'ascii', 'max_features': 5000}),
-                ('drop columns', {'drop_cols': ['label', 'text', 'processed_text']})]
+                ('drop columns', {'drop_cols': ['label_id', 'text', 'processed_text']})]
 
     result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id, pipeline=pipeline)
     return result

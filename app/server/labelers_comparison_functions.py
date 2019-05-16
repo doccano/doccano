@@ -57,7 +57,7 @@ def create_kappa_comparison_df(labelers_df, filter_double_score=False):
     return comparison_df.astype('float64')
 
 
-def rank_labelers(comparison_df):
+def compute_average_agreement_per_labeler(comparison_df):
     '''
     :param comparison_df: a cohen kappa distance matrix of the labelers
     :return: a rank list of labelers mean kappa cohen distance from the rest of the labelers

@@ -10,18 +10,6 @@
   </span>
   <b>Annotate Data</b>
 </a>
-<a class="navbar-item" href="{% url 'upload' view.kwargs.project_id %}">
-  <span class="icon">
-    <i class="fas fa-upload"></i>
-  </span>
-  <b>Import Data</b>
-</a>
-<a class="navbar-item" href="{% url 'download' view.kwargs.project_id %}">
-  <span class="icon">
-    <i class="fas fa-download"></i>
-  </span>
-  <b>Export Data</b>
-</a>
 <a class="navbar-item">
   {{ docs_count }} documents
 </a>
@@ -37,6 +25,20 @@
           </span>
           <span class="name">Dataset</span>
         </a>
+
+        <a class="item" href="{% url 'upload' view.kwargs.project_id %}">
+          <span class="icon">
+            <i class="fas fa-upload"></i>
+          </span>
+          <span class="name">Import Data</span>
+        </a>
+        <a class="item" href="{% url 'download' view.kwargs.project_id %}">
+          <span class="icon">
+            <i class="fas fa-download"></i>
+          </span>
+          <span class="name">Export Data</span>
+        </a>
+
         <a href="{% url 'guideline' view.kwargs.project_id %}" class="item">
           <span class="icon">
             <i class="fas fa-book"></i>

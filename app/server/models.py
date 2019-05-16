@@ -9,15 +9,73 @@ from .utils import get_key_choices
 
 
 class Project(models.Model):
+    project_types = {
+        'DocumentClassification': {
+            'title': 'document classification',
+            'type': 'DocumentClassification',
+            'image': staticfiles_storage.url('images/cat-1045782_640.jpg'),
+            'template_html': 'annotation/document_classification.html',
+            'document_serializer': '',
+            'annotations_serializer': '',
+        },
+
+        'SequenceLabeling': {
+            'title': 'sequence labeling',
+            'type': 'SequenceLabeling',
+            'image': staticfiles_storage.url('images/cat-3449999_640.jpg'),
+            'template_html': 'annotation/sequence_labeling.html',
+            'document_serializer': '',
+            'annotations_serializer': '',
+        },
+
+        'Seq2seq': {
+            'title': 'sequence to sequence',
+            'type': 'Seq2seq',
+            'image': staticfiles_storage.url('images/tiger-768574_640.jpg'),
+            'template_html': 'annotation/seq2seq.html',
+            'document_serializer': '',
+            'annotations_serializer': '',
+        },
+
+        'ImageClassification': {
+            'title': 'image classification',
+            'type': 'DocumentClassification',
+            'image': staticfiles_storage.url('images/cat-1045782_640.jpg'),
+            'template_html': 'annotation/image_classification.html',
+            'document_serializer': '',
+            'annotations_serializer': '',
+        },
+
+        # 'DocumentClassification': {
+        #     'title': '',
+        #     'type': '',
+        #     'image': '',
+        #     'template_html': '',
+        #     'document_serializer': '',
+        #     'annotations_serializer': '',
+        # },
+        #
+        # 'DocumentClassification': {
+        #     'title': '',
+        #     'type': '',
+        #     'image': '',
+        #     'template_html': '',
+        #     'document_serializer': '',
+        #     'annotations_serializer': '',
+        # },
+
+    }
     DOCUMENT_CLASSIFICATION = 'DocumentClassification'
     SEQUENCE_LABELING = 'SequenceLabeling'
     Seq2seq = 'Seq2seq'
 
-    PROJECT_CHOICES = (
-        (DOCUMENT_CLASSIFICATION, 'document classification'),
-        (SEQUENCE_LABELING, 'sequence labeling'),
-        (Seq2seq, 'sequence to sequence'),
-    )
+    # PROJECT_CHOICES = (
+    #     (DOCUMENT_CLASSIFICATION, 'document classification'),
+    #     (SEQUENCE_LABELING, 'sequence labeling'),
+    #     (Seq2seq, 'sequence to sequence'),
+    # )
+
+    PROJECT_CHOICES = ((k, v['title']) for k,v in project_types.items())
 
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=500)
@@ -44,24 +102,26 @@ class Project(models.Model):
 
     @property
     def image(self):
-        if self.is_type_of(self.DOCUMENT_CLASSIFICATION):
-            url = staticfiles_storage.url('images/cat-1045782_640.jpg')
-        elif self.is_type_of(self.SEQUENCE_LABELING):
-            url = staticfiles_storage.url('images/cat-3449999_640.jpg')
-        elif self.is_type_of(self.Seq2seq):
-            url = staticfiles_storage.url('images/tiger-768574_640.jpg')
+        url = self.project_types[ self.project_type ]['image']
+        # if self.is_type_of(self.DOCUMENT_CLASSIFICATION):
+        #     url = staticfiles_storage.url('images/cat-1045782_640.jpg')
+        # elif self.is_type_of(self.SEQUENCE_LABELING):
+        #     url = staticfiles_storage.url('images/cat-3449999_640.jpg')
+        # elif self.is_type_of(self.Seq2seq):
+        #     url = staticfiles_storage.url('images/tiger-768574_640.jpg')
 
         return url
 
     def get_template_name(self):
-        if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):
-            template_name = 'annotation/document_classification.html'
-        elif self.is_type_of(Project.SEQUENCE_LABELING):
-            template_name = 'annotation/sequence_labeling.html'
-        elif self.is_type_of(Project.Seq2seq):
-            template_name = 'annotation/seq2seq.html'
-        else:
-            raise ValueError('Template does not exist')
+        template_name = self.project_types[ self.project_type ]['template_html']
+        # if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):
+        #     template_name = 'annotation/document_classification.html'
+        # elif self.is_type_of(Project.SEQUENCE_LABELING):
+        #     template_name = 'annotation/sequence_labeling.html'
+        # elif self.is_type_of(Project.Seq2seq):
+        #     template_name = 'annotation/seq2seq.html'
+        # else:
+        #     raise ValueError('Template does not exist')
 
         return template_name
 

@@ -40,7 +40,7 @@ from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, Word2vecSerializer, UserSerializer
 from .filters import ExcludeSearchFilter
 
-from .labelers_comparison_functions import create_kappa_comparison_df, rank_labelers, add_agreement_columns
+from .labelers_comparison_functions import create_kappa_comparison_df, compute_average_agreement_per_labeler, add_agreement_columns
 
 
 from classifier.text.text_classifier import run_model_on_file
@@ -49,6 +49,51 @@ ML_FOLDER = 'ml_models'
 
 OUTPUT_FILE = 'ml_out.csv'
 INPUT_FILE = 'ml_input.csv'
+
+
+def get_labels_admin(project_id):
+    query = '''SELECT server_documentannotation.document_id,
+            server_documentannotation.label_id,
+            COUNT(DISTINCT user_id) AS num_labelers,
+            MAX(server_documentannotation.created_date_time) AS last_annotation_date,
+            substr(server_document.text, 0, 60) AS document_text,
+            server_documentgoldannotation.label_id as ground_truth,
+            server_documentmlmannotation.prob as model_confidence
+        FROM server_documentannotation
+        LEFT JOIN server_document ON server_document.id = server_documentannotation.document_id
+        LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_documentannotation.document_id
+        LEFT JOIN server_documentmlmannotation ON server_documentmlmannotation.document_id = server_documentannotation.document_id
+        LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+        WHERE server_document.project_id = {project_id}
+        GROUP BY server_documentannotation.document_id, 
+          server_documentannotation.label_id, 
+          server_document.text, 
+          server_documentgoldannotation.label_id, 
+          server_documentmlmannotation.prob'''.format(project_id=project_id)
+    cursor = connection.cursor()
+    cursor.execute(query)
+    df = pd.DataFrame(cursor.fetchall(), columns=[
+        'document_id', 'label_id', 'num_labelers', 'last_annotation_date', 'snippet', 'ground_truth', 'model_confidence'
+    ])
+    z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False]) \
+        .groupby(['document_id']) \
+        .agg({
+        'label_id': [('top_label', lambda x: x.iloc[0])],
+        'num_labelers': [
+            ('agreement', lambda x: round(x.iloc[0] / sum(x))),
+            ('num_labelers', lambda x: sum(x)),
+        ],
+        'last_annotation_date': [
+            ('last_annotation_date', lambda x: x.max())
+        ],
+        'snippet': [('snippet', lambda x: x.iloc[0])],
+        'ground_truth': [('ground_truth', lambda x: x.iloc[0])],
+        'model_confidence': [('model_confidence', lambda x: x.iloc[0])],
+    })
+    z.columns = [c[1] for c in z.columns]
+    z = z.reset_index()
+    z['ground_truth'] = z['ground_truth'].fillna(-1)
+    return z
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -109,107 +154,104 @@ class LabelersListAPI(APIView):
         return 42
 
     def get(self, request, *args, **kwargs):
-        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        users = []
+        # def get_annotations
+        # p = get_object_or_404(Project, pk=self.kwargs['project_id'])
         cursor = connection.cursor()
+        project_id = self.kwargs['project_id']
 
-        agreement_csv = 'user_id,document_id,label_id,true_label_id\n'
-
-        users_agreement_query = '''SELECT
-            server_documentannotation.user_id,
-            server_documentannotation.document_id,
-            server_documentannotation.label_id
-            FROM auth_user
-            LEFT JOIN server_documentannotation ON auth_user.id = server_documentannotation.user_id
-            LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
-            WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
-        cursor.execute(users_agreement_query)
-        agreement_array = []
-        for row in cursor.fetchall():
-            agreement_array.append([row[0], row[1], row[2]])
-            #agreement_csv += '%s,%s,%s\n' % (row[0], row[1], row[2])
-
-        gold_labels_query = '''SELECT
-            server_documentgoldannotation.document_id,
-            server_documentgoldannotation.label_id
-            FROM server_documentgoldannotation
-            LEFT JOIN server_document ON server_documentgoldannotation.document_id = server_document.id
-            WHERE server_document.project_id = ''' + str(self.kwargs['project_id'])
-        cursor.execute(gold_labels_query)
-        for row in cursor.fetchall():
-            for ar in agreement_array:
-                if (ar[1] == row[0]):
-                    ar.append(row[1])
-        truth_agreement = {}
-        for row in agreement_array:
-            if len(row) > 3:
-                print(row[3])
-                agreement_csv += '%s,%s,%s,%s\n' % (row[0], row[1], row[2], row[3])
-                if (not truth_agreement.get(row[0])):
-                    truth_agreement[row[0]] = {'right': 0, 'total': 0}
-                if (row[2] == row[3]):
-                    truth_agreement[row[0]]['right'] += 1
-                truth_agreement[row[0]]['total'] += 1
-            else:
-                agreement_csv += '%s,%s,%s, 0\n' % (row[0], row[1], row[2])
-        pandas_csv = StringIO(agreement_csv)
-
-        df = pd.read_csv(pandas_csv)
-        df.to_csv('temp_agreement.csv')
-        df = df.drop_duplicates(['document_id', 'user_id'])
-
-        pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
-        pivot_table = pd.merge(left=pivot_table, right=df.set_index('document_id')[['true_label_id']], left_index=True, right_index=True)
-        agreement_df = add_agreement_columns(pivot_table, 'true_label_id')
-        agreement = create_kappa_comparison_df(pivot_table)
-
-        users_agreement = rank_labelers(agreement)
-
-        users_query = '''WITH da AS (
-            SELECT COUNT(DISTINCT server_documentannotation.document_id) as num_documents_reviewed,
-                MAX(server_documentannotation.updated_date_time) as last_annotation,
-                COUNT(server_documentannotation.id) AS num_annotations,
-                server_documentannotation.user_id as user_id
-            FROM server_documentannotation INNER JOIN server_document ON server_documentannotation.document_id = server_document.id
-            WHERE server_document.project_id = %d
-            GROUP BY server_documentannotation.user_id
+        def get_annotations(cursor, project_id):
+            annotations_query = '''SELECT
+                server_documentannotation.user_id,
+                server_documentannotation.document_id,
+                server_documentannotation.label_id,
+                server_documentgoldannotation.label_id AS truth_label_id
+                FROM server_documentannotation 
+                -- LEFT JOIN server_documentannotation ON auth_user.id = server_documentannotation.user_id
+                LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+                LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_document.id
+                WHERE server_document.project_id = {project_id}'''.format(project_id=project_id)
+            cursor.execute(annotations_query)
+            annotations = pd.DataFrame(
+                cursor.fetchall(),
+                columns=['user_id', 'document_id', 'label_id', 'true_label_id']
             )
-            SELECT
-            da.user_id,
-            auth_user.email,
-            auth_user.username,
-            auth_user.first_name,
-            auth_user.last_name,
-            auth_user.last_login,
-            da.last_annotation,
-            da.num_documents_reviewed,
-            da.num_annotations
-            FROM
-            auth_user
-            INNER JOIN da ON auth_user.id = da.user_id''' % (self.kwargs['project_id'])
-        cursor.execute(users_query)
-        users = []
+            return annotations
 
-        for row in cursor.fetchall():
-            user_id = row[0]
-            users.append({
-                'id': user_id,
-                'name': row[2],
-                'count': row[8],
-                'last_date': row[6],
-                'truth_agreement': df[ (df.user_id==user_id) & (df.label_id==df.true_label_id) ].shape[0] / df[ df.user_id==user_id ].shape[0]
-            })
+        def get_users_data(cursor, project_id):
+            users_query = '''
+              WITH da AS (
+                SELECT 
+                    COUNT(DISTINCT server_documentannotation.document_id) as num_documents_reviewed,
+                    MAX(server_documentannotation.updated_date_time) as last_annotation,
+                    COUNT(server_documentannotation.id) AS num_annotations,
+                    server_documentannotation.user_id as user_id
+                    
+                FROM server_documentannotation 
+                INNER JOIN server_document ON server_documentannotation.document_id = server_document.id
+                WHERE server_document.project_id = {project_id}
+                GROUP BY server_documentannotation.user_id
+                )
+                
+                SELECT
+                    da.user_id,
+                    auth_user.email,
+                    auth_user.username,
+                    auth_user.first_name,
+                    auth_user.last_name,
+                    auth_user.last_login,
+                    da.last_annotation,
+                    da.num_documents_reviewed,
+                    da.num_annotations
+                FROM auth_user
+                INNER JOIN da ON auth_user.id = da.user_id'''.format(project_id=project_id)
+            cursor.execute(users_query)
+            users = pd.DataFrame(cursor.fetchall(), columns=[
+                'id',
+                'email',
+                'name',
+                'first_name',
+                'last_name',
+                'last_login',
+                'last_annotation',
+                'num_documents_reviewed',
+                'num_annotations'
+            ])
+            return users.set_index('id')
 
-        sns_plot = sns.heatmap(agreement.rename({'true_label_id': 'Truth'}, axis=1), annot=True)
-        fig = sns_plot.get_figure()
-        fig_bytes = BytesIO()
-        fig.savefig(fig_bytes, format='png')
-        fig_bytes.seek(0)
-        base64b = base64.b64encode(fig_bytes.read())
-        fig_bytes.close()
-        plt.clf()
+        def plot_agreement_matrix(agreement):
+            sns_plot = sns.heatmap(agreement.rename({'true_label_id': 'Truth'}, axis=1).rename({'true_label_id': 'Truth'}, axis=0), annot=True)
+            fig = sns_plot.get_figure()
+            fig_bytes = BytesIO()
+            fig.savefig(fig_bytes, format='png')
+            fig_bytes.seek(0)
+            base64b = base64.b64encode(fig_bytes.read())
+            fig_bytes.close()
+            plt.clf()
+            return base64b
 
-        response = {'users': users, 'matrix': base64b, 'users_agreement': users_agreement.fillna(1).to_dict()}
+
+        annotations_df = get_annotations(cursor, project_id)
+        annotations_df = annotations_df.drop_duplicates(['document_id', 'user_id'])
+        annotations_df['is_correct'] = [int(x) for x in annotations_df['label_id']==annotations_df['true_label_id']]
+        user_truth_agreement = annotations_df[ pd.notnull(annotations_df['true_label_id']) ].groupby('user_id')['is_correct'].agg(['count', 'mean'])
+
+        document_annotations_by_labeler = annotations_df.pivot(index='document_id', columns='user_id', values='label_id')
+        document_annotations_by_labeler = pd.merge(left=document_annotations_by_labeler, right=annotations_df.set_index('document_id')[['true_label_id']], left_index=True, right_index=True)
+        documents_agreement_df = add_agreement_columns(document_annotations_by_labeler, 'true_label_id')
+        users_agreement_kappa = create_kappa_comparison_df(document_annotations_by_labeler)
+        average_kappa_agreement_per_labeler = compute_average_agreement_per_labeler(users_agreement_kappa)
+
+        users = get_users_data(cursor, project_id)
+        users['average_kappa_agreement'] = average_kappa_agreement_per_labeler
+        users['agreement_with_truth'] = user_truth_agreement['mean']
+        users = users.reset_index()
+
+        response = {
+            'users': users.fillna(0).T.to_dict(),
+            'document_agreement': documents_agreement_df.fillna(0).T.to_dict(),
+            'matrix': plot_agreement_matrix(users_agreement_kappa),
+            'users_agreement': users_agreement_kappa.fillna(1).to_dict()
+        }
         return Response(response)
 
 class LabelAdminAPI(APIView):
@@ -217,47 +259,8 @@ class LabelAdminAPI(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get(self, request, *args, **kwargs):
-        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
-
-        query = '''SELECT server_documentannotation.document_id,
-                server_documentannotation.label_id,
-                COUNT(DISTINCT user_id) AS num_labelers,
-                MAX(server_documentannotation.created_date_time) AS last_annotation_date,
-                substr(server_document.text, 0, 60) AS document_text,
-				server_documentgoldannotation.label_id as ground_truth,
-				server_documentmlmannotation.prob as model_confidence
-            FROM server_documentannotation
-            LEFT JOIN server_document ON server_document.id = server_documentannotation.document_id
-			LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_documentannotation.document_id
-			LEFT JOIN server_documentmlmannotation ON server_documentmlmannotation.document_id = server_documentannotation.document_id
-            LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
-            WHERE server_document.project_id = %d
-            GROUP BY server_documentannotation.document_id, server_documentannotation.label_id, server_document.text, server_documentgoldannotation.label_id, server_documentmlmannotation.prob''' % (self.kwargs['project_id'])
-        cursor = connection.cursor()
-        cursor.execute(query)
-        labels_csv = 'document_id,label_id,ground_truth,model_confidence,num_labelers,last_annotation_date,snippet\n'
-        for row in cursor.fetchall():
-            labels_csv += '%s,%s,%s,%s,%s,%s,"%s"\n' % (row[0], row[1], row[5], row[6], row[2], row[3], row[4])
-        pandas_csv = StringIO(labels_csv)
-        df = pd.read_csv(pandas_csv)
-        z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False])\
-            .groupby(['document_id'])\
-            .agg({
-                'label_id': [('top_label', lambda x: x.iloc[0])],
-                'num_labelers': [
-                    ('agreement', lambda x: round( x.iloc[0] / sum(x)) ),
-                    ('num_labelers', lambda x: sum(x)),
-                ],
-                'last_annotation_date': [
-                    ('last_annotation_date', lambda x: x.max())
-                ],
-                'snippet': [('snippet', lambda x: x.iloc[0])],
-                'ground_truth': [('ground_truth', lambda x: x.iloc[0])],
-                'model_confidence': [('model_confidence', lambda x: x.iloc[0])],
-        })
-
-        z.columns = [c[1] for c in z.columns]
-        z = z.reset_index()
+        # p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        z = get_labels_admin(project_id=self.kwargs['project_id'])
         response = {'dataframe': z}
         return Response(response)
 

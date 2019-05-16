@@ -26,7 +26,27 @@ from .forms import ProjectForm
 from .models import Document, Project, DocumentAnnotation, Label, DocumentGoldAnnotation, User
 from app import settings
 
+from server.api import get_labels_admin
+
 logger = logging.getLogger(__name__)
+
+
+def download_file(data, spl, redirect):
+    def get_csv(self, filename, data):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+        response.write(data.to_csv())
+        return response
+
+    filename = '_'.join(spl)
+    try:
+        return self.get_csv(filename, data)
+    except Exception as e:
+        logger.exception(e)
+        messages.add_message(request, messages.ERROR, "Something went wrong")
+        return HttpResponseRedirect(redirect)
+
+
 
 
 class IndexView(TemplateView):
@@ -124,8 +144,11 @@ class UserInfoView(SuperUserMixin, LoginRequiredMixin, TemplateView):
             server_documentannotation.updated_date_time
             FROM server_documentannotation
             LEFT JOIN server_document ON server_document.id = server_documentannotation.document_id
-            WHERE server_document.project_id = %s AND server_documentannotation.user_id = % s''' % (self.kwargs['project_id'], self.kwargs['user_id'])
+            WHERE server_document.project_id = {project_id}
+            AND server_documentannotation.user_id = {user_id}'''.format(project_id=self.kwargs['project_id'], user_id=self.kwargs['user_id'])
         cursor.execute(annots_sql)
+
+
         annots_csv = 'user_id,created_date_time,updated_date_time\n'
         for row in cursor.fetchall():
             annots_csv += '%s,%s,%s\n' % (row[2], row[3], row[4])
@@ -151,7 +174,9 @@ class UserInfoView(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
         user_query = ''' 
         WITH da as (
-            SELECT MAX(server_documentannotation.updated_date_time) as last_annotation FROM server_documentannotation WHERE server_documentannotation.user_id = %s
+            SELECT MAX(server_documentannotation.updated_date_time) as last_annotation 
+            FROM server_documentannotation 
+            WHERE server_documentannotation.user_id = %s
         ),
         ut as(SELECT email, id, username FROM auth_user WHERE auth_user.id = %s),
         pt as(
@@ -162,7 +187,8 @@ class UserInfoView(SuperUserMixin, LoginRequiredMixin, TemplateView):
             WHERE server_project_users.user_id = %s
         )
 
-        SELECT ut.id, ut.email, ut.username, da.last_annotation,  pt.project_id, pt.project_name FROM da, ut, pt
+        SELECT ut.id, ut.email, ut.username, da.last_annotation,  pt.project_id, pt.project_name 
+        FROM da, ut, pt
         '''  % (self.kwargs['user_id'], self.kwargs['user_id'], self.kwargs['user_id'])
 
         cursor.execute(user_query)
@@ -538,64 +564,23 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
 class LabelsAdminDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
-        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
-
-        query = '''SELECT server_documentannotation.document_id,
-                server_documentannotation.label_id,
-                COUNT(DISTINCT user_id) AS num_labelers,
-                MAX(server_documentannotation.created_date_time) AS last_annotation_date,
-                substr(server_document.text, 0, 60) AS document_text,
-				server_documentgoldannotation.label_id as ground_truth,
-				server_documentmlmannotation.prob as model_confidence
-            FROM server_documentannotation
-            LEFT JOIN server_document ON server_document.id = server_documentannotation.document_id
-			LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_documentannotation.document_id
-			LEFT JOIN server_documentmlmannotation ON server_documentmlmannotation.document_id = server_documentannotation.document_id
-            LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
-            WHERE server_document.project_id = %d
-            GROUP BY server_documentannotation.document_id, server_documentannotation.label_id, server_document.text, server_documentgoldannotation.label_id, server_documentmlmannotation.prob''' % (self.kwargs['project_id'])
-        cursor = connection.cursor()
-        cursor.execute(query)
-        labels_csv = 'document_id,label_id,ground_truth,model_confidence,num_labelers,last_annotation_date,snippet\n'
-        for row in cursor.fetchall():
-            labels_csv += '%s,%s,%s,%s,%s,%s,"%s"\n' % (row[0], row[1], row[5], row[6], row[2], row[3], row[4])
-        pandas_csv = StringIO(labels_csv)
-        df = pd.read_csv(pandas_csv)
-        z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False])\
-            .groupby(['document_id'])\
-            .agg({
-                'label_id': [('top_label', lambda x: x.iloc[0])],
-                'num_labelers': [
-                    ('agreement', lambda x: round( x.iloc[0] / sum(x)) ),
-                    ('num_labelers', lambda x: sum(x)),
-                ],
-                'last_annotation_date': [
-                    ('last_annotation_date', lambda x: x.max())
-                ],
-                'snippet': [('snippet', lambda x: x.iloc[0])],
-                'ground_truth': [('ground_truth', lambda x: x.iloc[0])],
-                'model_confidence': [('model_confidence', lambda x: x.iloc[0])],
-        })
-
-        z.columns = [c[1] for c in z.columns]
-        data = z.reset_index()
-        spl = p.name.lower().split()
-        spl.append('labels')
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        data = get_labels_admin(project_id=project.id).reset_index()
+        spl = project.name.lower().split() + ['labels']
 
         filename = '_'.join(spl)
         try:
-            response = self.get_csv(filename, data)
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
+            response.write(data.to_csv())
             return response
         except Exception as e:
             logger.exception(e)
             messages.add_message(request, messages.ERROR, "Something went wrong")
-            return HttpResponseRedirect(reverse('labels_admin', args=[project.id]))
+            redirect = reverse('labels_admin', args=[project.id])
+            return HttpResponseRedirect(redirect)
 
-    def get_csv(self, filename, data):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
-        response.write(data.to_csv())
-        return response
+
 
 class LoginView(BaseLoginView):
     template_name = 'login.html'

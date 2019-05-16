@@ -62,23 +62,23 @@
   </div>
 </div>
 {% if project.enable_metadata_search %}
-<div class="card" style="margin-top: 2rem;">
-<header class="card-footer">
-    <div class="card-header-title">
-        Metadata search
-    </div>
-    <a href="#" style="text-decoration: none;" class="card-header-icon" aria-label="more options">
-      <span class="icon">
-        <i class="fas fa-angle-down" aria-hidden="true"></i>
-      </span>
-    </a>
-  </header>
+    <div class="card" style="margin-top: 2rem;">
+    <header class="card-footer">
+        <div class="card-header-title">
+            Metadata search
+        </div>
+        <a href="#" style="text-decoration: none;" class="card-header-icon" aria-label="more options">
+          <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+        </a>
+      </header>
 
-  <div class="card-content">
-    <p>Use this panel to filter documents based on their properties.</p>
-    <metadata-search :metadata="metadataKeys" @metadatasearch="metadataSearch"></metadata-search>
-  </div>
-</div>
+      <div class="card-content">
+        <p>Use this panel to filter documents based on their properties.</p>
+        <metadata-search :metadata="metadataKeys" @metadatasearch="metadataSearch"></metadata-search>
+      </div>
+    </div>
 {% endif %}
 {% endblock %}
 {% block footer %}

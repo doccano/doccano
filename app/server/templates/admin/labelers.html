@@ -31,11 +31,11 @@
           <tbody>
               <tr v-for="(user, index) in labelers" :key="index">
                   <td><a title="Click to view user details" @click="goToUser(user)">[[ user.id ]]</a></td>
-                  <td>[[ user.name ]]</td>
-                  <td>[[ user.last_date | parseDate ]]</td>
-                  <td>[[ user.count ]]</td>
-                  <td>[[ user.truth_agreement | toPercent ]]</td>
-                  <td>[[ usersAgreement[user.id] | toPercent ]]</td>
+                  <td><a href="mailto:{user.email}" title="{user.email}">[[ user.name ]]</a></td>
+                  <td>[[ user.last_annotation | parseDate ]]</td>
+                  <td>[[ user.num_annotations ]]</td>
+                  <td>[[ user.agreement_with_truth | toPercent ]]</td>
+                  <td>[[ user.average_kappa_agreement | toPercent ]]</td>
               </tr>
           </tbody>
       </table>
