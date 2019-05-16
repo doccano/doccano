@@ -13,7 +13,8 @@ const annotationMixin = {
       searchQuery: '',
       picked: 'all',
       annotationId: 100,
-      isActive: false,
+      isMetadataActive: false,
+      isAnnotationGuidelineActive: false,
     };
   },
 

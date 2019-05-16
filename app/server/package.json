@@ -17,11 +17,13 @@
     "axios": "^0.18.0",
     "chart.js": "^2.7.2",
     "highlight.js": "^9.12.0",
+    "lodash.isempty": "^4.4.0",
     "marked": "^0.3.19",
     "swiper": "^4.3.3",
     "vue": "^2.5.16",
     "vue-chartjs": "^3.4.0",
     "vue-debounce": "^1.1.0",
+    "vue-json-pretty": "^1.6.0",
     "vue-loader": "^15.2.4",
     "vue-shortkey": "^3.1.6"
   },

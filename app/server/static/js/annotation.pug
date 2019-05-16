@@ -69,16 +69,35 @@ div.columns(v-cloak="")
 
   div.column.is-7.is-offset-1.message.hero.is-fullheight#message-pane
 
-    div.modal(v-bind:class="{ 'is-active': isActive }")
+    div.modal(v-bind:class="{ 'is-active': isAnnotationGuidelineActive }")
       div.modal-background
       div.modal-card
         header.modal-card-head
           p.modal-card-title Annotation Guideline
-          button.delete(v-on:click="isActive = !isActive", aria-label="close")
+          button.delete(
+            v-on:click="isAnnotationGuidelineActive = !isAnnotationGuidelineActive"
+            aria-label="close"
+          )
         section.modal-card-body.modal-card-body-footer.content(
           v-html="compiledMarkdown"
           style="line-height: 150%"
         )
+
+    div.modal(v-bind:class="{ 'is-active': isMetadataActive }")
+      div.modal-background
+      div.modal-card
+        header.modal-card-head
+          p.modal-card-title Document Metadata
+          button.delete(
+            v-on:click="isMetadataActive = !isMetadataActive"
+            aria-label="close"
+          )
+        section.modal-card-body.modal-card-body-footer
+          vue-json-pretty(
+            v-bind:data="documentMetadata"
+            v-bind:show-double-quotes="false"
+            v-bind:show-line="false"
+          )
 
     div.columns.is-multiline.is-gapless.is-mobile.is-vertical-center
       div.column.is-3
@@ -87,15 +106,23 @@ div.columns(v-cloak="")
           v-bind:value="achievement"
           max="100"
         ) 30%
-      div.column.is-8
+      div.column.is-7
         span.ml10
           strong {{ total - remaining }}
         | /
         span {{ total }}
       div.column.is-1.has-text-right
-        a.button(v-on:click="isActive = !isActive")
+        a.button(v-on:click="isAnnotationGuidelineActive = !isAnnotationGuidelineActive")
           span.icon
             i.fas.fa-book
+      div.column.is-1.has-text-right
+        a.button(
+          v-on:click="isMetadataActive = !isMetadataActive && documentMetadata != null"
+          v-bind:disabled="documentMetadata == null"
+          v-bind:title="documentMetadata == null ? 'No document metadata available.' : null"
+        )
+          span.icon
+            i.fas.fa-box
 
     block annotation-area
 
