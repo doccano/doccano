@@ -17,6 +17,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db import connection
 
+from django.contrib.auth.forms import UserCreationForm
+
 from .resources import DocumentResource, DocumentAnnotationResource, LabelResource
 
 from .permissions import SuperUserMixin
@@ -50,7 +52,8 @@ class ProjectsView(LoginRequiredMixin, CreateView):
     template_name = 'projects.html'
 
 
-class UsersAdminView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+class UsersAdminView(SuperUserMixin, LoginRequiredMixin, CreateView):
+    form_class = UserCreationForm
     template_name = 'users.html'
 
 
@@ -80,12 +83,11 @@ class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
 
 class UserView(SuperUserMixin, LoginRequiredMixin, TemplateView):
-    template_name = 'admin/user.html'
+    template_name = 'user.html'
 
     def get_context_data(self, **kwargs):
         user = get_object_or_404(User, pk=self.kwargs['user_id'])
         context = super().get_context_data(**kwargs)
-        # context['docs_count'] = user.get_docs_count()
         return context
 
 class LabelersView(SuperUserMixin, LoginRequiredMixin, TemplateView):

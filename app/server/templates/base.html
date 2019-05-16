@@ -77,9 +77,9 @@
           <a class="navbar-item" href="{% url 'projects' %}">
             <span>Projects</span>
           </a>
-          <!--<a class="navbar-item" href="">
+          <a class="navbar-item" href="{% url 'users_admin' %}">
             <span>Users</span>
-          </a>-->
+          </a>
           {% endif %}
           {% if not user.is_authenticated %}
           <a class="navbar-item" href="{% url 'login' %}">

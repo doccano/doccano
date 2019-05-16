@@ -18,7 +18,9 @@ module.exports = {
         'upload': './static/js/upload.js',
         'navbar': './static/js/navbar.js',
         'settings': './static/js/settings.js',
-        'dataset': './static/js/dataset.js'
+        'dataset': './static/js/dataset.js',
+        'users': './static/js/users.js',
+        'user': './static/js/user.js'
     },
     output: {
         path: __dirname + '/static/bundle',

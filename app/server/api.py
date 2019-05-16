@@ -66,6 +66,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = self.get_object()
         return Response(project.get_progress(self.request.user))
 
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
+
 
 class LabelList(generics.ListCreateAPIView):
     queryset = Label.objects.all()

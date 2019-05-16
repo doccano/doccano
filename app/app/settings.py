@@ -113,6 +113,10 @@ SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY = os.getenv('OAUTH_AAD_KEY')
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET = os.getenv('OAUTH_AAD_SECRET')
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = os.getenv('OAUTH_AAD_TENANT')
 
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda u: "/users/%s/" % u.id,
+}
+
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 

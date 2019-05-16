@@ -2,7 +2,7 @@
 {% load static %}
 {% load widget_tweaks %}
 {% block content %}
-<div id="projects_root" v-cloak>
+<div id="users_root" v-cloak>
   <section class="hero project-image">
     <div class="container">
       <div class="columns">
@@ -30,7 +30,7 @@
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Create Project</p>
+        <p class="modal-card-title">Create User</p>
         <button class="delete" aria-label="close" @click="isActive=!isActive"></button>
       </header>
       <form method="post">
@@ -63,14 +63,14 @@
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Delete Project</p>
+        <p class="modal-card-title">Delete User</p>
         <button class="delete" aria-label="close" @click="isDelete=!isDelete"></button>
       </header>
       <section class="modal-card-body">
-        Are you sure you want to delete project?
+        Are you sure you want to delete user?
       </section>
       <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
-        <button class="button is-danger" @click="deleteProject()">Delete</button>
+        <button class="button is-danger" @click="deleteUser()">Delete</button>
         <button class="button" @click="isDelete=!isDelete">Cancel</button>
       </footer>
     </div>
@@ -83,50 +83,29 @@
       <div class="card events-card">
         <header class="card-header">
           <p class="card-header-title">
-            [[ items.length ]] Projects
+            [[ items.length ]] Users
           </p>
-          <div class="field card-header-icon">
-            <div class="control">
-              <div class="select">
-                <select v-model="selected">
-                  <option selected>All Project</option>
-                  <option>Text Classification</option>
-                  <option>Sequence Labeling</option>
-                  <option>Seq2seq</option>
-                </select>
-              </div>
-            </div>
-          </div>
         </header>
         <div class="card-table">
           <div class="content">
             <table class="table is-fullwidth">
               <tbody>
-                <tr v-for="project in selectedProjects">
+                <tr v-for="user in items">
                   <td class="pl15r">
-                    <div class="thumbnail-wrapper is-vertical">
-                      <img class="project-thumbnail" v-bind:src="project.image">
-                    </div>
                     <div class="dataset-item__main is-vertical">
                       <div class="dataset-item__main-title">
                         <div class="dataset-item__main-title-link dataset-item__link">
-                          <a v-bind:href="'/projects/' + project.id" class="has-text-black">[[ project.name ]]</a>
+                          <a v-bind:href="'/users/' + user.id" class="has-text-black">[[ user.username ]]</a>
                         </div>
                       </div>
                       <div class="dataset-item__main-subtitle">
-                        [[ project.description ]]
+                        [[ user.email ]]
                       </div>
-                      <div class="dataset-item__main-subtitle">
-                          Labeled: [[ project.progress.total - project.progress.remaining ]] / [[ project.progress.total ]]
-                      </div>
-                      <div class="dataset-item__main-info">
-                        <span class="dataset-item__main-update">updated <span>[[ getDaysAgo(project.updated_at) ]] days ago</span></span></div>
                     </div>
                   </td>
-                  <td class="is-vertical"><span class="tag is-normal">[[ project.project_type ]]</span></td>
                   {% if user.is_superuser %}
-                  <td class="is-vertical"><a v-bind:href="'/projects/' + project.id + '/docs'">Edit</a></td>
-                  <td class="is-vertical"><a class="has-text-danger" @click="setProject(project)">Delete</a></td>
+                  <td class="is-vertical"><a v-bind:href="'/users/' + user.id">Edit</a></td>
+                  <td class="is-vertical"><a class="has-text-danger" @click="setUser(user)">Delete</a></td>
                   {% endif %}
                 </tr>
               </tbody>
@@ -142,5 +121,5 @@
 </div>
 {% endblock %}
 {% block footer %}
-<script src="{% static 'bundle/projects.js' %}"></script>
+<script src="{% static 'bundle/users.js' %}"></script>
 {% endblock %}
