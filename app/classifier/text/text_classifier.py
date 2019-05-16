@@ -57,6 +57,10 @@ class TextClassifier(BaseClassifier):
         print('Reading input file...')
         df = pd.read_csv(input_filename, encoding='latin1')
         df = df[~pd.isnull(df['text'])]
+        if 'label_id' in df.columns:
+            df['label'] = df['label_id']
+        elif 'label' not in df.columns:
+            raise ValueError("no columns 'label' or 'label_id' exist in input file")
 
         print('Pre-processing text and extracting features...')
         self.set_preprocessor(pipeline)
@@ -93,12 +97,13 @@ class TextClassifier(BaseClassifier):
         X = self.pre_process(df_cpy, fit=False)
         prediction_df = self.get_prediction_df(X, y=df['label_id'])
 
+        prediction_df['document_id'] = df['document_id']
         prediction_df['user_id'] = user_id
-        prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)  # 'id': 'document_id'
+        prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)
         prediction_df['label_id'] = prediction_df['prediction']
 
         print('Saving output...')
-        prediction_df[['label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)  # 'document_id'
+        prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
         class_weights = pd.Series({term: weight for (term, weight) in self.important_features})
         project_id = 999
