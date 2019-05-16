@@ -91,6 +91,10 @@ class BaseClassifier:
             X = self.processing_pipeline.fit_transform(X)
         else:
             X = self.processing_pipeline.transform(X)
+
+        drop_columns = ['label', 'label_id', 'document_id']
+        ret_columns = set(X.columns).difference(drop_columns)
+        X = X[ret_columns]
         return X
 
     def fit(self, X, y):

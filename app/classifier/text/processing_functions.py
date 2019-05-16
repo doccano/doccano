@@ -21,20 +21,22 @@ def base_processing(X, col=None, **params):
         logger.warning('attempted to process non-existent column: %s' % col)
         return X, None
 
-    processed_text = X[col].str.strip().fillna('')
-    # remove non-english characters
-    processed_text = processed_text.apply(lambda x: re.sub("[^a-zA-Z]", " ", x))
-    # remove punctuation marks
-    processed_text = processed_text.apply(lambda x: re.sub("\.,\?\!", "", x))
-    processed_text = processed_text.apply(lambda x: re.sub("[ ]+", " ", x))
-    # lowercase
-    processed_text = processed_text.str.lower().str.strip()
+    def process_text(text):
+        # remove non-english characters
+        processed_text = re.sub("[^a-zA-Z]", " ", text)
+        # remove punctuation marks
+        processed_text = re.sub("\.,\?\!", "", processed_text)
+        processed_text = re.sub("[ ]+", " ", processed_text)
+        # lowercase
+        processed_text = processed_text.lower().strip()
+        return processed_text
+
     if 'new_col' in params:
         new_col = params['new_col']
     else:
         new_col = 'processed_text'
 
-    X[new_col] = processed_text
+    X[new_col] = X[col].apply(process_text)
     transform_params = {'col': col, 'new_col': new_col}
     return X, transform_params
 
@@ -69,7 +71,7 @@ def get_bag_of_words(X, fit=True, col=None, vectorizer=None, **params):
         word_count_matrix = vectorizer.transform(texts)
 
     bag_of_words_feature_names = [col + '_w_' + feature_name for feature_name in vectorizer.get_feature_names()]
-    bag_of_word_features_df = pd.DataFrame(word_count_matrix.todense(), columns=bag_of_words_feature_names)
+    bag_of_word_features_df = pd.DataFrame(word_count_matrix.todense(), columns=bag_of_words_feature_names, index=X.index.values)
 
     X = pd.merge(X, bag_of_word_features_df, right_index=True, left_index=True)
     transform_params = {'col': col, 'vectorizer': vectorizer}
