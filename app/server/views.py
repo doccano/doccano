@@ -56,6 +56,12 @@ class UsersAdminView(SuperUserMixin, LoginRequiredMixin, CreateView):
     form_class = UserCreationForm
     template_name = 'users.html'
 
+    def form_invalid(self, form):
+        print('invalid', form.errors)
+        response = super().form_invalid(form)
+        return response
+
+
 
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
     template_name = 'admin/dataset.html'
