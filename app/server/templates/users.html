@@ -39,14 +39,18 @@
           {% for hidden_field in form.hidden_fields %}
           {{ hidden_field }}
           {% endfor %}
+          <input type="hidden" ref="formError" name="variable" value="{% if form.errors %}true{% else %}false{% endif %}">
           {% for field in form.visible_fields %}
           <div class="field">
             {{ field.label_tag }}
             <div class="control">
               {% render_field field class="input select-height" %}
             </div>
+            {% for error in field.errors %}
+              <p class="help is-danger">{{ error }}</p>
+            {% endfor %}
             {% if field.help_text %}
-            <small class="form-text text-muted">{{ field.help_text }}</small>
+              <small class="form-text text-muted">{{ field.help_text }}</small>
             {% endif %}
           </div>
           {% endfor %}
