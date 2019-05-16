@@ -1,0 +1,13 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: docker build --target=builder .
+  displayName: 'Run tests'
+
+- script: DOCKER_PASSWORD="$(docker_password)" tools/cd.sh "azdo-$(Build.BuildId)"
+  displayName: 'Push docker image'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['docker_password'], ''))
