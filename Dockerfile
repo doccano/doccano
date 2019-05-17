@@ -24,6 +24,9 @@ COPY . /doccano
 RUN cd /doccano \
  && tools/ci.sh
 
+RUN cd /doccano \
+ && python app/manage.py collectstatic --noinput
+
 RUN rm -rf /doccano/app/server/node_modules/
 
 FROM python:${PYTHON_VERSION}-slim AS runtime
