@@ -27,4 +27,5 @@ social-auth-app-django==3.1.0
 social-auth-core[azuread]==3.0.0
 text-unidecode==1.2
 tornado==5.0.2
+unittest-xml-reporting==2.5.1
 whitenoise[brotli]==4.1.2

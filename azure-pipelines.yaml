@@ -5,8 +5,20 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: docker build --target=builder .
+- script: docker build --tag=doccano --target=builder .
   displayName: 'Run tests'
+
+- script: docker run doccano tar Ccf /doccano/app - junitxml | tar Cxf "$(Build.ArtifactStagingDirectory)" -
+  displayName: 'Export test results'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'TEST-*.xml'
+    searchFolder: '$(Build.ArtifactStagingDirectory)/junitxml'
+    mergeTestResults: true
+    testRunTitle: 'server.tests'
+  displayName: 'Publish test results'
 
 - script: DOCKER_PASSWORD="$(docker_password)" tools/cd.sh "azdo-$(Build.BuildId)"
   displayName: 'Push docker image'

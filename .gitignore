@@ -74,6 +74,7 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+junitxml/
 
 # Translations
 *.mo
