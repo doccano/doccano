@@ -90,6 +90,27 @@
       "metadata": {
         "description": "The Docker image to deploy."
       }
+    },
+    "dockerRegistry": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The registry of the Docker image."
+      }
+    },
+    "dockerRegistryUserName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The user name for the Docker registry."
+      }
+    },
+    "dockerRegistryPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The password for the Docker registry."
+      }
     }
   },
   "variables": {
@@ -102,7 +123,12 @@
     "databaseServerName": "[concat(parameters('appName'),'-state')]",
     "setupScriptName": "[concat(parameters('appName'),'-setup')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
-    "analyticsName": "[concat(parameters('appName'),'-analytics')]"
+    "analyticsName": "[concat(parameters('appName'),'-analytics')]",
+    "dockerRegistryCredential": {
+      "password": "[parameters('dockerRegistryPassword')]",
+      "username": "[parameters('dockerRegistryUserName')]",
+      "server": "[parameters('dockerRegistry')]"
+    }
   },
   "resources": [
     {
@@ -182,6 +208,7 @@
       "apiVersion": "2018-10-01",
       "location": "[variables('location')]",
       "properties": {
+        "imageRegistryCredentials": "[if(equals(parameters('dockerRegistry'), ''), json('null'), array(variables('dockerRegistryCredential')))]",
         "containers": [
           {
             "name": "createadmin",
@@ -243,6 +270,18 @@
             {
               "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
               "value": "false"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_URL",
+              "value": "[parameters('dockerRegistry')]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+              "value": "[parameters('dockerRegistryUserName')]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+              "value": "[parameters('dockerRegistryPassword')]"
             },
             {
               "name": "AZURE_APPINSIGHTS_IKEY",
