@@ -94,7 +94,13 @@ TEMPLATES = [
 ]
 
 STATICFILES_DIRS = [
-    path.join(BASE_DIR, 'server/static'),
+    static_path
+    for static_path in (
+        path.join(BASE_DIR, 'server', 'static', 'bundle'),
+        path.join(BASE_DIR, 'server', 'static', 'css'),
+        path.join(BASE_DIR, 'server', 'static', 'images'),
+    )
+    if path.isdir(static_path)
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
