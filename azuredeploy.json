@@ -105,6 +105,7 @@
     "databaseConnectionString": "[concat('pgsql://', variables('databaseUserCredentials'), '@', variables('databaseFqdn'), '/', parameters('databaseName'))]",
     "setupScriptName": "[concat(parameters('appName'),'-setup')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
+    "appFqdn": "[concat(parameters('appName'),'.azurewebsites.net')]",
     "analyticsName": "[concat(parameters('appName'),'-analytics')]"
   },
   "resources": [
@@ -274,6 +275,10 @@
     }
   ],
   "outputs": {
+    "appServer": {
+      "type": "string",
+      "value": "[concat(variables('appFqdn'))]"
+    },
     "databaseServer": {
       "type": "string",
       "value": "[variables('databaseFqdn')]"
