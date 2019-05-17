@@ -274,9 +274,9 @@
     }
   ],
   "outputs": {
-      "databaseServer": {
-          "type": "string",
-          "value": "[variables('databaseFqdn')]"
-        }
+    "databaseServer": {
+      "type": "string",
+      "value": "[variables('databaseFqdn')]"
+    }
   }
 }
