@@ -32,9 +32,7 @@ const vm = new Vue({
       bulmaToast.toast({
         message: 'Processing...',
         type: 'is-info',
-        position: 'top-center',
-        duration: 6000,
-        animate: { in: 'fadeIn', out: 'fadeOut' }
+        position: 'top-center'
       });
       axios.get(`${baseUrl}/api/projects/${projectId}/runmodel/`).then((r) => {
         this.modelProcessing = false;

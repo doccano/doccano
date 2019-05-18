@@ -142,16 +142,6 @@ class UserList(generics.ListCreateAPIView):
 class LabelersListAPI(APIView):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
-    def render_agreement_matrix(self):
-        return 'data:image/gif;base64,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'
-    
-    def get_truth_agreement(self):
-        cursor = connection.cursor()
-
-        return 42
-
-    def get_labelers_agreement(self):
-        return 42
 
     def get(self, request, *args, **kwargs):
         # def get_annotations
@@ -231,6 +221,7 @@ class LabelersListAPI(APIView):
 
 
         annotations_df = get_annotations(cursor, project_id)
+        annotations_df.to_csv(r'C:\Users\omri.allouche\Downloads\labeler_agreement.csv')
         annotations_df = annotations_df.drop_duplicates(['document_id', 'user_id'])
         annotations_df['is_correct'] = [int(x) for x in annotations_df['label_id']==annotations_df['true_label_id']]
         user_truth_agreement = annotations_df[ pd.notnull(annotations_df['true_label_id']) ].groupby('user_id')['is_correct'].agg(['count', 'mean'])
@@ -246,7 +237,9 @@ class LabelersListAPI(APIView):
         users['agreement_with_truth'] = user_truth_agreement['mean']
         users = users.reset_index()
 
+        num_truth_annotations = annotations_df['true_label_id'].count()
         response = {
+            'num_truth_annotations': num_truth_annotations,
             'users': users.fillna(0).T.to_dict(),
             'document_agreement': documents_agreement_df.fillna(0).T.to_dict(),
             'matrix': plot_agreement_matrix(users_agreement_kappa),
@@ -285,8 +278,9 @@ class RunModelAPI(APIView):
             server_documentannotation.label_id
             FROM
             server_document
-            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id AND server_documentannotation.user_id = %s
-            WHERE server_document.project_id = %s''' % (str(request.user.id), str(self.kwargs['project_id']))
+            LEFT JOIN server_documentannotation ON server_documentannotation.document_id = server_document.id 
+              -- AND server_documentannotation.user_id = {user_id}
+            WHERE server_document.project_id = {project_id}'''.format(user_id=request.user.id, project_id=project_id)
 
         doc_annotations_gold_query = '''SELECT
             server_document.id,
@@ -295,17 +289,21 @@ class RunModelAPI(APIView):
             FROM
             server_document
             LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_document.id
-            WHERE server_document.project_id =''' + str(self.kwargs['project_id'])
+            WHERE server_document.project_id = {project_id}'''.format(project_id=project_id)
 
         if not os.path.isdir(ML_FOLDER):
             os.makedirs(ML_FOLDER)
-        with open(os.path.join(ML_FOLDER, INPUT_FILE), 'w', encoding='utf-8', newline='') as outfile:
-            wr = csv.writer(outfile, quoting=csv.QUOTE_ALL)
-            wr.writerow(['document_id', 'text', 'label_id'])
-            cursor.execute(doc_annotations_query)
-            for row in cursor.fetchall():
-                label_id = None
-                wr.writerow([row[0], row[1], row[2]])
+
+        cursor.execute(doc_annotations_gold_query)
+        gold_annotations = cursor.fetchall()
+        cursor.execute(doc_annotations_query)
+        user_annotations = cursor.fetchall()
+
+        annotations = gold_annotations + user_annotations
+
+        df = pd.DataFrame(annotations, columns=['document_id', 'text', 'label_id'])
+        df = df.drop_duplicates(['document_id'])
+        df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE), encoding='utf-8')
 
         result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=0, project_id=project_id)
 
@@ -349,30 +347,40 @@ class ProjectStatsAPI(APIView):
 class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
     project_id = 999 # TODO: Change this to the actual current project
     pagination_class = None
-    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+    permission_classes = (IsAuthenticated, IsProjectUser)
     class_weights = None
     filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
     has_weights = False
-    if (os.path.isfile(filename)):
-        class_weights = pd.read_csv(os.path.abspath(filename), header=None,
-                    names=['term', 'weight']).set_index('term')['weight']
-        has_weights = True
-        
+
+    def get_class_weights(self):
+        if not self.has_weights:
+            self.set_class_weights()
+        return self.class_weights
+
+    def set_class_weights(self):
+        if (os.path.isfile(self.filename)):
+            data = pd.read_csv(os.path.abspath(self.filename), header=None, names=['term', 'weight'])
+            data['term'] = data['term'].str.replace('processed_text_w_', '')
+            self.class_weights = data.set_index('term')['weight']
+            self.has_weights = True
+
     def get(self, request, *args, **kwargs):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         doc_text_splited = d.text.split(' ')
         format_str_positive = '<span class="has-background-success">{}</span>'
         format_str_negative = '<span class="has-background-danger">{}</span>'
         text = []
-        if self.has_weights:
+        class_weights = self.get_class_weights()
+        if class_weights is not None:
             for w in doc_text_splited:
-                weight = self.class_weights.get(w.lower().replace(',','').replace('.',''), 0)
+                weight = class_weights.get(w.lower().replace(',','').replace('.',''), 0)
                 if weight < -0.2:
                     text.append(format_str_negative.format(w))
                 elif weight > 0.2:
                     text.append(format_str_positive.format(w))
                 else:
                     text.append(w)
+
         response = {'document': ' '.join(text)}
         # doc_text_splited = [w if np.abs(self.class_weights.get(w,0))<0.2 else format_str.format(w) for w in doc_text_splited]
         # doc_text_splited[0] = '<span class="has-background-primary">' + doc_text_splited[0] + '</span>'
@@ -465,7 +473,8 @@ class DocumentList(generics.ListCreateAPIView):
 
         if self.request.query_params.get('is_checked'):
             is_null = self.request.query_params.get('is_checked') == 'true'
-            queryset = project.get_documents(is_null).distinct()
+            print(int(is_null))
+            queryset = project.get_documents(is_null=is_null, user=self.request.user.id).distinct()
 
         if (project.use_machine_model_sort):
             queryset = queryset.order_by('doc_mlm_annotations__prob').filter(project=self.kwargs['project_id']).exclude(doc_mlm_annotations__prob__isnull=True)

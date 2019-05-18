@@ -28,6 +28,7 @@ const vm = new Vue({
   },
   created() {
     HTTP.get('labelers').then((response) => {
+      this.num_truth_annotations = response.data.num_truth_annotations;
       this.labelers = response.data.users;
       this.matrix = response.data.matrix;
       this.usersAgreement = response.data.users_agreement

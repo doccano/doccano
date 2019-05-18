@@ -116,7 +116,7 @@ class TextClassifier(BaseClassifier):
 
 def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow'):
     # rf = RandomForestClassifier(verbose=True, class_weight='balanced')
-    lr = LogisticRegression(verbose=True, class_weight='balanced')
+    lr = LogisticRegression(verbose=True, class_weight='balanced', random_state=0, penalty='l1', C=10000)
     clf = TextClassifier(model=lr)
     # pipeline functions are applied sequentially by order of appearance
     pipeline = [('base processing', {'col': 'text', 'new_col': 'processed_text'}),
