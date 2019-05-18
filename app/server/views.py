@@ -25,6 +25,7 @@ from .permissions import SuperUserMixin
 from .forms import ProjectForm
 from .models import Document, Project, DocumentAnnotation, Label, DocumentGoldAnnotation, User
 from app import settings
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -37,6 +38,11 @@ class ProjectView(LoginRequiredMixin, TemplateView):
 
     def get_template_names(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        if not self.request.user.is_superuser:
+            try:
+                user = project.users.get(id=self.request.user.id)
+            except ObjectDoesNotExist:
+                return '404.html'
         return [project.get_template_name()]
 
     def get_context_data(self, **kwargs):
