@@ -64,20 +64,15 @@
         </a>
       </header>
       <div class="card-content">
-        <table class="table">
-          <thead>
-            <tr>
-              <td>Term</td>
-              <td>Weight</td>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(term, index) in classWeightsData" :key="index">
-              <td>[[ term.term ]]</td>
-              <td>[[ term.weight | toFixed(3) ]]</td>
-            </tr>
-          </tbody>
-        </table>
+        <vue-good-table
+        :columns="classWeightsColumns"
+        :rows="classWeightsData"
+        :search-options="{
+          enabled: true,
+          trigger: 'enter'
+        }"
+        >
+        </vue-good-table>
       </div>
     </div>
   </div>
