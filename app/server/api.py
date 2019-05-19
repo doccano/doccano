@@ -365,7 +365,6 @@ class ClassWeightsApi(APIView):
     def get(self, request, *args, **kwargs):
         self.filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=self.kwargs['project_id'])
         weights = self.get_class_weights()
-        print(weights)
         return Response({'weights': weights.to_dict()})
 
 
