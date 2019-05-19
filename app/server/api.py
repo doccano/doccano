@@ -361,7 +361,7 @@ class ClassWeightsApi(APIView):
     def get(self, request, *args, **kwargs):
         weights = get_class_weights(self.kwargs['project_id'])
         resp = None
-        if (weights is not is None):
+        if (weights is not None):
             resp = weights.to_dict()
         return Response({'weights': resp})
 
