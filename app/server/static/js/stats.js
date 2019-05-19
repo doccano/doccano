@@ -2,6 +2,10 @@ import { HorizontalBar, mixins, Doughnut } from 'vue-chartjs';
 import Vue from 'vue';
 import HTTP from './http';
 
+import { toFixed } from './filters'
+
+Vue.filter('toFixed', toFixed)
+
 const { reactiveProp, reactiveData } = mixins;
 
 Vue.component('line-chart', {
@@ -57,6 +61,7 @@ const vm = new Vue({
     labelData: null,
     userData: null,
     progressData: null,
+    classWeightsData: []
   },
 
   methods: {
@@ -92,6 +97,28 @@ const vm = new Vue({
           'Incomplete',
         ],
       };
+    });
+    HTTP.get('class_weights').then((response) => {
+      const weightsData = response.data.weights
+      const threshold = 1
+      for (let key in weightsData) {
+        if (weightsData[key] < -threshold || weightsData[key] > threshold) {
+          this.classWeightsData.push({
+            term: key,
+            weight: weightsData[key]
+          })
+        }
+      }
+
+      this.classWeightsData = this.classWeightsData.sort((a, b) => {
+        if (a.weight > b.weight) {
+          return -1
+        } else if (a.weight < b.weight) {
+          return 1
+        }
+
+        return 0
+      })
     });
   },
 });

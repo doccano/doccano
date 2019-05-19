@@ -64,6 +64,20 @@
         </a>
       </header>
       <div class="card-content">
+        <table class="table">
+          <thead>
+            <tr>
+              <td>Term</td>
+              <td>Weight</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(term, index) in classWeightsData" :key="index">
+              <td>[[ term.term ]]</td>
+              <td>[[ term.weight | toFixed(3) ]]</td>
+            </tr>
+          </tbody>
+        </table>
         <!-- Show the top words here, from DocumentExplainAPI.get_class_weights() -->
       </div>
     </div>
