@@ -1,49 +1,74 @@
 import Vue from 'vue';
 import HTTP from './http';
 
-import { toPercent, parseDate } from './filters'
+import { VueGoodTable } from 'vue-good-table';
+
+import { toPercent } from './filters'
+
+import 'vue-good-table/dist/vue-good-table.css'
 
 Vue.filter('toPercent', toPercent)
-Vue.filter('parseDate', parseDate)
 
-Vue.component('th-sortable', {
-  props: ['label', 'field', 'value'],
-  template: `
-  <th @click="toggleSort">
-    {{ label }}
-    <span class="icon" v-if="value.field == field && value.order == 'asc'">
-      <i class="fas fa-sort-up" aria-hidden="true"></i>
-    </span>
-    <span class="icon" v-if="value.field == field && value.order == 'desc'">
-      <i class="fas fa-sort-down" aria-hidden="true"></i>
-    </span>
-  </th>`,
-  data() {
-    return {
-      labels: []
-    };
-  },
-  methods: {
-    toggleSort() {
-      if (this.value && this.value.field === this.field) {
-        if (this.value.order === 'asc') {
-          this.$emit('input', { field: this.field, order: 'desc' })
-        } else {
-          this.$emit('input', {})
-        }
-      } else {
-        this.$emit('input', { field: this.field, order: 'asc' })
-      }
-    }
-  }
-});
+const addZero = (str) => {
+  return ('0'+str).substr(-2)
+}
+
+const parseDate = (date) => {
+  const dateParsed = new Date(date)
+  return dateParsed.getFullYear() + "/" + (dateParsed.getMonth() + 1) + "/" + dateParsed.getDate() + " " + addZero(dateParsed.getHours()) + ":" + addZero(dateParsed.getMinutes()) + ":" + addZero(dateParsed.getSeconds()) 
+}
 
 const vm = new Vue({
   el: '#mail-app',
   delimiters: ['[[', ']]'],
   data: {
     tableRows: [],
-    sort: {}
+    sort: {},
+    tableColumns: [
+      {
+        label: 'Document Id',
+        field: 'documentId',
+        type: 'number'
+      },
+      {
+        label: 'Labelers Count',
+        field: 'labelersCount',
+        type: 'number',
+      },
+      {
+        label: 'Agreements Percent',
+        field: 'agreementsPercent',
+        type: 'percentage'
+      },
+      {
+        label: 'Top Label',
+        field: 'topLabel'
+      },
+      {
+        label: 'Ground Truth',
+        field: 'groundTruth'
+      },
+      {
+        label: 'Model Confidence',
+        field: 'modelConfidence',
+        type: 'percentage'
+      },
+      {
+        label: 'Last annotation',
+        field: 'lastAnnotationDate',
+        type: 'date',
+        dateInputFormat: 'YYYY/M/D HH:mm:ss',
+        dateOutputFormat: 'YYYY/M/D HH:mm:ss'
+      },
+      {
+        label: 'Snippet',
+        field: 'snippet'
+      }
+    ]
+  },
+
+  components: {
+    VueGoodTable
   },
 
   computed: {
@@ -81,7 +106,7 @@ const vm = new Vue({
         row.topLabel = this.labelNameById(dataframe.top_label[i]);
         row.groundTruth = this.labelNameById(dataframe.ground_truth[i]);
         row.modelConfidence = dataframe.model_confidence[i];
-        row.lastAnnotationDate = dataframe.last_annotation_date[i];
+        row.lastAnnotationDate = parseDate(dataframe.last_annotation_date[i]);
         row.docText = dataframe.snippet[i];
         row.snippet = dataframe.snippet[i];
         this.tableRows.push(row)

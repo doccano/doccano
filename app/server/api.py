@@ -305,7 +305,7 @@ class RunModelAPI(APIView):
         df = df.drop_duplicates(['document_id'])
         df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE), encoding='utf-8')
 
-        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=0, project_id=project_id)
+        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
 
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
@@ -344,8 +344,32 @@ class ProjectStatsAPI(APIView):
 
         return Response(response)
 
+class ClassWeightsApi(APIView):
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser)
+    has_weights = False
+    class_weights = None
+
+    def get_class_weights(self):
+        if not self.has_weights:
+            self.set_class_weights()
+        return self.class_weights
+
+    def set_class_weights(self):
+        if (os.path.isfile(self.filename)):
+            data = pd.read_csv(os.path.abspath(self.filename), header=None, names=['term', 'weight'])
+            data['term'] = data['term'].str.replace('processed_text_w_', '')
+            self.class_weights = data.set_index('term')['weight']
+            self.has_weights = True
+
+    def get(self, request, *args, **kwargs):
+        self.filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=self.kwargs['project_id'])
+        weights = self.get_class_weights()
+        return Response({'weights': weights.to_dict()})
+
+
 class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
-    project_id = 999 # TODO: Change this to the actual current project
+    project_id = 0
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser)
     class_weights = None
@@ -366,6 +390,8 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
 
     def get(self, request, *args, **kwargs):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        self.project_id = self.kwargs['project_id']
+        self.filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=self.project_id)
         doc_text_splited = d.text.split(' ')
         format_str_positive = '<span class="has-background-success">{}</span>'
         format_str_negative = '<span class="has-background-danger">{}</span>'

@@ -106,7 +106,6 @@ class TextClassifier(BaseClassifier):
         prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
         class_weights = pd.Series({term: weight for (term, weight) in self.important_features})
-        project_id = 999
         class_weights_filename = os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
         class_weights.to_csv(class_weights_filename, header=False)
 

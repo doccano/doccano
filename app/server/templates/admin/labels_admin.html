@@ -18,32 +18,31 @@
   </header>
   <div class="card-content">
       <p>The table below diplays the [[filteredTableRows.length]] documents that were annotated. Click on column names to sort.</p>
-      <table class="table is-striped is-narrow is-hoverable">
-          <thead>
-              <tr>
-                  <th is="th-sortable" label="Document ID" v-model="sort" field="documentId"></th>
-                  <th is="th-sortable" label="Number of labelers" v-model="sort" field="labelersCount"></th>
-                  <th is="th-sortable" label="% Agreement" v-model="sort" field="agreementsPercent"></th>
-                  <th is="th-sortable" label="Top label" v-model="sort" field="topLabel"></th>
-                  <th is="th-sortable" label="Ground truth" v-model="sort" field="groundTruth"></th>
-                  <th is="th-sortable" label="% Model confidence" v-model="sort" field="modelConfidence"></th>
-                  <th is="th-sortable" label="Date of last annotation" v-model="sort" field="lastAnnotationDate"></th>
-                  <th is="th-sortable" label="Document text" v-model="sort" field="docText"></th>
-              </tr>
-          </thead>
-          <tbody>
-              <tr v-for="(row, index) in filteredTableRows" :key="index" :class="{ 'has-background-danger' : row.groundTruth && row.topLabel != row.groundTruth}">
-                  <td><a :href="getUrl('{% url 'annotation' view.kwargs.project_id %}', row.documentId)">[[ row.documentId ]]</a></td>
-                  <td>[[ row.labelersCount ]]</td>
-                  <td>[[ row.agreementsPercent | toPercent ]]</td>
-                  <td>[[ row.topLabel ]]</td>
-                  <td>[[ row.groundTruth ]]</td>
-                  <td>[[ row.modelConfidence | toPercent ]]</td>
-                  <td>[[ row.lastAnnotationDate | parseDate ]]</td>
-                  <td>[[ row.snippet ]]</td>
-              </tr>
-          </tbody>
-      </table>
+      <vue-good-table
+        :columns="tableColumns"
+        :rows="tableRows"
+        :search-options="{
+          enabled: true,
+          trigger: 'enter'
+        }"
+        :pagination-options="{
+          enabled: true,
+          mode: 'pages'
+        }">
+
+        <template slot="table-row" slot-scope="props">
+            <span v-if="(props.column.field == 'topLabel' || props.column.field == 'groundTruth') && props.row.topLabel != props.row.groundTruth && props.row.groundTruth
+            ">
+              <span style="font-weight: bold; color: red;" v-if="props.column.field == 'topLabel'">[[ props.row.topLabel ]]</span> 
+              <span style="font-weight: bold; color: red;" v-else>[[ props.row.groundTruth ]]</span>
+            </span>
+            <span v-else>
+              [[ props.formattedRow[props.column.field] ]]
+            </span>
+          </template>
+
+        </vue-good-table>
+
   </div>
 </div>
 {% endblock %}
