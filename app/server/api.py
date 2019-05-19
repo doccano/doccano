@@ -344,59 +344,41 @@ class ProjectStatsAPI(APIView):
 
         return Response(response)
 
+
+def get_class_weights(project_id):
+    filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
+    if (os.path.isfile(filename)):
+        data = pd.read_csv(os.path.abspath(filename), header=None, names=['term', 'weight'])
+        data['term'] = data['term'].str.replace('processed_text_w_', '')
+        class_weights = data.set_index('term')['weight']
+        return class_weights
+    return None
+
 class ClassWeightsApi(APIView):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser)
-    has_weights = False
-    class_weights = None
-
-    def get_class_weights(self):
-        if not self.has_weights:
-            self.set_class_weights()
-        return self.class_weights
-
-    def set_class_weights(self):
-        if (os.path.isfile(self.filename)):
-            data = pd.read_csv(os.path.abspath(self.filename), header=None, names=['term', 'weight'])
-            data['term'] = data['term'].str.replace('processed_text_w_', '')
-            self.class_weights = data.set_index('term')['weight']
-            self.has_weights = True
 
     def get(self, request, *args, **kwargs):
-        self.filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=self.kwargs['project_id'])
-        weights = self.get_class_weights()
-        return Response({'weights': weights.to_dict()})
+        weights = get_class_weights(self.kwargs['project_id'])
+        resp = None
+        if (weights is not is None):
+            resp = weights.to_dict()
+        return Response({'weights': resp})
 
 
 class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
     project_id = 0
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser)
-    class_weights = None
-    filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
-    has_weights = False
-
-    def get_class_weights(self):
-        if not self.has_weights:
-            self.set_class_weights()
-        return self.class_weights
-
-    def set_class_weights(self):
-        if (os.path.isfile(self.filename)):
-            data = pd.read_csv(os.path.abspath(self.filename), header=None, names=['term', 'weight'])
-            data['term'] = data['term'].str.replace('processed_text_w_', '')
-            self.class_weights = data.set_index('term')['weight']
-            self.has_weights = True
 
     def get(self, request, *args, **kwargs):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         self.project_id = self.kwargs['project_id']
-        self.filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=self.project_id)
         doc_text_splited = d.text.split(' ')
         format_str_positive = '<span class="has-background-success">{}</span>'
         format_str_negative = '<span class="has-background-danger">{}</span>'
         text = []
-        class_weights = self.get_class_weights()
+        class_weights = get_class_weights(self.project_id)
         if class_weights is not None:
             for w in doc_text_splited:
                 weight = class_weights.get(w.lower().replace(',','').replace('.',''), 0)
@@ -408,9 +390,6 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
                     text.append(w)
 
         response = {'document': ' '.join(text)}
-        # doc_text_splited = [w if np.abs(self.class_weights.get(w,0))<0.2 else format_str.format(w) for w in doc_text_splited]
-        # doc_text_splited[0] = '<span class="has-background-primary">' + doc_text_splited[0] + '</span>'
-        # response = {'document': ' '.join(doc_text_splited)}
         return Response(response)
 
 
