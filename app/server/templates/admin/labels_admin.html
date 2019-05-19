@@ -32,7 +32,7 @@
               </tr>
           </thead>
           <tbody>
-              <tr v-for="(row, index) in filteredTableRows" :key="index">
+              <tr v-for="(row, index) in filteredTableRows" :key="index" :class="{ 'has-background-danger' : row.groundTruth && row.topLabel != row.groundTruth}">
                   <td><a :href="getUrl('{% url 'annotation' view.kwargs.project_id %}', row.documentId)">[[ row.documentId ]]</a></td>
                   <td>[[ row.labelersCount ]]</td>
                   <td>[[ row.agreementsPercent | toPercent ]]</td>
