@@ -46,8 +46,13 @@ def create_kappa_comparison_df(labelers_df, filter_double_score=False):
     comparison_df = pd.DataFrame(index=col_list,columns=col_list)
     for name1 in col_list:
         for name2 in col_list:
-            set1 = labelers_df[name1].astype('str')
-            set2 = labelers_df[name2].astype('str')
+            if name1==name2:
+                comparison_df.loc[name1, name2] = 1
+                continue
+
+            temp_df = labelers_df[[name1, name2]].dropna(axis='index')
+            set1 = temp_df.loc[:,name1]
+            set2 = temp_df.loc[:,name2]
             score = cohen_kappa_score(set1, set2)
             comparison_df.loc[name1, name2] = score
             comparison_df.loc[name2, name1] = score
@@ -57,7 +62,7 @@ def create_kappa_comparison_df(labelers_df, filter_double_score=False):
     return comparison_df.astype('float64')
 
 
-def rank_labelers(comparison_df):
+def compute_average_agreement_per_labeler(comparison_df):
     '''
     :param comparison_df: a cohen kappa distance matrix of the labelers
     :return: a rank list of labelers mean kappa cohen distance from the rest of the labelers
@@ -85,8 +90,10 @@ def calc_agreement(labelers_df, y):
     '''
     labeler_cols = [c for c in labelers_df.columns if c!=y]
     def calc_agreement_row(x):
-        values = x.loc[labeler_cols]
         true_y = x.loc[y]
+        if pd.isnull(true_y):
+            return None
+        values = [v for v in x.loc[labeler_cols] if pd.notnull(v)]
         return (values==true_y).mean()
     return labelers_df.apply(calc_agreement_row, axis=1)
 
@@ -96,7 +103,7 @@ def calc_entropy(labelers_df):
     :param labelers_df: a df in which each column is a labeler and each row a sample
     :return: a pd.Series of the entropy score of each samples
     '''
-    classes = np.unique(labelers_df)
+    classes = [v for v in np.unique(labelers_df) if pd.notnull(v)]
     return labelers_df.apply(lambda x: sp.stats.entropy([list(x).count(c) for c in classes]), axis=1)
 
 
@@ -107,9 +114,9 @@ def add_agreement_columns(labelers_df,y=None):
     :return: the labelers_df with 3 or 4 new columns
     '''
     df_copy = labelers_df.copy()
-    cols = df_copy.columns
     if y != None:
-        df_copy['true_agreement_prop'] = calc_agreement(df_copy[cols], y)
+        df_copy['true_agreement_prop'] = calc_agreement(df_copy, y)
+    cols = [c for c in df_copy.columns if isinstance(c, int)]
     df_copy['most_common'] = find_most_common_labeling(df_copy[cols])
     df_copy['most_common_agreement_prop'] = calc_agreement(df_copy[list(cols) + ['most_common']], 'most_common')
     df_copy['entropy'] = calc_entropy(df_copy[cols])
@@ -200,6 +207,16 @@ def train_labelers_based_model(labelers_df, y):
 
 
 if __name__ == '__main__':
-    df = pd.read_csv(r'C:\Users\omri.allouche\Downloads\labeler_agreement.csv')
-    pivot_table = df.pivot(index='document_id', columns='user_id', values='label_id')
-    create_kappa_comparison_df(pivot_table)
+    annotations_df = pd.read_csv(r'C:\Users\omri.allouche\Downloads\labeler_agreement.csv')
+    annotations_df = annotations_df.drop_duplicates(['document_id', 'user_id'])
+    annotations_df['is_correct'] = [int(x) for x in annotations_df['label_id'] == annotations_df['true_label_id']]
+    user_truth_agreement = annotations_df[pd.notnull(annotations_df['true_label_id'])].groupby('user_id')[
+        'is_correct'].agg(['count', 'mean'])
+
+    document_annotations_by_labeler = annotations_df.pivot(index='document_id', columns='user_id', values='label_id')
+    document_annotations_by_labeler = pd.merge(left=document_annotations_by_labeler,
+                                               right=annotations_df.set_index('document_id')[['true_label_id']],
+                                               left_index=True, right_index=True)
+    documents_agreement_df = add_agreement_columns(document_annotations_by_labeler, 'true_label_id')
+    users_agreement_kappa = create_kappa_comparison_df(document_annotations_by_labeler)
+    average_kappa_agreement_per_labeler = compute_average_agreement_per_labeler(users_agreement_kappa)

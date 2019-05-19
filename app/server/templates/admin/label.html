@@ -20,7 +20,7 @@
         <div class="control" v-for="label in labels">
           <div class="tags has-addons" @click="setLabel(label)" style="cursor:pointer;">
               <span class="tag is-medium" v-bind:style="{ color: label.text_color, 'background-color': label.background_color }">
-                <button class="delete is-small tweaked-margin" @click.stop.prevent="removeLabel(label)"></button>
+                <button class="delete is-small tweaked-margin" @click.stop.prevent="removeLabel(label)" title="Delete label"></button>
                 [[ label.text ]]
               </span>
               <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>

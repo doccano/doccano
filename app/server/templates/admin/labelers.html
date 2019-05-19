@@ -17,7 +17,10 @@
   </header>
 
   <div class="card-content">
-      <table class="table">
+      <p>
+          The dataset currently has [[num_truth_annotations]] annotations uploaded as ground truth.
+      </p>
+      <table class="table is-striped is-hoverable">
           <thead>
               <tr>
                   <th>User id</th>
@@ -31,15 +34,21 @@
           <tbody>
               <tr v-for="(user, index) in labelers" :key="index">
                   <td><a title="Click to view user details" @click="goToUser(user)">[[ user.id ]]</a></td>
-                  <td>[[ user.name ]]</td>
-                  <td>[[ user.last_date | parseDate ]]</td>
-                  <td>[[ user.count ]]</td>
-                  <td>[[ user.truth_agreement | toPercent ]]</td>
-                  <td>[[ usersAgreement[user.id] | toPercent ]]</td>
+                  <td><a href="mailto:{user.email}" title="{user.email}">[[ user.name ]]</a></td>
+                  <td>[[ user.last_annotation | parseDate ]]</td>
+                  <td>[[ user.num_annotations ]]</td>
+                  <td>[[ user.agreement_with_truth | toPercent ]]</td>
+                  <td>[[ user.average_kappa_agreement | toPercent ]]</td>
               </tr>
           </tbody>
       </table>
 
+      <h5 class="title is-5">
+          Inter-rater Agreement using Cohen's Kappa:
+      </h5>
+      <p class="subtitle is-6">
+          This matrix shows the level of agreement between the different labelers, <em>corrected for chance</em>. A value of 0 means an agreement expected at random, 1 means full agreement and -1 means full disagreement.
+      </p>
       <img v-if="matrix" :src="matrixSrc"/>
   </div>
 </div>

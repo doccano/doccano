@@ -6,7 +6,6 @@
   <header class="card-header">
     <div class="card-header-title">
       <h1 class="title">Labeled Documents</h1>
-      {#<p>The table below diplays labeled documents. Click on column names to sort.</p>#}
     </div>
     <div class="section section--small-padding">
       <a href="{% url 'download_labels_admin' view.kwargs.project_id %}" class="button is-primary button-margin ">Download CSV</a>
@@ -18,7 +17,8 @@
     </a>
   </header>
   <div class="card-content">
-      <table class="table">
+      <p>The table below diplays the [[filteredTableRows.length]] documents that were annotated. Click on column names to sort.</p>
+      <table class="table is-striped is-narrow is-hoverable">
           <thead>
               <tr>
                   <th is="th-sortable" label="Document ID" v-model="sort" field="documentId"></th>
