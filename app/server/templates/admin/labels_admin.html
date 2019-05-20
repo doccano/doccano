@@ -36,6 +36,9 @@
               <span style="font-weight: bold; color: red;" v-if="props.column.field == 'topLabel'">[[ props.row.topLabel ]]</span> 
               <span style="font-weight: bold; color: red;" v-else>[[ props.row.groundTruth ]]</span>
             </span>
+            <span v-if="props.column.field == 'documentId'">
+                <a :href="getUrl('{% url 'annotation' view.kwargs.project_id %}', props.row.documentId)">[[ props.row.documentId ]]</a>
+            </span>
             <span v-else>
               [[ props.formattedRow[props.column.field] ]]
             </span>

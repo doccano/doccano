@@ -70,4 +70,6 @@ Superuser created successfully.
 Doccano includes a suite of tests. 
 
 To run tests:
-[[TODO: Write this section]]
+```bash
+python manage.py test server.tests
+```

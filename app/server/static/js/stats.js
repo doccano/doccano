@@ -2,7 +2,11 @@ import { HorizontalBar, mixins, Doughnut } from 'vue-chartjs';
 import Vue from 'vue';
 import HTTP from './http';
 
+import { VueGoodTable } from 'vue-good-table';
+
 import { toFixed } from './filters'
+
+import 'vue-good-table/dist/vue-good-table.css'
 
 Vue.filter('toFixed', toFixed)
 
@@ -61,7 +65,22 @@ const vm = new Vue({
     labelData: null,
     userData: null,
     progressData: null,
-    classWeightsData: []
+    classWeightsData: [],
+    classWeightsColumns: [
+      {
+        label: 'Term',
+        field: 'term'
+      },
+      {
+        label: 'Weight',
+        field: 'weight',
+        type: 'number'
+      },
+    ]
+  },
+
+  components: {
+    VueGoodTable
   },
 
   methods: {
