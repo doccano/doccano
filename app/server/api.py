@@ -377,7 +377,7 @@ class ClassWeightsApi(APIView):
         resp = None
         if (weights is not None):
             resp = weights.to_dict()
-        return Response({'weights': resp})
+        return Response({'weights': weights.reset_index().values})
 
 
 class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
