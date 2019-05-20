@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import classification_report, confusion_matrix
-from classifier.sanitize_filename import sanitize_filename
+from classifier.utils import sanitize_filename
 
 logger = logging.getLogger()
 
@@ -130,6 +130,7 @@ class BaseClassifier:
 
         bootstrapped = ~pd.isnull(y_aug)
         self.fit(X.loc[bootstrapped], y_aug[bootstrapped])
+        return y_aug
 
     def optimize_hyper_parameters(self, X_train, y_train, score_func=None, verbose=False):
         if score_func is None:
