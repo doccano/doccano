@@ -406,6 +406,25 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
         response = {'document': ' '.join(text)}
         return Response(response)
 
+class DocumentLabelersAPI(generics.RetrieveUpdateDestroyAPIView):
+    project_id = 0
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get(self, request, *args, **kwargs):
+        d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        self.project_id = self.kwargs['project_id']
+        annots = d.get_annotations()
+        ret = []
+        for a in annots:
+            ret.append({
+                'user_id': a.user.id,
+                'user_name': a.user.username,
+                'label_id': a.label.id
+            })
+        response = {'document_annotations': ret}
+        return Response(response)
+
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()

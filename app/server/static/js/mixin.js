@@ -214,7 +214,9 @@ const annotationMixin = {
       metadataAll: [],
       metadataKeys: [],
       metadataRules: [],
-      docFromLink: null
+      docFromLink: null,
+      showLabelers: false,
+      labelers: []
     };
   },
 
@@ -372,6 +374,15 @@ const annotationMixin = {
         }
       }
 
+      console.log('subnit')
+
+      if (this.showLabelers) {
+        const doc = this.docs[0]
+        if (doc) {
+          this.getLabelers(doc.id)
+        }
+      }
+
       if (this.searchQuery.length) {
         this.highlightQuery = this.searchQuery;
       } else {
@@ -395,12 +406,24 @@ const annotationMixin = {
       return shortcut;
     },
 
-    getExplanation(id) {
-      HTTP.get(`docs/${id}/explanation`).then((response) => {
-        if (response.data) {
-          this.docExplanation = response.data.document
-        }
-      });
+    async getExplanation(id) {
+      const response = await HTTP.get(`docs/${id}/explanation`)
+      if (response.data) {
+        this.docExplanation = response.data.document
+      }
+    },
+
+    async getLabelers(id) {
+      const response = await HTTP.get(`docs/${id}/labelers`)
+      if (response.data) {
+        this.labelers = response.data.document_annotations
+        this.labelers = this.labelers.map((l) => {
+          return {
+            ...l,
+            label: this.labels.find((lf) => lf.id === l.label_id)
+          }
+        })
+      }
     },
 
     async popState() {
@@ -448,6 +471,9 @@ const annotationMixin = {
       if (this.explainMode) {
         const doc = this.docs[val]
         this.getExplanation(doc.id)
+        if (this.showLabelers) {
+          this.getLabelers(doc.id)
+        }
       }
     }
   },
@@ -501,6 +527,12 @@ const annotationMixin = {
     if (this.explainMode) {
       const doc = this.docs[0]
       this.getExplanation(doc.id)
+    }
+
+    if (document.getElementById('labelersCard')) {
+      this.showLabelers = true
+      const doc = this.docs[0]
+      this.getLabelers(doc.id)
     }
 
     window.addEventListener('popstate', this.popState)
