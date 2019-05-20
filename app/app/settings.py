@@ -161,6 +161,19 @@ if "test" in sys.argv:
         }  
     }
 
+if 'TRAVIS' in os.environ:
+    DATABASES = {    
+         'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'doccano',
+            'USER': 'postgres',
+            'PASSWORD': 'admin',
+            'HOST': 'localhost',
+            'PORT': 5433,
+            'CONN_MAX_AGE': 60
+        }  
+    }
+
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 
