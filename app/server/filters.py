@@ -10,6 +10,48 @@ from django.utils import six
 from django.db.models.constants import LOOKUP_SEP
 
 
+def tokenize(search):
+    exclude = False
+
+    ret = {
+        'terms': [],
+        'exclude': []
+    }
+
+    search = search.strip()
+
+    if (len(search) > 0):
+        while(True):
+            if (exclude):
+                out = 'exclude'
+            else:
+                out = 'terms'
+            exclude = False
+            if (search[0] == '"'):
+                next_quote = search[1:].find('"')
+                if (next_quote != -1):
+                    ret[out].append(search[1:next_quote+1])
+                    search = search[next_quote+1:]
+                else:
+                    if (search != '"'):
+                        search = search[1:]
+                    else:
+                        break
+            elif (search[0] == '-'):
+                exclude = True
+                search = search[1:]
+            else:
+                next_word_start = search.find(' ')
+                if (next_word_start != -1):
+                    ret[out].append(search[:next_word_start + 1].strip())
+                    search = search[next_word_start + 1:]
+                else:
+                    ret[out].append(search.strip())
+                    break
+    ret['terms'] = [t for t in ret['terms'] if len(t.strip()) > 0]
+    ret['exclude'] = [t for t in ret['exclude'] if len(t.strip()) > 0]
+    return ret
+
 class ExcludeSearchFilter(BaseFilterBackend):
     # The URL query parameter used for the search.
     search_param = api_settings.SEARCH_PARAM
@@ -35,19 +77,10 @@ class ExcludeSearchFilter(BaseFilterBackend):
             'exclude': None
         }
         params = request.query_params.get(self.search_param, '')
-        complex_search_result = re.search(self.complex_search_regex, params)
-        print(complex_search_result)
-        if (complex_search_result):
-            if (complex_search_result.group(1) and complex_search_result.group(2) and complex_search_result.group(3)):
-                ret['terms'] = [complex_search_result.group(1)]
-                ret['exclude'] = complex_search_result.group(2)
-            elif (complex_search_result.group(1) and not complex_search_result.group(2) and complex_search_result.group(3)):
-                ret['terms'] = [complex_search_result.group(1), complex_search_result.group(3)]
-            else:
-                ret['terms'] = [complex_search_result.group(1)]
-        else:
             ret['terms'] = params.replace(',', ' ').split()
-        return ret
+        newparams = params.replace(',', ' ')
+        newparams = newparams.replace('  ', ' ')
+        return tokenize(newparams)
 
     def construct_search(self, field_name):
         lookup = self.lookup_prefixes.get(field_name[0])
@@ -80,12 +113,13 @@ class ExcludeSearchFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         search_fields = getattr(view, 'search_fields', None)
         search_terms_result = self.get_search_terms(request)
+        print('suka',search_terms_result)
         search_terms = search_terms_result['terms']
         search_exclude = None
         if search_terms_result.get('exclude'):
             search_exclude = search_terms_result['exclude']
 
-        if not search_fields or not search_terms:
+        if not search_fields and not search_terms:
             return queryset
 
         orm_lookups = [
@@ -95,14 +129,15 @@ class ExcludeSearchFilter(BaseFilterBackend):
 
         base = queryset
         conditions = []
-        for search_term in search_terms:
-            queries = [
-                models.Q(**{orm_lookup: search_term})
-                for orm_lookup in orm_lookups
-            ]
-            conditions.append(reduce(operator.or_, queries))
-        
-        queryset = queryset.filter(reduce(operator.and_, conditions))
+        if len(search_terms):
+            for search_term in search_terms:
+                queries = [
+                    models.Q(**{orm_lookup: search_term})
+                    for orm_lookup in orm_lookups
+                ]
+                conditions.append(reduce(operator.or_, queries))
+            
+            queryset = queryset.filter(reduce(operator.and_, conditions))
 
         if self.must_call_distinct(queryset, search_fields):
             # Filtering against a many-to-many field requires us to
@@ -112,12 +147,21 @@ class ExcludeSearchFilter(BaseFilterBackend):
             queryset = distinct(queryset, base)
         if search_exclude:
             exclude_conditions = []
-            for search_term in search_terms:
-                queries = [
-                    models.Q(**{orm_lookup: search_term + ' ' + search_exclude})
-                    for orm_lookup in orm_lookups
-                ]
-                exclude_conditions.append(reduce(operator.or_, queries))
+            if len(search_terms):
+                for search_term in search_terms:
+                    for excl in search_exclude:
+                        queries = [
+                            models.Q(**{orm_lookup: search_term + ' ' + excl})
+                            for orm_lookup in orm_lookups
+                        ]
+                        exclude_conditions.append(reduce(operator.or_, queries))
+            else:
+                for excl in search_exclude:
+                    queries = [
+                        models.Q(**{orm_lookup: excl})
+                        for orm_lookup in orm_lookups
+                    ]
+                    exclude_conditions.append(reduce(operator.or_, queries))
             queryset = queryset.exclude(reduce(operator.and_, exclude_conditions))
         return queryset
 
