@@ -275,6 +275,7 @@ class RunModelAPI(APIView):
         doc_annotations_query = '''SELECT
             server_document.id,
             server_document.text,
+            server_documentannotation.user_id,
             server_documentannotation.label_id
             FROM
             server_document
@@ -285,11 +286,13 @@ class RunModelAPI(APIView):
         doc_annotations_gold_query = '''SELECT
             server_document.id,
             server_document.text,
+            '' as user_id,
             server_documentgoldannotation.label_id
             FROM
-            server_document
-            LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_document.id
-            WHERE server_document.project_id = {project_id}'''.format(project_id=project_id)
+            server_documentgoldannotation
+            LEFT JOIN server_document ON server_documentgoldannotation.document_id = server_document.id
+            WHERE server_document.project_id = {project_id}
+            '''.format(project_id=project_id)
 
         if not os.path.isdir(ML_FOLDER):
             os.makedirs(ML_FOLDER)
@@ -299,10 +302,21 @@ class RunModelAPI(APIView):
         cursor.execute(doc_annotations_query)
         user_annotations = cursor.fetchall()
 
-        annotations = gold_annotations + user_annotations
+        cols = ['document_id', 'text', 'user_id', 'label_id']
+        df_gold_annotations = pd.DataFrame(gold_annotations, columns=cols).set_index('document_id')
+        df_user_annotations = pd.DataFrame(user_annotations, columns=cols).set_index('document_id')
+        df_user_annotations['gold_label'] = df_gold_annotations['label_id']
+        df_user_annotations = df_user_annotations[ pd.isnull(df_user_annotations['gold_label']) ]
+        df_user_annotations = df_user_annotations.reset_index()[cols]
+        df_gold_annotations = df_gold_annotations.reset_index()
+        df = pd.concat([df_user_annotations[cols], df_gold_annotations])
 
-        df = pd.DataFrame(annotations, columns=['document_id', 'text', 'label_id'])
-        df = df.drop_duplicates(['document_id'])
+        print( df.groupby('label_id')[['user_id', 'document_id']].count())
+        df = df.drop_duplicates(['document_id', 'user_id'], keep='last')
+        print( df.groupby('label_id')[['user_id', 'document_id']].count())
+        # df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE.replace('.csv', '_full.csv')), encoding='utf-8')
+        df = df.drop_duplicates('document_id', keep='last')
+        print( df.groupby('label_id')[['user_id', 'document_id']].count())
         df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE), encoding='utf-8')
 
         result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)

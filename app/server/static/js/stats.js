@@ -100,7 +100,7 @@ const vm = new Vue({
     });
     HTTP.get('class_weights').then((response) => {
       const weightsData = response.data.weights
-      const threshold = 1
+      const threshold = 0
       for (let key in weightsData) {
         if (weightsData[key] < -threshold || weightsData[key] > threshold) {
           this.classWeightsData.push({
