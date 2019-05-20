@@ -91,10 +91,13 @@ class TextClassifier(BaseClassifier):
         _, evaluation_text = self.evaluate(X_test, y_test)
         result = result + '\nPerformance on test set: \n' + evaluation_text
 
-        print('Running the model on the entire dataset...')
+        print('Bootstrapping...')
         df_cpy = df.copy()
         df_cpy['label_id'] = None
         X = self.pre_process(df_cpy, fit=False)
+        self.bootstrap(X, y=df['label_id'])
+
+        print('Running the model on the entire dataset...')
         prediction_df = self.get_prediction_df(X, y=df['label_id'])
 
         prediction_df['document_id'] = df['document_id']
