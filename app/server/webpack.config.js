@@ -4,6 +4,9 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin')
 
 const devMode = process.env.DEBUG !== 'False';
 const hotReload = process.env.HOT_RELOAD === '1';
+const webpackHost = process.env.WEBPACK_HOST || '127.0.0.1';
+const webpackPort = process.env.WEBPACK_PORT ? parseInt(process.env.WEBPACK_PORT, 10) : 8080;
+const pollMillis = process.env.WEBPACK_POLL_MILLIS ? parseInt(process.env.WEBPACK_POLL_MILLIS, 10) : false;
 
 module.exports = {
     mode: devMode ? 'development' : 'production',
@@ -27,15 +30,20 @@ module.exports = {
         'download_text_classification': './static/js/download_text_classification.js',
     },
     output: {
-        publicPath: hotReload ? 'http://localhost:8080/' : '',
+        publicPath: hotReload ? `http://127.0.0.1:${webpackPort}/` : '',
         path: __dirname + '/static/bundle',
         filename: '[name].js'
     },
     devtool: devMode ? 'cheap-eval-source-map' : 'source-map',
     devServer: {
+        port: webpackPort,
+        host: webpackHost,
         hot: true,
         quiet: false,
         headers: { 'Access-Control-Allow-Origin': '*' }
+    },
+    watchOptions: {
+        poll: pollMillis,
     },
     module: {
         rules: [

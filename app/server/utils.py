@@ -4,6 +4,8 @@ import itertools
 import json
 import re
 from collections import defaultdict
+from math import floor
+from random import Random
 
 from django.db import transaction
 from rest_framework.renderers import JSONRenderer
@@ -74,16 +76,64 @@ class BaseStorage(object):
         """
         return [label for label in labels if label not in created]
 
-    def to_serializer_format(self, labels):
-        """Exclude created labels.
+    @classmethod
+    def to_serializer_format(cls, labels, created):
+        """Convert a label to model dictionary.
+
+        Also assigns shortkeys for each label that don't clash with existing
+        label shortkeys.
 
         Example:
             >>> labels = ["positive"]
-            >>> self.to_serializer_format(labels)
-            [{"text": "negative"}]
-        ```
+            >>> created = {}
+            >>> BaseStorage.to_serializer_format(labels, created)
+            [{"text": "positive", "suffix_key": "p", "prefix_key": None}]
         """
-        return [{'text': label} for label in labels]
+        existing_shortkeys = {(label.suffix_key, label.prefix_key)
+                              for label in created.values()}
+
+        serializer_labels = []
+
+        for label in sorted(labels):
+            serializer_label = {'text': label}
+
+            shortkey = cls.get_shortkey(label, existing_shortkeys)
+            if shortkey:
+                serializer_label['suffix_key'] = shortkey[0]
+                serializer_label['prefix_key'] = shortkey[1]
+                existing_shortkeys.add(shortkey)
+
+            color = Color.random()
+            serializer_label['background_color'] = color.hex
+            serializer_label['text_color'] = color.contrast_color.hex
+
+            serializer_labels.append(serializer_label)
+
+        return serializer_labels
+
+    @classmethod
+    def get_shortkey(cls, label, existing_shortkeys):
+        """Find the first non existing shortkey for the label.
+
+        Example without existing shortkey:
+            >>> BaseStorage.get_shortkey("positive", set())
+            ("p", None)
+
+        Example with existing shortkey:
+            >>> BaseStorage.get_shortkey("positive", {("p", None)})
+            ("p", "ctrl")
+        """
+        model_prefix_keys = [key for (key, _) in Label.PREFIX_KEYS]
+        prefix_keys = [None] + model_prefix_keys
+
+        model_suffix_keys = {key for (key, _) in Label.SUFFIX_KEYS}
+        suffix_keys = [key for key in label.lower() if key in model_suffix_keys]
+
+        for shortkey in itertools.product(suffix_keys, prefix_keys):
+            if shortkey not in existing_shortkeys:
+                return shortkey
+
+        return None
 
     def update_saved_labels(self, saved, new):
         """Update saved labels.
@@ -120,7 +170,7 @@ class ClassificationStorage(BaseStorage):
             labels = self.extract_label(data)
             unique_labels = self.extract_unique_labels(labels)
             unique_labels = self.exclude_created_labels(unique_labels, saved_labels)
-            unique_labels = self.to_serializer_format(unique_labels)
+            unique_labels = self.to_serializer_format(unique_labels, saved_labels)
             new_labels = self.save_label(unique_labels)
             saved_labels = self.update_saved_labels(saved_labels, new_labels)
             annotations = self.make_annotations(docs, labels, saved_labels)
@@ -170,7 +220,7 @@ class SequenceLabelingStorage(BaseStorage):
             labels = self.extract_label(data)
             unique_labels = self.extract_unique_labels(labels)
             unique_labels = self.exclude_created_labels(unique_labels, saved_labels)
-            unique_labels = self.to_serializer_format(unique_labels)
+            unique_labels = self.to_serializer_format(unique_labels, saved_labels)
             new_labels = self.save_label(unique_labels)
             saved_labels = self.update_saved_labels(saved_labels, new_labels)
             annotations = self.make_annotations(docs, labels, saved_labels)
@@ -444,3 +494,44 @@ class CSVPainter(JSONPainter):
             for a in annotations:
                 res.append({**d, **a})
         return res
+
+
+class Color:
+    def __init__(self, red, green, blue):
+        self.red = red
+        self.green = green
+        self.blue = blue
+
+    @property
+    def contrast_color(self):
+        """Generate black or white color.
+
+        Ensure that text and background color combinations provide
+        sufficient contrast when viewed by someone having color deficits or
+        when viewed on a black and white screen.
+
+        Algorithm from w3c:
+        * https://www.w3.org/TR/AERT/#color-contrast
+        """
+        return Color.white() if self.brightness < 128 else Color.black()
+
+    @property
+    def brightness(self):
+        return ((self.red * 299) + (self.green * 587) + (self.blue * 114)) / 1000
+
+    @property
+    def hex(self):
+        return '#{:02x}{:02x}{:02x}'.format(self.red, self.green, self.blue)
+
+    @classmethod
+    def white(cls):
+        return cls(red=255, green=255, blue=255)
+
+    @classmethod
+    def black(cls):
+        return cls(red=0, green=0, blue=0)
+
+    @classmethod
+    def random(cls, seed=None):
+        rgb = Random(seed).choices(range(256), k=3)
+        return cls(*rgb)
