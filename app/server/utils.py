@@ -5,7 +5,7 @@ import json
 import re
 from collections import defaultdict
 from math import floor
-from random import random
+from random import Random
 
 from django.db import transaction
 from rest_framework.renderers import JSONRenderer
@@ -103,10 +103,9 @@ class BaseStorage(object):
                 serializer_label['prefix_key'] = shortkey[1]
                 existing_shortkeys.add(shortkey)
 
-            background_color = cls.generate_color()
-            text_color = cls.black_or_white(background_color)
-            serializer_label['background_color'] = background_color
-            serializer_label['text_color'] = text_color
+            color = Color.random()
+            serializer_label['background_color'] = color.hex
+            serializer_label['text_color'] = color.contrast_color.hex
 
             serializer_labels.append(serializer_label)
 
@@ -135,21 +134,6 @@ class BaseStorage(object):
                 return shortkey
 
         return None
-
-    @classmethod
-    def generate_color(cls):
-        """Port of `label.vue:generateColor`."""
-        color = hex(int(floor(random() * 0xFFFFFF)))[2:]
-        random_color = '#' + ('000000' + color)[-6:]
-        return random_color
-
-    @classmethod
-    def black_or_white(cls, hexcolor):
-        """Port of `label.vue:blackOrWhite`."""
-        r = int(hexcolor[1:3], 16)
-        g = int(hexcolor[3:5], 16)
-        b = int(hexcolor[5:7], 16)
-        return '#ffffff' if (((r * 299) + (g * 587) + (b * 114)) / 1000) < 128 else '#000000'
 
     def update_saved_labels(self, saved, new):
         """Update saved labels.
@@ -510,3 +494,44 @@ class CSVPainter(JSONPainter):
             for a in annotations:
                 res.append({**d, **a})
         return res
+
+
+class Color:
+    def __init__(self, red, green, blue):
+        self.red = red
+        self.green = green
+        self.blue = blue
+
+    @property
+    def contrast_color(self):
+        """Generate black or white color.
+
+        Ensure that text and background color combinations provide
+        sufficient contrast when viewed by someone having color deficits or
+        when viewed on a black and white screen.
+
+        Algorithm from w3c:
+        * https://www.w3.org/TR/AERT/#color-contrast
+        """
+        return Color.white() if self.brightness < 128 else Color.black()
+
+    @property
+    def brightness(self):
+        return ((self.red * 299) + (self.green * 587) + (self.blue * 114)) / 1000
+
+    @property
+    def hex(self):
+        return '#{:02x}{:02x}{:02x}'.format(self.red, self.green, self.blue)
+
+    @classmethod
+    def white(cls):
+        return cls(red=255, green=255, blue=255)
+
+    @classmethod
+    def black(cls):
+        return cls(red=0, green=0, blue=0)
+
+    @classmethod
+    def random(cls, seed=None):
+        rgb = Random(seed).choices(range(256), k=3)
+        return cls(*rgb)
