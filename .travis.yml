@@ -1,5 +1,8 @@
 language: python
 
+addons:
+  postgresql: "10"
+
 services:
   - docker
   - postgresql
