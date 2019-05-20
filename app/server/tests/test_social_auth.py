@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
+from social_core.backends.azuread_tenant import AzureADTenantOAuth2
 from social_core.backends.github import GithubOAuth2
 from vcr_unittest import VCRMixin
 
@@ -49,6 +50,43 @@ class TestGithubSocialAuth(VCRTestCase):
         social_auth.fetch_github_permissions(
             strategy=self.strategy,
             details={'username': 'hirosan'},
+            user=user,
+            backend=self.backend,
+            response={'access_token': self.access_token},
+        )
+
+        self.assertFalse(user.is_superuser)
+
+
+@override_settings(SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa')
+@override_settings(SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET='bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb=')
+@override_settings(SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT='cccccccc-cccc-cccc-cccc-cccccccccccc')
+class TestAzureADTenantSocialAuth(VCRTestCase):
+    strategy = None
+    backend = AzureADTenantOAuth2(strategy=strategy)
+    access_token = 'censored'
+
+    @override_settings(AZUREAD_ADMIN_GROUP_ID='dddddddd-dddd-dddd-dddd-dddddddddddd')
+    def test_fetch_permissions_is_admin(self):
+        user = User()
+
+        social_auth.fetch_azuread_permissions(
+            strategy=self.strategy,
+            details={},
+            user=user,
+            backend=self.backend,
+            response={'access_token': self.access_token},
+        )
+
+        self.assertTrue(user.is_superuser)
+
+    @override_settings(AZUREAD_ADMIN_GROUP_ID='eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee')
+    def test_fetch_permissions_not_admin(self):
+        user = User()
+
+        social_auth.fetch_azuread_permissions(
+            strategy=self.strategy,
+            details={},
             user=user,
             backend=self.backend,
             response={'access_token': self.access_token},

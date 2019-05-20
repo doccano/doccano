@@ -129,6 +129,11 @@ if GITHUB_ADMIN_ORG_NAME and GITHUB_ADMIN_TEAM_NAME:
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY = env('OAUTH_AAD_KEY', None)
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET = env('OAUTH_AAD_SECRET', None)
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = env('OAUTH_AAD_TENANT', None)
+AZUREAD_ADMIN_GROUP_ID = env('AZUREAD_ADMIN_GROUP_ID', None)
+
+if AZUREAD_ADMIN_GROUP_ID:
+    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_RESOURCE = 'https://graph.microsoft.com/'
+    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SCOPE = ['Directory.Read.All']
 
 SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.social_details',
@@ -141,6 +146,7 @@ SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
     'server.social_auth.fetch_github_permissions',
+    'server.social_auth.fetch_azuread_permissions',
 ]
 
 # Database

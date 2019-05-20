@@ -1,0 +1,52 @@
+interactions:
+- request:
+    body: '{"groupIds": ["eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"]}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '54'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.21.0
+    method: POST
+    uri: https://graph.microsoft.com/v1.0/me/checkMemberGroups
+  response:
+    body:
+      string: '{"@odata.context":"https://graph.microsoft.com/v1.0/$metadata#Collection(Edm.String)","value":[]}'
+    headers:
+      Cache-Control:
+      - private
+      Content-Type:
+      - application/json;odata.metadata=minimal;odata.streaming=true;IEEE754Compatible=false;charset=utf-8
+      Date:
+      - Mon, 20 May 2019 19:34:52 GMT
+      Duration:
+      - '84.3986'
+      Location:
+      - https://graph.microsoft.com
+      OData-Version:
+      - '4.0'
+      Strict-Transport-Security:
+      - max-age=31536000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      client-request-id:
+      - 69bf4728-ae4e-47ef-afd0-7d2c31129b83
+      content-length:
+      - '97'
+      request-id:
+      - 69bf4728-ae4e-47ef-afd0-7d2c31129b83
+      x-ms-ags-diagnostic:
+      - '{"ServerInfo":{"DataCenter":"East US","Slice":"SliceC","Ring":"2","ScaleUnit":"000","RoleInstance":"AGSFE_IN_5","ADSiteName":"EUS"}}'
+    status:
+      code: 200
+      message: OK
+version: 1
