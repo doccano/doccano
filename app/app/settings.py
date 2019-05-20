@@ -120,6 +120,11 @@ AUTHENTICATION_BACKENDS = [
 
 SOCIAL_AUTH_GITHUB_KEY = env('OAUTH_GITHUB_KEY', None)
 SOCIAL_AUTH_GITHUB_SECRET = env('OAUTH_GITHUB_SECRET', None)
+GITHUB_ADMIN_ORG_NAME = env('GITHUB_ADMIN_ORG_NAME', None)
+GITHUB_ADMIN_TEAM_NAME = env('GITHUB_ADMIN_TEAM_NAME', None)
+
+if GITHUB_ADMIN_ORG_NAME and GITHUB_ADMIN_TEAM_NAME:
+    SOCIAL_AUTH_GITHUB_SCOPE = ['read:org']
 
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY = env('OAUTH_AAD_KEY', None)
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET = env('OAUTH_AAD_SECRET', None)
@@ -135,6 +140,7 @@ SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
+    'server.social_auth.fetch_github_permissions',
 ]
 
 # Database
