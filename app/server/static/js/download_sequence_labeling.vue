@@ -12,11 +12,29 @@ block select-format-area
     )
     | JSONL
 
+  label.radio
+    input(
+      type="radio"
+      name="format"
+      value="json1"
+      v-bind:checked="format == 'json1'"
+      v-model="format"
+    )
+    | JSON(Text-Labels)
+
+
 block example-format-area
   pre.code-block(v-show="format == 'json'")
     code.json
       include ./examples/download_sequence_labeling.jsonl
       | ...
+  pre.code-block(v-show="format == 'json1'")
+    code.json
+      include ./examples/download_sequence_labeling.json1l
+      | ...
+</template>
+
+
 </template>
 
 <script>
