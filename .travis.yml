@@ -12,7 +12,7 @@ before_install:
   - sudo /etc/init.d/postgresql restart
 env:
   global:
-    - PGPORT=5432
+    - PGPORT=5433
 
 services:
   - docker
