@@ -682,7 +682,9 @@ class TestUploader(APITestCase):
                                           users=[super_user], project_type=SEQUENCE_LABELING)
         cls.seq2seq_project = mommy.make('server.Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
         cls.classification_url = reverse(viewname='doc_uploader', args=[cls.classification_project.id])
+        cls.classification_labels_url = reverse(viewname='label_list', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_uploader', args=[cls.labeling_project.id])
+        cls.labeling_labels_url = reverse(viewname='label_list', args=[cls.labeling_project.id])
         cls.seq2seq_url = reverse(viewname='doc_uploader', args=[cls.seq2seq_project.id])
 
     def setUp(self):
@@ -693,6 +695,20 @@ class TestUploader(APITestCase):
         with open(os.path.join(DATA_DIR, filename)) as f:
             response = self.client.post(url, data={'file': f, 'format': format})
         self.assertEqual(response.status_code, expected_status)
+
+    def label_test_helper(self, url, expected_labels, expected_label_keys):
+        expected_keys = {key for label in expected_labels for key in label}
+
+        response = self.client.get(url).json()
+
+        actual_labels = [{key: value for (key, value) in label.items() if key in expected_keys}
+                         for label in response]
+
+        self.assertCountEqual(actual_labels, expected_labels)
+
+        for label in response:
+            for expected_label_key in expected_label_keys:
+                self.assertIsNotNone(label.get(expected_label_key))
 
     def test_can_upload_conll_format_file(self):
         self.upload_test_helper(url=self.labeling_url,
@@ -736,11 +752,35 @@ class TestUploader(APITestCase):
                                 format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
+        self.label_test_helper(
+            url=self.classification_labels_url,
+            expected_labels=[
+                {'text': 'positive', 'suffix_key': 'p', 'prefix_key': None},
+                {'text': 'negative', 'suffix_key': 'n', 'prefix_key': None},
+                {'text': 'neutral', 'suffix_key': 'n', 'prefix_key': 'ctrl'},
+            ],
+            expected_label_keys=[
+                'background_color',
+                'text_color',
+            ])
+
     def test_can_upload_labeling_jsonl(self):
         self.upload_test_helper(url=self.labeling_url,
                                 filename='labeling.jsonl',
                                 format='json',
                                 expected_status=status.HTTP_201_CREATED)
+
+        self.label_test_helper(
+            url=self.labeling_labels_url,
+            expected_labels=[
+                {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
+                {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
+                {'text': 'PER', 'suffix_key': 'p', 'prefix_key': None},
+            ],
+            expected_label_keys=[
+                'background_color',
+                'text_color',
+            ])
 
     def test_can_upload_seq2seq_jsonl(self):
         self.upload_test_helper(url=self.seq2seq_url,

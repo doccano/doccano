@@ -203,7 +203,7 @@ export default {
 
   methods: {
     generateColor() {
-      const color = (Math.random() * 0xFFFFFF | 0).toString(16); // eslint-disable-line no-bitwise
+      const color = Math.floor(Math.random() * 0xFFFFFF).toString(16);
       const randomColor = '#' + ('000000' + color).slice(-6);
       return randomColor;
     },
