@@ -42,9 +42,41 @@
             {% endfor %}
           </dd>
       </dl>
+
+      <vue-good-table
+      :columns="tableColumns"
+      :rows="tableRows"
+      :search-options="{
+        enabled: true,
+        trigger: 'enter'
+      }"
+      :pagination-options="{
+        enabled: true,
+        mode: 'pages'
+      }">
+
+      <template slot="table-row" slot-scope="props">
+          <span v-if="props.column.field == 'topLabel'">
+            <span style="font-weight: bold; color: red;" v-if="props.row.topLabel != props.row.groundTruth && props.row.groundTruth">[[ props.row.topLabel ]]</span> 
+            <span v-else>[[ props.row.topLabel ]]</span>
+          </span>
+          <span v-if="props.column.field == 'groundTruth'">
+            <span style="font-weight: bold; color: red;" v-if="props.row.topLabel != props.row.groundTruth && props.row.groundTruth">[[ props.row.groundTruth ]]</span> 
+            <span v-else>[[ props.row.groundTruth ]]</span>
+          </span>
+          <span v-if="props.column.field == 'documentId'">
+              <a :href="getUrl('{% url 'annotation' view.kwargs.project_id %}', props.row.documentId)">[[ props.row.documentId ]]</a>
+          </span>
+          <span v-if="props.column.field != 'topLabel' &&  props.column.field != 'groundTruth' &&  props.column.field != 'documentId'">
+            [[ props.formattedRow[props.column.field] ]]
+          </span>
+        </template>
+
+      </vue-good-table>
       </div>
   </div>
 </div>
 {% endblock %}
 {% block footer %}
+<script src="{% static 'bundle/user_info.js' %}"></script>
 {% endblock %}

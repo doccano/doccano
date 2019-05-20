@@ -61,6 +61,30 @@
 
   </div>
 </div>
+{% if user.is_superuser %}
+  <div class="card" style="margin-top: 2rem;" ref="labelersCard" id="labelersCard" v-show="labelers.length">
+    <header class="card-footer">
+        <div class="card-header-title">
+            Labelers
+        </div>
+        <a href="#" style="text-decoration: none;" class="card-header-icon" aria-label="more options">
+          <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+        </a>
+      </header>
+
+      <div class="card-content">
+          <div class="tags has-addons" v-for="labeler in labelers">
+              <p><b>[[ labeler.user_name ]]</b>
+                <a class="tag is-medium" v-bind:style="{ color: labeler.label.text_color, backgroundColor: labeler.label.background_color }">
+                    [[ labeler.label.text ]]
+                </a>
+                </p>
+          </div>
+      </div>
+  </div>
+{% endif %}
 {% if project.enable_metadata_search %}
     <div class="card" style="margin-top: 2rem;">
     <header class="card-footer">
