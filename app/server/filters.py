@@ -77,7 +77,6 @@ class ExcludeSearchFilter(BaseFilterBackend):
             'exclude': None
         }
         params = request.query_params.get(self.search_param, '')
-            ret['terms'] = params.replace(',', ' ').split()
         newparams = params.replace(',', ' ')
         newparams = newparams.replace('  ', ' ')
         return tokenize(newparams)
