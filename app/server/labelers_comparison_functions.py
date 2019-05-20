@@ -67,6 +67,8 @@ def compute_average_agreement_per_labeler(comparison_df):
     :param comparison_df: a cohen kappa distance matrix of the labelers
     :return: a rank list of labelers mean kappa cohen distance from the rest of the labelers
     '''
+    if 'true_label_id' in comparison_df:
+        comparison_df = comparison_df.drop('true_label_id', axis=1)
     df = comparison_df.copy()
     np.fill_diagonal(df.values, None)
     return df.mean(axis=1).sort_values(ascending=False)

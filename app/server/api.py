@@ -69,7 +69,11 @@ def get_labels_admin(project_id):
           server_documentannotation.label_id, 
           server_document.text, 
           server_documentgoldannotation.label_id, 
-          server_documentmlmannotation.prob'''.format(project_id=project_id)
+          server_documentmlmannotation.prob
+        ORDER BY  server_documentannotation.document_id ASC,
+          num_labelers DESC 
+          '''.format(project_id=project_id)
+
     cursor = connection.cursor()
     cursor.execute(query)
     df = pd.DataFrame(cursor.fetchall(), columns=[
@@ -80,7 +84,7 @@ def get_labels_admin(project_id):
         .agg({
         'label_id': [('top_label', lambda x: x.iloc[0])],
         'num_labelers': [
-            ('agreement', lambda x: round(x.iloc[0] / sum(x))),
+            ('agreement', lambda x: x.iloc[0] / sum(x)),
             ('num_labelers', lambda x: sum(x)),
         ],
         'last_annotation_date': [
@@ -235,6 +239,7 @@ class LabelersListAPI(APIView):
         users = get_users_data(cursor, project_id)
         users['average_kappa_agreement'] = average_kappa_agreement_per_labeler
         users['agreement_with_truth'] = user_truth_agreement['mean']
+        users['num_documents_with_truth_labels'] = user_truth_agreement['count']
         users = users.reset_index()
 
         num_truth_annotations = annotations_df['true_label_id'].count()

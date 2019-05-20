@@ -45,6 +45,15 @@ class Project(models.Model):
             'document_serializer': '',
             'annotations_serializer': '',
         },
+
+        'ImageCaptioning': {
+            'title': 'image captioning',
+            'type': 'Seq2seq',
+            'image': staticfiles_storage.url('images/cat-1045782_640.jpg'),
+            'template_html': 'annotation/image_captioning.html',
+            'document_serializer': '',
+            'annotations_serializer': '',
+        },
     }
     DOCUMENT_CLASSIFICATION = 'DocumentClassification'
     SEQUENCE_LABELING = 'SequenceLabeling'

@@ -37,9 +37,13 @@
 
           <dt>Projects assigned</dt>
           <dd>
+            <ul>
             {% for project in projects %}
-            <p><a href="/projects/{{ project.id }}">{{ project.name }}</a></p>
+                <li>
+                    <a href="/projects/{{ project.id }}">{{ project.name }}</a>
+                </li>
             {% endfor %}
+            </ul>
           </dd>
       </dl>
       </div>
