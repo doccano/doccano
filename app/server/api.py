@@ -211,8 +211,8 @@ class TextDownloadAPI(APIView):
         painter = self.select_painter(format)
         
         # json1 format prints text labels while json format prints annotations with label ids
-		# json1 format - "labels": [[0, 15, "PERSON"], ..]
-		# json format  "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
+        # json1 format - "labels": [[0, 15, "PERSON"], ..]
+        # json format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
         if format == "json1":
             labels = project.labels.all()
             data = painter.paint_labels(documents, labels)
