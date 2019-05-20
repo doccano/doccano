@@ -22,7 +22,6 @@ block select-format-area
     )
     | JSON(Text-Labels)
 
-
 block example-format-area
   pre.code-block(v-show="format == 'json'")
     code.json
@@ -32,9 +31,6 @@ block example-format-area
     code.json
       include ./examples/download_sequence_labeling.json1l
       | ...
-</template>
-
-
 </template>
 
 <script>
