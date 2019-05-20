@@ -108,7 +108,7 @@ const tokenizeSearch = (searchStr) => {
         }
       } else if (searchStr[0] === '-') {
         exclude = true
-        searchStr = searchStr(1)
+        searchStr = searchStr.substring(1)
       } else {
         const next_word_start = searchStr.indexOf(' ')
         if (next_word_start !== -1) {
