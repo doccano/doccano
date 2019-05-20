@@ -22,7 +22,7 @@ from furl import furl
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 
 env = Env()
-env.read_env(BASE_DIR, recurse=False)
+env.read_env(path.join(BASE_DIR, '.env'), recurse=False)
 
 
 # Quick-start development settings - unsuitable for production
