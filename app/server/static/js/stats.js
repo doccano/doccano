@@ -118,15 +118,12 @@ const vm = new Vue({
       };
     });
     HTTP.get('class_weights').then((response) => {
-      const weightsData = response.data.weights;
-      const threshold = 0;
+      const weightsData = response.data.weights
       for (let key in weightsData) {
-        if (weightsData[key] < -threshold || weightsData[key] > threshold) {
-          this.classWeightsData.push({
-            term: key,
-            weight: weightsData[key]
-          })
-        }
+        this.classWeightsData.push({
+          term: key,
+          weight: +weightsData[key]
+        })
       }
 
       this.classWeightsData = this.classWeightsData.sort((a, b) => {
