@@ -6,9 +6,13 @@ addons:
     packages:
     - postgresql-10
     - postgresql-client-10
+
+before_install:
+  - sudo cp /etc/postgresql/{9.6,10}/main/pg_hba.conf
+  - sudo /etc/init.d/postgresql restart
 env:
   global:
-  - PGPORT=5432
+    - PGPORT=5432
 
 services:
   - docker
