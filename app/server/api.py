@@ -209,13 +209,21 @@ class TextDownloadAPI(APIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         documents = project.documents.all()
         painter = self.select_painter(format)
-        data = painter.paint(documents)
+        
+        # json1 format prints text labels while json format prints annotations with label ids
+		# json1 format - "labels": [[0, 15, "PERSON"], ..]
+		# json format  "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
+        if format == "json1":
+            labels = project.labels.all()
+            data = painter.paint_labels(documents, labels)
+        else:
+            data = painter.paint(documents)
         return Response(data)
 
     def select_painter(self, format):
         if format == 'csv':
             return CSVPainter()
-        elif format == 'json':
+        elif format == 'json' or format == "json1":
             return JSONPainter()
         else:
             raise ValidationError('format {} is invalid.'.format(format))
