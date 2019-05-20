@@ -26,29 +26,30 @@ class TextClassifier(BaseClassifier):
         return classifier
 
     @property
-    def important_features(self, NUM_TOP_FEATURES=None, plot=False):
+    def important_features(self, k=None):
         try:
             importances = self._model.feature_importances_
+            feature_names = self.features
+            feature_importance_df = pd.DataFrame({'feature name': feature_names,
+                                                  'importance': importances,
+                                                  'class': np.nan}).sort_values(by='importance', ascending=False)
+            if isinstance(k, int):
+                feature_importance_df = feature_importance_df.head(k)
         except:
-            importances = self._model.coef_[0]
+            feature_importances_per_class = []
+            for i, c in enumerate(self._model.classes_):
+                importances = self._model.coef_[i]
+                feature_names = self.features
+                per_class_df = pd.DataFrame({'feature name': feature_names[importances > 0],
+                                             'importance': importances[importances > 0],
+                                             'class': c}).sort_values(by='importance', ascending=False)
+                if isinstance(k, int):
+                    per_class_df = per_class_df.head(k)
+                feature_importances_per_class.append(per_class_df)
 
-        indices = np.argsort(abs(importances))
+            feature_importance_df = pd.concat(feature_importances_per_class, sort=True)
 
-        if isinstance(NUM_TOP_FEATURES, int):
-            indices = indices[-NUM_TOP_FEATURES:]
-
-        result = [(self.features[id], importances[id]) for id in indices]
-
-        if plot:
-            import matplotlib.pyplot as plt
-            plt.figure(figsize=(10, 15))
-            plt.title('Feature Importances')
-            plt.barh(range(len(result)), [importance for name, importance in result], color='b', align='center')
-            plt.yticks(range(len(result)), [name for name, importance in result])
-            plt.xlabel('Relative Importance')
-            plt.show()
-
-        return result
+        return feature_importance_df
 
     def set_preprocessor(self, pipeline):
         self.processing_pipeline = TextPipeline(pipeline)
@@ -108,9 +109,9 @@ class TextClassifier(BaseClassifier):
         print('Saving output...')
         prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
-        class_weights = pd.Series({term: weight for (term, weight) in self.important_features})
+        class_weights = self.important_features
         class_weights_filename = os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
-        class_weights.to_csv(class_weights_filename, header=False)
+        class_weights.to_csv(class_weights_filename, header=True, index=False)
 
         print('Done running the model!')
         return result
@@ -118,11 +119,12 @@ class TextClassifier(BaseClassifier):
 
 def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow'):
     # rf = RandomForestClassifier(verbose=True, class_weight='balanced')
-    lr = LogisticRegression(verbose=True, class_weight='balanced', random_state=0, penalty='l1', C=10000)
+    lr = LogisticRegression(verbose=True, class_weight='balanced', random_state=0, penalty='l1', C=10000, multi_class='ovr')
     clf = TextClassifier(model=lr)
     # pipeline functions are applied sequentially by order of appearance
     pipeline = [('base processing', {'col': 'text', 'new_col': 'processed_text'}),
-                ('bag of words', {'col': 'processed_text', 'min_df': 1, 'max_df': 1., 'binary': True,
+                ('bag of words', {'col': 'processed_text',
+                                  'min_df': 1, 'max_df': 1., 'binary': True, 'ngram_range': (1, 2),
                                   'stop_words': 'english', 'strip_accents': 'ascii', 'max_features': 5000}),
                 ('drop columns', {'drop_cols': ['label_id', 'text', 'processed_text']})]
 
