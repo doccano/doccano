@@ -2,11 +2,15 @@ language: python
 
 services:
   - docker
+  - postgresql
 
 python:
   - "3.6"
 
 cache: pip
+
+before_script:
+  - psql -c 'create database doccano;' -U postgres
 
 install:
   - pip install -r requirements.txt
