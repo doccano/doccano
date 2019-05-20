@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 {% load static %}
-{% load render_bundle from webpack_loader %}
-
-{% block header %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/css/swiper.min.css">
-{% endblock %}
-
 {% block content %}
 <section class="hero" style="background-color:#2a2e2f">
   <div class="container">
@@ -173,7 +167,7 @@
         </h2>
         <ul>
           <li>
-            <a href="https://github.com/chakki-works/doccano">Documentation</a>
+            <a href="https://github.com/gong-io/doccano">Documentation</a>
           </li>
           <li>
             <a href="{% url 'demo-named-entity-recognition' %}">Live Demo</a>
@@ -182,7 +176,7 @@
             <a href="https://github.com/chakki-works/doccano">Source code</a>
           </li>
           <li>
-            <a href="https://github.com/chakki-works/doccano">Contribution</a>
+            <a href="https://github.com/gong-io/doccano">Contribution</a>
           </li>
         </ul>
       </div>
@@ -206,15 +200,11 @@
     <div class="content has-text-centered">
       <p>
         <a href="https://github.com/chakki-works/doccano">doccano</a> by
-        <a href="https://github.com/Hironsan">Hironsan</a>. The source code is licensed
+        <a href="https://github.com/Hironsan">Hironsan</a> and <a href="https://gong.io">Gong.io</a>. The source code is licensed
         <a href="http://opensource.org/licenses/mit-license.php">MIT</a>.
         <br>
       </p>
     </div>
   </div>
 </footer>
-{% endblock %}
-
-{% block footer %}
-{% render_bundle 'index' 'js' %}
 {% endblock %}

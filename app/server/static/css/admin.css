@@ -96,9 +96,11 @@
   padding: 20px;
 }
 
-.code-block {
-  padding: 0;
-  background-color: inherit;
+.section--small-padding {
+  padding: 1rem 1rem;
 }
 
 [v-cloak] { display: none; }
+a.card-header-icon {
+    display: none;
+}

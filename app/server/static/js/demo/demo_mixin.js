@@ -1,5 +1,3 @@
-import * as marked from 'marked';
-
 const annotationMixin = {
   data() {
     return {
@@ -13,8 +11,7 @@ const annotationMixin = {
       searchQuery: '',
       picked: 'all',
       annotationId: 100,
-      isMetadataActive: false,
-      isAnnotationGuidelineActive: false,
+      isActive: false,
     };
   },
 
@@ -116,7 +113,7 @@ const annotationMixin = {
     },
 
     id2label() {
-      const id2label = {};
+      let id2label = {};
       for (let i = 0; i < this.labels.length; i++) {
         const label = this.labels[i];
         id2label[label.id] = label;

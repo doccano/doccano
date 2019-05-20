@@ -136,7 +136,7 @@ body {
 
 .content {
   font-size: 16pt;
-  line-height: 250%;
+  line-height: 160%;
 }
 
 .content .tag {
@@ -283,4 +283,54 @@ body {
   align-items: center;
 }
 
+.aside .documents-pagination .icon{
+  color: initial;
+  padding-right: initial;
+  font-size: initial;
+}
+
+.metadataViewer pre {outline: 1px solid #ccc; padding: 5px; margin: 5px; }
+.metadataViewer .string { color: green; }
+.metadataViewer .number { color: darkorange; }
+.metadataViewer .boolean { color: blue; }
+.metadataViewer .null { color: magenta; }
+.metadataViewer .key { color: red; }
+
+span.highlight {
+    border-bottom: 4px solid rgb(255, 140, 0);
+}
+span.has-background-success > span.highlight {
+  border-bottom: 3px solid rgb(255, 140, 0);
+  background-color: initial;
+}
+
+span.has-background-danger > span.highlight {
+  border-bottom: 3px solid rgb(255, 140, 0);
+  background-color: initial;
+}
+
+.suggestions-list {
+  position: absolute;
+  z-index: 2;
+  width: 100%;
+}
+
 [v-cloak] { display: none; }
+
+
+
+@media screen and (min-width: 769px), print {
+    .modal-card, .modal-content {
+        min-width: 90%;
+    }
+}
+
+
+.card-header-title.has-background-royalblue .card-header-text {
+    color: white;
+    font-weight: normal;
+    margin-right: .5em;
+}
+a.card-header-icon {
+    display: none;
+}

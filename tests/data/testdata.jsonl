@@ -1,0 +1,18 @@
+{"id": 5, "label": "2", "text": "\u30a2\u30f3\u30d1\u30b5\u30f3\u30c9", "manual": true, "prob": 0.5, "manual": true, "prob": 0.5}
+{"id": 10, "label": "2", "text": "\u8a00\u8a9e", "manual": true, "prob": 0.5}
+{"id": 11, "label": "1", "text": "\u65e5\u672c\u8a9e", "manual": true, "prob": 0.5}
+{"id": 12, "label": "1", "text": "\u5730\u7406\u5b66", "manual": true, "prob": 0.5}
+{"id": 23, "label": "2", "text": "\u56fd\u306e\u4e00\u89a7", "manual": false, "prob": 0.5}
+{"id": 31, "label": "2", "text": "\u30d1\u30ea", "manual": false, "prob": 0.5}
+{"id": 32, "label": "3", "text": "\u30e8\u30fc\u30ed\u30c3\u30d1", "manual": false, "prob": 0.5}
+{"id": 42, "label": "2", "text": "\u751f\u7269", "manual": true, "prob": 0.5}
+{"id": 43, "label": "3", "text": "\u30b3\u30b1\u690d\u7269", "manual": false, "prob": 0.5}
+{"id": 47, "label": "3", "text": "\u793e\u4f1a\u5b66", "manual": true, "prob": 0.5}
+{"id": 111, "label": "1", "text": "\u65e5\u672c\u8a9e", "manual": true, "prob": 0.5}
+{"id": 112, "label": "1", "text": "\u5730\u7406\u5b66", "manual": true, "prob": 0.5}
+{"id": 123, "label": "2", "text": "\u56fd\u306e\u4e00\u89a7", "manual": false, "prob": 0.5}
+{"id": 131, "label": "2", "text": "\u30d1\u30ea", "manual": false, "prob": 0.5}
+{"id": 132, "label": "3", "text": "\u30e8\u30fc\u30ed\u30c3\u30d1", "manual": true, "prob": 0.5}
+{"id": 142, "label": "2", "text": "\u751f\u7269", "manual": true, "prob": 0.5}
+{"id": 143, "label": "1", "text": "\u30b3\u30b1\u690d\u7269", "manual": false, "prob": 0.5}
+{"id": 147, "label": "3", "text": "\u793e\u4f1a\u5b66", "manual": true, "prob": 0.5}

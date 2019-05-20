@@ -3,8 +3,6 @@
 app/staticfiles/
 app/db.sqlite3
 app/server/node_modules/
-app/server/static/bundle/
-app/server/webpack-stats.json
 !data/
 !tests/
 !tools/

@@ -1,0 +1,88 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="columns">
+  <div class="column is-12">
+    <div class="card">
+      <header class="card-header">
+        <div class="card-header-title">
+            <h1 class="title">
+                Project settings
+            </h1>
+        </div>
+        <a href="#" class="card-header-icon" aria-label="more options">
+          <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+        </a>
+      </header>
+      <div class="card-content columns">
+        <div class="column is-12">
+            <div class="content-99999">
+                <div class="field">
+                  <label class="label">Project name</label>
+                  <div class="control">
+                    <input class="input" type="text" maxlength="100" placeholder="Project name" v-model="projectSettings.name">
+                  </div>
+                </div>  
+
+                <div class="field">
+                  <label class="label">Project description</label>
+                  <div class="control">
+                    <textarea class="textarea" rows="2" placeholder="Project description" v-model="projectSettings.description"></textarea>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label class="label">Assigned users</label>
+                  <div class="control">
+                    <select multiple="multiple" class="input select-height" v-model="projectSettings.users">
+                      <option v-for="user in users" :value="user.id" :key="user.id">[[ user.username ]]</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field">
+                    <label class="checkbox">
+                        <input type="checkbox" v-model="projectSettings.use_machine_model_sort">
+                        Annotate documents according to the confidence level of the automatic Machine Learning model
+                    </label>
+                </div>
+
+                <div class="field">
+                    <label class="checkbox"
+                           title="Check this to show to labelers the prediction of a Machine Learning model for the current record, along with the confidence level of the model. This can improve the speed of labeling, but has a risk of trusting the model (sometimes wrong) predictions too much">
+                        <input type="checkbox" v-model="projectSettings.show_ml_model_prediction">
+                        Show predicted label and model confidence
+                    </label>
+                </div>
+
+                <div class="field">
+                    <label class="checkbox"
+                            title="Check this to allow labelers to filter records using metadata upload with each record. This is an advanced feature.">
+                        <input type="checkbox" v-model="projectSettings.enable_metadata_search">
+                        Enable metadata search
+                    </label>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" @click="submit" :disabled="submitDisabled">
+                            Save
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/settings.js' %}"></script>
+{% endblock %}

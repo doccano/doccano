@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+<div id="users_root" v-cloak>
+  <div class="modal" :class="{ 'is-active': isDelete }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Delete User</p>
+        <button class="delete" aria-label="close" @click="isDelete=!isDelete"></button>
+      </header>
+      <section class="modal-card-body">
+        Are you sure you want to delete user?
+      </section>
+      <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
+        <button class="button is-danger" @click="deleteUser()">Delete</button>
+        <button class="button" @click="isDelete=!isDelete">Cancel</button>
+      </footer>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-10 is-offset-1">
+      <div class="card events-card">
+        <header class="card-header">
+            <div class="card-header-title">
+                <h1 class="title">
+                    User settings
+                </h1>
+            </div>
+          </header>
+          <div class="card-content columns">
+            <div class="column is-12">
+                <div class="content-99999">
+                    <div class="field">
+                      <label class="label">User name</label>
+                      <div class="control">
+                        <input class="input" type="text" maxlength="100" placeholder="User name" v-model="userSettings.username">
+                      </div>
+                    </div>  
+
+                    <div class="field">
+                        <label class="label">User email</label>
+                        <div class="control">
+                          <input class="input" type="email" maxlength="100" placeholder="User email" v-model="userSettings.email">
+                        </div>
+                      </div> 
+    
+                    <div class="field">
+                      <label class="label">Assigned projects</label>
+                      <div class="control">
+                        <select multiple="multiple" class="input select-height" v-model="userSettings.projects">
+                          <option v-for="project in projects" :value="project.id" :key="project.id">[[ project.name ]]</option>
+                        </select>
+                      </div>
+                    </div>
+    
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-primary" @click="submit" :disabled="submitDisabled">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+    
+                </div>
+            </div>
+    
+          </div>
+      </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/user.js' %}"></script>
+{% endblock %}

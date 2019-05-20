@@ -1,14 +1,49 @@
 import Vue from 'vue';
-import DocumentClassification from './document_classification.vue';
+import annotationMixin from './mixin';
+import HTTP from './http';
+import simpleShortcut from './filter';
+
+import { toPercent, parseDate } from './filters'
+
+Vue.filter('toPercent', toPercent)
+Vue.filter('parseDate', parseDate)
 
 Vue.use(require('vue-shortkey'), {
   prevent: ['input', 'textarea'],
 });
 
-new Vue({
+Vue.filter('simpleShortcut', simpleShortcut);
+
+
+const vm = new Vue({
   el: '#mail-app',
+  delimiters: ['[[', ']]'],
+  mixins: [annotationMixin],
 
-  components: { DocumentClassification },
+  methods: {
+    isIn(label) {
+      for (let i = 0; i < this.annotations[this.pageNumber].length; i++) {
+        const a = this.annotations[this.pageNumber][i];
+        if (a.label === label.id) {
+          return a;
+        }
+      }
+      return false;
+    },
 
-  template: '<DocumentClassification />',
+    async addLabel(label) {
+      const a = this.isIn(label);
+      if (a) {
+        this.removeLabel(a);
+      } else {
+        const docId = this.docs[this.pageNumber].id;
+        const payload = {
+          label: label.id,
+        };
+        await HTTP.post(`docs/${docId}/annotations/`, payload).then((response) => {
+          this.annotations[this.pageNumber].push(response.data);
+        });
+      }
+    },
+  },
 });

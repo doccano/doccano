@@ -1,0 +1,49 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="columns">
+  <div class="column is-12">
+
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      Sessions
+    </p>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+  <div class="card-content">
+    <table class="table is-fullwidth is-hoverable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Project</th>
+          <th># Documents annotated</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for session in object_list %}
+        <tr>
+          <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
+          <td>{{ session.project.name }}</td>
+          <td>{{ session.date }}</td>
+          <td>{{ session.documents_annotated }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+  </div>
+</div>
+
+{% endblock %}
+{% block footer %}
+{% endblock %}

@@ -1,18 +1,40 @@
-language: minimal
+language: python
+
+addons:
+  postgresql: "10"
+  apt:
+    packages:
+    - postgresql-10
+    - postgresql-client-10
+
+before_install:
+  - sudo cp /etc/postgresql/{9.6,10}/main/pg_hba.conf
+  - sudo /etc/init.d/postgresql restart
+env:
+  global:
+    - PGPORT=5433
 
 services:
   - docker
+  - postgresql
+
+python:
+  - "3.6"
+
+cache: pip
+
+before_script:
+  - psql -c 'create database doccano;' -U postgres
+
+install:
+  - pip install -r requirements.txt
 
 script:
-  - docker build .
+  - tools/ci.sh
 
 deploy:
   - provider: script
-    script: tools/cd.sh travis-${TRAVIS_BUILD_NUMBER}
+    script: tools/cd.sh
     on:
-      branch: master
-
-  - provider: script
-    script: tools/cd.sh ${TRAVIS_TAG}
-    on:
+      repo: Honeyfy/doccano
       tags: true

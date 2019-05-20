@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+{% block header %}
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">
+{% endblock %}
+{% block navigation %}
+<a class="navbar-item" href="{% url 'annotation' view.kwargs.project_id %}">
+  <span class="icon">
+    <i class="fas fa-user-edit"></i>
+  </span>
+  <b>Annotate Data</b>
+</a>
+<a class="navbar-item" @click="runModel" title="Train a Machine Learning model to classify documents based on the documents that were already annotated">
+  <span class="icon">
+    <i class="fas fa-robot"></i>
+  </span>
+  <b>Run Model</b>
+</a>
+
+<a class="navbar-item">
+  {{ docs_count }} documents
+</a>
+{% endblock %}
+{% block content %}
+<div class="columns mr0" id="mail-app" v-cloak>
+  <aside class="column is-2 aside">
+    <div>
+      <div class="main">
+        <a href="{% url 'dataset' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fa fa-inbox"></i>
+          </span>
+          <span class="name">Dataset</span>
+        </a>
+
+        <a class="item" href="{% url 'upload' view.kwargs.project_id %}">
+          <span class="icon">
+            <i class="fas fa-upload"></i>
+          </span>
+          <span class="name">Import Data</span>
+        </a>
+        <a class="item" href="{% url 'download' view.kwargs.project_id %}">
+          <span class="icon">
+            <i class="fas fa-download"></i>
+          </span>
+          <span class="name">Export Data</span>
+        </a>
+
+        <a href="{% url 'guideline' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fas fa-book"></i>
+          </span>
+          <span class="name">Guidelines</span>
+        </a>
+
+        <hr style="margin: 0;">
+
+        <a href="{% url 'label-management' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fa fa-star"></i>
+          </span>
+          <span class="name">Labels</span>
+        </a>
+        <a href="{% url 'labels-admin' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fa fa-star"></i>
+          </span>
+          <span class="name">Labeled Documents</span>
+        </a>
+        <a href="{% url 'labelers' view.kwargs.project_id %}" class="item">
+            <span class="icon">
+              <i class="fa fa-users"></i>
+            </span>
+            <span class="name">Labelers</span>
+          </a>
+        <a href="{% url 'stats' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fas fa-signal"></i>
+          </span>
+          <span class="name">Statistics</span>
+        </a>
+        <a href="{% url 'settings' view.kwargs.project_id %}" class="item">
+          <span class="icon">
+            <i class="fas fa-cog"></i>
+          </span>
+          <span class="name">Project Settings</span>
+        </a>
+        <!--
+        <a href="#" class="item">
+            <span class="icon">
+                <i class="fas fa-users"></i>
+            </span>
+            <span class="name">Users</span>
+        </a>
+        -->
+      </div>
+    </div>
+  </aside>
+  <div class="column is-10 messages hero is-fullheight" id="message-feed">
+    {% if messages %}
+      <div>
+        <article class='message is-danger'>
+          <div class='message-body'>
+            <div>
+              {% for message in messages %}
+                <pre>{{ message }}</pre>
+              {% endfor %}
+            </div>
+          </div>
+        </article>
+      </div>
+    {% endif %}
+    {% block content-area %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

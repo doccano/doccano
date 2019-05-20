@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+<div id="users_root" v-cloak>
+  <section class="hero project-image">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-10 is-offset-1">
+          <h1 class="title is-1 has-text-white">
+            Hello, {{ user.get_username | title }}.
+          </h1>
+          <h2 class="subtitle is-4 has-text-white">
+            I hope you are having a great day!
+          </h2>
+          {% if user.is_superuser %}
+          <p>
+            <a class="button is-medium is-primary" @click="isActive=!isActive">
+              Create User
+            </a>
+          </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal card for creating project. -->
+  <div class="modal" :class="{ 'is-active': isActive }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Create User</p>
+        <button class="delete" aria-label="close" @click="isActive=!isActive"></button>
+      </header>
+      <form method="post">
+        {% csrf_token %}
+        <section class="modal-card-body">
+          {% for hidden_field in form.hidden_fields %}
+          {{ hidden_field }}
+          {% endfor %}
+          <input type="hidden" ref="formError" name="variable" value="{% if form.errors %}true{% else %}false{% endif %}">
+          {% for field in form.visible_fields %}
+          <div class="field">
+            {{ field.label_tag }}
+            <div class="control">
+              {% render_field field class="input select-height" %}
+            </div>
+            {% for error in field.errors %}
+              <p class="help is-danger">{{ error }}</p>
+            {% endfor %}
+            {% if field.help_text %}
+              <small class="form-text text-muted">{{ field.help_text }}</small>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </section>
+        <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
+          <button class="button is-primary">Create</button>
+          <button class="button" @click="isActive=!isActive">Cancel</button>
+        </footer>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" :class="{ 'is-active': isDelete }">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Delete User</p>
+        <button class="delete" aria-label="close" @click="isDelete=!isDelete"></button>
+      </header>
+      <section class="modal-card-body">
+        Are you sure you want to delete user?
+      </section>
+      <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
+        <button class="button is-danger" @click="deleteUser()">Delete</button>
+        <button class="button" @click="isDelete=!isDelete">Cancel</button>
+      </footer>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="container">
+      <div class="columns">
+        <div class="column is-10 is-offset-1">
+      <div class="card events-card">
+        <header class="card-header">
+          <p class="card-header-title">
+            [[ items.length ]] Users
+          </p>
+        </header>
+        <div class="card-table">
+          <div class="content">
+            <table class="table is-fullwidth">
+              <tbody>
+                <tr v-for="user in items">
+                  <td class="pl15r">
+                    <div class="dataset-item__main is-vertical">
+                      <div class="dataset-item__main-title">
+                        <div class="dataset-item__main-title-link dataset-item__link">
+                          <a v-bind:href="'/users/' + user.id" class="has-text-black">[[ user.username ]]</a>
+                        </div>
+                      </div>
+                      <div class="dataset-item__main-subtitle">
+                        [[ user.email ]]
+                      </div>
+                    </div>
+                  </td>
+                  {% if user.is_superuser %}
+                  <td class="is-vertical"><a v-bind:href="'/users/' + user.id">Edit</a></td>
+                  <td class="is-vertical"><a class="has-text-danger" @click="setUser(user)">Delete</a></td>
+                  {% endif %}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/users.js' %}"></script>
+{% endblock %}

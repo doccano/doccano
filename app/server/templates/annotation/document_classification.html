@@ -1,0 +1,110 @@
+{% extends "annotation/annotation_base.html" %}
+{% load static %}
+{% block annotation-area %}
+
+    <div class="card">
+  <header class="card-header">
+    <div class="card-header-title has-background-royalblue" style="padding:1.5rem;">
+        <span class="card-header-text">
+            Available labels:
+        </span>
+      <div class="field is-grouped is-grouped-multiline">
+        <div class="control" v-for="(label, item) in labels">
+          <div class="tags has-addons">
+            <a class="tag is-medium" v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }" v-on:click="addLabel(label)"
+              v-shortkey.once=" replaceNull(label.shortcut) " @shortkey="addLabel(label)">
+              [[ label.text ]]
+            </a>
+            <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="card-content">
+    <div class="field is-grouped is-grouped-multiline">
+      <div class="control" v-for="(annotation, index) in annotations[pageNumber]">
+        <div class="tags has-addons" v-if="id2label[annotation.label]">
+          <span class="tag is-medium" v-bind:style="{ color: id2label[annotation.label].text_color, 'background-color': id2label[annotation.label].background_color }">
+            [[ id2label[annotation.label].text ]]
+            <button class="delete is-small" v-on:click="removeLabel(annotation)"></button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    {% if user.is_superuser and project.show_ml_model_prediction %}
+      <div v-if="predictedLabel">
+          <div v-if="predictedLabel.label" class="tags has-addons">
+              <p>Predicted
+                <a class="tag is-medium" v-bind:style="{ color: predictedLabel.label.text_color, backgroundColor: predictedLabel.label.background_color }">
+                    [[ predictedLabel.label.text ]]
+                </a>
+                with probability <b>[[ predictedLabel.prob | toPercent ]]</b></p>
+          </div>
+      </div>
+    {% endif %}
+
+
+    {#      <span v-if="docs[pageNumber]">Item #[[ docs[pageNumber].id ]]. [[ docs[pageNumber].metadata ]]</span>#}
+    <hr style="margin: 0.8rem 0;">
+    <div class="content" v-if="docs[pageNumber]">
+        <p class="text" v-html="docText"></p>
+
+        <!--<pre class="metadata" style="color: #aaa; font-size:0.7em; margin-top:2em; line-height: 1.2em">[[ docs[pageNumber] ]]</pre>-->
+    </div>
+
+    <div v-if="metadataString & metadataString!='{}'" class="metadataViewer">
+      <pre v-html="metadataString"></pre>
+    </div>
+
+  </div>
+</div>
+{% if user.is_superuser %}
+  <div class="card" style="margin-top: 2rem;" ref="labelersCard" id="labelersCard" v-show="labelers.length">
+    <header class="card-footer">
+        <div class="card-header-title">
+            Labelers
+        </div>
+        <a href="#" style="text-decoration: none;" class="card-header-icon" aria-label="more options">
+          <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+        </a>
+      </header>
+
+      <div class="card-content">
+          <div class="tags has-addons" v-for="labeler in labelers">
+              <p><b>[[ labeler.user_name ]]</b>
+                <a class="tag is-medium" v-bind:style="{ color: labeler.label.text_color, backgroundColor: labeler.label.background_color }">
+                    [[ labeler.label.text ]]
+                </a>
+                </p>
+          </div>
+      </div>
+  </div>
+{% endif %}
+{% if project.enable_metadata_search %}
+    <div class="card" style="margin-top: 2rem;">
+    <header class="card-footer">
+        <div class="card-header-title">
+            Metadata search
+        </div>
+        <a href="#" style="text-decoration: none;" class="card-header-icon" aria-label="more options">
+          <span class="icon">
+            <i class="fas fa-angle-down" aria-hidden="true"></i>
+          </span>
+        </a>
+      </header>
+
+      <div class="card-content">
+        <p>Use this panel to filter documents based on their properties.</p>
+        <metadata-search :metadata="metadataKeys" @metadatasearch="metadataSearch"></metadata-search>
+      </div>
+    </div>
+{% endif %}
+{% endblock %}
+{% block footer %}
+    <script src="{% static 'bundle/document_classification.js' %}"></script>
+{% endblock %}

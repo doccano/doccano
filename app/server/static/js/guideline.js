@@ -1,13 +1,36 @@
 import Vue from 'vue';
-import vueDebounce from 'vue-debounce';
-import Guideline from './guideline.vue';
+import HTTP from './http';
 
-Vue.use(vueDebounce);
+const vm = new Vue({
+  el: '#editor',
+  data: {
+    input: '# hello',
+    project: Object,
+  },
 
-new Vue({
-  el: '#mail-app',
+  computed: {
+    compiledMarkdown() {
+      return marked(this.input, {
+        sanitize: true,
+      });
+    },
+  },
 
-  components: { Guideline },
+  created() {
+    HTTP.get().then((response) => {
+      this.input = response.data.guideline;
+      this.project = response.data;
+    });
+  },
 
-  template: '<Guideline />',
+  methods: {
+    update: _.debounce(function(e) {
+      this.input = e.target.value;
+      this.project.guideline = this.input;
+      HTTP.put('', this.project).then((response) => {
+        this.project = response.data;
+      });
+    }, 300),
+  },
+
 });

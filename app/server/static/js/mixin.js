@@ -1,45 +1,192 @@
-import * as marked from 'marked';
-import hljs from 'highlight.js';
-import VueJsonPretty from 'vue-json-pretty';
-import isEmpty from 'lodash.isempty';
 import HTTP from './http';
-import Messages from './messages.vue';
+import Vue from 'vue';
 
-const getOffsetFromUrl = (url) => {
-  const offsetMatch = url.match(/[?#].*offset=(\d+)/);
-  if (offsetMatch == null) {
-    return 0;
+Vue.component('metadata-search', {
+  props: ['metadata'],
+  template: `<div>
+  <div class="field is-horizontal" v-for="(rule, index) in rules" :key="index">
+    <div class="field-body">
+      <div class="field is-narrow">
+        <div class="control">
+          <div class="select">
+            <select v-model="rule.field">
+              <option v-for="(key, index) in metadata" :value="key" :key="index">
+                {{ key }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field is-narrow">
+        <div class="control">
+          <div class="select">
+            <select  v-model="rule.comparator">
+              <option v-for="comparator in comparators" :value="comparator.value" :key="comparator.value">
+                {{ comparator.text }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <input class="input" type="text" placeholder="Value" v-model="rule.search">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="field">
+    <div class="control">
+      <button class="button is-link" @click="search" :disabled="checkDisabled">Search</button>
+    </div>
+  </div>
+  </div>
+  `,
+  data() {
+    return {
+      comparators: [
+        {text: "==", value: 'eq'},
+        {text: "<=", value: 'leq'},
+        {text: "<", value: 'lt'},
+        {text: ">=", value: 'geq'},
+        {text: ">", value: 'gt'}
+      ],
+      rules: [
+        {field: '', comparator: 'eq', search: ''}
+      ]
+    };
+  },
+  methods: {
+    search() {
+      this.$emit('metadatasearch', this.rules)
+    }
+  },
+  computed: {
+    checkDisabled() {
+      let ret = false
+      this.rules.forEach((r) => {
+        if (!r.field.length || !r.search.length) {
+          ret = true
+        }
+      })
+      return ret
+    }
+  }
+});
+
+const tokenizeSearch = (searchStr) => {
+  let exclude = false
+  let out = 'terms'
+
+  const ret = {
+    terms: [],
+    exclude: []
   }
 
-  return parseInt(offsetMatch[1], 10);
-};
+  searchStr = searchStr.trim()
 
-const storeOffsetInUrl = (offset) => {
-  let href = window.location.href;
+  if (searchStr.length){
+    while(true) {
+      if (exclude){
+        out = 'exclude'
+      } else {
+        out = 'terms'
+      }
+               
+      exclude = false
+      if (searchStr[0] === '"') {
+        const next_quote = searchStr.substring(1).indexOf('"')
+        if (next_quote !== -1) {
+          ret[out].push(searchStr.substring(1, next_quote + 1))
+          searchStr = searchStr.substring(next_quote+1)
+        } else {
+          if (searchStr != '"') {
+            searchStr = searchStr.substring(1)
+          } else {
+            break
+          }
+        }
+      } else if (searchStr[0] === '-') {
+        exclude = true
+        searchStr = searchStr.substring(1)
+      } else {
+        const next_word_start = searchStr.indexOf(' ')
+        if (next_word_start !== -1) {
+          ret[out].push(searchStr.substring(0, next_word_start + 1).trim())
+          searchStr = searchStr.substring(next_word_start + 1)
+        } else {
+          ret[out].push(searchStr.trim())
+          break
+        }
+      }      
+    }   
+  }
+      
+  ret.terms = ret.terms.filter((t) => t.length)
+  ret.exclude = ret.exclude.filter((t) => t.length)
+  return ret
+}
 
-  const fragmentStart = href.indexOf('#') + 1;
-  if (fragmentStart === 0) {
-    href += '#offset=' + offset;
-  } else {
-    const prefix = href.substring(0, fragmentStart);
-    const fragment = href.substring(fragmentStart);
-
-    const newFragment = fragment.split('&').map((fragmentPart) => {
-      const keyValue = fragmentPart.split('=');
-      return keyValue[0] === 'offset'
-        ? 'offset=' + offset
-        : fragmentPart;
-    }).join('&');
-
-    href = prefix + newFragment;
+const getOffsetFromUrl = function(url) {
+  if (!url) {
+    return 0
   }
 
-  window.location.href = href;
+  const params = new URLSearchParams(url);
+  const offset = params.get('offset')
+
+  if (!offset) {
+    return 0
+  }
+
+  return parseInt(offset, 10);
 };
 
-export const annotationMixin = {
-  components: { VueJsonPretty },
+const getSearchQuery = function(url) {
+  if (!url) {
+    return ''
+  }
 
+  const params = new URLSearchParams(url);
+  const search = params.get('search')
+
+  if (!search) {
+    return ''
+  }
+
+  return search;
+}
+
+const setQueryStringParameter = (name, value) => {
+  const params = new URLSearchParams(location.search);
+  params.set(name, value);
+  window.history.pushState({}, "", decodeURIComponent(`${location.pathname}?${params}`));
+};
+
+const storeOffsetInUrl = function(offset) {
+  setQueryStringParameter('offset', offset)
+};
+
+const syntaxHighlight = (json) => {
+  json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+      var cls = 'number';
+      if (/^"/.test(match)) {
+          if (/:$/.test(match)) {
+              cls = 'key';
+          } else {
+              cls = 'string';
+          }
+      } else if (/true|false/.test(match)) {
+          cls = 'boolean';
+      } else if (/null/.test(match)) {
+          cls = 'null';
+      }
+      return '<span class="' + cls + '">' + match + '</span>';
+  });
+}
+
+const annotationMixin = {
   data() {
     return {
       pageNumber: 0,
@@ -51,11 +198,25 @@ export const annotationMixin = {
       remaining: 0,
       searchQuery: '',
       url: '',
-      offset: getOffsetFromUrl(window.location.href),
+      offset: 0,
       picked: 'all',
       count: 0,
-      isMetadataActive: false,
-      isAnnotationGuidelineActive: false,
+      isActive: false,
+      next: null,
+      prev: null,
+      highlightQuery: '',
+      last: null,
+      first: null,
+      limit: 0,
+      suggestions: [],
+      explainMode: false,
+      docExplanation: '',
+      metadataAll: [],
+      metadataKeys: [],
+      metadataRules: [],
+      docFromLink: null,
+      showLabelers: false,
+      labelers: []
     };
   },
 
@@ -73,6 +234,38 @@ export const annotationMixin = {
       }
     },
 
+    async firstDocumentsPage() {
+      if (this.first) {
+        this.url = this.first;
+        await this.search();
+        this.pageNumber = this.docs.length - 1;
+      }
+    },
+
+    async prevDocumentsPage() {
+      if (this.prev) {
+        this.url = this.prev;
+        await this.search();
+        this.pageNumber = this.docs.length - 1;
+      }
+    },
+
+    async nextDocumentsPage() {
+      if (this.next) {
+        this.url = this.next;
+        await this.search();
+        this.pageNumber = 0;
+      }
+    },
+
+    async lastDocumentsPage() {
+      if (this.last) {
+        this.url = this.last;
+        await this.search();
+        this.pageNumber = this.docs.length - 1;
+      }
+    },
+
     async prevPage() {
       this.pageNumber -= 1;
       if (this.pageNumber === -1) {
@@ -86,19 +279,74 @@ export const annotationMixin = {
       }
     },
 
-    async search() {
+    async search(setOffset = true) {
       await HTTP.get(this.url).then((response) => {
         this.docs = response.data.results;
         this.next = response.data.next;
         this.prev = response.data.previous;
         this.count = response.data.count;
+        if (this.next || this.prev) {
+          const limitMatches = this.next? this.next.match(/limit=(\d+)/) : this.prev.match(/limit=(\d+)/)
+          this.limit = Number.parseInt(limitMatches[1], 10)
+          const offsetMatches = this.next? this.next.match(/(offset=\d+)/) : this.prev.match(/(offset=\d+)/)
+          const lastOffset = Math.floor(this.count / this.limit) * this.limit
+          if (offsetMatches && offsetMatches.length > 1) {
+            this.first = this.next ? this.next.replace(offsetMatches[1], 'offset=0') : this.prev.replace(offsetMatches[1], 'offset=0')
+            this.last = this.next ? this.next.replace(offsetMatches[1], `offset=${lastOffset}`) : this.prev.replace(offsetMatches[1], `offset=${lastOffset}`)
+          }
+        } else {
+          this.first = 0
+          this.last = 0
+        }
+        
+        
         this.annotations = [];
         for (let i = 0; i < this.docs.length; i++) {
           const doc = this.docs[i];
           this.annotations.push(doc.annotations);
         }
-        this.offset = getOffsetFromUrl(this.url);
+        
+        if (setOffset) {
+          this.offset = getOffsetFromUrl(this.url);
+        }
+
+        if (this.offset === 0 && this.docFromLink) {
+          const docIdx = this.docs.findIndex((d) => d.id === this.docFromLink.id)
+          if (docIdx === -1) {
+            this.docs.unshift(this.docFromLink)
+          } else {
+            this.pageNumber = docIdx
+          }
+        }
       });
+    },
+
+    searchChange: _.debounce(function(e) {
+      this.suggestions = []
+      if (this.searchQuery.length > 2) {
+        const splittedQuery = this.searchQuery.trim().split(' ')
+        const lastWord = splittedQuery[splittedQuery.length - 1]
+        this.getSuggestions(lastWord)
+      }
+    }, 500),
+
+    async getSuggestions(word) {
+      // const res = await HTTP.get(`suggested/?word=${word}`)
+      const res = 0
+      if (res && res.data) {
+        this.suggestions = res.data
+      }
+    },
+
+    async submitSuggestion(s) {
+      const suggestion = s[0]
+      if (this.searchQuery[this.searchQuery.length - 1] === ' ') {
+        this.searchQuery += suggestion
+      } else {
+        this.searchQuery += ` ${suggestion}`
+      }
+      this.suggestions = []
+      await this.getSuggestions(suggestion)
     },
 
     getState() {
@@ -113,14 +361,38 @@ export const annotationMixin = {
 
     async submit() {
       const state = this.getState();
-      this.url = `docs?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
+      this.offset = 0;
+      this.suggestions = []
+      this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}&rules=${JSON.stringify(this.metadataRules)}`;
       await this.search();
       this.pageNumber = 0;
+
+      if (this.explainMode) {
+        const doc = this.docs[0]
+        if (doc) {
+          this.getExplanation(doc.id)
+        }
+      }
+
+      console.log('subnit')
+
+      if (this.showLabelers) {
+        const doc = this.docs[0]
+        if (doc) {
+          this.getLabelers(doc.id)
+        }
+      }
+
+      if (this.searchQuery.length) {
+        this.highlightQuery = this.searchQuery;
+      } else {
+        this.highlightQuery = '';
+      }
     },
 
     removeLabel(annotation) {
       const docId = this.docs[this.pageNumber].id;
-      HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then(() => {
+      HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then((response) => {
         const index = this.annotations[this.pageNumber].indexOf(annotation);
         this.annotations[this.pageNumber].splice(index, 1);
       });
@@ -134,13 +406,38 @@ export const annotationMixin = {
       return shortcut;
     },
 
-    shortcutKey(label) {
-      let shortcut = label.suffix_key;
-      if (label.prefix_key) {
-        shortcut = `${label.prefix_key} ${shortcut}`;
+    async getExplanation(id) {
+      const response = await HTTP.get(`docs/${id}/explanation`)
+      if (response.data) {
+        this.docExplanation = response.data.document
       }
-      return shortcut;
     },
+
+    async getLabelers(id) {
+      const response = await HTTP.get(`docs/${id}/labelers`)
+      if (response.data) {
+        this.labelers = response.data.document_annotations
+        this.labelers = this.labelers.map((l) => {
+          return {
+            ...l,
+            label: this.labels.find((lf) => lf.id === l.label_id)
+          }
+        })
+      }
+    },
+
+    async popState() {
+      const offset = getOffsetFromUrl(location.search)
+      const searchQuery = getSearchQuery(location.search)
+      const state = this.getState();
+      this.url = `docs/?q=${searchQuery}&is_checked=${state}&offset=${offset}&rules=${JSON.stringify(this.metadataRules)}`;
+      await this.search(false);
+    },
+
+    async metadataSearch(rules) {
+      this.metadataRules = rules
+      await this.submit()
+    }
   },
 
   watch: {
@@ -150,7 +447,7 @@ export const annotationMixin = {
 
     annotations() {
       // fetch progress info.
-      HTTP.get('statistics').then((response) => {
+      HTTP.get('progress').then((response) => {
         this.total = response.data.total;
         this.remaining = response.data.remaining;
       });
@@ -159,16 +456,90 @@ export const annotationMixin = {
     offset() {
       storeOffsetInUrl(this.offset);
     },
+
+    explainMode(val) {
+      if (val) {
+        localStorage.setItem('doccano_explainMode', true)
+        const doc = this.docs[this.pageNumber]
+        this.getExplanation(doc.id)
+      } else {
+        localStorage.removeItem('doccano_explainMode')
+      }
+    },
+
+    pageNumber(val) {
+      if (this.explainMode) {
+        const doc = this.docs[val]
+        this.getExplanation(doc.id)
+        if (this.showLabelers) {
+          this.getLabelers(doc.id)
+        }
+      }
+    }
   },
 
-  created() {
+  async created() {
+    this.offset = getOffsetFromUrl(location.search)
+    this.searchQuery = getSearchQuery(location.search)
     HTTP.get('labels').then((response) => {
       this.labels = response.data;
     });
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
     });
-    this.submit();
+    HTTP.get('metadata').then((response) => {
+      response.data.metadata.forEach((m) => {
+        try {
+          const data = JSON.parse(m);
+          Object.keys(data).forEach((k) => {
+            if (!this.metadataKeys.includes(k)) {
+              this.metadataKeys.push(k);
+            }
+          })
+        } catch (e) {
+          console.log('Wrong metadata format')
+        }
+      })
+    });
+
+    if (location.hash && location.hash.length) {
+      if (location.hash.indexOf('#document=') !== -1) {
+        try {
+          const docResp = await HTTP.get(`docs/${location.hash.replace('#document=', '')}`)
+          this.docFromLink = docResp.data
+        } catch(e) {
+          this.docFromLink = null
+        }
+      }
+    }
+
+    const state = this.getState();
+    this.url = `docs/?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
+    await this.search();
+    
+    if (localStorage) {
+      const explainMode = localStorage.getItem('doccano_explainMode')
+      if (explainMode) {
+        this.explainMode = true
+      }
+    }
+
+    if (this.explainMode) {
+      const doc = this.docs[0]
+      this.getExplanation(doc.id)
+    }
+
+    if (document.getElementById('labelersCard')) {
+      this.showLabelers = true
+      const doc = this.docs[0]
+      this.getLabelers(doc.id)
+    }
+
+    window.addEventListener('popstate', this.popState)
+  },
+
+  beforeDestroy() {
+    window.removeEventListener('popstate', this.popState)
   },
 
   computed: {
@@ -184,22 +555,8 @@ export const annotationMixin = {
       });
     },
 
-    documentMetadata() {
-      const document = this.docs[this.pageNumber];
-      if (document == null || document.meta == null) {
-        return null;
-      }
-
-      const metadata = JSON.parse(document.meta);
-      if (isEmpty(metadata)) {
-        return null;
-      }
-
-      return metadata;
-    },
-
     id2label() {
-      const id2label = {};
+      let id2label = {};
       for (let i = 0; i < this.labels.length; i++) {
         const label = this.labels[i];
         id2label[label.id] = label;
@@ -216,92 +573,68 @@ export const annotationMixin = {
       }
       return 'is-primary';
     },
-  },
-};
 
-export const uploadMixin = {
-  components: { Messages },
-
-  data: () => ({
-    file: '',
-    messages: [],
-    format: 'json',
-    isLoading: false,
-  }),
-
-  mounted() {
-    hljs.initHighlighting();
-  },
-
-  methods: {
-    upload() {
-      this.isLoading = true;
-      this.file = this.$refs.file.files[0];
-      const formData = new FormData();
-      formData.append('file', this.file);
-      formData.append('format', this.format);
-      HTTP.post('docs/upload',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then((response) => {
-          console.log(response); // eslint-disable-line no-console
-          this.messages = [];
-          window.location = window.location.pathname.split('/').slice(0, -1).join('/');
-        })
-        .catch((error) => {
-          this.isLoading = false;
-          this.handleError(error);
-        });
-    },
-
-    handleError(error) {
-      const problems = Array.isArray(error.response.data)
-        ? error.response.data
-        : [error.response.data];
-
-      problems.forEach((problem) => {
-        if ('detail' in problem) {
-          this.messages.push(problem.detail);
-        } else if ('text' in problem) {
-          this.messages = problem.text;
-        }
-      });
-    },
-
-    download() {
-      this.isLoading = true;
-      const headers = {};
-      if (this.format === 'csv') {
-        headers.Accept = 'text/csv; charset=utf-8';
-        headers['Content-Type'] = 'text/csv; charset=utf-8';
-      } else {
-        headers.Accept = 'application/json';
-        headers['Content-Type'] = 'application/json';
+    currentDoc() {
+      if (this.pageNumber >= 0) {
+        return this.docs[this.pageNumber];
       }
-      HTTP({
-        url: 'docs/download',
-        method: 'GET',
-        responseType: 'blob',
-        params: {
-          q: this.format,
-        },
-        headers,
-      }).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'file.' + this.format); // or any other extension
-        document.body.appendChild(link);
-        this.isLoading = false;
-        link.click();
-      }).catch((error) => {
-        this.isLoading = false;
-        this.handleError(error);
-      });
+      return null;
     },
+
+    metadataString() {
+      if (this.currentDoc && this.currentDoc.metadata && this.currentDoc.metadata!='{}') {
+        const json = JSON.parse(this.currentDoc.metadata)
+        const str = JSON.stringify(json, undefined, 4);
+        return syntaxHighlight(str);
+      }
+      return null;
+    },
+
+    docText() {
+      let text = this.docs[this.pageNumber].text;
+
+      if (this.explainMode && this.docExplanation) {
+        text = this.docExplanation
+      }
+
+      if(this.highlightQuery.length) {
+        const tokenized = tokenizeSearch(this.highlightQuery)
+        tokenized.terms.forEach((term) => {
+          const spl = term.split(' ')
+          spl.forEach((spl) => {
+            text = text.replace(new RegExp(`(${spl})`, 'gi'), `<span class="highlight">$1</span>`)
+          })
+        });
+      }
+      
+      return text
+    },
+
+    currentPage() {
+      if (this.offset && this.limit) {
+        return this.offset / this.limit
+      }
+      return 0
+    },
+
+    lastPage() {
+      return Math.floor(this.count / this.limit)
+    },
+
+
+    predictedLabel() {
+      if (this.currentDoc && this.currentDoc.mlm_annotations && this.currentDoc.mlm_annotations.length) {
+        const pred = this.currentDoc.mlm_annotations[0]
+        const label = this.labels.find((l) => l.id === pred.label)
+        const { prob } = pred
+        return {
+          label,
+          prob
+        }
+      }
+      return null
+    }
   },
 };
+
+export default annotationMixin;

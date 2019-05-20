@@ -12,10 +12,12 @@
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp"
     crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-extensions@4.0.1/bulma-divider/dist/css/bulma-divider.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma-extensions@4.0.1/bulma-checkradio/dist/css/bulma-checkradio.min.css" crossorigin="anonymous">
   <link rel="stylesheet" href="{% static 'css/forum.css' %}">
+  <link rel="stylesheet" href="{% static 'css/bulma.switcher.min.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/css/swiper.min.css">
   <!-- favicon settings -->
   <link rel="apple-touch-icon" sizes="57x57" href="{% static 'images/favicons/apple-icon-57x57.png' %}">
   <link rel="apple-touch-icon" sizes="60x60" href="{% static 'images/favicons/apple-icon-60x60.png' %}">
@@ -39,12 +41,12 @@
 </head>
 
 <body>
-  <nav class="navbar has-shadow">
+  <nav class="navbar has-shadow" id="navbar-component">
     <div class="container">
       <div class="navbar-brand">
         <a class="navbar-item" href="{% url 'index' %}">
           <img src="{% static 'images/logo.png' %}" width="32" height="32">
-          <b>doccano</b>
+          <b>Doccano</b>
         </a>
         {% block navigation %}{% endblock %}
       </div>
@@ -75,6 +77,9 @@
           <a class="navbar-item" href="{% url 'projects' %}">
             <span>Projects</span>
           </a>
+          <a class="navbar-item" href="{% url 'users_admin' %}">
+            <span>Users</span>
+          </a>
           {% endif %}
           {% if not user.is_authenticated %}
           <a class="navbar-item" href="{% url 'login' %}">
@@ -82,7 +87,7 @@
           </a>
           {% else %}
           <a class="navbar-item" href="{% url 'logout' %}">
-            <span>Logout</span>
+            <span>Logout {{user}}</span>
           </a>
           {% endif %}
         </div>
@@ -93,5 +98,21 @@
   {% block content %}{% endblock %}
   
   {% block footer %}{% endblock %}
+  <script src="{% static 'bundle/navbar.js' %}"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.3.3/js/swiper.min.js"></script>
+  <script>
+    var mySwiper = new Swiper('.swiper-container', {
+      // Optional parameters
+      loop: true,
+      autoplay: {
+        delay: 5000,
+      },
+      // Navigation arrows
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      },
+    })
+  </script>
 </body>
 </html>

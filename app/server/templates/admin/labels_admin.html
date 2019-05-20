@@ -1,0 +1,57 @@
+{% extends "admin/admin_base.html" %}
+{% load static %}
+{% block content-area %}
+
+<div class="card">
+  <header class="card-header">
+    <div class="card-header-title">
+      <h1 class="title">Labeled Documents</h1>
+    </div>
+    <div class="section section--small-padding">
+      <a href="{% url 'download_labels_admin' view.kwargs.project_id %}" class="button is-primary button-margin ">Download CSV</a>
+    </div>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+  <div class="card-content">
+      <p>The table below diplays the [[filteredTableRows.length]] documents that were annotated. Click on column names to sort.</p>
+      <vue-good-table
+        :columns="tableColumns"
+        :rows="tableRows"
+        :search-options="{
+          enabled: true,
+          trigger: 'enter'
+        }"
+        :pagination-options="{
+          enabled: true,
+          mode: 'pages'
+        }">
+
+        <template slot="table-row" slot-scope="props">
+            <span v-if="props.column.field == 'topLabel'">
+              <span style="font-weight: bold; color: red;" v-if="props.row.topLabel != props.row.groundTruth && props.row.groundTruth">[[ props.row.topLabel ]]</span> 
+              <span v-else>[[ props.row.topLabel ]]</span>
+            </span>
+            <span v-if="props.column.field == 'groundTruth'">
+              <span style="font-weight: bold; color: red;" v-if="props.row.topLabel != props.row.groundTruth && props.row.groundTruth">[[ props.row.groundTruth ]]</span> 
+              <span v-else>[[ props.row.groundTruth ]]</span>
+            </span>
+            <span v-if="props.column.field == 'documentId'">
+                <a :href="getUrl('{% url 'annotation' view.kwargs.project_id %}', props.row.documentId)">[[ props.row.documentId ]]</a>
+            </span>
+            <span v-if="props.column.field != 'topLabel' &&  props.column.field != 'groundTruth' &&  props.column.field != 'documentId'">
+              [[ props.formattedRow[props.column.field] ]]
+            </span>
+          </template>
+
+        </vue-good-table>
+
+  </div>
+</div>
+{% endblock %}
+{% block footer %}
+<script src="{% static 'bundle/labels_admin.js' %}"></script>
+{% endblock %}

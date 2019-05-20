@@ -1,115 +1,38 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
-from rest_polymorphic.serializers import PolymorphicSerializer
-from rest_framework.exceptions import ValidationError
-
-
+from django.contrib.auth.models import User
 from .models import Label, Project, Document
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, DocumentMLMAnnotation
+
+
+class LabelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Label
+        fields = ('id', 'text', 'comment', 'shortcut', 'background_color', 'text_color')
+
+
+class DocumentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text')
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = get_user_model()
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_superuser')
-
-
-class LabelSerializer(serializers.ModelSerializer):
-
-    def validate(self, attrs):
-        if 'prefix_key' not in attrs and 'suffix_key' not in attrs:
-            return super().validate(attrs)
-
-        prefix_key = attrs['prefix_key']
-        suffix_key = attrs['suffix_key']
-
-        # In the case of user don't set any shortcut key.
-        if prefix_key is None and suffix_key is None:
-            return super().validate(attrs)
-
-        # Don't allow shortcut key not to have a suffix key.
-        if prefix_key and not suffix_key:
-            raise ValidationError('Shortcut key may not have a suffix key.')
-
-        # Don't allow to save same shortcut key when prefix_key is null.
-        try:
-            context = self.context['request'].parser_context
-            project_id = context['kwargs']['project_id']
-        except (AttributeError, KeyError):
-            pass  # unit tests don't always have the correct context set up
-        else:
-            if Label.objects.filter(suffix_key=suffix_key,
-                                    prefix_key__isnull=True,
-                                    project=project_id).exists():
-                raise ValidationError('Duplicate key.')
-
-        return super().validate(attrs)
-
-    class Meta:
-        model = Label
-        fields = ('id', 'text', 'prefix_key', 'suffix_key', 'background_color', 'text_color')
-
-
-class DocumentSerializer(serializers.ModelSerializer):
-    annotations = serializers.SerializerMethodField()
-
-    def get_annotations(self, instance):
-        request = self.context.get('request')
-        project = instance.project
-        model = project.get_annotation_class()
-        serializer = project.get_annotation_serializer()
-        annotations = model.objects.filter(document=instance.id)
-        if request:
-            annotations = annotations.filter(user=request.user)
-        serializer = serializer(annotations, many=True)
-        return serializer.data
-
-    class Meta:
-        model = Document
-        fields = ('id', 'text', 'annotations', 'meta')
-
+        model = User
+        fields = ('id', 'username', 'email', 'projects')
 
 class ProjectSerializer(serializers.ModelSerializer):
-
+    progress = serializers.SerializerMethodField()
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
-        read_only_fields = ('image', 'updated_at')
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at', 'use_machine_model_sort', 'progress', 'enable_metadata_search', 'show_ml_model_prediction')
 
-
-class TextClassificationProjectSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = TextClassificationProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
-        read_only_fields = ('image', 'updated_at', 'users')
-
-
-class SequenceLabelingProjectSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = SequenceLabelingProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
-        read_only_fields = ('image', 'updated_at', 'users')
-
-
-class Seq2seqProjectSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Seq2seqProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at')
-        read_only_fields = ('image', 'updated_at', 'users')
-
-
-class ProjectPolymorphicSerializer(PolymorphicSerializer):
-    model_serializer_mapping = {
-        Project: ProjectSerializer,
-        TextClassificationProject: TextClassificationProjectSerializer,
-        SequenceLabelingProject: SequenceLabelingProjectSerializer,
-        Seq2seqProject: Seq2seqProjectSerializer
-    }
+    def get_progress(self, obj):
+        request = self.context.get('request')
+        return obj.get_progress(request.user)
 
 
 class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
@@ -124,31 +47,102 @@ class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
 
 
 class DocumentAnnotationSerializer(serializers.ModelSerializer):
-    # label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+    label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
 
     class Meta:
         model = DocumentAnnotation
-        fields = ('id', 'prob', 'label', 'user', 'document')
-        read_only_fields = ('user', )
+        fields = ('id', 'prob', 'label')
+
+    def create(self, validated_data):
+        annotation = DocumentAnnotation.objects.create(**validated_data)
+        return annotation
+
+class DocumentMLMAnnotationSerializer(serializers.ModelSerializer):
+    label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
+
+    class Meta:
+        model = DocumentMLMAnnotation
+        fields = ('id', 'prob', 'label')
+
+    def create(self, validated_data):
+        annotation = DocumentMLMAnnotation.objects.create(**validated_data)
+        return annotation
 
 
 class SequenceAnnotationSerializer(serializers.ModelSerializer):
-    #label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+    label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
 
     class Meta:
         model = SequenceAnnotation
-        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user', 'document')
-        read_only_fields = ('user',)
+        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset')
+
+    def create(self, validated_data):
+        annotation = SequenceAnnotation.objects.create(**validated_data)
+        return annotation
 
 
 class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
 
     class Meta:
         model = Seq2seqAnnotation
-        fields = ('id', 'text', 'user', 'document')
-        read_only_fields = ('user',)
+        fields = ('id', 'text')
+
+
+class ClassificationDocumentSerializer(serializers.ModelSerializer):
+    annotations = serializers.SerializerMethodField()
+    mlm_annotations = serializers.SerializerMethodField()
+
+    def get_annotations(self, instance):
+        request = self.context.get('request')
+        if request:
+            annotations = instance.doc_annotations.filter(user=request.user)
+            serializer = DocumentAnnotationSerializer(annotations, many=True)
+            return serializer.data
+
+    def get_mlm_annotations(self, instance):
+        request = self.context.get('request')
+        if request:
+            annotations = instance.doc_mlm_annotations
+            serializer = DocumentMLMAnnotationSerializer(annotations, many=True)
+            return serializer.data
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text', 'annotations', 'metadata', 'mlm_annotations')
+
+
+class SequenceDocumentSerializer(serializers.ModelSerializer):
+    annotations = serializers.SerializerMethodField()
+
+    def get_annotations(self, instance):
+        request = self.context.get('request')
+        if request:
+            annotations = instance.seq_annotations.filter(user=request.user)
+            serializer = SequenceAnnotationSerializer(annotations, many=True)
+            return serializer.data
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text', 'annotations')
+
+
+class Seq2seqDocumentSerializer(serializers.ModelSerializer):
+    annotations = serializers.SerializerMethodField()
+
+    def get_annotations(self, instance):
+        request = self.context.get('request')
+        if request:
+            annotations = instance.seq2seq_annotations.filter(user=request.user)
+            serializer = Seq2seqAnnotationSerializer(annotations, many=True)
+            return serializer.data
+
+    class Meta:
+        model = Document
+        fields = ('id', 'text', 'annotations')
+
+
+class Word2vecSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = ('id',)

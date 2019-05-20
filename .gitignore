@@ -74,7 +74,6 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
-junitxml/
 
 # Translations
 *.mo
@@ -135,6 +134,7 @@ venv.bak/
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff:
+.idea
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
@@ -198,8 +198,14 @@ pip-selfcheck.json
 # ignore db to avoid merge conflicts
 *.sqlite3
 
-# ignore django/node generated static files
-node_modules/
+# ignore django generated static files
 app/staticfiles/
-app/server/static/bundle/
-app/server/webpack-stats.json
+
+# ignore ml models files
+app/ml_models/
+
+# ignore javascript dependencies
+node_modules/
+
+# vscode
+.vscode/
