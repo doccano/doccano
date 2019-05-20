@@ -97,11 +97,15 @@
     "databaseSkuTier": "GeneralPurpose",
     "databaseSkuFamily": "Gen5",
     "databaseSkuName": "[concat('GP_', variables('databaseSkuFamily'), '_', parameters('databaseCores'))]",
-    "databaseConnectionString": "[concat('pgsql://', parameters('adminUserName'), '@', variables('databaseServerName'), ':', parameters('adminPassword'), '@', variables('databaseServerName'), '.postgres.database.azure.com:5432/', parameters('databaseName'))]",
     "databaseVersion": "9.6",
+    "databaseServerPort": 5432,
     "databaseServerName": "[concat(parameters('appName'),'-state')]",
+    "databaseUserCredentials" : "[concat(uriComponent(concat(parameters('adminUserName'), '@', variables('databaseServerName'))), ':', parameters('adminPassword'))]",
+    "databaseFqdn" : "[concat( variables('databaseServerName'), '.postgres.database.azure.com:', variables('databaseServerPort'))]",
+    "databaseConnectionString": "[concat('pgsql://', variables('databaseUserCredentials'), '@', variables('databaseFqdn'), '/', parameters('databaseName'))]",
     "setupScriptName": "[concat(parameters('appName'),'-setup')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
+    "appFqdn": "[concat(parameters('appName'),'.azurewebsites.net')]",
     "analyticsName": "[concat(parameters('appName'),'-analytics')]"
   },
   "resources": [
@@ -269,5 +273,15 @@
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
       }
     }
-  ]
+  ],
+  "outputs": {
+    "appServer": {
+      "type": "string",
+      "value": "[concat(variables('appFqdn'))]"
+    },
+    "databaseServer": {
+      "type": "string",
+      "value": "[variables('databaseFqdn')]"
+    }
+  }
 }
