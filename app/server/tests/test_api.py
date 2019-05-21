@@ -684,22 +684,21 @@ class TestUploader(APITestCase):
         cls.labeling_project = mommy.make('server.SequenceLabelingProject',
                                           users=[super_user], project_type=SEQUENCE_LABELING)
         cls.seq2seq_project = mommy.make('server.Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
-        cls.classification_url = reverse(viewname='doc_uploader', args=[cls.classification_project.id])
-        cls.classification_labels_url = reverse(viewname='label_list', args=[cls.classification_project.id])
-        cls.labeling_url = reverse(viewname='doc_uploader', args=[cls.labeling_project.id])
-        cls.labeling_labels_url = reverse(viewname='label_list', args=[cls.labeling_project.id])
-        cls.seq2seq_url = reverse(viewname='doc_uploader', args=[cls.seq2seq_project.id])
 
     def setUp(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
 
-    def upload_test_helper(self, url, filename, format, expected_status):
+    def upload_test_helper(self, project_id, filename, format, expected_status):
+        url = reverse(viewname='doc_uploader', args=[project_id])
+
         with open(os.path.join(DATA_DIR, filename)) as f:
             response = self.client.post(url, data={'file': f, 'format': format})
+
         self.assertEqual(response.status_code, expected_status)
 
-    def label_test_helper(self, url, expected_labels, expected_label_keys):
+    def label_test_helper(self, project_id, expected_labels, expected_label_keys):
+        url = reverse(viewname='label_list', args=[project_id])
         expected_keys = {key for label in expected_labels for key in label}
 
         response = self.client.get(url).json()
@@ -714,49 +713,49 @@ class TestUploader(APITestCase):
                 self.assertIsNotNone(label.get(expected_label_key))
 
     def test_can_upload_conll_format_file(self):
-        self.upload_test_helper(url=self.labeling_url,
+        self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.conll',
                                 format='conll',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_wrong_conll_format_file(self):
-        self.upload_test_helper(url=self.labeling_url,
+        self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.invalid.conll',
                                 format='conll',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_can_upload_classification_csv(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.csv',
                                 format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_seq2seq_csv(self):
-        self.upload_test_helper(url=self.seq2seq_url,
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='example.csv',
                                 format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.invalid.1.csv',
                                 format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_cannot_upload_csv_file_has_too_many_columns(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.invalid.2.csv',
                                 format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_can_upload_classification_jsonl(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='classification.jsonl',
                                 format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
-            url=self.classification_labels_url,
+            project_id=self.classification_project.id,
             expected_labels=[
                 {'text': 'positive', 'suffix_key': 'p', 'prefix_key': None},
                 {'text': 'negative', 'suffix_key': 'n', 'prefix_key': None},
@@ -768,13 +767,13 @@ class TestUploader(APITestCase):
             ])
 
     def test_can_upload_labeling_jsonl(self):
-        self.upload_test_helper(url=self.labeling_url,
+        self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.jsonl',
                                 format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
-            url=self.labeling_labels_url,
+            project_id=self.labeling_project.id,
             expected_labels=[
                 {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
                 {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
@@ -786,19 +785,19 @@ class TestUploader(APITestCase):
             ])
 
     def test_can_upload_seq2seq_jsonl(self):
-        self.upload_test_helper(url=self.seq2seq_url,
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='seq2seq.jsonl',
                                 format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_plain_text(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.txt',
                                 format='plain',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_data_without_label(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.jsonl',
                                 format='json',
                                 expected_status=status.HTTP_201_CREATED)
