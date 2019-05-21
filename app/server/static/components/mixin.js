@@ -2,7 +2,7 @@ import * as marked from 'marked';
 import hljs from 'highlight.js';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
-import HTTP from './http';
+import HTTP, { newHttpClient } from './http';
 import Messages from './messages.vue';
 
 const getOffsetFromUrl = (url) => {
@@ -227,10 +227,17 @@ export const uploadMixin = {
     messages: [],
     format: 'json',
     isLoading: false,
+    canUploadFromCloud: false,
   }),
 
   mounted() {
     hljs.initHighlighting();
+  },
+
+  created() {
+    newHttpClient().get('/v1/features').then((response) => {
+      this.canUploadFromCloud = response.data.cloud_upload;
+    });
   },
 
   computed: {
@@ -246,7 +253,7 @@ export const uploadMixin = {
       return '/cloud-storage'
         + `?project_id=${this.projectId}`
         + `&upload_format=${this.format}`
-        + `&next=${encodeURIComponent(this.postUploadUrl)}`
+        + `&next=${encodeURIComponent(this.postUploadUrl)}`;
     },
   },
 

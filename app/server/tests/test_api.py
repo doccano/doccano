@@ -847,6 +847,24 @@ class TestCloudUploader(TestUploader):
                                 expected_status=status.HTTP_302_FOUND)
 
 
+class TestFeatures(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_name = 'user_name'
+        cls.user_pass = 'user_pass'
+
+        cls.user = User.objects.create_user(username=cls.user_name, password=cls.user_pass, email='fizz@buzz.com')
+
+    def setUp(self):
+        self.client.login(username=self.user_name, password=self.user_pass)
+
+    @override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER=None)
+    def test_no_cloud_upload(self):
+        response = self.client.get(reverse('features'))
+
+        self.assertFalse(response.json().get('cloud_upload'))
+
+
 class TestParser(APITestCase):
 
     def parser_helper(self, filename, parser, include_label=True):

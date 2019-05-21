@@ -42,7 +42,7 @@ div.columns(v-cloak="")
                   span.file-label Select a file…
                 span.file-name {{ file.name }}
 
-          div.control
+          div.control(v-if="canUploadFromCloud")
             a.button(
               v-bind:href="cloudUploadUrl"
               v-bind:class="{'is-loading': isLoading}"
