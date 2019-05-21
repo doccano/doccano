@@ -4,7 +4,6 @@ import itertools
 import json
 import re
 from collections import defaultdict
-from math import floor
 from random import Random
 
 from django.db import transaction
@@ -55,40 +54,16 @@ class BaseStorage(object):
         annotation = serializer.save(user=user)
         return annotation
 
-    def extract_label(self, data):
-        """Extract labels from parsed data.
-
-        Example:
-            >>> data = [{"labels": ["positive"]}, {"labels": ["negative"]}]
-            >>> self.extract_label(data)
-            [["positive"], ["negative"]]
-        """
+    @classmethod
+    def extract_label(cls, data):
         return [d.get('labels', []) for d in data]
 
-    def exclude_created_labels(self, labels, created):
-        """Exclude created labels.
-
-        Example:
-            >>> labels = ["positive", "negative"]
-            >>> created = {"positive": ...}
-            >>> self.exclude_created_labels(labels, created)
-            ["negative"]
-        """
+    @classmethod
+    def exclude_created_labels(cls, labels, created):
         return [label for label in labels if label not in created]
 
     @classmethod
-    def to_serializer_format(cls, labels, created):
-        """Convert a label to model dictionary.
-
-        Also assigns shortkeys for each label that don't clash with existing
-        label shortkeys.
-
-        Example:
-            >>> labels = ["positive"]
-            >>> created = {}
-            >>> BaseStorage.to_serializer_format(labels, created)
-            [{"text": "positive", "suffix_key": "p", "prefix_key": None}]
-        """
+    def to_serializer_format(cls, labels, created, random_seed=None):
         existing_shortkeys = {(label.suffix_key, label.prefix_key)
                               for label in created.values()}
 
@@ -103,7 +78,7 @@ class BaseStorage(object):
                 serializer_label['prefix_key'] = shortkey[1]
                 existing_shortkeys.add(shortkey)
 
-            color = Color.random()
+            color = Color.random(seed=random_seed)
             serializer_label['background_color'] = color.hex
             serializer_label['text_color'] = color.contrast_color.hex
 
@@ -113,16 +88,6 @@ class BaseStorage(object):
 
     @classmethod
     def get_shortkey(cls, label, existing_shortkeys):
-        """Find the first non existing shortkey for the label.
-
-        Example without existing shortkey:
-            >>> BaseStorage.get_shortkey("positive", set())
-            ("p", None)
-
-        Example with existing shortkey:
-            >>> BaseStorage.get_shortkey("positive", {("p", None)})
-            ("p", "ctrl")
-        """
         model_prefix_keys = [key for (key, _) in Label.PREFIX_KEYS]
         prefix_keys = [None] + model_prefix_keys
 
@@ -135,13 +100,8 @@ class BaseStorage(object):
 
         return None
 
-    def update_saved_labels(self, saved, new):
-        """Update saved labels.
-
-        Example:
-            >>> saved = {'positive': ...}
-            >>> new = [<Label: positive>]
-        """
+    @classmethod
+    def update_saved_labels(cls, saved, new):
         for label in new:
             saved[label.text] = label
         return saved
@@ -176,27 +136,12 @@ class ClassificationStorage(BaseStorage):
             annotations = self.make_annotations(docs, labels, saved_labels)
             self.save_annotation(annotations, user)
 
-    def extract_unique_labels(self, labels):
-        """Extract unique labels
-
-        Example:
-            >>> labels = [["positive"], ["positive", "negative"], ["negative"]]
-            >>> self.extract_unique_labels(labels)
-            ["positive", "negative"]
-        """
+    @classmethod
+    def extract_unique_labels(cls, labels):
         return set(itertools.chain(*labels))
 
-    def make_annotations(self, docs, labels, saved_labels):
-        """Make list of annotation obj for serializer.
-
-        Example:
-            >>> docs = ["<Document: a>", "<Document: b>", "<Document: c>"]
-            >>> labels = [["positive"], ["positive", "negative"], ["negative"]]
-            >>> saved_labels = {"positive": "<Label: positive>", 'negative': "<Label: negative>"}
-            >>> self.make_annotations(docs, labels, saved_labels)
-            [{"document": 1, "label": 1}, {"document": 2, "label": 1}
-            {"document": 2, "label": 2}, {"document": 3, "label": 2}]
-        """
+    @classmethod
+    def make_annotations(cls, docs, labels, saved_labels):
         annotations = []
         for doc, label in zip(docs, labels):
             for name in label:
@@ -226,29 +171,12 @@ class SequenceLabelingStorage(BaseStorage):
             annotations = self.make_annotations(docs, labels, saved_labels)
             self.save_annotation(annotations, user)
 
-    def extract_unique_labels(self, labels):
-        """Extract unique labels
-
-        Example:
-            >>> labels = [[[0, 1, "LOC"]], [[3, 4, "ORG"]]]
-            >>> self.extract_unique_labels(labels)
-            ["LOC", "ORG"]
-        """
+    @classmethod
+    def extract_unique_labels(cls, labels):
         return set([label for _, _, label in itertools.chain(*labels)])
 
-    def make_annotations(self, docs, labels, saved_labels):
-        """Make list of annotation obj for serializer.
-
-        Example:
-            >>> docs = ["<Document: a>", "<Document: b>"]
-            >>> labels = labels = [[[0, 1, "LOC"]], [[3, 4, "ORG"]]]
-            >>> saved_labels = {"LOC": "<Label: LOC>", 'ORG': "<Label: ORG>"}
-            >>> self.make_annotations(docs, labels, saved_labels)
-            [
-              {"document": 1, "label": 1, "start_offset": 0, "end_offset": 1}
-              {"document": 2, "label": 2, "start_offset": 3, "end_offset": 4}
-            ]
-        """
+    @classmethod
+    def make_annotations(cls, docs, labels, saved_labels):
         annotations = []
         for doc, spans in zip(docs, labels):
             for span in spans:
@@ -276,16 +204,8 @@ class Seq2seqStorage(BaseStorage):
             annotations = self.make_annotations(doc, labels)
             self.save_annotation(annotations, user)
 
-    def make_annotations(self, docs, labels):
-        """Make list of annotation obj for serializer.
-
-        Example:
-            >>> docs = ["<Document: a>", "<Document: b>"]
-            >>> labels = [["Hello!"], ["How are you?", "What's up?"]]
-            >>> self.make_annotations(docs, labels)
-            [{"document": 1, "text": "Hello"}, {"document": 2, "text": "How are you?"}
-            {"document": 2, "text": "What's up?"}]
-        """
+    @classmethod
+    def make_annotations(cls, docs, labels):
         annotations = []
         for doc, texts in zip(docs, labels):
             for text in texts:
@@ -352,20 +272,8 @@ class CoNLLParser(FileParser):
             data.append(j)
             yield data
 
-    def calc_char_offset(self, words, tags):
-        """
-        Examples:
-            >>> words = ['EU', 'rejects', 'German', 'call']
-            >>> tags = ['B-ORG', 'O', 'B-MISC', 'O']
-            >>> entities = get_entities(tags)
-            >>> entities
-            [['ORG', 0, 0], ['MISC', 2, 2]]
-            >>> self.calc_char_offset(words, tags)
-            {
-              'text': 'EU rejects German call',
-              'labels': [[0, 2, 'ORG'], [11, 17, 'MISC']]
-            }
-        """
+    @classmethod
+    def calc_char_offset(cls, words, tags):
         doc = ' '.join(words)
         j = {'text': ' '.join(words), 'labels': []}
         pos = defaultdict(int)
