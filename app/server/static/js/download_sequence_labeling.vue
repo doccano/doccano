@@ -27,6 +27,7 @@ block example-format-area
     code.json
       include ./examples/download_sequence_labeling.jsonl
       | ...
+
   pre.code-block(v-show="format == 'json1'")
     code.json
       include ./examples/download_sequence_labeling.json1l
