@@ -233,6 +233,23 @@ export const uploadMixin = {
     hljs.initHighlighting();
   },
 
+  computed: {
+    projectId() {
+      return window.location.pathname.split('/')[2];
+    },
+
+    postUploadUrl() {
+      return window.location.pathname.split('/').slice(0, -1).join('/');
+    },
+
+    cloudUploadUrl() {
+      return '/cloud-storage'
+        + `?project_id=${this.projectId}`
+        + `&upload_format=${this.format}`
+        + `&next=${encodeURIComponent(this.postUploadUrl)}`
+    },
+  },
+
   methods: {
     upload() {
       this.isLoading = true;
@@ -250,7 +267,7 @@ export const uploadMixin = {
         .then((response) => {
           console.log(response); // eslint-disable-line no-console
           this.messages = [];
-          window.location = window.location.pathname.split('/').slice(0, -1).join('/');
+          window.location = this.postUploadUrl;
         })
         .catch((error) => {
           this.isLoading = false;

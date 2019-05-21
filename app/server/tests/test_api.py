@@ -803,6 +803,50 @@ class TestUploader(APITestCase):
                                 expected_status=status.HTTP_201_CREATED)
 
 
+@override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER='LOCAL')
+@override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_ACCOUNT=os.path.dirname(DATA_DIR))
+@override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_SECRET_KEY='not-used')
+class TestCloudUploader(TestUploader):
+    def upload_test_helper(self, project_id, filename, format, expected_status, **kwargs):
+        query_params = {
+            'project_id': project_id,
+            'upload_format': format,
+            'container': kwargs.pop('container', os.path.basename(DATA_DIR)),
+            'object': filename,
+        }
+
+        query_params.update(kwargs)
+
+        response = self.client.get(reverse('cloud_uploader'), query_params)
+
+        self.assertEqual(response.status_code, expected_status)
+
+    def test_cannot_upload_with_missing_file(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='does-not-exist',
+                                format='json',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_upload_with_missing_container(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.jsonl',
+                                container='does-not-exist',
+                                format='json',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_upload_with_missing_query_parameters(self):
+        response = self.client.get(reverse('cloud_uploader'), {'project_id': self.classification_project.id})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_can_upload_with_redirect(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.jsonl',
+                                next='http://somewhere',
+                                format='json',
+                                expected_status=status.HTTP_302_FOUND)
+
+
 class TestParser(APITestCase):
 
     def parser_helper(self, filename, parser, include_label=True):

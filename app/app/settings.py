@@ -57,6 +57,15 @@ INSTALLED_APPS = [
     'webpack_loader',
 ]
 
+CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env('CLOUD_BROWSER_LIBCLOUD_PROVIDER', None)
+CLOUD_BROWSER_APACHE_LIBCLOUD_ACCOUNT = env('CLOUD_BROWSER_LIBCLOUD_ACCOUNT', None)
+CLOUD_BROWSER_APACHE_LIBCLOUD_SECRET_KEY = env('CLOUD_BROWSER_LIBCLOUD_KEY', None)
+
+if CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER:
+    CLOUD_BROWSER_DATASTORE = 'ApacheLibcloud'
+    CLOUD_BROWSER_OBJECT_REDIRECT_URL = '/v1/cloud-upload'
+    INSTALLED_APPS.append('cloud_browser')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',

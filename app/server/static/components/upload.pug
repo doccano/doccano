@@ -24,19 +24,29 @@ div.columns(v-cloak="")
 
         block example-format-area
 
-        div.control(style="margin-top: 1em;")
-          div.file.has-name.is-primary
-            label.file-label
-              input.file-input(
-                v-on:change="upload()"
-                type="file"
-                ref="file"
-                name="file"
-                required
-              )
-              span.file-cta.button(v-bind:class="{'is-loading': isLoading}")
-                span.file-icon
-                  i.fas.fa-upload
-                span.file-label Select a file…
+        div.field.is-grouped(style="margin-top: 1em;")
 
-              span.file-name {{ file.name }}
+          div.control
+            div.file.has-name.is-primary
+              label.file-label
+                input.file-input(
+                  v-on:change="upload()"
+                  type="file"
+                  ref="file"
+                  name="file"
+                  required
+                )
+                span.file-cta.button(v-bind:class="{'is-loading': isLoading}")
+                  span.file-icon
+                    i.fas.fa-upload
+                  span.file-label Select a file…
+                span.file-name {{ file.name }}
+
+          div.control
+            a.button(
+              v-bind:href="cloudUploadUrl"
+              v-bind:class="{'is-loading': isLoading}"
+            )
+              span.file-icon
+                i.fa.fa-cloud-upload-alt
+              span Browse cloud…
