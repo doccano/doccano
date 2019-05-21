@@ -108,12 +108,11 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { title, daysAgo } from './filter';
+import { newHttpClient } from './http';
 
-axios.defaults.xsrfCookieName = 'csrftoken';
-axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 const baseUrl = window.location.href.split('/').slice(0, 3).join('/');
+const httpClient = newHttpClient();
 
 export default {
   filters: { title, daysAgo },
@@ -142,8 +141,8 @@ export default {
 
   created() {
     Promise.all([
-      axios.get(`${baseUrl}/v1/projects`),
-      axios.get(`${baseUrl}/v1/me`),
+      httpClient.get(`${baseUrl}/v1/projects`),
+      httpClient.get(`${baseUrl}/v1/me`),
     ]).then(([projects, me]) => {
       this.items = projects.data;
       this.username = me.data.username;
@@ -153,7 +152,7 @@ export default {
 
   methods: {
     deleteProject() {
-      axios.delete(`${baseUrl}/v1/projects/${this.project.id}`).then(() => {
+      httpClient.delete(`${baseUrl}/v1/projects/${this.project.id}`).then(() => {
         this.isDelete = false;
         const index = this.items.indexOf(this.project);
         this.items.splice(index, 1);
@@ -186,7 +185,7 @@ export default {
         guideline: 'Please write annotation guideline.',
         resourcetype: this.resourceType(),
       };
-      axios.post(`${baseUrl}/v1/projects`, payload)
+      httpClient.post(`${baseUrl}/v1/projects`, payload)
         .then((response) => {
           window.location = `${baseUrl}/projects/${response.data.id}/docs/create`;
         })
