@@ -34,6 +34,9 @@ class ProjectsView(LoginRequiredMixin, TemplateView):
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
     template_name = 'dataset.html'
     paginate_by = 5
+    extra_context = {
+        'bundle_name': 'dataset'
+    }
 
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
