@@ -8,5 +8,6 @@ app/server/webpack-stats.json
 !data/
 !tests/
 !tools/
+!.coveragerc
 !.flake8
 !requirements.txt
