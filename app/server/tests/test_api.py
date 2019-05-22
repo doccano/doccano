@@ -297,9 +297,14 @@ class TestDocumentListAPI(APITestCase):
         cls.main_project = mommy.make('server.TextClassificationProject', users=[project_member, super_user])
         mommy.make('server.Document', project=cls.main_project)
 
+        cls.random_order_project = mommy.make('server.TextClassificationProject', users=[project_member, super_user],
+                                              randomize_document_order=True)
+        mommy.make('server.Document', 100, project=cls.random_order_project)
+
         sub_project = mommy.make('server.TextClassificationProject', users=[non_project_member])
         mommy.make('server.Document', project=sub_project)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
+        cls.random_order_project_url = reverse(viewname='doc_list', args=[cls.random_order_project.id])
         cls.data = {'text': 'example'}
 
     def test_returns_docs_to_project_member(self):
@@ -307,6 +312,33 @@ class TestDocumentListAPI(APITestCase):
                           password=self.project_member_pass)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_returns_docs_in_consistent_order_for_all_users(self):
+        self.client.login(username=self.project_member_name, password=self.project_member_pass)
+        user1_documents = self.client.get(self.url, format='json').json().get('results')
+        self.client.logout()
+
+        self.client.login(username=self.super_user_name, password=self.super_user_pass)
+        user2_documents = self.client.get(self.url, format='json').json().get('results')
+        self.client.logout()
+
+        self.assertEqual(user1_documents, user2_documents)
+
+    def test_can_return_docs_in_consistent_random_order(self):
+        self.client.login(username=self.project_member_name, password=self.project_member_pass)
+        user1_documents1 = self.client.get(self.random_order_project_url, format='json').json().get('results')
+        user1_documents2 = self.client.get(self.random_order_project_url, format='json').json().get('results')
+        self.client.logout()
+        self.assertEqual(user1_documents1, user1_documents2)
+
+        self.client.login(username=self.super_user_name, password=self.super_user_pass)
+        user2_documents1 = self.client.get(self.random_order_project_url, format='json').json().get('results')
+        user2_documents2 = self.client.get(self.random_order_project_url, format='json').json().get('results')
+        self.client.logout()
+        self.assertEqual(user2_documents1, user2_documents2)
+
+        self.assertNotEqual(user1_documents1, user2_documents1)
+        self.assertNotEqual(user1_documents2, user2_documents2)
 
     def test_do_not_return_docs_to_non_project_member(self):
         self.client.login(username=self.non_project_member_name,

@@ -3,7 +3,7 @@ from collections import Counter
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count
+from django.db.models import Count, F
 from libcloud.base import DriverType, get_driver
 from libcloud.storage.types import ContainerDoesNotExistError, ObjectDoesNotExistError
 from rest_framework import generics, filters, status
@@ -129,7 +129,13 @@ class DocumentList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
-        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+
+        queryset = self.queryset.filter(project=project)
+
+        if project.randomize_document_order:
+            queryset = queryset.annotate(sort_id=F('id') % self.request.user.id).order_by('sort_id')
+
         return queryset
 
     def perform_create(self, serializer):

@@ -42,6 +42,17 @@
                 option(value="Seq2seq") sequence to sequence
             p.help.is-danger {{ projectTypeError }}
 
+          div.field
+            label.checkbox
+              input(
+                v-model="randomizeDocumentOrder"
+                name="randomize_document_order"
+                type="checkbox"
+                style="margin-right: 0.25em;"
+                required
+              )
+              | Randomize document order per user
+
         footer.modal-card-foot.pt20.pb20.pr20.pl20.has-background-white-ter
           button.button.is-primary(v-on:click="create()") Create
           button.button(v-on:click="isActive = !isActive") Cancel
@@ -131,6 +142,7 @@ export default {
     projectNameError: '',
     username: '',
     isSuperuser: false,
+    randomizeDocumentOrder: false,
   }),
 
   computed: {
@@ -182,6 +194,7 @@ export default {
         name: this.projectName,
         description: this.description,
         project_type: this.projectType,
+        randomize_document_order: this.randomizeDocumentOrder,
         guideline: 'Please write annotation guideline.',
         resourcetype: this.resourceType(),
       };
