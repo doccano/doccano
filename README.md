@@ -150,6 +150,12 @@ Next we need to create a user who can login to the admin site. Run the following
 python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
 ```
 
+Developers can also validate that the project works as expected by running the tests:
+
+```bash
+python manage.py test server.tests
+```
+
 Finally, to start the server, run the following command:
 
 ```bash
