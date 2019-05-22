@@ -351,7 +351,6 @@ class JSONParser(FileParser):
                 data = []
             try:
                 j = json.loads(line)
-                #j  = json.loads(line.decode('utf-8'))
                 j['meta'] = json.dumps(j.get('meta', {}))
                 data.append(j)
             except json.decoder.JSONDecodeError:
