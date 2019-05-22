@@ -113,7 +113,7 @@ class TextClassifier(BaseClassifier):
 
         prediction_df['document_id'] = df['document_id']
         prediction_df['user_id'] = user_id
-        prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)
+        prediction_df = prediction_df.rename(columns={'confidence': 'prob'})
         prediction_df['label_id'] = prediction_df['prediction']
 
         print('Saving output...')

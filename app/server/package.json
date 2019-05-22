@@ -11,10 +11,10 @@
     "axios": "^0.18.0",
     "bulma-toast": "^1.5.0",
     "chart.js": "^2.7.2",
-    "vue": "^2.5.16",
+    "vue": "^2.6.10",
     "vue-chartjs": "^3.4.0",
     "vue-good-table": "^2.16.4",
-    "vue-loader": "^15.2.4",
+    "vue-loader": "^15.7.0",
     "vue-shortkey": "^3.1.6"
   },
   "devDependencies": {

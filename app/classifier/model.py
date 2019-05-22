@@ -92,8 +92,8 @@ class BaseClassifier:
         else:
             X = self.processing_pipeline.transform(X)
 
-        drop_columns = ['label', 'label_id', 'document_id']
-        ret_columns = set(X.columns).difference(drop_columns)
+        drop_columns = ['user_id', 'label', 'label_id', 'document_id']
+        ret_columns = [ c for c in X.columns if c not in drop_columns or c[:8]=='Unnamed:' ]
         X = X[ret_columns]
         return X
 
