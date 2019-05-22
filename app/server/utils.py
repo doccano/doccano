@@ -343,14 +343,15 @@ class CSVParser(FileParser):
 class JSONParser(FileParser):
 
     def parse(self, file):
+        file = io.TextIOWrapper(file, encoding='utf-8')
         data = []
         for i, line in enumerate(file, start=1):
             if len(data) >= IMPORT_BATCH_SIZE:
                 yield data
                 data = []
             try:
-                #j = json.loads(line)
-                j  = json.loads(line.decode('utf-8'))
+                j = json.loads(line)
+                #j  = json.loads(line.decode('utf-8'))
                 j['meta'] = json.dumps(j.get('meta', {}))
                 data.append(j)
             except json.decoder.JSONDecodeError:
@@ -392,7 +393,7 @@ class JSONPainter(object):
         return data
 
     def paint_labels(self, documents, labels):
-        serializer_labels = LabelSerializer(labels, many = True)
+        serializer_labels = LabelSerializer(labels, many=True)
         serializer = DocumentSerializer(documents, many=True)
         data = []
         for d in serializer.data:
@@ -402,7 +403,7 @@ class JSONPainter(object):
                 label_text = label_obj['text']
                 label_start = a['start_offset']
                 label_end = a['end_offset']
-                labels. append([label_start, label_end, label_text])
+                labels.append([label_start, label_end, label_text])
             d.pop('annotations')
             d['labels'] = labels
             d['meta'] = json.loads(d['meta'])
