@@ -90,6 +90,27 @@
       "metadata": {
         "description": "The Docker image to deploy."
       }
+    },
+    "dockerRegistry": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The registry of the Docker image."
+      }
+    },
+    "dockerRegistryUserName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The user name for the Docker registry."
+      }
+    },
+    "dockerRegistryPassword": {
+      "type": "securestring",
+      "defaultValue": "",
+      "metadata": {
+        "description": "The password for the Docker registry."
+      }
     }
   },
   "variables": {
@@ -97,12 +118,21 @@
     "databaseSkuTier": "GeneralPurpose",
     "databaseSkuFamily": "Gen5",
     "databaseSkuName": "[concat('GP_', variables('databaseSkuFamily'), '_', parameters('databaseCores'))]",
-    "databaseConnectionString": "[concat('pgsql://', parameters('adminUserName'), '@', variables('databaseServerName'), ':', parameters('adminPassword'), '@', variables('databaseServerName'), '.postgres.database.azure.com:5432/', parameters('databaseName'))]",
     "databaseVersion": "9.6",
+    "databaseServerPort": 5432,
     "databaseServerName": "[concat(parameters('appName'),'-state')]",
+    "databaseUserCredentials" : "[concat(uriComponent(concat(parameters('adminUserName'), '@', variables('databaseServerName'))), ':', parameters('adminPassword'))]",
+    "databaseFqdn" : "[concat( variables('databaseServerName'), '.postgres.database.azure.com:', variables('databaseServerPort'))]",
+    "databaseConnectionString": "[concat('pgsql://', variables('databaseUserCredentials'), '@', variables('databaseFqdn'), '/', parameters('databaseName'))]",
     "setupScriptName": "[concat(parameters('appName'),'-setup')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
-    "analyticsName": "[concat(parameters('appName'),'-analytics')]"
+    "analyticsName": "[concat(parameters('appName'),'-analytics')]",
+    "dockerRegistryCredential": {
+      "password": "[parameters('dockerRegistryPassword')]",
+      "username": "[parameters('dockerRegistryUserName')]",
+      "server": "[parameters('dockerRegistry')]"
+    },
+    "appFqdn": "[concat(parameters('appName'),'.azurewebsites.net')]"
   },
   "resources": [
     {
@@ -182,6 +212,7 @@
       "apiVersion": "2018-10-01",
       "location": "[variables('location')]",
       "properties": {
+        "imageRegistryCredentials": "[if(equals(parameters('dockerRegistry'), ''), json('null'), array(variables('dockerRegistryCredential')))]",
         "containers": [
           {
             "name": "createadmin",
@@ -245,6 +276,18 @@
               "value": "false"
             },
             {
+              "name": "DOCKER_REGISTRY_SERVER_URL",
+              "value": "[parameters('dockerRegistry')]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_USERNAME",
+              "value": "[parameters('dockerRegistryUserName')]"
+            },
+            {
+              "name": "DOCKER_REGISTRY_SERVER_PASSWORD",
+              "value": "[parameters('dockerRegistryPassword')]"
+            },
+            {
               "name": "AZURE_APPINSIGHTS_IKEY",
               "value": "[reference(resourceId('Microsoft.Insights/components', variables('analyticsName')), '2014-04-01').InstrumentationKey]"
             },
@@ -269,5 +312,15 @@
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
       }
     }
-  ]
+  ],
+  "outputs": {
+    "appServer": {
+      "type": "string",
+      "value": "[concat(variables('appFqdn'))]"
+    },
+    "databaseServer": {
+      "type": "string",
+      "value": "[variables('databaseFqdn')]"
+    }
+  }
 }

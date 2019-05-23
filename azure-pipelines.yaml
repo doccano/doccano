@@ -1,0 +1,54 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: docker build --tag=doccano --target=builder .
+  displayName: 'Run tests'
+
+- script: docker run doccano tar Ccf /doccano/app - junitxml | tar Cxf "$(Build.ArtifactStagingDirectory)" -
+  displayName: 'Export test results'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'TEST-*.xml'
+    searchFolder: '$(Build.ArtifactStagingDirectory)/junitxml'
+    mergeTestResults: true
+    testRunTitle: 'server.tests'
+  displayName: 'Publish test results'
+
+# To publish docker images to a container registry, set the following pipeline variables:
+# - docker_password
+# - docker_username
+# - docker_registry (optional, set this to publish to a registry other than Docker Hub)
+#
+- script: DOCKER_PASSWORD="$(docker_password)" tools/cd.sh "azdo-$(Build.BuildId)"
+  displayName: 'Push docker image'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['docker_password'], ''))
+
+# To automatically deploy to Azure, create a service principal and set the following pipeline variables:
+# - auth_username (app ID)
+# - auth_tenant (tenant ID
+# - auth_password (secret)
+#
+# Additionally, to configure the deployment, set the following pipeline variables:
+# - doccano_admin_username
+# - doccano_admin_password
+# - doccano_admin_contact_email
+# - doccano_app_name (globally unique name for the app)
+# - doccano_secret_key (pass-through secret for Django)
+# - doccano_resource_group (group for all resources, will be created if it doesn't yet exist)
+# - doccano_location (name of the Azure region to which to deploy all resources)
+#
+- script: |
+    az login --service-principal --password "$(auth_password)" --tenant "$(auth_tenant)" --username "$(auth_username)"
+
+    DOCCANO_ADMIN_PASSWORD="$(doccano_admin_password)" \
+    DOCCANO_SECRET_KEY="$(doccano_secret_key)" \
+    DOCKER_PASSWORD="$(docker_password)" \
+    tools/azure.sh "azdo-$(Build.BuildId)"
+  displayName: 'Deploy to Azure'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), ne(variables['auth_password'], ''))

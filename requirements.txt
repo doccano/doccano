@@ -1,4 +1,5 @@
 applicationinsights==0.11.7
+coverage==4.5.3
 dj-database-url==0.5.0
 Django==2.1.7
 django-filter==2.0.0
@@ -27,4 +28,5 @@ social-auth-app-django==3.1.0
 social-auth-core[azuread]==3.0.0
 text-unidecode==1.2
 tornado==5.0.2
+unittest-xml-reporting==2.5.1
 whitenoise[brotli]==4.1.2
