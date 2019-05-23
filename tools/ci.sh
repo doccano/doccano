@@ -7,4 +7,4 @@ python app/manage.py migrate
 coverage run --source=app app/manage.py test server.tests
 coverage report
 
-(cd app/server && npm run lint)
+(cd app/server/static && npm run lint)

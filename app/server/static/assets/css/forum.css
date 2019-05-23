@@ -115,7 +115,7 @@ p {
 }
 
 .project-image {
-  background-image: url('/static/images/cat.png');
+  background-image: url('/static/assets/images/cat.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;

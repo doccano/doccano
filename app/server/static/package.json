@@ -5,9 +5,9 @@
   "scripts": {
     "start": "cross-env HOT_RELOAD=1 DEBUG=1 webpack-dev-server",
     "build": "webpack",
-    "lint.js": "eslint --max-warnings=0 'static/js/**/*.{js,vue}'",
-    "lint.pug": "pug-lint static/js -c static/js/.pug-lintrc",
-    "lint.pug.vue": "pug-lint-vue static/js -c static/js/.pug-lintrc",
+    "lint.js": "eslint --max-warnings=0 '{components,pages}/**/*.{js,vue}'",
+    "lint.pug": "pug-lint components/",
+    "lint.pug.vue": "pug-lint-vue components/",
     "lint": "run-s lint.js lint.pug lint.pug.vue",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

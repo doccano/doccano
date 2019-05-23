@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import UploadTextClassification from './upload_text_classification.vue';
+import UploadTextClassification from '../components/upload_text_classification.vue';
 
 new Vue({
   el: '#mail-app',

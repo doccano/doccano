@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import vueDebounce from 'vue-debounce';
-import Guideline from './guideline.vue';
+import Guideline from '../components/guideline.vue';
 
 Vue.use(vueDebounce);
 

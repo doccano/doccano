@@ -102,10 +102,11 @@ Next we need to start the webpack server so that the frontend gets compiled cont
 Run the following commands in a new shell:
 
 ```bash
-cd server
+cd server/static
 npm install
 npm run build
 # npm start  # for developers
+cd ..
 ```
 
 **Option3: Pull the development Docker-Compose images**

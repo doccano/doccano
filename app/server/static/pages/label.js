@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Labels from './label.vue';
+import Labels from '../components/label.vue';
 
 new Vue({
   el: '#mail-app',

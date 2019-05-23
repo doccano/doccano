@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import DocumentClassification from './document_classification.vue';
+import DocumentClassification from '../components/document_classification.vue';
 
 Vue.use(require('vue-shortkey'), {
   prevent: ['input', 'textarea'],

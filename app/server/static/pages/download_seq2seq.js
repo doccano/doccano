@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import DownloadSeq2Seq from './download_seq2seq.vue';
+import DownloadSeq2Seq from '../components/download_seq2seq.vue';
 
 new Vue({
   el: '#mail-app',

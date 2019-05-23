@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const process = require('process');
 const BundleTracker = require('webpack-bundle-tracker');
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
@@ -7,35 +9,25 @@ const hotReload = process.env.HOT_RELOAD === '1';
 const webpackHost = process.env.WEBPACK_HOST || '127.0.0.1';
 const webpackPort = process.env.WEBPACK_PORT ? parseInt(process.env.WEBPACK_PORT, 10) : 8080;
 const pollMillis = process.env.WEBPACK_POLL_MILLIS ? parseInt(process.env.WEBPACK_POLL_MILLIS, 10) : false;
+const noSourceMap = process.env.SOURCE_MAP === 'False';
+
+const pagesRoot = path.join(__dirname, 'pages');
+const entryPoints = {};
+fs.readdirSync(pagesRoot).forEach((scriptName) => {
+    const bundleName = path.parse(scriptName).name;
+    const scriptPath = path.join(pagesRoot, scriptName)
+    entryPoints[bundleName] = scriptPath;
+});
 
 module.exports = {
     mode: devMode ? 'development' : 'production',
-    entry: {
-        'index': './static/js/index.js',
-        'sequence_labeling': './static/js/sequence_labeling.js',
-        'document_classification': './static/js/document_classification.js',
-        'seq2seq': './static/js/seq2seq.js',
-        'projects': './static/js/projects.js',
-        'stats': './static/js/stats.js',
-        'label': './static/js/label.js',
-        'guideline': './static/js/guideline.js',
-        'dataset': './static/js/dataset.js',
-        'demo_text_classification': './static/js/demo/demo_text_classification.js',
-        'demo_named_entity': './static/js/demo/demo_named_entity.js',
-        'demo_translation': './static/js/demo/demo_translation.js',
-        'upload_seq2seq': './static/js/upload_seq2seq.js',
-        'upload_sequence_labeling': './static/js/upload_sequence_labeling.js',
-        'upload_text_classification': './static/js/upload_text_classification.js',
-        'download_seq2seq': './static/js/download_seq2seq.js',
-        'download_sequence_labeling': './static/js/download_sequence_labeling.js',
-        'download_text_classification': './static/js/download_text_classification.js',
-    },
+    entry: entryPoints,
     output: {
         publicPath: hotReload ? `http://127.0.0.1:${webpackPort}/` : '',
-        path: __dirname + '/static/bundle',
+        path: path.join(__dirname, 'bundle'),
         filename: '[name].js'
     },
-    devtool: devMode ? 'cheap-eval-source-map' : 'source-map',
+    devtool: noSourceMap ? false : (devMode ? 'cheap-eval-source-map' : 'source-map'),
     devServer: {
         port: webpackPort,
         host: webpackHost,

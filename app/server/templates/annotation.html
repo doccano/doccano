@@ -2,7 +2,7 @@
 {% load static %}
 {% load render_bundle from webpack_loader %}
 {% block header %}
-<link rel="stylesheet" href="{% static 'css/annotation.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/annotation.css' %}">
 {% endblock %}
 {% block navigation %}
 {% if user.is_superuser and 'project_id' in view.kwargs %}

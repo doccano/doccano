@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import DemoNamedEntity from './demo_named_entity.vue';
+import DemoNamedEntity from '../components/demo/demo_named_entity.vue';
 
 Vue.use(require('vue-shortkey'), {
   prevent: ['input', 'textarea'],

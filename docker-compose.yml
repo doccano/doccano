@@ -19,7 +19,7 @@ services:
     image: node:8
     volumes:
       - .:/src
-      - node_modules:/src/app/server/node_modules
+      - node_modules:/src/app/server/static/node_modules
     command: ["/src/tools/dev-webpack.sh"]
     environment:
       WEBPACK_HOST: "0.0.0.0"
