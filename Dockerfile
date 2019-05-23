@@ -24,14 +24,22 @@ COPY . /doccano
 RUN cd /doccano \
  && tools/ci.sh
 
-RUN rm -rf /doccano/app/server/node_modules/
+FROM builder AS cleaner
+
+RUN cd /doccano \
+ && python app/manage.py collectstatic --noinput
+
+RUN rm -rf /doccano/app/server/node_modules/ \
+ && rm -rf /doccano/app/server/static/ \
+ && rm -rf /doccano/app/staticfiles/js/ \
+ && find /doccano/app/staticfiles -type f -name '*.map*' -delete
 
 FROM python:${PYTHON_VERSION}-slim AS runtime
 
 COPY --from=builder /deps /deps
 RUN pip install --no-cache-dir /deps/*.whl
 
-COPY --from=builder /doccano /doccano
+COPY --from=cleaner /doccano /doccano
 
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"

@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from model_mommy import mommy
@@ -9,6 +9,7 @@ from ..serializers import SequenceAnnotationSerializer
 from ..serializers import Seq2seqAnnotationSerializer
 
 
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class TestTextClassificationProject(TestCase):
 
     @classmethod
@@ -32,6 +33,7 @@ class TestTextClassificationProject(TestCase):
         self.assertEqual(klass, DocumentAnnotation)
 
 
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class TestSequenceLabelingProject(TestCase):
 
     @classmethod
@@ -55,6 +57,7 @@ class TestSequenceLabelingProject(TestCase):
         self.assertEqual(klass, SequenceAnnotation)
 
 
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class TestSeq2seqProject(TestCase):
 
     @classmethod
