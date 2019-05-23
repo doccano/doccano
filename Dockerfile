@@ -3,21 +3,15 @@ FROM python:${PYTHON_VERSION} AS builder
 
 ARG NODE_VERSION="8.x"
 RUN curl -sL "https://deb.nodesource.com/setup_${NODE_VERSION}" | bash - \
- && apt-get install nodejs \
- && rm -rf /var/lib/apt/lists/*
+ && apt-get install nodejs
 
-COPY app/server/package*.json /doccano/app/server/
-RUN cd /doccano/app/server \
+COPY app/server/static/package*.json /doccano/app/server/static/
+RUN cd /doccano/app/server/static \
  && npm ci
 
 COPY requirements.txt /
 RUN pip install -r /requirements.txt \
  && pip wheel -r /requirements.txt -w /deps
-
-COPY app/server/static /doccano/app/server/static/
-COPY app/server/webpack.config.js /doccano/app/server/
-RUN cd /doccano/app/server \
- && DEBUG=False npm run build
 
 COPY . /doccano
 
@@ -26,13 +20,12 @@ RUN cd /doccano \
 
 FROM builder AS cleaner
 
+RUN cd /doccano/app/server/static \
+ && SOURCE_MAP=False DEBUG=False npm run build \
+ && rm -rf components pages node_modules .*rc package*.json webpack.config.js
+
 RUN cd /doccano \
  && python app/manage.py collectstatic --noinput
-
-RUN rm -rf /doccano/app/server/node_modules/ \
- && rm -rf /doccano/app/server/static/ \
- && rm -rf /doccano/app/staticfiles/js/ \
- && find /doccano/app/staticfiles -type f -name '*.map*' -delete
 
 FROM python:${PYTHON_VERSION}-slim AS runtime
 
