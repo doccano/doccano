@@ -689,11 +689,11 @@ class TestUploader(APITestCase):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
 
-    def upload_test_helper(self, project_id, filename, format, expected_status):
+    def upload_test_helper(self, project_id, filename, file_format, expected_status, **kwargs):
         url = reverse(viewname='doc_uploader', args=[project_id])
 
         with open(os.path.join(DATA_DIR, filename)) as f:
-            response = self.client.post(url, data={'file': f, 'format': format})
+            response = self.client.post(url, data={'file': f, 'format': file_format})
 
         self.assertEqual(response.status_code, expected_status)
 
@@ -715,43 +715,43 @@ class TestUploader(APITestCase):
     def test_can_upload_conll_format_file(self):
         self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.conll',
-                                format='conll',
+                                file_format='conll',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_wrong_conll_format_file(self):
         self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.invalid.conll',
-                                format='conll',
+                                file_format='conll',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_can_upload_classification_csv(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.csv',
-                                format='csv',
+                                file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_seq2seq_csv(self):
         self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='example.csv',
-                                format='csv',
+                                file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.invalid.1.csv',
-                                format='csv',
+                                file_format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_cannot_upload_csv_file_has_too_many_columns(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.invalid.2.csv',
-                                format='csv',
+                                file_format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_can_upload_classification_jsonl(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='classification.jsonl',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
@@ -769,7 +769,7 @@ class TestUploader(APITestCase):
     def test_can_upload_labeling_jsonl(self):
         self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.jsonl',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
@@ -787,19 +787,19 @@ class TestUploader(APITestCase):
     def test_can_upload_seq2seq_jsonl(self):
         self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='seq2seq.jsonl',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_plain_text(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.txt',
-                                format='plain',
+                                file_format='plain',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_data_without_label(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.jsonl',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
 
@@ -807,10 +807,10 @@ class TestUploader(APITestCase):
 @override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_ACCOUNT=os.path.dirname(DATA_DIR))
 @override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_SECRET_KEY='not-used')
 class TestCloudUploader(TestUploader):
-    def upload_test_helper(self, project_id, filename, format, expected_status, **kwargs):
+    def upload_test_helper(self, project_id, filename, file_format, expected_status, **kwargs):
         query_params = {
             'project_id': project_id,
-            'upload_format': format,
+            'upload_format': file_format,
             'container': kwargs.pop('container', os.path.basename(DATA_DIR)),
             'object': filename,
         }
@@ -824,14 +824,14 @@ class TestCloudUploader(TestUploader):
     def test_cannot_upload_with_missing_file(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='does-not-exist',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_cannot_upload_with_missing_container(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.jsonl',
                                 container='does-not-exist',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_cannot_upload_with_missing_query_parameters(self):
@@ -843,7 +843,7 @@ class TestCloudUploader(TestUploader):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.jsonl',
                                 next='http://somewhere',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_302_FOUND)
 
 

@@ -211,17 +211,17 @@ class TextUploadAPI(APIView):
         storage.save(user)
 
     @classmethod
-    def select_parser(cls, format):
-        if format == 'plain':
+    def select_parser(cls, file_format):
+        if file_format == 'plain':
             return PlainTextParser()
-        elif format == 'csv':
+        elif file_format == 'csv':
             return CSVParser()
-        elif format == 'json':
+        elif file_format == 'json':
             return JSONParser()
-        elif format == 'conll':
+        elif file_format == 'conll':
             return CoNLLParser()
         else:
-            raise ValidationError('format {} is invalid.'.format(format))
+            raise ValidationError('format {} is invalid.'.format(file_format))
 
 
 class CloudUploadAPI(APIView):
