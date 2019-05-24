@@ -393,7 +393,7 @@ class JSONPainter(object):
         return data
 
     @staticmethod
-    def paint_labels(self, documents, labels):
+    def paint_labels(documents, labels):
         serializer_labels = LabelSerializer(labels, many=True)
         serializer = DocumentSerializer(documents, many=True)
         data = []
