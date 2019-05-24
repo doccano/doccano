@@ -1,6 +1,14 @@
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/highlight';
+import hljsLanguages from './hljsLanguages';
 import HTTP, { newHttpClient } from './http';
 import Messages from './messages.vue';
+
+hljsLanguages.forEach((languageName) => {
+  /* eslint-disable import/no-dynamic-require, global-require */
+  const languageModule = require(`highlight.js/lib/languages/${languageName}`);
+  /* eslint-enable import/no-dynamic-require, global-require */
+  hljs.registerLanguage(languageName, languageModule);
+});
 
 export default {
   components: { Messages },
