@@ -244,11 +244,11 @@ class CoNLLParser(FileParser):
     def parse(self, file):
         words, tags = [], []
         data = []
+        file = io.TextIOWrapper(file, encoding='utf-8')
         for i, line in enumerate(file, start=1):
             if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
-            line = line.decode('utf-8')
             line = line.strip()
             if line:
                 try:
