@@ -32,10 +32,10 @@
 </template>
 
 <script>
-import { HorizontalBar, mixins, Doughnut } from 'vue-chartjs';
+import HorizontalBar from 'vue-chartjs/es/BaseCharts/HorizontalBar';
+import Doughnut from 'vue-chartjs/es/BaseCharts/Doughnut';
+import reactiveProp from 'vue-chartjs/es/mixins/reactiveProp';
 import HTTP from './http';
-
-const { reactiveProp } = mixins;
 
 const LineChart = {
   extends: HorizontalBar,
