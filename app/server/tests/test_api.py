@@ -907,7 +907,7 @@ class TestDownloader(APITestCase):
     def test_can_download_labelling_json1(self):
         self.download_test_helper(url=self.labeling_url,
                                   format='json1',
-                                  expected_status=status.HTTP_200_OK)    
+                                  expected_status=status.HTTP_200_OK)
 
     def test_can_download_plain_text(self):
         self.download_test_helper(url=self.classification_url,

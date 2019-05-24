@@ -392,6 +392,7 @@ class JSONPainter(object):
             data.append(d)
         return data
 
+    @staticmethod
     def paint_labels(self, documents, labels):
         serializer_labels = LabelSerializer(labels, many=True)
         serializer = DocumentSerializer(documents, many=True)
@@ -409,7 +410,6 @@ class JSONPainter(object):
             d['meta'] = json.loads(d['meta'])
             data.append(d)
         return data
-
 
 class CSVPainter(JSONPainter):
 

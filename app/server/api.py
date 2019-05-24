@@ -209,7 +209,6 @@ class TextDownloadAPI(APIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         documents = project.documents.all()
         painter = self.select_painter(format)
-        
         # json1 format prints text labels while json format prints annotations with label ids
         # json1 format - "labels": [[0, 15, "PERSON"], ..]
         # json format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
