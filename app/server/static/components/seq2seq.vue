@@ -38,7 +38,7 @@ block annotation-area
 </template>
 
 <script>
-import { annotationMixin } from './mixin';
+import annotationMixin from './annotationMixin';
 import todoFocus from './directives';
 import HTTP from './http';
 

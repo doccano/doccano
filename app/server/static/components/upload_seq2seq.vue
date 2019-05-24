@@ -38,7 +38,7 @@ block example-format-area
 </template>
 
 <script>
-import { uploadMixin } from './mixin';
+import uploadMixin from './uploadMixin';
 
 export default uploadMixin;
 </script>
