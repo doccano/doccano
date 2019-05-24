@@ -227,6 +227,7 @@ export const uploadMixin = {
     messages: [],
     format: 'json',
     isLoading: false,
+    isCloudUploadActive: false,
     canUploadFromCloud: false,
   }),
 
@@ -253,11 +254,21 @@ export const uploadMixin = {
       return '/cloud-storage'
         + `?project_id=${this.projectId}`
         + `&upload_format=${this.format}`
-        + `&next=${encodeURIComponent(this.postUploadUrl)}`;
+        + `&next=${encodeURIComponent('about:blank')}`;
     },
   },
 
   methods: {
+    cloudUpload() {
+      const iframeUrl = this.$refs.cloudUploadPane.contentWindow.location.href;
+      if (iframeUrl.indexOf('/v1/cloud-upload') > -1) {
+        this.isCloudUploadActive = false;
+        this.$nextTick(() => {
+          window.location.href = this.postUploadUrl;
+        });
+      }
+    },
+
     upload() {
       this.isLoading = true;
       this.file = this.$refs.file.files[0];

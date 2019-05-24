@@ -846,6 +846,13 @@ class TestCloudUploader(TestUploader):
                                 file_format='json',
                                 expected_status=status.HTTP_302_FOUND)
 
+    def test_can_upload_with_redirect_to_blank(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.jsonl',
+                                next='about:blank',
+                                file_format='json',
+                                expected_status=status.HTTP_201_CREATED)
+
 
 class TestFeatures(APITestCase):
     @classmethod

@@ -43,10 +43,18 @@ div.columns(v-cloak="")
                 span.file-name {{ file.name }}
 
           div.control(v-if="canUploadFromCloud")
-            a.button(
-              v-bind:href="cloudUploadUrl"
+            button.button(
+              v-on:click="isCloudUploadActive = !isCloudUploadActive"
               v-bind:class="{'is-loading': isLoading}"
             )
               span.file-icon
                 i.fa.fa-cloud-upload-alt
               span Browse cloud…
+
+        div(v-if="isCloudUploadActive")
+          iframe(
+            ref="cloudUploadPane"
+            v-bind:src="cloudUploadUrl"
+            v-on:load="cloudUpload"
+            style="width: 100%; height: 20em;"
+          )
