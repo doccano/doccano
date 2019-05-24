@@ -242,12 +242,6 @@ class CoNLLParser(FileParser):
     ```
     """
     def parse(self, file):
-        """Store json for seq2seq.
-
-        Return format:
-        {"text": "Python is awesome!", "labels": [[0, 6, "Product"],]}
-        ...
-        """
         words, tags = [], []
         data = []
         for i, line in enumerate(file, start=1):
