@@ -93,8 +93,19 @@ TEMPLATES = [
     },
 ]
 
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/2.0/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = [
-    path.join(BASE_DIR, 'server/static'),
+    static_path
+    for static_path in (
+        path.join(BASE_DIR, 'server', 'static', 'assets'),
+        path.join(BASE_DIR, 'server', 'static', 'static'),
+    )
+    if path.isdir(static_path)
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
@@ -103,7 +114,7 @@ WEBPACK_LOADER = {
     'DEFAULT': {
         'CACHE': not DEBUG,
         'BUNDLE_DIR_NAME': 'bundle/',
-        'STATS_FILE': path.join(BASE_DIR, 'server', 'webpack-stats.json'),
+        'STATS_FILE': path.join(BASE_DIR, 'server', 'static', 'webpack-stats.json'),
         'POLL_INTERVAL': 0.1,
         'TIMEOUT': None,
         'IGNORE': [r'.*\.hot-update.js', r'.+\.map']
@@ -187,11 +198,6 @@ USE_TZ = True
 
 TEST_RUNNER = 'xmlrunner.extra.djangotestrunner.XMLTestRunner'
 TEST_OUTPUT_DIR = path.join(BASE_DIR, 'junitxml')
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
-STATIC_URL = '/static/'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/projects/'

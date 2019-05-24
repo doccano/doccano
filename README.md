@@ -1,5 +1,6 @@
 # doccano
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/98a0992c0a254d0ba23fd75631fe2907)](https://app.codacy.com/app/Hironsan/doccano?utm_source=github.com&utm_medium=referral&utm_content=chakki-works/doccano&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/chakki-works/doccano.svg?branch=master)](https://travis-ci.org/chakki-works/doccano)
 
 doccano is an open source text annotation tool for human. It provides annotation features for text classification, sequence labeling and sequence to sequence. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create project, upload data and start annotation. You can build dataset in hours.
@@ -102,10 +103,11 @@ Next we need to start the webpack server so that the frontend gets compiled cont
 Run the following commands in a new shell:
 
 ```bash
-cd server
+cd server/static
 npm install
 npm run build
 # npm start  # for developers
+cd ..
 ```
 
 **Option3: Pull the development Docker-Compose images**
@@ -148,6 +150,12 @@ Next we need to create a user who can login to the admin site. Run the following
 
 ```bash
 python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+```
+
+Developers can also validate that the project works as expected by running the tests:
+
+```bash
+python manage.py test server.tests
 ```
 
 Finally, to start the server, run the following command:

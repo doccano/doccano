@@ -1,4 +1,4 @@
-import HTTP from './http';
+import HTTP from '../components/http';
 
 document.querySelectorAll('.delete-document-button').forEach((deleteButton) => {
   deleteButton.addEventListener('click', () => {

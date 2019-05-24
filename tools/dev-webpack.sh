@@ -3,10 +3,10 @@
 set -o errexit
 
 root="$(dirname "$0")/.."
-server="${root}/app/server"
+frontend="${root}/app/server/static"
 
 (
-  cd "${server}"
+  cd "${frontend}"
 
   if [[ ! -d node_modules/.bin ]]; then
     echo "Installing dependencies"
