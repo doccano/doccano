@@ -214,7 +214,7 @@ class TextDownloadAPI(APIView):
         # json format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
         if format == "json1":
             labels = project.labels.all()
-            data = painter.paint_labels(documents, labels)
+            data = JSONPainter.paint_labels(documents, labels)
         else:
             data = painter.paint(documents)
         return Response(data)
