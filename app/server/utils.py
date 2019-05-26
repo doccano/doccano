@@ -263,13 +263,14 @@ class CoNLLParser(FileParser):
                     raise FileParseException(line_num=i, line=line)
                 words.append(word)
                 tags.append(tag)
-            else:
+            elif words and tags:
                 j = self.calc_char_offset(words, tags)
                 data.append(j)
                 words, tags = [], []
         if len(words) > 0:
             j = self.calc_char_offset(words, tags)
             data.append(j)
+        if data:
             yield data
 
     @classmethod
