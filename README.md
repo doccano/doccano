@@ -48,7 +48,7 @@ Doccano also uses Vue.js, which offers simple & powerful templating of HTML page
 See [this page](INSTALLATION.md).
 
 ## Usage
-See [this page](usage.md).
+See [this page](USAGE.md).
 
 ## Use Cases
 
