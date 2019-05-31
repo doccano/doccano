@@ -808,15 +808,21 @@ class TestParser(APITestCase):
 
     def parser_helper(self, filename, parser, include_label=True):
         with open(os.path.join(DATA_DIR, filename), mode='rb') as f:
-            result = parser.parse(f)
+            result = list(parser.parse(f))
             for data in result:
                 for r in data:
                     self.assertIn('text', r)
                     if include_label:
                         self.assertIn('labels', r)
+        return result
 
     def test_give_valid_data_to_conll_parser(self):
         self.parser_helper(filename='labeling.conll', parser=CoNLLParser())
+
+    def test_give_valid_data_to_conll_parser_with_trailing_newlines(self):
+        result = self.parser_helper(filename='labeling.trailing.conll', parser=CoNLLParser())
+        self.assertEqual(len(result), 1)
+        self.assertEqual(len(result[0]), 1)
 
     def test_plain_parser(self):
         self.parser_helper(filename='example.txt', parser=PlainTextParser(), include_label=False)
