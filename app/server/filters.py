@@ -1,4 +1,4 @@
-from django.db.models import Count
+from django.db.models import Count, Q
 from django_filters.rest_framework import FilterSet, BooleanFilter
 from .models import Document
 
@@ -9,7 +9,9 @@ class DocumentFilter(FilterSet):
     seq2seq_annotations__isnull = BooleanFilter(field_name='seq2seq_annotations', method='filter_annotations')
 
     def filter_annotations(self, queryset, field_name, value):
-        queryset = queryset.annotate(num_annotations=Count(field_name))
+        queryset = queryset.annotate(num_annotations=
+            Count(field_name, filter=
+                Q(**{ f"{field_name}__user": self.request.user})))
 
         should_have_annotations = not value
         if should_have_annotations:
