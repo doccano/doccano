@@ -67,7 +67,8 @@ class StatisticsAPI(APIView):
         docs = project.documents
         annotation_class = project.get_annotation_class()
         total = docs.count()
-        done = annotation_class.objects.filter(document_id__in=docs.all()).\
+        done = annotation_class.objects.filter(document_id__in=docs.all(),
+            user_id=self.request.user).\
             aggregate(Count('document', distinct=True))['document__count']
         remaining = total - done
         return {'total': total, 'remaining': remaining}
