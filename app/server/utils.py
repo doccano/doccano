@@ -362,7 +362,8 @@ class SpacyParser(FileParser):
 
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
-        items = json.loads(file.read())  # needs loading of full document 
+        # needs loading of full document
+        items = json.loads(file.read()) 
         data = []
         for i, line in enumerate(items, start=1):
             if len(data) >= IMPORT_BATCH_SIZE:
@@ -435,7 +436,7 @@ class SpacyPainter(JSONPainter):
             entities = []
             for a in annotations:
                 label_id = a["label"]
-                label_text = Label.objects.get(id=label_id).text 
+                label_text = Label.objects.get(id=label_id).text
                 entities.append([a["start_offset"], a["end_offset"], label_text])
             res.append( tuple([text, {"entities" : entities}]) )
         return [res]
