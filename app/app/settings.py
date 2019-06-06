@@ -22,7 +22,7 @@ from furl import furl
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 
 env = Env()
-env.read_env(BASE_DIR, recurse=False)
+env.read_env(path.join(BASE_DIR, '.env'), recurse=False)
 
 
 # Quick-start development settings - unsuitable for production
@@ -131,10 +131,34 @@ AUTHENTICATION_BACKENDS = [
 
 SOCIAL_AUTH_GITHUB_KEY = env('OAUTH_GITHUB_KEY', None)
 SOCIAL_AUTH_GITHUB_SECRET = env('OAUTH_GITHUB_SECRET', None)
+GITHUB_ADMIN_ORG_NAME = env('GITHUB_ADMIN_ORG_NAME', None)
+GITHUB_ADMIN_TEAM_NAME = env('GITHUB_ADMIN_TEAM_NAME', None)
+
+if GITHUB_ADMIN_ORG_NAME and GITHUB_ADMIN_TEAM_NAME:
+    SOCIAL_AUTH_GITHUB_SCOPE = ['read:org']
 
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY = env('OAUTH_AAD_KEY', None)
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET = env('OAUTH_AAD_SECRET', None)
 SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = env('OAUTH_AAD_TENANT', None)
+AZUREAD_ADMIN_GROUP_ID = env('AZUREAD_ADMIN_GROUP_ID', None)
+
+if AZUREAD_ADMIN_GROUP_ID:
+    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_RESOURCE = 'https://graph.microsoft.com/'
+    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SCOPE = ['Directory.Read.All']
+
+SOCIAL_AUTH_PIPELINE = [
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'server.social_auth.fetch_github_permissions',
+    'server.social_auth.fetch_azuread_permissions',
+]
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases

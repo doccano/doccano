@@ -1,0 +1,76 @@
+interactions:
+- request:
+    body: '{"query": "\n                query($userName: String!, $orgName: String!,
+      $teamName: String!) {\n                    organization(login: $orgName) {\n                        teams(query:
+      $teamName, userLogins: [$userName], first: 1) {\n                            nodes
+      {\n                                name\n                            }\n                        }\n                    }\n                }\n            ",
+      "variables": {"userName": "c-w", "orgName": "CatalystCode", "teamName": "doccano-dev"}}'
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '513'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.21.0
+    method: POST
+    uri: https://api.github.com/graphql
+  response:
+    body:
+      string: '{"data":{"organization":{"teams":{"nodes":[{"name":"doccano-dev"}]}}}}'
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval,
+        X-GitHub-Media-Type
+      Cache-Control:
+      - no-cache
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Mon, 20 May 2019 17:38:20 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - GitHub.com
+      Status:
+      - 200 OK
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Transfer-Encoding:
+      - chunked
+      X-Accepted-OAuth-Scopes:
+      - repo
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v4; format=json
+      X-GitHub-Request-Id:
+      - E979:03BD:225D930:49FB694:5CE2E60C
+      X-OAuth-Scopes:
+      - read:org
+      X-RateLimit-Limit:
+      - '5000'
+      X-RateLimit-Remaining:
+      - '4955'
+      X-RateLimit-Reset:
+      - '1558377500'
+      X-XSS-Protection:
+      - 1; mode=block
+      content-length:
+      - '70'
+    status:
+      code: 200
+      message: OK
+version: 1
