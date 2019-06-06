@@ -383,7 +383,8 @@ class SpacyParser(FileParser):
 
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
-        items = json.loads(file.read())  # needs loading of full document 
+        # needs loading of full document
+        items = json.loads(file.read()) 
         data = []
         for i, line in enumerate(items, start=1):
             if len(data) >= IMPORT_BATCH_SIZE:
