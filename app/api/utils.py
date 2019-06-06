@@ -379,6 +379,25 @@ class JSONParser(FileParser):
         if data:
             yield data
 
+class SpacyParser(FileParser):
+
+    def parse(self, file):
+        file = io.TextIOWrapper(file, encoding='utf-8')
+        items = json.loads(file.read())  # needs loading of full document 
+        data = []
+        for i, line in enumerate(items, start=1):
+            if len(data) >= IMPORT_BATCH_SIZE:
+                yield data
+                data = []
+            try:
+                text, entities = line
+                labels = entities["entities"]
+                data.append({"text" : text, "labels" : labels})
+            except json.decoder.JSONDecodeError:
+                raise FileParseException(line_num=i, line=line)
+        if data:
+            yield data
+
 
 class JSONLRenderer(JSONRenderer):
 
@@ -443,6 +462,26 @@ class CSVPainter(JSONPainter):
             for a in annotations:
                 res.append({**d, **a})
         return res
+
+
+class SpacyPainter(JSONPainter):
+
+    def paint(self, documents):
+        data = super().paint(documents)
+        res = []
+
+        label_ids = {a['label'] for d in data for a in d['annotations']}
+        label_texts = {l['id']: l['text'] for l in Label.objects.filter(id__in=label_ids).values('text', 'id')}
+
+        for d in data:
+            text = d['text']
+            annotations = d.pop('annotations')
+            entities = []
+            for a in annotations:
+                label_text = label_texts[a['label']]
+                entities.append([a["start_offset"], a["end_offset"], label_text])
+            res.append((text, {"entities": entities}))
+        return [res]
 
 
 class Color:

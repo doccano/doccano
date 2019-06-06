@@ -22,6 +22,16 @@ block select-format-area
     )
     | JSONL
 
+  label.radio
+    input(
+      type="radio"
+      name="format"
+      value="spacy"
+      v-bind:checked="format == 'spacy'"
+      v-model="format"
+    )
+    | SpaCy
+
 block example-format-area
   pre.code-block(v-show="format == 'plain'")
     code.plaintext
@@ -36,6 +46,11 @@ block example-format-area
   pre.code-block(v-show="format == 'json'")
     code.json
       include ./examples/upload_sequence_labeling.jsonl
+      | ...
+
+  pre.code-block(v-show="format == 'spacy'")
+    code.spacy
+      include ./examples/upload_sequence_labeling.spacy.json
       | ...
 </template>
 

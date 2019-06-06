@@ -17,9 +17,9 @@ from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer
-from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, SpacyParser, iterable_to_io
 from .utils import JSONLRenderer
-from .utils import JSONPainter, CSVPainter
+from .utils import JSONPainter, CSVPainter, SpacyPainter
 
 
 class Me(APIView):
@@ -231,6 +231,8 @@ class TextUploadAPI(APIView):
             return CoNLLParser()
         elif file_format == 'excel':
             return ExcelParser()
+        elif format == 'spacy':
+            return SpacyParser()
         else:
             raise ValidationError('format {} is invalid.'.format(file_format))
 
@@ -310,5 +312,7 @@ class TextDownloadAPI(APIView):
             return CSVPainter()
         elif format == 'json' or format == "json1":
             return JSONPainter()
+        elif format == 'spacy':
+            return SpacyPainter()
         else:
             raise ValidationError('format {} is invalid.'.format(format))
