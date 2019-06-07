@@ -9,7 +9,7 @@ class IsProjectUser(BasePermission):
 
     def has_permission(self, request, view):
         user = request.user
-        project_id = view.kwargs.get('project_id')
+        project_id = view.kwargs.get('project_id') or request.query_params.get('project_id')
         project = get_object_or_404(Project, pk=project_id)
 
         return user in project.users.all()

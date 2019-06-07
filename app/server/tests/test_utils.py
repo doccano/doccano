@@ -1,10 +1,12 @@
+import io
+
 from django.test import TestCase
 
 from seqeval.metrics.sequence_labeling import get_entities
 
 from ..models import Label, Document
 from ..utils import BaseStorage, ClassificationStorage, SequenceLabelingStorage, Seq2seqStorage, CoNLLParser
-from ..utils import Color
+from ..utils import Color, iterable_to_io
 
 
 class TestColor(TestCase):
@@ -153,3 +155,16 @@ class TestCoNLLParser(TestCase):
             'text': 'EU rejects German call',
             'labels': [[0, 2, 'ORG'], [11, 17, 'MISC']]
         })
+
+
+class TestIterableToIO(TestCase):
+    def test(self):
+        def iterable():
+            yield b'fo'
+            yield b'o\nbar\n'
+            yield b'baz\nrest'
+
+        stream = iterable_to_io(iterable())
+        stream = io.TextIOWrapper(stream)
+
+        self.assertEqual(stream.readlines(), ['foo\n', 'bar\n', 'baz\n', 'rest'])

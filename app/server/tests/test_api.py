@@ -684,22 +684,21 @@ class TestUploader(APITestCase):
         cls.labeling_project = mommy.make('server.SequenceLabelingProject',
                                           users=[super_user], project_type=SEQUENCE_LABELING)
         cls.seq2seq_project = mommy.make('server.Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
-        cls.classification_url = reverse(viewname='doc_uploader', args=[cls.classification_project.id])
-        cls.classification_labels_url = reverse(viewname='label_list', args=[cls.classification_project.id])
-        cls.labeling_url = reverse(viewname='doc_uploader', args=[cls.labeling_project.id])
-        cls.labeling_labels_url = reverse(viewname='label_list', args=[cls.labeling_project.id])
-        cls.seq2seq_url = reverse(viewname='doc_uploader', args=[cls.seq2seq_project.id])
 
     def setUp(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
 
-    def upload_test_helper(self, url, filename, format, expected_status):
+    def upload_test_helper(self, project_id, filename, file_format, expected_status, **kwargs):
+        url = reverse(viewname='doc_uploader', args=[project_id])
+
         with open(os.path.join(DATA_DIR, filename)) as f:
-            response = self.client.post(url, data={'file': f, 'format': format})
+            response = self.client.post(url, data={'file': f, 'format': file_format})
+
         self.assertEqual(response.status_code, expected_status)
 
-    def label_test_helper(self, url, expected_labels, expected_label_keys):
+    def label_test_helper(self, project_id, expected_labels, expected_label_keys):
+        url = reverse(viewname='label_list', args=[project_id])
         expected_keys = {key for label in expected_labels for key in label}
 
         response = self.client.get(url).json()
@@ -714,49 +713,49 @@ class TestUploader(APITestCase):
                 self.assertIsNotNone(label.get(expected_label_key))
 
     def test_can_upload_conll_format_file(self):
-        self.upload_test_helper(url=self.labeling_url,
+        self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.conll',
-                                format='conll',
+                                file_format='conll',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_wrong_conll_format_file(self):
-        self.upload_test_helper(url=self.labeling_url,
+        self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.invalid.conll',
-                                format='conll',
+                                file_format='conll',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_can_upload_classification_csv(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.csv',
-                                format='csv',
+                                file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_seq2seq_csv(self):
-        self.upload_test_helper(url=self.seq2seq_url,
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='example.csv',
-                                format='csv',
+                                file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.invalid.1.csv',
-                                format='csv',
+                                file_format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_cannot_upload_csv_file_has_too_many_columns(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.invalid.2.csv',
-                                format='csv',
+                                file_format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
 
     def test_can_upload_classification_jsonl(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='classification.jsonl',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
-            url=self.classification_labels_url,
+            project_id=self.classification_project.id,
             expected_labels=[
                 {'text': 'positive', 'suffix_key': 'p', 'prefix_key': None},
                 {'text': 'negative', 'suffix_key': 'n', 'prefix_key': None},
@@ -768,13 +767,13 @@ class TestUploader(APITestCase):
             ])
 
     def test_can_upload_labeling_jsonl(self):
-        self.upload_test_helper(url=self.labeling_url,
+        self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.jsonl',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
-            url=self.labeling_labels_url,
+            project_id=self.labeling_project.id,
             expected_labels=[
                 {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
                 {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
@@ -786,22 +785,91 @@ class TestUploader(APITestCase):
             ])
 
     def test_can_upload_seq2seq_jsonl(self):
-        self.upload_test_helper(url=self.seq2seq_url,
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='seq2seq.jsonl',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_plain_text(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.txt',
-                                format='plain',
+                                file_format='plain',
                                 expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_data_without_label(self):
-        self.upload_test_helper(url=self.classification_url,
+        self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.jsonl',
-                                format='json',
+                                file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
+
+
+@override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER='LOCAL')
+@override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_ACCOUNT=os.path.dirname(DATA_DIR))
+@override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_SECRET_KEY='not-used')
+class TestCloudUploader(TestUploader):
+    def upload_test_helper(self, project_id, filename, file_format, expected_status, **kwargs):
+        query_params = {
+            'project_id': project_id,
+            'upload_format': file_format,
+            'container': kwargs.pop('container', os.path.basename(DATA_DIR)),
+            'object': filename,
+        }
+
+        query_params.update(kwargs)
+
+        response = self.client.get(reverse('cloud_uploader'), query_params)
+
+        self.assertEqual(response.status_code, expected_status)
+
+    def test_cannot_upload_with_missing_file(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='does-not-exist',
+                                file_format='json',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_upload_with_missing_container(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.jsonl',
+                                container='does-not-exist',
+                                file_format='json',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_upload_with_missing_query_parameters(self):
+        response = self.client.get(reverse('cloud_uploader'), {'project_id': self.classification_project.id})
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_can_upload_with_redirect(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.jsonl',
+                                next='http://somewhere',
+                                file_format='json',
+                                expected_status=status.HTTP_302_FOUND)
+
+    def test_can_upload_with_redirect_to_blank(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.jsonl',
+                                next='about:blank',
+                                file_format='json',
+                                expected_status=status.HTTP_201_CREATED)
+
+
+class TestFeatures(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_name = 'user_name'
+        cls.user_pass = 'user_pass'
+
+        cls.user = User.objects.create_user(username=cls.user_name, password=cls.user_pass, email='fizz@buzz.com')
+
+    def setUp(self):
+        self.client.login(username=self.user_name, password=self.user_pass)
+
+    @override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER=None)
+    def test_no_cloud_upload(self):
+        response = self.client.get(reverse('features'))
+
+        self.assertFalse(response.json().get('cloud_upload'))
 
 
 class TestParser(APITestCase):

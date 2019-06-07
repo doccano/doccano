@@ -2,7 +2,7 @@ import * as marked from 'marked';
 import hljs from 'highlight.js';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
-import HTTP from './http';
+import HTTP, { newHttpClient } from './http';
 import Messages from './messages.vue';
 
 const getOffsetFromUrl = (url) => {
@@ -227,13 +227,48 @@ export const uploadMixin = {
     messages: [],
     format: 'json',
     isLoading: false,
+    isCloudUploadActive: false,
+    canUploadFromCloud: false,
   }),
 
   mounted() {
     hljs.initHighlighting();
   },
 
+  created() {
+    newHttpClient().get('/v1/features').then((response) => {
+      this.canUploadFromCloud = response.data.cloud_upload;
+    });
+  },
+
+  computed: {
+    projectId() {
+      return window.location.pathname.split('/')[2];
+    },
+
+    postUploadUrl() {
+      return window.location.pathname.split('/').slice(0, -1).join('/');
+    },
+
+    cloudUploadUrl() {
+      return '/cloud-storage'
+        + `?project_id=${this.projectId}`
+        + `&upload_format=${this.format}`
+        + `&next=${encodeURIComponent('about:blank')}`;
+    },
+  },
+
   methods: {
+    cloudUpload() {
+      const iframeUrl = this.$refs.cloudUploadPane.contentWindow.location.href;
+      if (iframeUrl.indexOf('/v1/cloud-upload') > -1) {
+        this.isCloudUploadActive = false;
+        this.$nextTick(() => {
+          window.location.href = this.postUploadUrl;
+        });
+      }
+    },
+
     upload() {
       this.isLoading = true;
       this.file = this.$refs.file.files[0];
@@ -250,7 +285,7 @@ export const uploadMixin = {
         .then((response) => {
           console.log(response); // eslint-disable-line no-console
           this.messages = [];
-          window.location = window.location.pathname.split('/').slice(0, -1).join('/');
+          window.location = this.postUploadUrl;
         })
         .catch((error) => {
           this.isLoading = false;
