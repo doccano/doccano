@@ -31,8 +31,29 @@ strong {
   box-shadow: 0 1px 4px rgba(0, 0, 0, .3);
 }
 
+.navbar-burger,
 .navbar-item {
   color: white;
+}
+
+a.navbar-burger:hover {
+  background-color: #fafafa;
+  color: #3273dc;
+}
+
+.navbar-menu.is-active .navbar-item,
+.navbar-menu.is-active .navbar-link {
+  color: #4a4a4a;
+}
+
+.navbar-menu.is-active .navbar-dropdown .navbar-item {
+  color: #fafafa;
+}
+
+.navbar-menu.is-active .navbar-dropdown .navbar-item:hover,
+.navbar-menu.is-active .navbar-item:hover,
+.navbar-menu.is-active .navbar-link:hover {
+  color: #3273dc;
 }
 
 .topNav {
