@@ -11,7 +11,7 @@ if [ "$1" = "build" ]; then
     ls ./bundle
 else
     python app/manage.py migrate
-    python app/manage.py collectstatic --noinput
+    python app/manage.py collectstatic --noinput -i node_modules
     python app/manage.py create_admin --noinput --username="$ADMIN_USER_NAME" --email="$ADMIN_CONTACT_EMAIL" --password="$ADMIN_PASSWORD"
 
 fi

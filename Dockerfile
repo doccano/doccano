@@ -25,7 +25,7 @@ RUN cd /doccano/app/server/static \
  && rm -rf components pages node_modules .*rc package*.json webpack.config.js
 
 RUN cd /doccano \
- && python app/manage.py collectstatic --noinput
+ && python app/manage.py collectstatic --noinput -i node_modules
 
 FROM python:${PYTHON_VERSION}-slim AS runtime
 

@@ -2,7 +2,7 @@
 
 set -o errexit
 
-if [[ ! -d "app/staticfiles" ]]; then python app/manage.py collectstatic --noinput; fi
+if [[ ! -d "app/staticfiles" ]]; then python app/manage.py collectstatic --noinput -i node_modules; fi
 
 python app/manage.py wait_for_db
 python app/manage.py migrate
