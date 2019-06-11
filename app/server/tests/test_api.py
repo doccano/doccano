@@ -1039,7 +1039,7 @@ class TestStatisticsAPI(APITestCase):
         main_project = mommy.make('server.TextClassificationProject', users=[super_user])
         doc1 = mommy.make('server.Document', project=main_project)
         doc2 = mommy.make('server.Document', project=main_project)
-        mommy.make('DocumentAnnotation', document=doc1)
+        mommy.make('DocumentAnnotation', document=doc1, user=super_user)
         cls.url = reverse(viewname='statistics', args=[main_project.id])
         cls.doc = Document.objects.filter(project=main_project)
 
