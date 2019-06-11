@@ -352,6 +352,7 @@ class JSONParser(FileParser):
                 data = []
             try:
                 j = json.loads(line)
+                #j  = json.loads(line.decode('utf-8'))
                 j['meta'] = json.dumps(j.get('meta', {}))
                 data.append(j)
             except json.decoder.JSONDecodeError:
@@ -378,7 +379,6 @@ class JSONLRenderer(JSONRenderer):
                              ensure_ascii=self.ensure_ascii,
                              allow_nan=not self.strict) + '\n'
 
-
 class JSONPainter(object):
 
     def paint(self, documents):
@@ -393,6 +393,24 @@ class JSONPainter(object):
             data.append(d)
         return data
 
+    @staticmethod
+    def paint_labels(documents, labels):
+        serializer_labels = LabelSerializer(labels, many=True)
+        serializer = DocumentSerializer(documents, many=True)
+        data = []
+        for d in serializer.data:
+            labels = []
+            for a in d['annotations']:
+                label_obj = [x for x in serializer_labels.data if x['id'] == a['label']][0]
+                label_text = label_obj['text']
+                label_start = a['start_offset']
+                label_end = a['end_offset']
+                labels.append([label_start, label_end, label_text])
+            d.pop('annotations')
+            d['labels'] = labels
+            d['meta'] = json.loads(d['meta'])
+            data.append(d)
+        return data
 
 class CSVPainter(JSONPainter):
 
