@@ -3,6 +3,8 @@ const path = require('path');
 const process = require('process');
 const BundleTracker = require('webpack-bundle-tracker');
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const { ContextReplacementPlugin } = require('webpack');
+const hljsLanguages = require('./components/hljsLanguages');
 
 const devMode = process.env.DEBUG !== 'False';
 const hotReload = process.env.HOT_RELOAD === '1';
@@ -58,6 +60,10 @@ module.exports = {
         ]
     },
     plugins: [
+        new ContextReplacementPlugin(
+            /highlight\.js\/lib\/languages$/,
+            new RegExp(`^./(${hljsLanguages.join('|')})$`)
+        ),
         new BundleTracker({ filename: './webpack-stats.json' }),
         new VueLoaderPlugin()
     ],
