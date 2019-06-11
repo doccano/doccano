@@ -904,6 +904,7 @@ class TestFeatures(APITestCase):
         self.assertFalse(response.json().get('cloud_upload'))
 
 
+@override_settings(IMPORT_BATCH_SIZE=2)
 class TestParser(APITestCase):
 
     def parser_helper(self, filename, parser, include_label=True):

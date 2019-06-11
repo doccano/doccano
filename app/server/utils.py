@@ -7,10 +7,10 @@ from collections import defaultdict
 from random import Random
 
 from django.db import transaction
+from django.conf import settings
 from rest_framework.renderers import JSONRenderer
 from seqeval.metrics.sequence_labeling import get_entities
 
-from app.settings import IMPORT_BATCH_SIZE
 from .exceptions import FileParseException
 from .models import Label
 from .serializers import DocumentSerializer, LabelSerializer
@@ -242,19 +242,13 @@ class CoNLLParser(FileParser):
     ```
     """
     def parse(self, file):
-        """Store json for seq2seq.
-
-        Return format:
-        {"text": "Python is awesome!", "labels": [[0, 6, "Product"],]}
-        ...
-        """
         words, tags = [], []
         data = []
+        file = io.TextIOWrapper(file, encoding='utf-8')
         for i, line in enumerate(file, start=1):
-            if len(data) >= IMPORT_BATCH_SIZE:
+            if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
-            line = line.decode('utf-8')
             line = line.strip()
             if line:
                 try:
@@ -301,7 +295,7 @@ class PlainTextParser(FileParser):
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
         while True:
-            batch = list(itertools.islice(file, IMPORT_BATCH_SIZE))
+            batch = list(itertools.islice(file, settings.IMPORT_BATCH_SIZE))
             if not batch:
                 break
             yield [{'text': line.strip()} for line in batch]
@@ -327,7 +321,7 @@ class CSVParser(FileParser):
         columns = next(reader)
         data = []
         for i, row in enumerate(reader, start=2):
-            if len(data) >= IMPORT_BATCH_SIZE:
+            if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
             if len(row) == len(columns) and len(row) >= 2:
@@ -347,7 +341,7 @@ class JSONParser(FileParser):
         file = io.TextIOWrapper(file, encoding='utf-8')
         data = []
         for i, line in enumerate(file, start=1):
-            if len(data) >= IMPORT_BATCH_SIZE:
+            if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
             try:
