@@ -2,7 +2,7 @@
 
 Doccano is a fast-moving, community supported project. This roadmap provides guidance about priorities and focus areas of the doccano team and lists the functionality expected in upcoming releases of doccano. Many of these areas are driven by community use cases, and we welcome further contributions to doccano.
 
-# Current status
+## Current status
 
 Doccano is now able to:
 
@@ -18,11 +18,11 @@ Doccano is now able to:
 * Confirm annotation statistics.
 * Access via web API.
 
-# Roadmap
+## Roadmap
 
 This is a list of features on the short term roadmap and beyond:
 
-## APIs
+### APIs
 
 * Implement login and registration API.
 * Implement OAuth 2.0 API.
@@ -32,14 +32,14 @@ This is a list of features on the short term roadmap and beyond:
 * Optimize performance for statistics API.
 * More documentation and tutorials.
 
-## Project management
+### Project management
 
 * Enable to manage user by project administrators.
 * Implement RBAC and enable to assign a role to a user by project administrators.
 * Enhance annotation statistics.
 
 
-## Annotation
+### Annotation
 
 * Increase the number of annotation tasks such as relation extraction, entity linking, aspect-based sentiment analysis, visual question answering and so on.
 * Introduce a plugin feature to define custom tasks by a user.
@@ -49,7 +49,7 @@ This is a list of features on the short term roadmap and beyond:
 * More documentation and tutorials.
 
 
-## Upload and download
+### Upload and download
 
 * Enable to import data from cloud storage like s3.
 * Improve UX by showing progress bar.
@@ -57,7 +57,7 @@ This is a list of features on the short term roadmap and beyond:
 * Support for custom tokenization.
 * More performance optimizations.
 
-## Accessibility
+### Accessibility
 
 * Support smartphone to enable anyone to annotate anywhere.
 * Enable to customize font and font-family.
@@ -65,7 +65,7 @@ This is a list of features on the short term roadmap and beyond:
 * Enable to customize site theme per user.
  
  
-## Entire project
+### Entire project
 
 * Design Vue component and use it to implement frontend.
 * Introduce frontend testing framework.
@@ -76,7 +76,7 @@ This is a list of features on the short term roadmap and beyond:
 * Improve project management structure to accelerate the project improvement.
 * Create GitHub page by using mkdocs and move wiki contents to it.
 
-## Community and engagement
+### Community and engagement
 
 * New resources for community discussion and feedback.
 * Gather and highlight novel doccano use cases.
