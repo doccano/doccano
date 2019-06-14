@@ -1,10 +1,18 @@
 language: minimal
 
+python: "3.6"
+
 services:
   - docker
 
+install:
+  - pip install mkdocs mkdocs-material
+
 script:
   - docker build --target=builder .
+
+before_deploy:
+    - mkdocs build --verbose --clean
 
 deploy:
   - provider: script
@@ -16,3 +24,10 @@ deploy:
     script: tools/cd.sh ${TRAVIS_TAG}
     on:
       tags: true
+
+  - provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN
+    local_dir: site
+    on:
+        branch: master
