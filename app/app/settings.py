@@ -97,6 +97,7 @@ TEMPLATES = [
             ],
             'libraries': {
                 'analytics': 'server.templatetags.analytics',
+                'utils_templating': 'authentification.templatetags.utils_templating',
             },
         },
     },
