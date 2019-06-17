@@ -1,0 +1,31 @@
+{% extends "base_auth.html" %}
+
+{% load utils_templating %}
+{% block content_auth %}
+<div class="card-content">
+  <div style="text-align:center;font-size:1.5em">
+    <h2>Sign up</h2>
+  </div>
+  <form method="post">
+    {% csrf_token %}
+      {% for field in form %}
+      <div class="field">
+        <label class="label">{{ field.label_tag }}</label>
+        <div class="control">
+          {{ field|addcss:'input'  }}
+          {% if field.help_text %}
+            <small style="display: none">{{ field.help_text }}</small>
+          {% endif %}
+          {% for error in field.errors %}
+            <p style="color: red">{{ error }}</p>
+          {% endfor %}
+        </div>
+      </div>
+
+      {% endfor %}
+    <div style="text-align:center">
+        <button type="submit" class="button is-link">Sign up</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
