@@ -8,16 +8,22 @@ from .tokens import account_activation_token
 from django.core.mail import EmailMessage
 from django.views.generic import TemplateView
 
+from app import settings
+
 class SignupView(TemplateView):
     template_name = 'signup.html'
     form_class = SignupForm
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form, 'allow_signup': bool(settings.ALLOW_SIGNUP)})
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        
+        # here we make sure that a post request won't trigger a subscription in case allow_signup is False
+        if not bool(settings.ALLOW_SIGNUP):
+            return redirect('signup')
 
         if form.is_valid():
             user = form.save(commit=False)

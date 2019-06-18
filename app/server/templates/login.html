@@ -47,6 +47,13 @@
             </label>
           </div>
           <input class="button is-block is-primary is-middle is-fullwidth" type="submit" value="Login" />
+          {% if allow_signup %}
+          <div class="field">
+            <span class="checkbox" style="margin-top:10px">
+              Not registered yet ? <a href="{% url 'signup' %}"> Sign up </a>
+            </span>
+          </div>
+          {% endif %}
           <input type="hidden" name="next" value="{{ next }}" />
         </form>
         {% if social_login_enabled %}
