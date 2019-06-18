@@ -35,6 +35,9 @@ SECRET_KEY = env('SECRET_KEY',
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', True)
 
+# True if you want to allow users to be able to create an account
+ALLOW_SIGNUP = env.bool('ALLOW_SIGNUP', True)
+
 # ALLOWED_HOSTS = []
 
 
