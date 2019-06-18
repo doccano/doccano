@@ -20,7 +20,7 @@ class SignupView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        
+
         # here we make sure that a post request won't trigger a subscription in case allow_signup is False
         if not bool(settings.ALLOW_SIGNUP):
             return redirect('signup')
