@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
+
 @register.filter(name='addcss')
 def addcss(value, arg):
     css_classes = value.field.widget.attrs.get('class', '').split(' ')

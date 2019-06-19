@@ -10,6 +10,7 @@ from django.views.generic import TemplateView
 
 from app import settings
 
+
 class SignupView(TemplateView):
     template_name = 'signup.html'
     form_class = SignupForm
@@ -35,12 +36,12 @@ class SignupView(TemplateView):
             message = render_to_string('acc_active_email.html', {
                 'user': user,
                 'domain': current_site.domain,
-                'uid':urlsafe_base64_encode(force_bytes(user.pk)).decode(),
-                'token':account_activation_token.make_token(user),
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+                'token': account_activation_token.make_token(user),
             })
             to_email = form.cleaned_data.get('email')
             email = EmailMessage(
-                        mail_subject, message, to=[to_email]
+                mail_subject, message, to=[to_email]
             )
             email.send()
             return render(request, 'validate_mail_address_complete.html')

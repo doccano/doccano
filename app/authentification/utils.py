@@ -6,6 +6,7 @@ from django.utils.http import urlsafe_base64_decode
 from .tokens import account_activation_token
 from django.contrib.auth.models import User
 
+
 def activate(request, uidb64, token):
     try:
         uid = force_text(urlsafe_base64_decode(uidb64))
@@ -15,7 +16,8 @@ def activate(request, uidb64, token):
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
         user.save()
-        login(request=request, user=user, backend='django.contrib.auth.backends.ModelBackend')
+        login(request=request, user=user,
+              backend='django.contrib.auth.backends.ModelBackend')
         return redirect('projects')
     else:
         return render(request, 'validate_mail_address_invalid.html')

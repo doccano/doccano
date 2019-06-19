@@ -9,23 +9,23 @@
   </div> -->
   <form method="post">
     {% csrf_token %}
-      {% for field in form %}
-      <div class="field">
-        <label class="label">{{ field.label_tag }}</label>
-        <div class="control">
-          {{ field|addcss:'input'  }}
-          {% if field.help_text %}
-            <small style="display: none">{{ field.help_text }}</small>
-          {% endif %}
-          {% for error in field.errors %}
-            <p style="color: red">{{ error }}</p>
-          {% endfor %}
-        </div>
+    {% for field in form %}
+    <div class="field">
+      <label class="label">{{ field.label_tag }}</label>
+      <div class="control">
+        {{ field|addcss:'input'  }}
+        {% if field.help_text %}
+        <small style="display: none">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+        <p style="color: red">{{ error }}</p>
+        {% endfor %}
       </div>
+    </div>
 
-      {% endfor %}
+    {% endfor %}
     <div style="text-align:center">
-        <button type="submit" class="button is-block is-primary is-fullwidth is-middle">Sign up</button>
+      <button type="submit" class="button is-block is-primary is-fullwidth is-middle">Sign up</button>
     </div>
     <div class="field">
       <span class="checkbox" style="margin-top:30px">
