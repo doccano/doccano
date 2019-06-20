@@ -1,13 +1,13 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from .api import Me, Features
-from .api import ProjectList, ProjectDetail
-from .api import LabelList, LabelDetail
-from .api import DocumentList, DocumentDetail
-from .api import AnnotationList, AnnotationDetail
-from .api import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
-from .api import StatisticsAPI
+from .views import Me, Features
+from .views import ProjectList, ProjectDetail
+from .views import LabelList, LabelDetail
+from .views import DocumentList, DocumentDetail
+from .views import AnnotationList, AnnotationDetail
+from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
+from .views import StatisticsAPI
 
 
 urlpatterns = [
