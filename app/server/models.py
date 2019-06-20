@@ -10,10 +10,12 @@ from polymorphic.models import PolymorphicModel
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
+QANDA = 'QandA'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
+    (QANDA, 'question and answer'),
 )
 
 
@@ -137,6 +139,33 @@ class Seq2seqProject(Project):
         return Seq2seqStorage(data, self)
 
 
+class QandAProject(Project):
+
+    @property
+    def image(self):
+        return staticfiles_storage.url('assets/images/cats/seq2seq.jpg')
+
+    def get_bundle_name(self):
+        return 'qanda'
+
+    def get_bundle_name_upload(self):
+        return 'upload_qanda'
+
+    def get_bundle_name_download(self):
+        return 'download_qanda'
+
+    def get_annotation_serializer(self):
+        from .serializers import QandAAnnotationSerializer
+        return QandAAnnotationSerializer
+
+    def get_annotation_class(self):
+        return QandAAnnotation
+
+    def get_storage(self, data):
+        from .utils import QandAStorage
+        return QandAStorage(data, self)
+
+
 class Label(models.Model):
     PREFIX_KEYS = (
         ('ctrl', 'ctrl'),
@@ -225,6 +254,14 @@ class SequenceAnnotation(Annotation):
 
 class Seq2seqAnnotation(Annotation):
     document = models.ForeignKey(Document, related_name='seq2seq_annotations', on_delete=models.CASCADE)
+    text = models.TextField()
+
+    class Meta:
+        unique_together = ('document', 'user', 'text')
+
+
+class QandAAnnotation(Annotation):
+    document = models.ForeignKey(Document, related_name='qanda_annotations', on_delete=models.CASCADE)
     text = models.TextField()
 
     class Meta:

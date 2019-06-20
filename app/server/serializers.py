@@ -5,8 +5,8 @@ from rest_framework.exceptions import ValidationError
 
 
 from .models import Label, Project, Document
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, QandAProject
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, QandAAnnotation
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -107,12 +107,22 @@ class Seq2seqProjectSerializer(serializers.ModelSerializer):
         read_only_fields = ('image', 'updated_at', 'users')
 
 
+class QandAProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = QandAProject
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at',
+                  'randomize_document_order')
+        read_only_fields = ('image', 'updated_at', 'users')
+
+
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
     model_serializer_mapping = {
         Project: ProjectSerializer,
         TextClassificationProject: TextClassificationProjectSerializer,
         SequenceLabelingProject: SequenceLabelingProjectSerializer,
-        Seq2seqProject: Seq2seqProjectSerializer
+        Seq2seqProject: Seq2seqProjectSerializer,
+        QandAProject: QandAProjectSerializer
     }
 
 
@@ -154,5 +164,14 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seq2seqAnnotation
+        fields = ('id', 'text', 'user', 'document')
+        read_only_fields = ('user',)
+
+
+class QandAAnnotationSerializer(serializers.ModelSerializer):
+    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+
+    class Meta:
+        model = QandAAnnotation
         fields = ('id', 'text', 'user', 'document')
         read_only_fields = ('user',)
