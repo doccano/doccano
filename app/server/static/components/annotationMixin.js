@@ -90,11 +90,7 @@ export default {
         this.next = response.data.next;
         this.prev = response.data.previous;
         this.count = response.data.count;
-        this.annotations = [];
-        for (let i = 0; i < this.docs.length; i++) {
-          const doc = this.docs[i];
-          this.annotations.push(doc.annotations);
-        }
+        this.annotations = this.docs.map(doc => doc.annotations);
         this.offset = getOffsetFromUrl(this.url);
       });
     },
