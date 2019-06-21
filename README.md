@@ -1,5 +1,35 @@
 # doccano
 
+To start a dev env of doccano do the following:
+
+## Create a python3 virtual env
+Create an environment and activate it.
+```
+python3 -m venv .venv # This will create an environment named .venv
+```
+Then run setup:
+```
+make setup-local
+```
+This will install all the requirements and collect static resources for the django service.
+
+you will need to start the database and node server:
+```
+make docker-start
+```
+Run migrations:
+```
+make migrate
+```
+Create an admin user:
+```
+make create-admin
+```
+From here starting the service, you'll need to run:
+```
+make run-local
+```
+## About the open-source project:
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/98a0992c0a254d0ba23fd75631fe2907)](https://app.codacy.com/app/Hironsan/doccano?utm_source=github.com&utm_medium=referral&utm_content=chakki-works/doccano&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/chakki-works/doccano.svg?branch=master)](https://travis-ci.org/chakki-works/doccano)
 
@@ -238,7 +268,7 @@ After the annotation step, you can download the annotated data. Click the `Edit 
 
 <img src="./docs/export_data.png" alt="Edit label" width=600>
 
-You can export data as CSV file or JSON file by clicking the button. As for the export file format, you can check it here: [Export File Formats](https://github.com/chakki-works/doccano/wiki/Export-File-Formats). 
+You can export data as CSV file or JSON file by clicking the button. As for the export file format, you can check it here: [Export File Formats](https://github.com/chakki-works/doccano/wiki/Export-File-Formats).
 
 Each exported document will have metadata column or key, which will contain
 additional columns or keys from the imported document. The primary use-case for metadata is to allow you to match exported data with other system

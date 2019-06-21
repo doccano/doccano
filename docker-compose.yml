@@ -1,22 +1,8 @@
 version: "3"
 services:
-
-  django:
-    image: python:3.6
-    volumes:
-      - .:/src
-      - venv:/src/venv
-    command: ["/src/tools/dev-django.sh", "0.0.0.0:8000"]
-    environment:
-      ADMIN_USERNAME: "admin"
-      ADMIN_PASSWORD: "password"
-      ADMIN_EMAIL: "admin@example.com"
-      DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
-    ports:
-      - 8000:8000
-
   webpack:
     image: node:8
+    container_name: webpack
     volumes:
       - .:/src
       - node_modules:/src/app/server/static/node_modules
@@ -30,6 +16,7 @@ services:
 
   postgres:
     image: postgres:9.6
+    container_name: postgres
     environment:
       POSTGRES_USER: "doccano"
       POSTGRES_PASSWORD: "doccano"

@@ -116,6 +116,7 @@ celerybeat-schedule
 .venv
 env/
 venv/
+.venv/
 ENV/
 env.bak/
 venv.bak/
@@ -153,6 +154,10 @@ venv.bak/
 # Gradle:
 .idea/**/gradle.xml
 .idea/**/libraries
+
+# VsCode
+.vscode/
+.vscode
 
 # CMake
 cmake-build-debug/
