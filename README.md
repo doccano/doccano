@@ -4,32 +4,32 @@ To start a dev env of doccano do the following:
 
 ## Create a python3 virtual env
 Create an environment and activate it.
-```
+```bash
 python3 -m venv .venv # This will create an environment named .venv
 ```
 Then run setup:
-```
+```bash
 make setup-local
 ```
 This will install all the requirements and collect static resources for the django service.
 
 you will need to start the database and node server:
-```
+```bash
 make docker-start
 ```
 Run migrations:
-```
+```bash
 make migrate
 ```
 Create an admin user:
-```
+```bash
 make create-admin
 ```
 From here starting the service, you'll need to run:
-```
+```bash
 make run-local
 ```
-## About the open-source project:
+## About the open-source project
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/98a0992c0a254d0ba23fd75631fe2907)](https://app.codacy.com/app/Hironsan/doccano?utm_source=github.com&utm_medium=referral&utm_content=chakki-works/doccano&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/chakki-works/doccano.svg?branch=master)](https://travis-ci.org/chakki-works/doccano)
 
