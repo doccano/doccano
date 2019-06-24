@@ -505,7 +505,6 @@ class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
 
 class DocumentExport(SuperUserMixin, LoginRequiredMixin, View):
-
     def get(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         queryset = Document.objects.filter(project=project)
@@ -515,8 +514,56 @@ class DocumentExport(SuperUserMixin, LoginRequiredMixin, View):
         response.write(dataset.csv)
         return response
 
-class DocumentAnnotationExport(SuperUserMixin, LoginRequiredMixin, View):
+class DataExportToS3(SuperUserMixin, LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
 
+        import s3fs
+        s3 = s3fs.S3FileSystem(anon=False)
+        # Use 'w' for py3, 'wb' for py2
+        query = """
+        SELECT
+    server_document.id AS document_id,
+    server_documentannotation.id AS annotation_id,
+    server_documentannotation.created_date_time AS annotation_datetime,
+    server_documentannotation.user_id,
+    auth_user.username AS username,
+    server_documentannotation.label_id,
+    server_label.text AS label_text,
+    server_documentgoldannotation.label_id AS gold_label_id,
+    server_document.text,
+    server_document.metadata
+
+FROM server_documentannotation
+    LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+    LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
+    LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+    LEFT JOIN server_documentgoldannotation ON server_document.id = server_documentgoldannotation.document_id
+WHERE server_document.project_id = {}
+        """.format(int(project.id))
+
+        cursor = connection.cursor()
+        cursor.execute(query)
+
+        df = pd.DataFrame(cursor.fetchall())
+        print(df.head())
+        with s3.open('gong-datasets/email_dumps/doccano_project_{}_export.csv'.format(project.id), 'w') as f:
+            df.to_csv(f)
+        print('writen successfully')
+        # import boto3
+        # BUCKET = "gong-datasets"
+        # # local_path = r'C:\Temp\parquet\\'
+        # s3_file_path_format = "email_dumps/doccano_project_{}_export.csv"
+        # # s3 = boto3.resource('s3')
+        # client = boto3.client('s3')
+        # client.put_object(Body=data, Bucket='my_bucket_name', Key='my/key/including/anotherfilename.txt')
+        # s3.Bucket(BUCKET).upload_file(filename, s3_file_path_format.format(project.id))
+
+
+        response = HttpResponseRedirect('/')
+        return response
+
+class DocumentAnnotationExport(SuperUserMixin, LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         project_docs = Document.objects.filter(project=project)
@@ -528,7 +575,6 @@ class DocumentAnnotationExport(SuperUserMixin, LoginRequiredMixin, View):
         return response
 
 class LabelExport(SuperUserMixin, LoginRequiredMixin, View):
-
     def get(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         queryset = Label.objects.filter(project=project)
@@ -539,7 +585,6 @@ class LabelExport(SuperUserMixin, LoginRequiredMixin, View):
         return response
 
 class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
-
     def get(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, pk=project_id)
@@ -574,7 +619,6 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
         return response
 
 class LabelsAdminDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
-
     def get(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         data = get_labels_admin(project_id=project.id).reset_index()

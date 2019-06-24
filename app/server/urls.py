@@ -1,6 +1,7 @@
 from django.urls import path
 from rest_framework import routers
 
+from .views import DataExportToS3
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView, SettingsView, LabelersView, LabelAdminView
 from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport, UserInfoView
@@ -41,6 +42,7 @@ urlpatterns = [
     path('projects/<int:project_id>/download_file', DataDownloadFile.as_view(), name='download_file'),
     path('projects/<int:project_id>/download_labels_admin', LabelsAdminDownloadFile.as_view(), name='download_labels_admin'),
     path('projects/<int:project_id>/export_docs', DocumentExport.as_view(), name='export_docs'),
+    path('projects/<int:project_id>/export_to_s3', DataExportToS3.as_view(), name='export_to_s3'),
     path('projects/<int:project_id>/export_annotations', DocumentAnnotationExport.as_view(), name='export_annotations'),
     path('projects/<int:project_id>/export_labels', LabelExport.as_view(), name='export_labels'),
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
