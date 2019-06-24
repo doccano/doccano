@@ -5,6 +5,8 @@ ARG NODE_VERSION="8.x"
 RUN curl -sL "https://deb.nodesource.com/setup_${NODE_VERSION}" | bash - \
  && apt-get install nodejs
 
+RUN apt-get install -y unixodbc-dev
+
 COPY app/server/static/package*.json /doccano/app/server/static/
 RUN cd /doccano/app/server/static \
  && npm ci
@@ -28,6 +30,15 @@ RUN cd /doccano \
  && python app/manage.py collectstatic --noinput
 
 FROM python:${PYTHON_VERSION}-slim-stretch AS runtime
+
+RUN apt-get update \
+ && apt-get install -y curl gnupg apt-transport-https \
+ && curl -fsS https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+ && curl -fsS https://packages.microsoft.com/config/debian/9/prod.list > /etc/apt/sources.list.d/mssql.list \
+ && apt-get update \
+ && ACCEPT_EULA=Y apt-get install -y msodbcsql17 mssql-tools \
+ && apt-get remove -y curl gnupg apt-transport-https \
+ && rm -rf /var/lib/apt/lists/*
 
 RUN useradd -ms /bin/sh doccano
 

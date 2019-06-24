@@ -226,7 +226,7 @@ class SequenceAnnotation(Annotation):
 
 class Seq2seqAnnotation(Annotation):
     document = models.ForeignKey(Document, related_name='seq2seq_annotations', on_delete=models.CASCADE)
-    text = models.TextField()
+    text = models.CharField(max_length=500)
 
     class Meta:
         unique_together = ('document', 'user', 'text')
