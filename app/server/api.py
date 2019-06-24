@@ -393,20 +393,51 @@ class ProjectStatsAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        labels = [label.text for label in p.labels.all()]
-        users = [user.username for user in p.users.all()]
-        docs = [doc for doc in p.documents.all()]
-        nested_labels = [[a.label.text for a in doc.get_annotations()] for doc in docs]
-        nested_users = [[a.user.username for a in doc.get_annotations()] for doc in docs]
+        query = """
+SELECT
+    server_documentannotation.user_id,
+    auth_user.username AS username,
+    server_documentannotation.label_id,
+    server_label.text AS label_text,
+    COUNT(DISTINCT server_document.id) AS num_documents,
+    COUNT(server_documentannotation.id) AS num_annotations
 
-        label_count = Counter(chain(*nested_labels))
-        label_data = [label_count[name] for name in labels]
+FROM server_documentannotation
+    LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+    LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
+    LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+WHERE server_document.project_id = {}
+GROUP BY user_id, username, label_id, label_text
+        """.format(int(project.id))
 
-        user_count = Counter(chain(*nested_users))
-        user_data = [user_count[name] for name in users]
+        cursor = connection.cursor()
+        cursor.execute(query)
+        df = pd.DataFrame(cursor.fetchall())
+        response = {
+            'label': {
+                'labels': labels,
+                'data': label_data
+            },
+            'user': {
+                'users': users,
+                'data': user_data
+            }
+        }
 
-        response = {'label': {'labels': labels, 'data': label_data},
-                    'user': {'users': users, 'data': user_data}}
+        # labels = [label.text for label in p.labels.all()]
+        # users = [user.username for user in p.users.all()]
+        # docs = [doc for doc in p.documents.all()]
+        # nested_labels = [[a.label.text for a in doc.get_annotations()] for doc in docs]
+        # nested_users = [[a.user.username for a in doc.get_annotations()] for doc in docs]
+        #
+        # label_count = Counter(chain(*nested_labels))
+        # label_data = [label_count[name] for name in labels]
+        #
+        # user_count = Counter(chain(*nested_users))
+        # user_data = [user_count[name] for name in users]
+        #
+        # response = {'label': {'labels': labels, 'data': label_data},
+        #             'user': {'users': users, 'data': user_data}}
 
         return Response(response)
 
