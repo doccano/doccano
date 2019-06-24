@@ -360,7 +360,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 label_col = 1
                 user_col = 2
             else:
-                raise DataUpload.ImportFileError("CSV file must have either a title with \"text\" column and \"label\" column and \"user\" column or have three columns ")
+                raise DataUpload.ImportFileError("CSV file must either have a first row with the column titles \"text\", \"label\" and \"user\", or have three columns in that order.")
             errors = []
             labels_set = []
             count = 0

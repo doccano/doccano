@@ -26,9 +26,15 @@
                   <th>User id</th>
                   <th>Name</th>
                   <th>Last annotation</th>
-                  <th># of annotations made</th>
-                  <th>Agreement with truth</th>
-                  <th>% Agreement with other labelers</th>
+                  <th>
+                      # of annotations made
+                  </th>
+                  <th title="The % of labels for which the labeler's annotation matched that marked as truth. This serves to estimate the performance level of the labeler. The number of annotations that the labeler made that have a truth label is shown in parenthesis.">
+                      % Correct (# annotations)
+                  </th>
+                  <th title="This is the average Kappa score of the agreement between the labeler and other labelers. The score is corrected for chance. A value of 0 means an agreement expected at random, 1 means full agreement and -1 means full disagreement.">
+                      Kappa agreement with other labelers
+                  </th>
               </tr>
           </thead>
           <tbody>
@@ -37,19 +43,21 @@
                   <td><a href="mailto:{user.email}" title="{user.email}">[[ user.name ]]</a></td>
                   <td>[[ user.last_annotation | parseDate ]]</td>
                   <td>[[ user.num_annotations ]]</td>
-                  <td>[[ user.agreement_with_truth | toPercent ]]</td>
-                  <td>[[ user.average_kappa_agreement | toPercent ]]</td>
+                  <td>[[ user.agreement_with_truth | toPercent ]] ([[ user.num_documents_with_truth_labels ]])</td>
+                  <td>[[ user.average_kappa_agreement | toFixed(2,0) ]]</td>
               </tr>
           </tbody>
       </table>
 
-      <h5 class="title is-5">
+      <h5 class="title is-5" style="margin-top: 4rem;">
           Inter-rater Agreement using Cohen's Kappa:
       </h5>
-      <p class="subtitle is-6">
+      <p class="subtitle is-6" style="margin-bottom: 0rem;">
           This matrix shows the level of agreement between the different labelers, <em>corrected for chance</em>. A value of 0 means an agreement expected at random, 1 means full agreement and -1 means full disagreement.
       </p>
-      <img v-if="matrix" :src="matrixSrc"/>
+      <div>
+        <img v-if="matrix" :src="matrixSrc"/>
+      </div>
   </div>
 </div>
 {% endblock %}

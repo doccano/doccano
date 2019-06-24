@@ -42,8 +42,7 @@ from .filters import ExcludeSearchFilter
 
 from .labelers_comparison_functions import create_kappa_comparison_df, compute_average_agreement_per_labeler, add_agreement_columns
 
-
-from classifier.text.text_classifier import run_model_on_file
+# from classifier.text.text_classifier import run_model_on_file
 
 ML_FOLDER = 'ml_models'
 
@@ -69,7 +68,11 @@ def get_labels_admin(project_id):
           server_documentannotation.label_id, 
           server_document.text, 
           server_documentgoldannotation.label_id, 
-          server_documentmlmannotation.prob'''.format(project_id=project_id)
+          server_documentmlmannotation.prob
+        ORDER BY  server_documentannotation.document_id ASC,
+          num_labelers DESC 
+          '''.format(project_id=project_id)
+
     cursor = connection.cursor()
     cursor.execute(query)
     df = pd.DataFrame(cursor.fetchall(), columns=[
@@ -80,7 +83,7 @@ def get_labels_admin(project_id):
         .agg({
         'label_id': [('top_label', lambda x: x.iloc[0])],
         'num_labelers': [
-            ('agreement', lambda x: round(x.iloc[0] / sum(x))),
+            ('agreement', lambda x: x.iloc[0] / sum(x)),
             ('num_labelers', lambda x: sum(x)),
         ],
         'last_annotation_date': [
@@ -235,6 +238,7 @@ class LabelersListAPI(APIView):
         users = get_users_data(cursor, project_id)
         users['average_kappa_agreement'] = average_kappa_agreement_per_labeler
         users['agreement_with_truth'] = user_truth_agreement['mean']
+        users['num_documents_with_truth_labels'] = user_truth_agreement['count']
         users = users.reset_index()
 
         num_truth_annotations = annotations_df['true_label_id'].count()
@@ -365,8 +369,10 @@ class RunModelAPI(APIView):
         print( df.groupby('label_id')[['user_id', 'document_id']].count())
         df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE), encoding='utf-8')
 
-        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
-
+        # result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
+        active_learning_function = Project.project_types[ p.project_type ]['active_learning_model']
+        result = active_learning_function(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE),
+                                   user_id=request.user.id, project_id=project_id)
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
 
@@ -387,20 +393,51 @@ class ProjectStatsAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        labels = [label.text for label in p.labels.all()]
-        users = [user.username for user in p.users.all()]
-        docs = [doc for doc in p.documents.all()]
-        nested_labels = [[a.label.text for a in doc.get_annotations()] for doc in docs]
-        nested_users = [[a.user.username for a in doc.get_annotations()] for doc in docs]
+        query = """
+SELECT
+    server_documentannotation.user_id,
+    auth_user.username AS username,
+    server_documentannotation.label_id,
+    server_label.text AS label_text,
+    COUNT(DISTINCT server_document.id) AS num_documents,
+    COUNT(server_documentannotation.id) AS num_annotations
 
-        label_count = Counter(chain(*nested_labels))
-        label_data = [label_count[name] for name in labels]
+FROM server_documentannotation
+    LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+    LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
+    LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+WHERE server_document.project_id = {}
+GROUP BY user_id, username, label_id, label_text
+        """.format(int(project.id))
 
-        user_count = Counter(chain(*nested_users))
-        user_data = [user_count[name] for name in users]
+        cursor = connection.cursor()
+        cursor.execute(query)
+        df = pd.DataFrame(cursor.fetchall())
+        response = {
+            'label': {
+                'labels': labels,
+                'data': label_data
+            },
+            'user': {
+                'users': users,
+                'data': user_data
+            }
+        }
 
-        response = {'label': {'labels': labels, 'data': label_data},
-                    'user': {'users': users, 'data': user_data}}
+        # labels = [label.text for label in p.labels.all()]
+        # users = [user.username for user in p.users.all()]
+        # docs = [doc for doc in p.documents.all()]
+        # nested_labels = [[a.label.text for a in doc.get_annotations()] for doc in docs]
+        # nested_users = [[a.user.username for a in doc.get_annotations()] for doc in docs]
+        #
+        # label_count = Counter(chain(*nested_labels))
+        # label_data = [label_count[name] for name in labels]
+        #
+        # user_count = Counter(chain(*nested_users))
+        # user_data = [user_count[name] for name in users]
+        #
+        # response = {'label': {'labels': labels, 'data': label_data},
+        #             'user': {'users': users, 'data': user_data}}
 
         return Response(response)
 
@@ -408,9 +445,10 @@ class ProjectStatsAPI(APIView):
 def get_class_weights(project_id):
     filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
     if (os.path.isfile(filename)):
-        data = pd.read_csv(os.path.abspath(filename), header=None, names=['term', 'weight'])
-        data['term'] = data['term'].str.replace('processed_text_w_', '')
-        class_weights = data.set_index('term')['weight']
+        data = pd.read_csv(os.path.abspath(filename))
+        data['importance'] = data['importance'].apply(lambda x: round(x,2))
+        data['feature_name'] = data['feature_name'].str.replace('processed_text_w_', '')
+        class_weights = data.set_index('feature_name')
         return class_weights
     return None
 
@@ -420,9 +458,9 @@ class ClassWeightsApi(APIView):
 
     def get(self, request, *args, **kwargs):
         weights = get_class_weights(self.kwargs['project_id'])
-        resp = None
-        if (weights is not None):
-            resp = weights.to_dict()
+        # resp = None
+        # if (weights is not None):
+        #     resp = weights.to_dict()
         return Response({'weights': weights.reset_index().values})
 
 

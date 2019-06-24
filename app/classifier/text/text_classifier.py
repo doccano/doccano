@@ -8,7 +8,7 @@ from sklearn.linear_model import LogisticRegression
 import logging
 
 logger = logging.getLogger('text classifier')
-
+ngram_range = (1, 1)
 
 class TextClassifier(BaseClassifier):
     @classmethod
@@ -27,10 +27,11 @@ class TextClassifier(BaseClassifier):
 
     @property
     def important_features(self, k=None):
+        column_order = ['feature_name', 'importance', 'class']
         try:
             importances = self._model.feature_importances_
             feature_names = self.features
-            feature_importance_df = pd.DataFrame({'feature name': feature_names,
+            feature_importance_df = pd.DataFrame({'feature_name': feature_names,
                                                   'importance': importances,
                                                   'class': np.nan}).sort_values(by='importance', ascending=False)
             if isinstance(k, int):
@@ -41,7 +42,7 @@ class TextClassifier(BaseClassifier):
                 feature_importances_per_class = []
                 for i, c in enumerate(self._model.classes_):
                     importances = self._model.coef_[i]
-                    per_class_df = pd.DataFrame({'feature name': feature_names[importances > 0],
+                    per_class_df = pd.DataFrame({'feature_name': feature_names[importances > 0],
                                                  'importance': importances[importances > 0],
                                                  'class': c}).sort_values(by='importance', ascending=False)
                     if isinstance(k, int):
@@ -51,17 +52,19 @@ class TextClassifier(BaseClassifier):
                 feature_importance_df = pd.concat(feature_importances_per_class, sort=True)
             else:
                 importances = self._model.coef_[0]
-                feature_importance_df = pd.DataFrame({'feature name': feature_names,
+                feature_importance_df = pd.DataFrame({'feature_name': feature_names,
                                                       'importance': abs(importances),
-                                                      'class': [self._model.classes_[0] if imp > 0 else self._model.classes_[1] for imp in importances]})
+                                                      'class': [
+                                                          self._model.classes_[0] if imp > 0 else self._model.classes_[
+                                                              1] for imp in importances]})
 
-        return feature_importance_df.sort_values(by=['class', 'importance'], ascending=False)
+        return feature_importance_df.sort_values(by=['class', 'importance'], ascending=False)[column_order]
 
     def set_preprocessor(self, pipeline):
         self.processing_pipeline = TextPipeline(pipeline)
 
     def run_on_file(self, input_filename, output_filename, user_id, project_id, label_id=None,
-                    pipeline=None, bootstrap_iterations=1, bootstrap_threshold=0.9):
+                    pipeline=None, bootstrap_iterations=0, bootstrap_threshold=0.9):
         print('Reading input file...')
         df = pd.read_csv(input_filename, encoding='latin1')
         df = df[~pd.isnull(df['text'])]
@@ -99,21 +102,22 @@ class TextClassifier(BaseClassifier):
         _, evaluation_text = self.evaluate(X_test, y_test)
         result = result + '\nPerformance on test set: \n' + evaluation_text
 
-        print('Bootstrapping...')
+        print('Running the model on the entire dataset...')
         df_cpy = df.copy()
         df_cpy['label_id'] = None
         X = self.pre_process(df_cpy, fit=False)
         y = df['label_id']
+
+        print('Bootstrapping...')
         for i in range(bootstrap_iterations):
             print('bootstrap iteration ', i, '/', bootstrap_iterations, ' ', [x for x in zip(np.unique(y[~pd.isna(y)], return_counts=True))])
             y = self.bootstrap(X, y=y, th=bootstrap_threshold)
 
-        print('Running the model on the entire dataset...')
         prediction_df = self.get_prediction_df(X, y=df['label_id'])
 
         prediction_df['document_id'] = df['document_id']
         prediction_df['user_id'] = user_id
-        prediction_df = prediction_df.rename(columns={'confidence': 'prob'})
+        prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)
         prediction_df['label_id'] = prediction_df['prediction']
 
         print('Saving output...')
@@ -126,21 +130,20 @@ class TextClassifier(BaseClassifier):
         print('Done running the model!')
         return result
 
-
-def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None,
-                      bootstrap_iterations=1, bootstrap_threshold=0.9):
+def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow'):
     # rf = RandomForestClassifier(verbose=True, class_weight='balanced')
-    lr = LogisticRegression(verbose=True, class_weight='balanced', random_state=0, penalty='l1', C=10000, multi_class='ovr')
+    # lr = LogisticRegression(verbose=False, class_weight='balanced', random_state=0, penalty='l2', C=1)
+    lr = LogisticRegression(verbose=False, class_weight='balanced', random_state=0, penalty='l1',
+                            multi_class='ovr')
     clf = TextClassifier(model=lr)
     # pipeline functions are applied sequentially by order of appearance
     pipeline = [('base processing', {'col': 'text', 'new_col': 'processed_text'}),
                 ('bag of words', {'col': 'processed_text',
-                                  'min_df': 1, 'max_df': 1., 'binary': True, 'ngram_range': (1, 2),
+                                  'min_df': 1, 'max_df': 1., 'binary': True, 'ngram_range': ngram_range,
                                   'stop_words': 'english', 'strip_accents': 'ascii', 'max_features': 5000}),
                 ('drop columns', {'drop_cols': ['label_id', 'text', 'processed_text']})]
 
-    result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id,
-                             pipeline=pipeline, bootstrap_iterations=bootstrap_iterations, bootstrap_threshold=bootstrap_threshold)
+    result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id, pipeline=pipeline)
     return result
 
 

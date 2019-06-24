@@ -16,6 +16,8 @@ export const parseDate = (date) => {
     return dateParsed.getFullYear() + "/" + (dateParsed.getMonth() + 1) + "/" + dateParsed.getDate() + " " + addZero(dateParsed.getHours()) + ":" + addZero(dateParsed.getMinutes()) + ":" + addZero(dateParsed.getSeconds()) 
 }
 
-export const toFixed = (val, length) => {
-    return parseFloat(val).toFixed(length)
+export const toFixed = (val, length, factor) => {
+    factor = factor || 1
+    length  = length || 2
+    return parseFloat(val * factor).toFixed(length)
 }

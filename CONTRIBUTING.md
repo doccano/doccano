@@ -6,4 +6,4 @@ Doccano is under continuous development, in both [the original project](https://
 
 If you have requests for features, please file an issue describing your request. Also, if you want to see work towards a specific feature, feel free to contribute by working towards it. The standard procedure is to fork the repository, add a feature, fix a bug, then file a pull request that your changes are to be merged into the main repository and included in the next release.
 
-Here are some tips that might help - [How to Contribute to the Doccano Project](https://github.com/chakki-works/doccano/wiki/How-to-Contribute-to-Doccano-Project)
+Here are some tips that might help - [How to contribute to the project](https://github.com/gong-io/io/HOW_TO_CONTRIBUTE.md)

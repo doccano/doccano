@@ -31,12 +31,12 @@ const vm = new Vue({
         type: 'number'
       },
       {
-        label: 'Labelers Count',
+        label: '# Labelers',
         field: 'labelersCount',
         type: 'number',
       },
       {
-        label: 'Agreements Percent',
+        label: '% Agreements',
         field: 'agreementsPercent',
         type: 'percentage'
       },
