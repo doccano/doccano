@@ -20,7 +20,8 @@ module.exports = {
         'settings': './static/js/settings.js',
         'dataset': './static/js/dataset.js',
         'users': './static/js/users.js',
-        'user': './static/js/user.js'
+        'user': './static/js/user.js',
+        'user_info': './static/js/user_info.js'
     },
     output: {
         path: __dirname + '/static/bundle',

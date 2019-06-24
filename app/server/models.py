@@ -4,66 +4,17 @@ from django.db import models
 from django.db.models import Q
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.staticfiles.storage import staticfiles_storage
 from .utils import get_key_choices
+from server.project_types import project_types
+
 
 
 class Project(models.Model):
-    project_types = {
-        'DocumentClassification': {
-            'title': 'document classification',
-            'type': 'DocumentClassification',
-            'image': staticfiles_storage.url('images/cat-1045782_640.jpg'),
-            'template_html': 'annotation/document_classification.html',
-            'document_serializer': '',
-            'annotations_serializer': '',
-        },
+    project_types = project_types
 
-        'SequenceLabeling': {
-            'title': 'sequence labeling',
-            'type': 'SequenceLabeling',
-            'image': staticfiles_storage.url('images/cat-3449999_640.jpg'),
-            'template_html': 'annotation/sequence_labeling.html',
-            'document_serializer': '',
-            'annotations_serializer': '',
-        },
-
-        'Seq2seq': {
-            'title': 'sequence to sequence',
-            'type': 'Seq2seq',
-            'image': staticfiles_storage.url('images/tiger-768574_640.jpg'),
-            'template_html': 'annotation/seq2seq.html',
-            'document_serializer': '',
-            'annotations_serializer': '',
-        },
-
-        'ImageClassification': {
-            'title': 'image classification',
-            'type': 'DocumentClassification',
-            'image': staticfiles_storage.url('images/cat-1045782_640.jpg'),
-            'template_html': 'annotation/image_classification.html',
-            'document_serializer': '',
-            'annotations_serializer': '',
-        },
-
-        'ImageCaptioning': {
-            'title': 'image captioning',
-            'type': 'Seq2seq',
-            'image': staticfiles_storage.url('images/cat-1045782_640.jpg'),
-            'template_html': 'annotation/image_captioning.html',
-            'document_serializer': '',
-            'annotations_serializer': '',
-        },
-    }
     DOCUMENT_CLASSIFICATION = 'DocumentClassification'
     SEQUENCE_LABELING = 'SequenceLabeling'
     Seq2seq = 'Seq2seq'
-
-    # PROJECT_CHOICES = (
-    #     (DOCUMENT_CLASSIFICATION, 'document classification'),
-    #     (SEQUENCE_LABELING, 'sequence labeling'),
-    #     (Seq2seq, 'sequence to sequence'),
-    # )
 
     PROJECT_CHOICES = ((k, v['title']) for k,v in project_types.items())
 

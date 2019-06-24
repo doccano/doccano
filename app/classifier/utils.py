@@ -18,6 +18,14 @@ def train_test_split(data):
 
     return x_train, x_test, y_train, ids
 
+def sanitize_filename(filename):
+    return filename \
+        .replace('"', '') \
+        .replace('?', '') \
+        .replace('/', '-') \
+        .replace(' ', '_') \
+        .lower() \
+        .replace(':', '_') \
 
 def load_dataset(filename):
     with open(filename) as f:

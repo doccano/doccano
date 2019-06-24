@@ -6,7 +6,7 @@ from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, G
 from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport, UserInfoView
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation, LabelsAdminDownloadFile, UsersAdminView, UserView
 from .api import ProjectViewSet, UserViewSet, LabelList, ProjectStatsAPI, LabelDetail, DocumentDetail, ProjectDetail, UserInfo, \
-    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, LabelersListAPI, LabelAdminAPI, DocumentExplainAPI, SuggestedTerms, MetadataAPI, UserList, ClassWeightsApi
+    AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, LabelersListAPI, LabelAdminAPI, DocumentExplainAPI, DocumentLabelersAPI, SuggestedTerms, MetadataAPI, UserList, ClassWeightsApi
 
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/projects/<int:project_id>/suggested/', SuggestedTerms.as_view(), name='suggested'),
     path('api/projects/<int:project_id>/class_weights/', ClassWeightsApi.as_view(), name='class_weights'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/explanation/', DocumentExplainAPI.as_view(), name='document_explain'),
+    path('api/projects/<int:project_id>/docs/<int:doc_id>/labelers/', DocumentLabelersAPI.as_view(), name='document_labelers'),
     path('api/projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>', AnnotationDetail.as_view(), name='ann'),
     path('projects/', ProjectsView.as_view(), name='projects'),
     path('users_admin/', UsersAdminView.as_view(), name='users_admin'),

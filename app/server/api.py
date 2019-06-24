@@ -42,8 +42,7 @@ from .filters import ExcludeSearchFilter
 
 from .labelers_comparison_functions import create_kappa_comparison_df, compute_average_agreement_per_labeler, add_agreement_columns
 
-
-from classifier.text.text_classifier import run_model_on_file
+# from classifier.text.text_classifier import run_model_on_file
 
 ML_FOLDER = 'ml_models'
 
@@ -265,8 +264,54 @@ class LabelAdminAPI(APIView):
 class UserInfo(APIView):
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
+
     def get(self, request, *args, **kwargs):
-        return Response({})
+        user_annots_sql = '''
+        SELECT server_documentannotation.document_id,
+                server_documentannotation.label_id,
+                COUNT(DISTINCT user_id) AS num_labelers,
+                server_documentannotation.created_date_time AS last_annotation_date,
+                substr(server_document.text, 0, 60) AS document_text,
+                server_documentgoldannotation.label_id as ground_truth,
+                server_documentmlmannotation.prob as model_confidence
+            FROM server_documentannotation
+            LEFT JOIN server_document ON server_document.id = server_documentannotation.document_id
+            LEFT JOIN server_documentgoldannotation ON server_documentgoldannotation.document_id = server_documentannotation.document_id
+            LEFT JOIN server_documentmlmannotation ON server_documentmlmannotation.document_id = server_documentannotation.document_id
+            LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+            WHERE server_document.project_id = {project_id} AND server_documentannotation.user_id = {user_id}
+            GROUP BY server_documentannotation.document_id, 
+            server_documentannotation.label_id, 
+            server_document.text, 
+            server_documentgoldannotation.label_id, 
+            server_documentmlmannotation.prob,
+            server_documentannotation.created_date_time'''.format(project_id=self.kwargs['project_id'], user_id=self.kwargs['user_id'])
+        cursor = connection.cursor()
+        cursor.execute(user_annots_sql)
+        df = pd.DataFrame(cursor.fetchall(), columns=[
+            'document_id', 'label_id', 'num_labelers', 'last_annotation_date', 'snippet', 'ground_truth', 'model_confidence'
+        ])
+        z = df.sort_values(['document_id', 'num_labelers'], ascending=[True, False]) \
+            .groupby(['document_id']) \
+            .agg({
+            'label_id': [('top_label', lambda x: x.iloc[0])],
+            'num_labelers': [
+                ('agreement', lambda x: round(x.iloc[0] / sum(x))),
+                ('num_labelers', lambda x: sum(x)),
+            ],
+            'last_annotation_date': [
+                ('last_annotation_date', lambda x: x.max())
+            ],
+            'snippet': [('snippet', lambda x: x.iloc[0])],
+            'ground_truth': [('ground_truth', lambda x: x.iloc[0])],
+            'model_confidence': [('model_confidence', lambda x: x.iloc[0])],
+        })
+        z.columns = [c[1] for c in z.columns]
+        z = z.reset_index()
+        z['ground_truth'] = z['ground_truth'].fillna(-1)
+
+        response = {'dataframe': z}
+        return Response(response)
 
 class RunModelAPI(APIView):
     pagination_class = None
@@ -324,8 +369,10 @@ class RunModelAPI(APIView):
         print( df.groupby('label_id')[['user_id', 'document_id']].count())
         df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE), encoding='utf-8')
 
-        result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
-
+        # result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
+        active_learning_function = Project.project_types[ p.project_type ]['active_learning_model']
+        result = active_learning_function(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE),
+                                   user_id=request.user.id, project_id=project_id)
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
 
@@ -367,9 +414,10 @@ class ProjectStatsAPI(APIView):
 def get_class_weights(project_id):
     filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
     if (os.path.isfile(filename)):
-        data = pd.read_csv(os.path.abspath(filename), header=None, names=['term', 'weight'])
-        data['term'] = data['term'].str.replace('processed_text_w_', '')
-        class_weights = data.set_index('term')['weight']
+        data = pd.read_csv(os.path.abspath(filename))
+        data['importance'] = data['importance'].apply(lambda x: round(x,2))
+        data['feature_name'] = data['feature_name'].str.replace('processed_text_w_', '')
+        class_weights = data.set_index('feature_name')
         return class_weights
     return None
 
@@ -379,9 +427,9 @@ class ClassWeightsApi(APIView):
 
     def get(self, request, *args, **kwargs):
         weights = get_class_weights(self.kwargs['project_id'])
-        resp = None
-        if (weights is not None):
-            resp = weights.to_dict()
+        # resp = None
+        # if (weights is not None):
+        #     resp = weights.to_dict()
         return Response({'weights': weights.reset_index().values})
 
 
@@ -409,6 +457,25 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
                     text.append(w)
 
         response = {'document': ' '.join(text)}
+        return Response(response)
+
+class DocumentLabelersAPI(generics.RetrieveUpdateDestroyAPIView):
+    project_id = 0
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get(self, request, *args, **kwargs):
+        d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        self.project_id = self.kwargs['project_id']
+        annots = d.get_annotations()
+        ret = []
+        for a in annots:
+            ret.append({
+                'user_id': a.user.id,
+                'user_name': a.user.username,
+                'label_id': a.label.id
+            })
+        response = {'document_annotations': ret}
         return Response(response)
 
 
