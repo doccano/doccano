@@ -2,7 +2,8 @@
   div(@click="setSelectedRange")
     span.text-sequence(
       v-for="r in chunksWithLabel"
-      v-bind:class="{ tag: id2label[r.label].text_color }"
+      v-bind:class="getChunkClass(r)"
+      v-bind:data-tooltip="id2label[r.label].text"
       v-bind:style="{ \
         color: id2label[r.label].text_color, \
         backgroundColor: id2label[r.label].background_color \
@@ -83,6 +84,18 @@ export default {
   },
 
   methods: {
+    getChunkClass(chunk) {
+      if (!chunk.id) {
+        return {};
+      }
+
+      const label = this.id2label[chunk.label];
+      return [
+        'tooltip is-tooltip-bottom',
+        { tag: label.text_color },
+      ];
+    },
+
     setSelectedRange() {
       let start;
       let end;
