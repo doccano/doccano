@@ -9,7 +9,7 @@ import pandas as pd
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import precision_recall_fscore_support
 from sklearn.metrics import classification_report, confusion_matrix
-from sanitize_filename import sanitize_filename
+from classifier.utils import sanitize_filename
 
 logger = logging.getLogger()
 

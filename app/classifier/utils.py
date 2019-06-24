@@ -4,6 +4,16 @@ Utilities.
 import json
 
 
+def sanitize_filename(filename):
+    return filename \
+        .replace('"', '') \
+        .replace('?', '') \
+        .replace('/', '-') \
+        .replace(' ', '_') \
+        .lower() \
+        .replace(':', '_') \
+
+
 def train_test_split(data):
     x_train, x_test, y_train, ids = [], [], [], []
     for d in data:
