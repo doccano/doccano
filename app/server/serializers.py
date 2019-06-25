@@ -28,7 +28,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     progress = serializers.SerializerMethodField()
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at', 'use_machine_model_sort', 'progress', 'enable_metadata_search', 'show_ml_model_prediction')
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at', 'use_machine_model_sort', 'progress', 'enable_metadata_search', 'show_ml_model_prediction', 'enable_metadata_search')
 
     def get_progress(self, obj):
         request = self.context.get('request')

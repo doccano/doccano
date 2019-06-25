@@ -67,6 +67,14 @@
                 </div>
 
                 <div class="field">
+                    <label class="checkbox"
+                            title="Check this to show documents to labelers in a random order, and not according to document ID. When activated, the order is always the same.">
+                        <input type="checkbox" v-model="projectSettings.shuffle_documents">
+                        Show documents shuffled
+                    </label>
+                </div>
+
+                <div class="field">
                     <div class="control">
                         <button class="button is-primary" @click="submit" :disabled="submitDisabled">
                             Save

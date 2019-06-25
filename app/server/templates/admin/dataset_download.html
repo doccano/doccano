@@ -24,30 +24,27 @@
         </p>
           <form action="{% url 'download_file' view.kwargs.project_id %}" method="get">
             <div class="section">
-              <ul>
-                  <li>
-                    <a class="control">
-                      <button type="submit" class="button is-primary button-margin " name="format" value="csv">Download CSV File</button>
-                    </a>
-                  </li>
-                  <li>
-                  <a class="control">
-                    <button type="submit" class="button is-primary button-margin " name="format" value="json">Download JSON File</button>
-                  </a>
-                </li>
-              </ul>
+                <a class="control">
+                  <button type="submit" class="button button-margin " name="format" value="csv">Download CSV File</button>
+                </a>
+              <a class="control">
+                <button type="submit" class="button button-margin " name="format" value="json">Download JSON File</button>
+              </a>
             </div>
           </form>
 
           <div class="section">
             <div class="buttons">
-                <a class="button is-primary" href="{% url 'export_docs' view.kwargs.project_id %}" target="_blank">
+                <a class="button is-primary" href="{% url 'export_to_s3' view.kwargs.project_id %}" target="_blank">
+                    Export project data
+                </a>
+                <a class="button" href="{% url 'export_docs' view.kwargs.project_id %}" target="_blank">
                     Export project documents
                 </a>
-                <a class="button is-primary" href="{% url 'export_annotations' view.kwargs.project_id %}" target="_blank">
+                <a class="button" href="{% url 'export_annotations' view.kwargs.project_id %}" target="_blank">
                     Export project annotations
                 </a>
-                <a class="button is-primary" href="{% url 'export_labels' view.kwargs.project_id %}" target="_blank">
+                <a class="button" href="{% url 'export_labels' view.kwargs.project_id %}" target="_blank">
                     Export project labels
                 </a>
             </div>

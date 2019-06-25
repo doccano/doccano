@@ -9,6 +9,7 @@ const vm = new Vue({
         use_machine_model_sort: false,
         show_ml_model_prediction: false,
         enable_metadata_search: false,
+        shuffle_documents: false,
         name: '',
         description: '',
         users: []

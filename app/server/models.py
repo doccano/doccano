@@ -28,6 +28,7 @@ class Project(models.Model):
     use_machine_model_sort = models.BooleanField(default=False)
     enable_metadata_search = models.BooleanField(default=False)
     show_ml_model_prediction = models.BooleanField(default=False)
+    shuffle_documents = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('upload', args=[self.id])

@@ -55,7 +55,6 @@ class IndexView(TemplateView):
 
 
 class ProjectView(LoginRequiredMixin, TemplateView):
-
     def get_template_names(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         if not self.request.user.is_superuser:
@@ -516,51 +515,95 @@ class DocumentExport(SuperUserMixin, LoginRequiredMixin, View):
 
 class DataExportToS3(SuperUserMixin, LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-
         import s3fs
         s3 = s3fs.S3FileSystem(anon=False)
-        # Use 'w' for py3, 'wb' for py2
-        query = """
-        SELECT
-    server_document.id AS document_id,
-    server_documentannotation.id AS annotation_id,
-    server_documentannotation.created_date_time AS annotation_datetime,
-    server_documentannotation.user_id,
-    auth_user.username AS username,
-    server_documentannotation.label_id,
-    server_label.text AS label_text,
-    server_documentgoldannotation.label_id AS gold_label_id,
-    server_document.text,
-    server_document.metadata
 
-FROM server_documentannotation
-    LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
-    LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
-    LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
-    LEFT JOIN server_documentgoldannotation ON server_document.id = server_documentgoldannotation.document_id
-WHERE server_document.project_id = {}
-        """.format(int(project.id))
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project_type = Project.project_types[project.project_type]['type']
+
+        if project_type=='DocumentClassification':
+            query = """
+                    SELECT
+                server_document.id AS document_id,
+                server_documentannotation.id AS annotation_id,
+                server_documentannotation.created_date_time AS annotation_datetime,
+                server_documentannotation.user_id,
+                auth_user.username AS username,
+                server_documentannotation.label_id,
+                server_label.text AS label_text,
+                server_documentgoldannotation.label_id AS gold_label_id,
+                server_documentmlmannotation .label_id AS machine_learning_model_predicted_label_id,
+                server_document.text,
+                server_document.metadata
+
+            FROM server_documentannotation
+                RIGHT JOIN server_document ON server_documentannotation.document_id = server_document.id
+                LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
+                LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+                LEFT JOIN server_documentgoldannotation ON server_document.id = server_documentgoldannotation.document_id
+                LEFT JOIN server_documentmlmannotation ON server_document.id = server_documentmlmannotation.document_id
+            WHERE server_document.project_id = {}
+                    """.format(int(project.id))
+            columns = ['document_id', 'annotation_id', 'annotation_datetime', 'user_id', 'username', 'label_id', 'label_text', 'gold_label_id', 'machine_learning_model_predicted_label_id', 'document_text', 'document_metadata']
+
+        elif project_type=='SequenceLabeling':
+            query = """
+                    SELECT
+                server_document.id AS document_id,
+                server_documentannotation.id AS annotation_id,
+                server_documentannotation.created_date_time AS annotation_datetime,
+                server_documentannotation.user_id,
+                auth_user.username AS username,
+                server_documentannotation.label_id,
+                server_label.text AS label_text,
+                server_documentgoldannotation.label_id AS gold_label_id,
+                server_documentannotation.start_offset,
+                server_documentannotation.end_offset,
+                server_document.text,
+                server_document.metadata
+
+            FROM server_sequenceannotation AS server_documentannotation
+                RIGHT JOIN server_document ON server_documentannotation.document_id = server_document.id
+                LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
+                LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+                LEFT JOIN server_documentgoldannotation ON server_document.id = server_documentgoldannotation.document_id
+            WHERE server_document.project_id = {}
+                    """.format(int(project.id))
+            columns = ['document_id', 'annotation_id', 'annotation_datetime', 'user_id', 'username', 'label_id', 'label_text', 'gold_label_id', 'start_offset', 'end_offset', 'document_text', 'document_metadata']
+
+        elif project_type=='Seq2seq':
+            query = """
+                    SELECT
+                server_document.id AS document_id,
+                server_documentannotation.id AS annotation_id,
+                server_documentannotation.created_date_time AS annotation_datetime,
+                server_documentannotation.user_id,
+                auth_user.username AS username,
+                server_documentannotation.text AS annotation_text,
+                server_document.text,
+                server_document.metadata
+
+            FROM server_seq2seqannotation AS server_documentannotation
+                RIGHT JOIN server_document ON server_documentannotation.document_id = server_document.id
+                LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+            WHERE server_document.project_id = {}
+                    """.format(int(project.id))
+            columns = ['document_id', 'annotation_id', 'annotation_datetime', 'user_id', 'username', 'annotation_text', 'document_text', 'document_metadata']
+
+        else:
+            raise Exception('Unidentified project type')
 
         cursor = connection.cursor()
         cursor.execute(query)
 
-        df = pd.DataFrame(cursor.fetchall())
-        print(df.head())
-        with s3.open('gong-datasets/email_dumps/doccano_project_{}_export.csv'.format(project.id), 'w') as f:
-            df.to_csv(f)
-        print('writen successfully')
-        # import boto3
-        # BUCKET = "gong-datasets"
-        # # local_path = r'C:\Temp\parquet\\'
-        # s3_file_path_format = "email_dumps/doccano_project_{}_export.csv"
-        # # s3 = boto3.resource('s3')
-        # client = boto3.client('s3')
-        # client.put_object(Body=data, Bucket='my_bucket_name', Key='my/key/including/anotherfilename.txt')
-        # s3.Bucket(BUCKET).upload_file(filename, s3_file_path_format.format(project.id))
+        df = pd.DataFrame(cursor.fetchall(), columns=columns)
+        filename = 'gong-datasets/doccano/doccano_project_{}_{}_export.csv'.format(project.id, project.name.replace(' ','_').lower())
+        s3_parquet_filename = 's3://'+filename.replace('.csv', '.parquet')
+        with s3.open(filename, 'w') as f:
+            df.to_csv(f, index=False)
+        df.to_parquet(s3_parquet_filename, index=False, allow_truncated_timestamps=True)
 
-
-        response = HttpResponseRedirect('/')
+        response = HttpResponseRedirect('/projects/{}/stats'.format(project.id))
         return response
 
 class DocumentAnnotationExport(SuperUserMixin, LoginRequiredMixin, View):

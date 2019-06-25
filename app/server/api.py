@@ -393,32 +393,72 @@ class ProjectStatsAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        query = """
-SELECT
-    server_documentannotation.user_id,
-    auth_user.username AS username,
-    server_documentannotation.label_id,
-    server_label.text AS label_text,
-    COUNT(DISTINCT server_document.id) AS num_documents,
-    COUNT(server_documentannotation.id) AS num_annotations
+        project_type = Project.project_types[project.project_type]['type']
 
-FROM server_documentannotation
-    LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
-    LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
-    LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
-WHERE server_document.project_id = {}
-GROUP BY user_id, username, label_id, label_text
-        """.format(int(project.id))
+        if project_type=='DocumentClassification':
+            query = """
+    SELECT
+        server_documentannotation.user_id,
+        auth_user.username AS username,
+        server_documentannotation.label_id,
+        server_label.text AS label_text,
+        COUNT(DISTINCT server_document.id) AS num_documents,
+        COUNT(server_documentannotation.id) AS num_annotations
+    
+    FROM server_documentannotation
+        LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+        LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
+        LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+    WHERE server_document.project_id = {}
+    GROUP BY user_id, username, label_id, label_text
+            """.format(int(project.id))
+            columns = ['user_id', 'username', 'label_id', 'label_text', 'num_documents', 'num_annotations']
+
+        elif project_type=='SequenceLabeling':
+            query = """
+            SELECT
+                server_documentannotation.user_id,
+                auth_user.username AS username,
+                server_documentannotation.label_id,
+                server_label.text AS label_text,
+                COUNT(DISTINCT server_document.id) AS num_documents,
+                COUNT(server_documentannotation.id) AS num_annotations
+
+            FROM server_sequenceannotation AS server_documentannotation
+                LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+                LEFT JOIN server_label ON server_documentannotation.label_id = server_label.id
+                LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+            WHERE server_document.project_id = {}
+            GROUP BY user_id, username, label_id, label_text
+                    """.format(int(project.id))
+            columns = ['user_id', 'username', 'label_id', 'label_text', 'num_documents', 'num_annotations']
+
+        elif project_type=='Seq2seq':
+            query = """
+            SELECT
+                server_documentannotation.user_id,
+                auth_user.username AS username,
+                COUNT(DISTINCT server_document.id) AS num_documents,
+                COUNT(server_documentannotation.id) AS num_annotations
+
+            FROM server_seq2seqannotation AS server_documentannotation
+                LEFT JOIN server_document ON server_documentannotation.document_id = server_document.id
+                LEFT JOIN auth_user ON auth_user.id = server_documentannotation.user_id
+            WHERE server_document.project_id = {}
+            GROUP BY user_id, username
+                    """.format(int(project.id))
+            columns = ['user_id', 'username', 'num_documents', 'num_annotations']
+
+        else:
+            raise Exception('Unidentified project type')
 
         cursor = connection.cursor()
         cursor.execute(query)
-        df = pd.DataFrame(cursor.fetchall(), columns=['user_id', 'username', 'label_id', 'label_text', 'num_documents', 'num_annotations'])
-        print(df.columns)
-        print(df.shape)
-        print(df.head(1))
+        df = pd.DataFrame(cursor.fetchall(), columns=columns)
         labels = df.groupby('label_text')['num_documents'].sum()
         users = df.groupby('username')['num_documents'].sum()
-        user_label_pivot_table = df.pivot(index='user_name', columns='label_text', values='num_documents').fillna(0)
+        # user_label_pivot_table = df.pivot(index='user_name', columns='label_text', values='num_documents').fillna(0)
+        user_label_pivot_table = []
         response = {
             'label': {
                 'labels': labels.index,
@@ -430,21 +470,6 @@ GROUP BY user_id, username, label_id, label_text
             },
             'user_label_pivot_table': user_label_pivot_table
         }
-
-        # labels = [label.text for label in p.labels.all()]
-        # users = [user.username for user in p.users.all()]
-        # docs = [doc for doc in p.documents.all()]
-        # nested_labels = [[a.label.text for a in doc.get_annotations()] for doc in docs]
-        # nested_users = [[a.user.username for a in doc.get_annotations()] for doc in docs]
-        #
-        # label_count = Counter(chain(*nested_labels))
-        # label_data = [label_count[name] for name in labels]
-        #
-        # user_count = Counter(chain(*nested_users))
-        # user_data = [user_count[name] for name in users]
-        #
-        # response = {'label': {'labels': labels, 'data': label_data},
-        #             'user': {'users': users, 'data': user_data}}
 
         return Response(response)
 
@@ -523,7 +548,8 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
 
     def get_queryset(self):
-        queryset = self.queryset.filter(project=self.kwargs['project_id'])
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        queryset = self.queryset.filter(project.id)
         return queryset
 
 
@@ -633,6 +659,10 @@ class DocumentList(generics.ListCreateAPIView):
                     if (should_append):
                         result.append(doc.id)
                 queryset = queryset.filter(id__in=result)
+
+        if project.shuffle_documents:
+            print('order randomly')
+            queryset = queryset.order_by('?')
 
         return queryset
 
