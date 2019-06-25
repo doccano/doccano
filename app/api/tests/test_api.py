@@ -93,7 +93,7 @@ class TestProjectDetailAPI(APITestCase):
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
         cls.main_project = mommy.make('TextClassificationProject', users=[cls.project_member, super_user])
-        sub_project = mommy.make('TextClassificationProject', users=[non_project_member])
+        mommy.make('TextClassificationProject', users=[non_project_member])
         cls.url = reverse(viewname='project_detail', args=[cls.main_project.id])
         cls.data = {'description': 'lorem'}
 
@@ -666,7 +666,7 @@ class TestFilter(APITestCase):
         cls.label2 = mommy.make('Label', project=cls.main_project)
         doc1 = mommy.make('Document', project=cls.main_project)
         doc2 = mommy.make('Document', project=cls.main_project)
-        doc3 = mommy.make('Document', project=cls.main_project)
+        mommy.make('Document', project=cls.main_project)
         mommy.make('SequenceAnnotation', document=doc1, user=project_member, label=cls.label1)
         mommy.make('SequenceAnnotation', document=doc2, user=project_member, label=cls.label2)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
@@ -1039,7 +1039,7 @@ class TestStatisticsAPI(APITestCase):
 
         main_project = mommy.make('TextClassificationProject', users=[super_user])
         doc1 = mommy.make('Document', project=main_project)
-        doc2 = mommy.make('Document', project=main_project)
+        mommy.make('Document', project=main_project)
         mommy.make('DocumentAnnotation', document=doc1, user=super_user)
         cls.url = reverse(viewname='statistics', args=[main_project.id])
         cls.doc = Document.objects.filter(project=main_project)
