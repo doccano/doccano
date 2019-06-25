@@ -392,7 +392,7 @@ class ProjectStatsAPI(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get(self, request, *args, **kwargs):
-        p = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         query = """
 SELECT
     server_documentannotation.user_id,
@@ -412,16 +412,23 @@ GROUP BY user_id, username, label_id, label_text
 
         cursor = connection.cursor()
         cursor.execute(query)
-        df = pd.DataFrame(cursor.fetchall())
+        df = pd.DataFrame(cursor.fetchall(), columns=['user_id', 'username', 'label_id', 'label_text', 'num_documents', 'num_annotations'])
+        print(df.columns)
+        print(df.shape)
+        print(df.head(1))
+        labels = df.groupby('label_text')['num_documents'].sum()
+        users = df.groupby('username')['num_documents'].sum()
+        user_label_pivot_table = df.pivot(index='user_name', columns='label_text', values='num_documents').fillna(0)
         response = {
             'label': {
-                'labels': labels,
-                'data': label_data
+                'labels': labels.index,
+                'data': labels.values
             },
             'user': {
-                'users': users,
-                'data': user_data
-            }
+                'users': users.index,
+                'data': users.values
+            },
+            'user_label_pivot_table': user_label_pivot_table
         }
 
         # labels = [label.text for label in p.labels.all()]
@@ -450,7 +457,7 @@ def get_class_weights(project_id):
         data['feature_name'] = data['feature_name'].str.replace('processed_text_w_', '')
         class_weights = data.set_index('feature_name')
         return class_weights
-    return None
+    return pd.DataFrame([], columns=['importance', 'feature_name']).set_index('feature_name')
 
 class ClassWeightsApi(APIView):
     pagination_class = None

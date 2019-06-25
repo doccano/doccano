@@ -146,7 +146,7 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
 }
-DATABASES['default'] = DATABASES['posgres_local']
+DATABASES['default'] = DATABASES['posgres']
 
 if "test" in sys.argv:
     DATABASES = {    
