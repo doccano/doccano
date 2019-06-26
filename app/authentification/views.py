@@ -26,6 +26,9 @@ class SignupView(TemplateView):
         if not bool(settings.ALLOW_SIGNUP):
             return redirect('signup')
 
+        if not hasattr(settings, "EMAIL_BACKEND") or not hasattr(settings, "EMAIL_HOST"):
+            return render(request, 'email_not_set.html')
+
         if form.is_valid():
             user = form.save(commit=False)
             user.is_active = False
