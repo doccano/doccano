@@ -8,7 +8,7 @@ from model_mommy import mommy
 
 from ..models import User, SequenceAnnotation, Document
 from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
-from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser
+from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser, SpacyParser
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -938,6 +938,24 @@ class TestUploader(APITestCase):
                 'text_color',
             ])
 
+    def test_can_upload_labeling_spacy(self):
+        self.upload_test_helper(url=self.labeling_url,
+                                filename='labeling.spacy.json',
+                                format='spacy',
+                                expected_status=status.HTTP_201_CREATED)
+
+        self.label_test_helper(
+            url=self.labeling_labels_url,
+            expected_labels=[
+                {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
+                {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
+                {'text': 'PER', 'suffix_key': 'p', 'prefix_key': None},
+            ],
+            expected_label_keys=[
+                'background_color',
+                'text_color',
+            ])
+
     def test_can_upload_seq2seq_jsonl(self):
         self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='seq2seq.jsonl',
@@ -1067,6 +1085,9 @@ class TestParser(APITestCase):
     def test_give_labeling_data_to_json_parser(self):
         self.parser_helper(filename='labeling.jsonl', parser=JSONParser())
 
+    def test_give_labeling_data_to_spacy_parser(self):
+        self.parser_helper(filename='labeling.spacy.json', parser=SpacyParser())
+
     def test_give_seq2seq_data_to_json_parser(self):
         self.parser_helper(filename='seq2seq.jsonl', parser=JSONParser())
 
@@ -1129,6 +1150,11 @@ class TestDownloader(APITestCase):
     def test_can_download_labeling_jsonl(self):
         self.download_test_helper(url=self.labeling_url,
                                   format='json',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_can_download_labeling_spacy(self):
+        self.download_test_helper(url=self.labeling_url,
+                                  format='spacy',
                                   expected_status=status.HTTP_200_OK)
 
     def test_can_download_seq2seq_jsonl(self):

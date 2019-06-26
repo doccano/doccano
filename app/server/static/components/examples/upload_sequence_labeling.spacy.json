@@ -1,5 +1,6 @@
 [
-    [ "EU rejects German call to boycott British lamb.", { "entities": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]} ],
+    [ "EU rejects German call to boycott British lamb.", { "entities": [ [0, 2, "ORG"], [11, 17, "MISC"] ]} ],
     [ "Peter Blackburn", { "entities": [ [0, 15, "PERSON"] ]} ],
-    [ "President Obama", { "entities": [ [10, 15, "PERSON"] ]} ],
+    [ "President Obama", { "entities": [ [10, 15, "PERSON"] ]} ]
+]
 
