@@ -274,7 +274,7 @@ class CoNLLParser(FileParser):
         pos = defaultdict(int)
         for label, start_offset, end_offset in get_entities(tags):
             entity = ' '.join(words[start_offset: end_offset + 1])
-            char_left = doc.index(entity, pos[entity])
+            char_left = start_offset * 2;
             char_right = char_left + len(entity)
             span = [char_left, char_right, label]
             j['labels'].append(span)
