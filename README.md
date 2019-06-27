@@ -95,6 +95,7 @@ docker pull chakkiworks/doccano
 First we need to install the dependencies. Run the following commands:
 
 ```bash
+sudo apt-get install libpq-dev
 pip install -r requirements.txt
 cd app
 ```
