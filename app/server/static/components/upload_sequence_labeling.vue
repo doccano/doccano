@@ -51,7 +51,8 @@ block example-format-area
   pre.code-block(v-show="format == 'spacy'")
     code.spacy
       include ./examples/upload_sequence_labeling.spacy.json
-      | ...
+      | 
+      
 </template>
 
 <script>

@@ -3,4 +3,3 @@
     [ "Peter Blackburn", { "entities": [ [0, 15, "PERSON"] ]} ],
     [ "President Obama", { "entities": [ [10, 15, "PERSON"] ]} ]
 ]
-
