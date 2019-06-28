@@ -426,6 +426,40 @@ class TestDocumentDetailAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
+class TestApproveLabelsAPI(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        # Todo: change super_user to project_admin.
+        super_user = User.objects.create_superuser(username=cls.super_user_name,
+                                                   password=cls.super_user_pass,
+                                                   email='fizz@buzz.com')
+        project = mommy.make('TextClassificationProject', users=[project_member, super_user])
+        cls.doc = mommy.make('Document', project=project)
+        cls.url = reverse(viewname='approve_labels', args=[project.id, cls.doc.id])
+
+    def test_allows_superuser_to_approve_and_disapprove_labels(self):
+        self.client.login(username=self.super_user_name, password=self.super_user_pass)
+
+        response = self.client.post(self.url, format='json', data={'approved': True})
+        self.assertEqual(response.data['annotation_approver'], self.super_user_name)
+
+        response = self.client.post(self.url, format='json', data={'approved': False})
+        self.assertIsNone(response.data['annotation_approver'])
+
+    def test_disallows_project_member_to_approve_and_disapprove_labels(self):
+        self.client.login(username=self.project_member_name, password=self.project_member_pass)
+
+        response = self.client.post(self.url, format='json', data={'approved': True})
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
 class TestAnnotationListAPI(APITestCase):
 
     @classmethod
