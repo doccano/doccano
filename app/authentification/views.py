@@ -7,6 +7,7 @@ from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from django.core.mail import EmailMessage
 from django.views.generic import TemplateView
+from django.shortcuts import redirect
 
 from app import settings
 
