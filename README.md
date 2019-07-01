@@ -130,7 +130,7 @@ Depending on your installation method, there are two options:
 First, run a Docker container:
 
 ```bash
-docker run -d --name doccano -p 8000:80 chakkiworks/doccano
+docker run -d --name doccano -p 8000:8000 chakkiworks/doccano
 ```
 
 Then, execute `create-admin.sh` script for creating a superuser.
