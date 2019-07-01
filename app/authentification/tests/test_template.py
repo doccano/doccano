@@ -1,9 +1,10 @@
-from django.test import SimpleTestCase, TestCase, RequestFactory
+from django.test import SimpleTestCase, TestCase, RequestFactory, override_settings
 from django.http import HttpRequest
 from ..views import SignupView
 from app import settings
 
 
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class AddCSSTemplateTagTest(SimpleTestCase):
 
     def test_rendered(self):
@@ -13,6 +14,7 @@ class AddCSSTemplateTagTest(SimpleTestCase):
             self.assertInHTML(needle, str(SignupView.as_view()(request, as_string=True).content))
 
 
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class ViewsTest(SimpleTestCase):
     """Class for testing views"""
 
@@ -52,12 +54,17 @@ class ViewsTest(SimpleTestCase):
             self.assertEqual(response.status_code, 302)
 
 
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class ViewsDBTest(TestCase):
     """Class for testing views with DB queries"""
 
     def test_form_submission(self):
             self.factory = RequestFactory()
-            EMAIL_BACKEND = settings.EMAIL_BACKEND
+            if hasattr(settings, 'EMAIL_BACKEND'):
+                EMAIL_BACKEND = settings.EMAIL_BACKEND
+            else:
+                EMAIL_BACKEND = False
+
             settings.EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
             request = self.factory.post('/signup')
             request.POST = {'username': 'username5648',
@@ -67,5 +74,8 @@ class ViewsDBTest(TestCase):
                             }
             response = SignupView.as_view()(request)
             needle = '<span>emailed you instructions to activate your account</span>'
-            settings.EMAIL_BACKEND = EMAIL_BACKEND
+            if not EMAIL_BACKEND:
+                delattr(settings, 'EMAIL_BACKEND')
+            else:
+                settings.EMAIL_BACKEND = EMAIL_BACKEND
             self.assertInHTML(needle, str(response.content))
