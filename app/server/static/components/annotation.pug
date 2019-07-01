@@ -133,7 +133,12 @@ div.columns(v-cloak="")
           span.icon
             i.fas.fa-box
 
-    block annotation-area
+    div.columns
+      div.column
+        block annotation-area
+
+      div.column(v-if="documentMetadata != null && documentMetadata.documentSourceUrl != null")
+        preview(v-bind:url="documentMetadata.documentSourceUrl")
 
     div.level.mt30
       a.button.level-left(
