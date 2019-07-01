@@ -1,5 +1,6 @@
 from django.test import TestCase
 from ..forms import SignupForm
+from ..tokens import account_activation_token
 
 
 class TestSignUp(TestCase):
@@ -33,3 +34,16 @@ class TestSignUp(TestCase):
             'password1': ['This field is required.'],
             'password2': ['This field is required.']
         })
+
+
+class TestToken(TestCase):
+    """test for token"""
+
+    def test_valid_token(self):
+        request_POST = {'username': 'username5645',
+                        'email': 'email@example.com',
+                        'password1': 'pwd000000',
+                        'password2': 'pwd000000'}
+        user = SignupForm(request_POST).save(commit=False)
+        token = account_activation_token.make_token(user)
+        self.assertTrue(isinstance(token, str))

@@ -5,6 +5,8 @@ omit =
   app/server/migrations/*
   app/server/templatetags/*
   app/server/tests/*
+  app/authentification/tests/*
+  app/authentification/templatetags/*
 
 exclude_lines =
   pragma: no cover
