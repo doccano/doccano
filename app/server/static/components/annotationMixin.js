@@ -1,7 +1,9 @@
 import * as marked from 'marked';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
-import HTTP from './http';
+import HTTP, { rootUrl, newHttpClient } from './http';
+
+const httpClient = newHttpClient();
 
 const getOffsetFromUrl = (url) => {
   const offsetMatch = url.match(/[?#].*offset=(\d+)/);
@@ -52,6 +54,7 @@ export default {
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
       count: 0,
+      isSuperuser: false,
       isMetadataActive: false,
       isAnnotationGuidelineActive: false,
     };
@@ -90,11 +93,7 @@ export default {
         this.next = response.data.next;
         this.prev = response.data.previous;
         this.count = response.data.count;
-        this.annotations = [];
-        for (let i = 0; i < this.docs.length; i++) {
-          const doc = this.docs[i];
-          this.annotations.push(doc.annotations);
-        }
+        this.annotations = this.docs.map(doc => doc.annotations);
         this.offset = getOffsetFromUrl(this.url);
       });
     },
@@ -139,6 +138,17 @@ export default {
       }
       return shortcut;
     },
+
+    approveDocumentAnnotations() {
+      const document = this.docs[this.pageNumber];
+      const approved = !this.documentAnnotationsAreApproved;
+
+      HTTP.post(`docs/${document.id}/approve-labels`, { approved }).then((response) => {
+        const documents = this.docs.slice();
+        documents[this.pageNumber] = response.data;
+        this.docs = documents;
+      });
+    },
   },
 
   watch: {
@@ -166,6 +176,9 @@ export default {
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
     });
+    httpClient.get(`${rootUrl}/v1/me`).then((response) => {
+      this.isSuperuser = response.data.is_superuser;
+    });
     this.submit();
   },
 
@@ -180,6 +193,19 @@ export default {
       return marked(this.guideline, {
         sanitize: true,
       });
+    },
+
+    documentAnnotationsAreApproved() {
+      const document = this.docs[this.pageNumber];
+      return document != null && document.annotation_approver != null;
+    },
+
+    documentAnnotationsApprovalTooltip() {
+      const document = this.docs[this.pageNumber];
+
+      return this.documentAnnotationsAreApproved
+        ? `Annotations approved by ${document.annotation_approver}, click to reject annotations`
+        : 'Click to approve annotations';
     },
 
     documentMetadata() {

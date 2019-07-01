@@ -1,4 +1,6 @@
+import sys
 import logging
+sys.path.append('../api')
 
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.shortcuts import get_object_or_404
@@ -6,8 +8,8 @@ from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .permissions import SuperUserMixin
-from .models import Project
+from api.permissions import SuperUserMixin
+from api.models import Project
 from app import settings
 
 logger = logging.getLogger(__name__)

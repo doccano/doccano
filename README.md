@@ -95,6 +95,7 @@ docker pull chakkiworks/doccano
 First we need to install the dependencies. Run the following commands:
 
 ```bash
+sudo apt-get install libpq-dev
 pip install -r requirements.txt
 cd app
 ```
@@ -129,7 +130,7 @@ Depending on your installation method, there are two options:
 First, run a Docker container:
 
 ```bash
-docker run -d --name doccano -p 8000:80 chakkiworks/doccano
+docker run -d --name doccano -p 8000:8000 chakkiworks/doccano
 ```
 
 Then, execute `create-admin.sh` script for creating a superuser.
