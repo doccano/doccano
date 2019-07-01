@@ -1,4 +1,3 @@
-from ..utils import activate
 from django.test import RequestFactory, TestCase
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
