@@ -6,6 +6,8 @@ import logging
 import datetime
 import pandas as pd
 
+from string import Template
+
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
@@ -19,11 +21,11 @@ from django.db import connection
 
 from django.contrib.auth.forms import UserCreationForm
 
-from .resources import DocumentResource, DocumentAnnotationResource, LabelResource
+from .resources import DocumentResource, DocumentAnnotationResource, LabelResource, DocumentMLMAnnotationResource
 
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
-from .models import Document, Project, DocumentAnnotation, Label, DocumentGoldAnnotation, User
+from .models import Document, Project, DocumentAnnotation, DocumentMLMAnnotation, Label, DocumentGoldAnnotation, User
 from app import settings
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -616,6 +618,35 @@ class DocumentAnnotationExport(SuperUserMixin, LoginRequiredMixin, View):
         response['Content-Disposition'] = 'attachment; filename="{}_annotations.csv"'.format(project)
         response.write(dataset.csv)
         return response
+
+class ProjectExport(SuperUserMixin, LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project_docs = Document.objects.filter(project=project)
+        queryset = DocumentAnnotation.objects.filter(document__in=project_docs)
+        annotations = DocumentAnnotationResource().export(queryset)
+
+        queryset = DocumentMLMAnnotation.objects.filter(document__in=project_docs)
+        mlm_annotations = DocumentMLMAnnotationResource().export(queryset)
+
+        queryset = Label.objects.filter(project=project)
+        labels = LabelResource().export(queryset)
+
+        queryset = Document.objects.filter(project=project)
+        documents = DocumentResource().export(queryset)
+
+        response = HttpResponse(content_type='text/json')
+        response['Content-Disposition'] = 'attachment; filename="{}_full_project.json"'.format(project)
+        t = Template('''{
+            "annotations": ${annotations},
+            "mlm_annotations": ${mlm_annotations}
+            "labels": ${labels},
+            "documents": ${documents}
+        }''')
+        response.write(t.safe_substitute(annotations=annotations.json, mlm_annotations=mlm_annotations.json, labels=labels.json, documents=documents.json))
+        return response
+
 
 class LabelExport(SuperUserMixin, LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):

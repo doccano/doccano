@@ -4,7 +4,7 @@ from rest_framework import routers
 from .views import DataExportToS3
 from .views import IndexView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView, SettingsView, LabelersView, LabelAdminView
-from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport, UserInfoView
+from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport, UserInfoView, ProjectExport
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation, LabelsAdminDownloadFile, UsersAdminView, UserView
 from .api import ProjectViewSet, UserViewSet, LabelList, ProjectStatsAPI, LabelDetail, DocumentDetail, ProjectDetail, UserInfo, \
     AnnotationList, AnnotationDetail, DocumentList, RunModelAPI, LabelersListAPI, LabelAdminAPI, DocumentExplainAPI, DocumentLabelersAPI, SuggestedTerms, MetadataAPI, UserList, ClassWeightsApi
@@ -45,6 +45,7 @@ urlpatterns = [
     path('projects/<int:project_id>/export_to_s3', DataExportToS3.as_view(), name='export_to_s3'),
     path('projects/<int:project_id>/export_annotations', DocumentAnnotationExport.as_view(), name='export_annotations'),
     path('projects/<int:project_id>/export_labels', LabelExport.as_view(), name='export_labels'),
+    path('projects/<int:project_id>/export_full_project', ProjectExport.as_view(), name='export_full_project'),
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
     path('users/<int:user_id>/', UserView.as_view(), name='edit-user'),
     path('projects/<int:project_id>/docs/', DatasetView.as_view(), name='dataset'),
