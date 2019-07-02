@@ -23,7 +23,7 @@ from django.contrib.auth.models import User
 
 from django.contrib.auth.forms import UserCreationForm
 
-from .resources import DocumentResource, DocumentAnnotationResource, LabelResource, DocumentMLMAnnotationResource, UserResource
+from .resources import DocumentResource, DocumentAnnotationResource, LabelResource, DocumentMLMAnnotationResource, UserResource, ProjectResource
 
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
@@ -641,6 +641,9 @@ class ProjectExport(SuperUserMixin, LoginRequiredMixin, View):
         queryset = User.objects.all()
         users = UserResource().export(queryset)
 
+        queryset = Project.objects.filter(id=self.kwargs['project_id'])
+        proj_export = ProjectResource().export(queryset)
+
         response = HttpResponse(content_type='text/json')
         response['Content-Disposition'] = 'attachment; filename="{}_full_project.json"'.format(project)
         t = Template('''{
@@ -648,9 +651,10 @@ class ProjectExport(SuperUserMixin, LoginRequiredMixin, View):
             "mlm_annotations": ${mlm_annotations}
             "labels": ${labels},
             "documents": ${documents},
-            "users": ${users}
+            "users": ${users},
+            "project": ${project}
         }''')
-        response.write(t.safe_substitute(annotations=annotations.json, mlm_annotations=mlm_annotations.json, labels=labels.json, documents=documents.json, users=users.json))
+        response.write(t.safe_substitute(annotations=annotations.json, mlm_annotations=mlm_annotations.json, labels=labels.json, documents=documents.json, users=users.json, project=proj_export.json))
         return response
 
 
