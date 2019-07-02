@@ -202,7 +202,9 @@ pip-selfcheck.json
 app/staticfiles/
 
 # ignore ml models files
+ml_models/
 app/ml_models/
+app/server/ml_models/
 
 # ignore javascript dependencies
 node_modules/

@@ -11,33 +11,7 @@ Doccano prompts labelers to annotate examples that would most likely improve mod
 Doccano allows for the integration of the work of multiple labelers, and provides administrative tools to for evaluating the performance of each labeler as well as inter-labeler agreement. It further combines the labelers annotations to create a joint gold standard.
 
 ## Presentation
-We presented Doccano at the [2019 Data Science Summit](https://www.aidatasciencesummit.com/). Slides are available [here](https://docs.google.com/presentation/d/12T0AzfMb_0ikfxP4ZA2eaGaVyx9w45PoFKC6oSF2dVU/edit?usp=sharing).
-
-## Video
-((((EMBED A VIDEO SHOWING HOW DOCCANO WORKS))))
-
-## Demo
-You can play with an online demo version of Doccano [here](http://doccano.herokuapp.com).
-
-## Use Cases
-
-### [Sentiment analysis](https://doccano.herokuapp.com/demo/text-classification/)
-
-Second demo is one of the text classification tasks, topic classification. Since there may be more than one category, you can annotate multi-labels.
-
-![Text Classification](./docs/text_classification.gif)
-
-### [Named entity recognition](https://doccano.herokuapp.com/demo/named-entity-recognition/)
-
-In named-entity recognition projects you mark part of the text and annotate it as one of the available labels. A common use case is annotating people, places, company names etc. in text documents.
-
-![Named Entity Recognition](./docs/named_entity_annotation.gif)
-
-### [Sequence to Sequence & Machine translation](https://doccano.herokuapp.com/demo/translation/)
-
-In Sequence-to-sequence (aka seq2seq) models you provide text that matches the original text. A common use case is machine translation - you are given a sentence in French, and need to translate it to English. Since there may be more than one responses in sequence to sequence tasks, you can create multi responses.
-
-![Machine Translation](./docs/translation.gif)
+We presented Doccano at the <a target="_blank" href="https://www.aidatasciencesummit.com/">2019 Data Science Summit</a>. Slides are available <a target="_blank" href="https://docs.google.com/presentation/d/12T0AzfMb_0ikfxP4ZA2eaGaVyx9w45PoFKC6oSF2dVU/edit?usp=sharing">here</a>.
 
 ## Features
 
@@ -74,12 +48,27 @@ Doccano also uses Vue.js, which offers simple & powerful templating of HTML page
 See [this page](INSTALLATION.md).
 
 ## Usage
-See [this page](usage.md).
+See [this page](USAGE.md).
 
-## Running tests
-```bash
-python manage.py test server.tests
-```
+## Use Cases
+
+### [Sentiment analysis](https://doccano.herokuapp.com/demo/text-classification/)
+
+This demo is a text classification task. Since there may be more than one label per document, you can use multiple labels when annotating.
+
+![Text Classification](./docs/text_classification.gif)
+
+### [Named entity recognition](https://doccano.herokuapp.com/demo/named-entity-recognition/)
+
+In named-entity recognition projects you mark part of the text and annotate it as one of the available labels. A common use case is annotating people, places, company names etc. in text documents.
+
+![Named Entity Recognition](./docs/named_entity_annotation.gif)
+
+### [Sequence to Sequence & Machine translation](https://doccano.herokuapp.com/demo/translation/)
+
+In Sequence-to-sequence (aka seq2seq) models you provide text that matches the original text. A common use case is machine translation - you are given a sentence in French, and need to translate it to English. Since there may be more than one responses in sequence to sequence tasks, you can create multi responses.
+
+![Machine Translation](./docs/translation.gif)
 
 ## Contribution
 See [this page](CONTRIBUTING.md).
