@@ -248,4 +248,6 @@ APPLICATION_INSIGHTS = {
     'ikey': AZURE_APPINSIGHTS_IKEY if AZURE_APPINSIGHTS_IKEY else None,
 }
 
+ML_FOLDER = 'ml_models'
+
 django_heroku.settings(locals(), test_runner=False)

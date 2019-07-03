@@ -19,6 +19,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db import connection
 
+import os
+
 from django.contrib.auth.forms import UserCreationForm
 
 from .resources import DocumentResource, DocumentAnnotationResource, LabelResource, DocumentMLMAnnotationResource

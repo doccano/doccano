@@ -21,7 +21,8 @@ module.exports = {
         'dataset': './static/js/dataset.js',
         'users': './static/js/users.js',
         'user': './static/js/user.js',
-        'user_info': './static/js/user_info.js'
+        'user_info': './static/js/user_info.js',
+        'ml_model': './static/js/ml_model.js'
     },
     output: {
         path: __dirname + '/static/bundle',

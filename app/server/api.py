@@ -376,6 +376,12 @@ class RunModelAPI(APIView):
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
 
+        ml_model_results_filename = os.path.join(ML_FOLDER, 'ml_model_results_{}.txt'.format(project_id))
+
+        ml_file = open(ml_model_results_filename,'w+')
+        ml_file.write(result)
+        ml_file.close()
+
         batch_size = 1000
         new_annotations = (DocumentMLMAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), prob=row['prob']) for row in reader)
         while True:
