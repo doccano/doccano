@@ -30,6 +30,7 @@ from app import settings
 from django.core.exceptions import ObjectDoesNotExist
 
 from server.api import get_labels_admin
+from app.settings import ML_FOLDER
 
 logger = logging.getLogger(__name__)
 
@@ -235,6 +236,28 @@ class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         context = super().get_context_data(**kwargs)
         context['docs_count'] = project.get_docs_count()
+        return context
+
+
+class MachineLearningModelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin/ml_model.html'
+
+    def get_context_data(self, **kwargs):
+        project_id = self.kwargs['project_id']
+        # project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context = super().get_context_data(**kwargs)
+
+        try:
+            ml_model_results_filename = os.path.join(ML_FOLDER, 'ml_model_results_{}.txt'.format(project_id))
+            print(ml_model_results_filename)
+            with open(ml_model_results_filename, 'rt') as f:
+                model_results = f.read()
+        except Exception as e:
+            print(e)
+            model_results = 'Could not locate the results of a Machine Learning model. You can try to train a new model.'
+
+        context['model_results'] = model_results
+        print(context)
         return context
 
 
