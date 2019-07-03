@@ -78,6 +78,17 @@ class ProjectsView(LoginRequiredMixin, CreateView):
     form_class = ProjectForm
     template_name = 'projects.html'
 
+    def form_valid(self, form):
+        self.object = form.save()
+        print('Proj created!!', form)
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, **kwargs):
+        projects = Project.objects.all()
+        context = super().get_context_data(**kwargs)
+        context['projects'] = projects
+        return context
+
 
 class UsersAdminView(SuperUserMixin, LoginRequiredMixin, CreateView):
     form_class = UserCreationForm

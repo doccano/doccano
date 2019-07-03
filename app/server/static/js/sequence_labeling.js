@@ -142,6 +142,8 @@ Vue.component('annotator', {
       const l = this.makeLabel(left, this.text.length);
       res.push(l);
 
+      console.log('chunks', res)
+
       return res;
     },
 
