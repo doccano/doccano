@@ -16,7 +16,7 @@
                   backgroundColor: newLabel.background_color \
                 }") {{ newLabel.text }}
 
-                span.tag is-medium
+                span.tag.is-medium
                   kbd {{ shortcutKey(newLabel) | simpleShortcut }}
 
             div.column
