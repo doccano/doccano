@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework import routers
 
 from .views import DataExportToS3
-from .views import IndexView
+from .views import IndexView, MachineLearningModelView
 from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView, SettingsView, LabelersView, LabelAdminView
 from .views import ProjectsView, DataDownload, DataDownloadFile, DocumentExport, DocumentAnnotationExport, LabelExport, UserInfoView, ProjectExport
 from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation, LabelsAdminDownloadFile, UsersAdminView, UserView
@@ -55,6 +55,7 @@ urlpatterns = [
     path('projects/<int:project_id>/users/', LabelersView.as_view(), name='labelers'),
     path('projects/<int:project_id>/users/<int:user_id>', UserInfoView.as_view(), name='user-info-view'),
     path('projects/<int:project_id>/stats/', StatsView.as_view(), name='stats'),
+    path('projects/<int:project_id>/ml_model/', MachineLearningModelView.as_view(), name='ml_model'),
     path('projects/<int:project_id>/guideline/', GuidelineView.as_view(), name='guideline'),
     path('projects/<int:project_id>/settings/', SettingsView.as_view(), name='settings'),
     path('demo/text-classification/', DemoTextClassification.as_view(), name='demo-text-classification'),
