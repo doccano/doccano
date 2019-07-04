@@ -82,16 +82,27 @@ class ProjectsView(LoginRequiredMixin, CreateView):
     template_name = 'projects.html'
 
     def form_valid(self, form):
-        self.object = form.save()
-        print('Proj created!!', form)
+        duplicate_project = self.request.POST.get('duplicate_project')
+        if (duplicate_project and len(duplicate_project)):
+            to_duplicate = Project.objects.get(pk=duplicate_project)
+            if (to_duplicate):
+                self.object = to_duplicate.duplicate_object(self.request.POST.get('name'))
+        else:
+            self.object = form.save()
         return HttpResponseRedirect(self.get_success_url())
+    def form_invalid(self, form):
+        duplicate_project = self.request.POST.get('duplicate_project')
+        if (duplicate_project and len(duplicate_project)):
+            to_duplicate = Project.objects.get(pk=duplicate_project)
+            if (to_duplicate):
+                self.object = to_duplicate.duplicate_object(self.request.POST.get('name'), self.request.POST.get('duplicate_labels'))
+                return HttpResponseRedirect(self.get_success_url())
 
     def get_context_data(self, **kwargs):
         projects = Project.objects.all()
         context = super().get_context_data(**kwargs)
         context['projects'] = projects
         return context
-
 
 class UsersAdminView(SuperUserMixin, LoginRequiredMixin, CreateView):
     form_class = UserCreationForm

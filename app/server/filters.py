@@ -112,7 +112,6 @@ class ExcludeSearchFilter(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         search_fields = getattr(view, 'search_fields', None)
         search_terms_result = self.get_search_terms(request)
-        print('suka',search_terms_result)
         search_terms = search_terms_result['terms']
         search_exclude = None
         if search_terms_result.get('exclude'):

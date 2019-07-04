@@ -15,6 +15,7 @@ const vm = new Vue({
     isDelete: false,
     project: null,
     selected: 'All Project',
+    duplicateProject: ''
   },
 
   methods: {
@@ -69,6 +70,14 @@ const vm = new Vue({
       }
       return projects;
     },
+    getAction() {
+      let ret = ''
+      if (this.duplicateProject) {
+        ret = '/api/duplicate/'
+      }
+
+      return ret
+    }
   },
 
   created() {
