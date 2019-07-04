@@ -8,7 +8,12 @@
         color: id2label[r.label].text_color, \
         backgroundColor: id2label[r.label].background_color \
       }"
-    ) {{ textPart(r) }}
+    )
+      span
+        span(
+          v-for="highlightedChunk in getSearchHighlightedChunks(textPart(r))"
+          v-bind:class="highlightedChunk.highlight && 'has-background-warning'"
+        ) {{ highlightedChunk.content }}
       button.delete.is-small(v-if="id2label[r.label].text_color", v-on:click="removeLabel(r)")
 </template>
 
@@ -18,6 +23,10 @@ export default {
     labels: {
       type: Array, // [{id: Integer, color: String, text: String}]
       default: () => [],
+    },
+    searchQuery: {
+      type: String,
+      default: '',
     },
     text: {
       type: String,
@@ -84,6 +93,40 @@ export default {
   },
 
   methods: {
+    getSearchHighlightedChunks(text) {
+      if (this.searchQuery) {
+        const chunks = [];
+        let currentText = text;
+        let nextIndex;
+
+        do {
+          nextIndex = currentText.toLowerCase().indexOf(this.searchQuery.toLowerCase());
+
+          if (nextIndex !== -1) {
+            chunks.push({
+              content: currentText.substring(0, nextIndex),
+              highlight: false,
+            });
+            chunks.push({
+              content: currentText.substring(nextIndex, nextIndex + this.searchQuery.length),
+              highlight: true,
+            });
+            nextIndex += this.searchQuery.length;
+            currentText = currentText.substring(nextIndex);
+          } else {
+            chunks.push({
+              content: currentText.substring(nextIndex),
+              highlight: false,
+            });
+          }
+        } while (nextIndex !== -1);
+
+        return chunks.filter(({ content }) => content);
+      }
+
+      return [{ content: text, highlight: false }];
+    },
+
     getChunkClass(chunk) {
       if (!chunk.id) {
         return {};
