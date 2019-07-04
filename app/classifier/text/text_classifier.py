@@ -67,14 +67,19 @@ class TextClassifier(BaseClassifier):
                     pipeline=None, bootstrap_iterations=0, bootstrap_threshold=0.9):
         print('Reading input file...')
         df = pd.read_csv(input_filename, encoding='latin1')
-        df = df[~pd.isnull(df['text'])]
         if 'label_id' in df.columns:
             df['label'] = df['label_id']
         elif 'label' not in df.columns:
             raise ValueError("no columns 'label' or 'label_id' exist in input file")
 
+        df = df[~pd.isnull(df['text'])]
         print('Pre-processing text and extracting features...')
         self.set_preprocessor(pipeline)
+
+        if 'gold_label' in df.columns:
+            df_gold_labels = df.loc[ pd.notnull(df['gold_label']), 'label_id'] = None
+            X_gold_labels = self.pre_process(df_gold_labels)
+            y_gold_labels = df_gold_labels['gold_label'].values
 
         if label_id:
             df_labeled = df[df['label_id'] == label_id]
@@ -84,6 +89,7 @@ class TextClassifier(BaseClassifier):
             df_labeled = df[~pd.isnull(df['label_id'])]
 
         X = self.pre_process(df_labeled, fit=True)
+
         if 'label_id' not in df_labeled.columns:
             raise RuntimeError("column 'label_id' not found")
         else:
@@ -101,6 +107,11 @@ class TextClassifier(BaseClassifier):
         print('Performance on test set:')
         _, evaluation_text = self.evaluate(X_test, y_test)
         result = result + '\nPerformance on test set: \n' + evaluation_text
+
+        if 'gold_label' in df.columns:
+            print('Performance on gold labels set:')
+            _, evaluation_text = self.evaluate(X_gold_labels, y_gold_labels)
+            result = result + '\nPerformance on gold labels set: \n' + evaluation_text
 
         print('Running the model on the entire dataset...')
         df_cpy = df.copy()
@@ -126,6 +137,9 @@ class TextClassifier(BaseClassifier):
         class_weights = self.important_features
         class_weights_filename = os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
         class_weights.to_csv(class_weights_filename, header=True, index=False)
+
+        model_save_filename = os.path.dirname(input_filename)+'/ml_model_{project_id}.pickle'.format(project_id=project_id)
+        self.save(model_save_filename)
 
         print('Done running the model!')
         return result
