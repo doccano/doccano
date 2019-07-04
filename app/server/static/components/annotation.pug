@@ -145,6 +145,8 @@ div.columns(v-cloak="")
           i.fas.fa-chevron-left
         span Prev
 
+      span.button.level-center.is-static {{ offset + pageNumber + 1 }} / {{ count }}
+
       a.button.level-right(
         v-shortkey="{ next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright'] }"
         v-on:click="nextPage"
