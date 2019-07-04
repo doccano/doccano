@@ -336,7 +336,7 @@ class RunModelAPI(APIView):
         doc_annotations_gold_query = '''SELECT
             server_document.id,
             server_document.text,
-            '' as user_id,
+            'Gold truth' as user_id,
             server_documentgoldannotation.label_id
             FROM
             server_documentgoldannotation
