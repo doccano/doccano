@@ -371,10 +371,24 @@ class RunModelAPI(APIView):
 
         # result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
         active_learning_function = Project.project_types[ p.project_type ]['active_learning_model']
-        result = active_learning_function(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE),
-                                   user_id=request.user.id, project_id=project_id)
+        result = active_learning_function(
+            os.path.join(ML_FOLDER, INPUT_FILE),
+            os.path.join(ML_FOLDER, OUTPUT_FILE),
+            user_id=request.user.id, project_id=project_id)
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
+
+
+        # model = TextClassifier.load(filename)
+        # print('Performance on test set:')
+        # _, evaluation_text = self.evaluate(X_test, y_test)
+        # result = result + '\nPerformance on test set: \n' + evaluation_text
+        # prediction_df = self.get_prediction_df(X, y=df['label_id'])
+        # prediction_df['document_id'] = df['document_id']
+        # prediction_df['user_id'] = user_id
+        # prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)
+        # prediction_df['label_id'] = prediction_df['prediction']
+        # prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
         batch_size = 1000
         new_annotations = (DocumentMLMAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), prob=row['prob']) for row in reader)
