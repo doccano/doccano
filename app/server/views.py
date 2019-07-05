@@ -6,6 +6,8 @@ import logging
 import datetime
 import pandas as pd
 
+import requests
+
 from string import Template
 
 from django.contrib.auth.views import LoginView as BaseLoginView
@@ -431,6 +433,10 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         import_format = request.POST['format']
         try:
             file = request.FILES['file'].file
+            if (request.POST['url']):
+                print('URL', request.POST['url'])
+                r = requests.get(request.POST['url']) 
+                file = r.content
             documents = []
             true_labels = []
             users_lsbels = []
