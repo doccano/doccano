@@ -12,7 +12,7 @@
         <div class="control" v-for="(label, item) in labels">
           <div class="tags has-addons">
             <a class="tag is-medium" v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }" v-on:click="addLabel(label)"
-              v-shortkey.once=" replaceNull(label.shortcut) " @shortkey="addLabel(label)">
+              v-shortkey.once=" replaceNull(label.shortcut) " @shortkey="addLabel(label)" @shortkeydown="labelKeyDown(label)">
               [[ label.text ]]
             </a>
             <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
