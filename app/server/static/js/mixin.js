@@ -216,13 +216,17 @@ const annotationMixin = {
       metadataRules: [],
       docFromLink: null,
       showLabelers: false,
-      labelers: []
+      labelers: [],
+      preventLabeling: false
     };
   },
 
   methods: {
     async nextPage() {
       this.pageNumber += 1;
+      if (this.labelKeyPress) {
+        this.preventLabeling = true
+      }
       if (this.pageNumber === this.docs.length) {
         if (this.next) {
           this.url = this.next;
@@ -268,6 +272,9 @@ const annotationMixin = {
 
     async prevPage() {
       this.pageNumber -= 1;
+      if (this.labelKeyPress) {
+        this.preventLabeling = true
+      }
       if (this.pageNumber === -1) {
         if (this.prev) {
           this.url = this.prev;
@@ -373,8 +380,6 @@ const annotationMixin = {
           this.getExplanation(doc.id)
         }
       }
-
-      console.log('subnit')
 
       if (this.showLabelers) {
         const doc = this.docs[0]
