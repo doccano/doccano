@@ -1,6 +1,6 @@
 import csv
 import json
-from io import TextIOWrapper, StringIO
+from io import TextIOWrapper, StringIO, BytesIO
 import itertools as it
 import logging
 import datetime
@@ -432,11 +432,13 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
         import_format = request.POST['format']
         try:
-            file = request.FILES['file'].file
             if (request.POST['url']):
                 print('URL', request.POST['url'])
                 r = requests.get(request.POST['url']) 
-                file = r.content
+                file = BytesIO(r.content)
+                import_format = import_format.replace('_url', '')
+            else:
+                file = request.FILES['file'].file
             documents = []
             true_labels = []
             users_lsbels = []
