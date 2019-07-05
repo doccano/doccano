@@ -7,6 +7,5 @@ const HTTP = axios.create({
   baseURL: `/v1/${baseUrl}`,
 });
 
-export const rootUrl = window.location.href.split('/').slice(0, 3).join('/');
 export const defaultHttpClient = axios.create();
 export default HTTP;
