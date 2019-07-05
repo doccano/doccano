@@ -122,7 +122,7 @@ export default {
     },
 
     replaceNull(shortcut) {
-      if (shortcut === null) {
+      if (shortcut == null) {
         shortcut = '';
       }
       shortcut = shortcut.split(' ');
