@@ -19,9 +19,11 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db import connection
 
+from django.contrib.auth.models import User
+
 from django.contrib.auth.forms import UserCreationForm
 
-from .resources import DocumentResource, DocumentAnnotationResource, LabelResource, DocumentMLMAnnotationResource
+from .resources import DocumentResource, DocumentAnnotationResource, LabelResource, DocumentMLMAnnotationResource, UserResource, ProjectResource
 
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
@@ -659,15 +661,23 @@ class ProjectExport(SuperUserMixin, LoginRequiredMixin, View):
         queryset = Document.objects.filter(project=project)
         documents = DocumentResource().export(queryset)
 
+        queryset = User.objects.all()
+        users = UserResource().export(queryset)
+
+        queryset = Project.objects.filter(id=self.kwargs['project_id'])
+        proj_export = ProjectResource().export(queryset)
+
         response = HttpResponse(content_type='text/json')
         response['Content-Disposition'] = 'attachment; filename="{}_full_project.json"'.format(project)
         t = Template('''{
             "annotations": ${annotations},
             "mlm_annotations": ${mlm_annotations}
             "labels": ${labels},
-            "documents": ${documents}
+            "documents": ${documents},
+            "users": ${users},
+            "project": ${project}
         }''')
-        response.write(t.safe_substitute(annotations=annotations.json, mlm_annotations=mlm_annotations.json, labels=labels.json, documents=documents.json))
+        response.write(t.safe_substitute(annotations=annotations.json, mlm_annotations=mlm_annotations.json, labels=labels.json, documents=documents.json, users=users.json, project=proj_export.json))
         return response
 
 
