@@ -87,7 +87,6 @@ class UsersAdminView(SuperUserMixin, LoginRequiredMixin, CreateView):
     template_name = 'users.html'
 
     def form_invalid(self, form):
-        print('invalid', form.errors)
         response = super().form_invalid(form)
         return response
 
@@ -456,7 +455,6 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         import_format = request.POST['format']
         try:
             if (request.POST['url']):
-                print('URL', request.POST['url'])
                 r = requests.get(request.POST['url']) 
                 file = BytesIO(r.content)
                 import_format = import_format.replace('_url', '')

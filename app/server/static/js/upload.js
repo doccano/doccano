@@ -64,7 +64,6 @@ const vm = new Vue({
         e.preventDefault()
         return
       }
-      console.log('submit', e)
     },
     setTab(tab) {
       this.activeTab = tab
