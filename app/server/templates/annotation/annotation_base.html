@@ -177,7 +177,7 @@
       <a class="button level-left"
          title="Move to the previous record. You can also use the left arrow key as a keyboard shortcut"
          v-on:click="prevPage"
-         v-shortkey="{prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft']}"
+         v-shortkey.once="{prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft']}"
          @shortkey="prevPage">
         <span class="icon">
           <i class="fas fa-chevron-left"></i>
@@ -188,7 +188,7 @@
       <a class="button level-right"
          title="Move to the next record. You can also use the right arrow key as a keyboard shortcut"
          v-on:click="nextPage"
-         v-shortkey="{next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright']}"
+         v-shortkey.once="{next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright']}"
          @shortkey="nextPage">
         <span>Next</span>
         <span class="icon">

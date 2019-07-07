@@ -15,6 +15,9 @@ import sys
 import django_heroku
 import dj_database_url
 
+ML_FOLDER = 'ml_models'
+OUTPUT_FILE = 'ml_out.csv'
+INPUT_FILE = 'ml_input.csv'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -146,7 +149,7 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
 }
-DATABASES['default'] = DATABASES['posgres_local']
+DATABASES['default'] = DATABASES['posgres']
 
 if "test" in sys.argv:
     DATABASES = {    

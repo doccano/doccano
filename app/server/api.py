@@ -42,12 +42,9 @@ from .filters import ExcludeSearchFilter
 
 from .labelers_comparison_functions import create_kappa_comparison_df, compute_average_agreement_per_labeler, add_agreement_columns
 
+from app.settings import ML_FOLDER, INPUT_FILE, OUTPUT_FILE
+
 # from classifier.text.text_classifier import run_model_on_file
-
-ML_FOLDER = 'ml_models'
-
-OUTPUT_FILE = 'ml_out.csv'
-INPUT_FILE = 'ml_input.csv'
 
 
 def get_labels_admin(project_id):
