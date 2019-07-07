@@ -106,9 +106,12 @@ class TextClassifier(BaseClassifier):
         df_gold_labels = df[ df['user_id']=='gold_label' ]
         X_gold_labels = self.pre_process(df_gold_labels, fit=False)
         y_gold_labels = df_gold_labels['label_id'].values
-        print('Performance on gold labels set:')
-        _, evaluation_text = self.evaluate(X_gold_labels, y_gold_labels)
-        result = result + '\nPerformance on gold labels set: \n' + evaluation_text
+        if len(y_gold_labels)>0:
+            print('Performance on gold labels set:')
+            _, evaluation_text = self.evaluate(X_gold_labels, y_gold_labels)
+            result = result + '\nPerformance on gold labels set: \n' + evaluation_text
+        else:
+            print('Gold labels do not exist - skipping the evaluation of model performance on them.')
 
         if run_on_entire_dataset:
             print('Running the model on the entire dataset...')
