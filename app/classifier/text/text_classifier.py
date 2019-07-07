@@ -158,7 +158,7 @@ def run_model_on_file(input_filename, output_filename, user_id, project_id, labe
                                   'stop_words': 'english', 'strip_accents': 'ascii', 'max_features': 5000}),
                 ('drop columns', {'drop_cols': ['label_id', 'text', 'processed_text']})]
 
-    result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id, pipeline=pipeline)
+    result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id, pipeline=pipeline, run_on_entire_dataset=run_on_entire_dataset)
     return result
 
 

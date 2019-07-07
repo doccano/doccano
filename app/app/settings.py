@@ -18,8 +18,8 @@ import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ML_FOLDER = os.path.join(BASE_DIR, 'ml_models/')
-OUTPUT_FILE = 'ml_out.csv'
-INPUT_FILE = 'ml_input.csv'
+OUTPUT_FILE = os.path.join(ML_FOLDER, 'ml_out.csv')
+INPUT_FILE = os.path.join(ML_FOLDER, 'ml_input.csv')
 
 
 # Quick-start development settings - unsuitable for production

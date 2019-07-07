@@ -365,16 +365,16 @@ class RunModelAPI(APIView):
         # df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE.replace('.csv', '_full.csv')), encoding='utf-8')
         df = df.drop_duplicates('document_id', keep='last')
         print( df.groupby('label_id')[['user_id', 'document_id']].count())
-        df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE), encoding='utf-8')
+        df.to_csv(INPUT_FILE, encoding='utf-8')
 
-        # result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
+        # result = run_model_on_file(INPUT_FILE, OUTPUT_FILE, user_id=request.user.id, project_id=project_id)
         active_learning_function = Project.project_types[ p.project_type ]['active_learning_function']
         result = active_learning_function(
-            input_filename=os.path.join(ML_FOLDER, INPUT_FILE),
-            output_filename=os.path.join(ML_FOLDER, OUTPUT_FILE),
-            user_id=request.user.id,
-            project_id=project_id,
-            run_on_entire_dataset=False
+            input_filename = INPUT_FILE,
+            output_filename = OUTPUT_FILE,
+            user_id = request.user.id,
+            project_id = project_id,
+            run_on_entire_dataset = (p.use_machine_model_sort or p.show_ml_model_prediction)
         )
 
         if p.use_machine_model_sort or p.show_ml_model_prediction:
