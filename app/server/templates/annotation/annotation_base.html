@@ -7,7 +7,7 @@
 {% endblock %}
 {% block navigation %}
 {% if user.is_superuser %}
-<a class="navbar-item" href="{% url 'dataset' view.kwargs.project_id %}">
+<a class="navbar-item" href="{% url 'stats' view.kwargs.project_id %}">
   <span class="icon">
     <i class="fas fa-edit"></i>
   </span>

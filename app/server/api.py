@@ -221,7 +221,7 @@ class LabelersListAPI(APIView):
 
 
         annotations_df = get_annotations(cursor, project_id)
-        annotations_df.to_csv(r'C:\Users\omri.allouche\Downloads\labeler_agreement.csv')
+        # annotations_df.to_csv(r'C:\Users\omri.allouche\Downloads\labeler_agreement.csv')
         annotations_df = annotations_df.drop_duplicates(['document_id', 'user_id'])
         annotations_df['is_correct'] = [int(x) for x in annotations_df['label_id']==annotations_df['true_label_id']]
         user_truth_agreement = annotations_df[ pd.notnull(annotations_df['true_label_id']) ].groupby('user_id')['is_correct'].agg(['count', 'mean'])
@@ -376,30 +376,32 @@ class RunModelAPI(APIView):
             project_id=project_id,
             run_on_entire_dataset=False
         )
-        reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
-        DocumentMLMAnnotation.objects.all().delete()
 
+        if p.use_machine_model_sort or p.show_ml_model_prediction:
+            print('Saving annotations to DB...')
+            try:
+                reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
+                DocumentMLMAnnotation.objects.all().delete()
 
-        # model = TextClassifier.load(filename)
-        # print('Performance on test set:')
-        # _, evaluation_text = self.evaluate(X_test, y_test)
-        # result = result + '\nPerformance on test set: \n' + evaluation_text
-        # prediction_df = self.get_prediction_df(X, y=df['label_id'])
-        # prediction_df['document_id'] = df['document_id']
-        # prediction_df['user_id'] = user_id
-        # prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)
-        # prediction_df['label_id'] = prediction_df['prediction']
-        # prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
+                batch_size = 1000
+                new_annotations = (DocumentMLMAnnotation(
+                    document=Document.objects.get(pk=int(float(row['document_id']))),
+                    label=Label.objects.get(pk=int(float(row['label_id']))),
+                    prob=row['prob']
+                ) for row in reader if row['document_id']!='')
 
-        batch_size = 1000
-        new_annotations = (DocumentMLMAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), prob=row['prob']) for row in reader)
-        while True:
-            batch = list(islice(new_annotations, batch_size))
-            if not batch:
-                break
-            DocumentMLMAnnotation.objects.bulk_create(batch, batch_size)
+                while True:
+                    print('processing batch...')
+                    batch = list(islice(new_annotations, batch_size))
+                    if not batch:
+                        break
+                    DocumentMLMAnnotation.objects.bulk_create(batch, batch_size)
+            except Exception as e:
+                print(e)
+
         # os.remove(INPUT_FILE)
         # os.remove(OUTPUT_FILE)
+        print('Done!')
         return Response({'result': '<pre>'+result+'</pre>'})
 
 class ProjectStatsAPI(APIView):
@@ -490,13 +492,15 @@ class ProjectStatsAPI(APIView):
 
 
 def get_class_weights(project_id):
-    filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
+    filename = os.path.join(ML_FOLDER, 'ml_logistic_regression_weights_{project_id}.csv').format(project_id=project_id)
     if (os.path.isfile(filename)):
         data = pd.read_csv(os.path.abspath(filename))
         data['importance'] = data['importance'].apply(lambda x: round(x,2))
         data['feature_name'] = data['feature_name'].str.replace('processed_text_w_', '')
         class_weights = data.set_index('feature_name')
         return class_weights
+    else:
+        print('Missing class weights filename...')
     return pd.DataFrame([], columns=['importance', 'feature_name']).set_index('feature_name')
 
 class ClassWeightsApi(APIView):
@@ -520,17 +524,33 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         self.project_id = self.kwargs['project_id']
         doc_text_splited = d.text.split(' ')
-        format_str_positive = '<span class="has-background-success">{}</span>'
-        format_str_negative = '<span class="has-background-danger">{}</span>'
+        format_str = '<span style="background-color:{bg_color}; color:{text_color}" title="Weight:{weight} for class {title}">{w}</span>'
+
+        labels = Label.objects.all()
+        labels = {row['id']: row for row in (labels.values())}
         text = []
         class_weights = get_class_weights(self.project_id)
         if class_weights is not None:
             for w in doc_text_splited:
-                weight = class_weights.get(w.lower().replace(',','').replace('.',''), 0)
-                if weight < -0.2:
-                    text.append(format_str_negative.format(w))
-                elif weight > 0.2:
-                    text.append(format_str_positive.format(w))
+                w_clean = w.lower().replace(',','').replace('.','')
+                if w_clean in class_weights.index:
+                    row = class_weights.loc[w_clean]
+                    # weight = row['weight']
+                    weight = row['importance']
+                    label_id = row['class']
+                    label_bg = labels[label_id]['background_color']
+                    label_text_color = labels[label_id]['text_color']
+                    label_title = labels[label_id]['text']
+                    if weight > 0.2:
+                        text.append(format_str.format(
+                            w=w,
+                            bg_color=label_bg,
+                            text_color=label_text_color,
+                            title=label_title,
+                            weight=weight
+                        ))
+                    else:
+                        text.append(w)
                 else:
                     text.append(w)
 
