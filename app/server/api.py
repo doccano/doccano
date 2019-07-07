@@ -336,7 +336,7 @@ class RunModelAPI(APIView):
         doc_annotations_gold_query = '''SELECT
             server_document.id,
             server_document.text,
-            'Gold truth' as user_id,
+            'gold_label' as user_id,
             server_documentgoldannotation.label_id
             FROM
             server_documentgoldannotation
@@ -364,6 +364,7 @@ class RunModelAPI(APIView):
         print( df.groupby('label_id')[['user_id', 'document_id']].count())
         df = df.drop_duplicates(['document_id', 'user_id'], keep='last')
         print( df.groupby('label_id')[['user_id', 'document_id']].count())
+        # This step would keep only annotations marked as Gold truth in the set, without using them for training the model
         # df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE.replace('.csv', '_full.csv')), encoding='utf-8')
         df = df.drop_duplicates('document_id', keep='last')
         print( df.groupby('label_id')[['user_id', 'document_id']].count())

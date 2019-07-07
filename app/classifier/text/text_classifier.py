@@ -76,10 +76,9 @@ class TextClassifier(BaseClassifier):
         print('Pre-processing text and extracting features...')
         self.set_preprocessor(pipeline)
 
-        if 'gold_label' in df.columns:
-            df_gold_labels = df.loc[ pd.notnull(df['gold_label']), 'label_id'] = None
-            X_gold_labels = self.pre_process(df_gold_labels)
-            y_gold_labels = df_gold_labels['gold_label'].values
+        df_gold_labels = df[ df['user_id']=='gold_label' ]
+        X_gold_labels = self.pre_process(df_gold_labels)
+        y_gold_labels = df_gold_labels['gold_label'].values
 
         if label_id:
             df_labeled = df[df['label_id'] == label_id]
@@ -108,10 +107,9 @@ class TextClassifier(BaseClassifier):
         _, evaluation_text = self.evaluate(X_test, y_test)
         result = result + '\nPerformance on test set: \n' + evaluation_text
 
-        if 'gold_label' in df.columns:
-            print('Performance on gold labels set:')
-            _, evaluation_text = self.evaluate(X_gold_labels, y_gold_labels)
-            result = result + '\nPerformance on gold labels set: \n' + evaluation_text
+        print('Performance on gold labels set:')
+        _, evaluation_text = self.evaluate(X_gold_labels, y_gold_labels)
+        result = result + '\nPerformance on gold labels set: \n' + evaluation_text
 
         print('Running the model on the entire dataset...')
         df_cpy = df.copy()
