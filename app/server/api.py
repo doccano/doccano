@@ -368,11 +368,14 @@ class RunModelAPI(APIView):
         df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE), encoding='utf-8')
 
         # result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
-        active_learning_function = Project.project_types[ p.project_type ]['active_learning_model']
+        active_learning_function = Project.project_types[ p.project_type ]['active_learning_function']
         result = active_learning_function(
-            os.path.join(ML_FOLDER, INPUT_FILE),
-            os.path.join(ML_FOLDER, OUTPUT_FILE),
-            user_id=request.user.id, project_id=project_id)
+            input_filename=os.path.join(ML_FOLDER, INPUT_FILE),
+            output_filename=os.path.join(ML_FOLDER, OUTPUT_FILE),
+            user_id=request.user.id,
+            project_id=project_id,
+            run_on_entire_dataset=False
+        )
         reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
         DocumentMLMAnnotation.objects.all().delete()
 
@@ -555,6 +558,17 @@ class DocumentLabelersAPI(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        queryset = self.queryset.filter(project.id)
+        return queryset
+
+
+class ProjectsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)

@@ -64,7 +64,7 @@ class TextClassifier(BaseClassifier):
         self.processing_pipeline = TextPipeline(pipeline)
 
     def run_on_file(self, input_filename, output_filename, user_id, project_id, label_id=None,
-                    pipeline=None, bootstrap_iterations=0, bootstrap_threshold=0.9):
+                    pipeline=None, bootstrap_iterations=0, bootstrap_threshold=0.9, run_on_entire_dataset=False):
         print('Reading input file...')
         df = pd.read_csv(input_filename, encoding='latin1')
         if 'label_id' in df.columns:
@@ -75,10 +75,6 @@ class TextClassifier(BaseClassifier):
         df = df[~pd.isnull(df['text'])]
         print('Pre-processing text and extracting features...')
         self.set_preprocessor(pipeline)
-
-        df_gold_labels = df[ df['user_id']=='gold_label' ]
-        X_gold_labels = self.pre_process(df_gold_labels)
-        y_gold_labels = df_gold_labels['gold_label'].values
 
         if label_id:
             df_labeled = df[df['label_id'] == label_id]
@@ -107,30 +103,34 @@ class TextClassifier(BaseClassifier):
         _, evaluation_text = self.evaluate(X_test, y_test)
         result = result + '\nPerformance on test set: \n' + evaluation_text
 
+        df_gold_labels = df[ df['user_id']=='gold_label' ]
+        X_gold_labels = self.pre_process(df_gold_labels, fit=False)
+        y_gold_labels = df_gold_labels['label_id'].values
         print('Performance on gold labels set:')
         _, evaluation_text = self.evaluate(X_gold_labels, y_gold_labels)
         result = result + '\nPerformance on gold labels set: \n' + evaluation_text
 
-        print('Running the model on the entire dataset...')
-        df_cpy = df.copy()
-        df_cpy['label_id'] = None
-        X = self.pre_process(df_cpy, fit=False)
-        y = df['label_id']
+        if run_on_entire_dataset:
+            print('Running the model on the entire dataset...')
+            df_cpy = df.copy()
+            df_cpy['label_id'] = None
+            X = self.pre_process(df_cpy, fit=False)
+            y = df['label_id']
 
-        print('Bootstrapping...')
-        for i in range(bootstrap_iterations):
-            print('bootstrap iteration ', i, '/', bootstrap_iterations, ' ', [x for x in zip(np.unique(y[~pd.isna(y)], return_counts=True))])
-            y = self.bootstrap(X, y=y, th=bootstrap_threshold)
+            print('Bootstrapping...')
+            for i in range(bootstrap_iterations):
+                print('bootstrap iteration ', i, '/', bootstrap_iterations, ' ', [x for x in zip(np.unique(y[~pd.isna(y)], return_counts=True))])
+                y = self.bootstrap(X, y=y, th=bootstrap_threshold)
 
-        prediction_df = self.get_prediction_df(X, y=df['label_id'])
+            prediction_df = self.get_prediction_df(X, y=df['label_id'])
 
-        prediction_df['document_id'] = df['document_id']
-        prediction_df['user_id'] = user_id
-        prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)
-        prediction_df['label_id'] = prediction_df['prediction']
+            prediction_df['document_id'] = df['document_id']
+            prediction_df['user_id'] = user_id
+            prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)
+            prediction_df['label_id'] = prediction_df['prediction']
 
-        print('Saving output...')
-        prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
+            print('Saving output...')
+            prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
 
         class_weights = self.important_features
         class_weights_filename = os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
@@ -142,7 +142,7 @@ class TextClassifier(BaseClassifier):
         print('Done running the model!')
         return result
 
-def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow'):
+def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow', run_on_entire_dataset=False):
     # rf = RandomForestClassifier(verbose=True, class_weight='balanced')
     # lr = LogisticRegression(verbose=False, class_weight='balanced', random_state=0, penalty='l2', C=1)
     lr = LogisticRegression(verbose=False, class_weight='balanced', random_state=0, penalty='l1',
@@ -160,4 +160,10 @@ def run_model_on_file(input_filename, output_filename, user_id, project_id, labe
 
 
 if __name__ == '__main__':
-    run_model_on_file('../../ml_models/ml_input.csv', '../../ml_models/ml_out_manual.csv', project_id=9999, user_id=2, label_id=None)
+    run_model_on_file(
+        input_filename='../../ml_models/ml_input.csv',
+        output_filename='../../ml_models/ml_out_manual.csv',
+        project_id=9999,
+        user_id=2,
+        label_id=None,
+        run_on_entire_dataset=True)
