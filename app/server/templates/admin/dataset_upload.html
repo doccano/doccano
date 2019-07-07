@@ -26,32 +26,71 @@
                 The values in the "text" column should exactly match the text of one of existing documents in the database. <br>
                 The values in the "label" column should match exactly the text of one of the existing labels.</li>
         </ul.is-unstyled>
-        <form action="" method="post" enctype="multipart/form-data">
+        <form action="" method="post" @submit="submit" enctype="multipart/form-data">
           {% csrf_token %}
-          <div class="section">
-            <div class="control">
-              <label class="radio mb10">
-                <input type="radio" name="format" value="csv" checked> Upload a CSV file from your computer<br>
-                <input type="radio" name="format" value="json" checked> Upload a JSON file from your computer<br>
-                <input type="radio" name="format" value="csv_labeled" checked> Upload a labeled CSV file from your computer<br>
-                <input type="radio" name="format" value="csv_labeled_users" checked> Upload a users labeled CSV file from your computer<br>
-               </label>
-              <div class="file has-name is-small mb20">
-                <label class="file-label">
-                  <input class="file-input" type="file" ref="file" name="file" required v-on:change="handleFileUpload()">
-                  <span class="file-cta">
-                    <span class="file-icon">
-                      <i class="fas fa-upload"></i>
-                    </span>
-                    <span class="file-label">
-                      Select a file…
-                    </span>
-                  </span>
-                  <span class="file-name">
-                    [[ file ]]
-                  </span>
-                </label>
-              </div>
+          <div class="column is-12 tabs">
+            <ul>
+              <li :class="{'is-active' : activeTab == 1}" @click="setTab(1)"><a>Upload from computer</a></li>
+              <li :class="{'is-active' : activeTab == 2}" @click="setTab(2)"><a>Upload by URL</a></li>
+            </ul>
+          </div>
+          <div class="column is-12 tabs-content">
+            <div class="tab-content" :class="{'is-active' : activeTab == 1}" >
+                <div class="section pt10">
+                  <div class="control mb10">
+                    <template v-for="format in formats.local">
+                        <label class="radio">
+                            <input type="radio" name="format" :value="format.value" v-model="selectedFormat">
+                            [[ format.text ]]
+                          </label>
+                          <br/>
+                    </template>
+                  </div>
+                  <div class="control">
+                    <div class="file has-name is-small mb20">
+                      <label class="file-label">
+                        <input class="file-input" type="file" ref="file" name="file" v-on:change="handleFileUpload()">
+                        <span class="file-cta">
+                          <span class="file-icon">
+                            <i class="fas fa-upload"></i>
+                          </span>
+                          <span class="file-label">
+                            Select a file…
+                          </span>
+                        </span>
+                        <span class="file-name">
+                          [[ file ]]
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="tab-content" :class="{'is-active' : activeTab == 2}" >
+                <div class="section pt10">
+                    <div class="control mb10">
+                      <template v-for="format in formats.url">
+                          <label class="radio">
+                              <input type="radio" name="format" :value="format.value" v-model="selectedFormat">
+                              [[ format.text ]]
+                            </label>
+                            <br/>
+                      </template>
+                    </div>
+                    <div class="field is-horizontal">
+                      <div class="field-label is-normal">
+                        <label class="label">URL</label>
+                      </div>
+                      <div class="field-body">
+                        <div class="field">
+                          <p class="control">
+                            <input class="input" type="text" name="url" v-model="inputUrl" placeholder="https://example.com/tet.csv">
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                  </div>
             </div>
           </div>
 

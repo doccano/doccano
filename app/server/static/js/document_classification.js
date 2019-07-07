@@ -8,7 +8,9 @@ import { toPercent, parseDate } from './filters'
 Vue.filter('toPercent', toPercent)
 Vue.filter('parseDate', parseDate)
 
-Vue.use(require('vue-shortkey'), {
+import vueshortkey from './vue-shortkey'
+
+Vue.use(vueshortkey, {
   prevent: ['input', 'textarea'],
 });
 
@@ -33,17 +35,29 @@ const vm = new Vue({
 
     async addLabel(label) {
       const a = this.isIn(label);
+      let pageNumber = this.pageNumber
+      this.labelKeyPress = false
+      if (this.preventLabeling) {
+        this.preventLabeling = false
+        return
+      }
       if (a) {
         this.removeLabel(a);
       } else {
-        const docId = this.docs[this.pageNumber].id;
+        const docId = this.docs[pageNumber].id;
         const payload = {
           label: label.id,
         };
         await HTTP.post(`docs/${docId}/annotations/`, payload).then((response) => {
-          this.annotations[this.pageNumber].push(response.data);
+          this.annotations[pageNumber].push(response.data);
         });
       }
     },
+
+    labelKeyDown() {
+      if (!this.labelKeyPress) {
+        this.labelKeyPress = true
+      }
+    }
   },
 });
