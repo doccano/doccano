@@ -42,12 +42,9 @@ from .filters import ExcludeSearchFilter
 
 from .labelers_comparison_functions import create_kappa_comparison_df, compute_average_agreement_per_labeler, add_agreement_columns
 
+from app.settings import ML_FOLDER, INPUT_FILE, OUTPUT_FILE
+
 # from classifier.text.text_classifier import run_model_on_file
-
-ML_FOLDER = 'ml_models'
-
-OUTPUT_FILE = 'ml_out.csv'
-INPUT_FILE = 'ml_input.csv'
 
 
 def get_labels_admin(project_id):
@@ -224,7 +221,7 @@ class LabelersListAPI(APIView):
 
 
         annotations_df = get_annotations(cursor, project_id)
-        annotations_df.to_csv(r'C:\Users\omri.allouche\Downloads\labeler_agreement.csv')
+        # annotations_df.to_csv(r'C:\Users\omri.allouche\Downloads\labeler_agreement.csv')
         annotations_df = annotations_df.drop_duplicates(['document_id', 'user_id'])
         annotations_df['is_correct'] = [int(x) for x in annotations_df['label_id']==annotations_df['true_label_id']]
         user_truth_agreement = annotations_df[ pd.notnull(annotations_df['true_label_id']) ].groupby('user_id')['is_correct'].agg(['count', 'mean'])
@@ -336,7 +333,7 @@ class RunModelAPI(APIView):
         doc_annotations_gold_query = '''SELECT
             server_document.id,
             server_document.text,
-            '' as user_id,
+            'gold_label' as user_id,
             server_documentgoldannotation.label_id
             FROM
             server_documentgoldannotation
@@ -364,33 +361,47 @@ class RunModelAPI(APIView):
         print( df.groupby('label_id')[['user_id', 'document_id']].count())
         df = df.drop_duplicates(['document_id', 'user_id'], keep='last')
         print( df.groupby('label_id')[['user_id', 'document_id']].count())
+        # This step would keep only annotations marked as Gold truth in the set, without using them for training the model
         # df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE.replace('.csv', '_full.csv')), encoding='utf-8')
         df = df.drop_duplicates('document_id', keep='last')
         print( df.groupby('label_id')[['user_id', 'document_id']].count())
-        df.to_csv(os.path.join(ML_FOLDER, INPUT_FILE), encoding='utf-8')
+        df.to_csv(INPUT_FILE, encoding='utf-8')
 
-        # result = run_model_on_file(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE), user_id=request.user.id, project_id=project_id)
-        active_learning_function = Project.project_types[ p.project_type ]['active_learning_model']
-        result = active_learning_function(os.path.join(ML_FOLDER, INPUT_FILE), os.path.join(ML_FOLDER, OUTPUT_FILE),
-                                   user_id=request.user.id, project_id=project_id)
-        reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
-        DocumentMLMAnnotation.objects.all().delete()
+        # result = run_model_on_file(INPUT_FILE, OUTPUT_FILE, user_id=request.user.id, project_id=project_id)
+        active_learning_function = Project.project_types[ p.project_type ]['active_learning_function']
+        result = active_learning_function(
+            input_filename = INPUT_FILE,
+            output_filename = OUTPUT_FILE,
+            user_id = request.user.id,
+            project_id = project_id,
+            run_on_entire_dataset = (p.use_machine_model_sort or p.show_ml_model_prediction)
+        )
 
-        ml_model_results_filename = os.path.join(ML_FOLDER, 'ml_model_results_{}.txt'.format(project_id))
+        if p.use_machine_model_sort or p.show_ml_model_prediction:
+            print('Saving annotations to DB...')
+            try:
+                reader = csv.DictReader(open(os.path.join(ML_FOLDER, OUTPUT_FILE), 'r', encoding='utf-8'))
+                DocumentMLMAnnotation.objects.all().delete()
 
-        ml_file = open(ml_model_results_filename,'w+')
-        ml_file.write(result)
-        ml_file.close()
+                batch_size = 1000
+                new_annotations = (DocumentMLMAnnotation(
+                    document=Document.objects.get(pk=int(float(row['document_id']))),
+                    label=Label.objects.get(pk=int(float(row['label_id']))),
+                    prob=row['prob']
+                ) for row in reader if row['document_id']!='')
 
-        batch_size = 1000
-        new_annotations = (DocumentMLMAnnotation(document=Document.objects.get(pk=row['document_id']), label=Label.objects.get(pk=int(float(row['label_id']))), prob=row['prob']) for row in reader)
-        while True:
-            batch = list(islice(new_annotations, batch_size))
-            if not batch:
-                break
-            DocumentMLMAnnotation.objects.bulk_create(batch, batch_size)
+                while True:
+                    print('processing batch...')
+                    batch = list(islice(new_annotations, batch_size))
+                    if not batch:
+                        break
+                    DocumentMLMAnnotation.objects.bulk_create(batch, batch_size)
+            except Exception as e:
+                print(e)
+
         # os.remove(INPUT_FILE)
         # os.remove(OUTPUT_FILE)
+        print('Done!')
         return Response({'result': '<pre>'+result+'</pre>'})
 
 class ProjectStatsAPI(APIView):
@@ -481,13 +492,15 @@ class ProjectStatsAPI(APIView):
 
 
 def get_class_weights(project_id):
-    filename = 'ml_models/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
+    filename = os.path.join(ML_FOLDER, 'ml_logistic_regression_weights_{project_id}.csv').format(project_id=project_id)
     if (os.path.isfile(filename)):
         data = pd.read_csv(os.path.abspath(filename))
         data['importance'] = data['importance'].apply(lambda x: round(x,2))
         data['feature_name'] = data['feature_name'].str.replace('processed_text_w_', '')
         class_weights = data.set_index('feature_name')
         return class_weights
+    else:
+        print('Missing class weights filename...')
     return pd.DataFrame([], columns=['importance', 'feature_name']).set_index('feature_name')
 
 class ClassWeightsApi(APIView):
@@ -511,17 +524,33 @@ class DocumentExplainAPI(generics.RetrieveUpdateDestroyAPIView):
         d = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         self.project_id = self.kwargs['project_id']
         doc_text_splited = d.text.split(' ')
-        format_str_positive = '<span class="has-background-success">{}</span>'
-        format_str_negative = '<span class="has-background-danger">{}</span>'
+        format_str = '<span style="background-color:{bg_color}; color:{text_color}" title="Weight:{weight} for class {title}">{w}</span>'
+
+        labels = Label.objects.all()
+        labels = {row['id']: row for row in (labels.values())}
         text = []
         class_weights = get_class_weights(self.project_id)
         if class_weights is not None:
             for w in doc_text_splited:
-                weight = class_weights.get(w.lower().replace(',','').replace('.',''), 0)
-                if weight < -0.2:
-                    text.append(format_str_negative.format(w))
-                elif weight > 0.2:
-                    text.append(format_str_positive.format(w))
+                w_clean = w.lower().replace(',','').replace('.','')
+                if w_clean in class_weights.index:
+                    row = class_weights.loc[w_clean]
+                    # weight = row['weight']
+                    weight = row['importance']
+                    label_id = row['class']
+                    label_bg = labels[label_id]['background_color']
+                    label_text_color = labels[label_id]['text_color']
+                    label_title = labels[label_id]['text']
+                    if weight > 0.2:
+                        text.append(format_str.format(
+                            w=w,
+                            bg_color=label_bg,
+                            text_color=label_text_color,
+                            title=label_title,
+                            weight=weight
+                        ))
+                    else:
+                        text.append(w)
                 else:
                     text.append(w)
 
@@ -549,6 +578,17 @@ class DocumentLabelersAPI(generics.RetrieveUpdateDestroyAPIView):
 
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        queryset = self.queryset.filter(project.id)
+        return queryset
+
+
+class ProjectsDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)

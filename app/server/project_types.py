@@ -10,7 +10,7 @@ project_types = {
         'template_html': 'annotation/document_classification.html',
         'document_serializer': '',
         'annotations_serializer': '',
-        'active_learning_model': text_classifier_function
+        'active_learning_function': text_classifier_function
     },
 
     'SequenceLabeling': {
@@ -38,7 +38,7 @@ project_types = {
         'template_html': 'annotation/image_classification.html',
         'document_serializer': '',
         'annotations_serializer': '',
-        # 'active_learning_model': imagenet_classifier_function
+        # 'active_learning_function': imagenet_classifier_function
     },
 
     'ImageCaptioning': {
