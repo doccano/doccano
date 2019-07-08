@@ -21,4 +21,8 @@ class Migration(migrations.Migration):
             name='seq2seqannotation',
             unique_together={('document', 'user', 'text')},
         ),
+        migrations.AlterUniqueTogether(
+            name='label',
+            unique_together={('project', 'text')},
+        ),
     ]
