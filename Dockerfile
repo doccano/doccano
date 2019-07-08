@@ -15,8 +15,8 @@ RUN pip install -r /requirements.txt \
 
 COPY . /doccano
 
-RUN cd /doccano \
- && tools/ci.sh
+WORKDIR /doccano
+RUN tools/ci.sh
 
 FROM builder AS cleaner
 
