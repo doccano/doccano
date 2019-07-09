@@ -1,8 +1,8 @@
 from django.contrib import admin
 
 from .models import Label, Document, Project
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, QandAAnnotation,
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, QandAProject,
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, QandAAnnotation
+from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, QandAProject
 
 admin.site.register(DocumentAnnotation)
 admin.site.register(SequenceAnnotation)
