@@ -1,12 +1,24 @@
 import Vue from 'vue';
-import DemoTranslation from '../components/demo/demo_translation.vue';
+import { demoTranslation as data } from '../components/demo/demo_data';
+import DemoApi from '../components/demo/demo_api';
+import Seq2Seq from '../components/seq2seq.vue';
 
 Vue.use(require('vue-shortkey'));
+
+const demoApi = new DemoApi(data, 'text');
 
 new Vue({
   el: '#mail-app',
 
-  components: { DemoTranslation },
+  components: { Seq2Seq },
 
-  template: '<DemoTranslation />',
+  beforeCreate() {
+    demoApi.start();
+  },
+
+  beforeDestroy() {
+    demoApi.stop();
+  },
+
+  template: '<Seq2Seq />',
 });

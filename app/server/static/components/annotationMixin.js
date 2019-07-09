@@ -1,9 +1,7 @@
 import * as marked from 'marked';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
-import HTTP, { rootUrl, newHttpClient } from './http';
-
-const httpClient = newHttpClient();
+import HTTP, { defaultHttpClient } from './http';
 
 const getOffsetFromUrl = (url) => {
   const offsetMatch = url.match(/[?#].*offset=(\d+)/);
@@ -124,7 +122,7 @@ export default {
     },
 
     replaceNull(shortcut) {
-      if (shortcut === null) {
+      if (shortcut == null) {
         shortcut = '';
       }
       shortcut = shortcut.split(' ');
@@ -176,7 +174,7 @@ export default {
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
     });
-    httpClient.get(`${rootUrl}/v1/me`).then((response) => {
+    defaultHttpClient.get('/v1/me').then((response) => {
       this.isSuperuser = response.data.is_superuser;
     });
     this.submit();

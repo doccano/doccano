@@ -1,6 +1,6 @@
 import hljs from 'highlight.js/lib/highlight';
 import hljsLanguages from './hljsLanguages';
-import HTTP, { newHttpClient } from './http';
+import HTTP, { defaultHttpClient } from './http';
 import Messages from './messages.vue';
 
 hljsLanguages.forEach((languageName) => {
@@ -27,7 +27,7 @@ export default {
   },
 
   created() {
-    newHttpClient().get('/v1/features').then((response) => {
+    defaultHttpClient.get('/v1/features').then((response) => {
       this.canUploadFromCloud = response.data.cloud_upload;
     });
   },
