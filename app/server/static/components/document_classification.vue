@@ -34,7 +34,9 @@ block annotation-area
 
       hr
       div.content(v-if="docs[pageNumber]")
-        span.text {{ docs[pageNumber].text }}
+        //- span.text {{ docs[pageNumber].text }}
+        ul
+          li.content(v-for="line in convotext") {{line}}
 </template>
 
 <style scoped>
@@ -56,6 +58,27 @@ export default {
   filters: { simpleShortcut },
 
   mixins: [annotationMixin],
+
+  computed: {
+    convotext() {
+      let jsonText = JSON.parse(this.docs[this.pageNumber].text)
+      let messages = jsonText.messages
+      let messageTexts = []
+      for (let m of messages){
+        let prefix = ""
+        if (m.incoming) {
+          prefix = "S: "
+        } else {
+          prefix = "BOT: "
+        }
+        
+        messageTexts.push(prefix + m.body)
+        
+      }
+
+      return messageTexts
+    }
+  },
 
   methods: {
     isIn(label) {

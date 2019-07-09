@@ -5,7 +5,8 @@ block annotation-area
   div.card.has-text-weight-bold.has-text-white.has-background-royalblue
     div.card-content
       div.content(v-if="docs[pageNumber]")
-        span.text {{ docs[pageNumber].text }}
+        ul
+          li.content(v-for="line in splitText") {{line}}
 
   section.todoapp
     header.header
@@ -49,8 +50,16 @@ export default {
 
   data: () => ({
     newTodo: '',
-    editedTodo: null,
+    editedTodo: null
   }),
+
+  computed: {
+    splitText() {
+      let splitText = this.docs[this.pageNumber].text.split("<br>")
+      splitText = splitText.map((x) => {return x.trim()})
+      return splitText
+    }
+  },
 
   methods: {
     addTodo() {
@@ -112,3 +121,6 @@ export default {
   },
 };
 </script>
+
+
+ssh -N -f -L localhost:8888:localhost:8889 noah@ec2-34-229-140-98.compute-1.amazonaws.co

@@ -1,6 +1,6 @@
 <template lang="pug">
   div(@click="setSelectedRange")
-    span.text-sequence(
+    p.text-sequence(
       v-for="r in chunksWithLabel"
       v-bind:class="{ tag: id2label[r.label].text_color }"
       v-bind:style="{ \
