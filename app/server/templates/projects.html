@@ -39,6 +39,25 @@
           {% for hidden_field in form.hidden_fields %}
           {{ hidden_field }}
           {% endfor %}
+          {% if projects %}
+            <div class="field">
+              <label for="id_project_type">Duplicate project:</label>
+              <div class="control">
+                <select name="duplicate_project"  required="required" id="id_duplicate_project" class="input select-height" v-model="duplicateProject">
+                  <option value="" selected="selected">None</option> 
+                  {% for project in projects %}
+                    <option value="{{ project.id }}">{{ project.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <label class="checkbox" v-if="duplicateProject">
+              <input type="checkbox" name="duplicate_labels" id="id_duplicate_labels">
+              Duplicate labels
+            </label>
+            <div class="field" v-if="duplicateProject"><label for="id_name">Name:</label> <div class="control"><input type="text" name="name" maxlength="100" required="required" id="id_name" class="input select-height"></div></div>
+          {% endif %}
+          <template v-if="!duplicateProject">
           {% for field in form.visible_fields %}
           <div class="field">
             {{ field.label_tag }}
@@ -50,6 +69,7 @@
             {% endif %}
           </div>
           {% endfor %}
+          </template>
         </section>
         <footer class="modal-card-foot pt20 pb20 pr20 pl20 has-background-white-ter">
           <button class="button is-primary">Create</button>
