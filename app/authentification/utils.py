@@ -4,7 +4,9 @@ from django.contrib.auth import login
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 from .tokens import account_activation_token
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 
 def activate(request, uidb64, token):

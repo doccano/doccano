@@ -12,7 +12,7 @@ services:
       ADMIN_PASSWORD: "password"
       ADMIN_EMAIL: "admin@example.com"
       DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
-      ALLOW_SIGNUP: "True" 
+      ALLOW_SIGNUP: "False" 
     ports:
       - 8000:8000
 
