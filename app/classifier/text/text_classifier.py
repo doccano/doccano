@@ -55,7 +55,7 @@ class TextClassifier(BaseClassifier):
                 feature_importance_df = pd.DataFrame({'feature_name': feature_names,
                                                       'importance': abs(importances),
                                                       'class': [
-                                                          self._model.classes_[0] if imp > 0 else self._model.classes_[
+                                                          self._model.classes_[0] if imp < 0 else self._model.classes_[
                                                               1] for imp in importances]})
 
         return feature_importance_df.sort_values(by=['class', 'importance'], ascending=False)[column_order]
@@ -163,10 +163,14 @@ def run_model_on_file(input_filename, output_filename, user_id, project_id, labe
 
 
 if __name__ == '__main__':
+    from app.settings import ML_FOLDER, INPUT_FILE, OUTPUT_FILE
+
     run_model_on_file(
-        input_filename='../../ml_models/ml_input.csv',
-        output_filename='../../ml_models/ml_out_manual.csv',
+        # input_filename='../../ml_models/ml_input.csv',
+        # output_filename='../../ml_models/ml_out_manual.csv',
+        input_filename=INPUT_FILE,
+        output_filename=OUTPUT_FILE,
         project_id=9999,
         user_id=2,
         label_id=None,
-        run_on_entire_dataset=True)
+        run_on_entire_dataset=False)
