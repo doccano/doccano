@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('server', '0002_project_randomize_document_order'),
+        ('api', '0002_approve_document_labels'),
     ]
 
     operations = [
@@ -22,20 +22,20 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('text', models.TextField()),
-                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='qanda_annotations', to='server.Document')),
+                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='qanda_annotations', to='api.Document')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='QandAProject',
             fields=[
-                ('project_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='server.Project')),
+                ('project_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='api.Project')),
             ],
             options={
                 'abstract': False,
                 'base_manager_name': 'objects',
             },
-            bases=('server.project',),
+            bases=('api.project',),
         ),
         migrations.AlterField(
             model_name='project',
