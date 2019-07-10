@@ -21,6 +21,7 @@ from server.views import LoginView
 
 
 urlpatterns = [
+    path('', include('authentification.urls')),
     path('', include('server.urls')),
     path('admin/', admin.site.urls),
     path('social/', include('social_django.urls')),

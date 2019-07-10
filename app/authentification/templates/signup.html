@@ -1,0 +1,45 @@
+{% extends "base_auth.html" %}
+
+{% load utils_templating %}
+{% block content_auth %}
+{% if allow_signup %}
+<div class="card-content">
+  <!-- <div style="text-align:center;font-size:1.5em">
+    <h2>Sign up</h2>
+  </div> -->
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="field">
+      <label class="label">{{ field.label_tag }}</label>
+      <div class="control">
+        {{ field|addcss:'input'  }}
+        {% if field.help_text %}
+        <small style="display: none">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+        <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% endfor %}
+    <div style="text-align:center">
+      <button type="submit" class="button is-block is-primary is-fullwidth is-middle">Sign up</button>
+    </div>
+    <div class="field">
+      <span class="checkbox" style="margin-top:30px">
+        Already registered ? <a href="{% url 'login' %}"> login </a>
+      </span>
+    </div>
+  </form>
+</div>
+
+{% else %}
+<div class="card-content">
+  <div>
+    You can't signup yourself, please contact the admin in order to get your username and your password!
+  </div>
+</div>
+{% endif %}
+{% endblock %}
