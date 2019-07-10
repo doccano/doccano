@@ -79,7 +79,7 @@ class StatisticsAPI(APIView):
         annotation_class = project.get_annotation_class()
         total = docs.count()
         done = annotation_class.objects.filter(document_id__in=docs.all(),
-            user_id=self.request.user).\
+                                               user_id=self.request.user).\
             aggregate(Count('document', distinct=True))['document__count']
         remaining = total - done
         return {'total': total, 'remaining': remaining}
@@ -140,7 +140,16 @@ class DocumentList(generics.ListCreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
 
-        queryset = project.documents
+        if (settings.ELASTIC_SEARCH_HOST):  # Elasticsearch
+            from .index import DocumentIndex
+            if not self.request.query_params['q']:
+                s = DocumentIndex.search()
+                queryset = s.to_queryset()
+            else:
+                s = DocumentIndex.search().query("match", text=self.request.query_params['q'])
+                queryset = s.to_queryset()
+        else:  # Document Filtering
+            queryset = project.documents
 
         if project.randomize_document_order:
             queryset = queryset.annotate(sort_id=F('id') % self.request.user.id).order_by('sort_id')
