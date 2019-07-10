@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="hero-body">
+  <div class="container">
+    <div class="card is-shady column is-4 is-offset-4">
+      {% block content_auth %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -29,18 +29,21 @@ RUN cd /doccano \
 
 FROM python:${PYTHON_VERSION}-slim AS runtime
 
+RUN useradd -ms /bin/sh doccano
+
 COPY --from=builder /deps /deps
 RUN pip install --no-cache-dir /deps/*.whl
 
-COPY --from=cleaner /doccano /doccano
+COPY --from=cleaner --chown=doccano:doccano /doccano /doccano
 
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
-ENV PORT="80"
+ENV PORT="8000"
 ENV WORKERS="2"
 ENV GOOGLE_TRACKING_ID=""
 ENV AZURE_APPINSIGHTS_IKEY=""
 
+USER doccano
 WORKDIR /doccano
 EXPOSE ${PORT}
 

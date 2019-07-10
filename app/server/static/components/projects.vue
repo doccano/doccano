@@ -122,10 +122,7 @@
 
 <script>
 import { title, daysAgo } from './filter';
-import { newHttpClient } from './http';
-
-const baseUrl = window.location.href.split('/').slice(0, 3).join('/');
-const httpClient = newHttpClient();
+import { defaultHttpClient } from './http';
 
 export default {
   filters: { title, daysAgo },
@@ -155,8 +152,8 @@ export default {
 
   created() {
     Promise.all([
-      httpClient.get(`${baseUrl}/v1/projects`),
-      httpClient.get(`${baseUrl}/v1/me`),
+      defaultHttpClient.get('/v1/projects'),
+      defaultHttpClient.get('/v1/me'),
     ]).then(([projects, me]) => {
       this.items = projects.data;
       this.username = me.data.username;
@@ -166,7 +163,7 @@ export default {
 
   methods: {
     deleteProject() {
-      httpClient.delete(`${baseUrl}/v1/projects/${this.project.id}`).then(() => {
+      defaultHttpClient.delete(`/v1/projects/${this.project.id}`).then(() => {
         this.isDelete = false;
         const index = this.items.indexOf(this.project);
         this.items.splice(index, 1);
@@ -203,9 +200,9 @@ export default {
         guideline: 'Please write annotation guideline.',
         resourcetype: this.resourceType(),
       };
-      httpClient.post(`${baseUrl}/v1/projects`, payload)
+      defaultHttpClient.post('/v1/projects', payload)
         .then((response) => {
-          window.location = `${baseUrl}/projects/${response.data.id}/docs/create`;
+          window.location = `/projects/${response.data.id}/docs/create`;
         })
         .catch((error) => {
           this.projectTypeError = '';

@@ -106,11 +106,20 @@ div.columns(v-cloak="")
           v-bind:value="achievement"
           max="100"
         ) 30%
-      div.column.is-7
+      div.column.is-6
         span.ml10
           strong {{ total - remaining }}
         | /
         span {{ total }}
+
+      div.column.is-1.has-text-right
+        a.button.tooltip.is-tooltip-bottom(
+          v-if="isSuperuser"
+          v-on:click="approveDocumentAnnotations"
+          v-bind:data-tooltip="documentAnnotationsApprovalTooltip"
+        )
+          span.icon
+            i.far(v-bind:class="[documentAnnotationsAreApproved ? 'fa-check-circle' : 'fa-circle']")
       div.column.is-1.has-text-right
         a.button(v-on:click="isAnnotationGuidelineActive = !isAnnotationGuidelineActive")
           span.icon
@@ -135,6 +144,8 @@ div.columns(v-cloak="")
         span.icon
           i.fas.fa-chevron-left
         span Prev
+
+      span.button.level-center.is-static {{ offset + pageNumber + 1 }} / {{ count }}
 
       a.button.level-right(
         v-shortkey="{ next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright'] }"

@@ -35,6 +35,9 @@ SECRET_KEY = env('SECRET_KEY',
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG', True)
 
+# True if you want to allow users to be able to create an account
+ALLOW_SIGNUP = env.bool('ALLOW_SIGNUP', True)
+
 # ALLOWED_HOSTS = []
 
 
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'server.apps.ServerConfig',
+    'api.apps.ApiConfig',
     'widget_tweaks',
     'rest_framework',
     'django_filters',
@@ -84,7 +88,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [path.join(BASE_DIR, 'server/templates')],
+        'DIRS': [path.join(BASE_DIR, 'server/templates'), path.join(BASE_DIR, 'authentification/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -97,6 +101,7 @@ TEMPLATES = [
             ],
             'libraries': {
                 'analytics': 'server.templatetags.analytics',
+                'utils_templating': 'authentification.templatetags.utils_templating',
             },
         },
     },
@@ -265,3 +270,13 @@ AZURE_APPINSIGHTS_IKEY = env('AZURE_APPINSIGHTS_IKEY', None)
 APPLICATION_INSIGHTS = {
     'ikey': AZURE_APPINSIGHTS_IKEY if AZURE_APPINSIGHTS_IKEY else None,
 }
+
+## necessary for email verification setup
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'random@gmail.com'
+# EMAIL_HOST_PASSWORD = 'gfds6jk#4ljIr%G8%'
+# EMAIL_PORT = 587
+#
+## During development only
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

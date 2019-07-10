@@ -54,6 +54,7 @@ class LabelSerializer(serializers.ModelSerializer):
 
 class DocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
+    annotation_approver = serializers.SerializerMethodField()
 
     def get_annotations(self, instance):
         request = self.context.get('request')
@@ -66,9 +67,14 @@ class DocumentSerializer(serializers.ModelSerializer):
         serializer = serializer(annotations, many=True)
         return serializer.data
 
+    @classmethod
+    def get_annotation_approver(cls, instance):
+        approver = instance.annotations_approved_by
+        return approver.username if approver else None
+
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations', 'meta')
+        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver')
 
 
 class ProjectSerializer(serializers.ModelSerializer):

@@ -29,6 +29,11 @@
             "description": "Debug mode or not.",
             "required": false,
             "value": "False"
+        },
+        "ALLOW_SIGNUP": {
+            "description": "Allow users to signup themselves or not",
+            "required": false,
+            "value": "True"
         }
     },
     "scripts": {

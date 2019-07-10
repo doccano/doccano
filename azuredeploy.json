@@ -272,6 +272,14 @@
           "alwaysOn": true,
           "appSettings": [
             {
+              "name": "WEBSITES_PORT",
+              "value": "8000"
+            },
+            {
+              "name": "PORT",
+              "value": "8000"
+            },
+            {
               "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
               "value": "false"
             },

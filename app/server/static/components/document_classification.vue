@@ -58,14 +58,8 @@ export default {
   mixins: [annotationMixin],
 
   methods: {
-    isIn(label) {
-      for (let i = 0; i < this.annotations[this.pageNumber].length; i++) {
-        const a = this.annotations[this.pageNumber][i];
-        if (a.label === label.id) {
-          return a;
-        }
-      }
-      return false;
+    getAnnotation(label) {
+      return this.annotations[this.pageNumber].find(annotation => annotation.label === label.id);
     },
 
     async submit() {
@@ -76,9 +70,9 @@ export default {
     },
 
     async addLabel(label) {
-      const a = this.isIn(label);
-      if (a) {
-        this.removeLabel(a);
+      const annotation = this.getAnnotation(label);
+      if (annotation) {
+        this.removeLabel(annotation);
       } else {
         const docId = this.docs[this.pageNumber].id;
         const payload = {

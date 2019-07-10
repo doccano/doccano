@@ -21,6 +21,7 @@ from server.views import LoginView
 
 
 urlpatterns = [
+    path('', include('authentification.urls')),
     path('', include('server.urls')),
     path('admin/', admin.site.urls),
     path('social/', include('social_django.urls')),
@@ -28,7 +29,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
     path('api-auth/', include('rest_framework.urls')),
-    path('v1/', include('server.api_urls')),
+    path('v1/', include('api.urls')),
 ]
 
 if 'cloud_browser' in settings.INSTALLED_APPS:

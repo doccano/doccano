@@ -42,7 +42,6 @@ class Features(APIView):
 
 
 class ProjectList(generics.ListCreateAPIView):
-    queryset = Project.objects.all()
     serializer_class = ProjectPolymorphicSerializer
     pagination_class = None
     permission_classes = (IsAuthenticated, IsAdminUserAndWriteOnly)
@@ -97,15 +96,25 @@ class StatisticsAPI(APIView):
         return label_count, user_count
 
 
+class ApproveLabelsAPI(APIView):
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def post(self, request, *args, **kwargs):
+        approved = self.request.data.get('approved', True)
+        document = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        document.annotations_approved_by = self.request.user if approved else None
+        document.save()
+        return Response(DocumentSerializer(document).data)
+
+
 class LabelList(generics.ListCreateAPIView):
-    queryset = Label.objects.all()
     serializer_class = LabelSerializer
     pagination_class = None
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUserAndWriteOnly)
 
     def get_queryset(self):
-        queryset = self.queryset.filter(project=self.kwargs['project_id'])
-        return queryset
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return project.labels
 
     def perform_create(self, serializer):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -120,7 +129,6 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class DocumentList(generics.ListCreateAPIView):
-    queryset = Document.objects.all()
     serializer_class = DocumentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text', )
@@ -132,7 +140,7 @@ class DocumentList(generics.ListCreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
 
-        queryset = self.queryset.filter(project=project)
+        queryset = project.documents
 
         if project.randomize_document_order:
             queryset = queryset.annotate(sort_id=F('id') % self.request.user.id).order_by('sort_id')

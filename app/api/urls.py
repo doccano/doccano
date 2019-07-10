@@ -1,13 +1,13 @@
 from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from .api import Me, Features
-from .api import ProjectList, ProjectDetail
-from .api import LabelList, LabelDetail
-from .api import DocumentList, DocumentDetail
-from .api import AnnotationList, AnnotationDetail
-from .api import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
-from .api import StatisticsAPI
+from .views import Me, Features
+from .views import ProjectList, ProjectDetail
+from .views import LabelList, LabelDetail, ApproveLabelsAPI
+from .views import DocumentList, DocumentDetail
+from .views import AnnotationList, AnnotationDetail
+from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
+from .views import StatisticsAPI
 
 
 urlpatterns = [
@@ -26,6 +26,8 @@ urlpatterns = [
          DocumentList.as_view(), name='doc_list'),
     path('projects/<int:project_id>/docs/<int:doc_id>',
          DocumentDetail.as_view(), name='doc_detail'),
+    path('projects/<int:project_id>/docs/<int:doc_id>/approve-labels',
+         ApproveLabelsAPI.as_view(), name='approve_labels'),
     path('projects/<int:project_id>/docs/<int:doc_id>/annotations',
          AnnotationList.as_view(), name='annotation_list'),
     path('projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>',

@@ -7,5 +7,5 @@ const HTTP = axios.create({
   baseURL: `/v1/${baseUrl}`,
 });
 
-export const newHttpClient = axios.create;
+export const defaultHttpClient = axios.create();
 export default HTTP;

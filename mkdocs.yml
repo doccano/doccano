@@ -29,6 +29,7 @@ extra:
 nav:
   - Doccano: index.md
   - Getting started: getting-started.md
+  - Tutorial: tutorial.md
   - Advanced:
     - AWS HTTPS settings: advanced/aws_https_settings.md
     - OAuth2 settings: advanced/oauth2_settings.md
