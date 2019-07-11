@@ -15,7 +15,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework_csv.renderers import CSVRenderer
 
 from .filters import DocumentFilter
-from .models import Project, Label, Document
+from .models import Project, Label, Document, Seq2seqAnnotation
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer
@@ -90,9 +90,14 @@ class StatisticsAPI(APIView):
         annotation_class = project.get_annotation_class()
         docs = project.documents.all()
         annotations = annotation_class.objects.filter(document_id__in=docs.all())
-        for d in annotations.values('label__text', 'user__username').annotate(Count('label'), Count('user')):
-            label_count[d['label__text']] += d['label__count']
-            user_count[d['user__username']] += d['user__count']
+        if annotation_class == Seq2seqAnnotation:
+            for d in annotations.values('text', 'user__username').annotate(Count('text'), Count('user')):
+                label_count[d['text']] += d['text__count']
+                user_count[d['user__username']] += d['user__count']
+        else:
+            for d in annotations.values('label__text', 'user__username').annotate(Count('label'), Count('user')):
+                label_count[d['label__text']] += d['label__count']
+                user_count[d['user__username']] += d['user__count']
         return label_count, user_count
 
 
