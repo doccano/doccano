@@ -85,5 +85,4 @@ dependencies:
     - whitenoise==4.1.2
     - wrapt==1.11.2
     - yarl==1.3.0
-prefix: /home/hakan/anaconda3/envs/doccano
 
