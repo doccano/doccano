@@ -143,7 +143,7 @@ class QandAProject(Project):
 
     @property
     def image(self):
-        return staticfiles_storage.url('assets/images/cats/seq2seq.jpg')
+        return staticfiles_storage.url('assets/images/cats/qanda.jpg')
 
     def get_bundle_name(self):
         return 'qanda'
