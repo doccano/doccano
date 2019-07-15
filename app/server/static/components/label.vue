@@ -52,22 +52,17 @@
                 label.label Color
                 div.field.has-addons
                   div.control
-                    a.button(
-                      v-bind:style="{ \
-                        color: newLabel.text_color, \
-                        backgroundColor: newLabel.background_color \
-                      }"
+                    div.form__field
+                      div.form__input
+                        swatches(v-model="newLabel.background_color", colors="basic", \
+                          show-fallback=true, popover-to="", :trigger-style="{ \
+                          width: '36px', height: '36px' }")
+                  div.control
+                    a.button.random-color-button(
                       v-on:click="setColor(newLabel)"
                     )
                       span.icon.is-small
                         i.fas.fa-sync-alt
-
-                  div.control.is-expanded
-                    input.input(
-                      type="text"
-                      placeholder="Text input"
-                      v-model="newLabel.background_color"
-                    )
 
             div.column
               div.field
@@ -151,19 +146,17 @@
                 label.label Color
                 div.field.has-addons
                   div.control
-                    a.button.has-text-white(
-                      v-bind:style="{ backgroundColor: label.background_color }"
-                      v-on:click="setColor(label)"
+                    div.form__field
+                      div.form__input
+                        swatches(v-model="label.background_color", colors="basic", \
+                          show-fallback=true, popover-to="", :trigger-style="{ \
+                          width: '36px', height: '36px' }")
+                  div.control
+                    a.button.random-color-button(
+                      v-on:click="setColor(newLabel)"
                     )
                       span.icon.is-small
                         i.fas.fa-sync-alt
-
-                  div.control.is-expanded
-                    input.input(
-                      type="text"
-                      placeholder="Text input"
-                      v-model="label.background_color"
-                    )
 
             div.column
               div.field
@@ -176,13 +169,25 @@
                     a.button.is-primary(v-on:click="doneEdit(label)") Save changes
 </template>
 
+<style scoped>
+.random-color-button {
+  height: 36px;
+  width: 36px;
+  background-color: transparent;
+  color: #404040;
+  border: none;
+}
+</style>
+
 <script>
+import Swatches from 'vue-swatches';
+import 'vue-swatches/dist/vue-swatches.min.css';
 import HTTP from './http';
 import Messages from './messages.vue';
 import { simpleShortcut } from './filter';
 
 export default {
-  components: { Messages },
+  components: { Messages, Swatches },
 
   filters: { simpleShortcut },
 
@@ -203,8 +208,8 @@ export default {
 
   methods: {
     generateColor() {
-      const color = Math.floor(Math.random() * 0xFFFFFF).toString(16);
-      const randomColor = '#' + ('000000' + color).slice(-6);
+      const gencolor = Math.floor(Math.random() * 0xFFFFFF).toString(16);
+      const randomColor = '#' + ('000000' + gencolor).slice(-6);
       return randomColor;
     },
 
@@ -264,6 +269,7 @@ export default {
         background_color: '#209cee',
         text_color: '#ffffff',
       };
+      this.setColor(this.newLabel);
     },
 
     cancelCreate() {
