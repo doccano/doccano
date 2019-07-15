@@ -1,5 +1,5 @@
 ARG PYTHON_VERSION="3.6"
-FROM python:${PYTHON_VERSION} AS builder
+FROM python:${PYTHON_VERSION}-stretch AS builder
 
 ARG NODE_VERSION="8.x"
 RUN curl -sL "https://deb.nodesource.com/setup_${NODE_VERSION}" | bash - \
@@ -27,7 +27,7 @@ RUN cd /doccano/app/server/static \
 RUN cd /doccano \
  && python app/manage.py collectstatic --noinput
 
-FROM python:${PYTHON_VERSION}-slim AS runtime
+FROM python:${PYTHON_VERSION}-slim-stretch AS runtime
 
 RUN useradd -ms /bin/sh doccano
 
