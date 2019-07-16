@@ -263,7 +263,8 @@ class Seq2seqAnnotation(Annotation):
 
 class QandAAnnotation(Annotation):
     document = models.ForeignKey(Document, related_name='qanda_annotations', on_delete=models.CASCADE)
-    text = models.TextField()
+    response = models.TextField()
+    start_offset = models.IntegerField()
 
     class Meta:
-        unique_together = ('document', 'user', 'text')
+        unique_together = ('document', 'user', 'response', 'start_offset')

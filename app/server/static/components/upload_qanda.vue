@@ -25,15 +25,15 @@ block select-format-area
 block example-format-area
   pre.code-block(v-show="format === 'plain'")
     code.plaintext
-      include ./examples/upload_seq2seq.txt
+      include ./examples/upload_qanda.txt
       | ...
   pre.code-block(v-show="format === 'csv'")
     code.csv
-      include ./examples/upload_seq2seq.csv
+      include ./examples/upload_qanda.csv
       | ...
   pre.code-block(v-show="format === 'json'")
     code.json
-      include ./examples/upload_seq2seq.jsonl
+      include ./examples/upload_qanda.jsonl
       | ...
 </template>
 
