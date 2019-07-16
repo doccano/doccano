@@ -54,9 +54,13 @@
                   div.control
                     div.form__field
                       div.form__input
-                        swatches(v-model="newLabel.background_color", colors="basic", \
-                          show-fallback=true, popover-to="", :trigger-style="{ \
-                          width: '36px', height: '36px' }")
+                        swatches(
+                          v-model="newLabel.background_color"
+                          colors="basic"
+                          show-fallback=true
+                          popover-to=""
+                          v-bind:trigger-style="{ width: '36px', height: '36px' }"
+                        )
                   div.control
                     a.button.random-color-button(
                       v-on:click="setColor(newLabel)"
@@ -148,9 +152,13 @@
                   div.control
                     div.form__field
                       div.form__input
-                        swatches(v-model="label.background_color", colors="basic", \
-                          show-fallback=true, popover-to="", :trigger-style="{ \
-                          width: '36px', height: '36px' }")
+                        swatches(
+                          v-model="label.background_color"
+                          colors="basic"
+                          show-fallback=true
+                          popover-to=""
+                          v-bind:trigger-style="{ width: '36px', height: '36px' }"
+                        )
                   div.control
                     a.button.random-color-button(
                       v-on:click="setColor(newLabel)"
