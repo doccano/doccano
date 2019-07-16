@@ -160,8 +160,8 @@
                           v-bind:trigger-style="{ width: '36px', height: '36px' }"
                         )
                   div.control
-                    a.button.random-color-button(
-                      v-on:click="setColor(newLabel)"
+                    a.button.random-color-button-edit(
+                      v-on:click="setEditColor"
                     )
                       span.icon.is-small
                         i.fas.fa-sync-alt
@@ -179,6 +179,14 @@
 
 <style scoped>
 .random-color-button {
+  height: 36px;
+  width: 36px;
+  background-color: transparent;
+  color: #404040;
+  border: none;
+}
+
+.random-color-button-edit {
   height: 36px;
   width: 36px;
   background-color: transparent;
@@ -233,6 +241,10 @@ export default {
       const textColor = this.blackOrWhite(bgColor);
       label.background_color = bgColor;
       label.text_color = textColor;
+    },
+
+    setEditColor() {
+      this.setColor(this.editedLabel);
     },
 
     shortcutKey(label) {
