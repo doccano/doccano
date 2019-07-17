@@ -6,7 +6,7 @@ class Command(createsuperuser.Command):
     help = 'Non-interactively create an admin user'
 
     def add_arguments(self, parser):
-        super(Command, self).add_arguments(parser)
+        super().add_arguments(parser)
         parser.add_argument('--password', default=None,
                             help='The password for the admin.')
 
@@ -17,7 +17,7 @@ class Command(createsuperuser.Command):
         if password and not username:
             raise CommandError('--username is required if specifying --password')
 
-        super(Command, self).handle(*args, **options)
+        super().handle(*args, **options)
 
         if password:
             database = options.get('database')
