@@ -130,13 +130,11 @@ Depending on your installation method, there are two options:
 First, run a Docker container:
 
 ```bash
-docker run -d --name doccano -p 8000:8000 chakkiworks/doccano
-```
-
-Then, execute `create-admin.sh` script for creating a superuser.
-
-```bash
-docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
+docker run -d --name doccano \
+  -e "ADMIN_USERNAME=admin" \
+  -e "ADMIN_EMAIL=admin@example.com" \
+  -e "ADMIN_PASSWORD=password" \
+  -p 8000:8000 chakkiworks/doccano
 ```
 
 **Option2: Running Django development server**
