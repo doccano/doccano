@@ -8,6 +8,7 @@ from random import Random
 
 from django.db import transaction
 from django.conf import settings
+import pyexcel
 from rest_framework.renderers import JSONRenderer
 from seqeval.metrics.sequence_labeling import get_entities
 
@@ -318,13 +319,32 @@ class CSVParser(FileParser):
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
         reader = csv.reader(file)
+        yield from ExcelParser.parse_excel_csv_reader(reader)
+
+
+class ExcelParser(FileParser):
+    def parse(self, file):
+        excel_book = pyexcel.iget_book(file_type="xlsx", file_content=file.read())
+        # Handle multiple sheets
+        for sheet_name in excel_book.sheet_names():
+            reader = excel_book[sheet_name].to_array()
+            yield from self.parse_excel_csv_reader(reader)
+
+    @staticmethod
+    def parse_excel_csv_reader(reader):
         columns = next(reader)
         data = []
+        if len(columns) == 1 and columns[0] != 'text':
+            data.append({'text': columns[0]})
         for i, row in enumerate(reader, start=2):
             if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
-            if len(row) == len(columns) and len(row) >= 2:
+            # Only text column
+            if len(row) == len(columns) and len(row) == 1:
+                data.append({'text': row[0]})
+            # Text, labels and metadata columns
+            elif len(row) == len(columns) and len(row) >= 2:
                 text, label = row[:2]
                 meta = json.dumps(dict(zip(columns[2:], row[2:])))
                 j = {'text': text, 'labels': [label], 'meta': meta}
@@ -346,7 +366,6 @@ class JSONParser(FileParser):
                 data = []
             try:
                 j = json.loads(line)
-                #j  = json.loads(line.decode('utf-8'))
                 j['meta'] = json.dumps(j.get('meta', {}))
                 data.append(j)
             except json.decoder.JSONDecodeError:
@@ -372,6 +391,7 @@ class JSONLRenderer(JSONRenderer):
                              cls=self.encoder_class,
                              ensure_ascii=self.ensure_ascii,
                              allow_nan=not self.strict) + '\n'
+
 
 class JSONPainter(object):
 
@@ -405,6 +425,7 @@ class JSONPainter(object):
             d['meta'] = json.loads(d['meta'])
             data.append(d)
         return data
+
 
 class CSVPainter(JSONPainter):
 

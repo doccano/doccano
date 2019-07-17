@@ -759,7 +759,7 @@ class TestUploader(APITestCase):
     def upload_test_helper(self, project_id, filename, file_format, expected_status, **kwargs):
         url = reverse(viewname='doc_uploader', args=[project_id])
 
-        with open(os.path.join(DATA_DIR, filename)) as f:
+        with open(os.path.join(DATA_DIR, filename), 'rb') as f:
             response = self.client.post(url, data={'file': f, 'format': file_format})
 
         self.assertEqual(response.status_code, expected_status)
@@ -803,6 +803,12 @@ class TestUploader(APITestCase):
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_single_column_csv(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column.csv',
+                                file_format='csv',
+                                expected_status=status.HTTP_201_CREATED)
+
     def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.invalid.1.csv',
@@ -814,6 +820,43 @@ class TestUploader(APITestCase):
                                 filename='example.invalid.2.csv',
                                 file_format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_can_upload_classification_excel(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_seq2seq_excel(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_single_column_excel(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_cannot_upload_excel_file_does_not_match_column_and_row(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.invalid.1.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_upload_excel_file_has_too_many_columns(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.invalid.2.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    @override_settings(IMPORT_BATCH_SIZE=1)
+    def test_can_upload_small_batch_size(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column_no_header.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_classification_jsonl(self):
         self.upload_test_helper(project_id=self.classification_project.id,
