@@ -1,5 +1,6 @@
 from django.contrib.auth.management.commands import createsuperuser
 from django.core.management import CommandError
+from django.db import IntegrityError
 
 
 class Command(createsuperuser.Command):
@@ -17,7 +18,10 @@ class Command(createsuperuser.Command):
         if password and not username:
             raise CommandError('--username is required if specifying --password')
 
-        super().handle(*args, **options)
+        try:
+            super().handle(*args, **options)
+        except IntegrityError:
+            self.stderr.write(f'User {username} already exists.')
 
         if password:
             database = options.get('database')
