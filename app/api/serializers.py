@@ -74,7 +74,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver')
+        fields = ('id', 'text', 'extra_text', 'annotations', 'meta', 'annotation_approver')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -179,5 +179,5 @@ class QandAAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QandAAnnotation
-        fields = ('id', 'text', 'user', 'document')
+        fields = ('id', 'response', 'start_offset', 'user', 'document')
         read_only_fields = ('user',)

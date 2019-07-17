@@ -27,4 +27,9 @@ class Migration(migrations.Migration):
             name='qandaannotation',
             unique_together={('document', 'user', 'response', 'start_offset')},
         ),
+        migrations.AddField(
+            model_name='document',
+            name='extra_text',
+            field=models.TextField()
+        ),
     ]

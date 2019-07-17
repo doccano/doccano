@@ -210,6 +210,7 @@ class Label(models.Model):
 
 class Document(models.Model):
     text = models.TextField()
+    extra_text = models.TextField()
     project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
     meta = models.TextField(default='{}')
     created_at = models.DateTimeField(auto_now_add=True)
