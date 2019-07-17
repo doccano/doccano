@@ -125,7 +125,7 @@ Let’s start the development server and explore it.
 
 Depending on your installation method, there are two options:
 
-**Option1: Running the Docker image as a Container**
+#### Option 1: Running the Docker image as a Container
 
 First, run a Docker container:
 
@@ -137,7 +137,7 @@ docker run -d --name doccano \
   -p 8000:8000 chakkiworks/doccano
 ```
 
-**Option2: Running Django development server**
+#### Option 2: Running Django development server
 
 Before running, we need to make migration. Run the following command:
 
@@ -163,7 +163,7 @@ Finally, to start the server, run the following command:
 python manage.py runserver
 ```
 
-**Option3: Running the development Docker-Compose stack**
+#### Option 3: Running the development Docker-Compose stack
 
 We can use docker-compose to set up the webpack server, django server, database, etc. all in one command:
 
