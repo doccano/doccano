@@ -118,18 +118,17 @@ class BaseClassifier:
             X = X[self.columns_]
         return self._model.predict_proba(X)
 
-    def bootstrap(self, X, y, th=0.9):
+    def bootstrap(self, X, y, th=0.9, fit=True):
         has_label = ~pd.isnull(y)
-        self.fit(X.loc[has_label], y[has_label])
+        if fit:
+            self.fit(X.loc[has_label], y[has_label])
+
         prediction_df = self.get_prediction_df(X)
 
         y_aug = y.copy()
         aug_ix = (prediction_df['confidence'] > th) & (~has_label)
         y_aug[aug_ix] = prediction_df['prediction']
         print('adding ', sum(aug_ix), 'bootstrapped samples')
-
-        bootstrapped = ~pd.isnull(y_aug)
-        self.fit(X.loc[bootstrapped], y_aug[bootstrapped])
         return y_aug
 
     def optimize_hyper_parameters(self, X_train, y_train, score_func=None, verbose=False):

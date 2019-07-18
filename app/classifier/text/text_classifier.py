@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 from classifier.model import BaseClassifier
 from classifier.text.text_pipeline import TextPipeline
@@ -115,25 +116,46 @@ class TextClassifier(BaseClassifier):
 
         if run_on_entire_dataset:
             print('Running the model on the entire dataset...')
-            df_cpy = df.copy()
-            df_cpy['label_id'] = None
-            X = self.pre_process(df_cpy, fit=False)
-            y = df['label_id']
 
-            print('Bootstrapping...')
-            for i in range(bootstrap_iterations):
-                print('bootstrap iteration ', i, '/', bootstrap_iterations, ' ', [x for x in zip(np.unique(y[~pd.isna(y)], return_counts=True))])
-                y = self.bootstrap(X, y=y, th=bootstrap_threshold)
+            output_df = pd.DataFrame(columns=('document_id', 'label_id', 'user_id', 'prob'))
+            output_df.to_csv(output_filename, index=False, header=True, index_label=False)
 
-            prediction_df = self.get_prediction_df(X, y=df['label_id'])
+            if bootstrap_iterations > 0:
+                print('Bootstrapping...')
+            y_aug = df['label_id'].copy()
+            for i in range(bootstrap_iterations+1):
+                # fitting on labeled examples
+                has_label = ~pd.isna(y_aug)
+                X_labeled = self.pre_process(df.loc[has_label], fit=False)
+                self.fit(X_labeled, y_aug[has_label])
 
-            prediction_df['document_id'] = df['document_id']
-            prediction_df['user_id'] = user_id
-            prediction_df = prediction_df.rename({'confidence': 'prob'}, axis=1)
-            prediction_df['label_id'] = prediction_df['prediction']
+                # predict in chunks and (optionally) add bootstrapped labels
+                chunk_size = 10000
+                n_samples = df.shape[0]
+                for chunk_start in tqdm(range(0, n_samples, chunk_size)):
+                    chunk_end = min(n_samples, chunk_start + chunk_size)
+                    chunk_df = df.iloc[chunk_start:chunk_end]
+                    chunk_df['label_id'] = None
+                    y = df.iloc[chunk_start:chunk_end]['label_id']
+                    X = self.pre_process(chunk_df, fit=False)
 
-            print('Saving output...')
-            prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, index=False, header=True)
+                    if i < bootstrap_iterations:
+                        print('bootstrap iteration ', i, '/', bootstrap_iterations, ' ',
+                              [x for x in zip(np.unique(y_aug[has_label], return_counts=True))])
+
+                        # no need to re-fit the model, only predict
+                        y_chunk_aug = self.bootstrap(X, y=y, th=bootstrap_threshold, fit=False)
+                        y_aug.iloc[chunk_start:chunk_end] = y_chunk_aug
+
+                    # write to file only in last iteration
+                    if i == bootstrap_iterations:
+                        chunk_prediction_df = self.get_prediction_df(X, y=df['label_id'])
+
+                        chunk_prediction_df['document_id'] = df['document_id']
+                        chunk_prediction_df['user_id'] = user_id
+                        chunk_prediction_df = chunk_prediction_df.rename({'confidence': 'prob'}, axis=1)
+                        chunk_prediction_df['label_id'] = chunk_prediction_df['prediction']
+                        chunk_prediction_df[['document_id', 'label_id', 'user_id', 'prob']].to_csv(output_filename, mode="a", index=False, header=False)
 
         class_weights = self.important_features
         class_weights_filename = os.path.dirname(input_filename)+'/ml_logistic_regression_weights_{project_id}.csv'.format(project_id=project_id)
@@ -144,6 +166,7 @@ class TextClassifier(BaseClassifier):
 
         print('Done running the model!')
         return result
+
 
 def run_model_on_file(input_filename, output_filename, user_id, project_id, label_id=None, method='bow', run_on_entire_dataset=False):
     # rf = RandomForestClassifier(verbose=True, class_weight='balanced')
@@ -158,7 +181,8 @@ def run_model_on_file(input_filename, output_filename, user_id, project_id, labe
                                   'stop_words': 'english', 'strip_accents': 'ascii', 'max_features': 5000}),
                 ('drop columns', {'drop_cols': ['label_id', 'text', 'processed_text']})]
 
-    result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id, pipeline=pipeline, run_on_entire_dataset=run_on_entire_dataset)
+    result = clf.run_on_file(input_filename, output_filename, user_id, project_id, label_id,
+                             pipeline=pipeline, run_on_entire_dataset=run_on_entire_dataset)
     return result
 
 
