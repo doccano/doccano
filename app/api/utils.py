@@ -6,6 +6,7 @@ import re
 from collections import defaultdict
 from random import Random
 
+import conllu
 from django.db import transaction
 from django.conf import settings
 from rest_framework.renderers import JSONRenderer
@@ -242,44 +243,50 @@ class CoNLLParser(FileParser):
     ```
     """
     def parse(self, file):
-        words, tags = [], []
         data = []
         file = io.TextIOWrapper(file, encoding='utf-8')
-        for i, line in enumerate(file, start=1):
-            if len(data) >= settings.IMPORT_BATCH_SIZE:
-                yield data
-                data = []
-            line = line.strip()
-            if line:
-                try:
-                    word, tag = line.split('\t')
-                except ValueError:
-                    raise FileParseException(line_num=i, line=line)
+
+        # Add check exception
+
+        field_parsers = {
+            "ne": lambda line, i: conllu.parser.parse_nullable_value(line[i]),
+        }
+
+        try:
+            sentences = conllu.parse(
+                file.read(),
+                fields=("form", "ne"),
+                field_parsers=field_parsers
+            )
+        except conllu.parser.ParseException as e:
+            raise FileParseException(line_num=-1, line=str(e))
+
+        for sentence in sentences:
+            if not sentence:
+                continue
+            # if len(data) >= settings.IMPORT_BATCH_SIZE:
+            #     yield data
+            #     data = []
+            words, labels = [], []
+            for item in sentence:
+                word = item.get("form")
+                tag = item.get("ne", None)
+
+                if tag is not None:
+                    char_left = sum(map(lambda x: len(x), words)) + len(words)
+                    char_right = char_left + len(word)
+                    span = [char_left, char_right, tag]
+                    labels.append(span)
+
                 words.append(word)
-                tags.append(tag)
-            elif words and tags:
-                j = self.calc_char_offset(words, tags)
-                data.append(j)
-                words, tags = [], []
-        if len(words) > 0:
-            j = self.calc_char_offset(words, tags)
+
+            # Create JSONL
+            j = {'text': ' '.join(words), 'labels': labels}
+
             data.append(j)
+
         if data:
             yield data
-
-    @classmethod
-    def calc_char_offset(cls, words, tags):
-        doc = ' '.join(words)
-        j = {'text': ' '.join(words), 'labels': []}
-        pos = defaultdict(int)
-        for label, start_offset, end_offset in get_entities(tags):
-            entity = ' '.join(words[start_offset: end_offset + 1])
-            char_left = doc.index(entity, pos[entity])
-            char_right = char_left + len(entity)
-            span = [char_left, char_right, label]
-            j['labels'].append(span)
-            pos[entity] = char_right
-        return j
 
 
 class PlainTextParser(FileParser):
@@ -373,6 +380,7 @@ class JSONLRenderer(JSONRenderer):
                              ensure_ascii=self.ensure_ascii,
                              allow_nan=not self.strict) + '\n'
 
+
 class JSONPainter(object):
 
     def paint(self, documents):
@@ -405,6 +413,7 @@ class JSONPainter(object):
             d['meta'] = json.loads(d['meta'])
             data.append(d)
         return data
+
 
 class CSVPainter(JSONPainter):
 

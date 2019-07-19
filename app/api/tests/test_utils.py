@@ -143,13 +143,16 @@ class TestSeq2seqStorage(TestCase):
 
 class TestCoNLLParser(TestCase):
     def test_calc_char_offset(self):
-        words = ['EU', 'rejects', 'German', 'call']
-        tags = ['B-ORG', 'O', 'B-MISC', 'O']
+        f = io.BytesIO()
 
-        entities = get_entities(tags)
-        actual = CoNLLParser.calc_char_offset(words, tags)
+        s = [
+            ("EU", "ORG"), ("rejects", "_"), ("German", "MISC"), ("call", "_")
+        ]
+        for w, t in s:
+            f.write("{}\t{}\n".format(w, t).encode())
+        f.seek(0)
 
-        self.assertEqual(entities, [('ORG', 0, 0), ('MISC', 2, 2)])
+        actual = next(CoNLLParser().parse(f))[0]
 
         self.assertEqual(actual, {
             'text': 'EU rejects German call',
