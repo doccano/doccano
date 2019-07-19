@@ -273,7 +273,7 @@ class CoNLLParser(FileParser):
                 tag = item.get("ne", None)
 
                 if tag is not None:
-                    char_left = sum(map(lambda x: len(x), words)) + len(words)
+                    char_left = sum(map(len, words)) + len(words)
                     char_right = char_left + len(word)
                     span = [char_left, char_right, tag]
                     labels.append(span)
