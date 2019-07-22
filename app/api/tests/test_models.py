@@ -91,11 +91,11 @@ class TestLabel(TestCase):
 
     def test_keys_uniqueness(self):
         label = mommy.make('Label', prefix_key='ctrl', suffix_key='a')
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError):
             Label(project=label.project,
                   text='example',
                   prefix_key=label.prefix_key,
-                  suffix_key=label.suffix_key).save()
+                  suffix_key=label.suffix_key).full_clean()
 
     def test_suffix_key_uniqueness(self):
         label = mommy.make('Label', prefix_key=None, suffix_key='a')

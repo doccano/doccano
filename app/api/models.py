@@ -163,19 +163,18 @@ class Label(models.Model):
         # Don't allow shortcut key not to have a suffix key.
         if self.prefix_key and not self.suffix_key:
             raise ValidationError('Shortcut key may not have a suffix key.')
-        super().clean()
 
-    def validate_unique(self, exclude=None):
-        # Don't allow to save same shortcut key when prefix_key is null.
-        if Label.objects.exclude(id=self.id).filter(suffix_key=self.suffix_key,
-                                                    prefix_key__isnull=True).exists():
-            raise ValidationError('Duplicate key.')
-        super().validate_unique(exclude)
+        # each shortcut (prefix key + suffix key) can only be assigned to one label
+        if self.suffix_key or self.prefix_key:
+            other_labels = self.project.labels.exclude(id=self.id)
+            if other_labels.filter(suffix_key=self.suffix_key, prefix_key=self.prefix_key).exists():
+                raise ValidationError('A label with this shortcut already exists in the project')
+
+        super().clean()
 
     class Meta:
         unique_together = (
             ('project', 'text'),
-            ('project', 'prefix_key', 'suffix_key')
         )
 
 
@@ -226,7 +225,7 @@ class SequenceAnnotation(Annotation):
 
 class Seq2seqAnnotation(Annotation):
     document = models.ForeignKey(Document, related_name='seq2seq_annotations', on_delete=models.CASCADE)
-    text = models.TextField()
+    text = models.CharField(max_length=500)
 
     class Meta:
         unique_together = ('document', 'user', 'text')
