@@ -6,6 +6,7 @@ python:
 env:
   - DATABASE=sqlite
   - DATABASE=postgres
+  - DATABASE=mssql
 
 services:
   - docker
@@ -16,6 +17,11 @@ before_install:
     if [[ "${DATABASE}" = "postgres" ]]; then
       docker run --rm --name=postgres --network=doccano -d -e POSTGRES_USER=user -e POSTGRES_PASSWORD=pass -e POSTGRES_DB=db postgres
       export DATABASE_URL="postgres://user:pass@postgres:5432/db?sslmode=disable"
+
+    elif [[ "${DATABASE}" = "mssql" ]]; then
+      docker run --rm --name=mssql --network=doccano -d -e ACCEPT_EULA=y -e SA_PASSWORD=sUp3rS3cr3t mcr.microsoft.com/mssql/server:2017-latest
+      docker exec -it mssql sh -c "while ! /opt/mssql-tools/bin/sqlcmd -U SA -P sUp3rS3cr3t -Q 'CREATE DATABASE db;'; do sleep 3; done"
+      export DATABASE_URL="mssql://SA:sUp3rS3cr3t@mssql:1433/db?sslmode=disable"
     fi
 
 install:
