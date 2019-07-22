@@ -254,6 +254,11 @@ DATABASES['default'].update(dj_database_url.config(
 if DATABASES['default'].get('ENGINE') == 'django.db.backends.sqlite3':
     DATABASES['default'].get('OPTIONS', {}).pop('sslmode', None)
 
+# default to a sensible modern driver for Azure SQL
+if DATABASES['default'].get('ENGINE') == 'sql_server.pyodbc':
+    db_options = DATABASES['default'].setdefault('OPTIONS', {})\
+        .setdefault('driver', 'ODBC Driver 17 for SQL Server')
+
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 

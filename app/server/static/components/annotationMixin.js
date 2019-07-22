@@ -2,6 +2,7 @@ import * as marked from 'marked';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
 import HTTP, { defaultHttpClient } from './http';
+import Preview from './preview.vue';
 
 const getOffsetFromUrl = (url) => {
   const offsetMatch = url.match(/[?#].*offset=(\d+)/);
@@ -36,7 +37,7 @@ const storeOffsetInUrl = (offset) => {
 };
 
 export default {
-  components: { VueJsonPretty },
+  components: { VueJsonPretty, Preview },
 
   data() {
     return {

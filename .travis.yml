@@ -3,14 +3,30 @@ language: python
 python:
   - "3.6"
 
+env:
+  - DATABASE=sqlite
+  - DATABASE=postgres
+
 services:
   - docker
+
+before_install:
+  - docker network create doccano
+  - >
+    if [[ "${DATABASE}" = "postgres" ]]; then
+      docker run --rm --name=postgres --network=doccano -d -e POSTGRES_USER=user -e POSTGRES_PASSWORD=pass -e POSTGRES_DB=db postgres
+      export DATABASE_URL="postgres://user:pass@postgres:5432/db?sslmode=disable"
+    fi
 
 install:
     - pip install mkdocs mkdocs-material
 
 script:
-  - docker build --target=builder .
+  - docker build --target=builder --tag=doccano-test .
+  - >
+    if [[ "${DATABASE}" != "sqlite" ]]; then
+      docker run --network doccano -e DATABASE_URL="${DATABASE_URL}" -it doccano-test sh -c 'app/manage.py migrate && app/manage.py test api.tests server.tests'
+    fi
 
 before_deploy:
     - mkdocs build --verbose --clean

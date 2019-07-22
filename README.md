@@ -164,6 +164,10 @@ Finally, to start the server, run the following command:
 ```bash
 python manage.py runserver
 ```
+Optionally, you can change the bind ip and port using the command
+```bash
+python manage.py runserver <ip>:<port>
+```
 
 **Option3: Running the development Docker-Compose stack**
 
