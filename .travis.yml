@@ -31,7 +31,7 @@ script:
   - docker build --target=builder --tag=doccano-test .
   - >
     if [[ "${DATABASE}" != "sqlite" ]]; then
-      docker run --network doccano -e DATABASE_URL="${DATABASE_URL}" -it doccano-test sh -c 'app/manage.py migrate && app/manage.py test api.tests server.tests'
+      docker run --network doccano -e DATABASE_URL="${DATABASE_URL}" -it doccano-test sh -c 'app/manage.py wait_for_db && app/manage.py migrate && app/manage.py test api.tests server.tests'
     fi
 
 before_deploy:
