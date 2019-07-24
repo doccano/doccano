@@ -162,8 +162,8 @@ class QandAProject(Project):
         return QandAAnnotation
 
     def get_storage(self, data):
-        from .utils import QandAStorage
-        return QandAStorage(data, self)
+        from .utils import Seq2seqStorage
+        return Seq2seqStorage(data, self)
 
 
 class Label(models.Model):
