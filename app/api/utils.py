@@ -15,6 +15,13 @@ from .exceptions import FileParseException
 from .models import Label
 from .serializers import DocumentSerializer, LabelSerializer
 
+DELIMITERS_FOR_CONLL_FORMAT = {
+        "TOKENIZER_REGEX"               : r"[ ]",
+        "TOKENIZER_DELIMITER_CHAR_COUNT": 1,
+        "BETWEEN_WORD_AND_TAG"          : "   ",
+        "BETWEEN_TOKENS"                : "\n",
+        "BETWEEN_DOCUMENTS"             : "\n\n",
+}
 
 def extract_label(tag):
     ptn = re.compile(r'(B|I|E|S)-(.+)')
@@ -479,3 +486,65 @@ def iterable_to_io(iterable, buffer_size=io.DEFAULT_BUFFER_SIZE):
                 return 0    # indicate EOF
 
     return io.BufferedReader(IterStream(), buffer_size=buffer_size)
+
+
+class CoNLLRenderer(JSONRenderer):
+    charset = "utf-8"
+    media_type = 'text/plain'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        """
+        Render `data` into CONLL, returning a formatted string.
+        """
+        if data is None:
+            return bytes()
+
+        if not isinstance(data, list):
+            data = [data]
+
+        return DELIMITERS_FOR_CONLL_FORMAT.get("BETWEEN_DOCUMENTS").join(data)
+
+
+class CONLLPainter(object):
+    @staticmethod
+    def paint_labels(documents, labels):
+        serializer_labels = LabelSerializer(labels, many=True)
+        serializer = DocumentSerializer(documents, many=True)
+        data = []
+        for d in serializer.data:
+            word_array = re.split(DELIMITERS_FOR_CONLL_FORMAT.get("TOKENIZER_REGEX"), d['text'])
+            tag_array = []
+            current_word_index = 0
+
+            def count_characters_till_word(word_array_internal):
+                characters_till_word_internal = []
+                word_length_array = list(map(len, word_array_internal))
+                total_count_till_word = 0
+                for i in word_length_array:
+                    characters_till_word_internal.append(total_count_till_word)
+                    total_count_till_word += (i + DELIMITERS_FOR_CONLL_FORMAT.get("TOKENIZER_DELIMITER_CHAR_COUNT"))
+                return characters_till_word_internal
+
+            characters_till_word = count_characters_till_word(word_array)
+            for a in sorted(d['annotations'], key = lambda d: d.get('start_offset')):
+                label_obj = [x for x in serializer_labels.data if x['id'] == a['label']][0]
+                label_text = label_obj['text']
+                label_start = a['start_offset']
+                label_end = a['end_offset']
+                while len(word_array) > current_word_index and characters_till_word[current_word_index] < label_start:
+                    current_word_index += 1
+                    tag_array.append("O")
+                while len(word_array) > current_word_index and label_start <= characters_till_word[current_word_index]:
+                    if characters_till_word[current_word_index] < label_end:
+                        if label_start == characters_till_word[current_word_index] or (label_start == characters_till_word[current_word_index]-1):
+                            tag_array.append("B-"+label_text)
+                        else:
+                            tag_array.append("I-"+label_text)
+                        current_word_index += 1
+                    else:
+                        break
+            while len(word_array) > current_word_index:
+                current_word_index += 1
+                tag_array.append("O")
+            data.append(DELIMITERS_FOR_CONLL_FORMAT.get("BETWEEN_TOKENS").join(map(lambda ttuple: ttuple[0] + DELIMITERS_FOR_CONLL_FORMAT.get("BETWEEN_WORD_AND_TAG") + ttuple[1], zip(word_array, tag_array))))
+        return data

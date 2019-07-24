@@ -22,6 +22,16 @@ block select-format-area
     )
     | JSON(Text-Labels)
 
+  label.radio
+    input(
+      type="radio"
+      name="format"
+      value="conll"
+      v-bind:checked="format == 'conll'"
+      v-model="format"
+    )
+    | CoNLL
+
 block example-format-area
   pre.code-block(v-show="format == 'json'")
     code.json
@@ -31,6 +41,11 @@ block example-format-area
   pre.code-block(v-show="format == 'json1'")
     code.json
       include ./examples/download_sequence_labeling.json1l
+      | ...
+
+  pre.code-block(v-show="format == 'conll'")
+    code.json
+      include ./examples/download_sequence_labeling.conll
       | ...
 </template>
 

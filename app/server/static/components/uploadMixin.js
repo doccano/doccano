@@ -104,6 +104,9 @@ export default {
       if (this.format === 'csv') {
         headers.Accept = 'text/csv; charset=utf-8';
         headers['Content-Type'] = 'text/csv; charset=utf-8';
+      } else if (this.format === 'conll') {
+        headers.Accept = 'text/plain';
+        headers['Content-Type'] = 'text/plain';
       } else {
         headers.Accept = 'application/json';
         headers['Content-Type'] = 'application/json';

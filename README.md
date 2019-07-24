@@ -116,6 +116,9 @@ cd ..
 ```bash
 docker-compose pull
 ```
+**NOTE**: 
+To run any `docker` command on windows then please make sure "Docker Desktop" is installed and running.
+For error - "ERROR: for doccano_django_1  Cannot create container for service django: b'Drive has not been shared'", please follow this link - <https://github.com/docker/compose/issues/4854>
 
 ## Usage
 

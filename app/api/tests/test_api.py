@@ -1017,7 +1017,7 @@ class TestDownloader(APITestCase):
     def test_cannot_download_conll_format_file(self):
         self.download_test_helper(url=self.labeling_url,
                                   format='conll',
-                                  expected_status=status.HTTP_400_BAD_REQUEST)
+                                  expected_status=status.HTTP_200_OK)
 
     def test_can_download_classification_csv(self):
         self.download_test_helper(url=self.classification_url,

@@ -20,8 +20,8 @@ from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer
 from .utils import CSVParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
-from .utils import JSONLRenderer
-from .utils import JSONPainter, CSVPainter
+from .utils import JSONLRenderer, CoNLLRenderer
+from .utils import JSONPainter, CSVPainter, CONLLPainter
 
 
 class Me(APIView):
@@ -292,7 +292,7 @@ class CloudUploadAPI(APIView):
 
 class TextDownloadAPI(APIView):
     permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
-    renderer_classes = (CSVRenderer, JSONLRenderer)
+    renderer_classes = (CSVRenderer, JSONLRenderer, CoNLLRenderer)
 
     def get(self, request, *args, **kwargs):
         format = request.query_params.get('q')
@@ -305,6 +305,9 @@ class TextDownloadAPI(APIView):
         if format == "json1":
             labels = project.labels.all()
             data = JSONPainter.paint_labels(documents, labels)
+        elif format == 'conll':
+            labels = project.labels.all()
+            data = CONLLPainter.paint_labels(documents, labels)
         else:
             data = painter.paint(documents)
         return Response(data)
@@ -314,5 +317,7 @@ class TextDownloadAPI(APIView):
             return CSVPainter()
         elif format == 'json' or format == "json1":
             return JSONPainter()
+        elif format == 'conll':
+            return CONLLPainter()
         else:
             raise ValidationError('format {} is invalid.'.format(format))
