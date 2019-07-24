@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0002_approve_document_labels'),
+        ('api', '0003_support_sql_server'),
     ]
 
     operations = [

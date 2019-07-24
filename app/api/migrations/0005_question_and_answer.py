@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0003_question_and_answer_creation'),
+        ('api', '0004_question_and_answer_creation'),
     ]
 
     operations = [
