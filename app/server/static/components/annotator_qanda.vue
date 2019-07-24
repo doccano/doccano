@@ -37,8 +37,9 @@ export default {
     chunks() {
       const res = [];
       let left = 0;
+      let e;
       for (let i = 0; i < this.sortedEntityPositions.length; i++) {
-        let e = this.sortedEntityPositions[i];
+        e = this.sortedEntityPositions[i];
         e.label = 1;
         e.end_offset = e.start_offset + e.response.length;
 
@@ -78,7 +79,7 @@ export default {
       }
       return {
         color: '#ffffff',
-        backgroundColor: '#4169e1'
+        backgroundColor: '#4169e1',
       };
     },
 
@@ -138,7 +139,7 @@ export default {
       if (this.entityPositions.length > 0) {
         return true;
       }
-      return false
+      return false;
     },
 
     resetRange() {
