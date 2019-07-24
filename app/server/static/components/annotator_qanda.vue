@@ -38,9 +38,9 @@ export default {
       const res = [];
       let left = 0;
       for (let i = 0; i < this.sortedEntityPositions.length; i++) {
-        let e = this.sortedEntityPositions[i]
-        e.label = 1
-        e.end_offset = e.start_offset + e.response.length
+        let e = this.sortedEntityPositions[i];
+        e.label = 1;
+        e.end_offset = e.start_offset + e.response.length;
 
         const l = this.makeEmptyChunk(left, e.start_offset);
 
@@ -103,13 +103,10 @@ export default {
       }
       this.startOffset = start;
       this.endOffset = end;
-      console.log(start, end); // eslint-disable-line no-console
+      // console.log(start, end); // eslint-disable-line no-console
     },
 
     validRange() {
-      console.log('il faut ecrire toutes les regles de valiation ! to_be_changed');
-      return true
-
       if (this.startOffset === this.endOffset) {
         return false;
       }
@@ -150,7 +147,6 @@ export default {
     },
 
     textPart(r) {
-      console.log(r);
       return [...this.text].slice(r.start_offset, r.end_offset).join('');
     },
 

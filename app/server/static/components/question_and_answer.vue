@@ -51,9 +51,9 @@ export default {
   mixins: [annotationMixin],
 
   computed: {
-    hasAnswer(){
-      return this.docs[this.pageNumber] && this.annotations[this.pageNumber].length > 0
-    }
+    hasAnswer() {
+      return this.docs[this.pageNumber] && this.annotations[this.pageNumber].length > 0;
+    },
   },
 
   methods: {
