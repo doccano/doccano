@@ -6,7 +6,9 @@ RUN curl -sL "https://deb.nodesource.com/setup_${NODE_VERSION}" | bash - \
  && apt-get install --no-install-recommends -y \
       nodejs=8.16.0-1nodesource1
 
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update \
+ && apt-get install --no-install-recommends -y \
+      g++ \
       unixodbc-dev=2.3.4-1
 
 COPY app/server/static/package*.json /doccano/app/server/static/
