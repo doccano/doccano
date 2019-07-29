@@ -30,6 +30,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='document',
             name='extra_text',
-            field=models.TextField()
+            field=models.TextField(blank=True)
         ),
     ]
