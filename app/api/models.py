@@ -7,6 +7,8 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 
+from .managers import AnnotationManager, Seq2seqAnnotationManager
+
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
@@ -221,6 +223,8 @@ class Document(models.Model):
 
 
 class Annotation(models.Model):
+    objects = AnnotationManager()
+
     prob = models.FloatField(default=0.0)
     manual = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -254,6 +258,9 @@ class SequenceAnnotation(Annotation):
 
 
 class Seq2seqAnnotation(Annotation):
+    # Override AnnotationManager for custom functionality
+    objects = Seq2seqAnnotationManager()
+
     document = models.ForeignKey(Document, related_name='seq2seq_annotations', on_delete=models.CASCADE)
     text = models.CharField(max_length=500)
 

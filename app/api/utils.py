@@ -373,6 +373,7 @@ class JSONLRenderer(JSONRenderer):
                              ensure_ascii=self.ensure_ascii,
                              allow_nan=not self.strict) + '\n'
 
+
 class JSONPainter(object):
 
     def paint(self, documents):
@@ -405,6 +406,7 @@ class JSONPainter(object):
             d['meta'] = json.loads(d['meta'])
             data.append(d)
         return data
+
 
 class CSVPainter(JSONPainter):
 
