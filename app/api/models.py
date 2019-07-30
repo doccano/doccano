@@ -7,7 +7,7 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 
-from .managers import AnnotationManager, Seq2seqAnnotationManager
+from .managers import AnnotationManager, Seq2seqAnnotationManager, QandAAnnotationManager
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -269,6 +269,8 @@ class Seq2seqAnnotation(Annotation):
 
 
 class QandAAnnotation(Annotation):
+    objects = QandAAnnotationManager()
+
     document = models.ForeignKey(Document, related_name='qanda_annotations', on_delete=models.CASCADE)
     response = models.TextField()
     start_offset = models.IntegerField()

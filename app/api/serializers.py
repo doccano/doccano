@@ -179,5 +179,5 @@ class QandAAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = QandAAnnotation
-        fields = ('id', 'response', 'start_offset', 'user', 'document')
+        fields = ('id', 'response', 'start_offset', 'user', 'document', 'prob')
         read_only_fields = ('user',)
