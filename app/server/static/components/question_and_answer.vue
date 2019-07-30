@@ -22,10 +22,9 @@ block annotation-area
           ref="annotator"
         )
     div.card-content.has-text-centered
-      button.button.is-link.is-medium(
-          v-bind:disabled="this.hasAnswer"
-          v-on:click="annotate()"
-        ) Submit Selection
+      button.button.is-link.is-medium
+        (v-bind:disabled="this.hasAnswer")
+        (@click="annotate()") Submit Selection
 </template>
 
 <style scoped>
