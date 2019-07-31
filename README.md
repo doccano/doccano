@@ -252,12 +252,12 @@ by adding `external_id` to the imported file. For example:
 Input file may look like this:
 `import.json`
 ```JSON
-{"text": "EU rejects German call to boycott British lamb.", "external_id": 1}
+{"text": "EU rejects German call to boycott British lamb.", "meta": {"external_id": 1}}
 ```
 and the exported file will look like this:
 `output.json`
 ```JSON
-{"doc_id": 2023, "text": "EU rejects German call to boycott British lamb.", "labels": ["news"], "username": "root", "metadata": {"external_id": 1}}
+{"doc_id": 2023, "text": "EU rejects German call to boycott British lamb.", "labels": ["news"], "username": "root", "meta": {"external_id": 1}}
 ```
 
 ### Tutorial
