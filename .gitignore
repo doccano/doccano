@@ -198,3 +198,5 @@ pip-selfcheck.json
 node_modules/
 bundle/
 webpack-stats.json
+
+.vscode/
