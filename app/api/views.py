@@ -162,9 +162,12 @@ class AnnotationList(generics.ListCreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         model = project.get_annotation_class()
-        self.queryset = model.objects.filter(document=self.kwargs['doc_id'],
-                                             user=self.request.user)
-        return self.queryset
+
+        queryset = model.objects.filter(document=self.kwargs['doc_id'])
+        if not project.collaborative_annotation:
+            queryset = queryset.filter(user=self.request.user)
+
+        return queryset
 
     def create(self, request, *args, **kwargs):
         request.data['document'] = self.kwargs['doc_id']
