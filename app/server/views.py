@@ -66,6 +66,13 @@ class GuidelineView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     }
 
 
+class UsersView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+    template_name = 'admin.html'
+    extra_context = {
+        'bundle_name': 'users'
+    }
+
+
 class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
 

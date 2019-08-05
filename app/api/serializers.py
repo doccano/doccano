@@ -4,7 +4,7 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 from rest_framework.exceptions import ValidationError
 
 
-from .models import Label, Project, Document
+from .models import Label, Project, Document, RoleMapping, Role
 from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
@@ -161,3 +161,28 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
         model = Seq2seqAnnotation
         fields = ('id', 'text', 'user', 'document', 'prob')
         read_only_fields = ('user',)
+
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ('id', 'name')
+
+
+class RoleMappingSerializer(serializers.ModelSerializer):
+    username = serializers.SerializerMethodField()
+    rolename = serializers.SerializerMethodField()
+
+    @classmethod
+    def get_username(cls, instance):
+        user = instance.user
+        return user.username if user else None
+
+    @classmethod
+    def get_rolename(cls, instance):
+        role = instance.role
+        return role.name if role else None
+
+    class Meta:
+        model = RoleMapping
+        fields = ('id', 'user', 'role', 'username', 'rolename')

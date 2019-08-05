@@ -1293,3 +1293,192 @@ class TestStatisticsAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertIn('user', response.data)
         self.assertIsInstance(response.data['user'], dict)
+
+
+class TestUserAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        User.objects.create_superuser(username=cls.super_user_name,
+                                      password=cls.super_user_pass,
+                                      email='fizz@buzz.com')
+        cls.url = reverse(viewname='user_list')
+
+    def test_returns_user_count(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(1, len(response.data))
+
+
+class TestRoleAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_name = 'user_name'
+        cls.user_pass = 'user_pass'
+        cls.project_admin_name = 'project_admin_name'
+        cls.project_admin_pass = 'project_admin_pass'
+        cls.user = User.objects.create_user(username=cls.user_name,
+                                            password=cls.user_pass)
+        project_admin = User.objects.create_superuser(username=cls.project_admin_name,
+                                                      password=cls.project_admin_pass,
+                                                      email='fizz@buzz.com')
+        cls.url = reverse(viewname='roles')
+
+    def test_cannot_create_multiple_roles_with_same_name(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        roles = [
+            {'name': 'examplerole', 'description': 'example'},
+            {'name': 'examplerole', 'description': 'example'}
+        ]
+        self.client.post(self.url, format='json', data=roles[0])
+        second_response = self.client.post(self.url, format='json', data=roles[1])
+        self.assertEqual(second_response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_nonadmin_cannot_create_role(self):
+        self.client.login(username=self.user_name,
+                          password=self.user_pass)
+        data = {'name': 'testrole', 'description': 'example'}
+        response = self.client.post(self.url, format='json', data=data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_can_create_role(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        data = {'name': 'testrole', 'description': 'example'}
+        response = self.client.post(self.url, format='json', data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_admin_can_get_roles(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class TestRoleMappingListAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.second_project_member_name = 'second_project_member_name'
+        cls.second_project_member_pass = 'second_project_member_pass'
+        cls.project_admin_name = 'project_admin_name'
+        cls.project_admin_pass = 'project_admin_pass'
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                      password=cls.project_member_pass)
+        cls.second_project_member = User.objects.create_user(username=cls.second_project_member_name,
+                                                      password=cls.second_project_member_pass)
+        project_admin = User.objects.create_superuser(username=cls.project_admin_name,
+                                                   password=cls.project_admin_pass,
+                                                   email='fizz@buzz.com')
+        cls.main_project = mommy.make('Project', users=[project_member, project_admin, cls.second_project_member])
+        cls.other_project = mommy.make('Project', users=[cls.second_project_member, project_admin])
+
+        cls.role = mommy.make('Role', name=settings.ROLE_PROJECT_ADMIN)
+        rolemapping = mommy.make('RoleMapping', role=cls.role, project=cls.main_project, user=project_admin)
+        cls.data = {'user': project_member.id, 'role': cls.role.id, 'project': cls.main_project.id}
+        cls.other_url = reverse(viewname='rolemapping_list', args=[cls.other_project.id])
+        cls.url = reverse(viewname='rolemapping_list', args=[cls.main_project.id])
+
+    def test_returns_mappings_to_project_admin(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_allows_superuser_to_create_mapping(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.post(self.url, format='json', data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_do_not_allow_nonadmin_to_create_mapping(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.post(self.url, format='json', data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_do_not_return_mappings_to_nonadmin(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_can_create_same_mapping_in_multiple_projects(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        mapping = [
+            {'user': self.second_project_member.id, 'role': self.role.id, 'project': self.main_project.id},
+            {'user': self.second_project_member.id, 'role': self.role.id, 'project': self.other_project.id}
+        ]
+        response = self.client.post(self.url, format='json', data=mapping[0])
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(self.other_url, format='json', data=mapping[1])
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+
+class TestRoleMappingDetailAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_admin_name = 'project_admin_name'
+        cls.project_admin_pass = 'project_admin_pass'
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        project_admin = User.objects.create_superuser(username=cls.project_admin_name,
+                                                   password=cls.project_admin_pass,
+                                                   email='fizz@buzz.com')
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                      password=cls.project_member_pass)
+        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
+            password=cls.non_project_member_pass)
+        project = mommy.make('Project', users=[project_admin, project_member])
+        role = mommy.make('Role', name=settings.ROLE_PROJECT_ADMIN)
+        change_role = mommy.make('Role', name=settings.ROLE_ANNOTATOR)
+        cls.rolemapping = mommy.make('RoleMapping', role=role, project=project, user=project_admin)
+        cls.url = reverse(viewname='rolemapping_detail', args=[project.id, cls.rolemapping.id])
+        cls.data = {'role': change_role.id }
+
+    def test_returns_rolemapping_to_project_member(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data['id'], self.rolemapping.id)
+
+    def test_do_not_return_mapping_to_non_project_member(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_admin_to_update_mapping(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.patch(self.url, format='json', data=self.data)
+        self.assertEqual(response.data['role'], self.data['role'])
+
+    def test_disallows_project_member_to_update_mapping(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.patch(self.url, format='json', data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_admin_to_delete_mapping(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_disallows_project_member_to_delete_mapping(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

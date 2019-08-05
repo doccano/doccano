@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, F
@@ -13,11 +14,12 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework_csv.renderers import CSVRenderer
 
 from .filters import DocumentFilter
-from .models import Project, Label, Document
+from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotator, IsAnnotationApprover, IsAnnotatorAndCreator, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
-from .serializers import ProjectPolymorphicSerializer
+from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
+from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
@@ -319,3 +321,40 @@ class TextDownloadAPI(APIView):
             return JSONPainter()
         else:
             raise ValidationError('format {} is invalid.'.format(format))
+
+
+class Users(APIView):
+    permission_classes = (IsAuthenticated, IsProjectAdmin)
+
+    def get(self, request, *args, **kwargs):
+        queryset = User.objects.all()
+        serialized_data = UserSerializer(queryset, many=True).data
+        return Response(serialized_data)
+
+
+class Roles(generics.ListCreateAPIView):
+    serializer_class = RoleSerializer
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectAdmin)
+    queryset = Role.objects.all()
+
+
+class RoleMappingList(generics.ListCreateAPIView):
+    serializer_class = RoleMappingSerializer
+    pagination_class = None
+    permission_classes = (IsAuthenticated, IsProjectAdmin)
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return project.role_mapping
+
+    def perform_create(self, serializer):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        serializer.save(project=project)
+
+
+class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = RoleMapping.objects.all()
+    serializer_class = RoleMappingSerializer
+    lookup_url_kwarg = 'rolemapping_id'
+    permission_classes = (IsAuthenticated, IsProjectAdmin)
