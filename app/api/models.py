@@ -1,6 +1,8 @@
 import string
 
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save, pre_save, pre_delete
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
@@ -237,3 +239,49 @@ class Seq2seqAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user', 'text')
+
+
+class Role(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
+class RoleMapping(models.Model):
+    user = models.ForeignKey(User, related_name='role_mapping', on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name='role_mapping', on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        other_rolemappings = self.project.role_mappings.exclude(id=self.id)
+
+        if other_rolemappings.filter(user=self.user, project=self.project).exists():
+            raise ValidationError('This user is already assigned to a role in this project.')
+
+    class Meta:
+        unique_together = ("user", "project", "role")
+
+
+@receiver(post_save, sender=RoleMapping)
+def add_linked_project(sender, instance, created, **kwargs):
+    userInstance = instance.user
+    projectInstance = instance.project
+    if created and userInstance and projectInstance:
+        user = User.objects.get(pk=userInstance.pk)
+        project = Project.objects.get(pk=projectInstance.pk)
+        user.projects.add(project)
+        user.save()
+
+
+@receiver(pre_delete, sender=RoleMapping)
+def delete_linked_project(sender, instance, using, **kwargs):
+    userInstance = instance.user
+    projectInstance = instance.project
+    if userInstance and projectInstance:
+        user = User.objects.get(pk=userInstance.pk)
+        project = Project.objects.get(pk=projectInstance.pk)
+        user.projects.remove(project)
+        user.save()
