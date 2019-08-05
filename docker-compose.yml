@@ -35,8 +35,11 @@ services:
       POSTGRES_USER: "doccano"
       POSTGRES_PASSWORD: "doccano"
       POSTGRES_DB: "doccano"
+      PGDATA: /var/lib/postgres/data
     ports:
       - 5432:5432
+    volumes:
+      - ./app/db:/var/lib/postgres/data
 
 volumes:
   node_modules:
