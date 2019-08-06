@@ -13,6 +13,19 @@ const getOffsetFromUrl = (url) => {
   return parseInt(offsetMatch[1], 10);
 };
 
+const removeHost = (url) => {
+  if (!url) {
+    return url;
+  }
+
+  const hostMatch = url.match(/^https?:\/\/[^/]*\/(.*)$/);
+  if (hostMatch == null) {
+    return url;
+  }
+
+  return `${window.location.origin}/${hostMatch[1]}`;
+};
+
 const storeOffsetInUrl = (offset) => {
   let href = window.location.href;
 
@@ -36,6 +49,28 @@ const storeOffsetInUrl = (offset) => {
   window.location.href = href;
 };
 
+const getLimitFromUrl = (url, prevLimit) => {
+  try {
+    const limitMatch = url.match(/[?#].*limit=(\d+)/);
+
+    return parseInt(limitMatch[1], 10);
+  } catch (err) {
+    return prevLimit;
+  }
+};
+
+const getSidebarTotal = (count, limit) => (
+  count !== 0 && limit !== 0
+    ? Math.ceil(count / limit)
+    : 0
+);
+
+const getSidebarPage = (offset, limit) => (
+  limit !== 0
+    ? Math.ceil(offset / limit) + 1
+    : 0
+);
+
 export default {
   components: { VueJsonPretty, Preview },
 
@@ -53,6 +88,9 @@ export default {
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
       count: 0,
+      prevLimit: 0,
+      paginationPages: 0,
+      paginationPage: 0,
       isSuperuser: false,
       isMetadataActive: false,
       isAnnotationGuidelineActive: false,
@@ -97,14 +135,44 @@ export default {
       }
     },
 
+    async nextPagination() {
+      if (this.next) {
+        this.url = this.next;
+        await this.search();
+        this.pageNumber = 0;
+      } else {
+        this.pageNumber = this.docs.length - 1;
+      }
+      this.resetScrollbar();
+    },
+
+    async prevPagination() {
+      if (this.prev) {
+        this.url = this.prev;
+        await this.search();
+        this.pageNumber = this.docs.length - this.limit;
+      } else {
+        this.pageNumber = 0;
+      }
+      this.resetScrollbar();
+    },
+
     async search() {
       await HTTP.get(this.url).then((response) => {
         this.docs = response.data.results;
-        this.next = response.data.next;
-        this.prev = response.data.previous;
+        this.next = removeHost(response.data.next);
+        this.prev = removeHost(response.data.previous);
         this.count = response.data.count;
         this.annotations = this.docs.map(doc => doc.annotations);
         this.offset = getOffsetFromUrl(this.url);
+        this.prevLimit = this.limit;
+        if (this.next || this.prevLimit) {
+          this.limit = getLimitFromUrl(this.next, this.prevLimit);
+        } else {
+          this.limit = this.count;
+        }
+        this.paginationPages = getSidebarTotal(this.count, this.limit);
+        this.paginationPage = getSidebarPage(this.offset, this.limit);
       });
     },
 
