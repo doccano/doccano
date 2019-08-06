@@ -247,10 +247,13 @@ class Role(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
+
 
 class RoleMapping(models.Model):
-    user = models.ForeignKey(User, related_name='role_mapping', on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, related_name='role_mapping', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='role_mappings', on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name='role_mappings', on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
