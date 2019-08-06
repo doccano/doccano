@@ -60,6 +60,13 @@ export default {
   },
 
   methods: {
+    resetScrollbar() {
+      const textbox = this.$refs.textbox;
+      if (textbox) {
+        textbox.scrollTop = 0;
+      }
+    },
+
     async nextPage() {
       this.pageNumber += 1;
       if (this.pageNumber === this.docs.length) {
@@ -70,6 +77,8 @@ export default {
         } else {
           this.pageNumber = this.docs.length - 1;
         }
+      } else {
+        this.resetScrollbar();
       }
     },
 
@@ -83,6 +92,8 @@ export default {
         } else {
           this.pageNumber = 0;
         }
+      } else {
+        this.resetScrollbar();
       }
     },
 

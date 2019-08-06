@@ -55,7 +55,7 @@ div.columns(v-cloak="")
       div.main.pt0.pb0.pr20.pl20
         span About {{ count }} results
 
-      div.main
+      div.main.sidebar-scrollable
         a.item(
           v-for="(doc, index) in docs"
           v-bind:class="{ active: index == pageNumber }"
