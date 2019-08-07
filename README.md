@@ -125,21 +125,19 @@ Let’s start the development server and explore it.
 
 Depending on your installation method, there are two options:
 
-**Option1: Running the Docker image as a Container**
+#### Option 1: Running the Docker image as a Container
 
 First, run a Docker container:
 
 ```bash
-docker run -d --name doccano -p 8000:8000 chakkiworks/doccano
+docker run -d --rm --name doccano \
+  -e "ADMIN_USERNAME=admin" \
+  -e "ADMIN_EMAIL=admin@example.com" \
+  -e "ADMIN_PASSWORD=password" \
+  -p 8000:8000 chakkiworks/doccano
 ```
 
-Then, execute `create-admin.sh` script for creating a superuser.
-
-```bash
-docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
-```
-
-**Option2: Running Django development server**
+#### Option 2: Running Django development server
 
 Before running, we need to make migration. Run the following command:
 
@@ -169,7 +167,7 @@ Optionally, you can change the bind ip and port using the command
 python manage.py runserver <ip>:<port>
 ```
 
-**Option3: Running the development Docker-Compose stack**
+#### Option 3: Running the development Docker-Compose stack
 
 We can use docker-compose to set up the webpack server, django server, database, etc. all in one command:
 
