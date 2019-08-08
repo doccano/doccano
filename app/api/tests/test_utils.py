@@ -143,14 +143,12 @@ class TestSeq2seqStorage(TestCase):
 
 class TestCoNLLParser(TestCase):
     def test_calc_char_offset(self):
-        f = io.BytesIO()
-
-        s = [
-            ("EU", "ORG"), ("rejects", "_"), ("German", "MISC"), ("call", "_")
-        ]
-        for w, t in s:
-            f.write("{}\t{}\n".format(w, t).encode())
-        f.seek(0)
+        f = io.BytesIO(
+          b"EU\tORG\n"
+          b"rejects\t_\n"
+          b"German\tMISC\n"
+          b"call\t_\n"
+        )
 
         actual = next(CoNLLParser().parse(f))[0]
 
