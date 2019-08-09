@@ -122,10 +122,10 @@
                         td.is-vertical
                           span.tag.is-normal {{ project.project_type }}
 
-                        td.is-vertical(v-if="isSuperuser")
+                        td.is-vertical(v-if="isProjectAdmin.get(project.id)")
                           a(v-bind:href="'/projects/' + project.id + '/docs'") Edit
 
-                        td.is-vertical(v-if="isSuperuser")
+                        td.is-vertical(v-if="isProjectAdmin.get(project.id)")
                           a.has-text-danger(v-on:click="setProject(project)") Delete
 </template>
 
@@ -152,6 +152,7 @@ export default {
     isSuperuser: false,
     randomizeDocumentOrder: false,
     collaborativeAnnotation: false,
+    isProjectAdmin: null,
   }),
 
   computed: {
@@ -168,6 +169,10 @@ export default {
       this.items = projects.data;
       this.username = me.data.username;
       this.isSuperuser = me.data.is_superuser;
+      this.isProjectAdmin = new Map(this.items.map((project) => {
+        const isProjectAdmin = project.current_users_role.is_project_admin;
+        return [project.id, isProjectAdmin];
+      }));
     });
   },
 

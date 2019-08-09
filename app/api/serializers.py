@@ -1,4 +1,6 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 from rest_framework.exceptions import ValidationError
@@ -77,39 +79,56 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
+    current_users_role = serializers.SerializerMethodField()
+
+    def get_current_users_role(self, instance):
+        role_abstractor = {
+            "is_project_admin": settings.ROLE_PROJECT_ADMIN,
+            "is_annotator": settings.ROLE_ANNOTATOR,
+            "is_annotation_approver": settings.ROLE_ANNOTATION_APPROVER,
+        }
+        queryset = RoleMapping.objects.values("role_id__name")
+        if queryset:
+            users_role = get_object_or_404(
+                queryset, project=instance.id, user=self.context.get("request").user.id
+            )
+            for key, val in role_abstractor.items():
+                role_abstractor[key] = users_role["role_id__name"] == val
+        return role_abstractor
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at',
-                  'randomize_document_order', 'collaborative_annotation')
-        read_only_fields = ('image', 'updated_at')
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+                  'updated_at', 'randomize_document_order', 'collaborative_annotation')
+        read_only_fields = ('image', 'updated_at', 'current_users_role')
 
 
-class TextClassificationProjectSerializer(serializers.ModelSerializer):
+class TextClassificationProjectSerializer(ProjectSerializer):
 
     class Meta:
         model = TextClassificationProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at',
-                  'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users')
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+                  'updated_at', 'randomize_document_order')
+        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
 
 
-class SequenceLabelingProjectSerializer(serializers.ModelSerializer):
+class SequenceLabelingProjectSerializer(ProjectSerializer):
+
 
     class Meta:
         model = SequenceLabelingProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at',
-                  'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users')
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+                  'updated_at', 'randomize_document_order')
+        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
 
 
-class Seq2seqProjectSerializer(serializers.ModelSerializer):
+class Seq2seqProjectSerializer(ProjectSerializer):
 
     class Meta:
         model = Seq2seqProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at',
-                  'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users')
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+                  'updated_at', 'randomize_document_order')
+        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):

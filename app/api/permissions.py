@@ -12,13 +12,6 @@ class ProjectMixin:
         return view.kwargs.get('project_id') or request.query_params.get('project_id')
 
 
-class IsProjectUser(ProjectMixin, BasePermission):
-
-    def has_permission(self, request, view):
-        project = get_object_or_404(Project, pk=self.get_project_id(request, view))
-        return user in project.users.all()
-
-
 class IsAdminUserAndWriteOnly(BasePermission):
 
     def has_permission(self, request, view):
@@ -74,18 +67,19 @@ class IsProjectAdmin(RolePermission):
     role_name = settings.ROLE_PROJECT_ADMIN
 
 
-class IsAnnotatorAndCreator(RolePermission):
+class IsAnnotatorAndReadOnly(RolePermission):
+    role_name = settings.ROLE_ANNOTATOR
+
+class IsAnnotator(RolePermission):
     unsafe_methods_check = False
     role_name = settings.ROLE_ANNOTATOR
 
-
-class IsAnnotator(RolePermission):
-    role_name = settings.ROLE_ANNOTATOR
-
-
-class IsAnnotationApprover(RolePermission):
+class IsAnnotationApproverAndReadOnly(RolePermission):
     role_name = settings.ROLE_ANNOTATION_APPROVER
 
+class IsAnnotationApprover(RolePermission):
+    unsafe_methods_check = False
+    role_name = settings.ROLE_ANNOTATION_APPROVER
 
 def is_in_role(role_name, user_id, project_id):
     return RoleMapping.objects.filter(

@@ -9,7 +9,7 @@ from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from api.permissions import SuperUserMixin
-from api.models import Project
+from api.models import Project, RoleMapping
 from app import settings
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,11 @@ class ProjectView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        context['is_project_admin'] = RoleMapping.objects.filter(
+            role_id__name=settings.ROLE_PROJECT_ADMIN,
+            project=project.id,
+            user=self.request.user.id
+        ).exists()
         context['bundle_name'] = project.get_bundle_name()
         return context
 

@@ -1,7 +1,7 @@
 import * as marked from 'marked';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
-import HTTP, { defaultHttpClient } from './http';
+import HTTP from './http';
 import Preview from './preview.vue';
 
 const getOffsetFromUrl = (url) => {
@@ -91,7 +91,7 @@ export default {
       prevLimit: 0,
       paginationPages: 0,
       paginationPage: 0,
-      isSuperuser: false,
+      isAnnotationApprover: false,
       isMetadataActive: false,
       isAnnotationGuidelineActive: false,
     };
@@ -253,9 +253,8 @@ export default {
     });
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
-    });
-    defaultHttpClient.get('/v1/me').then((response) => {
-      this.isSuperuser = response.data.is_superuser;
+      const roles = response.data.current_users_role;
+      this.isAnnotationApprover = roles.is_annotation_approver || roles.is_project_admin;
     });
     this.submit();
   },

@@ -4,6 +4,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_save, pre_delete
 from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
@@ -270,13 +271,42 @@ class RoleMapping(models.Model):
 
 @receiver(post_save, sender=RoleMapping)
 def add_linked_project(sender, instance, created, **kwargs):
+    if not created:
+        return
     userInstance = instance.user
     projectInstance = instance.project
-    if created and userInstance and projectInstance:
+    if userInstance and projectInstance:
         user = User.objects.get(pk=userInstance.pk)
         project = Project.objects.get(pk=projectInstance.pk)
         user.projects.add(project)
         user.save()
+
+
+@receiver(post_save)
+def add_superusers_to_project(sender, instance, created, **kwargs):
+    if not created:
+        return
+    if sender not in Project.__subclasses__():
+        return
+    superusers = User.objects.filter(is_superuser=True)
+    admin_role = Role.objects.filter(name=settings.ROLE_PROJECT_ADMIN).first()
+    if superusers and admin_role:
+        RoleMapping.objects.bulk_create(
+            [RoleMapping(role_id=admin_role.id, user_id=superuser.id, project_id=instance.id)
+             for superuser in superusers]
+        )
+
+
+@receiver(post_save, sender=User)
+def add_new_superuser_to_projects(sender, instance, created, **kwargs):
+    if created and instance.is_superuser:
+        admin_role = Role.objects.filter(name=settings.ROLE_PROJECT_ADMIN).first()
+        projects = Project.objects.all()
+        if admin_role and projects:
+            RoleMapping.objects.bulk_create(
+                [RoleMapping(role_id=admin_role.id, user_id=instance.id, project_id=project.id)
+                 for project in projects]
+            )
 
 
 @receiver(pre_delete, sender=RoleMapping)
