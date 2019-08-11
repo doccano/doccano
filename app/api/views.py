@@ -26,6 +26,7 @@ from .utils import JSONPainter, CSVPainter
 IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
 
+
 class Me(APIView):
     permission_classes = (IsAuthenticated,)
 
