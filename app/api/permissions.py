@@ -44,16 +44,12 @@ class RolePermission(ProjectMixin, BasePermission):
     unsafe_methods_check = True
     role_name = ''
 
-    def is_super_user(self, user):
-        return user.is_superuser
-
     def has_permission(self, request, view):
-        is_super_user = self.is_super_user(request.user)
-        if is_super_user:
+        if request.user.is_superuser:
             return True
 
         if self.unsafe_methods_check and request.method in self.UNSAFE_METHODS:
-            return is_super_user
+            return request.user.is_superuser
 
         project_id = self.get_project_id(request, view)
         if not project_id and request.method in SAFE_METHODS:
