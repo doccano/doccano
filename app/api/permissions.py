@@ -66,16 +66,20 @@ class IsProjectAdmin(RolePermission):
 class IsAnnotatorAndReadOnly(RolePermission):
     role_name = settings.ROLE_ANNOTATOR
 
+
 class IsAnnotator(RolePermission):
     unsafe_methods_check = False
     role_name = settings.ROLE_ANNOTATOR
 
+
 class IsAnnotationApproverAndReadOnly(RolePermission):
     role_name = settings.ROLE_ANNOTATION_APPROVER
+
 
 class IsAnnotationApprover(RolePermission):
     unsafe_methods_check = False
     role_name = settings.ROLE_ANNOTATION_APPROVER
+
 
 def is_in_role(role_name, user_id, project_id):
     return RoleMapping.objects.filter(
