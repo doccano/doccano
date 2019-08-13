@@ -29,29 +29,25 @@ export default {
   computed: {
     sortedEntityPositions() {
       /* eslint-disable vue/no-side-effects-in-computed-properties */
-      this.entityPositions = this.entityPositions.sort((a, b) => a.start_offset - b.start_offset);
-      return this.entityPositions;
+      return this.entityPositions.sort((a, b) => a.start_offset - b.start_offset);
       /* eslint-enable vue/no-side-effects-in-computed-properties */
     },
 
     chunks() {
       const res = [];
       let left = 0;
-      let e;
-      for (let i = 0; i < this.sortedEntityPositions.length; i++) {
-        e = this.sortedEntityPositions[i];
-        e.label = 1;
-        e.end_offset = e.start_offset + e.response.length;
+      for (let entity of this.sortedEntityPositions) {
+        entity.label = 1;
+        entity.end_offset = entity.start_offset + entity.response.length;
 
-        const l = this.makeEmptyChunk(left, e.start_offset);
-
-        res.push(l);
-        res.push(e);
-        left = e.end_offset;
+        const emptyChunk = this.makeEmptyChunk(left, entity.start_offset);
+        res.push(emptyChunk);
+        res.push(entity);
+        left = entity.end_offset;
       }
-      const l = this.makeEmptyChunk(left, this.text.length);
-      res.push(l);
-
+      const emptyChunk = this.makeEmptyChunk(left, this.text.length);
+      res.push(emptyChunk);
+      console.log(res);
       return res;
     },
 
@@ -104,7 +100,6 @@ export default {
       }
       this.startOffset = start;
       this.endOffset = end;
-      // console.log(start, end); // eslint-disable-line no-console
     },
 
     validRange() {
@@ -117,8 +112,7 @@ export default {
       if (this.startOffset < 0 || this.endOffset < 0) {
         return false;
       }
-      for (let i = 0; i < this.entityPositions.length; i++) {
-        const e = this.entityPositions[i];
+      for (let e of this.entityPositions) {
         if ((e.start_offset <= this.startOffset) && (this.startOffset < e.end_offset)) {
           return false;
         }

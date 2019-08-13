@@ -9,7 +9,7 @@ block annotation-area
           div.control
             div.tags.has-addons.white(
               v-if="docs[pageNumber] && docs[pageNumber].extra_text"
-              ) {{ docs[pageNumber].extra_text || 'missing quesiton' }}
+            ) {{ docs[pageNumber].extra_text || 'missing question' }}
 
     div.card-content
       div.content(v-if="docs[pageNumber] && annotations[pageNumber]")
@@ -24,7 +24,8 @@ block annotation-area
     div.card-content.has-text-centered
       button.button.is-link.is-medium(
         v-bind:disabled="this.hasAnswer"
-        v-on:click="annotate()") Submit Selection
+        v-on:click="annotate()"
+      ) Submit Selection
 </template>
 
 <style scoped>
