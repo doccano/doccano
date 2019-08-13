@@ -21,7 +21,7 @@ def create_default_roles():
 
 
 def assign_user_to_role(project_member, project, role_name):
-    role, created = Role.objects.get_or_create(name=role_name)
+    role, _ = Role.objects.get_or_create(name=role_name)
     RoleMapping.objects.get_or_create(role_id=role.id, user_id=project_member.id, project_id=project.id)
 
 
@@ -49,9 +49,9 @@ class TestProjectListAPI(APITestCase):
                                                       password=cls.sub_project_member_pass)
         approver = User.objects.create_user(username=cls.approver_name,
                                             password=cls.approver_pass)
-        project_admin = User.objects.create_superuser(username=cls.super_user_name,
-                                                   password=cls.super_user_pass,
-                                                   email='fizz@buzz.com')
+        User.objects.create_superuser(username=cls.super_user_name,
+                                      password=cls.super_user_pass,
+                                      email='fizz@buzz.com')
         cls.main_project = mommy.make('TextClassificationProject', users=[main_project_member])
         cls.sub_project = mommy.make('TextClassificationProject', users=[sub_project_member])
         assign_user_to_role(project_member=main_project_member, project=cls.main_project,
@@ -301,8 +301,7 @@ class TestLabelDetailAPI(APITestCase):
         create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
-        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
-                                                      password=cls.non_project_member_pass)
+        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
         # Todo: change super_user to project_admin.
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
@@ -1415,7 +1414,7 @@ class TestRoleMappingListAPI(APITestCase):
         cls.other_project = mommy.make('Project', users=[cls.second_project_member, project_admin])
         cls.admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
         cls.role = mommy.make('Role', name='otherrole')
-        rolemapping = mommy.make('RoleMapping', role=cls.admin_role, project=cls.main_project, user=project_admin)
+        mommy.make('RoleMapping', role=cls.admin_role, project=cls.main_project, user=project_admin)
         cls.data = {'user': project_member.id, 'role': cls.admin_role.id, 'project': cls.main_project.id}
         cls.other_url = reverse(viewname='rolemapping_list', args=[cls.other_project.id])
         cls.url = reverse(viewname='rolemapping_list', args=[cls.main_project.id])
@@ -1460,8 +1459,7 @@ class TestRoleMappingDetailAPI(APITestCase):
                                                    password=cls.project_admin_pass)
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                       password=cls.project_member_pass)
-        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
-            password=cls.non_project_member_pass)
+        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
         project = mommy.make('Project', users=[project_admin, project_member])
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
         annotator_role = Role.objects.get(name=settings.ROLE_ANNOTATOR)
