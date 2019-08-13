@@ -36,7 +36,7 @@ export default {
     chunks() {
       const res = [];
       let left = 0;
-      for (let entity of this.sortedEntityPositions) {
+      for (const entity of this.sortedEntityPositions) {
         entity.label = 1;
         entity.end_offset = entity.start_offset + entity.response.length;
 
@@ -47,7 +47,6 @@ export default {
       }
       const emptyChunk = this.makeEmptyChunk(left, this.text.length);
       res.push(emptyChunk);
-      console.log(res);
       return res;
     },
 
@@ -112,7 +111,7 @@ export default {
       if (this.startOffset < 0 || this.endOffset < 0) {
         return false;
       }
-      for (let e of this.entityPositions) {
+      for (const e of this.entityPositions) {
         if ((e.start_offset <= this.startOffset) && (this.startOffset < e.end_offset)) {
           return false;
         }
