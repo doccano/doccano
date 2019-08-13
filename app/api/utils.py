@@ -278,10 +278,9 @@ class CoNLLParser(FileParser):
 
                     words.append(word)
 
-                # Create JSONL
-                j = {'text': ' '.join(words), 'labels': labels}
+                # Create and add JSONL
+                data.append({'text': ' '.join(words), 'labels': labels})
 
-                data.append(j)
         except conllu.parser.ParseException as e:
             raise FileParseException(line_num=-1, line=str(e))
 
