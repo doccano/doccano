@@ -272,7 +272,7 @@ class QandAAnnotation(Annotation):
     objects = QandAAnnotationManager()
 
     document = models.ForeignKey(Document, related_name='qanda_annotations', on_delete=models.CASCADE)
-    response = models.CharField(max_length=1000)
+    response = models.CharField(max_length=500)
     start_offset = models.IntegerField()
 
     class Meta:
