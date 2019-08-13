@@ -36,7 +36,7 @@ export default {
     chunks() {
       const res = [];
       let left = 0;
-      this.sortedEntityPositions.forEach(function fctName (entity) {
+      this.sortedEntityPositions.forEach(function fctName(entity) {
         entity.label = 1;
         entity.end_offset = entity.start_offset + entity.response.length;
 
@@ -113,7 +113,7 @@ export default {
       }
       let isValid;
       isValid = true;
-      this.entityPositions.forEach(function fctName (e) {
+      this.entityPositions.forEach(function fctName(e) {
         if ((e.start_offset <= this.startOffset) && (this.startOffset < e.end_offset)) {
           isValid = false;
         }
@@ -127,7 +127,7 @@ export default {
           isValid = false;
         }
       });
-      return isValid
+      return isValid;
     },
 
     hasAnswer() {
