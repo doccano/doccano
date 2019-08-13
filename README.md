@@ -190,7 +190,7 @@ Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see
 
 Now, try logging in with the superuser account you created in the previous step. You should see the doccano project list page:
 
-<img src="./docs/projects.png" alt="projects" width=600>
+<img src="./docs/projects.png" alt="Projects page" width=600>
 
 There is no project created yet. To create your project, make sure you’re in the project list page and select `Create Project` button. You should see the following screen:
 
@@ -245,19 +245,19 @@ Click `Labels` button in left bar to define your own labels. You should see the 
 
 Click `Users` button in left bar to assign project users to annotator, admin, or annotation approval roles.
 
-<img src="./docs/user_page.png" alt="Edit label" width=600>
+<img src="./docs/user_page.png" alt="Assign users to roles on project" width=600>
 
 ### Annotation
 
 Now, you are ready to annotate the texts. Just click the `Annotate Data` button in the navigation bar, you can start to annotate the documents you uploaded.
 
-<img src="./docs/annotation.png" alt="Edit label" width=600>
+<img src="./docs/annotation.png" alt="Annotate data" width=600>
 
 ### Export Data
 
 After the annotation step, you can download the annotated data. Click the `Edit data` button in navigation bar, and then click `Export Data`. You should see below screen:
 
-<img src="./docs/export_data.png" alt="Edit label" width=600>
+<img src="./docs/export_data.png" alt="Export data" width=600>
 
 You can export data as CSV file or JSON file by clicking the button. As for the export file format, you can check it here: [Export File Formats](https://github.com/chakki-works/doccano/wiki/Export-File-Formats). 
 
