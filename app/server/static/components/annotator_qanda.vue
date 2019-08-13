@@ -44,6 +44,7 @@ export default {
         res.push(emptyChunk);
         res.push(entity);
         left = entity.end_offset;
+        return;
       })
       const emptyChunk = this.makeEmptyChunk(left, this.text.length);
       res.push(emptyChunk);
@@ -124,7 +125,7 @@ export default {
         if ((this.startOffset < e.end_offset) && (e.end_offset < this.endOffset)) {
           return false;
         }
-      })
+      });
       return true;
     },
 
