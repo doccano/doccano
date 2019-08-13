@@ -36,7 +36,7 @@ export default {
     chunks() {
       const res = [];
       let left = 0;
-      this.sortedEntityPositions.forEach(function(entity) {
+      this.sortedEntityPositions.forEach(function fctName (entity) {
         entity.label = 1;
         entity.end_offset = entity.start_offset + entity.response.length;
 
@@ -111,21 +111,23 @@ export default {
       if (this.startOffset < 0 || this.endOffset < 0) {
         return false;
       }
-      this.entityPositions.forEach(function(e) {
+      let isValid;
+      isValid = true;
+      this.entityPositions.forEach(function fctName (e) {
         if ((e.start_offset <= this.startOffset) && (this.startOffset < e.end_offset)) {
-          return false;
+          isValid = false;
         }
         if ((e.start_offset < this.endOffset) && (this.endOffset < e.end_offset)) {
-          return false;
+          isValid = false;
         }
         if ((this.startOffset < e.start_offset) && (e.start_offset < this.endOffset)) {
-          return false;
+          isValid = false;
         }
         if ((this.startOffset < e.end_offset) && (e.end_offset < this.endOffset)) {
-          return false;
+          isValid = false;
         }
       });
-      return true;
+      return isValid
     },
 
     hasAnswer() {
