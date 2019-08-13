@@ -150,6 +150,12 @@ Next we need to create a user who can login to the admin site. Run the following
 python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
 ```
 
+Create the admin, annotator, and annotation approver roles to assign to users. Run the following command:
+
+```bash
+python manage.py create_roles
+```
+
 Developers can also validate that the project works as expected by running the tests:
 
 ```bash
@@ -234,6 +240,12 @@ Once you select a TXT/JSON file on your computer, click `Upload dataset` button.
 Click `Labels` button in left bar to define your own labels. You should see the label editor page. In label editor page, you can create labels by specifying label text, shortcut key, background color and text color.
 
 <img src="./docs/label_editor.png" alt="Edit label" width=600>
+
+### Assign Roles to Users
+
+Click `Users` button in left bar to assign project users to annotator, admin, or annotation approval roles.
+
+<img src="./docs/user_page.png" alt="Edit label" width=600>
 
 ### Annotation
 
