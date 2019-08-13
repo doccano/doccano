@@ -36,7 +36,7 @@ export default {
     chunks() {
       const res = [];
       let left = 0;
-      for (const entity of this.sortedEntityPositions) {
+      this.sortedEntityPositions.forEach((entity) => {
         entity.label = 1;
         entity.end_offset = entity.start_offset + entity.response.length;
 
@@ -44,7 +44,7 @@ export default {
         res.push(emptyChunk);
         res.push(entity);
         left = entity.end_offset;
-      }
+      })
       const emptyChunk = this.makeEmptyChunk(left, this.text.length);
       res.push(emptyChunk);
       return res;
@@ -111,7 +111,7 @@ export default {
       if (this.startOffset < 0 || this.endOffset < 0) {
         return false;
       }
-      for (const e of this.entityPositions) {
+      this.entityPositions.forEach((e) => {
         if ((e.start_offset <= this.startOffset) && (this.startOffset < e.end_offset)) {
           return false;
         }
@@ -124,7 +124,7 @@ export default {
         if ((this.startOffset < e.end_offset) && (e.end_offset < this.endOffset)) {
           return false;
         }
-      }
+      })
       return true;
     },
 
