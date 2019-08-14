@@ -120,10 +120,14 @@ export default {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'file.' + this.format); // or any other extension
-        document.body.appendChild(link);
-        this.isLoading = false;
-        link.click();
+        var id = window.location.pathname.split('/')[2];
+        defaultHttpClient.get(`/v1/projects/${id}`).then((response) => {
+          this.name = response.data.name;
+          link.setAttribute('download', `${this.name}.` + this.format); // or any other extension
+          document.body.appendChild(link);
+          this.isLoading = false;
+          link.click();
+        });
       }).catch((error) => {
         this.isLoading = false;
         this.handleError(error);
