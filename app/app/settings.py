@@ -274,6 +274,7 @@ GOOGLE_TRACKING_ID = env('GOOGLE_TRACKING_ID', 'UA-125643874-2').strip()
 AZURE_APPINSIGHTS_IKEY = env('AZURE_APPINSIGHTS_IKEY', None)
 APPLICATION_INSIGHTS = {
     'ikey': AZURE_APPINSIGHTS_IKEY if AZURE_APPINSIGHTS_IKEY else None,
+    'endpoint': env('AZURE_APPINSIGHTS_ENDPOINT', None),
 }
 
 ## necessary for email verification setup
