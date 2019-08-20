@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.urlpatterns import format_suffix_patterns
 
 from .views import Me, Features
@@ -11,6 +12,7 @@ from .views import StatisticsAPI
 
 
 urlpatterns = [
+    path('auth-token', obtain_auth_token),
     path('me', Me.as_view(), name='me'),
     path('features', Features.as_view(), name='features'),
     path('cloud-upload', CloudUploadAPI.as_view(), name='cloud_uploader'),
