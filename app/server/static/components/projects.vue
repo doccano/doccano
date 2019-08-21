@@ -53,6 +53,17 @@
               )
               | Randomize document order per user
 
+          div.field
+            label.checkbox
+              input(
+                v-model="collaborativeAnnotation"
+                name="collaborative_annotation"
+                type="checkbox"
+                style="margin-right: 0.25em;"
+                required
+              )
+              | Share annotations across all users
+
         footer.modal-card-foot.pt20.pb20.pr20.pl20.has-background-white-ter
           button.button.is-primary(v-on:click="create()") Create
           button.button(v-on:click="isActive = !isActive") Cancel
@@ -140,6 +151,7 @@ export default {
     username: '',
     isSuperuser: false,
     randomizeDocumentOrder: false,
+    collaborativeAnnotation: false,
   }),
 
   computed: {
@@ -192,6 +204,7 @@ export default {
         description: this.description,
         project_type: this.projectType,
         randomize_document_order: this.randomizeDocumentOrder,
+        collaborative_annotation: this.collaborativeAnnotation,
         guideline: 'Please write annotation guideline.',
         resourcetype: this.resourceType(),
       };

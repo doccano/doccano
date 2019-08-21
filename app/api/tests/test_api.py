@@ -491,6 +491,10 @@ class TestAnnotationListAPI(APITestCase):
         cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': main_project_label.id}
         cls.num_entity_of_project_member = SequenceAnnotation.objects.filter(document=main_project_doc,
                                                                              user=project_member).count()
+        cls.num_entity_of_another_project_member = SequenceAnnotation.objects.filter(
+            document=main_project_doc,
+            user=another_project_member).count()
+        cls.main_project = main_project
 
     def test_returns_annotations_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -510,6 +514,15 @@ class TestAnnotationListAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(len(response.data), self.num_entity_of_project_member)
 
+    def test_returns_annotations_of_another_project_member_if_collaborative_project(self):
+        self._patch_project(self.main_project, 'collaborative_annotation', True)
+
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(len(response.data),
+                         self.num_entity_of_project_member + self.num_entity_of_another_project_member)
+
     def test_allows_project_member_to_create_annotation(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
@@ -521,6 +534,17 @@ class TestAnnotationListAPI(APITestCase):
                           password=self.non_project_member_pass)
         response = self.client.post(self.url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def _patch_project(self, project, attribute, value):
+        old_value = getattr(project, attribute, None)
+        setattr(project, attribute, value)
+        project.save()
+
+        def cleanup_project():
+            setattr(project, attribute, old_value)
+            project.save()
+
+        self.addCleanup(cleanup_project)
 
 
 class TestAnnotationDetailAPI(APITestCase):
