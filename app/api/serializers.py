@@ -41,10 +41,9 @@ class LabelSerializer(serializers.ModelSerializer):
             pass  # unit tests don't always have the correct context set up
         else:
             if Label.objects.filter(suffix_key=suffix_key,
-                                    prefix_key__isnull=True,
+                                    prefix_key=prefix_key,
                                     project=project_id).exists():
                 raise ValidationError('Duplicate key.')
-
         return super().validate(attrs)
 
     class Meta:
