@@ -216,7 +216,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 5,
+    'PAGE_SIZE': env.int('DOCCANO_PAGE_SIZE', default=5),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'SEARCH_PARAM': 'q',
     'DEFAULT_RENDERER_CLASSES': (
