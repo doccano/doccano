@@ -209,6 +209,26 @@ class TestLabelListAPI(APITestCase):
         response = self.client.post(self.other_url, format='json', data=label)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_can_create_same_suffix_with_different_prefix(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        label = {'text': 'Person', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        label = {'text': 'Percentage', 'prefix_key': 'ctrl', 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_cannot_create_same_shortcut_key(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        label = {'text': 'Person', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        label = {'text': 'Percentage', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_disallows_project_member_to_create_label(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
