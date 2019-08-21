@@ -124,14 +124,8 @@
     "databaseUserCredentials" : "[concat(uriComponent(concat(parameters('adminUserName'), '@', variables('databaseServerName'))), ':', parameters('adminPassword'))]",
     "databaseFqdn" : "[concat( variables('databaseServerName'), '.postgres.database.azure.com:', variables('databaseServerPort'))]",
     "databaseConnectionString": "[concat('pgsql://', variables('databaseUserCredentials'), '@', variables('databaseFqdn'), '/', parameters('databaseName'))]",
-    "setupScriptName": "[concat(parameters('appName'),'-setup')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
     "analyticsName": "[concat(parameters('appName'),'-analytics')]",
-    "dockerRegistryCredential": {
-      "password": "[parameters('dockerRegistryPassword')]",
-      "username": "[parameters('dockerRegistryUserName')]",
-      "server": "[parameters('dockerRegistry')]"
-    },
     "appFqdn": "[concat(parameters('appName'),'.azurewebsites.net')]"
   },
   "resources": [
@@ -207,54 +201,6 @@
       ]
     },
     {
-      "name": "[variables('setupScriptName')]",
-      "type": "Microsoft.ContainerInstance/containerGroups",
-      "apiVersion": "2018-10-01",
-      "location": "[variables('location')]",
-      "properties": {
-        "imageRegistryCredentials": "[if(equals(parameters('dockerRegistry'), ''), json('null'), array(variables('dockerRegistryCredential')))]",
-        "containers": [
-          {
-            "name": "createadmin",
-            "properties": {
-              "image": "[parameters('dockerImageName')]",
-              "command": [
-                "tools/create-admin.sh",
-                "[parameters('adminUserName')]",
-                "[parameters('adminContactEmail')]",
-                "[parameters('adminPassword')]"
-              ],
-              "environmentVariables": [
-                {
-                  "name": "DEBUG",
-                  "value": "False"
-                },
-                {
-                  "name": "SECRET_KEY",
-                  "value": "[parameters('secretKey')]"
-                },
-                {
-                  "name": "DATABASE_URL",
-                  "value": "[variables('databaseConnectionString')]"
-                }
-              ],
-              "resources": {
-                "requests": {
-                  "cpu": "1",
-                  "memoryInGb": "1.5"
-                }
-              }
-            }
-          }
-        ],
-        "osType": "Linux",
-        "restartPolicy": "Never"
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('databaseServerName'))]"
-      ]
-    },
-    {
       "type": "Microsoft.Web/sites",
       "apiVersion": "2016-08-01",
       "name": "[parameters('appName')]",
@@ -301,7 +247,19 @@
             },
             {
               "name": "GOOGLE_TRACKING_ID",
-              "value": ""
+              "value": " "
+            },
+            {
+              "name": "ADMIN_USERNAME",
+              "value": "[parameters('adminUserName')]"
+            },
+            {
+              "name": "ADMIN_EMAIL",
+              "value": "[parameters('adminContactEmail')]"
+            },
+            {
+              "name": "ADMIN_PASSWORD",
+              "value": "[parameters('adminPassword')]"
             },
             {
               "name": "DEBUG",

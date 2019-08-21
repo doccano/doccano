@@ -36,20 +36,13 @@
             "value": "True"
         }
     },
+    "stack": "container",
     "scripts": {
-        "postdeploy": "sh tools/heroku.sh deploy"
+        "postdeploy": "sh tools/heroku.sh"
     },
     "addons": [
         {
             "plan": "heroku-postgresql:hobby-dev"
-        }
-    ],
-    "buildpacks": [
-        {
-            "url": "heroku/nodejs"
-        },
-        {
-            "url": "heroku/python"
         }
     ]
 }
