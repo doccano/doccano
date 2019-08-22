@@ -4,6 +4,6 @@ if [[ "$#" -ne 3 ]]; then echo "Usage: $0 <username> <email> <password>" >&2; ex
 
 set -o errexit
 
-python app/manage.py wait_for_db
-python app/manage.py migrate
-python app/manage.py create_admin --noinput --username="$1" --email="$2" --password="$3"
+python3 app/manage.py wait_for_db
+python3 app/manage.py migrate
+python3 app/manage.py create_admin --noinput --username="$1" --email="$2" --password="$3"

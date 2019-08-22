@@ -80,23 +80,23 @@ Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see
 Before running, we need to make migration. Run the following command:
 
 ```bash
-python manage.py migrate
+python3 manage.py migrate
 ```
 
 Next we need to create a user who can login to the admin site. Run the following command:
 
 ```bash
-python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+python3 manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
 ```
 
 Developers can also validate that the project works as expected by running the tests:
 
 ```bash
-python manage.py test server.tests
+python3 manage.py test server.tests
 ```
 
 Finally, to start the server, run the following command:
 
 ```bash
-python manage.py runserver
+python3 manage.py runserver
 ```

@@ -28,7 +28,7 @@ export OAUTH_GITHUB_SECRET=YOUR_CLIENT_SECRET
 ## Run server
 
 ```bash
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 Go to login page:

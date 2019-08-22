@@ -29,7 +29,7 @@ RUN cd /doccano/app/server/static \
  && rm -rf components pages node_modules .*rc package*.json webpack.config.js
 
 RUN cd /doccano \
- && python app/manage.py collectstatic --noinput
+ && python3 app/manage.py collectstatic --noinput
 
 FROM python:${PYTHON_VERSION}-slim-stretch AS runtime
 

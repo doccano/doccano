@@ -141,31 +141,31 @@ docker run -d --rm --name doccano \
 Before running, we need to make migration. Run the following command:
 
 ```bash
-python manage.py migrate
+python3 manage.py migrate
 ```
 
 Next we need to create a user who can login to the admin site. Run the following command:
 
 ```bash
-python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+python3 manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
 ```
 
 Developers can also validate that the project works as expected by running the tests:
 
 ```bash
-python manage.py test server.tests
+python3 manage.py test server.tests
 ```
 
 Finally, to start the server, run the following command:
 
 ```bash
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 Optionally, you can change the bind ip and port using the command
 
 ```bash
-python manage.py runserver <ip>:<port>
+python3 manage.py runserver <ip>:<port>
 ```
 
 #### Option 3: Running the development Docker-Compose stack

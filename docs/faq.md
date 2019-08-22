@@ -28,11 +28,11 @@ Following list is ordered by from easy to hard. If you are not familiar with Pyt
    * Build frontend library: `npm install`
    * Build frontend source code: `npm run build`
    * Back to server directory: `cd ../`
-   * Initialize doccano: `python manage.py migrate`
-   * Create user: `python manage.py createsuperuser`
-   * Run doccano: `python manage.py runserver`
+   * Initialize doccano: `python3 manage.py migrate`
+   * Create user: `python3 manage.py createsuperuser`
+   * Run doccano: `python3 manage.py runserver`
    * Stop doccano: Ctrl+C
-   * Re-Launch doccano: `python manage.py runserver` (Confirm you are at `app/server` directory and environment is active).
+   * Re-Launch doccano: `python3 manage.py runserver` (Confirm you are at `app/server` directory and environment is active).
 
 ## I can't upload my data.
 
