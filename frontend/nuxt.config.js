@@ -25,6 +25,11 @@ export default {
       }
     ]
   },
+
+  serverMiddleware: [
+    '~/api/index.js'
+  ],
+
   /*
   ** Customize the progress-bar color
   */
