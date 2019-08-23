@@ -23,7 +23,7 @@ Following list is ordered by from easy to hard. If you are not familiar with Pyt
    * Move to doccano directory: `cd doccano`
    * Create environment for doccano: `virtualenv venv`
    * Activate environment: `source venv/bin/activate`
-   * Install required packages: `pip install -r requirements.txt`
+   * Install required packages: `pip3 install -r requirements.txt`
    * Move server directory: `cd app/server`
    * Build frontend library: `npm install`
    * Build frontend source code: `npm run build`

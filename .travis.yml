@@ -25,7 +25,7 @@ before_install:
     fi
 
 install:
-    - pip install mkdocs mkdocs-material
+    - pip3 install mkdocs mkdocs-material
 
 script:
   - docker build --target=builder --tag=doccano-test .

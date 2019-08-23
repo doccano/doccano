@@ -14,8 +14,8 @@ RUN cd /doccano/app/server/static \
  && npm ci
 
 COPY requirements.txt /
-RUN pip install -r /requirements.txt \
- && pip wheel -r /requirements.txt -w /deps
+RUN pip3 install -r /requirements.txt \
+ && pip3 wheel -r /requirements.txt -w /deps
 
 COPY . /doccano
 
@@ -39,7 +39,7 @@ RUN /doccano/tools/install-mssql.sh
 RUN useradd -ms /bin/sh doccano
 
 COPY --from=builder /deps /deps
-RUN pip install --no-cache-dir /deps/*.whl
+RUN pip3 install --no-cache-dir /deps/*.whl
 
 COPY --from=cleaner --chown=doccano:doccano /doccano /doccano
 

@@ -28,7 +28,7 @@ docker-compose pull
 First we need to install the dependencies. Run the following commands:
 
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 cd app
 ```
 
