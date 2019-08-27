@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseURL = 'http://localhost:3000/v1' // Todo: change URL by development/staging/production.
+const baseURL = 'http://127.0.0.1:3000/v1' // Todo: change URL by development/staging/production.
 
 export default class ApiService {
   constructor() {

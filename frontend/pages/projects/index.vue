@@ -13,46 +13,16 @@
               <v-btn
                 class="mb-2 text-capitalize"
                 color="primary"
-                @click="openAddModal"
+                @click="dialog=true"
               >
                 Add Project
               </v-btn>
-              <Modal
-                ref="childDialogue"
-                :title="addModal.title"
-                :button="addModal.button"
-                @agree="createProject"
+              <v-dialog
+                v-model="dialog"
+                width="800px"
               >
-                <v-form
-                  ref="form"
-                  v-model="valid"
-                  lazy-validation
-                >
-                  <v-text-field
-                    v-model="newProject.name"
-                    :rules="nameRules"
-                    label="Project name"
-                    prepend-icon="label"
-                    required
-                    autofocus
-                  />
-                  <v-text-field
-                    v-model="newProject.description"
-                    :rules="nameRules"
-                    label="Description"
-                    prepend-icon="label"
-                    required
-                  />
-                  <v-select
-                    v-model="newProject.project_type"
-                    :items="projectTypes"
-                    :rules="[v => !!v || 'Type is required']"
-                    label="projectType"
-                    prepend-icon="mdi-keyboard"
-                    required
-                  />
-                </v-form>
-              </Modal>
+                <form-project-creation @cancel="dialog=false" @create-project="createProject" />
+              </v-dialog>
               <v-btn
                 class="mb-2 ml-2 text-capitalize"
                 outlined
@@ -105,34 +75,21 @@
 
 <script>
 import Modal from '~/components/Modal'
+import FormProjectCreation from '~/components/FormProjectCreation'
 import ProjectService from '~/services/project.service'
 
 export default {
   layout: 'projects',
   components: {
-    Modal
+    Modal,
+    FormProjectCreation
   },
   data: () => ({
     dialog: false,
-    valid: true,
     search: '',
     selected: [],
     selectedUser: null,
-    projectTypes: [
-      'Text Classification',
-      'Sequence Labeling',
-      'Sequence to sequence'
-    ], // Todo: Get project types from backend server.
     projects: [],
-    newProject: {
-      name: '',
-      description: '',
-      project_type: null
-    },
-    addModal: {
-      title: 'Add Project',
-      button: 'Add Project'
-    },
     removeModal: {
       title: 'Remove Project',
       button: 'Yes, remove'
@@ -151,9 +108,6 @@ export default {
         text: 'Type',
         value: 'project_type'
       }
-    ],
-    nameRules: [
-      v => !!v || 'Name is required'
     ]
   }),
 
@@ -162,14 +116,9 @@ export default {
   },
 
   methods: {
-    async createProject() {
-      const response = await ProjectService.createProject(this.newProject)
-      this.projects.unshift(response)
-      this.newProject = {
-        name: '',
-        description: '',
-        project_type: null
-      }
+    createProject(project) {
+      this.projects.unshift(project)
+      this.dialog = false
     },
     async deleteProject() {
       // Todo: bulk delete.
@@ -178,9 +127,6 @@ export default {
         this.projects = this.projects.filter(item => item.id !== project.id)
       }
       this.selected = []
-    },
-    openAddModal() {
-      this.$refs.childDialogue.open()
     },
     openRemoveModal() {
       this.$refs.removeDialogue.open()
