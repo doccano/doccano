@@ -1,7 +1,8 @@
 import axios from 'axios'
+const baseURL = 'http://localhost:3000/v1' // Todo: change URL by development/staging/production.
 
-export default class Request {
-  constructor(baseURL) {
+export default class ApiService {
+  constructor() {
     this.instance = axios.create({
       baseURL
     })

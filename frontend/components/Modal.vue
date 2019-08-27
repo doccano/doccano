@@ -29,7 +29,7 @@
         <v-btn
           class="text-none"
           text
-          @click="dialog = false"
+          @click="agree"
         >
           {{ button }}
         </v-btn>
@@ -59,6 +59,7 @@ export default {
     },
     agree() {
       this.dialog = false
+      this.$emit('agree')
     },
     cancel() {
       this.dialog = false

@@ -1,8 +1,8 @@
 import MockAdapter from 'axios-mock-adapter'
-import Request from '@/services/request.js'
+import ApiService from '@/services/api.service'
 
 describe('Request', () => {
-  const r = new Request('')
+  const r = new ApiService('')
   const mockAxios = new MockAdapter(r.instance)
 
   test('can get resources', async () => {
