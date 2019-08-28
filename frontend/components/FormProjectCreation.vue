@@ -14,15 +14,15 @@
               v-model="name"
               :rules="nameRules"
               label="Project name"
-              prepend-icon="label"
+              prepend-icon="mdi-account-multiple"
               required
               autofocus
             />
             <v-text-field
               v-model="description"
-              :rules="nameRules"
+              :rules="descriptionRules"
               label="Description"
-              prepend-icon="label"
+              prepend-icon="mdi-clipboard-text"
               required
             />
             <v-select
@@ -74,7 +74,12 @@ export default {
       'Sequence to sequence'
     ], // Todo: Get project types from backend server.
     nameRules: [
-      v => !!v || 'Name is required'
+      v => !!v || 'Project name is required',
+      v => (v && v.length <= 30) || 'Project name must be less than 30 characters'
+    ],
+    descriptionRules: [
+      v => !!v || 'Description is required',
+      v => (v && v.length <= 100) || 'Description must be less than 100 characters'
     ]
   }),
 

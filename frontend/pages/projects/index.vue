@@ -65,6 +65,11 @@
                   filled
                 />
               </template>
+              <template v-slot:item.name="{ item }">
+                <nuxt-link :to="`/projects/${item.id}`">
+                  <span>{{ item.name }}</span>
+                </nuxt-link>
+              </template>
             </v-data-table>
           </v-card>
         </v-flex>
