@@ -29,6 +29,7 @@ router.post('/', (req, res) => {
     updated_at: '2019-08-21T02:49:48.790813Z',
     randomize_document_order: false
   }
+  db.push(project)
   res.json(project)
 })
 
