@@ -387,7 +387,7 @@ class SpacyParser(FileParser):
         items = json.loads(file.read())
         data = []
         for i, line in enumerate(items, start=1):
-            if len(data) >= IMPORT_BATCH_SIZE:
+            if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
             try:
