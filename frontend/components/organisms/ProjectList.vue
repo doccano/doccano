@@ -45,9 +45,11 @@ export default {
       required: true
     }
   },
-  data: () => ({
-    search: ''
-  }),
+  data() {
+    return {
+      search: ''
+    }
+  },
   methods: {
     update(selected) {
       this.$emit('update', selected)

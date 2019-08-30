@@ -10,8 +10,8 @@
 
 <script>
 import ProjectList from '@/components/containers/ProjectList'
-import ProjectCreationButton from '@/components/organisms/ProjectCreationButton'
-import ProjectDeletionButton from '@/components/organisms/ProjectDeletionButton'
+import ProjectDeletionButton from '@/components/containers/ProjectDeletionButton'
+import ProjectCreationButton from '@/components/containers/ProjectCreationButton'
 
 export default {
   layout: 'projects',

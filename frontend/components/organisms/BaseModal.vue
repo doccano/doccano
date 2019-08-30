@@ -9,33 +9,26 @@
         color="primary"
         @click="dialog=true"
       >
-        Add Project
+        {{ text }}
       </v-btn>
     </template>
-    <project-creation-form
-      :create-project="createProject"
-      @close="dialog=false"
-    />
+    <template #content />
   </v-dialog>
 </template>
 
 <script>
-import ProjectCreationForm from '@/components/organisms/ProjectCreationForm'
-
 export default {
-  components: {
-    ProjectCreationForm
+  props: {
+    text: {
+      type: String,
+      default: '',
+      required: true
+    }
   },
 
   data() {
     return {
       dialog: false
-    }
-  },
-
-  methods: {
-    createProject(payload) {
-      return this.$store.dispatch('ProjectList/createProject', payload)
     }
   }
 }
