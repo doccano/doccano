@@ -941,7 +941,7 @@ class TestUploader(APITestCase):
     def test_can_upload_labeling_spacy(self):
         self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.spacy.json',
-                                format='spacy',
+                                file_format='spacy',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
@@ -959,7 +959,7 @@ class TestUploader(APITestCase):
     def test_can_upload_labeling_spacy(self):
         self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.spacy.json',
-                                format='spacy',
+                                file_format='spacy',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
