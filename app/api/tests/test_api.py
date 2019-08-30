@@ -956,24 +956,6 @@ class TestUploader(APITestCase):
                 'text_color',
             ])
 
-    def test_can_upload_labeling_spacy(self):
-        self.upload_test_helper(project_id=self.labeling_project.id,
-                                filename='labeling.spacy.json',
-                                file_format='spacy',
-                                expected_status=status.HTTP_201_CREATED)
-
-        self.label_test_helper(
-            project_id=self.labeling_project.id,
-            expected_labels=[
-                {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
-                {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
-                {'text': 'PER', 'suffix_key': 'p', 'prefix_key': None},
-            ],
-            expected_label_keys=[
-                'background_color',
-                'text_color',
-            ])
-
     def test_can_upload_seq2seq_jsonl(self):
         self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='seq2seq.jsonl',

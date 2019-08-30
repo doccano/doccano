@@ -1,0 +1,5 @@
+[ 
+    ["example text", { "entities": [[0, 7, "LOC"], [8, 12, "ORG"]] } ],
+    ["example", { "entities": [[0, 7, "LOC"]] } ],
+    ["example person", { "entities": [[8, 14, "PER"]] } ]
+]
