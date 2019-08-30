@@ -231,7 +231,7 @@ class TextUploadAPI(APIView):
             return CoNLLParser()
         elif file_format == 'excel':
             return ExcelParser()
-        elif format == 'spacy':
+        elif file_format == 'spacy':
             return SpacyParser()
         else:
             raise ValidationError('format {} is invalid.'.format(file_format))
