@@ -22,10 +22,13 @@ class IsAdminUserAndWriteOnly(BasePermission):
         return IsAdminUser().has_permission(request, view)
 
 
-class SuperUserMixin(UserPassesTestMixin):
-
+class ProjectAdminMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.is_superuser
+        return self.request.user.is_superuser or is_in_role(
+            role_name=IsProjectAdmin.role_name,
+            user_id=self.request.user.id,
+            project_id=self.kwargs['project_id'],
+        )
 
 
 class IsOwnAnnotation(ProjectMixin, BasePermission):

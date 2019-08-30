@@ -8,7 +8,7 @@ from django.views.generic import TemplateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from api.permissions import SuperUserMixin
+from api.permissions import ProjectAdminMixin
 from api.models import Project, RoleMapping
 from app import settings
 
@@ -38,7 +38,7 @@ class ProjectsView(LoginRequiredMixin, TemplateView):
     template_name = 'projects.html'
 
 
-class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
+class DatasetView(ProjectAdminMixin, LoginRequiredMixin, ListView):
     template_name = 'dataset.html'
     paginate_by = 5
     extra_context = {
@@ -50,35 +50,35 @@ class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
         return project.documents.all()
 
 
-class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+class LabelView(ProjectAdminMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
     extra_context = {
         'bundle_name': 'label'
     }
 
 
-class StatsView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+class StatsView(ProjectAdminMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
     extra_context = {
         'bundle_name': 'stats'
     }
 
 
-class GuidelineView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+class GuidelineView(ProjectAdminMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
     extra_context = {
         'bundle_name': 'guideline'
     }
 
 
-class UsersView(SuperUserMixin, LoginRequiredMixin, TemplateView):
+class UsersView(ProjectAdminMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
     extra_context = {
         'bundle_name': 'users'
     }
 
 
-class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
+class DataUpload(ProjectAdminMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
 
     def get_context_data(self, **kwargs):
@@ -88,7 +88,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         return context
 
 
-class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
+class DataDownload(ProjectAdminMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin.html'
 
     def get_context_data(self, **kwargs):
