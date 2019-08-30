@@ -939,13 +939,13 @@ class TestUploader(APITestCase):
             ])
 
     def test_can_upload_labeling_spacy(self):
-        self.upload_test_helper(url=self.labeling_url,
+        self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.spacy.json',
                                 format='spacy',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
-            url=self.labeling_labels_url,
+            project_id=self.labeling_project.id,
             expected_labels=[
                 {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
                 {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
@@ -957,13 +957,13 @@ class TestUploader(APITestCase):
             ])
 
     def test_can_upload_labeling_spacy(self):
-        self.upload_test_helper(url=self.labeling_url,
+        self.upload_test_helper(project_id=self.labeling_project.id,
                                 filename='labeling.spacy.json',
                                 format='spacy',
                                 expected_status=status.HTTP_201_CREATED)
 
         self.label_test_helper(
-            url=self.labeling_labels_url,
+            project_id=self.labeling_project.id,
             expected_labels=[
                 {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
                 {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
