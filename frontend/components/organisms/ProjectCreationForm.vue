@@ -101,14 +101,20 @@ export default {
     cancel() {
       this.$emit('close')
     },
+    validate() {
+      return this.$refs.form.validate()
+    },
+    reset() {
+      this.$refs.form.reset()
+    },
     create() {
-      if (this.$refs.form.validate()) {
+      if (this.validate()) {
         this.createProject({
           name: this.name,
           description: this.description,
           project_type: this.projectType
         })
-        this.$refs.form.reset()
+        this.reset()
         this.cancel()
       }
     }

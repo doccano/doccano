@@ -29,18 +29,20 @@ describe('ProjectCreationForm', () => {
 
   test('emit close event when form is valid', () => {
     const wrapper = factory({ createProject, projectTypes })
-    wrapper.vm.$refs.form = {}  // Todo: need more elegant solution
-    wrapper.vm.$refs.form.validate = () => (true)
-    wrapper.vm.$refs.form.reset = () => { }
+    wrapper.setMethods({
+      validate: jest.fn(() => true),
+      reset: jest.fn()
+    })
     wrapper.vm.create()
     expect(wrapper.emitted('close')).toBeTruthy()
   })
 
   test('do not emit close event when form is invalid', () => {
     const wrapper = factory({ createProject, projectTypes })
-    wrapper.vm.$refs.form = {}  // Todo: need more elegant solution
-    wrapper.vm.$refs.form.validate = () => (false)
-    wrapper.vm.$refs.form.reset = () => { }
+    wrapper.setMethods({
+      validate: jest.fn(() => false),
+      reset: jest.fn()
+    })
     wrapper.vm.create()
     expect(wrapper.emitted('close')).toBeFalsy()
   })
