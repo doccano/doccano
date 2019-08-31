@@ -10,6 +10,7 @@
           :rules="nameRules"
           label="Project name"
           prepend-icon="mdi-account-multiple"
+          data-test="project-name"
           required
           autofocus
         />
@@ -18,6 +19,7 @@
           :rules="descriptionRules"
           label="Description"
           prepend-icon="mdi-clipboard-text"
+          data-test="project-description"
           required
         />
         <v-select
@@ -26,6 +28,7 @@
           :rules="[v => !!v || 'Type is required']"
           label="projectType"
           prepend-icon="mdi-keyboard"
+          data-test="project-type"
           required
         />
       </v-form>
@@ -35,6 +38,7 @@
         class="text-capitalize"
         text
         color="primary"
+        data-test="cancel-button"
         @click="cancel"
       >
         Cancel
@@ -43,6 +47,7 @@
         :disabled="!valid"
         class="text-none"
         text
+        data-test="create-button"
         @click="create"
       >
         Create
