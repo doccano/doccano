@@ -15,6 +15,7 @@
         class="text-capitalize"
         text
         color="primary"
+        data-test="cancel-button"
         @click="cancel"
       >
         Cancel
@@ -22,6 +23,7 @@
       <v-btn
         class="text-none"
         text
+        data-test="delete-button"
         @click="deleteProject"
       >
         Yes, delete
