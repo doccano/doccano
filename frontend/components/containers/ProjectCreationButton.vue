@@ -35,7 +35,7 @@ export default {
 
   methods: {
     createProject(payload) {
-      return this.$store.dispatch('ProjectList/createProject', payload)
+      return this.$store.dispatch('projects/createProject', payload)
     }
   }
 }

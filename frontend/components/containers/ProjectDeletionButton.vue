@@ -7,7 +7,7 @@
       <v-btn
         class="mb-2 ml-2 text-capitalize"
         outlined
-        :disabled="selected.length === 0"
+        :disabled="!isProjectSelected"
         @click="dialog=true"
       >
         Delete
@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import ProjectDeletionForm from '@/components/organisms/ProjectDeletionForm'
 
 export default {
@@ -37,12 +37,13 @@ export default {
   },
 
   computed: {
-    ...mapState('ProjectList', ['projects', 'selected'])
+    ...mapState('projects', ['selected']),
+    ...mapGetters('projects', ['isProjectSelected'])
   },
 
   methods: {
     handleDeleteProject() {
-      this.$store.dispatch('ProjectList/deleteProject')
+      this.$store.dispatch('projects/deleteProject')
       this.dialog = false
     }
   }

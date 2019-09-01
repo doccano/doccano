@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import ProjectList from '@/components/organisms/ProjectList'
 
 export default {
@@ -36,16 +36,19 @@ export default {
   },
 
   computed: {
-    ...mapState('ProjectList', ['projects', 'selected'])
+    ...mapState('projects', ['projects', 'selected'])
   },
 
-  async created() {
-    await this.$store.dispatch('ProjectList/getProjectList')
+  created() {
+    this.getProjectList()
   },
 
   methods: {
+    ...mapActions('projects', ['getProjectList']),
+    ...mapMutations('projects', ['updateSelected']),
+
     update(selected) {
-      this.$store.commit('ProjectList/updateSelected', selected)
+      this.updateSelected(selected)
     }
   }
 }
