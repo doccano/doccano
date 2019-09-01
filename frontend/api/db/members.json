@@ -2,11 +2,11 @@
     {
         "id": 1,
         "username": "Barack Obama",
-        "role": "admin"
+        "role": "Admin"
     },
     {
         "id": 2,
         "username": "George W. Bush",
-        "role": "member"
+        "role": "Member"
     }
 ]

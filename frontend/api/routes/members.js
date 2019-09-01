@@ -20,8 +20,12 @@ router.get('/', (req, res) => {
 // Add a project user.
 router.post('/', (req, res) => {
   const user = users.find(item => item.id === parseInt(req.body.id))
-  db.push(user)
-  res.json(user)
+  const member = {
+    ...user,
+    role: req.body.role
+  }
+  db.push(member)
+  res.json(member)
 })
 
 // Update a project user.
@@ -29,6 +33,17 @@ router.put('/:userId', (req, res) => {
   const projectIndex = db.findIndex(item => item.id === parseInt(req.params.userId))
   if (projectIndex !== -1) {
     db[projectIndex] = req.body
+    res.json(db[projectIndex])
+  } else {
+    res.status(404).json({ detail: 'Not found.' })
+  }
+})
+
+// Partially update a project user.
+router.patch('/:userId', (req, res) => {
+  const projectIndex = db.findIndex(item => item.id === parseInt(req.params.userId))
+  if (projectIndex !== -1) {
+    db[projectIndex].role = req.body.role
     res.json(db[projectIndex])
   } else {
     res.status(404).json({ detail: 'Not found.' })

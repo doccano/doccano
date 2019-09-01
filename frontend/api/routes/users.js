@@ -7,7 +7,7 @@ const db = JSON.parse(fs.readFileSync('./api/db/users.json', 'utf8'))
 router.get('/', (req, res) => {
   const q = req.query.q
   if (q) {
-    res.json(db.filter(item => item.text.toLowerCase().includes(q.toLowerCase())))
+    res.json(db.filter(item => item.username.toLowerCase().includes(q.toLowerCase())))
   } else {
     res.json(db)
   }
