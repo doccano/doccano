@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import ProjectCreationForm from '@/components/organisms/ProjectCreationForm'
 
 export default {
@@ -34,9 +35,7 @@ export default {
   },
 
   methods: {
-    createProject(payload) {
-      return this.$store.dispatch('projects/createProject', payload)
-    }
+    ...mapActions('projects', ['createProject'])
   }
 }
 </script>
