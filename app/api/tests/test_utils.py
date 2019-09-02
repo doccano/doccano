@@ -1,11 +1,13 @@
 import io
+from collections import OrderedDict
+from unittest.mock import Mock, patch
 
+from django.db.models import QuerySet
 from django.test import TestCase
-
 from seqeval.metrics.sequence_labeling import get_entities
 
 from ..models import Label, Document
-from ..utils import BaseStorage, ClassificationStorage, SequenceLabelingStorage, Seq2seqStorage, CoNLLParser
+from ..utils import BaseStorage, ClassificationStorage, SequenceLabelingStorage, Seq2seqStorage, CoNLLParser, CoNLLRenderer, CONLLPainter
 from ..utils import Color, iterable_to_io
 
 
@@ -168,3 +170,33 @@ class TestIterableToIO(TestCase):
         stream = io.TextIOWrapper(stream)
 
         self.assertEqual(stream.readlines(), ['foo\n', 'bar\n', 'baz\n', 'rest'])
+
+class TestCoNLLRenderer(TestCase):
+
+    def test_render_for_no_data(self):
+        data = None
+        test_object = CoNLLRenderer()
+        assert test_object.render(data) == bytes()
+
+    def test_render_for_data_not_as_list(self):
+        data = "One_Document"
+        test_object = CoNLLRenderer()
+        assert test_object.render(data) == data
+
+    def test_render_for_two_documents(self):
+        data = ["First_Document", "Second_Document"]
+        test_object = CoNLLRenderer()
+        assert test_object.render(data) == "\n\n".join(data)
+
+class TestCONLLPainter(TestCase):
+
+    def test_paint_labels_for_empty_data(self):
+        labels = QuerySet(model=Label())
+        documents = QuerySet(model=Document())
+        assert CONLLPainter.paint_labels(documents, labels) == []
+
+    def test_paint_labels_with_some_data(self):
+        with patch.object('api.serializers.DocumentSerializer', return_value=[{"text": "India is great"}]) as document_serializer:
+            labels = Mock(QuerySet)
+            documents = Mock(QuerySet)
+            assert CONLLPainter.paint_labels(documents, labels) == []
