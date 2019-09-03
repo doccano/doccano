@@ -7,9 +7,13 @@ env:
   - DATABASE=sqlite
   - DATABASE=postgres
   - DATABASE=mssql
+  # Path to 'hadolint' binary
+  - HADOLINT: "${HOME}/hadolint"
 
 services:
   - docker
+
+sudo: false
 
 before_install:
   - docker network create doccano
@@ -26,6 +30,8 @@ before_install:
 
 install:
     - pip install mkdocs mkdocs-material
+    # Download hadolint binary and set it as executable
+    - curl -sL -o ${HADOLINT} "https://github.com/hadolint/hadolint/releases/download/v1.16.0/hadolint-$(uname -s)-$(uname -m)" && chmod 700 ${HADOLINT}
 
 script:
   - docker build --target=builder --tag=doccano-test .
@@ -33,6 +39,9 @@ script:
     if [[ "${DATABASE}" != "sqlite" ]]; then
       docker run --network doccano -e DATABASE_URL="${DATABASE_URL}" -it doccano-test sh -c 'app/manage.py wait_for_db && app/manage.py migrate && app/manage.py test api.tests server.tests'
     fi
+  # List files which name starts with 'Dockerfile'
+  # eg. Dockerfile, Dockerfile.build, etc.
+  - git ls-files --exclude='Dockerfile*' --ignored | xargs --max-lines=1 ${HADOLINT}
 
 before_deploy:
     - mkdocs build --verbose --clean
@@ -54,3 +63,5 @@ deploy:
     local_dir: site
     on:
         branch: master
+
+        # Use container-based infrastructure for quicker build start-up
