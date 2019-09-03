@@ -1,39 +1,27 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    width="800px"
+  <base-modal
+    text="Remove"
+    :disabled="!isMemberSelected"
   >
-    <template v-slot:activator="{ on }">
-      <v-btn
-        class="mb-2 ml-2 text-capitalize"
-        outlined
-        :disabled="!isMemberSelected"
-        @click="dialog=true"
-      >
-        Remove
-      </v-btn>
+    <template v-slot="slotProps">
+      <member-deletion-form
+        :selected="selected"
+        @remove="handleRemoveMember(); slotProps.close()"
+        @close="slotProps.close"
+      />
     </template>
-    <member-deletion-form
-      :selected="selected"
-      @remove="handleRemoveMember"
-      @close="dialog=false"
-    />
-  </v-dialog>
+  </base-modal>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import BaseModal from '@/components/molecules/BaseModal'
 import MemberDeletionForm from '@/components/organisms/MemberDeletionForm'
 
 export default {
   components: {
+    BaseModal,
     MemberDeletionForm
-  },
-
-  data() {
-    return {
-      dialog: false
-    }
   },
 
   computed: {
@@ -47,7 +35,6 @@ export default {
     handleRemoveMember() {
       const projectId = this.$route.params.id
       this.removeMember(projectId)
-      this.dialog = false
     }
   }
 }

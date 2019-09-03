@@ -1,37 +1,26 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    width="800px"
+  <base-modal
+    text="Add Project"
+    :is-create="true"
   >
-    <template v-slot:activator="{ on }">
-      <v-btn
-        class="mb-2 text-capitalize"
-        color="primary"
-        @click="dialog=true"
-      >
-        Add Project
-      </v-btn>
+    <template v-slot="slotProps">
+      <project-creation-form
+        :create-project="createProject"
+        @close="slotProps.close"
+      />
     </template>
-    <project-creation-form
-      :create-project="createProject"
-      @close="dialog=false"
-    />
-  </v-dialog>
+  </base-modal>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import BaseModal from '@/components/molecules/BaseModal'
 import ProjectCreationForm from '@/components/organisms/ProjectCreationForm'
 
 export default {
   components: {
+    BaseModal,
     ProjectCreationForm
-  },
-
-  data() {
-    return {
-      dialog: false
-    }
   },
 
   methods: {

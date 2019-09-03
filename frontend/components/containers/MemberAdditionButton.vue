@@ -1,39 +1,33 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    width="800px"
+  <base-modal
+    text="Add Member"
+    :is-create="true"
   >
-    <template v-slot:activator="{ on }">
-      <v-btn
-        class="mb-2 text-capitalize"
-        color="primary"
-        @click="dialog=true"
-      >
-        Add Member
-      </v-btn>
+    <template v-slot="slotProps">
+      <member-addition-form
+        :add-member="addMember"
+        :items="items"
+        @close="slotProps.close"
+        @search-user="searchUser"
+      />
     </template>
-    <member-addition-form
-      :add-member="addMember"
-      :items="items"
-      @close="dialog=false"
-      @search-user="searchUser"
-    />
-  </v-dialog>
+  </base-modal>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import BaseModal from '@/components/molecules/BaseModal'
 import MemberAdditionForm from '@/components/organisms/MemberAdditionForm'
 import UserService from '@/services/user.service'
 
 export default {
   components: {
+    BaseModal,
     MemberAdditionForm
   },
 
   data() {
     return {
-      dialog: false,
       items: []
     }
   },

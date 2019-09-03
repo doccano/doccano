@@ -1,39 +1,27 @@
 <template>
-  <v-dialog
-    v-model="dialog"
-    width="800px"
+  <base-modal
+    text="Delete"
+    :disabled="!isProjectSelected"
   >
-    <template v-slot:activator="{ on }">
-      <v-btn
-        class="mb-2 ml-2 text-capitalize"
-        outlined
-        :disabled="!isProjectSelected"
-        @click="dialog=true"
-      >
-        Delete
-      </v-btn>
+    <template v-slot="slotProps">
+      <project-deletion-form
+        :selected="selected"
+        @delete="handleDeleteProject(); slotProps.close()"
+        @close="slotProps.close"
+      />
     </template>
-    <project-deletion-form
-      :selected="selected"
-      @delete="handleDeleteProject"
-      @close="dialog=false"
-    />
-  </v-dialog>
+  </base-modal>
 </template>
 
 <script>
 import { mapState, mapGetters } from 'vuex'
+import BaseModal from '@/components/molecules/BaseModal'
 import ProjectDeletionForm from '@/components/organisms/ProjectDeletionForm'
 
 export default {
   components: {
+    BaseModal,
     ProjectDeletionForm
-  },
-
-  data() {
-    return {
-      dialog: false
-    }
   },
 
   computed: {
@@ -44,7 +32,6 @@ export default {
   methods: {
     handleDeleteProject() {
       this.$store.dispatch('projects/deleteProject')
-      this.dialog = false
     }
   }
 }
