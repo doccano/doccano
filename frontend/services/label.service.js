@@ -1,32 +1,29 @@
 import ApiService from '@/services/api.service'
 
-class MemberService {
+class LabelService {
   constructor() {
     this.request = new ApiService()
   }
 
-  getMemberList(projectId) {
-    return this.request.get(`/projects/${projectId}/users`)
+  getLabelList(projectId) {
+    return this.request.get(`/projects/${projectId}/labels`)
   }
 
-  addMember(projectId, userId, role) {
+  addLabel(projectId, payload) {
+    return this.request.post(`/projects/${projectId}/labels`, payload)
+  }
+
+  deleteLabel(projectId, labelId) {
+    return this.request.delete(`/projects/${projectId}/labels/${labelId}`)
+  }
+
+  updateLabel(projectId, labelId, payload) {
     const data = {
-      id: userId,
-      role
+      id: labelId,
+      ...payload
     }
-    return this.request.post(`/projects/${projectId}/users`, data)
-  }
-
-  deleteMember(projectId, userId) {
-    return this.request.delete(`/projects/${projectId}/users/${userId}`)
-  }
-
-  updateMemberRole(projectId, userId, role) {
-    const data = {
-      role
-    }
-    return this.request.patch(`/projects/${projectId}/users/${userId}`, data)
+    return this.request.patch(`/projects/${projectId}/labels/${labelId}`, data)
   }
 }
 
-export default new MemberService()
+export default new LabelService()

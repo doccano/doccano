@@ -53,7 +53,7 @@ export const actions = {
       })
   },
   updateLabel({ commit }, data) {
-    LabelService.updateLabel(data.projectId, data.labelId, data)
+    LabelService.updateLabel(data.projectId, data.id, data)
       .then((response) => {
         commit('updateLabel', response)
       })

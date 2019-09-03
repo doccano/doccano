@@ -37,7 +37,7 @@ router.get('/:labelId', (req, res) => {
 })
 
 // Update a label.
-router.put('/:labelId', (req, res) => {
+router.patch('/:labelId', (req, res) => {
   const labelIndex = db.findIndex(item => item.id === parseInt(req.params.labelId))
   if (labelIndex !== -1) {
     db[labelIndex] = req.body
