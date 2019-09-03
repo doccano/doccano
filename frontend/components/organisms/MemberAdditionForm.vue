@@ -1,5 +1,12 @@
 <template>
-  <base-card title="Add Member">
+  <base-card
+    title="Add Member"
+    agree-text="Add"
+    cancel-text="Cancel"
+    :disabled="!valid"
+    @agree="create"
+    @cancel="cancel"
+  >
     <template #content>
       <v-form
         ref="form"
@@ -10,6 +17,7 @@
           :items="items"
           :loading="isLoading"
           :search-input.sync="username"
+          :rules="userRules"
           color="white"
           hide-no-data
           hide-selected
@@ -22,30 +30,11 @@
         <v-select
           v-model="role"
           :items="roles"
+          :rules="roleRules"
           label="Role"
           prepend-icon="mdi-account-card-details-outline"
         />
       </v-form>
-    </template>
-    <template #actions>
-      <v-btn
-        class="text-capitalize"
-        text
-        color="primary"
-        data-test="cancel-button"
-        @click="cancel"
-      >
-        Cancel
-      </v-btn>
-      <v-btn
-        :disabled="!valid"
-        class="text-none"
-        text
-        data-test="create-button"
-        @click="create"
-      >
-        Add
-      </v-btn>
     </template>
   </base-card>
 </template>
@@ -71,12 +60,18 @@ export default {
   },
   data() {
     return {
-      valid: true,
+      valid: false,
       username: '',
       role: null,
       isLoading: false,
       selectedUser: null,
-      roles: ['Admin', 'Member']
+      roles: ['Admin', 'Member'],
+      userRules: [
+        v => !!v || 'User is required'
+      ],
+      roleRules: [
+        v => !!v || 'Role is required'
+      ]
     }
   },
 

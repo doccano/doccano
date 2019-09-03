@@ -1,5 +1,11 @@
 <template>
-  <base-card title="Delete Project">
+  <base-card
+    title="Delete Project"
+    agree-text="Yes, delete"
+    cancel-text="Cancel"
+    @agree="deleteProject"
+    @cancel="cancel"
+  >
     <template #content>
       Are you sure you want to delete these projects?
       <v-list dense>
@@ -9,25 +15,6 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-    </template>
-    <template #actions>
-      <v-btn
-        class="text-capitalize"
-        text
-        color="primary"
-        data-test="cancel-button"
-        @click="cancel"
-      >
-        Cancel
-      </v-btn>
-      <v-btn
-        class="text-none"
-        text
-        data-test="delete-button"
-        @click="deleteProject"
-      >
-        Yes, delete
-      </v-btn>
     </template>
   </base-card>
 </template>

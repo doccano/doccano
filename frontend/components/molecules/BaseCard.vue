@@ -12,7 +12,24 @@
     </v-container>
     <v-card-actions>
       <v-spacer />
-      <slot name="actions" />
+      <v-btn
+        class="text-capitalize"
+        text
+        color="primary"
+        data-test="cancel-button"
+        @click="cancel"
+      >
+        {{ cancelText }}
+      </v-btn>
+      <v-btn
+        class="text-none"
+        text
+        :disabled="disabled"
+        data-test="delete-button"
+        @click="agree"
+      >
+        {{ agreeText }}
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -24,6 +41,29 @@ export default {
       type: String,
       default: '',
       required: true
+    },
+    cancelText: {
+      type: String,
+      default: '',
+      required: true
+    },
+    agreeText: {
+      type: String,
+      default: '',
+      required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  methods: {
+    agree() {
+      this.$emit('agree')
+    },
+    cancel() {
+      this.$emit('cancel')
     }
   }
 }

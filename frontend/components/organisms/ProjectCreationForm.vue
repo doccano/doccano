@@ -1,5 +1,12 @@
 <template>
-  <base-card title="Add Project">
+  <base-card
+    title="Add Project"
+    agree-text="Create"
+    cancel-text="Cancel"
+    :disabled="!valid"
+    @agree="create"
+    @cancel="cancel"
+  >
     <template #content>
       <v-form
         ref="form"
@@ -33,26 +40,6 @@
         />
       </v-form>
     </template>
-    <template #actions>
-      <v-btn
-        class="text-capitalize"
-        text
-        color="primary"
-        data-test="cancel-button"
-        @click="cancel"
-      >
-        Cancel
-      </v-btn>
-      <v-btn
-        :disabled="!valid"
-        class="text-none"
-        text
-        data-test="create-button"
-        @click="create"
-      >
-        Create
-      </v-btn>
-    </template>
   </base-card>
 </template>
 
@@ -80,7 +67,7 @@ export default {
   },
   data() {
     return {
-      valid: true,
+      valid: false,
       name: '',
       description: '',
       projectType: null,
