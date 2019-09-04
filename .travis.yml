@@ -7,7 +7,9 @@ env:
   - DATABASE=sqlite
   - DATABASE=postgres
   - DATABASE=mssql
-  - HADOLINT: "${HOME}/hadolint"
+  
+  env:
+    - HADOLINT: "${HOME}/hadolint"
 
 services:
   - docker
