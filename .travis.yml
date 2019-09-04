@@ -4,10 +4,12 @@ python:
   - "3.6"
 
 env:
-  - DATABASE=sqlite
-  - DATABASE=postgres
-  - DATABASE=mssql
-  - HADOLINT="${HOME}/hadolint"
+  global:
+    - HADOLINT="${HOME}/hadolint"
+  matrix:
+    - DATABASE=sqlite
+    - DATABASE=postgres
+    - DATABASE=mssql
 
 services:
   - docker
