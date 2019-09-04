@@ -17,7 +17,7 @@ from .models import Project, Label, Document
 from .permissions import IsAdminUserAndWriteOnly, IsProjectUser, IsOwnAnnotation
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer
-from .utils import CSVParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
@@ -162,9 +162,12 @@ class AnnotationList(generics.ListCreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         model = project.get_annotation_class()
-        self.queryset = model.objects.filter(document=self.kwargs['doc_id'],
-                                             user=self.request.user)
-        return self.queryset
+
+        queryset = model.objects.filter(document=self.kwargs['doc_id'])
+        if not project.collaborative_annotation:
+            queryset = queryset.filter(user=self.request.user)
+
+        return queryset
 
     def create(self, request, *args, **kwargs):
         request.data['document'] = self.kwargs['doc_id']
@@ -226,6 +229,8 @@ class TextUploadAPI(APIView):
             return JSONParser()
         elif file_format == 'conll':
             return CoNLLParser()
+        elif file_format == 'excel':
+            return ExcelParser()
         else:
             raise ValidationError('format {} is invalid.'.format(file_format))
 
