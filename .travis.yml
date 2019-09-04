@@ -7,7 +7,7 @@ env:
   - DATABASE=sqlite
   - DATABASE=postgres
   - DATABASE=mssql
-  # - HADOLINT=${HOME}/hadolint
+  - HADOLINT: "${HOME}/hadolint"
 
 services:
   - docker
@@ -30,8 +30,8 @@ before_install:
 install:
     - echo "${HADOLINT}"
     - pip install mkdocs mkdocs-material
-    - curl -sL -o ${HOME}/hadolint "https://github.com/hadolint/hadolint/releases/download/v1.16.0/hadolint-$(uname -s)-$(uname -m)" 
-    - chmod 700 ${HOME}/hadolint
+    - curl -sL -o ${HADOLINT} "https://github.com/hadolint/hadolint/releases/download/v1.16.0/hadolint-$(uname -s)-$(uname -m)" 
+    - chmod 700 ${HADOLINT}
 
 script:
   - docker build --target=builder --tag=doccano-test .
