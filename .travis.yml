@@ -31,7 +31,7 @@ before_install:
 install:
     - pip install mkdocs mkdocs-material
     # Download hadolint binary and set it as executable
-    - curl -sL -o "https://github.com/hadolint/hadolint/releases/download/v1.16.0/hadolint-$(uname -s)-$(uname -m)" && chmod 700 ${HADOLINT}
+    - curl -sL "https://github.com/hadolint/hadolint/releases/download/v1.16.0/hadolint-$(uname -s)-$(uname -m)" -o ${HADOLINT} && chmod 700 ${HADOLINT}
 
 script:
   - docker build --target=builder --tag=doccano-test .
