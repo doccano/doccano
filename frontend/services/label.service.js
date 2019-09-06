@@ -18,11 +18,7 @@ class LabelService {
   }
 
   updateLabel(projectId, labelId, payload) {
-    const data = {
-      id: labelId,
-      ...payload
-    }
-    return this.request.patch(`/projects/${projectId}/labels/${labelId}`, data)
+    return this.request.patch(`/projects/${projectId}/labels/${labelId}`, payload)
   }
 }
 

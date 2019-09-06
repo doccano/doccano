@@ -19,66 +19,45 @@
       />
     </template>
     <template v-slot:item.text="{ item }">
-      <v-edit-dialog
-        :return-value.sync="item.text"
-      >
+      <v-edit-dialog>
         {{ item.text }}
         <template v-slot:input>
           <v-text-field
-            v-model="item.text"
+            :value="item.text"
             label="Edit"
             single-line
+            @change="updateLabel({ id: item.id, text: $event })"
           />
         </template>
       </v-edit-dialog>
     </template>
     <template v-slot:item.suffix_key="{ item }">
-      <v-edit-dialog
-        :return-value.sync="item.suffix_key"
-        large
-        persistent
-        @save="updateShortcut({ id: item.id, suffix_key: newKey })"
-      >
+      <v-edit-dialog>
         <div>{{ item.suffix_key }}</div>
-        <template v-slot:input>
-          <div class="mt-4 title">
-            Update key
-          </div>
-        </template>
         <template v-slot:input>
           <v-select
             :value="item.suffix_key"
             :items="keys"
             label="Key"
-            @input="setNewKey"
+            @change="updateLabel({ id: item.id, suffix_key: $event })"
           />
         </template>
       </v-edit-dialog>
     </template>
     <template v-slot:item.background_color="{ item }">
-      <v-edit-dialog
-        :return-value.sync="item.background_color"
-        large
-        persistent
-        @save="updateColor({ id:item.id, background_color: newColor })"
-      >
+      <v-edit-dialog>
         <v-chip :color="item.background_color" dark>
           {{ item.background_color }}
         </v-chip>
-        <template v-slot:input>
-          <div class="mt-4 title">
-            Update color
-          </div>
-        </template>
         <template v-slot:input>
           <v-color-picker
             :value="item.backgroundColor"
             show-swatches
             hide-mode-switch
             width="800"
-            :mode.sync="mode"
+            mode="hexa"
             class="ma-2"
-            @input="setNewColor"
+            @update:color="updateLabel({ id:item.id, background_color: $event.hex })"
           />
         </template>
       </v-edit-dialog>
@@ -103,35 +82,22 @@ export default {
       type: Array,
       default: () => [],
       required: true
+    },
+    keys: {
+      type: Array,
+      default: () => 'abcdefghijklmnopqrstuvwxyz'.split('')
     }
   },
   data() {
     return {
-      search: '',
-      newKey: null,
-      newColor: null,
-      keys: 'abcdefghijklmnopqrstuvwxyz'.split(''),
-      mode: 'hexa',
-      color: '#FF00FF'
+      search: ''
     }
   },
   methods: {
-    setNewKey(value) {
-      this.newKey = value
-    },
-    setNewColor(value) {
-      this.newColor = value
-    },
     update(selected) {
       this.$emit('update-selected', selected)
     },
-    updateRole(payload) {
-      this.$emit('update-role', payload)
-    },
-    updateShortcut(payload) {
-      this.$emit('update-label', payload)
-    },
-    updateColor(payload) {
+    updateLabel(payload) {
       this.$emit('update-label', payload)
     }
   }

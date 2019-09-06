@@ -40,7 +40,8 @@ router.get('/:labelId', (req, res) => {
 router.patch('/:labelId', (req, res) => {
   const labelIndex = db.findIndex(item => item.id === parseInt(req.params.labelId))
   if (labelIndex !== -1) {
-    db[labelIndex] = req.body
+    // db[labelIndex] = req.body
+    Object.assign(db[labelIndex], req.body)
     res.json(db[labelIndex])
   } else {
     res.status(404).json({ detail: 'Not found.' })
