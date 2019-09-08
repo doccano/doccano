@@ -1,27 +1,21 @@
 <template>
-  <base-modal
-    text="Delete"
+  <confirm-dialog
+    title="Delete Project"
+    message="Are you sure you want to delete these projects?"
+    item-key="name"
     :disabled="!isProjectSelected"
-  >
-    <template v-slot="slotProps">
-      <project-deletion-form
-        :selected="selected"
-        @delete="handleDeleteProject(); slotProps.close()"
-        @close="slotProps.close"
-      />
-    </template>
-  </base-modal>
+    :items="selected"
+    @ok="handleDeleteProject"
+  />
 </template>
 
 <script>
 import { mapState, mapGetters } from 'vuex'
-import BaseModal from '@/components/molecules/BaseModal'
-import ProjectDeletionForm from '@/components/organisms/ProjectDeletionForm'
+import ConfirmDialog from '@/components/organisms/ConfirmDialog'
 
 export default {
   components: {
-    BaseModal,
-    ProjectDeletionForm
+    ConfirmDialog
   },
 
   computed: {

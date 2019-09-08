@@ -1,6 +1,6 @@
 <template>
   <base-modal
-    text="Add Member"
+    text="Add"
     :is-create="true"
   >
     <template v-slot="slotProps">

@@ -43,8 +43,8 @@ export const actions = {
         alert(error)
       })
   },
-  addMember({ commit }, data) {
-    LabelService.addLabel(data.projectId, data.labelId, data)
+  createLabel({ commit }, data) {
+    LabelService.addLabel(data.projectId, data)
       .then((response) => {
         commit('addLabel', response)
       })
@@ -61,7 +61,7 @@ export const actions = {
         alert(error)
       })
   },
-  removeLabel({ commit, state }, projectId) {
+  deleteLabel({ commit, state }, projectId) {
     for (const label of state.selected) {
       LabelService.deleteLabel(projectId, label.id)
         .then((response) => {

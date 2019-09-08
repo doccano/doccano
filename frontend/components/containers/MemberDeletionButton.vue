@@ -1,27 +1,21 @@
 <template>
-  <base-modal
-    text="Remove"
+  <confirm-dialog
+    title="Remove Member"
+    message="Are you sure you want to remove these members?"
+    item-key="username"
     :disabled="!isMemberSelected"
-  >
-    <template v-slot="slotProps">
-      <member-deletion-form
-        :selected="selected"
-        @remove="handleRemoveMember(); slotProps.close()"
-        @close="slotProps.close"
-      />
-    </template>
-  </base-modal>
+    :items="selected"
+    @ok="handleRemoveMember()"
+  />
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import BaseModal from '@/components/molecules/BaseModal'
-import MemberDeletionForm from '@/components/organisms/MemberDeletionForm'
+import ConfirmDialog from '@/components/organisms/ConfirmDialog'
 
 export default {
   components: {
-    BaseModal,
-    MemberDeletionForm
+    ConfirmDialog
   },
 
   computed: {

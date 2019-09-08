@@ -23,6 +23,7 @@ router.post('/', (req, res) => {
     background_color: req.body.background_color,
     text_color: '#ffffff'
   }
+  db.push(label)
   res.json(label)
 })
 
