@@ -3,8 +3,10 @@
     :value="selected"
     :headers="headers"
     :items="labels"
-    item-key="id"
     :search="search"
+    :loading="loading"
+    loading-text="Loading... Please wait"
+    item-key="id"
     show-select
     @input="update"
   >
@@ -86,6 +88,11 @@ export default {
     keys: {
       type: Array,
       default: () => 'abcdefghijklmnopqrstuvwxyz'.split('')
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+      required: true
     }
   },
   data() {

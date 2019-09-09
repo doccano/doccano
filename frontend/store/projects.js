@@ -2,7 +2,8 @@ import ProjectService from '@/services/project.service'
 
 export const state = () => ({
   projects: [],
-  selected: []
+  selected: [],
+  loading: false
 })
 
 export const getters = {
@@ -26,17 +27,24 @@ export const mutations = {
   },
   resetSelected(state) {
     state.selected = []
+  },
+  setLoading(state, payload) {
+    state.loading = payload
   }
 }
 
 export const actions = {
-  getProjectList(context, config) {
+  getProjectList({ commit }, config) {
+    commit('setLoading', true)
     return ProjectService.getProjectList()
       .then((response) => {
-        context.commit('setProjectList', response)
+        commit('setProjectList', response)
       })
       .catch((error) => {
         alert(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
       })
   },
   createProject({ commit }, project) {

@@ -2,7 +2,8 @@ import LabelService from '@/services/label.service'
 
 export const state = () => ({
   items: [],
-  selected: []
+  selected: [],
+  loading: false
 })
 
 export const getters = {
@@ -30,17 +31,24 @@ export const mutations = {
   },
   resetSelected(state) {
     state.selected = []
+  },
+  setLoading(state, payload) {
+    state.loading = payload
   }
 }
 
 export const actions = {
-  getLabelList(context, config) {
+  getLabelList({ commit }, config) {
+    commit('setLoading', true)
     return LabelService.getLabelList()
       .then((response) => {
-        context.commit('setLabelList', response)
+        commit('setLabelList', response)
       })
       .catch((error) => {
         alert(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
       })
   },
   createLabel({ commit }, data) {

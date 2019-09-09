@@ -4,6 +4,8 @@
     :headers="headers"
     :items="members"
     :search="search"
+    :loading="loading"
+    loading-text="Loading... Please wait"
     item-key="id"
     show-select
     @input="update"
@@ -68,6 +70,11 @@ export default {
         'Admin',
         'Member'
       ]
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+      required: true
     }
   },
   data() {

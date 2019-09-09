@@ -3,6 +3,7 @@
     :headers="headers"
     :projects="projects"
     :selected="selected"
+    :loading="loading"
     @update="update"
   />
 </template>
@@ -36,7 +37,7 @@ export default {
   },
 
   computed: {
-    ...mapState('projects', ['projects', 'selected'])
+    ...mapState('projects', ['projects', 'selected', 'loading'])
   },
 
   created() {

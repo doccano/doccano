@@ -3,6 +3,7 @@
     :headers="headers"
     :members="items"
     :selected="selected"
+    :loading="loading"
     @update-selected="updateSelected"
     @update-role="updateRole"
   />
@@ -34,7 +35,7 @@ export default {
   },
 
   computed: {
-    ...mapState('members', ['items', 'selected'])
+    ...mapState('members', ['items', 'selected', 'loading'])
   },
 
   created() {

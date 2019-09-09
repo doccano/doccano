@@ -5,6 +5,8 @@
     :items="docs"
     item-key="id"
     :search="search"
+    :loading="loading"
+    loading-text="Loading... Please wait"
     show-select
     @input="update"
   >
@@ -51,6 +53,11 @@ export default {
     selected: {
       type: Array,
       default: () => [],
+      required: true
+    },
+    loading: {
+      type: Boolean,
+      default: false,
       required: true
     }
   },

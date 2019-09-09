@@ -3,6 +3,7 @@
     :headers="headers"
     :docs="items"
     :selected="selected"
+    :loading="loading"
     @update-selected="updateSelected"
     @update-doc="handleUpdateDoc"
   />
@@ -29,7 +30,7 @@ export default {
   },
 
   computed: {
-    ...mapState('documents', ['items', 'selected'])
+    ...mapState('documents', ['items', 'selected', 'loading'])
   },
 
   created() {

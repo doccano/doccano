@@ -2,7 +2,8 @@ import DocumentService from '@/services/document.service'
 
 export const state = () => ({
   items: [],
-  selected: []
+  selected: [],
+  loading: false
 })
 
 export const getters = {
@@ -30,17 +31,24 @@ export const mutations = {
   },
   resetSelected(state) {
     state.selected = []
+  },
+  setLoading(state, payload) {
+    state.loading = payload
   }
 }
 
 export const actions = {
-  getDocumentList(context, config) {
+  getDocumentList({ commit }, config) {
+    commit('setLoading', true)
     return DocumentService.getDocumentList()
       .then((response) => {
-        context.commit('setDocumentList', response)
+        commit('setDocumentList', response)
       })
       .catch((error) => {
         alert(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
       })
   },
   createDocument({ commit }, data) {

@@ -2,7 +2,8 @@ import MemberService from '@/services/member.service'
 
 export const state = () => ({
   items: [],
-  selected: []
+  selected: [],
+  loading: false
 })
 
 export const getters = {
@@ -30,17 +31,24 @@ export const mutations = {
   },
   resetSelected(state) {
     state.selected = []
+  },
+  setLoading(state, payload) {
+    state.loading = payload
   }
 }
 
 export const actions = {
-  getMemberList(context, config) {
+  getMemberList({ commit }, config) {
+    commit('setLoading', true)
     return MemberService.getMemberList()
       .then((response) => {
-        context.commit('setMemberList', response)
+        commit('setMemberList', response)
       })
       .catch((error) => {
         alert(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
       })
   },
   addMember({ commit }, data) {

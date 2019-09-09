@@ -3,6 +3,7 @@
     :headers="headers"
     :labels="items"
     :selected="selected"
+    :loading="loading"
     @update-selected="updateSelected"
     @update-label="handleUpdateLabel"
   />
@@ -38,7 +39,7 @@ export default {
   },
 
   computed: {
-    ...mapState('labels', ['items', 'selected'])
+    ...mapState('labels', ['items', 'selected', 'loading'])
   },
 
   created() {
