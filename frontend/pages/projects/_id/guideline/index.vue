@@ -1,9 +1,9 @@
 <template>
   <editor
+    v-if="current"
     v-model="editorText"
     preview-style="vertical"
     height="inherit"
-    @change="onEditorChange"
   />
 </template>
 
@@ -24,31 +24,29 @@ export default {
     return /^\d+$/.test(params.id)
   },
 
-  data() {
-    return {
-      editorText: ''
-    }
-  },
-
   computed: {
-    ...mapState('projects', ['current'])
+    ...mapState('projects', ['current']),
+
+    editorText: {
+      get() {
+        return this.current.guideline
+      },
+      set(value) {
+        const data = {
+          projectId: this.$route.params.id,
+          guideline: value
+        }
+        this.updateCurrentProject(data)
+      }
+    }
   },
 
   async created() {
     await this.setCurrentProject(this.$route.params.id)
-    this.editorText = this.current.guideline
   },
 
   methods: {
-    ...mapActions('projects', ['setCurrentProject', 'updateCurrentProject']),
-
-    onEditorChange() {
-      const data = {
-        projectId: this.$route.params.id,
-        guideline: this.editorText
-      }
-      this.updateCurrentProject(data)
-    }
+    ...mapActions('projects', ['setCurrentProject', 'updateCurrentProject'])
   }
 }
 </script>
