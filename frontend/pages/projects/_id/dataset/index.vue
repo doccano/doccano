@@ -1,4 +1,14 @@
 <template>
+  <v-card>
+    <v-card-title>
+    <!--
+      <label-creation-button />
+      <label-deletion-button />
+      -->
+    </v-card-title>
+    <document-list />
+  </v-card>
+  <!--
   <v-content>
     <v-container
       fluid
@@ -58,7 +68,6 @@
                 >
                   <span class="d-flex d-sm-none">{{ item.text | truncate(50) }}</span>
                   <span class="d-none d-sm-flex">{{ item.text | truncate(200) }}</span>
-                  <!--{{ item.text | truncate(200) }}-->
                   <template v-slot:input>
                     <v-textarea
                       v-model="item.text"
@@ -73,70 +82,23 @@
       </v-layout>
     </v-container>
   </v-content>
+  -->
 </template>
 
 <script>
-import Modal from '~/components/Modal'
+import DocumentList from '@/components/containers/DocumentList'
+// import DocumentCreationButton from '@/components/containers/DocumentCreationButton'
+// import DocumentDeletionButton from '@/components/containers/DocumentDeletionButton'
 
 export default {
   layout: 'project',
   components: {
-    Modal
+    DocumentList
+    // LabelCreationButton,
+    // LabelDeletionButton
   },
-  data: () => ({
-    search: '',
-    selected: [],
-    removeModal: {
-      title: 'Remove Document',
-      button: 'Yes, remove'
-    },
-    headers: [
-      {
-        text: 'Text',
-        align: 'left',
-        value: 'text'
-      }
-    ],
-    docs: [
-      {
-        id: 1,
-        text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-      },
-      {
-        id: 2,
-        text: 'Text 1'
-      },
-      {
-        id: 3,
-        text: 'Text 2'
-      },
-      {
-        id: 4,
-        text: 'Text 3'
-      },
-      {
-        id: 5,
-        text: 'Text 4'
-      }
-    ]
-  }),
-
-  methods: {
-    save() {
-      // send server
-    },
-    cancel() {
-    },
-    open() {
-    },
-    close() {
-    },
-    openAddModal() {
-      this.$refs.childDialogue.open()
-    },
-    openRemoveModal() {
-      this.$refs.removeDialogue.open()
-    }
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   }
 }
 </script>

@@ -22,6 +22,17 @@ router.post('/', (req, res) => {
   res.json(doc)
 })
 
+// Update a document partially.
+router.patch('/:docId', (req, res) => {
+  const docIndex = db.findIndex(item => item.id === parseInt(req.params.docId))
+  if (docIndex !== -1) {
+    Object.assign(db[docIndex], req.body)
+    res.json(db[docIndex])
+  } else {
+    res.status(404).json({ detail: 'Not found.' })
+  }
+})
+
 // Get a doc.
 router.get('/:docId', (req, res) => {
   const doc = db.find(item => item.id === parseInt(req.params.docId))
