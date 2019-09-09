@@ -13,8 +13,16 @@ class ProjectService {
     return this.request.post('/projects', data)
   }
 
+  updateProject(projectId, payload) {
+    return this.request.patch(`/projects/${projectId}`, payload)
+  }
+
   deleteProject(projectId) {
     return this.request.delete(`/projects/${projectId}`)
+  }
+
+  fetchProjectById(projectId) {
+    return this.request.get(`/projects/${projectId}`)
   }
 }
 

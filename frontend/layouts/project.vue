@@ -24,7 +24,7 @@
           <v-layout
             justify-center
           >
-            <v-flex>
+            <v-flex fill-height>
               <nuxt />
             </v-flex>
           </v-layout>

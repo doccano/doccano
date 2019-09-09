@@ -54,6 +54,17 @@ router.put('/:projectId', (req, res) => {
   }
 })
 
+// Partially update a project user.
+router.patch('/:projectId', (req, res) => {
+  const projectIndex = db.findIndex(item => item.id === parseInt(req.params.projectId))
+  if (projectIndex !== -1) {
+    Object.assign(db[projectIndex], req.body)
+    res.json(db[projectIndex])
+  } else {
+    res.status(404).json({ detail: 'Not found.' })
+  }
+})
+
 // Delete a project.
 router.delete('/:projectId', (req, res, next) => {
   const project = db.find(item => item.id === parseInt(req.params.projectId))

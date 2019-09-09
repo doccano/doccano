@@ -3,6 +3,7 @@ import ProjectService from '@/services/project.service'
 export const state = () => ({
   projects: [],
   selected: [],
+  current: null,
   loading: false
 })
 
@@ -19,6 +20,10 @@ export const mutations = {
   createProject(state, project) {
     state.projects.unshift(project)
   },
+  updateProject(state, project) {
+    const item = state.projects.find(item => item.id === project.id)
+    Object.assign(item, project)
+  },
   deleteProject(state, projectId) {
     state.projects = state.projects.filter(item => item.id !== projectId)
   },
@@ -30,13 +35,16 @@ export const mutations = {
   },
   setLoading(state, payload) {
     state.loading = payload
+  },
+  setCurrent(state, payload) {
+    state.current = payload
   }
 }
 
 export const actions = {
   getProjectList({ commit }, config) {
     commit('setLoading', true)
-    return ProjectService.getProjectList()
+    ProjectService.getProjectList()
       .then((response) => {
         commit('setProjectList', response)
       })
@@ -56,6 +64,15 @@ export const actions = {
         alert(error)
       })
   },
+  updateProject({ commit }, data) {
+    ProjectService.updateProject(data.projectId, data)
+      .then((response) => {
+        commit('updateProject', response)
+      })
+      .catch((error) => {
+        alert(error)
+      })
+  },
   deleteProject({ commit, state }, config) {
     for (const project of state.selected) {
       ProjectService.deleteProject(project.id)
@@ -67,5 +84,23 @@ export const actions = {
         })
     }
     commit('resetSelected')
+  },
+  setCurrentProject({ commit }, projectId) {
+    return ProjectService.fetchProjectById(projectId)
+      .then((response) => {
+        commit('setCurrent', response)
+      })
+      .catch((error) => {
+        alert(error)
+      })
+  },
+  updateCurrentProject({ commit }, data) {
+    ProjectService.updateProject(data.projectId, data)
+      .then((response) => {
+        commit('setCurrent', response)
+      })
+      .catch((error) => {
+        alert(error)
+      })
   }
 }
