@@ -26,6 +26,7 @@
         <template v-slot:input>
           <v-text-field
             :value="item.text"
+            :rules="labelNameRules"
             label="Edit"
             single-line
             @change="updateLabel({ id: item.id, text: $event })"
@@ -54,6 +55,7 @@
         <template v-slot:input>
           <v-color-picker
             :value="item.backgroundColor"
+            :rules="colorRules"
             show-swatches
             hide-mode-switch
             width="800"
@@ -68,6 +70,8 @@
 </template>
 
 <script>
+import { colorRules, labelNameRules } from '@/rules/index'
+
 export default {
   props: {
     headers: {
@@ -97,7 +101,9 @@ export default {
   },
   data() {
     return {
-      search: ''
+      search: '',
+      colorRules,
+      labelNameRules
     }
   },
   methods: {

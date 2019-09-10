@@ -37,6 +37,7 @@
           <v-select
             :value="item.role"
             :items="roles"
+            :rules="roleRules"
             label="Role"
             @input="setNewRole"
           />
@@ -47,6 +48,8 @@
 </template>
 
 <script>
+import { roleRules } from '@/rules/index'
+
 export default {
   props: {
     headers: {
@@ -80,7 +83,8 @@ export default {
   data() {
     return {
       search: '',
-      newRole: null
+      newRole: null,
+      roleRules
     }
   },
   methods: {

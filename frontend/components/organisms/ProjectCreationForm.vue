@@ -14,7 +14,7 @@
       >
         <v-text-field
           v-model="name"
-          :rules="nameRules"
+          :rules="projectNameRules"
           label="Project name"
           prepend-icon="mdi-account-multiple"
           data-test="project-name"
@@ -32,7 +32,7 @@
         <v-select
           v-model="projectType"
           :items="projectTypes"
-          :rules="[v => !!v || 'Type is required']"
+          :rules="projectTypeRules"
           label="projectType"
           prepend-icon="mdi-keyboard"
           data-test="project-type"
@@ -45,6 +45,7 @@
 
 <script>
 import BaseCard from '@/components/molecules/BaseCard'
+import { projectNameRules, descriptionRules, projectTypeRules } from '@/rules/index'
 
 export default {
   components: {
@@ -71,16 +72,9 @@ export default {
       name: '',
       description: '',
       projectType: null,
-      nameRules: [
-        v => !!v || 'Project name is required',
-        v =>
-          (v && v.length <= 30) || 'Project name must be less than 30 characters'
-      ],
-      descriptionRules: [
-        v => !!v || 'Description is required',
-        v =>
-          (v && v.length <= 100) || 'Description must be less than 100 characters'
-      ]
+      projectNameRules,
+      projectTypeRules,
+      descriptionRules
     }
   },
 

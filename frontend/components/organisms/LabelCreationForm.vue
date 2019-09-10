@@ -14,7 +14,7 @@
       >
         <v-text-field
           v-model="labelName"
-          :rules="nameRules"
+          :rules="labelNameRules"
           label="Label name"
           prepend-icon="label"
         />
@@ -40,6 +40,7 @@
 
 <script>
 import BaseCard from '@/components/molecules/BaseCard'
+import { colorRules, labelNameRules } from '@/rules/index'
 
 export default {
   components: {
@@ -62,14 +63,8 @@ export default {
       labelName: '',
       suffixKey: '',
       color: '',
-      nameRules: [
-        v => !!v || 'Label name is required',
-        v =>
-          (v && v.length <= 30) || 'Label name must be less than 30 characters'
-      ],
-      colorRules: [
-        v => !!v || 'Color is required'
-      ]
+      labelNameRules,
+      colorRules
     }
   },
 

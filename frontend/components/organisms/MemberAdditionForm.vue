@@ -17,7 +17,7 @@
           :items="items"
           :loading="isLoading"
           :search-input.sync="username"
-          :rules="userRules"
+          :rules="userNameRules"
           color="white"
           hide-no-data
           hide-selected
@@ -41,6 +41,7 @@
 
 <script>
 import BaseCard from '@/components/molecules/BaseCard'
+import { userNameRules, roleRules } from '@/rules/index'
 
 export default {
   components: {
@@ -66,12 +67,8 @@ export default {
       isLoading: false,
       selectedUser: null,
       roles: ['Admin', 'Member'],
-      userRules: [
-        v => !!v || 'User is required'
-      ],
-      roleRules: [
-        v => !!v || 'Role is required'
-      ]
+      userNameRules,
+      roleRules
     }
   },
 
