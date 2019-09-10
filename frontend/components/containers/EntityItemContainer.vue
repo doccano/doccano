@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import EntityItem from '~/components/EntityItem'
+import EntityItem from '~/components/molecules/EntityItem'
 
 export default {
   components: {

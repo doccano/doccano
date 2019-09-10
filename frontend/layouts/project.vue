@@ -36,7 +36,7 @@
 
 <script>
 import BaseLayout from '~/layouts/BaseLayout'
-import SideBarLeft from '~/components/project/SideBarLeft'
+import SideBarLeft from '~/components/organisms/SideBarLeft'
 
 export default {
   components: {

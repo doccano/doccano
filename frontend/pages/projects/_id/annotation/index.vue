@@ -22,8 +22,8 @@
 </template>
 
 <script>
-import EntityItemContainer from '~/components/EntityItemContainer'
-import SideBarLabeling from '~/components/project/SideBarRight/SideBarLabeling'
+import EntityItemContainer from '~/components/containers/EntityItemContainer'
+import SideBarLabeling from '~/components/organisms/SideBarLabeling'
 
 export default {
   layout: 'annotation',
