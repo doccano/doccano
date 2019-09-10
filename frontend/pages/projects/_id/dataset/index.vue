@@ -1,6 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
+      <document-upload-button />
       <document-deletion-button />
     </v-card-title>
     <document-list />
@@ -9,14 +10,14 @@
 
 <script>
 import DocumentList from '@/components/containers/DocumentList'
-// import DocumentCreationButton from '@/components/containers/DocumentCreationButton'
+import DocumentUploadButton from '@/components/containers/DocumentUploadButton'
 import DocumentDeletionButton from '@/components/containers/DocumentDeletionButton'
 
 export default {
   layout: 'project',
   components: {
     DocumentList,
-    // DocumentCreationButton,
+    DocumentUploadButton,
     DocumentDeletionButton
   },
   validate({ params }) {

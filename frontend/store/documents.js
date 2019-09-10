@@ -51,7 +51,7 @@ export const actions = {
         commit('setLoading', false)
       })
   },
-  createDocument({ commit }, data) {
+  uploadDocument({ commit }, data) {
     DocumentService.addDocument(data.projectId, data)
       .then((response) => {
         commit('addDocument', response)

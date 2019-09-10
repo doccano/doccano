@@ -31,3 +31,13 @@ export const descriptionRules = [
 export const projectTypeRules = [
   v => !!v || 'Project type is required'
 ]
+
+// Rules for Document.
+export const fileFormatRules = [
+  v => !!v || 'File format is required'
+]
+
+export const uploadFileRules = [
+  v => !!v || 'File is required',
+  v => !v || v.size < 1000000 || 'File size should be less than 1 MB!'
+]
