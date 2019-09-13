@@ -24,6 +24,11 @@ export default {
           text: 'Text',
           align: 'left',
           value: 'text'
+        },
+        {
+          text: 'Metadata',
+          align: 'left',
+          value: 'meta'
         }
       ]
     }
