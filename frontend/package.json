@@ -19,6 +19,7 @@
     "@toast-ui/vue-editor": "^1.1.1",
     "codemirror": "^5.48.2",
     "nuxt": "^2.0.0",
+    "papaparse": "^5.0.2",
     "tui-editor": "^1.4.5",
     "vuetify": "^2.0.2"
   },
