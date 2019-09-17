@@ -6,6 +6,10 @@
     <template v-slot="slotProps">
       <document-upload-form
         :upload-document="uploadDocument"
+        :formats="formatList"
+        :headers="headers"
+        :parse-file="parseFile"
+        :parsed-doc="parsedDoc"
         @close="slotProps.close"
       />
     </template>
@@ -13,7 +17,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import BaseModal from '@/components/molecules/BaseModal'
 import DocumentUploadForm from '@/components/organisms/DocumentUploadForm'
 
@@ -23,8 +27,12 @@ export default {
     DocumentUploadForm
   },
 
+  computed: {
+    ...mapGetters('documents', ['formatList', 'parsedDoc', 'headers'])
+  },
+
   methods: {
-    ...mapActions('documents', ['uploadDocument'])
+    ...mapActions('documents', ['uploadDocument', 'parseFile'])
   }
 }
 </script>

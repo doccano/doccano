@@ -10,32 +10,17 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import DocumentList from '@/components/organisms/DocumentList'
 
 export default {
   components: {
     DocumentList
   },
-  data() {
-    return {
-      headers: [
-        {
-          text: 'Text',
-          align: 'left',
-          value: 'text'
-        },
-        {
-          text: 'Metadata',
-          align: 'left',
-          value: 'meta'
-        }
-      ]
-    }
-  },
 
   computed: {
-    ...mapState('documents', ['items', 'selected', 'loading'])
+    ...mapState('documents', ['items', 'selected', 'loading']),
+    ...mapGetters('documents', ['headers'])
   },
 
   created() {

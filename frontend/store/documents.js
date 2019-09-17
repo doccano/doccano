@@ -1,14 +1,57 @@
 import DocumentService from '@/services/document.service'
+import CSVParser from '@/services/parsers/csv.service'
 
 export const state = () => ({
   items: [],
   selected: [],
-  loading: false
+  loading: false,
+  selectedFormat: null,
+  parsed: {}
 })
 
 export const getters = {
   isDocumentSelected(state) {
     return state.selected.length > 0
+  },
+  formatList() {
+    return [
+      {
+        type: 'csv',
+        text: 'Upload a CSV file from your computer',
+        accept: '.csv'
+      },
+      {
+        type: 'plain',
+        text: 'Upload text items from your computer',
+        accept: '.txt'
+      },
+      {
+        type: 'json',
+        text: 'Upload a JSON file from your computer',
+        accept: '.json,.jsonl'
+      }
+    ]
+  },
+  headers() {
+    return [
+      {
+        text: 'Text',
+        align: 'left',
+        value: 'text'
+      },
+      {
+        text: 'Metadata',
+        align: 'left',
+        value: 'meta'
+      }
+    ]
+  },
+  parsedDoc(state) {
+    if ('data' in state.parsed) {
+      return state.parsed.data
+    } else {
+      return []
+    }
   }
 }
 
@@ -34,6 +77,10 @@ export const mutations = {
   },
   setLoading(state, payload) {
     state.loading = payload
+  },
+  parseFile(state, text) {
+    const parser = new CSVParser()
+    state.parsed = parser.parse(text)
   }
 }
 
@@ -80,5 +127,15 @@ export const actions = {
         })
     }
     commit('resetSelected')
+  },
+  parseFile({ commit }, data) {
+    const reader = new FileReader()
+    reader.readAsText(data, 'UTF-8')
+    reader.onload = (e) => {
+      commit('parseFile', e.target.result)
+    }
+    reader.onerror = (e) => {
+      alert(e)
+    }
   }
 }
