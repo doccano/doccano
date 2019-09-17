@@ -20,7 +20,7 @@ describe('ProjectList', () => {
       updated_at: '2019-07-09T06:19:29.789091Z',
       randomize_document_order: false,
       resourcetype: 'SequenceLabelingProject'
-    },
+    }
   ]
   const headers = [
     {
@@ -38,15 +38,16 @@ describe('ProjectList', () => {
     }
   ]
   const selected = []
+  const loading = false
 
   test('can receive props', () => {
-    const propsData = { projects, headers, selected }
+    const propsData = { projects, headers, selected, loading }
     const wrapper = shallowMount(ProjectList, { propsData })
     expect(wrapper.props()).toEqual(propsData)
   })
 
   test('emitted update event', () => {
-    const propsData = { projects, headers, selected }
+    const propsData = { projects, headers, selected, loading }
     const wrapper = shallowMount(ProjectList, { propsData })
     wrapper.vm.update(propsData)
     expect(wrapper.emitted('update')).toBeTruthy()
