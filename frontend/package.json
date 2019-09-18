@@ -17,10 +17,12 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/vuetify": "^1.0.2",
     "@toast-ui/vue-editor": "^1.1.1",
+    "chart.js": "^2.8.0",
     "codemirror": "^5.48.2",
     "nuxt": "^2.0.0",
     "papaparse": "^5.0.2",
     "tui-editor": "^1.4.5",
+    "vue-chartjs": "^3.4.2",
     "vuetify": "^2.0.2"
   },
   "devDependencies": {
