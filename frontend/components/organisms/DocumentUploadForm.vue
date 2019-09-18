@@ -28,28 +28,19 @@
           :accept="acceptType"
           :rules="uploadFileRules"
           label="File input"
-          @change="parseFile"
         />
       </v-form>
-      <document-list
-        :headers="headers"
-        :docs="parsedDoc"
-        :selected="[]"
-        :loading="false"
-      />
     </template>
   </base-card>
 </template>
 
 <script>
 import BaseCard from '@/components/molecules/BaseCard'
-import DocumentList from '@/components/organisms/DocumentList'
 import { fileFormatRules, uploadFileRules } from '@/rules/index'
 
 export default {
   components: {
-    BaseCard,
-    DocumentList
+    BaseCard
   },
   props: {
     uploadDocument: {
@@ -57,22 +48,7 @@ export default {
       default: () => {},
       required: true
     },
-    parseFile: {
-      type: Function,
-      default: () => {},
-      required: true
-    },
     formats: {
-      type: Array,
-      default: () => [],
-      required: true
-    },
-    parsedDoc: {
-      type: Array,
-      default: () => [],
-      required: true
-    },
-    headers: {
       type: Array,
       default: () => [],
       required: true

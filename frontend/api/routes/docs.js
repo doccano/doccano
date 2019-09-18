@@ -22,6 +22,18 @@ router.post('/', (req, res) => {
   res.json(doc)
 })
 
+// Upload a file.
+router.post('/upload', (req, res) => {
+  const doc = {
+    id: db.reduce((x, y) => { return x.id > y.id ? x : y }).id + 1,
+    text: 'Uploaded Document',
+    meta: JSON.stringify({}),
+    annotations: []
+  }
+  db.push(doc)
+  res.json(doc)
+})
+
 // Update a document partially.
 router.patch('/:docId', (req, res) => {
   const docIndex = db.findIndex(item => item.id === parseInt(req.params.docId))

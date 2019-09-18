@@ -7,9 +7,6 @@
       <document-upload-form
         :upload-document="uploadDocument"
         :formats="formatList"
-        :headers="headers"
-        :parse-file="parseFile"
-        :parsed-doc="parsedDoc"
         @close="slotProps.close"
       />
     </template>
@@ -28,11 +25,11 @@ export default {
   },
 
   computed: {
-    ...mapGetters('documents', ['formatList', 'parsedDoc', 'headers'])
+    ...mapGetters('documents', ['formatList'])
   },
 
   methods: {
-    ...mapActions('documents', ['uploadDocument', 'parseFile'])
+    ...mapActions('documents', ['uploadDocument'])
   }
 }
 </script>

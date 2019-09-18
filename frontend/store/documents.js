@@ -99,7 +99,7 @@ export const actions = {
       })
   },
   uploadDocument({ commit }, data) {
-    DocumentService.addDocument(data.projectId, data)
+    DocumentService.uploadFile(data.projectId, data)
       .then((response) => {
         commit('addDocument', response)
       })
