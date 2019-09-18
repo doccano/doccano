@@ -34,6 +34,11 @@ router.post('/upload', (req, res) => {
   res.json(doc)
 })
 
+// Download a file.
+router.get('/download', (req, res) => {
+  res.json(db)
+})
+
 // Update a document partially.
 router.patch('/:docId', (req, res) => {
   const docIndex = db.findIndex(item => item.id === parseInt(req.params.docId))
