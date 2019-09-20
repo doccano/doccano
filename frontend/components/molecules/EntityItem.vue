@@ -1,6 +1,6 @@
 <template>
   <span v-if="label" class="highlight bottom" :style="{ borderColor: color }">
-    <span class="highlight__content">{{ content }}</span><span class="highlight__label" :data-label="label" :style="{backgroundColor: color}" @click="open" />
+    <span class="highlight__content">{{ content }}<v-icon class="delete" @click="remove">mdi-close-circle</v-icon></span><span class="highlight__label" :data-label="label" :style="{backgroundColor: color}" @click="open" />
   </span>
   <span v-else>{{ content }}</span>
 </template>
@@ -32,6 +32,9 @@ export default {
   methods: {
     open() {
       alert('hello')
+    },
+    remove() {
+      alert('remove')
     }
   }
 }
@@ -60,6 +63,15 @@ export default {
     line-height: 22px;
     display: flex;
 }
+.highlight .delete {
+  top:-15px;
+  left:-13px;
+  position:absolute;
+  display: none;
+}
+.highlight:hover .delete {
+  display: block;
+}
 .highlight__content {
     display: flex;
     flex-wrap: wrap;
@@ -86,5 +98,9 @@ export default {
 }
 .highlight__label::after {
   content: attr(data-label);
+  display: block;
+  font-size: 14px;
+  -webkit-font-smoothing: subpixel-antialiased;
+  letter-spacing: .1em;
 }
 </style>
