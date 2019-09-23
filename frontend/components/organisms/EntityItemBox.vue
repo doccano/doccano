@@ -26,7 +26,9 @@
         <v-list-item
           v-for="(label, i) in labels"
           :key="i"
-          @click="addEntity(start, end, label.id)"
+          v-shortkey="[label.suffix_key]"
+          @shortkey="assignLabel(label.id)"
+          @click="assignLabel(label.id)"
         >
           <v-list-item-content>
             <v-list-item-title v-text="label.text" />
@@ -41,7 +43,9 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import EntityItem from '~/components/molecules/EntityItem'
+Vue.use(require('vue-shortkey'))
 
 export default {
   components: {
@@ -142,7 +146,7 @@ export default {
         this.showMenu = true
       })
     },
-    getSpanInfo() {
+    setSpanInfo() {
       let selection
       // Modern browsers.
       if (window.getSelection) {
@@ -158,37 +162,41 @@ export default {
       const preSelectionRange = range.cloneRange()
       preSelectionRange.selectNodeContents(this.$el)
       preSelectionRange.setEnd(range.startContainer, range.startOffset)
-      const start = [...preSelectionRange.toString()].length
-      const end = start + [...range.toString()].length
-      return { start, end }
+      this.start = [...preSelectionRange.toString()].length
+      this.end = this.start + [...range.toString()].length
     },
-    validateSpan(span, entities) {
-      if (!span) {
+    validateSpan() {
+      if ((typeof this.start === 'undefined') || (typeof this.end === 'undefined')) {
         return false
       }
-      if (span.start === span.end) {
+      if (this.start === this.end) {
         return false
       }
       for (const entity of this.entities) {
-        if ((entity.start_offset <= span.start) && (span.start < entity.end_offset)) {
+        if ((entity.start_offset <= this.start) && (this.start < entity.end_offset)) {
           return false
         }
-        if ((entity.start_offset < span.end) && (span.end <= entity.end_offset)) {
+        if ((entity.start_offset < this.end) && (this.end <= entity.end_offset)) {
           return false
         }
-        if ((span.start < entity.start_offset) && (entity.end_offset < span.end)) {
+        if ((this.start < entity.start_offset) && (entity.end_offset < this.end)) {
           return false
         }
       }
       return true
     },
     open(e) {
-      const span = this.getSpanInfo()
-      const isValid = this.validateSpan(span, this.entities)
-      if (isValid) {
-        this.start = span.start
-        this.end = span.end
+      this.setSpanInfo()
+      if (this.validateSpan()) {
         this.show(e)
+      }
+    },
+    assignLabel(labelId) {
+      if (this.validateSpan()) {
+        this.addEntity(this.start, this.end, labelId)
+        this.showMenu = false
+        this.start = 0
+        this.end = 0
       }
     }
   }

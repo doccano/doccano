@@ -18,6 +18,8 @@
       <v-list-item
         v-for="(item, i) in labels"
         :key="i"
+        v-shortkey.once="[item.suffix_key]"
+        @shortkey="update(item)"
         @click="update(item)"
       >
         <v-list-item-content>
@@ -33,7 +35,9 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { idealColor } from '~/plugins/utils.js'
+Vue.use(require('vue-shortkey'))
 
 export default {
   props: {
@@ -69,6 +73,7 @@ export default {
   methods: {
     update(label) {
       this.$emit('update', label)
+      this.showMenu = false
     },
     remove() {
       this.$emit('remove')
