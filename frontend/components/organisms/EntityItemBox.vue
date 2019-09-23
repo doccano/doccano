@@ -7,6 +7,8 @@
       :label="chunk.label"
       :color="chunk.color"
       :labels="labels"
+      @remove="deleteAnnotation(chunk.id)"
+      @update="updateEntity($event.id, chunk.id)"
     />
     <v-menu
       v-model="showMenu"
@@ -24,13 +26,13 @@
         <v-list-item
           v-for="(label, i) in labels"
           :key="i"
-          @click="add"
+          @click="addEntity(start, end, label.id)"
         >
           <v-list-item-content>
-            <v-list-item-title v-text="label.name" />
+            <v-list-item-title v-text="label.text" />
           </v-list-item-content>
           <v-list-item-action>
-            <v-list-item-action-text v-text="label.shortcut" />
+            <v-list-item-action-text v-text="label.suffix_key" />
           </v-list-item-action>
         </v-list-item>
       </v-list>
@@ -46,7 +48,7 @@ export default {
     EntityItem
   },
   props: {
-    content: {
+    text: {
       type: String,
       default: '',
       required: true
@@ -58,6 +60,21 @@ export default {
     },
     entities: {
       type: Array,
+      default: () => ([]),
+      required: true
+    },
+    deleteAnnotation: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    updateEntity: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    addEntity: {
+      type: Function,
       default: () => ([]),
       required: true
     }
@@ -85,23 +102,24 @@ export default {
         chunks.push({
           label: null,
           color: null,
-          text: this.content.slice(startOffset, entity.start_offset)
+          text: this.text.slice(startOffset, entity.start_offset)
         })
         startOffset = entity.end_offset
 
         // add entities to chunks.
         const label = this.labelObject[entity.label]
         chunks.push({
-          label: label.name,
-          color: label.color,
-          text: this.content.slice(entity.start_offset, entity.end_offset)
+          id: entity.id,
+          label: label.text,
+          color: label.background_color,
+          text: this.text.slice(entity.start_offset, entity.end_offset)
         })
       }
       // add the rest of text.
       chunks.push({
         label: null,
         color: null,
-        text: this.content.slice(startOffset, this.content.length)
+        text: this.text.slice(startOffset, this.text.length)
       })
       return chunks
     },
@@ -123,9 +141,6 @@ export default {
       this.$nextTick(() => {
         this.showMenu = true
       })
-    },
-    add() {
-
     },
     getSpanInfo() {
       let selection
@@ -171,6 +186,8 @@ export default {
       const span = this.getSpanInfo()
       const isValid = this.validateSpan(span, this.entities)
       if (isValid) {
+        this.start = span.start
+        this.end = span.end
         this.show(e)
       }
     }

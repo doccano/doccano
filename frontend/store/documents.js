@@ -1,4 +1,5 @@
 import DocumentService from '@/services/document.service'
+import AnnotationService from '@/services/annotation.service'
 import CSVParser from '@/services/parsers/csv.service'
 
 export const state = () => ({
@@ -6,7 +7,8 @@ export const state = () => ({
   selected: [],
   loading: false,
   selectedFormat: null,
-  parsed: {}
+  parsed: {},
+  current: 0
 })
 
 export const getters = {
@@ -52,6 +54,9 @@ export const getters = {
     } else {
       return []
     }
+  },
+  currentDoc(state) {
+    return state.items[state.current]
   }
 }
 
@@ -81,6 +86,16 @@ export const mutations = {
   parseFile(state, text) {
     const parser = new CSVParser()
     state.parsed = parser.parse(text)
+  },
+  addAnnotation(state, payload) {
+    state.items[state.current].annotations.push(payload)
+  },
+  deleteAnnotation(state, annotationId) {
+    state.items[state.current].annotations = state.items[state.current].annotations.filter(item => item.id !== annotationId)
+  },
+  updateAnnotation(state, payload) {
+    const item = state.items[state.current].annotations.find(item => item.id === payload.id)
+    Object.assign(item, payload)
   }
 }
 
@@ -128,6 +143,10 @@ export const actions = {
     }
     commit('resetSelected')
   },
+  nextPage({ commit }) {
+  },
+  prevPage({ commit }) {
+  },
   parseFile({ commit }, data) {
     const reader = new FileReader()
     reader.readAsText(data, 'UTF-8')
@@ -137,5 +156,35 @@ export const actions = {
     reader.onerror = (e) => {
       alert(e)
     }
+  },
+  addAnnotation({ commit, state }, payload) {
+    const documentId = state.items[state.current].id
+    AnnotationService.addAnnotation(payload.projectId, documentId, payload)
+      .then((response) => {
+        commit('addAnnotation', response)
+      })
+      .catch((error) => {
+        alert(error)
+      })
+  },
+  updateAnnotation({ commit, state }, payload) {
+    const documentId = state.items[state.current].id
+    AnnotationService.updateAnnotation(payload.projectId, documentId, payload.annotationId, payload)
+      .then((response) => {
+        commit('updateAnnotation', response)
+      })
+      .catch((error) => {
+        alert(error)
+      })
+  },
+  deleteAnnotation({ commit, state }, payload) {
+    const documentId = state.items[state.current].id
+    AnnotationService.deleteAnnotation(payload.projectId, documentId, payload.annotationId)
+      .then((response) => {
+        commit('deleteAnnotation', payload.annotationId)
+      })
+      .catch((error) => {
+        alert(error)
+      })
   }
 }

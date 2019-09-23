@@ -1,7 +1,34 @@
 <template>
-  <span v-if="label" class="highlight bottom" :style="{ borderColor: color }">
-    <span class="highlight__content">{{ content }}<v-icon class="delete" @click="remove">mdi-close-circle</v-icon></span><span class="highlight__label" :data-label="label" :style="{backgroundColor: color}" @click="open" />
-  </span>
+  <v-menu
+    v-if="label"
+    v-model="showMenu"
+    offset-y
+  >
+    <template v-slot:activator="{ on }">
+      <span class="highlight bottom" :style="{ borderColor: color }" v-on="on">
+        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span class="highlight__label" :data-label="label" :style="{ backgroundColor: color, color: textColor }" />
+      </span>
+    </template>
+    <v-list
+      dense
+      min-width="150"
+      max-height="400"
+      class="overflow-y-auto"
+    >
+      <v-list-item
+        v-for="(item, i) in labels"
+        :key="i"
+        @click="update(item)"
+      >
+        <v-list-item-content>
+          <v-list-item-title v-text="item.text" />
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-list-item-action-text v-text="item.suffix_key" />
+        </v-list-item-action>
+      </v-list-item>
+    </v-list>
+  </v-menu>
   <span v-else>{{ content }}</span>
 </template>
 
@@ -22,6 +49,16 @@ export default {
     color: {
       type: String,
       default: '#64FFDA'
+    },
+    labels: {
+      type: Array,
+      default: () => [],
+      required: true
+    }
+  },
+  data() {
+    return {
+      showMenu: false
     }
   },
   computed: {
@@ -30,11 +67,11 @@ export default {
     }
   },
   methods: {
-    open() {
-      alert('hello')
+    update(label) {
+      this.$emit('update', label)
     },
     remove() {
-      alert('remove')
+      this.$emit('remove')
     }
   }
 }
@@ -42,26 +79,25 @@ export default {
 
 <style scoped>
 .highlight.blue {
-    background: #edf4fa !important;
+  background: #edf4fa !important;
 }
 .highlight.bottom {
-    display: block;
-    white-space: normal;
+  display: block;
+  white-space: normal;
 }
 .highlight:first-child {
-    margin-left: 0;
+  margin-left: 0;
 }
 .highlight {
-    border: 2px solid;
-    color: #232323;
-    margin: 4px 6px 4px 3px;
-    vertical-align: middle;
-    box-shadow: 2px 4px 20px rgba(0,0,0,.1);
-    position: relative;
-    cursor: default;
-    min-width: 26px;
-    line-height: 22px;
-    display: flex;
+  border: 2px solid;
+  margin: 4px 6px 4px 3px;
+  vertical-align: middle;
+  box-shadow: 2px 4px 20px rgba(0,0,0,.1);
+  position: relative;
+  cursor: default;
+  min-width: 26px;
+  line-height: 22px;
+  display: flex;
 }
 .highlight .delete {
   top:-15px;
@@ -73,28 +109,28 @@ export default {
   display: block;
 }
 .highlight__content {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 2px 2px 0px 6px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 2px 2px 0px 6px;
 }
 .highlight.bottom .highlight__content:after {
-    content: " ";
-    padding-right: 3px;
+  content: " ";
+  padding-right: 3px;
 }
 .highlight__label {
-    line-height: 14px;
-    padding-top: 1px;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    padding: 0 8px;
-    text-align: center;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    color: white;
+  line-height: 14px;
+  padding-top: 1px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  padding: 0 8px;
+  text-align: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  color: white;
 }
 .highlight__label::after {
   content: attr(data-label);
