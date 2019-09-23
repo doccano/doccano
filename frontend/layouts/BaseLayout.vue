@@ -10,13 +10,6 @@
       <nuxt-link to="/" class="top">
         <span class="title ml-3 mr-5">doccano</span>
       </nuxt-link>
-      <v-text-field
-        solo-inverted
-        flat
-        hide-details
-        label="Search"
-        prepend-inner-icon="search"
-      />
       <v-spacer />
       <slot name="rightDrawerIcon" />
     </v-app-bar>

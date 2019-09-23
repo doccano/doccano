@@ -19,19 +19,6 @@
       </v-navigation-drawer>
     </template>
 
-    <!--
-    <template #rightDrawer>
-      <v-navigation-drawer
-        v-model="drawerRight"
-        app
-        clipped
-        right
-      >
-        <slot name="sideBarRightContent" />
-      </v-navigation-drawer>
-    </template>
-    -->
-
     <template #content>
       <nuxt />
     </template>
