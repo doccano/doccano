@@ -14,7 +14,7 @@ services:
       DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
       ALLOW_SIGNUP: "False" 
     ports:
-      - 8000:8000
+      - 8000:8800
 
   webpack:
     image: node:8
@@ -35,6 +35,11 @@ services:
       POSTGRES_USER: "doccano"
       POSTGRES_PASSWORD: "doccano"
       POSTGRES_DB: "doccano"
+    volumes:
+      - ./postgres/config:/etc/postgresql
+      - ./postgres/log:/var/log/postgresql/
+      - ./postgres/data:/var/lib/postgresql/data/
+
     ports:
       - 5432:5432
 

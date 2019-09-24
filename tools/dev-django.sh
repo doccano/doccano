@@ -6,6 +6,8 @@ root="$(dirname "$0")/.."
 app="${root}/app"
 venv="${root}/venv"
 
+apt-get update && apt-get -y install unixodbc-dev
+
 if [[ ! -f "${venv}/bin/python" ]]; then
   echo "Creating virtualenv"
   mkdir -p "${venv}"
