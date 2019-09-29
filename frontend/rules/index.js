@@ -10,7 +10,8 @@ export const labelNameRules = [
 
 // Rules for project member.
 export const userNameRules = [
-  v => !!v || 'User is required'
+  v => !!v || 'User name is required',
+  v => (v && v.length <= 30) || 'User name must be less than 30 characters'
 ]
 
 export const roleRules = [
@@ -40,4 +41,10 @@ export const fileFormatRules = [
 export const uploadFileRules = [
   v => !!v || 'File is required',
   v => !v || v.size < 1000000 || 'File size should be less than 1 MB!'
+]
+
+// Rules for user.
+export const passwordRules = [
+  v => !!v || 'Password is required',
+  v => (v && v.length <= 30) || 'Password must be less than 30 characters'
 ]
