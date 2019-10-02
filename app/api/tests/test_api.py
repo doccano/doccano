@@ -209,6 +209,26 @@ class TestLabelListAPI(APITestCase):
         response = self.client.post(self.other_url, format='json', data=label)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_can_create_same_suffix_with_different_prefix(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        label = {'text': 'Person', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        label = {'text': 'Percentage', 'prefix_key': 'ctrl', 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_cannot_create_same_shortcut_key(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        label = {'text': 'Person', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        label = {'text': 'Percentage', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_disallows_project_member_to_create_label(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
@@ -491,6 +511,10 @@ class TestAnnotationListAPI(APITestCase):
         cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': main_project_label.id}
         cls.num_entity_of_project_member = SequenceAnnotation.objects.filter(document=main_project_doc,
                                                                              user=project_member).count()
+        cls.num_entity_of_another_project_member = SequenceAnnotation.objects.filter(
+            document=main_project_doc,
+            user=another_project_member).count()
+        cls.main_project = main_project
 
     def test_returns_annotations_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -510,6 +534,15 @@ class TestAnnotationListAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(len(response.data), self.num_entity_of_project_member)
 
+    def test_returns_annotations_of_another_project_member_if_collaborative_project(self):
+        self._patch_project(self.main_project, 'collaborative_annotation', True)
+
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(len(response.data),
+                         self.num_entity_of_project_member + self.num_entity_of_another_project_member)
+
     def test_allows_project_member_to_create_annotation(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
@@ -521,6 +554,17 @@ class TestAnnotationListAPI(APITestCase):
                           password=self.non_project_member_pass)
         response = self.client.post(self.url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def _patch_project(self, project, attribute, value):
+        old_value = getattr(project, attribute, None)
+        setattr(project, attribute, value)
+        project.save()
+
+        def cleanup_project():
+            setattr(project, attribute, old_value)
+            project.save()
+
+        self.addCleanup(cleanup_project)
 
 
 class TestAnnotationDetailAPI(APITestCase):
@@ -759,7 +803,7 @@ class TestUploader(APITestCase):
     def upload_test_helper(self, project_id, filename, file_format, expected_status, **kwargs):
         url = reverse(viewname='doc_uploader', args=[project_id])
 
-        with open(os.path.join(DATA_DIR, filename)) as f:
+        with open(os.path.join(DATA_DIR, filename), 'rb') as f:
             response = self.client.post(url, data={'file': f, 'format': file_format})
 
         self.assertEqual(response.status_code, expected_status)
@@ -803,6 +847,12 @@ class TestUploader(APITestCase):
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_single_column_csv(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column.csv',
+                                file_format='csv',
+                                expected_status=status.HTTP_201_CREATED)
+
     def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.invalid.1.csv',
@@ -814,6 +864,43 @@ class TestUploader(APITestCase):
                                 filename='example.invalid.2.csv',
                                 file_format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_can_upload_classification_excel(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_seq2seq_excel(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_single_column_excel(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_cannot_upload_excel_file_does_not_match_column_and_row(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.invalid.1.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_upload_excel_file_has_too_many_columns(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.invalid.2.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    @override_settings(IMPORT_BATCH_SIZE=1)
+    def test_can_upload_small_batch_size(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column_no_header.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_classification_jsonl(self):
         self.upload_test_helper(project_id=self.classification_project.id,

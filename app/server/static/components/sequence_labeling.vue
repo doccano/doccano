@@ -21,10 +21,11 @@ block annotation-area
                 kbd {{ shortcutKey(label) | simpleShortcut }}
 
     div.card-content
-      div.content(v-if="docs[pageNumber] && annotations[pageNumber]")
+      div.content.scrollable(v-if="docs[pageNumber] && annotations[pageNumber]", ref="textbox")
         annotator(
           v-bind:labels="labels"
           v-bind:entity-positions="annotations[pageNumber]"
+          v-bind:search-query="searchQuery"
           v-bind:text="docs[pageNumber].text"
           v-on:remove-label="removeLabel"
           v-on:add-label="addLabel"

@@ -3,7 +3,11 @@ FROM python:${PYTHON_VERSION}-stretch AS builder
 
 ARG NODE_VERSION="8.x"
 RUN curl -sL "https://deb.nodesource.com/setup_${NODE_VERSION}" | bash - \
- && apt-get install nodejs
+ && apt-get install --no-install-recommends -y \
+      nodejs
+
+COPY tools/install-mssql.sh /doccano/tools/install-mssql.sh
+RUN /doccano/tools/install-mssql.sh --dev
 
 COPY app/server/static/package*.json /doccano/app/server/static/
 RUN cd /doccano/app/server/static \
@@ -15,8 +19,8 @@ RUN pip install -r /requirements.txt \
 
 COPY . /doccano
 
-RUN cd /doccano \
- && tools/ci.sh
+WORKDIR /doccano
+RUN tools/ci.sh
 
 FROM builder AS cleaner
 
@@ -28,6 +32,9 @@ RUN cd /doccano \
  && python app/manage.py collectstatic --noinput
 
 FROM python:${PYTHON_VERSION}-slim-stretch AS runtime
+
+COPY --from=builder /doccano/tools/install-mssql.sh /doccano/tools/install-mssql.sh
+RUN /doccano/tools/install-mssql.sh
 
 RUN useradd -ms /bin/sh doccano
 

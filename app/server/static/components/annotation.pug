@@ -53,9 +53,9 @@ div.columns(v-cloak="")
                       | Completed
 
       div.main.pt0.pb0.pr20.pl20
-        span About {{ count }} results
+        span About {{ count }} results (page {{ paginationPage }} of {{ paginationPages }})
 
-      div.main
+      div.main.sidebar-scrollable
         a.item(
           v-for="(doc, index) in docs"
           v-bind:class="{ active: index == pageNumber }"
@@ -133,25 +133,49 @@ div.columns(v-cloak="")
           span.icon
             i.fas.fa-box
 
-    block annotation-area
+    div.columns
+      div.column
+        block annotation-area
+
+      div.column(v-if="documentMetadata != null && documentMetadata.documentSourceUrl != null")
+        preview(v-bind:url="documentMetadata.documentSourceUrl")
 
     div.level.mt30
-      a.button.level-left(
-        v-shortkey="{ prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft'] }"
-        v-on:click="prevPage"
-        v-on:shortkey="prevPage"
-      )
-        span.icon
-          i.fas.fa-chevron-left
-        span Prev
+      div.level-left
+        div.buttons
+          a.button(
+            v-shortkey="{ prev1: ['shift', 'ctrl', 'p'], prev2: ['shift', 'arrowup'], prev3: ['shift', 'arrowleft'] }"
+            v-on:click="prevPagination"
+            v-on:shortkey="prevPagination"
+          )
+            span.icon.tooltip(data-tooltip="Previous page")
+              i.fas.fa-arrow-left
 
-      span.button.level-center.is-static {{ offset + pageNumber + 1 }} / {{ count }}
+          a.button(
+            v-shortkey="{ prev1: ['ctrl', 'p'], prev2: ['arrowup'], prev3: ['arrowleft'] }"
+            v-on:click="prevPage"
+            v-on:shortkey="prevPage"
+          )
+            span.icon.tooltip(data-tooltip="Previous document")
+              i.fas.fa-chevron-left
 
-      a.button.level-right(
-        v-shortkey="{ next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright'] }"
-        v-on:click="nextPage"
-        v-on:shortkey="nextPage"
-      )
-        span Next
-        span.icon
-          i.fas.fa-chevron-right
+      div.level-center
+        span.button.is-static {{ offset + pageNumber + 1 }} / {{ count }}
+
+      div.level-right
+        div.buttons
+          a.button(
+            v-shortkey="{ next1: ['ctrl', 'n'], next2: ['arrowdown'], next3: ['arrowright'] }"
+            v-on:click="nextPage"
+            v-on:shortkey="nextPage"
+          )
+            span.icon.tooltip(data-tooltip="Next document")
+              i.fas.fa-chevron-right
+
+          a.button(
+            v-shortkey="{ next1: ['shift', 'ctrl', 'n'], next2: ['shift', 'arrowdown'], next3: ['shift', 'arrowright'] }"
+            v-on:click="nextPagination"
+            v-on:shortkey="nextPagination"
+          )
+            span.icon.tooltip(data-tooltip="Next page")
+              i.fas.fa-arrow-right

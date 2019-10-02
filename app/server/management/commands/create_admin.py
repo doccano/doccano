@@ -1,12 +1,13 @@
 from django.contrib.auth.management.commands import createsuperuser
 from django.core.management import CommandError
+from django.db import IntegrityError
 
 
 class Command(createsuperuser.Command):
     help = 'Non-interactively create an admin user'
 
     def add_arguments(self, parser):
-        super(Command, self).add_arguments(parser)
+        super().add_arguments(parser)
         parser.add_argument('--password', default=None,
                             help='The password for the admin.')
 
@@ -17,7 +18,10 @@ class Command(createsuperuser.Command):
         if password and not username:
             raise CommandError('--username is required if specifying --password')
 
-        super(Command, self).handle(*args, **options)
+        try:
+            super().handle(*args, **options)
+        except IntegrityError:
+            self.stderr.write(f'User {username} already exists.')
 
         if password:
             database = options.get('database')

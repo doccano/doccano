@@ -162,10 +162,6 @@ class Migration(migrations.Migration):
             unique_together={('document', 'user', 'label', 'start_offset', 'end_offset')},
         ),
         migrations.AlterUniqueTogether(
-            name='seq2seqannotation',
-            unique_together={('document', 'user', 'text')},
-        ),
-        migrations.AlterUniqueTogether(
             name='label',
             unique_together={('project', 'text'), ('project', 'prefix_key', 'suffix_key')},
         ),

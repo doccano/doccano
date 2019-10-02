@@ -6,8 +6,10 @@ import re
 from collections import defaultdict
 from random import Random
 
+import conllu
 from django.db import transaction
 from django.conf import settings
+import pyexcel
 from rest_framework.renderers import JSONRenderer
 from seqeval.metrics.sequence_labeling import get_entities
 
@@ -249,44 +251,49 @@ class CoNLLParser(FileParser):
     ```
     """
     def parse(self, file):
-        words, tags = [], []
         data = []
         file = io.TextIOWrapper(file, encoding='utf-8')
-        for i, line in enumerate(file, start=1):
-            if len(data) >= settings.IMPORT_BATCH_SIZE:
-                yield data
-                data = []
-            line = line.strip()
-            if line:
-                try:
-                    word, tag = line.split('\t')
-                except ValueError:
-                    raise FileParseException(line_num=i, line=line)
-                words.append(word)
-                tags.append(tag)
-            elif words and tags:
-                j = self.calc_char_offset(words, tags)
-                data.append(j)
-                words, tags = [], []
-        if len(words) > 0:
-            j = self.calc_char_offset(words, tags)
-            data.append(j)
+
+        # Add check exception
+
+        field_parsers = {
+            "ne": lambda line, i: conllu.parser.parse_nullable_value(line[i]),
+        }
+
+        gen_parser = conllu.parse_incr(
+            file,
+            fields=("form", "ne"),
+            field_parsers=field_parsers
+        )
+
+        try:
+            for sentence in gen_parser:
+                if not sentence:
+                    continue
+                if len(data) >= settings.IMPORT_BATCH_SIZE:
+                    yield data
+                    data = []
+                words, labels = [], []
+                for item in sentence:
+                    word = item.get("form")
+                    tag = item.get("ne")
+
+                    if tag is not None:
+                        char_left = sum(map(len, words)) + len(words)
+                        char_right = char_left + len(word)
+                        span = [char_left, char_right, tag]
+                        labels.append(span)
+
+                    words.append(word)
+
+                # Create and add JSONL
+                data.append({'text': ' '.join(words), 'labels': labels})
+
+        except conllu.parser.ParseException as e:
+            raise FileParseException(line_num=-1, line=str(e))
+
         if data:
             yield data
-
-    @classmethod
-    def calc_char_offset(cls, words, tags):
-        doc = ' '.join(words)
-        j = {'text': ' '.join(words), 'labels': []}
-        pos = defaultdict(int)
-        for label, start_offset, end_offset in get_entities(tags):
-            entity = ' '.join(words[start_offset: end_offset + 1])
-            char_left = doc.index(entity, pos[entity])
-            char_right = char_left + len(entity)
-            span = [char_left, char_right, label]
-            j['labels'].append(span)
-            pos[entity] = char_right
-        return j
 
 
 class PlainTextParser(FileParser):
@@ -325,13 +332,32 @@ class CSVParser(FileParser):
     def parse(self, file):
         file = io.TextIOWrapper(file, encoding='utf-8')
         reader = csv.reader(file)
+        yield from ExcelParser.parse_excel_csv_reader(reader)
+
+
+class ExcelParser(FileParser):
+    def parse(self, file):
+        excel_book = pyexcel.iget_book(file_type="xlsx", file_content=file.read())
+        # Handle multiple sheets
+        for sheet_name in excel_book.sheet_names():
+            reader = excel_book[sheet_name].to_array()
+            yield from self.parse_excel_csv_reader(reader)
+
+    @staticmethod
+    def parse_excel_csv_reader(reader):
         columns = next(reader)
         data = []
+        if len(columns) == 1 and columns[0] != 'text':
+            data.append({'text': columns[0]})
         for i, row in enumerate(reader, start=2):
             if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
-            if len(row) == len(columns) and len(row) >= 2:
+            # Only text column
+            if len(row) == len(columns) and len(row) == 1:
+                data.append({'text': row[0]})
+            # Text, labels and metadata columns
+            elif len(row) == len(columns) and len(row) >= 2:
                 text, label = row[:2]
                 meta = json.dumps(dict(zip(columns[2:], row[2:])))
                 j = {'text': text, 'labels': [label], 'meta': meta}
@@ -353,7 +379,6 @@ class JSONParser(FileParser):
                 data = []
             try:
                 j = json.loads(line)
-                #j  = json.loads(line.decode('utf-8'))
                 j['meta'] = json.dumps(j.get('meta', {}))
                 data.append(j)
             except json.decoder.JSONDecodeError:
@@ -379,6 +404,7 @@ class JSONLRenderer(JSONRenderer):
                              cls=self.encoder_class,
                              ensure_ascii=self.ensure_ascii,
                              allow_nan=not self.strict) + '\n'
+
 
 class JSONPainter(object):
 
@@ -412,6 +438,7 @@ class JSONPainter(object):
             d['meta'] = json.loads(d['meta'])
             data.append(d)
         return data
+
 
 class CSVPainter(JSONPainter):
 

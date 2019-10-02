@@ -41,10 +41,9 @@ class LabelSerializer(serializers.ModelSerializer):
             pass  # unit tests don't always have the correct context set up
         else:
             if Label.objects.filter(suffix_key=suffix_key,
-                                    prefix_key__isnull=True,
+                                    prefix_key=prefix_key,
                                     project=project_id).exists():
                 raise ValidationError('Duplicate key.')
-
         return super().validate(attrs)
 
     class Meta:
@@ -62,7 +61,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         model = project.get_annotation_class()
         serializer = project.get_annotation_serializer()
         annotations = model.objects.filter(document=instance.id)
-        if request:
+        if request and not project.collaborative_annotation:
             annotations = annotations.filter(user=request.user)
         serializer = serializer(annotations, many=True)
         return serializer.data
@@ -82,7 +81,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'project_type', 'image', 'updated_at',
-                  'randomize_document_order')
+                  'randomize_document_order', 'collaborative_annotation')
         read_only_fields = ('image', 'updated_at')
 
 
@@ -160,5 +159,5 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seq2seqAnnotation
-        fields = ('id', 'text', 'user', 'document')
+        fields = ('id', 'text', 'user', 'document', 'prob')
         read_only_fields = ('user',)

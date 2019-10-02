@@ -7,6 +7,8 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 
+from .managers import AnnotationManager, Seq2seqAnnotationManager
+
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
@@ -26,6 +28,7 @@ class Project(PolymorphicModel):
     users = models.ManyToManyField(User, related_name='projects')
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
     randomize_document_order = models.BooleanField(default=False)
+    collaborative_annotation = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('upload', args=[self.id])
@@ -163,19 +166,18 @@ class Label(models.Model):
         # Don't allow shortcut key not to have a suffix key.
         if self.prefix_key and not self.suffix_key:
             raise ValidationError('Shortcut key may not have a suffix key.')
-        super().clean()
 
-    def validate_unique(self, exclude=None):
-        # Don't allow to save same shortcut key when prefix_key is null.
-        if Label.objects.exclude(id=self.id).filter(suffix_key=self.suffix_key,
-                                                    prefix_key__isnull=True).exists():
-            raise ValidationError('Duplicate key.')
-        super().validate_unique(exclude)
+        # each shortcut (prefix key + suffix key) can only be assigned to one label
+        if self.suffix_key or self.prefix_key:
+            other_labels = self.project.labels.exclude(id=self.id)
+            if other_labels.filter(suffix_key=self.suffix_key, prefix_key=self.prefix_key).exists():
+                raise ValidationError('A label with this shortcut already exists in the project')
+
+        super().clean()
 
     class Meta:
         unique_together = (
             ('project', 'text'),
-            ('project', 'prefix_key', 'suffix_key')
         )
 
 
@@ -192,6 +194,8 @@ class Document(models.Model):
 
 
 class Annotation(models.Model):
+    objects = AnnotationManager()
+
     prob = models.FloatField(default=0.0)
     manual = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -225,8 +229,11 @@ class SequenceAnnotation(Annotation):
 
 
 class Seq2seqAnnotation(Annotation):
+    # Override AnnotationManager for custom functionality
+    objects = Seq2seqAnnotationManager()
+
     document = models.ForeignKey(Document, related_name='seq2seq_annotations', on_delete=models.CASCADE)
-    text = models.TextField()
+    text = models.CharField(max_length=500)
 
     class Meta:
         unique_together = ('document', 'user', 'text')

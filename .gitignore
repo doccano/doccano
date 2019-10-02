@@ -198,7 +198,3 @@ pip-selfcheck.json
 node_modules/
 bundle/
 webpack-stats.json
-/.idea/doccano.iml
-/.idea/misc.xml
-/.idea/modules.xml
-/.idea/vcs.xml

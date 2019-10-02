@@ -58,20 +58,19 @@ Doccano can be deployed to AWS ([Cloudformation](https://docs.aws.amazon.com/AWS
 
 > Notice: (1) EC2 KeyPair cannot be created automatically, so make sure you have an existing EC2 KeyPair in one region. Or [create one yourself](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair). (2) If you want to access doccano via HTTPS in AWS, here is an [instruction](https://github.com/chakki-works/doccano/wiki/HTTPS-setting-for-doccano-in-AWS).
 
-
 ## Features
 
-* Collaborative annotation
-* Multi-Language support
-* Emoji :smile: support
-* (future) Auto labeling
+-   Collaborative annotation
+-   Multi-Language support
+-   Emoji :smile: support
+-   (future) Auto labeling
 
 ## Requirements
 
-* Python 3.6+
-* Django 2.1.7+
-* Node.js 8.0+
-* Google Chrome(highly recommended)
+-   Python 3.6+
+-   Django 2.1.7+
+-   Node.js 8.0+
+-   Google Chrome(highly recommended)
 
 ## Installation
 
@@ -128,21 +127,19 @@ Let’s start the development server and explore it.
 
 Depending on your installation method, there are two options:
 
-**Option1: Running the Docker image as a Container**
+#### Option 1: Running the Docker image as a Container
 
 First, run a Docker container:
 
 ```bash
-docker run -d --name doccano -p 8000:8000 chakkiworks/doccano
+docker run -d --rm --name doccano \
+  -e "ADMIN_USERNAME=admin" \
+  -e "ADMIN_EMAIL=admin@example.com" \
+  -e "ADMIN_PASSWORD=password" \
+  -p 8000:8000 chakkiworks/doccano
 ```
 
-Then, execute `create-admin.sh` script for creating a superuser.
-
-```bash
-docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
-```
-
-**Option2: Running Django development server**
+#### Option 2: Running Django development server
 
 Before running, we need to make migration. Run the following command:
 
@@ -168,7 +165,13 @@ Finally, to start the server, run the following command:
 python manage.py runserver
 ```
 
-**Option3: Running the development Docker-Compose stack**
+Optionally, you can change the bind ip and port using the command
+
+```bash
+python manage.py runserver <ip>:<port>
+```
+
+#### Option 3: Running the development Docker-Compose stack
 
 We can use docker-compose to set up the webpack server, django server, database, etc. all in one command:
 
@@ -198,20 +201,26 @@ After creating a project, you will see the "Import Data" page, or click `Import 
 
 <img src="./docs/upload.png" alt="Upload project" width=600>
 
-You can upload two types of files:
-- `CSV file`: file must contain a header with a `text` column or be one-column csv file.
-- `JSON file`: each line contains a JSON object with a `text` key. JSON format supports line breaks rendering.
+You can upload the following types of files (depending on project type):
+
+-   `Text file`: file must contain one sentence/document per line separated by new lines.
+-   `CSV file`: file must contain a header with `"text"` as the first column or be one-column csv file. If using labels the sencond column must be the labels.
+-   `Excel file`: file must contain a header with `"text"` as the first column or be one-column excel file. If using labels the sencond column must be the labels. Supports multiple sheets as long as format is the same.
+-   `JSON file`: each line contains a JSON object with a `text` key. JSON format supports line breaks rendering.
 
 > Notice: Doccano won't render line breaks in annotation page for sequence labeling task due to the indent problem, but the exported JSON file still contains line breaks.
 
-`example.txt` (or `example.csv`)
-```python
+`example.txt/csv/xlsx`
+
+```txt
 EU rejects German call to boycott British lamb.
 President Obama is speaking at the White House.
 He lives in Newark, Ohio.
 ...
 ```
+
 `example.json`
+
 ```JSON
 {"text": "EU rejects German call to boycott British lamb."}
 {"text": "President Obama is speaking at the White House."}
@@ -219,7 +228,7 @@ He lives in Newark, Ohio.
 ...
 ```
 
-Any other columns (for csv) or keys (for json) are preserved and will be exported in the `metadata` column or key as is.
+Any other columns (for csv/excel) or keys (for json) are preserved and will be exported in the `metadata` column or key as is.
 
 Once you select a TXT/JSON file on your computer, click `Upload dataset` button. After uploading the dataset file, we will see the `Dataset` page (or click `Dataset` button list in the left bar). This page displays all the documents we uploaded in one project.
 
@@ -228,7 +237,6 @@ Once you select a TXT/JSON file on your computer, click `Upload dataset` button.
 Click `Labels` button in left bar to define your own labels. You should see the label editor page. In label editor page, you can create labels by specifying label text, shortcut key, background color and text color.
 
 <img src="./docs/label_editor.png" alt="Edit label" width=600>
-
 
 ### Annotation
 
@@ -250,13 +258,16 @@ by adding `external_id` to the imported file. For example:
 
 Input file may look like this:
 `import.json`
+
 ```JSON
-{"text": "EU rejects German call to boycott British lamb.", "external_id": 1}
+{"text": "EU rejects German call to boycott British lamb.", "meta": {"external_id": 1}}
 ```
+
 and the exported file will look like this:
 `output.json`
+
 ```JSON
-{"doc_id": 2023, "text": "EU rejects German call to boycott British lamb.", "labels": ["news"], "username": "root", "metadata": {"external_id": 1}}
+{"doc_id": 2023, "text": "EU rejects German call to boycott British lamb.", "labels": ["news"], "username": "root", "meta": {"external_id": 1}}
 ```
 
 ### Tutorial
@@ -270,7 +281,6 @@ I hope you are having a great day!
 As with any software, doccano is under continuous development. If you have requests for features, please file an issue describing your request. Also, if you want to see work towards a specific feature, feel free to contribute by working towards it. The standard procedure is to fork the repository, add a feature, fix a bug, then file a pull request that your changes are to be merged into the main repository and included in the next release.
 
 Here are some tips might be helpful. [How to Contribute to Doccano Project](https://github.com/chakki-works/doccano/wiki/How-to-Contribute-to-Doccano-Project)
-
 
 ## Contact
 
