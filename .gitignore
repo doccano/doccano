@@ -140,6 +140,10 @@ venv.bak/
 .idea/**/workspace.xml
 .idea/**/tasks.xml
 .idea/dictionaries
+.idea/doccano.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/
