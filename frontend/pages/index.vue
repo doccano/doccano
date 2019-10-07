@@ -1,32 +1,50 @@
 <template>
   <v-content>
     <section>
-      <v-parallax src="/images/hero.jpeg" height="600">
+      <v-parallax
+        src="/images/vbanner.jpg"
+        height="400"
+        dark
+      >
         <v-layout
-          column
+          wrap
           align-center
           justify-center
           class="white--text"
         >
-          <img src="/images/vuetify.png" alt="Vuetify.js" height="200">
-          <h1 class="white--text mb-2 display-1 text-xs-center">
-            Text Annotation for Human
-          </h1>
-          <div class="subheading mb-3 text-xs-center">
-            Just create project, upload data and start annotation. You can build dataset in hours.
-          </div>
-          <v-btn
-            class="blue lighten-2 mt-5"
-            dark
-            large
-            href="/pre-made-themes"
-          >
-            Get Started
-          </v-btn>
+          <v-flex text-right class="mr-5">
+            <img src="~/assets/icon.png" alt="doccano" height="200">
+          </v-flex>
+          <v-flex>
+            <h1 class="mb-2 display-1 text-xs-center">
+              Text Annotation for Human
+            </h1>
+            <div class="mt-4">
+              <v-btn
+                large
+                outlined
+                color="white"
+                href="https://github.com/chakki-works/doccano"
+              >
+                <v-icon left>
+                  mdi-github-circle
+                </v-icon>
+                GitHub
+              </v-btn>
+              <v-btn
+                class="blue lighten-2 ml-5"
+                dark
+                large
+                href="/auth"
+              >
+                Get Started
+              </v-btn>
+            </div>
+          </v-flex>
         </v-layout>
       </v-parallax>
     </section>
-    <section>
+    <v-container>
       <v-layout
         column
         wrap
@@ -42,61 +60,52 @@
         </v-flex>
         <v-flex xs12>
           <v-container grid-list-xl>
-            <v-layout row wrap align-center>
+            <v-layout wrap align-center>
               <v-flex xs12 md4>
-                <v-card class="elevation-0 transparent">
-                  <v-card-text class="text-xs-center">
-                    <v-icon x-large class="blue--text text--lighten-2">
-                      color_lens
-                    </v-icon>
-                  </v-card-text>
+                <v-card>
+                  <v-img
+                    src="/images/feature3.png"
+                    height="200px"
+                  />
                   <v-card-title primary-title class="layout justify-center">
-                    <div class="headline text-xs-center">
+                    <div class="headline text-xs-center font-weight-bold mb-2">
                       Team Collaboration
                     </div>
                   </v-card-title>
-                  <v-card-text class="subheading">
-                    Cras facilisis mi vitae nunc lobortis pharetra. Nulla volutpat tincidunt ornare.
-                    Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                    Nullam in aliquet odio. Aliquam eu est vitae tellus bibendum tincidunt. Suspendisse potenti.
+                  <v-card-text class="subtitle-1 layout justify-center">
+                    Annotation with your team mates.
                   </v-card-text>
                 </v-card>
               </v-flex>
               <v-flex xs12 md4>
-                <v-card class="elevation-0 transparent">
-                  <v-card-text class="text-xs-center">
-                    <v-icon x-large class="blue--text text--lighten-2">
-                      flash_on
-                    </v-icon>
-                  </v-card-text>
+                <v-card>
+                  <v-img
+                    src="/images/feature2.png"
+                    height="200px"
+                  />
                   <v-card-title primary-title class="layout justify-center">
-                    <div class="headline">
-                      Multi Language
+                    <div class="headline text-xs-center font-weight-bold mb-2">
+                      Any Language
                     </div>
                   </v-card-title>
-                  <v-card-text class="subheading">
-                    Cras facilisis mi vitae nunc lobortis pharetra. Nulla volutpat tincidunt ornare.
-                    Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                    Nullam in aliquet odio. Aliquam eu est vitae tellus bibendum tincidunt. Suspendisse potenti.
+                  <v-card-text class="subtitle-1 layout justify-center">
+                    Annotation with any language.
                   </v-card-text>
                 </v-card>
               </v-flex>
               <v-flex xs12 md4>
-                <v-card class="elevation-0 transparent">
-                  <v-card-text class="text-xs-center">
-                    <v-icon x-large class="blue--text text--lighten-2">
-                      build
-                    </v-icon>
-                  </v-card-text>
+                <v-card>
+                  <v-img
+                    src="/images/feature1.png"
+                    height="200px"
+                  />
                   <v-card-title primary-title class="layout justify-center">
-                    <div class="headline text-xs-center">
-                      Completely Open Sourced
+                    <div class="headline text-xs-center font-weight-bold mb-2">
+                      Open Source
                     </div>
                   </v-card-title>
-                  <v-card-text class="subheading">
-                    Cras facilisis mi vitae nunc lobortis pharetra. Nulla volutpat tincidunt ornare.
-                    Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-                    Nullam in aliquet odio. Aliquam eu est vitae tellus bibendum tincidunt. Suspendisse potenti.
+                  <v-card-text class="subtitle-1 layout justify-center">
+                    Annotation with free and customizable.
                   </v-card-text>
                 </v-card>
               </v-flex>
@@ -104,6 +113,53 @@
           </v-container>
         </v-flex>
       </v-layout>
+    </v-container>
+
+    <section>
+      <v-parallax
+        src="/images/vbanner.jpg"
+        height="400"
+        dark
+      >
+        <v-container>
+          <v-layout
+            wrap
+            align-center
+            justify-center
+            class="white--text"
+          >
+            <v-flex
+              xs12
+              md7
+            >
+              <v-img
+                src="http://doccano.herokuapp.com/static/images/named_entity_recognition.6fb82064e7aa.png"
+                max-height="380"
+                contain
+                class="ma-5"
+              />
+            </v-flex>
+            <v-flex
+              xs12
+              md5
+            >
+              <h1 class="mb-2 display-1 text-xs-center">
+                Realize your ideas quickly
+              </h1>
+              <div class="mt-4">
+                <v-btn
+                  class="blue lighten-2"
+                  dark
+                  large
+                  href="/demo"
+                >
+                  Try demo
+                </v-btn>
+              </div>
+            </v-flex>
+          </v-layout>
+        </v-container>
+      </v-parallax>
     </section>
   </v-content>
 </template>

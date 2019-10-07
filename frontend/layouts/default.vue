@@ -1,11 +1,22 @@
 <template>
   <v-app>
     <v-app-bar
-      color="indigo lighten-1"
-      dark
       app
+      color=""
     >
-      <v-toolbar-title v-text="title" />
+      <nuxt-link to="/" style="line-height:0;">
+        <img src="~/assets/icon.png" height="48">
+      </nuxt-link>
+      <v-toolbar-title class="align-center ml-2">
+        doccano
+      </v-toolbar-title>
+      <div class="flex-grow-1" />
+      <v-btn
+        outlined
+        href="auth"
+      >
+        Sign in
+      </v-btn>
     </v-app-bar>
     <nuxt />
     <v-footer
@@ -17,14 +28,14 @@
         wrap
       >
         <v-flex
-          primary
+          black
           lighten-2
           py-4
           text-center
           white--text
           xs12
         >
-          {{ new Date().getFullYear() }} — <strong>Vuetify</strong>
+          &copy; {{ new Date().getFullYear() }} doccano
         </v-flex>
       </v-layout>
     </v-footer>
@@ -32,19 +43,11 @@
 </template>
 
 <script>
-export default {
-  data() {
-    return {
-      title: 'doccano',
-      links: [
-        'Home',
-        'About Us',
-        'Team',
-        'Services',
-        'Blog',
-        'Contact Us'
-      ]
-    }
-  }
-}
+export default {}
 </script>
+
+<style scoped>
+.top{
+  text-decoration: none;
+}
+</style>
