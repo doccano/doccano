@@ -68,12 +68,22 @@ class StatisticsAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         p = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        label_count, user_count = self.label_per_data(p)
-        progress = self.progress(project=p)
-        response = dict()
-        response['label'] = label_count
-        response['user'] = user_count
-        response.update(progress)
+
+        include = set(request.GET.getlist('include'))
+        response = {}
+
+        if not include or 'label' in include or 'user' in include:
+            label_count, user_count = self.label_per_data(p)
+            response['label'] = label_count
+            response['user'] = user_count
+
+        if not include or 'total' in include or 'remaining' in include:
+            progress = self.progress(project=p)
+            response.update(progress)
+
+        if include:
+            response = {key: value for (key, value) in response.items() if key in include}
+
         return Response(response)
 
     def progress(self, project):

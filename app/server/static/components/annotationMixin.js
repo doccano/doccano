@@ -236,7 +236,7 @@ export default {
 
     annotations() {
       // fetch progress info.
-      HTTP.get('statistics').then((response) => {
+      HTTP.get('statistics?include=total&include=remaining').then((response) => {
         this.total = response.data.total;
         this.remaining = response.data.remaining;
       });

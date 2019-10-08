@@ -1331,6 +1331,12 @@ class TestStatisticsAPI(APITestCase):
         self.assertIn('user', response.data)
         self.assertIsInstance(response.data['user'], dict)
 
+    def test_returns_partial_response(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.get(f'{self.url}?include=user', format='json')
+        self.assertEqual(list(response.data.keys()), ['user'])
+
 
 class TestUserAPI(APITestCase):
 
