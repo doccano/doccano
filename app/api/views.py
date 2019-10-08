@@ -187,8 +187,7 @@ class AnnotationList(generics.ListCreateAPIView):
         return super().create(request, args, kwargs)
 
     def perform_create(self, serializer):
-        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
-        serializer.save(document=doc, user=self.request.user)
+        serializer.save(document_id=self.kwargs['doc_id'], user=self.request.user)
 
 
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
