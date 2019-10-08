@@ -1,21 +1,25 @@
 <template>
   <v-combobox
-    v-model="chips"
+    :value="annotatedLabels"
     :items="labels"
-    chips
-    clearable
+    item-text="text"
     label="Label"
+    hide-selected
+    chips
     multiple
+    @input="add"
   >
     <template v-slot:selection="{ attrs, item, select, selected }">
       <v-chip
         v-bind="attrs"
         :input-value="selected"
+        :color="item.background_color"
+        text-color="white"
         close
         @click="select"
-        @click:close="remove(item)"
+        @click:close="remove(item.id)"
       >
-        {{ item }}
+        {{ item.text }}
       </v-chip>
     </template>
   </v-combobox>
@@ -28,19 +32,46 @@ export default {
       type: Array,
       default: () => [],
       required: true
+    },
+    annotations: {
+      type: Array,
+      default: () => ([]),
+      required: true
+    },
+    addLabel: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    deleteLabel: {
+      type: Function,
+      default: () => ([]),
+      required: true
     }
   },
 
-  data() {
-    return {
-      chips: []
+  computed: {
+    annotatedLabels() {
+      const labelIds = this.annotations.map(item => item.label)
+      return this.labels.filter(item => labelIds.includes(item.id))
+    },
+    labelObject() {
+      const obj = {}
+      for (const label of this.labels) {
+        obj[label.id] = label
+      }
+      return obj
     }
   },
 
   methods: {
-    remove(item) {
-      this.chips.splice(this.chips.indexOf(item), 1)
-      this.chips = [...this.chips]
+    add(labels) {
+      const label = labels[labels.length - 1]
+      this.addLabel(label.id)
+    },
+    remove(labelId) {
+      const annotation = this.annotations.find(item => item.label === labelId)
+      this.deleteLabel(annotation.id)
     }
   }
 }
