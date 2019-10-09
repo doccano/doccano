@@ -14,6 +14,7 @@ if [[ ! -f "${venv}/bin/python" ]]; then
 fi
 
 echo "Installing dependencies"
+apt-get update && apt-get install -y g++ unixodbc-dev # pyodbc build dependencies
 "${venv}/bin/pip" install -r "${root}/requirements.txt"
 
 echo "Initializing database"
