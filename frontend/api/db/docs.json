@@ -10,7 +10,8 @@
                 "start_offset": 10,
                 "end_offset": 24,
                 "user": 1,
-                "document": 1
+                "document": 1,
+                "text": "This text is for seq2seq testing"
             }
         ],
         "meta": "{}",

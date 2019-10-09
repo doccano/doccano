@@ -92,7 +92,8 @@ router.post('/:docId/annotations', (req, res, next) => {
       start_offset: req.body.start_offset,
       end_offset: req.body.end_offset,
       user: 1,
-      document: parseInt(req.params.docId)
+      document: parseInt(req.params.docId),
+      text: req.body.text
     }
     doc.annotations.push(annotation)
     res.json(annotation)
