@@ -98,10 +98,10 @@ export default {
       });
     },
 
-    download() {
+    download(download_url, format) {
       this.isLoading = true;
       const headers = {};
-      if (this.format === 'csv') {
+      if (format === 'csv') {
         headers.Accept = 'text/csv; charset=utf-8';
         headers['Content-Type'] = 'text/csv; charset=utf-8';
       } else {
@@ -109,18 +109,18 @@ export default {
         headers['Content-Type'] = 'application/json';
       }
       HTTP({
-        url: 'docs/download',
+        url: download_url,
         method: 'GET',
         responseType: 'blob',
         params: {
-          q: this.format,
+          q: format,
         },
         headers,
       }).then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'file.' + this.format); // or any other extension
+        link.setAttribute('download', 'file.' + format); // or any other extension
         document.body.appendChild(link);
         this.isLoading = false;
         link.click();
@@ -128,6 +128,14 @@ export default {
         this.isLoading = false;
         this.handleError(error);
       });
+    },
+
+    downloadDocs() {
+      this.download('docs/download', this.format)
+    },
+
+    downloadLabels() {
+      this.download('labels/download', 'json')
     },
   },
 };

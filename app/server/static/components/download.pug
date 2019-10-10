@@ -18,6 +18,16 @@ div.columns(v-cloak="")
         button.button.is-primary(
           style="margin-top: 1em;"
           type="submit"
-          v-on:click="download()"
+          v-on:click="downloadDocs()"
           v-bind:class="{'is-loading': isLoading}"
         ) Download
+
+        hr
+
+        button.button.is-secondary(
+          style="margin-top: 1em;"
+          type="submit"
+          v-on:click="downloadLabels()"
+          v-bind:class="{'is-loading': isLoading}"
+        ) Download Labels
+

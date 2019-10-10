@@ -1242,6 +1242,7 @@ class TestDownloader(APITestCase):
         cls.classification_url = reverse(viewname='doc_downloader', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_downloader', args=[cls.labeling_project.id])
         cls.seq2seq_url = reverse(viewname='doc_downloader', args=[cls.seq2seq_project.id])
+        cls.download_labels_url = reverse(viewname='label_downloader', args=[cls.labeling_project.id])
 
     def setUp(self):
         self.client.login(username=self.super_user_name,
@@ -1295,6 +1296,12 @@ class TestDownloader(APITestCase):
         self.download_test_helper(url=self.classification_url,
                                   format='plain',
                                   expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_label_download_json(self):
+        self.download_test_helper(url=self.download_labels_url,
+                                  format='json',
+                                  expected_status=status.HTTP_200_OK)
+
 
 
 class TestStatisticsAPI(APITestCase):

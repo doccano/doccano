@@ -7,7 +7,7 @@ from .views import ProjectList, ProjectDetail
 from .views import LabelList, LabelDetail, ApproveLabelsAPI
 from .views import DocumentList, DocumentDetail
 from .views import AnnotationList, AnnotationDetail
-from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
+from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI, LabelDownloadAPI
 from .views import StatisticsAPI
 from .views import RoleMappingList, RoleMappingDetail, Roles
 
@@ -26,6 +26,8 @@ urlpatterns = [
          LabelList.as_view(), name='label_list'),
     path('projects/<int:project_id>/labels/<int:label_id>',
          LabelDetail.as_view(), name='label_detail'),
+    path('projects/<int:project_id>/labels/download',
+         LabelDownloadAPI.as_view(),  name='label_downloader'),
     path('projects/<int:project_id>/docs',
          DocumentList.as_view(), name='doc_list'),
     path('projects/<int:project_id>/docs/<int:doc_id>',
