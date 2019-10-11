@@ -19,11 +19,8 @@ class UserSerializer(serializers.ModelSerializer):
 class LabelSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
-        if 'prefix_key' not in attrs and 'suffix_key' not in attrs:
-            return super().validate(attrs)
-
-        prefix_key = attrs['prefix_key']
-        suffix_key = attrs['suffix_key']
+        prefix_key = attrs.get('prefix_key')
+        suffix_key = attrs.get('suffix_key')
 
         # In the case of user don't set any shortcut key.
         if prefix_key is None and suffix_key is None:
@@ -37,13 +34,22 @@ class LabelSerializer(serializers.ModelSerializer):
         try:
             context = self.context['request'].parser_context
             project_id = context['kwargs']['project_id']
+            label_id = context['kwargs'].get('label_id')
         except (AttributeError, KeyError):
             pass  # unit tests don't always have the correct context set up
         else:
-            if Label.objects.filter(suffix_key=suffix_key,
-                                    prefix_key=prefix_key,
-                                    project=project_id).exists():
-                raise ValidationError('Duplicate key.')
+            conflicting_labels = Label.objects.filter(
+                suffix_key=suffix_key,
+                prefix_key=prefix_key,
+                project=project_id,
+            )
+
+            if label_id is not None:
+                conflicting_labels = conflicting_labels.exclude(id=label_id)
+
+            if conflicting_labels.exists():
+                raise ValidationError('Duplicate shortcut key.')
+
         return super().validate(attrs)
 
     class Meta:

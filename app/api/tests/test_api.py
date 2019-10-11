@@ -256,7 +256,9 @@ class TestLabelDetailAPI(APITestCase):
                                                    email='fizz@buzz.com')
         project = mommy.make('Project', users=[project_member, super_user])
         cls.label = mommy.make('Label', project=project)
+        cls.label_with_shortcut = mommy.make('Label', suffix_key='l', project=project)
         cls.url = reverse(viewname='label_detail', args=[project.id, cls.label.id])
+        cls.url_with_shortcut = reverse(viewname='label_detail', args=[project.id, cls.label_with_shortcut.id])
         cls.data = {'text': 'example'}
 
     def test_returns_label_to_project_member(self):
@@ -276,6 +278,12 @@ class TestLabelDetailAPI(APITestCase):
                           password=self.super_user_pass)
         response = self.client.patch(self.url, format='json', data=self.data)
         self.assertEqual(response.data['text'], self.data['text'])
+
+    def test_allows_superuser_to_update_label_with_shortcut(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.patch(self.url_with_shortcut, format='json', data={'suffix_key': 's'})
+        self.assertEqual(response.data['suffix_key'], 's')
 
     def test_disallows_project_member_to_update_label(self):
         self.client.login(username=self.project_member_name,
