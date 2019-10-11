@@ -16,6 +16,7 @@ import { mapState, mapActions } from 'vuex'
 
 export default {
   layout: 'project',
+
   components: {
     Editor
   },

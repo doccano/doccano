@@ -12,6 +12,7 @@
 <script>
 export default {
   layout: 'project',
+
   computed: {
     url() {
       const projectId = this.$route.params.id

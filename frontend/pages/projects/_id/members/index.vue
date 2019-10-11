@@ -15,11 +15,13 @@ import MemberDeletionButton from '@/components/containers/MemberDeletionButton'
 
 export default {
   layout: 'project',
+
   components: {
     MemberList,
     MemberAdditionButton,
     MemberDeletionButton
   },
+
   validate({ params }) {
     return /^\d+$/.test(params.id)
   }

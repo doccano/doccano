@@ -15,11 +15,13 @@ import LabelDeletionButton from '@/components/containers/LabelDeletionButton'
 
 export default {
   layout: 'project',
+
   components: {
     LabelList,
     LabelCreationButton,
     LabelDeletionButton
   },
+
   validate({ params }) {
     return /^\d+$/.test(params.id)
   }

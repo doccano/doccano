@@ -15,11 +15,13 @@ import DocumentDeletionButton from '@/components/containers/DocumentDeletionButt
 
 export default {
   layout: 'project',
+
   components: {
     DocumentList,
     DocumentUploadButton,
     DocumentDeletionButton
   },
+
   validate({ params }) {
     return /^\d+$/.test(params.id)
   }
