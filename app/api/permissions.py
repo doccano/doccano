@@ -34,6 +34,9 @@ class ProjectAdminMixin(UserPassesTestMixin):
 class IsOwnAnnotation(ProjectMixin, BasePermission):
 
     def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True
+
         project_id = self.get_project_id(request, view)
         annotation_id = view.kwargs.get('annotation_id')
         project = get_object_or_404(Project, pk=project_id)
