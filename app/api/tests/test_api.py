@@ -841,6 +841,12 @@ class TestUploader(APITestCase):
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_csv_with_non_utf8_encoding(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.utf16.csv',
+                                file_format='csv',
+                                expected_status=status.HTTP_201_CREATED)
+
     def test_can_upload_seq2seq_csv(self):
         self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='example.csv',
