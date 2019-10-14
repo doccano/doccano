@@ -104,7 +104,7 @@ export const actions = {
     commit('setLoading', true)
     return DocumentService.getDocumentList()
       .then((response) => {
-        commit('setDocumentList', response)
+        commit('setDocumentList', response.results)
       })
       .catch((error) => {
         alert(error)

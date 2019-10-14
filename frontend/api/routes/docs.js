@@ -1,13 +1,14 @@
 const fs = require('fs')
 const express = require('express')
 const router = express.Router()
-let db = JSON.parse(fs.readFileSync('./api/db/docs.json', 'utf8'))
+const db = JSON.parse(fs.readFileSync('./api/db/docs.json', 'utf8'))
 
 // Get doc list.
 router.get('/', (req, res) => {
   const q = req.query.q
   if (q) {
-    res.json(db.filter(item => item.text.toLowerCase().includes(q.toLowerCase())))
+    // res.json(db.filter(item => item.text.toLowerCase().includes(q.toLowerCase())))
+    res.json(db)
   } else {
     res.json(db)
   }
@@ -16,7 +17,7 @@ router.get('/', (req, res) => {
 // Create a doc.
 router.post('/', (req, res) => {
   const doc = {
-    id: db.reduce((x, y) => { return x.id > y.id ? x : y }).id + 1,
+    id: db.results.reduce((x, y) => { return x.id > y.id ? x : y }).id + 1,
     text: req.body.text
   }
   res.json(doc)
@@ -25,12 +26,12 @@ router.post('/', (req, res) => {
 // Upload a file.
 router.post('/upload', (req, res) => {
   const doc = {
-    id: db.reduce((x, y) => { return x.id > y.id ? x : y }).id + 1,
+    id: db.results.reduce((x, y) => { return x.id > y.id ? x : y }).id + 1,
     text: 'Uploaded Document',
     meta: JSON.stringify({}),
     annotations: []
   }
-  db.push(doc)
+  db.results.push(doc)
   res.json(doc)
 })
 
@@ -41,10 +42,10 @@ router.get('/download', (req, res) => {
 
 // Update a document partially.
 router.patch('/:docId', (req, res) => {
-  const docIndex = db.findIndex(item => item.id === parseInt(req.params.docId))
+  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId))
   if (docIndex !== -1) {
-    Object.assign(db[docIndex], req.body)
-    res.json(db[docIndex])
+    Object.assign(db.results[docIndex], req.body)
+    res.json(db.results[docIndex])
   } else {
     res.status(404).json({ detail: 'Not found.' })
   }
@@ -52,7 +53,7 @@ router.patch('/:docId', (req, res) => {
 
 // Get a doc.
 router.get('/:docId', (req, res) => {
-  const doc = db.find(item => item.id === parseInt(req.params.docId))
+  const doc = db.results.find(item => item.id === parseInt(req.params.docId))
   if (doc) {
     res.json(doc)
   } else {
@@ -62,10 +63,10 @@ router.get('/:docId', (req, res) => {
 
 // Update a doc.
 router.put('/:docId', (req, res) => {
-  const docIndex = db.findIndex(item => item.id === parseInt(req.params.docId))
+  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId))
   if (docIndex !== -1) {
-    db[docIndex] = req.body
-    res.json(db[docIndex])
+    db.results[docIndex] = req.body
+    res.json(db.results[docIndex])
   } else {
     res.status(404).json({ detail: 'Not found.' })
   }
@@ -73,9 +74,9 @@ router.put('/:docId', (req, res) => {
 
 // Delete a doc.
 router.delete('/:docId', (req, res, next) => {
-  const doc = db.find(item => item.id === parseInt(req.params.docId))
+  const doc = db.results.find(item => item.id === parseInt(req.params.docId))
   if (doc) {
-    db = db.filter(item => item.id !== parseInt(req.params.docId))
+    db.results = db.results.filter(item => item.id !== parseInt(req.params.docId))
     res.json(doc)
   } else {
     res.status(404).json({ detail: 'Not found.' })
@@ -84,7 +85,7 @@ router.delete('/:docId', (req, res, next) => {
 
 // Add an annotation.
 router.post('/:docId/annotations', (req, res, next) => {
-  const doc = db.find(item => item.id === parseInt(req.params.docId))
+  const doc = db.results.find(item => item.id === parseInt(req.params.docId))
   if (doc) {
     const annotation = {
       id: Math.floor(Math.random() * 10000),
@@ -104,12 +105,12 @@ router.post('/:docId/annotations', (req, res, next) => {
 
 // Delete an annotation.
 router.delete('/:docId/annotations/:annotationId', (req, res, next) => {
-  const doc = db.find(item => item.id === parseInt(req.params.docId))
-  const docIndex = db.findIndex(item => item.id === parseInt(req.params.docId))
+  const doc = db.results.find(item => item.id === parseInt(req.params.docId))
+  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId))
   if (doc) {
     const annotation = doc.annotations.find(item => item.id === parseInt(req.params.annotationId))
     doc.annotations = doc.annotations.filter(item => item.id !== parseInt(req.params.annotationId))
-    db[docIndex] = doc
+    db.results[docIndex] = doc
     res.json(annotation)
   } else {
     res.status(404).json({ detail: 'Not found.' })
@@ -118,12 +119,12 @@ router.delete('/:docId/annotations/:annotationId', (req, res, next) => {
 
 // Update an annotation.
 router.patch('/:docId/annotations/:annotationId', (req, res, next) => {
-  const docIndex = db.findIndex(item => item.id === parseInt(req.params.docId))
+  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId))
   if (docIndex !== -1) {
-    const doc = db[docIndex]
+    const doc = db.results[docIndex]
     const annotationIndex = doc.annotations.findIndex(item => item.id === parseInt(req.params.annotationId))
-    Object.assign(db[docIndex].annotations[annotationIndex], req.body)
-    res.json(db[docIndex].annotations[annotationIndex])
+    Object.assign(db.results[docIndex].annotations[annotationIndex], req.body)
+    res.json(db.results[docIndex].annotations[annotationIndex])
   } else {
     res.status(404).json({ detail: 'Not found.' })
   }
