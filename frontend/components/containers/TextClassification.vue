@@ -35,7 +35,9 @@ export default {
 
   created() {
     this.getLabelList()
-    this.getDocumentList()
+    this.getDocumentList({
+      projectId: this.$route.params.id
+    })
   },
 
   methods: {
