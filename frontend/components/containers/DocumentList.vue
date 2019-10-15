@@ -4,8 +4,10 @@
     :docs="items"
     :selected="selected"
     :loading="loading"
+    :total="total"
     @update-selected="updateSelected"
     @update-doc="handleUpdateDoc"
+    @change-option="handleChangeOption"
   />
 </template>
 
@@ -19,12 +21,14 @@ export default {
   },
 
   computed: {
-    ...mapState('documents', ['items', 'selected', 'loading']),
+    ...mapState('documents', ['items', 'selected', 'loading', 'total']),
     ...mapGetters('documents', ['headers'])
   },
 
   created() {
-    this.getDocumentList()
+    this.getDocumentList({
+      projectId: this.$route.params.id
+    })
   },
 
   methods: {
@@ -37,6 +41,14 @@ export default {
         ...payload
       }
       this.updateDocument(data)
+    },
+
+    handleChangeOption(option) {
+      this.getDocumentList({
+        projectId: this.$route.params.id,
+        limit: option.itemsPerPage,
+        offset: (option.page - 1) * option.itemsPerPage
+      })
     }
   }
 }

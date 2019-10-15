@@ -4,8 +4,13 @@
     :headers="headers"
     :items="docs"
     item-key="id"
+    :options.sync="options"
+    :server-items-length="total"
     :search="search"
     :loading="loading"
+    :footer-props="{
+      'items-per-page-options': [10, 50, 100]
+    }"
     loading-text="Loading... Please wait"
     show-select
     @input="update"
@@ -59,11 +64,25 @@ export default {
       type: Boolean,
       default: false,
       required: true
+    },
+    total: {
+      type: Number,
+      default: 0,
+      required: true
     }
   },
   data() {
     return {
-      search: ''
+      search: '',
+      options: {}
+    }
+  },
+  watch: {
+    options: {
+      handler() {
+        this.$emit('change-option', this.options)
+      },
+      deep: true
     }
   },
   methods: {

@@ -5,8 +5,8 @@ class DocumentService {
     this.request = new ApiService()
   }
 
-  getDocumentList(projectId) {
-    return this.request.get(`/projects/${projectId}/docs`)
+  getDocumentList({ projectId, limit, offset }) {
+    return this.request.get(`/projects/${projectId}/docs?limit=${limit}&offset=${offset}`)
   }
 
   addDocument(projectId, payload) {

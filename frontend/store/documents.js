@@ -8,7 +8,8 @@ export const state = () => ({
   loading: false,
   selectedFormat: null,
   parsed: {},
-  current: 0
+  current: 0,
+  total: 0
 })
 
 export const getters = {
@@ -39,12 +40,14 @@ export const getters = {
       {
         text: 'Text',
         align: 'left',
-        value: 'text'
+        value: 'text',
+        sortable: false
       },
       {
         text: 'Metadata',
         align: 'left',
-        value: 'meta'
+        value: 'meta',
+        sortable: false
       }
     ]
   },
@@ -83,6 +86,9 @@ export const mutations = {
   setLoading(state, payload) {
     state.loading = payload
   },
+  setTotalItems(state, payload) {
+    state.total = payload
+  },
   parseFile(state, text) {
     const parser = new CSVParser()
     state.parsed = parser.parse(text)
@@ -100,11 +106,12 @@ export const mutations = {
 }
 
 export const actions = {
-  getDocumentList({ commit }, config) {
+  getDocumentList({ commit }, payload) {
     commit('setLoading', true)
-    return DocumentService.getDocumentList()
+    return DocumentService.getDocumentList(payload)
       .then((response) => {
         commit('setDocumentList', response.results)
+        commit('setTotalItems', response.count)
       })
       .catch((error) => {
         alert(error)
