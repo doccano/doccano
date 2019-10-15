@@ -30,6 +30,11 @@ export default {
   },
 
   watch: {
+    page() {
+      const checkpoint = {}
+      checkpoint[this.$route.params.id] = this.page
+      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
+    },
     offset() {
       this.getDocumentList({
         projectId: this.$route.params.id,
@@ -43,6 +48,8 @@ export default {
   },
 
   created() {
+    const checkpoint = JSON.parse(localStorage.getItem('checkpoint'))
+    this.page = checkpoint ? checkpoint[this.$route.params.id] : 1
     this.getDocumentList({
       projectId: this.$route.params.id,
       limit: this.limit,
