@@ -14,6 +14,7 @@
                 <entity-item-box />
               </v-card-text>
             </v-card>
+            <paginator class="mt-3" />
           </v-flex>
         </v-layout>
       </v-container>
@@ -24,20 +25,22 @@
 <script>
 import EntityItemBox from '~/components/containers/EntityItemBox'
 import SideBarLabeling from '~/components/organisms/SideBarLabeling'
+import Paginator from '~/components/containers/Paginator'
 
 export default {
   layout: 'annotation',
 
   components: {
     EntityItemBox,
-    SideBarLabeling
+    SideBarLabeling,
+    Paginator
   },
 
   data() {
     return {
       progress: 30,
       metadata: '{"wikiPageId":2}',
-      search: '',
+      page: 1,
       labels: [
         {
           id: 1,

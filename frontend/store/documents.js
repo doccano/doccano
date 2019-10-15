@@ -64,6 +64,9 @@ export const getters = {
 }
 
 export const mutations = {
+  setCurrent(state, payload) {
+    state.current = payload
+  },
   setDocumentList(state, payload) {
     state.items = payload
   },

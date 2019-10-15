@@ -10,6 +10,7 @@
         <v-layout justify-center>
           <v-flex>
             <seq2seq-container />
+            <paginator class="mt-3" />
           </v-flex>
         </v-layout>
       </v-container>
@@ -20,13 +21,15 @@
 <script>
 import Seq2seqContainer from '~/components/containers/Seq2seqContainer'
 import SideBarLabeling from '~/components/organisms/SideBarLabeling'
+import Paginator from '~/components/containers/Paginator'
 
 export default {
   layout: 'annotation',
 
   components: {
     Seq2seqContainer,
-    SideBarLabeling
+    SideBarLabeling,
+    Paginator
   },
 
   data() {

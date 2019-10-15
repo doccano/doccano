@@ -10,6 +10,7 @@
         <v-layout justify-center>
           <v-flex>
             <text-classification />
+            <paginator class="mt-3" />
           </v-flex>
         </v-layout>
       </v-container>
@@ -20,13 +21,15 @@
 <script>
 import TextClassification from '~/components/containers/TextClassification'
 import SideBarLabeling from '~/components/organisms/SideBarLabeling'
+import Paginator from '~/components/containers/Paginator'
 
 export default {
   layout: 'annotation',
 
   components: {
     TextClassification,
-    SideBarLabeling
+    SideBarLabeling,
+    Paginator
   },
 
   data() {
