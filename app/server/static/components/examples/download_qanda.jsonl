@@ -1,0 +1,3 @@
+{"id": 1, "text": "Peter Blackburn", "extra_text": "What is Peter lastname ?", "annotations": [{"response": "Blackburn", "start_offset": 0, "user": 1}]}
+{"id": 2, "text": "President Obama", "extra_text": "Who is president ?", "annotations": [{"response": "Obama", "start_offset": 10, "user": 1}]}
+{"id": 3, "text": "EU rejects ...", "extra_text": "What EU rejects ?", "annotations": [{"response": "_SKIPPED_BY_USER", "start_offset": 0, "user": 1}]}

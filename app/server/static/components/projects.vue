@@ -40,6 +40,7 @@
                 option(value="DocumentClassification") document classification
                 option(value="SequenceLabeling") sequence labeling
                 option(value="Seq2seq") sequence to sequence
+                option(value="QandA") question and answer
             p.help.is-danger {{ projectTypeError }}
 
           div.field
@@ -95,6 +96,7 @@
                         option Text Classification
                         option Sequence Labeling
                         option Seq2seq
+                        option QandA
 
               div.card-table
                 div.content
@@ -195,6 +197,9 @@ export default {
       if (projectType === 'Seq2seq') {
         return this.selected === 'Seq2seq';
       }
+      if (projectType === 'QandA') {
+        return this.selected === 'QandA';
+      }
       return false;
     },
 
@@ -237,6 +242,9 @@ export default {
       }
       if (this.projectType === 'Seq2seq') {
         return 'Seq2seqProject';
+      }
+      if (this.projectType === 'QandA') {
+        return 'QandAProject';
       }
       return '';
     },

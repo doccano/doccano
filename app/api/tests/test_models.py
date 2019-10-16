@@ -3,10 +3,11 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from model_mommy import mommy
 
-from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
+from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, QandAAnnotation
 from ..serializers import DocumentAnnotationSerializer
 from ..serializers import SequenceAnnotationSerializer
 from ..serializers import Seq2seqAnnotationSerializer
+from ..serializers import QandAAnnotationSerializer
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -79,6 +80,30 @@ class TestSeq2seqProject(TestCase):
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
         self.assertEqual(klass, Seq2seqAnnotation)
+
+
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+class TestQandAProject(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project = mommy.make('QandAProject')
+
+    def test_image(self):
+        image_url = self.project.image
+        self.assertTrue(image_url.endswith('.jpg'))
+
+    def test_get_bundle_name(self):
+        template = self.project.get_bundle_name()
+        self.assertEqual(template, 'qanda')
+
+    def test_get_annotation_serializer(self):
+        serializer = self.project.get_annotation_serializer()
+        self.assertEqual(serializer, QandAAnnotationSerializer)
+
+    def test_get_annotation_class(self):
+        klass = self.project.get_annotation_class()
+        self.assertEqual(klass, QandAAnnotation)
 
 
 class TestLabel(TestCase):
@@ -162,3 +187,14 @@ class TestSeq2seqAnnotation(TestCase):
             Seq2seqAnnotation(document=a.document,
                               user=a.user,
                               text=a.text).save()
+
+
+class TestQandAAnnotation(TestCase):
+
+    def test_uniqueness(self):
+        a = mommy.make('QandAAnnotation')
+        with self.assertRaises(IntegrityError):
+            QandAAnnotation(document=a.document,
+                            user=a.user,
+                            start_offset=a.start_offset,
+                            response=a.response).save()

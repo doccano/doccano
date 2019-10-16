@@ -7,15 +7,17 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 
-from .managers import AnnotationManager, Seq2seqAnnotationManager
+from .managers import AnnotationManager, Seq2seqAnnotationManager, QandAAnnotationManager
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
+QANDA = 'QandA'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
+    (QANDA, 'question and answer'),
 )
 
 
@@ -140,6 +142,33 @@ class Seq2seqProject(Project):
         return Seq2seqStorage(data, self)
 
 
+class QandAProject(Project):
+
+    @property
+    def image(self):
+        return staticfiles_storage.url('assets/images/cats/qanda.jpg')
+
+    def get_bundle_name(self):
+        return 'qanda'
+
+    def get_bundle_name_upload(self):
+        return 'upload_qanda'
+
+    def get_bundle_name_download(self):
+        return 'download_qanda'
+
+    def get_annotation_serializer(self):
+        from .serializers import QandAAnnotationSerializer
+        return QandAAnnotationSerializer
+
+    def get_annotation_class(self):
+        return QandAAnnotation
+
+    def get_storage(self, data):
+        from .utils import SequenceLabelingStorage
+        return SequenceLabelingStorage(data, self)
+
+
 class Label(models.Model):
     PREFIX_KEYS = (
         ('ctrl', 'ctrl'),
@@ -183,6 +212,7 @@ class Label(models.Model):
 
 class Document(models.Model):
     text = models.TextField()
+    extra_text = models.TextField(blank=True)
     project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
     meta = models.TextField(default='{}')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -237,3 +267,14 @@ class Seq2seqAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user', 'text')
+
+
+class QandAAnnotation(Annotation):
+    objects = QandAAnnotationManager()
+
+    document = models.ForeignKey(Document, related_name='qanda_annotations', on_delete=models.CASCADE)
+    response = models.CharField(max_length=500)
+    start_offset = models.IntegerField()
+
+    class Meta:
+        unique_together = ('document', 'user', 'response', 'start_offset')

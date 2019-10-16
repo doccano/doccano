@@ -290,4 +290,4 @@ APPLICATION_INSIGHTS = {
 # EMAIL_PORT = 587
 #
 ## During development only
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
