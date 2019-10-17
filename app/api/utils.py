@@ -6,6 +6,7 @@ import re
 from collections import defaultdict
 
 import conllu
+from chardet import UniversalDetector
 from django.db import transaction
 from django.conf import settings
 from colour import Color
@@ -246,7 +247,8 @@ class CoNLLParser(FileParser):
     """
     def parse(self, file):
         data = []
-        file = io.TextIOWrapper(file, encoding='utf-8')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
 
         # Add check exception
 
@@ -301,7 +303,8 @@ class PlainTextParser(FileParser):
     ```
     """
     def parse(self, file):
-        file = io.TextIOWrapper(file, encoding='utf-8')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
         while True:
             batch = list(itertools.islice(file, settings.IMPORT_BATCH_SIZE))
             if not batch:
@@ -324,7 +327,8 @@ class CSVParser(FileParser):
     ```
     """
     def parse(self, file):
-        file = io.TextIOWrapper(file, encoding='utf-8')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
         reader = csv.reader(file)
         yield from ExcelParser.parse_excel_csv_reader(reader)
 
@@ -365,7 +369,8 @@ class ExcelParser(FileParser):
 class JSONParser(FileParser):
 
     def parse(self, file):
-        file = io.TextIOWrapper(file, encoding='utf-8')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
         data = []
         for i, line in enumerate(file, start=1):
             if len(data) >= settings.IMPORT_BATCH_SIZE:
@@ -466,3 +471,34 @@ def iterable_to_io(iterable, buffer_size=io.DEFAULT_BUFFER_SIZE):
                 return 0    # indicate EOF
 
     return io.BufferedReader(IterStream(), buffer_size=buffer_size)
+
+
+class EncodedIO(io.RawIOBase):
+    def __init__(self, fobj, buffer_size=io.DEFAULT_BUFFER_SIZE, default_encoding='utf-8'):
+        buffer = b''
+        detector = UniversalDetector()
+
+        while True:
+            read = fobj.read(buffer_size)
+            detector.feed(read)
+            buffer += read
+            if detector.done or len(read) < buffer_size:
+                break
+
+        if detector.done:
+            self.encoding = detector.result['encoding']
+        else:
+            self.encoding = default_encoding
+
+        self._fobj = fobj
+        self._buffer = buffer
+
+    def readable(self):
+        return self._fobj.readable()
+
+    def readinto(self, b):
+        l = len(b)
+        chunk = self._buffer or self._fobj.read(l)
+        output, self._buffer = chunk[:l], chunk[l:]
+        b[:len(output)] = output
+        return len(output)
