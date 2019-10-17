@@ -9,6 +9,11 @@
       <v-container fluid fill-height>
         <v-layout justify-center>
           <v-flex>
+            <v-card color="transparent elevation-0">
+              <v-card-title>
+                <guideline-button />
+              </v-card-title>
+            </v-card>
             <v-card>
               <v-card-text class="title">
                 <entity-item-box />
@@ -26,6 +31,7 @@
 import EntityItemBox from '~/components/containers/EntityItemBox'
 import SideBarLabeling from '~/components/organisms/SideBarLabeling'
 import Paginator from '~/components/containers/Paginator'
+import GuidelineButton from '@/components/containers/GuidelineButton'
 
 export default {
   layout: 'annotation',
@@ -33,7 +39,8 @@ export default {
   components: {
     EntityItemBox,
     SideBarLabeling,
-    Paginator
+    Paginator,
+    GuidelineButton
   },
 
   data() {

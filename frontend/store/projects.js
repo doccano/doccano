@@ -10,6 +10,9 @@ export const state = () => ({
 export const getters = {
   isProjectSelected(state) {
     return state.selected.length > 0
+  },
+  currentProject(state) {
+    return state.current
   }
 }
 
