@@ -1,15 +1,12 @@
 <template>
-  <v-card>
-    <v-data-table
-      :headers="headers"
-      :items="metaArray"
-      item-key="key"
-      hide-default-footer
-      disable-pagination
-      class="elevation-1"
-    >
-    </v-data-table>
-  </v-card>
+  <v-data-table
+    :headers="headers"
+    :items="metaArray"
+    item-key="key"
+    hide-default-footer
+    disable-pagination
+    class="elevation-1"
+  />
 </template>
 
 <script>
@@ -28,12 +25,14 @@ export default {
         {
           text: 'Key',
           align: 'left',
-          value: 'key'
+          value: 'key',
+          sortable: false
         },
         {
           text: 'Value',
           align: 'left',
-          value: 'value'
+          value: 'value',
+          sortable: false
         }
       ]
     }
