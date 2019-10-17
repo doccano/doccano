@@ -1,9 +1,27 @@
 <template>
-  <v-pagination
-    v-model="page"
-    :length="total"
-    :total-visible="7"
-  />
+  <div class="v-data-footer">
+    <span>
+      {{ page }} of {{ total }}
+    </span>
+    <v-btn
+      text
+      :disabled="page===1"
+      fab
+      small
+      @click="prevPage"
+    >
+      <v-icon>mdi-chevron-left</v-icon>
+    </v-btn>
+    <v-btn
+      text
+      :disabled="page===total"
+      fab
+      small
+      @click="nextPage"
+    >
+      <v-icon>mdi-chevron-right</v-icon>
+    </v-btn>
+  </div>
 </template>
 
 <script>
@@ -59,7 +77,13 @@ export default {
 
   methods: {
     ...mapActions('documents', ['getDocumentList']),
-    ...mapMutations('documents', ['setCurrent'])
+    ...mapMutations('documents', ['setCurrent']),
+    prevPage() {
+      this.page -= 1
+    },
+    nextPage() {
+      this.page += 1
+    }
   }
 }
 </script>

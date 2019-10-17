@@ -12,6 +12,8 @@
             <v-card color="transparent elevation-0">
               <v-card-title>
                 <guideline-button />
+                <v-spacer />
+                <paginator />
               </v-card-title>
             </v-card>
             <v-card>
@@ -19,7 +21,6 @@
                 <entity-item-box />
               </v-card-text>
             </v-card>
-            <paginator class="mt-3" />
           </v-flex>
         </v-layout>
       </v-container>

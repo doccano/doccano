@@ -1,6 +1,6 @@
 <template>
   <entity-item-box
-    v-if="currentDoc"
+    v-if="isReady"
     :labels="items"
     :text="currentDoc.text"
     :entities="currentDoc.annotations"
@@ -20,8 +20,11 @@ export default {
   },
 
   computed: {
-    ...mapState('labels', ['items']),
-    ...mapGetters('documents', ['currentDoc'])
+    ...mapState('labels', ['items', 'loading']),
+    ...mapGetters('documents', ['currentDoc']),
+    isReady() {
+      return !!this.currentDoc && !this.loading
+    }
   },
 
   created() {
