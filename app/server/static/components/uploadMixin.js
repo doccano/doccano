@@ -98,7 +98,7 @@ export default {
       });
     },
 
-    download(download_url, format) {
+    download(downloadUrl, format) {
       this.isLoading = true;
       const headers = {};
       if (format === 'csv') {
@@ -109,7 +109,7 @@ export default {
         headers['Content-Type'] = 'application/json';
       }
       HTTP({
-        url: download_url,
+        url: downloadUrl,
         method: 'GET',
         responseType: 'blob',
         params: {
@@ -131,11 +131,11 @@ export default {
     },
 
     downloadDocs() {
-      this.download('docs/download', this.format)
+      this.download('docs/download', this.format);
     },
 
     downloadLabels() {
-      this.download('labels/download', 'json')
+      this.download('labels/download', 'json');
     },
   },
 };
