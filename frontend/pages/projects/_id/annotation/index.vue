@@ -13,6 +13,7 @@
           <paginator />
         </v-col>
       </v-row>
+      <bottom-navigator class="d-flex d-sm-none" />
       <v-row justify="center">
         <v-col cols="12" md="9">
           <v-card>
@@ -34,11 +35,13 @@ import EntityItemBox from '~/components/containers/EntityItemBox'
 import Paginator from '~/components/containers/Paginator'
 import GuidelineButton from '@/components/containers/GuidelineButton'
 import MetadataBox from '@/components/organisms/MetadataBox'
+import BottomNavigator from '@/components/organisms/BottomNavigator'
 
 export default {
   layout: 'annotation',
 
   components: {
+    BottomNavigator,
     EntityItemBox,
     Paginator,
     GuidelineButton,
