@@ -4,10 +4,6 @@
       <v-app-bar-nav-icon @click="drawerLeft = !drawerLeft" />
     </template>
 
-    <template #rightDrawerIcon>
-      <v-app-bar-nav-icon @click="toggle" />
-    </template>
-
     <template #leftDrawer>
       <v-navigation-drawer
         v-model="drawerLeft"
@@ -26,7 +22,6 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
 import BaseLayout from '~/layouts/BaseLayout'
 import SideBarLeft from '~/components/organisms/SideBarLeft'
 
@@ -35,14 +30,10 @@ export default {
     BaseLayout,
     SideBarLeft
   },
-  data: () => ({
-    drawerLeft: false,
-    drawerRight: false
-  }),
-  methods: {
-    ...mapMutations({
-      toggle: 'sidebar/toggle'
-    })
+  data() {
+    return {
+      drawerLeft: false
+    }
   }
 }
 </script>
