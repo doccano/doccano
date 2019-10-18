@@ -1,34 +1,30 @@
 <template>
   <v-content>
-    <v-container fluid grid-list-md>
-      <v-layout justify-center row wrap>
-        <!--
-        <v-flex d-flex xs12 sm12 md12>
-          <v-card color="transparent elevation-0">
-            <v-card-title>
-              <guideline-button />
-              <v-spacer />
-              <paginator />
-            </v-card-title>
-          </v-card>
-        </v-flex>
-        -->
-        <v-flex d-flex xs12 sm6 md9>
-          <v-card width="100%">
-            <v-card-title>
-              <guideline-button />
-              <v-spacer />
-              <paginator />
-            </v-card-title>
+    <v-container fluid>
+      <v-row
+        no-gutters
+        class="d-none d-sm-flex"
+      >
+        <v-col>
+          <guideline-button />
+        </v-col>
+        <v-spacer />
+        <v-col>
+          <paginator />
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="12" md="9">
+          <v-card>
             <v-card-text class="title">
               <entity-item-box />
             </v-card-text>
           </v-card>
-        </v-flex>
-        <v-flex d-flex xs12 sm6 md3>
-          <metadata-box :metadata="JSON.parse(metadata)" style="width:100%" />
-        </v-flex>
-      </v-layout>
+        </v-col>
+        <v-col cols="12" md="3">
+          <metadata-box :metadata="JSON.parse(metadata)" />
+        </v-col>
+      </v-row>
     </v-container>
   </v-content>
 </template>
