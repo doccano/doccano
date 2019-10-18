@@ -138,7 +138,7 @@ export default {
     },
     addEntity(startOffset, endOffset, labelId) {
       const payload = {
-        id: this.currentDoc.annotations.reduce((x, y) => { return x.id > y.id ? x : y }).id + 1,
+        id: Math.floor(Math.random() * Math.floor(Number.MAX_SAFE_INTEGER)),
         start_offset: startOffset,
         end_offset: endOffset,
         label: labelId

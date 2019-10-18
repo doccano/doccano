@@ -59,7 +59,6 @@ export default {
       this.updateAnnotation(payload)
     },
     addLabel(labelId) {
-      alert(labelId)
       const payload = {
         label: labelId,
         projectId: this.$route.params.id
