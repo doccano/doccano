@@ -14,7 +14,7 @@
         v-bind="attrs"
         :input-value="selected"
         :color="item.background_color"
-        text-color="white"
+        :text-color="textColor(item.background_color)"
         close
         @click="select"
         @click:close="remove(item.id)"
@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { idealColor } from '~/plugins/utils'
+
 export default {
   props: {
     labels: {
@@ -65,6 +67,9 @@ export default {
   },
 
   methods: {
+    textColor(backgroundColor) {
+      return idealColor(backgroundColor)
+    },
     add(labels) {
       const label = labels[labels.length - 1]
       this.addLabel(label.id)

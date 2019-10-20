@@ -49,7 +49,11 @@
     </template>
     <template v-slot:item.background_color="{ item }">
       <v-edit-dialog>
-        <v-chip :color="item.background_color" dark>
+        <v-chip
+          :color="item.background_color"
+          :text-color="textColor(item.background_color)"
+          dark
+        >
           {{ item.background_color }}
         </v-chip>
         <template v-slot:input>
@@ -71,6 +75,7 @@
 
 <script>
 import { colorRules, labelNameRules } from '@/rules/index'
+import { idealColor } from '~/plugins/utils'
 
 export default {
   props: {
@@ -107,6 +112,9 @@ export default {
     }
   },
   methods: {
+    textColor(backgroundColor) {
+      return idealColor(backgroundColor)
+    },
     update(selected) {
       this.$emit('update-selected', selected)
     },
