@@ -11,7 +11,7 @@
         clipped
         color=""
       >
-        <side-bar-left />
+        <the-side-bar />
       </v-navigation-drawer>
     </template>
 
@@ -36,12 +36,12 @@
 
 <script>
 import BaseLayout from '~/layouts/BaseLayout'
-import SideBarLeft from '~/components/organisms/SideBarLeft'
+import TheSideBar from '~/components/organisms/TheSideBar'
 
 export default {
   components: {
     BaseLayout,
-    SideBarLeft
+    TheSideBar
   },
   data: () => ({
     drawerLeft: false
