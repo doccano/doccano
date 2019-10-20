@@ -31,14 +31,28 @@
               Realize your ideas quickly
             </h1>
             <div class="mt-4">
-              <v-btn
-                class="blue lighten-2"
-                dark
-                large
-                href="/demo"
-              >
-                Try demo
-              </v-btn>
+              <v-menu open-on-hover offset-y>
+                <template v-slot:activator="{ on }">
+                  <v-btn
+                    class="blue lighten-2"
+                    dark
+                    large
+                    v-on="on"
+                  >
+                    Try demo
+                    <v-icon>mdi-menu-down</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for="(item, index) in items"
+                    :key="index"
+                    @click="$router.push('/demo/' + item.link)"
+                  >
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </div>
           </v-flex>
         </v-layout>
@@ -46,3 +60,17 @@
     </v-parallax>
   </section>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      items: [
+        { title: 'Named Entity Recognition', link: 'named-entity-recognition' },
+        { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
+        { title: 'Translation', link: 'translation' }
+      ]
+    }
+  }
+}
+</script>
