@@ -1,21 +1,37 @@
 <template>
-  <project-list
+  <v-data-table
+    :value="selected"
     :headers="headers"
-    :projects="projects"
-    :selected="selected"
+    :items="projects"
+    :search="search"
     :loading="loading"
-    @update="update"
-  />
+    loading-text="Loading... Please wait"
+    item-key="id"
+    show-select
+    @input="update"
+  >
+    <template v-slot:top>
+      <v-text-field
+        v-model="search"
+        prepend-inner-icon="search"
+        label="Search"
+        single-line
+        hide-details
+        filled
+      />
+    </template>
+    <template v-slot:item.name="{ item }">
+      <nuxt-link :to="`/projects/${item.id}`">
+        <span>{{ item.name }}</span>
+      </nuxt-link>
+    </template>
+  </v-data-table>
 </template>
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex'
-import ProjectList from '@/components/organisms/ProjectList'
 
 export default {
-  components: {
-    ProjectList
-  },
   data() {
     return {
       headers: [
@@ -32,7 +48,8 @@ export default {
           text: 'Type',
           value: 'project_type'
         }
-      ]
+      ],
+      search: ''
     }
   },
 
