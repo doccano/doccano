@@ -4,7 +4,7 @@
       v-if="currentDoc"
       class="title mb-5"
     >
-      <v-card-text>
+      <v-card-text class="title">
         {{ currentDoc.text }}
       </v-card-text>
     </v-card>

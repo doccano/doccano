@@ -24,7 +24,9 @@
       </template>
       <template v-slot:item.text="{ item }">
         <v-edit-dialog>
-          {{ item.text }}
+          <span class="title" style="font-weight:400">
+            {{ item.text }}
+          </span>
           <template v-slot:input>
             <v-textarea
               :value="item.text"
