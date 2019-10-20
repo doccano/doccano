@@ -10,7 +10,7 @@
       doccano
     </v-toolbar-title>
     <div class="flex-grow-1" />
-    <v-menu offset-y>
+    <v-menu open-on-hover offset-y>
       <template v-slot:activator="{ on }">
         <v-btn
           text
