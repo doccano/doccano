@@ -6,7 +6,7 @@
     <nuxt-link to="/" style="line-height:0;">
       <img src="~/assets/icon.png" height="48">
     </nuxt-link>
-    <v-toolbar-title class="align-center ml-2">
+    <v-toolbar-title class="ml-2 d-none d-sm-flex">
       doccano
     </v-toolbar-title>
     <div class="flex-grow-1" />
