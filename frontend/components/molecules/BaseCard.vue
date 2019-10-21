@@ -1,18 +1,18 @@
 <template>
   <v-card>
-    <v-card-title class="grey lighten-2">
-      {{ title }}
-    </v-card-title>
-    <v-container grid-list-sm>
-      <v-layout wrap>
-        <v-flex xs12>
-          <slot name="content" />
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <v-toolbar
+      color="primary white--text"
+      flat
+    >
+      <v-toolbar-title>{{ title }}</v-toolbar-title>
+    </v-toolbar>
+    <v-card-text class="text--primary mt-3 pl-4">
+      <slot name="content" />
+    </v-card-text>
     <v-card-actions>
       <v-spacer />
       <v-btn
+        v-if="cancelText"
         class="text-capitalize"
         text
         color="primary"
@@ -22,6 +22,7 @@
         {{ cancelText }}
       </v-btn>
       <v-btn
+        v-if="agreeText"
         class="text-none"
         text
         :disabled="disabled"
@@ -44,13 +45,11 @@ export default {
     },
     cancelText: {
       type: String,
-      default: '',
-      required: true
+      default: ''
     },
     agreeText: {
       type: String,
-      default: '',
-      required: true
+      default: ''
     },
     disabled: {
       type: Boolean,

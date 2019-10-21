@@ -1,9 +1,11 @@
 <template>
-  <v-card class="elevation-12">
-    <v-toolbar color="primary" dark flat>
-      <v-toolbar-title>Login</v-toolbar-title>
-    </v-toolbar>
-    <v-card-text>
+  <base-card
+    title="Login"
+    agree-text="Login"
+    :disabled="!valid"
+    @agree="tryLogin"
+  >
+    <template #content>
       <v-form
         ref="form"
         v-model="valid"
@@ -26,24 +28,19 @@
           type="password"
         />
       </v-form>
-    </v-card-text>
-    <v-card-actions>
-      <div class="flex-grow-1" />
-      <v-btn
-        :disabled="!valid"
-        color="primary"
-        @click="tryLogin"
-      >
-        Login
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+    </template>
+  </base-card>
 </template>
 
 <script>
 import { userNameRules, passwordRules } from '@/rules/index'
+import BaseCard from '@/components/molecules/BaseCard'
 
 export default {
+  components: {
+    BaseCard
+  },
+
   props: {
     login: {
       type: Function,
