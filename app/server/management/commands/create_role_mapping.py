@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand, CommandError
 class Command(BaseCommand):
     help = 'Non-interactively create a rolemapping'
 
+    @classmethod
     def add_arguments(self, parser):
         parser.add_argument('--rolename', default=None,
                             help='The name of the role.')

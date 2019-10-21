@@ -19,7 +19,6 @@ from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, Is
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
-from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
