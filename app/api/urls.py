@@ -8,7 +8,7 @@ from .views import LabelList, LabelDetail, ApproveLabelsAPI
 from .views import DocumentList, DocumentDetail
 from .views import AnnotationList, AnnotationDetail
 from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
-from .views import StatisticsAPI
+from .views import StatisticsAPI, AutoLabelAPI
 
 
 urlpatterns = [
@@ -30,6 +30,8 @@ urlpatterns = [
          DocumentDetail.as_view(), name='doc_detail'),
     path('projects/<int:project_id>/docs/<int:doc_id>/approve-labels',
          ApproveLabelsAPI.as_view(), name='approve_labels'),
+    path('projects/<int:project_id>/docs/<int:doc_id>/auto-label',
+         AutoLabelAPI.as_view(), name='auto_label'),
     path('projects/<int:project_id>/docs/<int:doc_id>/annotations',
          AnnotationList.as_view(), name='annotation_list'),
     path('projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>',

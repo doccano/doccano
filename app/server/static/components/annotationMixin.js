@@ -227,6 +227,12 @@ export default {
         this.docs = documents;
       });
     },
+  runAutoLabeling() {
+    const document = this.docs[this.pageNumber];
+    HTTP.get(`docs/${document.id}/auto-label`).then((response) => {
+      this.submit();
+    });
+  },
   },
 
   watch: {
@@ -284,6 +290,10 @@ export default {
       return this.documentAnnotationsAreApproved
         ? `Annotations approved by ${document.annotation_approver}, click to reject annotations`
         : 'Click to approve annotations';
+    },
+
+    autoLabelTooltip() {
+      return 'Remove unapproved annotations and suggests new ones';
     },
 
     documentMetadata() {

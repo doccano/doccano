@@ -20,6 +20,7 @@ from .serializers import ProjectPolymorphicSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
+from labeling.interactive import ProjectInteraction
 
 
 class Me(APIView):
@@ -76,9 +77,8 @@ class StatisticsAPI(APIView):
         docs = project.documents
         annotation_class = project.get_annotation_class()
         total = docs.count()
-        done = annotation_class.objects.filter(document_id__in=docs.all(),
-            user_id=self.request.user).\
-            aggregate(Count('document', distinct=True))['document__count']
+        done = docs.exclude(annotations_approved_by=None).\
+            aggregate(Count('id', distinct=True))['id__count']
         remaining = total - done
         return {'total': total, 'remaining': remaining}
 
@@ -96,6 +96,30 @@ class ApproveLabelsAPI(APIView):
         document.annotations_approved_by = self.request.user if approved else None
         document.save()
         return Response(DocumentSerializer(document).data)
+
+
+class AutoLabelAPI(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
+
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = project.get_annotation_serializer()
+        return self.serializer_class
+
+    def get_queryset(self):
+        projInteract = ProjectInteraction()
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        docs = project.documents
+        annotation_class = project.get_annotation_class()
+        # Delete unapproved annotations
+        docs_unapproved = docs.filter(annotations_approved_by=None)
+        annotation_class.objects.filter(document__in=docs_unapproved).delete()
+        # New annotations computed by algorithm
+        suggested_annotations = projInteract.auto_label_documents(docs, project, self.request.user.id)
+        for new_annotation in suggested_annotations:
+            annotation_class.objects.create(**new_annotation)
+        self.queryset = annotation_class.objects.all()
+        return self.queryset
 
 
 class LabelList(generics.ListCreateAPIView):
