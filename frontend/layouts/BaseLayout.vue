@@ -21,9 +21,6 @@
   </v-app>
 </template>
 
-<script>
-</script>
-
 <style scoped>
 .top{
   text-decoration: none;

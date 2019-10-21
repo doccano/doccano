@@ -1,8 +1,5 @@
 <template>
-  <v-app-bar
-    app
-    color=""
-  >
+  <v-app-bar app>
     <nuxt-link to="/" style="line-height:0;">
       <img src="~/assets/icon.png" height="48">
     </nuxt-link>
@@ -36,11 +33,18 @@
     >
       Sign in
     </v-btn>
+    <the-top-menu />
   </v-app-bar>
 </template>
 
 <script>
+import TheTopMenu from '@/components/organisms/TheTopMenu'
+
 export default {
+  components: {
+    TheTopMenu
+  },
+
   data() {
     return {
       items: [
