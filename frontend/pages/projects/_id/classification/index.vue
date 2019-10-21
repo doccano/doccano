@@ -19,7 +19,10 @@
           <text-classification />
         </v-col>
         <v-col cols="12" md="3">
-          <metadata-box :metadata="JSON.parse(metadata)" />
+          <metadata-box
+            v-if="currentDoc"
+            :metadata="JSON.parse(currentDoc.meta)"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -27,6 +30,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import TextClassification from '~/components/containers/TextClassification'
 import Paginator from '~/components/containers/Paginator'
 import GuidelineButton from '@/components/containers/GuidelineButton'
@@ -44,10 +48,8 @@ export default {
     MetadataBox
   },
 
-  data() {
-    return {
-      metadata: '{"wikiPageId":2}'
-    }
+  computed: {
+    ...mapGetters('documents', ['currentDoc'])
   },
 
   validate({ params }) {
