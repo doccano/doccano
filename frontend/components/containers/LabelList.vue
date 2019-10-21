@@ -74,29 +74,13 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { colorRules, labelNameRules } from '@/rules/index'
 import { idealColor } from '~/plugins/utils'
 
 export default {
   data() {
     return {
-      headers: [
-        {
-          text: 'Name',
-          align: 'left',
-          value: 'text'
-        },
-        {
-          text: 'Shortkey',
-          value: 'suffix_key'
-        },
-        {
-          text: 'Color',
-          sortable: false,
-          value: 'background_color'
-        }
-      ],
       search: '',
       colorRules,
       labelNameRules
@@ -105,6 +89,7 @@ export default {
 
   computed: {
     ...mapState('labels', ['items', 'selected', 'loading']),
+    ...mapGetters('labels', ['headers']),
 
     keys() {
       return 'abcdefghijklmnopqrstuvwxyz'.split('')

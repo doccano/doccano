@@ -9,6 +9,24 @@ export const state = () => ({
 export const getters = {
   isLabelSelected(state) {
     return state.selected.length > 0
+  },
+  headers() {
+    return [
+      {
+        text: 'Name',
+        align: 'left',
+        value: 'text'
+      },
+      {
+        text: 'Shortkey',
+        value: 'suffix_key'
+      },
+      {
+        text: 'Color',
+        sortable: false,
+        value: 'background_color'
+      }
+    ]
   }
 }
 

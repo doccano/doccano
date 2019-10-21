@@ -48,24 +48,12 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { roleRules } from '@/rules/index'
 
 export default {
   data() {
     return {
-      headers: [
-        {
-          text: 'Name',
-          align: 'left',
-          sortable: false,
-          value: 'username'
-        },
-        {
-          text: 'Role',
-          value: 'role'
-        }
-      ],
       roles: [
         'Admin',
         'Member'
@@ -77,7 +65,8 @@ export default {
   },
 
   computed: {
-    ...mapState('members', ['items', 'selected', 'loading'])
+    ...mapState('members', ['items', 'selected', 'loading']),
+    ...mapGetters('members', ['headers'])
   },
 
   created() {

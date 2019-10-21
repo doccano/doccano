@@ -13,6 +13,23 @@ export const getters = {
   },
   currentProject(state) {
     return state.current
+  },
+  headers() {
+    return [
+      {
+        text: 'Name',
+        align: 'left',
+        value: 'name'
+      },
+      {
+        text: 'Description',
+        value: 'description'
+      },
+      {
+        text: 'Type',
+        value: 'project_type'
+      }
+    ]
   }
 }
 
