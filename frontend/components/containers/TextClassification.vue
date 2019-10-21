@@ -1,6 +1,6 @@
 <template>
-  <base-text-area>
-    <template #title>
+  <v-card>
+    <v-card-title>
       <multi-class-classification
         v-if="currentDoc"
         :labels="items"
@@ -8,23 +8,19 @@
         :add-label="addLabel"
         :delete-label="removeLabel"
       />
-    </template>
-    <template #content>
-      <div v-if="currentDoc" class="title">
-        {{ currentDoc.text }}<!-- {{currentDoc}}-->
-      </div>
-    </template>
-  </base-text-area>
+    </v-card-title>
+    <v-card-text v-if="currentDoc" class="title">
+      {{ currentDoc.text }}
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import BaseTextArea from '@/components/molecules/BaseTextArea'
 import MultiClassClassification from '@/components/organisms/MultiClassClassification'
 
 export default {
   components: {
-    BaseTextArea,
     MultiClassClassification
   },
 

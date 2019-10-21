@@ -3,21 +3,19 @@
     <v-container fluid>
       <v-row justify="center">
         <v-col cols="12" md="9">
-          <base-text-area>
-            <template #title>
+          <v-card>
+            <v-card-title>
               <multi-class-classification
                 :labels="items"
                 :annotations="currentDoc.annotations"
                 :add-label="addLabel"
                 :delete-label="removeLabel"
               />
-            </template>
-            <template #content>
-              <div class="title">
-                {{ currentDoc.text }}
-              </div>
-            </template>
-          </base-text-area>
+            </v-card-title>
+            <v-card-text class="title">
+              {{ currentDoc.text }}
+            </v-card-text>
+          </v-card>
         </v-col>
         <v-col cols="12" md="3">
           <metadata-box :metadata="JSON.parse(currentDoc.meta)" />
@@ -29,7 +27,6 @@
 
 <script>
 import MultiClassClassification from '~/components/organisms/MultiClassClassification'
-import BaseTextArea from '@/components/molecules/BaseTextArea'
 import MetadataBox from '@/components/organisms/MetadataBox'
 
 export default {
@@ -37,8 +34,7 @@ export default {
 
   components: {
     MultiClassClassification,
-    MetadataBox,
-    BaseTextArea
+    MetadataBox
   },
 
   data() {
