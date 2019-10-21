@@ -46,7 +46,8 @@ export default {
       items: [
         { title: 'Named Entity Recognition', link: 'named-entity-recognition' },
         { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
-        { title: 'Translation', link: 'translation' }
+        { title: 'Translation', link: 'translation' },
+        { title: 'Text to SQL', link: 'text-to-sql' }
       ]
     }
   }
