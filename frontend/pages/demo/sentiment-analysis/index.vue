@@ -33,7 +33,7 @@ import BaseTextArea from '@/components/molecules/BaseTextArea'
 import MetadataBox from '@/components/organisms/MetadataBox'
 
 export default {
-  layout: 'annotation',
+  layout: 'demo',
 
   components: {
     MultiClassClassification,

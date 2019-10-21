@@ -29,7 +29,7 @@ import EntityItemBox from '~/components/organisms/EntityItemBox'
 import MetadataBox from '@/components/organisms/MetadataBox'
 
 export default {
-  layout: 'annotation',
+  layout: 'demo',
 
   components: {
     EntityItemBox,

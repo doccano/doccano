@@ -31,7 +31,7 @@ import Seq2seqBox from '~/components/organisms/Seq2seqBox'
 import MetadataBox from '@/components/organisms/MetadataBox'
 
 export default {
-  layout: 'annotation',
+  layout: 'demo',
 
   components: {
     Seq2seqBox,
