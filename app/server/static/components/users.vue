@@ -13,15 +13,13 @@
                 v-bind:type="{ 'is-danger': getAddUserMessage }"
                 v-bind:message="getAddUserMessage"
               )
-                b-autocomplete(
-                  v-model="newRoleMapping.username"
+                b-select(
                   placeholder="e.g. Anne"
-                  open-on-focus=true
-                  v-bind:data="otherUsers"
-                  field="username"
-                  v-on:select="option => {selected = option; newRoleMapping.userid = selected.id}"
-                  v-on:input="value => checkValidExistingUser(value)"
-              )
+                  v-model="newRoleMapping.username"
+                  v-on:input="option => {checkValidExistingUser(option); newRoleMapping.userid = option}"
+                )
+                  option(v-for="otherUser in otherUsers", v-bind:value="otherUser.id", v-bind:key="otherUser.id")
+                    | {{ otherUser.username }}
 
             div.column
               b-field(label="Role")
@@ -68,10 +66,23 @@
               span Delete
 </template>
 
-<style scoped>
+<style>
 .user-table {
   padding: 40px 20px;
 }
+
+.user-table .table {
+  width: 100%;
+}
+
+.user-table .card {
+  padding: 20px 20px;
+}
+
+.user-table .has-addons {
+  display: none;
+}
+
 </style>
 
 <script>
@@ -138,7 +149,7 @@ export default {
     },
 
     checkValidExistingUser(inputValue) {
-      this.hasNewUserError = !this.otherUsers.some(user => user.username === inputValue);
+      this.hasNewUserError = !this.otherUsers.some(user => user.id === inputValue);
       return inputValue;
     },
 
