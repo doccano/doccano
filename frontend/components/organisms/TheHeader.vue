@@ -11,6 +11,12 @@
       doccano
     </v-toolbar-title>
     <div class="flex-grow-1" />
+    <v-btn
+      text
+      @click="$router.push('/projects')"
+    >
+      Projects
+    </v-btn>
     <v-menu open-on-hover offset-y>
       <template v-slot:activator="{ on }">
         <v-btn
