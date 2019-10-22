@@ -1,47 +1,45 @@
 <template>
-  <base-layout>
-    <template #leftDrawerIcon>
-      <v-app-bar-nav-icon @click="drawerLeft = !drawerLeft" />
-    </template>
+  <v-app>
+    <the-header>
+      <template #leftDrawerIcon>
+        <v-app-bar-nav-icon @click="drawerLeft = !drawerLeft" />
+      </template>
+    </the-header>
 
-    <template #leftDrawer>
-      <v-navigation-drawer
-        v-model="drawerLeft"
-        app
-        clipped
-        color=""
+    <v-navigation-drawer
+      v-model="drawerLeft"
+      app
+      clipped
+      color=""
+    >
+      <the-side-bar />
+    </v-navigation-drawer>
+
+    <v-content>
+      <v-container
+        fluid
+        fill-height
       >
-        <the-side-bar />
-      </v-navigation-drawer>
-    </template>
-
-    <template #content>
-      <v-content>
-        <v-container
-          fluid
-          fill-height
+        <v-layout
+          justify-center
         >
-          <v-layout
-            justify-center
-          >
-            <v-flex fill-height>
-              <nuxt />
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-content>
-    </template>
-  </base-layout>
+          <v-flex fill-height>
+            <nuxt />
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import BaseLayout from '~/layouts/BaseLayout'
 import TheSideBar from '~/components/organisms/TheSideBar'
+import TheHeader from '~/components/organisms/TheHeader'
 
 export default {
   components: {
-    BaseLayout,
-    TheSideBar
+    TheSideBar,
+    TheHeader
   },
   data: () => ({
     drawerLeft: false

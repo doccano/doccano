@@ -1,30 +1,29 @@
 <template>
-  <base-layout>
-    <template #content>
-      <v-content>
-        <v-container
-          fluid
-          fill-height
+  <v-app>
+    <the-header />
+    <v-content>
+      <v-container
+        fluid
+        fill-height
+      >
+        <v-layout
+          justify-center
         >
-          <v-layout
-            justify-center
-          >
-            <v-flex>
-              <nuxt />
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-content>
-    </template>
-  </base-layout>
+          <v-flex>
+            <nuxt />
+          </v-flex>
+        </v-layout>
+      </v-container>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import BaseLayout from '~/layouts/BaseLayout'
+import TheHeader from '~/components/organisms/TheHeader'
 
 export default {
   components: {
-    BaseLayout
+    TheHeader
   }
 }
 </script>

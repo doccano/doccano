@@ -1,5 +1,9 @@
 <template>
-  <v-app-bar app>
+  <v-app-bar
+    app
+    clipped-left
+  >
+    <slot name="leftDrawerIcon" />
     <nuxt-link to="/" style="line-height:0;">
       <img src="~/assets/icon.png" height="48">
     </nuxt-link>

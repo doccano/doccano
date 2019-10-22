@@ -1,17 +1,16 @@
 <template>
-  <base-layout>
-    <template #content>
-      <nuxt />
-    </template>
-  </base-layout>
+  <v-app>
+    <the-header />
+    <nuxt />
+  </v-app>
 </template>
 
 <script>
-import BaseLayout from '~/layouts/BaseLayout'
+import TheHeader from '~/components/organisms/TheHeader'
 
 export default {
   components: {
-    BaseLayout
+    TheHeader
   }
 }
 </script>

@@ -1,34 +1,32 @@
 <template>
-  <base-layout>
-    <template #leftDrawerIcon>
-      <v-app-bar-nav-icon @click="drawerLeft = !drawerLeft" />
-    </template>
+  <v-app>
+    <the-header>
+      <template #leftDrawerIcon>
+        <v-app-bar-nav-icon @click="drawerLeft = !drawerLeft" />
+      </template>
+    </the-header>
 
-    <template #leftDrawer>
-      <v-navigation-drawer
-        v-model="drawerLeft"
-        app
-        clipped
-        color=""
-      >
-        <the-side-bar />
-      </v-navigation-drawer>
-    </template>
+    <v-navigation-drawer
+      v-model="drawerLeft"
+      app
+      clipped
+      color=""
+    >
+      <the-side-bar />
+    </v-navigation-drawer>
 
-    <template #content>
-      <nuxt />
-    </template>
-  </base-layout>
+    <nuxt />
+  </v-app>
 </template>
 
 <script>
-import BaseLayout from '~/layouts/BaseLayout'
 import TheSideBar from '~/components/organisms/TheSideBar'
+import TheHeader from '~/components/organisms/TheHeader'
 
 export default {
   components: {
-    BaseLayout,
-    TheSideBar
+    TheSideBar,
+    TheHeader
   },
   data() {
     return {
