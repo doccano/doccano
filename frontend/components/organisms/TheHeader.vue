@@ -33,7 +33,7 @@
     </v-menu>
     <v-btn
       outlined
-      href="auth"
+      @click="$router.push('/auth')"
     >
       Sign in
     </v-btn>
