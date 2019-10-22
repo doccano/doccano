@@ -16,9 +16,10 @@
                 b-select(
                   placeholder="e.g. Anne"
                   v-model="newRoleMapping.username"
-                  v-on:input="option => {checkValidExistingUser(option); newRoleMapping.userid = option}"
+                  v-on:input="option => {checkValidExistingUser(option);\
+                    newRoleMapping.userid = option}"
                 )
-                  option(v-for="otherUser in otherUsers", v-bind:value="otherUser.id", v-bind:key="otherUser.id")
+                  option(v-for="otherUser in otherUsers", v-bind:value="otherUser.id")
                     | {{ otherUser.username }}
 
             div.column
