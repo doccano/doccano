@@ -182,7 +182,14 @@ We can use docker-compose to set up the webpack server, django server, database,
 docker-compose up
 ```
 
-Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see the login screen:
+_Note the superuser account credentials located in the `docker-compose.yaml` file:_
+```yml
+ADMIN_USERNAME: "admin"
+ADMIN_PASSWORD: "password"
+```
+
+### Confirm all doccano services are running
+Open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see the login screen:
 
 <img src="./docs/login_form.png" alt="Login Form" width=400>
 
