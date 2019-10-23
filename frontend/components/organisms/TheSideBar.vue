@@ -34,10 +34,6 @@ export default {
       { icon: 'mdi-database', text: 'Dataset', link: 'dataset' },
       { icon: 'label', text: 'Labels', link: 'labels' },
       { icon: 'person', text: 'Members', link: 'members' },
-      { divider: true },
-      { icon: 'backup', text: 'Import', link: 'upload' },
-      { icon: 'archive', text: 'Export', link: 'download' },
-      { divider: true },
       { icon: 'settings', text: 'Guideline', link: 'guideline' },
       { icon: 'chat_bubble', text: 'Statistics', link: 'statistics' }
     ]
