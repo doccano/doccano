@@ -74,6 +74,8 @@ Doccano can be deployed to AWS ([Cloudformation](https://docs.aws.amazon.com/AWS
 
 ## Installation
 
+### Clone repository
+
 First of all, you have to clone the repository:
 
 ```bash
@@ -86,6 +88,8 @@ _Note for Windows developers: Be sure to configure git to correctly handle line 
 ```bash
 git clone https://github.com/chakki-works/doccano.git --config core.autocrlf=input
 ```
+
+### Install doccano
 
 To install doccano, there are three options:
 
