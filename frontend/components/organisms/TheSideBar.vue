@@ -29,14 +29,17 @@
 
 <script>
 export default {
-  data: () => ({
-    items: [
-      { icon: 'mdi-database', text: 'Dataset', link: 'dataset' },
-      { icon: 'label', text: 'Labels', link: 'labels' },
-      { icon: 'person', text: 'Members', link: 'members' },
-      { icon: 'settings', text: 'Guideline', link: 'guideline' },
-      { icon: 'chat_bubble', text: 'Statistics', link: 'statistics' }
-    ]
-  })
+  data() {
+    return {
+      items: [
+        { icon: 'mdi-home', text: 'Home', link: '' },
+        { icon: 'mdi-database', text: 'Dataset', link: 'dataset' },
+        { icon: 'label', text: 'Labels', link: 'labels' },
+        { icon: 'person', text: 'Members', link: 'members' },
+        { icon: 'settings', text: 'Guideline', link: 'guideline' },
+        { icon: 'chat_bubble', text: 'Statistics', link: 'statistics' }
+      ]
+    }
+  }
 }
 </script>
