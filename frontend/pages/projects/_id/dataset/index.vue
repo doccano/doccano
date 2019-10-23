@@ -1,31 +1,11 @@
 <template>
   <v-card>
     <v-card-title class="mb-2">
-      <v-menu offset-y>
-        <template v-slot:activator="{ on }">
-          <v-btn
-            color="text-capitalize primary"
-            v-on="on"
-          >
-            Actions
-            <v-icon>mdi-menu-down</v-icon>
-          </v-btn>
-        </template>
-        <v-list dense>
-          <v-list-item @click="importDialog=true">
-            <v-list-item-icon>
-              <v-icon>backup</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Import</v-list-item-title>
-          </v-list-item>
-          <v-list-item @click="exportDialog=true">
-            <v-list-item-icon>
-              <v-icon>archive</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Export</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
+      <action-menu
+        :items="menuItems"
+        @upload="importDialog=true"
+        @download="exportDialog=true"
+      />
       <v-dialog
         v-model="importDialog"
         width="800"
@@ -74,6 +54,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
+import ActionMenu from '@/components/molecules/ActionMenu'
 import ConfirmForm from '@/components/organisms/ConfirmForm'
 import DocumentList from '@/components/containers/DocumentList'
 import DocumentUploadForm from '@/components/organisms/DocumentUploadForm'
@@ -83,6 +64,7 @@ export default {
   layout: 'project',
 
   components: {
+    ActionMenu,
     ConfirmForm,
     DocumentList,
     DocumentUploadForm,
@@ -93,7 +75,11 @@ export default {
     return {
       importDialog: false,
       exportDialog: false,
-      deleteDialog: false
+      deleteDialog: false,
+      menuItems: [
+        { title: 'Import', icon: 'backup', event: 'upload' },
+        { title: 'Export', icon: 'archive', event: 'download' }
+      ]
     }
   },
 
