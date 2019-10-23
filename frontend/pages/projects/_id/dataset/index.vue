@@ -12,22 +12,38 @@
           </v-btn>
         </template>
         <v-list dense>
-          <v-list-item @click="uploadDialog=true">
+          <v-list-item @click="importDialog=true">
             <v-list-item-icon>
               <v-icon>backup</v-icon>
             </v-list-item-icon>
-            <v-list-item-title>Upload</v-list-item-title>
+            <v-list-item-title>Import</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="exportDialog=true">
+            <v-list-item-icon>
+              <v-icon>archive</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Export</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
       <v-dialog
-        v-model="uploadDialog"
+        v-model="importDialog"
         width="800"
       >
         <document-upload-form
           :upload-document="uploadDocument"
           :formats="formatList"
-          @close="uploadDialog=false"
+          @close="importDialog=false"
+        />
+      </v-dialog>
+      <v-dialog
+        v-model="exportDialog"
+        width="800"
+      >
+        <document-export-form
+          :export-document="exportDocument"
+          :formats="['json']"
+          @close="exportDialog=false"
         />
       </v-dialog>
       <v-btn
@@ -61,6 +77,7 @@ import { mapActions, mapGetters, mapState } from 'vuex'
 import ConfirmForm from '@/components/organisms/ConfirmForm'
 import DocumentList from '@/components/containers/DocumentList'
 import DocumentUploadForm from '@/components/organisms/DocumentUploadForm'
+import DocumentExportForm from '@/components/organisms/DocumentExportForm'
 
 export default {
   layout: 'project',
@@ -68,12 +85,14 @@ export default {
   components: {
     ConfirmForm,
     DocumentList,
-    DocumentUploadForm
+    DocumentUploadForm,
+    DocumentExportForm
   },
 
   data() {
     return {
-      uploadDialog: false,
+      importDialog: false,
+      exportDialog: false,
       deleteDialog: false
     }
   },
@@ -84,7 +103,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('documents', ['uploadDocument', 'deleteDocument'])
+    ...mapActions('documents', ['uploadDocument', 'exportDocument', 'deleteDocument'])
   },
 
   validate({ params }) {

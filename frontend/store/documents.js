@@ -124,12 +124,34 @@ export const actions = {
       })
   },
   uploadDocument({ commit }, data) {
+    commit('setLoading', true)
     DocumentService.uploadFile(data.projectId, data)
       .then((response) => {
         commit('addDocument', response)
       })
       .catch((error) => {
         alert(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
+      })
+  },
+  exportDocument({ commit }, data) {
+    commit('setLoading', true)
+    DocumentService.exportFile(data.projectId, data.format)
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'file.' + data.format)
+        document.body.appendChild(link)
+        link.click()
+      })
+      .catch((error) => {
+        alert(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
       })
   },
   updateDocument({ commit }, data) {

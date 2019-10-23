@@ -24,6 +24,25 @@ class DocumentService {
   uploadFile(projectId, payload) {
     return this.request.post(`/projects/${projectId}/docs/upload`, payload)
   }
+
+  exportFile(projectId, format) {
+    const headers = {}
+    if (format === 'csv') {
+      headers.Accept = 'text/csv; charset=utf-8'
+      headers['Content-Type'] = 'text/csv; charset=utf-8'
+    } else {
+      headers.Accept = 'application/json'
+      headers['Content-Type'] = 'application/json'
+    }
+    const config = {
+      responseType: 'blob',
+      params: {
+        q: format
+      },
+      headers
+    }
+    return this.request.get(`/projects/${projectId}/docs/download`, config)
+  }
 }
 
 export default new DocumentService()
