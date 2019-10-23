@@ -6,26 +6,20 @@
         @upload="importDialog=true"
         @download="exportDialog=true"
       />
-      <v-dialog
-        v-model="importDialog"
-        width="800"
-      >
+      <base-dialog :dialog="importDialog">
         <document-upload-form
           :upload-document="uploadDocument"
           :formats="formatList"
           @close="importDialog=false"
         />
-      </v-dialog>
-      <v-dialog
-        v-model="exportDialog"
-        width="800"
-      >
+      </base-dialog>
+      <base-dialog :dialog="exportDialog">
         <document-export-form
           :export-document="exportDocument"
           :formats="['json']"
           @close="exportDialog=false"
         />
-      </v-dialog>
+      </base-dialog>
       <v-btn
         class="text-capitalize ms-2"
         outlined
@@ -34,10 +28,7 @@
       >
         Delete
       </v-btn>
-      <v-dialog
-        v-model="deleteDialog"
-        width="800"
-      >
+      <base-dialog :dialog="deleteDialog">
         <confirm-form
           title="Delete Document"
           message="Are you sure you want to delete these documents from this project?"
@@ -46,7 +37,7 @@
           @ok="deleteDocument($route.params.id);deleteDialog=false"
           @cancel="deleteDialog=false"
         />
-      </v-dialog>
+      </base-dialog>
     </v-card-title>
     <document-list />
   </v-card>
@@ -55,6 +46,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
 import ActionMenu from '@/components/molecules/ActionMenu'
+import BaseDialog from '@/components/molecules/BaseDialog'
 import ConfirmForm from '@/components/organisms/ConfirmForm'
 import DocumentList from '@/components/containers/DocumentList'
 import DocumentUploadForm from '@/components/organisms/DocumentUploadForm'
@@ -65,6 +57,7 @@ export default {
 
   components: {
     ActionMenu,
+    BaseDialog,
     ConfirmForm,
     DocumentList,
     DocumentUploadForm,
