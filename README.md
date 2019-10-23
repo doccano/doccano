@@ -70,7 +70,7 @@ Doccano can be deployed to AWS ([Cloudformation](https://docs.aws.amazon.com/AWS
 -   Python 3.6+
 -   Django 2.1.7+
 -   Node.js 8.0+
--   Google Chrome(highly recommended)
+-   Google Chrome (highly recommended)
 
 ## Installation
 
@@ -83,13 +83,13 @@ cd doccano
 
 To install doccano, there are three options:
 
-**Option1: Pull the production Docker image**
+#### Option 1: Pull the production Docker image
 
 ```bash
 docker pull chakkiworks/doccano
 ```
 
-**Option2: Setup Python environment**
+#### Option 2: Setup Python environment
 
 First we need to install the dependencies. Run the following commands:
 
@@ -110,7 +110,7 @@ npm run build
 cd ..
 ```
 
-**Option3: Pull the development Docker-Compose images**
+#### Option 3: Pull the development Docker-Compose images
 
 ```bash
 docker-compose pull
@@ -122,7 +122,7 @@ docker-compose pull
 
 Let’s start the development server and explore it.
 
-Depending on your installation method, there are two options:
+Depending on your installation method, there are three options:
 
 #### Option 1: Running the Docker image as a Container
 
@@ -196,7 +196,7 @@ There is no project created yet. To create your project, make sure you’re in t
 
 <img src="./docs/create_project.png" alt="Project Creation" width=400>
 
-In this step, you can select three project types: text classificatioin, sequence labeling and sequence to sequence. You should select a type with your purpose.
+In this step, you can select three project types: text classification, sequence labeling and sequence to sequence. You should select a type with your purpose.
 
 ### Import Data
 
@@ -207,8 +207,8 @@ After creating a project, you will see the "Import Data" page, or click `Import 
 You can upload the following types of files (depending on project type):
 
 -   `Text file`: file must contain one sentence/document per line separated by new lines.
--   `CSV file`: file must contain a header with `"text"` as the first column or be one-column csv file. If using labels the sencond column must be the labels.
--   `Excel file`: file must contain a header with `"text"` as the first column or be one-column excel file. If using labels the sencond column must be the labels. Supports multiple sheets as long as format is the same.
+-   `CSV file`: file must contain a header with `"text"` as the first column or be one-column csv file. If using labels the second column must be the labels.
+-   `Excel file`: file must contain a header with `"text"` as the first column or be one-column excel file. If using labels the second column must be the labels. Supports multiple sheets as long as format is the same.
 -   `JSON file`: each line contains a JSON object with a `text` key. JSON format supports line breaks rendering.
 
 > Notice: Doccano won't render line breaks in annotation page for sequence labeling task due to the indent problem, but the exported JSON file still contains line breaks.
