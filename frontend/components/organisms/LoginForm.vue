@@ -58,14 +58,8 @@ export default {
   },
 
   methods: {
-    cancel() {
-      this.$emit('close')
-    },
     validate() {
       return this.$refs.form.validate()
-    },
-    reset() {
-      this.$refs.form.reset()
     },
     tryLogin() {
       if (this.validate()) {
@@ -73,8 +67,7 @@ export default {
           username: this.username,
           password: this.password
         })
-        this.reset()
-        this.cancel()
+        this.$router.push('/projects')
       }
     }
   }

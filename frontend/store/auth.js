@@ -21,38 +21,19 @@ export const getters = {
 
 export const actions = {
   authenticateUser({ commit }, authData) {
-    let authUrl =
-      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' +
-      process.env.fbAPIKey
-    if (!authData.isLogin) {
-      authUrl =
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=' +
-        process.env.fbAPIKey
-    }
+    const authUrl = 'http://127.0.0.1:8000/v1/auth-token'
     return this.$axios
-      .$post(authUrl, {
-        email: authData.email,
-        password: authData.password,
-        returnSecureToken: true
-      })
+      .$post(authUrl, authData)
       .then((result) => {
-        commit('setToken', result.idToken)
-        localStorage.setItem('token', result.idToken)
-        localStorage.setItem(
-          'tokenExpiration',
-          new Date().getTime() + Number.parseInt(result.expiresIn) * 1000
-        )
-        Cookie.set('jwt', result.idToken)
-        Cookie.set(
-          'expirationDate',
-          new Date().getTime() + Number.parseInt(result.expiresIn) * 1000
-        )
+        alert(JSON.stringify(result))
+        commit('setToken', result.token)
+        localStorage.setItem('token', result.token)
+        Cookie.set('jwt', result.token)
       })
       .catch(e => alert(e))
   },
   initAuth({ commit, dispatch }, req) {
     let token
-    let expirationDate
     if (req) {
       if (!req.headers.cookie) {
         return
@@ -64,27 +45,16 @@ export const actions = {
         return
       }
       token = jwtCookie.split('=')[1]
-      expirationDate = req.headers.cookie
-        .split(';')
-        .find(c => c.trim().startsWith('expirationDate='))
-        .split('=')[1]
     } else {
       token = localStorage.getItem('token')
-      expirationDate = localStorage.getItem('tokenExpiration')
-    }
-    if (new Date().getTime() > +expirationDate || !token) {
-      dispatch('logout')
-      return
     }
     commit('setToken', token)
   },
   logout({ commit }) {
     commit('clearToken')
     Cookie.remove('jwt')
-    Cookie.remove('expirationDate')
     if (process.client) {
       localStorage.removeItem('token')
-      localStorage.removeItem('tokenExpiration')
     }
   }
 }
