@@ -263,7 +263,7 @@ export default {
           this.messages = [];
         })
         .catch((error) => {
-          console.log(error);
+          console.log(error); // eslint-disable-line no-console
           if (error.response.data.non_field_errors) {
             error.response.data.non_field_errors.forEach((msg) => {
               this.messages.push(msg);
