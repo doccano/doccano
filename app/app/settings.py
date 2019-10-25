@@ -263,6 +263,13 @@ DATABASES['default'].update(dj_database_url.config(
 if DATABASES['default'].get('ENGINE') == 'django.db.backends.sqlite3':
     DATABASES['default'].get('OPTIONS', {}).pop('sslmode', None)
 
+# work-around for dj-database-url: patch ssl for mysql
+if DATABASES['default'].get('ENGINE') == 'django.db.backends.mysql':
+    DATABASES['default'].get('OPTIONS', {}).pop('sslmode', None)
+    if env('MYSQL_SSL_CA', None):
+        DATABASES['default'].setdefault('OPTIONS', {})\
+            .setdefault('ssl', {}).setdefault('ca', env('MYSQL_SSL_CA', None))
+
 # default to a sensible modern driver for Azure SQL
 if DATABASES['default'].get('ENGINE') == 'sql_server.pyodbc':
     DATABASES['default'].setdefault('OPTIONS', {})\
