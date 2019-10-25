@@ -67,6 +67,10 @@ export default {
     return {
       e6: 1
     }
+  },
+
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   }
 }
 </script>
