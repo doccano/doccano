@@ -3,27 +3,27 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/98a0992c0a254d0ba23fd75631fe2907)](https://app.codacy.com/app/Hironsan/doccano?utm_source=github.com&utm_medium=referral&utm_content=chakki-works/doccano&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/chakki-works/doccano.svg?branch=master)](https://travis-ci.org/chakki-works/doccano)
 
-doccano is an open source text annotation tool for human. It provides annotation features for text classification, sequence labeling and sequence to sequence. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create project, upload data and start annotation. You can build dataset in hours.
+doccano is an open source text annotation tool for humans. It provides annotation features for text classification, sequence labeling and sequence to sequence tasks. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create a project, upload data and start annotating. You can build a dataset in hours.
 
 ## Demo
 
-You can enjoy [annotation demo](http://doccano.herokuapp.com).
+You can enjoy the [annotation demo](http://doccano.herokuapp.com).
 
 ### [Named entity recognition](https://doccano.herokuapp.com/demo/named-entity-recognition/)
 
-First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can quickly annotate text spans.
+The first demo is a sequence labeling task: named-entity recognition. You just select text spans and annotate them. Doccano supports shortcut keys, so you can quickly annotate text spans.
 
 ![Named Entity Recognition](./docs/named_entity_annotation.gif)
 
 ### [Sentiment analysis](https://doccano.herokuapp.com/demo/text-classification/)
 
-Second demo is one of the text classification tasks, topic classification. Since there may be more than one category, you can annotate multi-labels.
+The second demo is a text classification task: sentiment analysis. Since there may be more than one category, you can annotate multi-labels.
 
 ![Text Classification](./docs/text_classification.gif)
 
 ### [Machine translation](https://doccano.herokuapp.com/demo/translation/)
 
-Final demo is one of the sequence to sequence tasks, machine translation. Since there may be more than one responses in sequence to sequence tasks, you can create multi responses.
+The final demo is a sequence to sequence task: machine translation. Since there may be more than one response in sequence to sequence tasks, you can create multi responses.
 
 ![Machine Translation](./docs/translation.gif)
 
@@ -83,13 +83,13 @@ cd doccano
 
 To install doccano, there are three options:
 
-**Option1: Pull the production Docker image**
+**Option 1: Pull the production Docker image**
 
 ```bash
 docker pull chakkiworks/doccano
 ```
 
-**Option2: Setup Python environment**
+**Option 2: Setup Python environment**
 
 First we need to install the dependencies. Run the following commands:
 
@@ -110,7 +110,7 @@ npm run build
 cd ..
 ```
 
-**Option3: Pull the development Docker-Compose images**
+**Option 3: Pull the development Docker-Compose images**
 
 ```bash
 docker-compose pull
