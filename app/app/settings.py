@@ -265,7 +265,7 @@ if DATABASES['default'].get('ENGINE') == 'django.db.backends.sqlite3':
 
 # default to a sensible modern driver for Azure SQL
 if DATABASES['default'].get('ENGINE') == 'sql_server.pyodbc':
-    db_options = DATABASES['default'].setdefault('OPTIONS', {})\
+    DATABASES['default'].setdefault('OPTIONS', {})\
         .setdefault('driver', 'ODBC Driver 17 for SQL Server')
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
