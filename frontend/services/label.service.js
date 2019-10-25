@@ -2,7 +2,7 @@ import ApiService from '@/services/api.service'
 
 class LabelService {
   constructor() {
-    this.request = new ApiService()
+    this.request = ApiService
   }
 
   getLabelList(projectId) {

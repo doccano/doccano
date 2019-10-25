@@ -15,6 +15,7 @@ import ProjectCreationButton from '@/components/containers/ProjectCreationButton
 
 export default {
   layout: 'projects',
+  middleware: 'check-auth',
   components: {
     ProjectList,
     ProjectCreationButton,

@@ -61,9 +61,9 @@ export default {
     validate() {
       return this.$refs.form.validate()
     },
-    tryLogin() {
+    async tryLogin() {
       if (this.validate()) {
-        this.login({
+        await this.login({
           username: this.username,
           password: this.password
         })

@@ -2,7 +2,7 @@ import ApiService from '@/services/api.service'
 
 class DocumentService {
   constructor() {
-    this.request = new ApiService()
+    this.request = ApiService
   }
 
   getDocumentList({ projectId, limit, offset }) {

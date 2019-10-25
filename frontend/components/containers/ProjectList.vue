@@ -43,8 +43,8 @@ export default {
     ...mapGetters('projects', ['headers'])
   },
 
-  created() {
-    this.getProjectList()
+  async created() {
+    await this.getProjectList()
   },
 
   methods: {

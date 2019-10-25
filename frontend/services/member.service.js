@@ -2,7 +2,7 @@ import ApiService from '@/services/api.service'
 
 class MemberService {
   constructor() {
-    this.request = new ApiService()
+    this.request = ApiService
   }
 
   getMemberList(projectId) {

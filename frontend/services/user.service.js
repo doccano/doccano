@@ -2,7 +2,7 @@ import ApiService from '@/services/api.service'
 
 class UserService {
   constructor() {
-    this.request = new ApiService()
+    this.request = ApiService
   }
 
   getUserList(query) {

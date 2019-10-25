@@ -2,7 +2,7 @@ import ApiService from '@/services/api.service'
 
 class StatisticsService {
   constructor() {
-    this.request = new ApiService()
+    this.request = ApiService
   }
 
   getStatistics(projectId) {

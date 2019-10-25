@@ -1,11 +1,23 @@
 import axios from 'axios'
-const baseURL = 'http://127.0.0.1:3000/v1' // Todo: change URL by development/staging/production.
+const baseURL = 'http://127.0.0.1:8000/v1' // Todo: change URL by development/staging/production.
 
-export default class ApiService {
+class ApiService {
   constructor() {
     this.instance = axios.create({
       baseURL
     })
+  }
+
+  setHeader(token) {
+    this.instance.defaults.headers.common.Authorization = `Token ${token}`
+  }
+
+  removeHeader() {
+    this.instance.defaults.headers.common = {}
+  }
+
+  neko() {
+    return this.instance
   }
 
   request(method, url, data = {}, config = {}) {
@@ -39,3 +51,5 @@ export default class ApiService {
     return this.request('DELETE', url, {}, config)
   }
 }
+
+export default new ApiService()

@@ -1,4 +1,5 @@
 import Cookie from 'js-cookie'
+import ApiService from '@/services/api.service'
 
 export const state = () => ({
   token: null
@@ -25,10 +26,10 @@ export const actions = {
     return this.$axios
       .$post(authUrl, authData)
       .then((result) => {
-        alert(JSON.stringify(result))
         commit('setToken', result.token)
         localStorage.setItem('token', result.token)
         Cookie.set('jwt', result.token)
+        ApiService.setHeader(result.token)
       })
       .catch(e => alert(e))
   },
@@ -49,6 +50,7 @@ export const actions = {
       token = localStorage.getItem('token')
     }
     commit('setToken', token)
+    ApiService.setHeader(token)
   },
   logout({ commit }) {
     commit('clearToken')

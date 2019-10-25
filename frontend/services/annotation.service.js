@@ -2,7 +2,7 @@ import ApiService from '@/services/api.service'
 
 class AnnotationService {
   constructor() {
-    this.request = new ApiService()
+    this.request = ApiService
   }
 
   getAnnotationList(projectId, docId) {
