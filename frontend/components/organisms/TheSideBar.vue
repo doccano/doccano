@@ -36,8 +36,8 @@ export default {
         { icon: 'mdi-database', text: 'Dataset', link: 'dataset' },
         { icon: 'label', text: 'Labels', link: 'labels' },
         { icon: 'person', text: 'Members', link: 'members' },
-        { icon: 'settings', text: 'Guideline', link: 'guideline' },
-        { icon: 'chat_bubble', text: 'Statistics', link: 'statistics' }
+        { icon: 'mdi-book-open-outline', text: 'Guideline', link: 'guideline' },
+        { icon: 'mdi-chart-bar', text: 'Statistics', link: 'statistics' }
       ]
     }
   }
