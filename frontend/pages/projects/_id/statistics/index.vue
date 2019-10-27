@@ -59,7 +59,7 @@ export default {
   },
 
   created() {
-    StatisticsService.getStatistics().then((response) => {
+    StatisticsService.getStatistics(this.$route.params.id).then((response) => {
       this.labelStat = this.makeData(response.label, 'Label stats')
       this.userStat = this.makeData(response.user, 'User stats')
       const complete = response.total - response.remaining
