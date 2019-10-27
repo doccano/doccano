@@ -97,7 +97,9 @@ export default {
   },
 
   created() {
-    this.getLabelList()
+    this.getLabelList({
+      projectId: this.$route.params.id
+    })
   },
 
   methods: {

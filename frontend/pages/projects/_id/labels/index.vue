@@ -16,6 +16,8 @@ import LabelDeletionButton from '@/components/containers/LabelDeletionButton'
 export default {
   layout: 'project',
 
+  middleware: 'check-auth',
+
   components: {
     LabelList,
     LabelCreationButton,

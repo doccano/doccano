@@ -56,9 +56,9 @@ export const mutations = {
 }
 
 export const actions = {
-  getLabelList({ commit }, config) {
+  getLabelList({ commit }, payload) {
     commit('setLoading', true)
-    return LabelService.getLabelList()
+    return LabelService.getLabelList(payload.projectId)
       .then((response) => {
         commit('setLabelList', response)
       })
