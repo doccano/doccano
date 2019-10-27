@@ -114,7 +114,7 @@ div.columns(v-cloak="")
 
       div.column.is-1.has-text-right
         a.button.tooltip.is-tooltip-bottom(
-          v-if="isSuperuser"
+          v-if="isAnnotationApprover"
           v-on:click="approveDocumentAnnotations"
           v-bind:data-tooltip="documentAnnotationsApprovalTooltip"
         )

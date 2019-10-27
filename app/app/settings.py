@@ -175,6 +175,10 @@ SOCIAL_AUTH_PIPELINE = [
     'server.social_auth.fetch_azuread_permissions',
 ]
 
+ROLE_PROJECT_ADMIN = env('ROLE_PROJECT_ADMIN', 'project_admin')
+ROLE_ANNOTATOR = env('ROLE_ANNOTATOR', 'annotator')
+ROLE_ANNOTATION_APPROVER = env('ROLE_ANNOTATION_APPROVER', 'annotation_approver')
+
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 

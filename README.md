@@ -3,27 +3,27 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/98a0992c0a254d0ba23fd75631fe2907)](https://app.codacy.com/app/Hironsan/doccano?utm_source=github.com&utm_medium=referral&utm_content=chakki-works/doccano&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/chakki-works/doccano.svg?branch=master)](https://travis-ci.org/chakki-works/doccano)
 
-doccano is an open source text annotation tool for humans. It provides annotation features for text classification, sequence labeling and sequence to sequence. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create project, upload data and start annotation. You can build dataset in hours.
+doccano is an open source text annotation tool for humans. It provides annotation features for text classification, sequence labeling and sequence to sequence tasks. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create a project, upload data and start annotating. You can build a dataset in hours.
 
 ## Demo
 
-You can enjoy [annotation demo](http://doccano.herokuapp.com).
+You can try the [annotation demo](http://doccano.herokuapp.com).
 
 ### [Named entity recognition](https://doccano.herokuapp.com/demo/named-entity-recognition/)
 
-First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can quickly annotate text spans.
+The first demo is a sequence labeling task: named-entity recognition. You just select text spans and annotate them. Doccano supports shortcut keys, so you can quickly annotate text spans.
 
 ![Named Entity Recognition](./docs/named_entity_annotation.gif)
 
 ### [Text classification](https://doccano.herokuapp.com/demo/text-classification/)
 
-Second demo is one of the text classification tasks, topic classification. Since there may be more than one category, you can annotate multi-labels.
+The second demo is a text classification task: sentiment analysis. Since there may be more than one category, you can annotate with multiple labels.
 
 ![Text Classification](./docs/text_classification.gif)
 
 ### [Machine translation](https://doccano.herokuapp.com/demo/translation/)
 
-Final demo is one of the sequence to sequence tasks, machine translation. Since there may be more than one responses in sequence to sequence tasks, you can create multi responses.
+The final demo is a sequence to sequence task: machine translation. Since there may be more than one response in sequence to sequence tasks, you can create multiple responses.
 
 ![Machine Translation](./docs/translation.gif)
 
@@ -54,7 +54,7 @@ git push heroku master
 
 Doccano can be deployed to AWS ([Cloudformation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)) by clicking on the button below:
 
-[![AWS CloudFormation Launch Stack SVG Button](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3-external-1.amazonaws.com/cf-templates-10vry9l3mp71r-us-east-1/20190732wl-new.templatexloywxxyimi&stackName=doccano)
+[![AWS CloudFormation Launch Stack SVG Button](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home?#/stacks/create/review?stackName=doccano&templateURL=https://s3-external-1.amazonaws.com/cf-templates-10vry9l3mp71r-us-east-1/2019290i9t-AppSGl1poo4j8qpq)
 
 > Notice: (1) EC2 KeyPair cannot be created automatically, so make sure you have an existing EC2 KeyPair in one region. Or [create one yourself](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair). (2) If you want to access doccano via HTTPS in AWS, here is an [instruction](https://github.com/chakki-works/doccano/wiki/HTTPS-setting-for-doccano-in-AWS).
 
@@ -150,6 +150,12 @@ Next we need to create a user who can login to the admin site. Run the following
 python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
 ```
 
+Create the admin, annotator, and annotation approver roles to assign to users. Run the following command:
+
+```bash
+python manage.py create_roles
+```
+
 Developers can also validate that the project works as expected by running the tests:
 
 ```bash
@@ -184,7 +190,7 @@ Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see
 
 Now, try logging in with the superuser account you created in the previous step. You should see the doccano project list page:
 
-<img src="./docs/projects.png" alt="projects" width=600>
+<img src="./docs/projects.png" alt="Projects page" width=600>
 
 There is no project created yet. To create your project, make sure you’re in the project list page and select `Create Project` button. You should see the following screen:
 
@@ -235,17 +241,23 @@ Click `Labels` button in left bar to define your own labels. You should see the 
 
 <img src="./docs/label_editor.png" alt="Edit label" width=600>
 
+### Assign Roles to Users
+
+Click `Users` button in left bar to assign project users to annotator, admin, or annotation approval roles.
+
+<img src="./docs/user_page.png" alt="Assign users to roles on project" width=600>
+
 ### Annotation
 
 Now, you are ready to annotate the texts. Just click the `Annotate Data` button in the navigation bar, you can start to annotate the documents you uploaded.
 
-<img src="./docs/annotation.png" alt="Edit label" width=600>
+<img src="./docs/annotation.png" alt="Annotate data" width=600>
 
 ### Export Data
 
 After the annotation step, you can download the annotated data. Click the `Edit data` button in navigation bar, and then click `Export Data`. You should see below screen:
 
-<img src="./docs/export_data.png" alt="Edit label" width=600>
+<img src="./docs/export_data.png" alt="Export data" width=600>
 
 You can export data as CSV file or JSON file by clicking the button. As for the export file format, you can check it here: [Export File Formats](https://github.com/chakki-works/doccano/wiki/Export-File-Formats). 
 
