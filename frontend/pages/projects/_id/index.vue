@@ -3,58 +3,42 @@
     <v-card-title>
       Welcome doccano!
     </v-card-title>
-    <v-stepper v-model="e6" vertical non-linear>
-      <v-stepper-step :complete="e6 > 1" step="1" editable>
-        Import a dataset
-      </v-stepper-step>
-      <v-stepper-content step="1">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
-        <v-btn color="primary" @click="e6 = 2">Continue</v-btn>
-        <v-btn text>Cancel</v-btn>
-      </v-stepper-content>
-
-      <v-stepper-step :complete="e6 > 2" step="2" editable>Create labels for this project</v-stepper-step>
-      <v-stepper-content step="2">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
-        <v-btn color="primary" @click="e6 = 3">Continue</v-btn>
-        <v-btn text>Cancel</v-btn>
-      </v-stepper-content>
-
-      <v-stepper-step :complete="e6 > 3" step="3" editable>Add members for collaborative work</v-stepper-step>
-      <v-stepper-content step="3">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
-        <v-btn color="primary" @click="e6 = 4">Continue</v-btn>
-        <v-btn text>Cancel</v-btn>
-      </v-stepper-content>
-
-      <v-stepper-step :complete="e6 > 4" step="4" editable>Define a guideline for the work</v-stepper-step>
-      <v-stepper-content step="4">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
-        <v-btn color="primary" @click="e6 = 5">Continue</v-btn>
-        <v-btn text>Cancel</v-btn>
-      </v-stepper-content>
-
-      <v-stepper-step :complete="e6 > 5" step="5" editable>Annotate the dataset</v-stepper-step>
-      <v-stepper-content step="5">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
-        <v-btn color="primary" @click="e6 = 6">Continue</v-btn>
-        <v-btn text>Cancel</v-btn>
-      </v-stepper-content>
-
-      <v-stepper-step :complete="e6 > 6" step="6" editable>View statistics</v-stepper-step>
-      <v-stepper-content step="6">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
-        <v-btn color="primary" @click="e6 = 7">Continue</v-btn>
-        <v-btn text>Cancel</v-btn>
-      </v-stepper-content>
-
-      <v-stepper-step :complete="e6 > 7" step="7" editable>Export the dataset</v-stepper-step>
-      <v-stepper-content step="7">
-        <v-card color="grey lighten-1" class="mb-12" height="200px"></v-card>
-        <v-btn color="primary" @click="e6 = 1">Finish</v-btn>
-        <v-btn text>Cancel</v-btn>
-      </v-stepper-content>
-
+    <v-stepper
+      v-model="e6"
+      vertical
+      non-linear
+    >
+      <div
+        v-for="(item, index) in items"
+        :key="index"
+      >
+        <v-stepper-step
+          :complete="e6 > index + 1"
+          :step="index + 1"
+          editable
+        >
+          {{ item.title }}
+        </v-stepper-step>
+        <v-stepper-content :step="index + 1">
+          <v-card
+            color="grey lighten-1"
+            class="mb-12"
+            height="200px"
+          />
+          <v-btn
+            color="primary"
+            @click="next"
+          >
+            Continue
+          </v-btn>
+          <v-btn
+            text
+            @click="prev"
+          >
+            Cancel
+          </v-btn>
+        </v-stepper-content>
+      </div>
     </v-stepper>
   </v-card>
 </template>
@@ -65,7 +49,25 @@ export default {
 
   data() {
     return {
-      e6: 1
+      e6: 1,
+      items: [
+        { title: 'Import a dataset' },
+        { title: 'Create labels for this project' },
+        { title: 'Add members for collaborative work' },
+        { title: 'Define a guideline for the work' },
+        { title: 'Annotate the dataset' },
+        { title: 'View statistics' },
+        { title: 'Export the dataset' }
+      ]
+    }
+  },
+
+  methods: {
+    next() {
+      this.e6 = Math.max(1, (this.e6 + 1) % (this.items.length + 1))
+    },
+    prev() {
+      this.e6 = Math.max(1, this.e6 - 1)
     }
   },
 
