@@ -12,12 +12,17 @@
     </v-toolbar-title>
     <div class="flex-grow-1" />
     <v-btn
+      v-if="isAuthenticated"
       text
       @click="$router.push('/projects')"
     >
       Projects
     </v-btn>
-    <v-menu open-on-hover offset-y>
+    <v-menu
+      v-if="!isAuthenticated"
+      open-on-hover
+      offset-y
+    >
       <template v-slot:activator="{ on }">
         <v-btn
           text
@@ -38,16 +43,18 @@
       </v-list>
     </v-menu>
     <v-btn
+      v-if="!isAuthenticated"
       outlined
       @click="$router.push('/auth')"
     >
       Sign in
     </v-btn>
-    <the-top-menu />
+    <the-top-menu v-if="isAuthenticated" />
   </v-app-bar>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import TheTopMenu from '@/components/organisms/TheTopMenu'
 
 export default {
@@ -64,6 +71,10 @@ export default {
         { title: 'Text to SQL', link: 'text-to-sql' }
       ]
     }
+  },
+
+  computed: {
+    ...mapGetters('auth', ['isAuthenticated'])
   }
 }
 </script>
