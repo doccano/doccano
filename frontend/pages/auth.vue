@@ -5,7 +5,7 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <login-form
-              :login=authenticateUser
+              :login="authenticateUser"
             />
           </v-col>
         </v-row>
