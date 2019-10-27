@@ -55,6 +55,8 @@ import DocumentExportForm from '@/components/organisms/DocumentExportForm'
 export default {
   layout: 'project',
 
+  middleware: 'check-auth',
+
   components: {
     ActionMenu,
     BaseDialog,

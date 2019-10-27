@@ -40,6 +40,8 @@ import BottomNavigator from '@/components/organisms/BottomNavigator'
 export default {
   layout: 'annotation',
 
+  middleware: 'check-auth',
+
   components: {
     BottomNavigator,
     TextClassification,

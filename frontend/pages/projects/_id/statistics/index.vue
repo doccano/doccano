@@ -43,6 +43,8 @@ import StatisticsService from '@/services/statistics.service'
 export default {
   layout: 'project',
 
+  middleware: 'check-auth',
+
   components: {
     DoughnutChart,
     BarChart

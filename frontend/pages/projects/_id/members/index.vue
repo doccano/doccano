@@ -16,6 +16,8 @@ import MemberDeletionButton from '@/components/containers/MemberDeletionButton'
 export default {
   layout: 'project',
 
+  middleware: 'check-auth',
+
   components: {
     MemberList,
     MemberAdditionButton,
