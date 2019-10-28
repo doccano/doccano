@@ -1,6 +1,6 @@
 # Project information
 site_name: 'doccano'
-site_description: 'A Text Annotation tool for Human'
+site_description: 'A Text Annotation tool for Humans'
 site_author: 'Hiroki Nakayama'
 site_url: 'https://chakki-works.github.io/doccano/'
 
@@ -36,7 +36,5 @@ nav:
   #- Release notes: release-notes.md
   #- Author's notes: authors-notes.md
   - FAQ: faq.md
-  - Contributing: CONTRIBUTING.md
   - Code of Conduct: CODE_OF_CONDUCT.md
   - Roadmap: roadmap.md
-  - License: LICENSE.md

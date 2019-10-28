@@ -1,4 +1,4 @@
-# Introduction
+# Roadmap
 
 Doccano is a fast-moving, community supported project. This roadmap provides guidance about priorities and focus areas of the doccano team and lists the functionality expected in upcoming releases of doccano. Many of these areas are driven by community use cases, and we welcome further contributions to doccano.
 
