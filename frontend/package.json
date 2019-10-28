@@ -1,7 +1,7 @@
 {
-  "name": "doccano-client",
+  "name": "doccano",
   "version": "1.0.0",
-  "description": "doccano client",
+  "description": "doccano is an open source annotation tools for machine learning practitioner.",
   "author": "Hironsan",
   "private": true,
   "scripts": {
