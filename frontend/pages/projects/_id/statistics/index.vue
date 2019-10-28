@@ -1,5 +1,8 @@
 <template>
-  <v-container fluid>
+  <v-container
+    v-if="stats"
+    fluid
+  >
     <v-row>
       <v-col
         cols="12"
@@ -7,7 +10,7 @@
       >
         <v-card>
           <doughnut-chart
-            :chart-data="progressStat"
+            :chart-data="progress"
           />
         </v-card>
       </v-col>
@@ -17,7 +20,7 @@
       >
         <v-card>
           <bar-chart
-            :chart-data="labelStat"
+            :chart-data="labelStats"
           />
         </v-card>
       </v-col>
@@ -27,7 +30,7 @@
       >
         <v-card>
           <bar-chart
-            :chart-data="userStat"
+            :chart-data="userStats"
           />
         </v-card>
       </v-col>
@@ -36,9 +39,9 @@
 </template>
 
 <script>
+import { mapActions, mapGetters, mapState } from 'vuex'
 import DoughnutChart from '@/components/molecules/DoughnutChart'
 import BarChart from '@/components/molecules/BarChart'
-import StatisticsService from '@/services/statistics.service'
 
 export default {
   layout: 'project',
@@ -50,48 +53,19 @@ export default {
     BarChart
   },
 
-  data() {
-    return {
-      progressStat: {},
-      userStat: {},
-      labelStat: {}
-    }
+  computed: {
+    ...mapGetters('statistics', ['userStats', 'labelStats', 'progress']),
+    ...mapState('statistics', ['stats'])
   },
 
-  created() {
-    StatisticsService.getStatistics(this.$route.params.id).then((response) => {
-      this.labelStat = this.makeData(response.label, 'Label stats')
-      this.userStat = this.makeData(response.user, 'User stats')
-      const complete = response.total - response.remaining
-      const incomplete = response.remaining
-      this.progressStat = {
-        datasets: [{
-          data: [complete, incomplete],
-          backgroundColor: ['#00d1b2', '#ffdd57']
-        }],
-
-        labels: [
-          'Completed',
-          'Incomplete'
-        ]
-      }
+  async created() {
+    await this.fetchStatistics({
+      projectId: this.$route.params.id
     })
   },
 
   methods: {
-    makeData(object, label) {
-      const labels = Object.keys(object)
-      const counts = Object.values(object)
-      const res = {
-        labels: labels,
-        datasets: [{
-          label: label,
-          backgroundColor: '#00d1b2',
-          data: counts
-        }]
-      }
-      return res
-    }
+    ...mapActions('statistics', ['fetchStatistics'])
   },
 
   validate({ params }) {

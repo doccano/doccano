@@ -5,7 +5,7 @@ class StatisticsService {
     this.request = ApiService
   }
 
-  getStatistics(projectId) {
+  getStatistics({ projectId }) {
     return this.request.get(`/projects/${projectId}/statistics`)
   }
 }
