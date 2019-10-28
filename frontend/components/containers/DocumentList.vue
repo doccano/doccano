@@ -68,6 +68,12 @@ export default {
         })
       },
       deep: true
+    },
+    search() {
+      this.getDocumentList({
+        projectId: this.$route.params.id,
+        q: this.search
+      })
     }
   },
 
