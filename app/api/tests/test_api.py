@@ -1,16 +1,32 @@
 import os
 
+from django.conf import settings
 from django.test import override_settings
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from model_mommy import mommy
 
-from ..models import User, SequenceAnnotation, Document
+from ..models import User, SequenceAnnotation, Document, Role, RoleMapping
 from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
+
+
+def create_default_roles():
+    Role.objects.get_or_create(name=settings.ROLE_PROJECT_ADMIN)
+    Role.objects.get_or_create(name=settings.ROLE_ANNOTATOR)
+    Role.objects.get_or_create(name=settings.ROLE_ANNOTATION_APPROVER)
+
+
+def assign_user_to_role(project_member, project, role_name):
+    role, _ = Role.objects.get_or_create(name=role_name)
+    RoleMapping.objects.get_or_create(role_id=role.id, user_id=project_member.id, project_id=project.id)
+
+
+def remove_all_role_mappings():
+    RoleMapping.objects.all().delete()
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -22,25 +38,42 @@ class TestProjectListAPI(APITestCase):
         cls.main_project_member_pass = 'project_member_pass'
         cls.sub_project_member_name = 'sub_project_member_name'
         cls.sub_project_member_pass = 'sub_project_member_pass'
+        cls.approver_name = 'approver_name_name'
+        cls.approver_pass = 'approver_pass'
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
         main_project_member = User.objects.create_user(username=cls.main_project_member_name,
                                                        password=cls.main_project_member_pass)
         sub_project_member = User.objects.create_user(username=cls.sub_project_member_name,
                                                       password=cls.sub_project_member_pass)
-        # Todo: change super_user to project_admin.
-        super_user = User.objects.create_superuser(username=cls.super_user_name,
-                                                   password=cls.super_user_pass,
-                                                   email='fizz@buzz.com')
-
+        approver = User.objects.create_user(username=cls.approver_name,
+                                            password=cls.approver_pass)
+        User.objects.create_superuser(username=cls.super_user_name,
+                                      password=cls.super_user_pass,
+                                      email='fizz@buzz.com')
         cls.main_project = mommy.make('TextClassificationProject', users=[main_project_member])
         cls.sub_project = mommy.make('TextClassificationProject', users=[sub_project_member])
-
+        assign_user_to_role(project_member=main_project_member, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=sub_project_member, project=cls.sub_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=approver, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATION_APPROVER)
         cls.url = reverse(viewname='project_list')
         cls.data = {'name': 'example', 'project_type': 'DocumentClassification',
                     'description': 'example', 'guideline': 'example',
                     'resourcetype': 'TextClassificationProject'}
         cls.num_project = main_project_member.projects.count()
+
+    def test_returns_main_project_to_approver(self):
+        self.client.login(username=self.approver_name,
+                          password=self.approver_pass)
+        response = self.client.get(self.url, format='json')
+        project = response.data[0]
+        num_project = len(response.data)
+        self.assertEqual(num_project, self.num_project)
+        self.assertEqual(project['id'], self.main_project.id)
 
     def test_returns_main_project_to_main_project_member(self):
         self.client.login(username=self.main_project_member_name,
@@ -72,6 +105,10 @@ class TestProjectListAPI(APITestCase):
         response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class TestProjectDetailAPI(APITestCase):
@@ -82,20 +119,25 @@ class TestProjectDetailAPI(APITestCase):
         cls.project_member_pass = 'project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
-        cls.super_user_name = 'super_user_name'
-        cls.super_user_pass = 'super_user_pass'
+        cls.admin_user_name = 'admin_user_name'
+        cls.admin_user_pass = 'admin_user_pass'
+        create_default_roles()
         cls.project_member = User.objects.create_user(username=cls.project_member_name,
                                                       password=cls.project_member_pass)
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
-        # Todo: change super_user to project_admin.
-        super_user = User.objects.create_superuser(username=cls.super_user_name,
-                                                   password=cls.super_user_pass,
+        project_admin = User.objects.create_superuser(username=cls.admin_user_name,
+                                                   password=cls.admin_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mommy.make('TextClassificationProject', users=[cls.project_member, super_user])
+
+        cls.main_project = mommy.make('TextClassificationProject', users=[cls.project_member, project_admin])
         mommy.make('TextClassificationProject', users=[non_project_member])
         cls.url = reverse(viewname='project_detail', args=[cls.main_project.id])
         cls.data = {'description': 'lorem'}
+        assign_user_to_role(project_member=cls.project_member, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=project_admin, project=cls.main_project,
+                            role_name=settings.ROLE_PROJECT_ADMIN)
 
     def test_returns_main_project_detail_to_main_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -109,29 +151,33 @@ class TestProjectDetailAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_allows_superuser_to_update_project(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
+    def test_allows_admin_to_update_project(self):
+        self.client.login(username=self.admin_user_name,
+                          password=self.admin_user_pass)
         response = self.client.patch(self.url, format='json', data=self.data)
         self.assertEqual(response.data['description'], self.data['description'])
 
-    def test_disallows_project_member_to_update_project(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
+    def test_disallows_non_project_member_to_update_project(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
         response = self.client.patch(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_allows_superuser_to_delete_project(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
+    def test_allows_admin_to_delete_project(self):
+        self.client.login(username=self.admin_user_name,
+                          password=self.admin_user_pass)
         response = self.client.delete(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def test_disallows_project_member_to_delete_project(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
+    def test_disallows_non_project_member_to_delete_project(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
         response = self.client.delete(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
 
 
 class TestLabelListAPI(APITestCase):
@@ -142,25 +188,27 @@ class TestLabelListAPI(APITestCase):
         cls.project_member_pass = 'project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
-        cls.super_user_name = 'super_user_name'
-        cls.super_user_pass = 'super_user_pass'
-        project_member = User.objects.create_user(username=cls.project_member_name,
-                                                  password=cls.project_member_pass)
+        cls.admin_user_name = 'admin_user_name'
+        cls.admin_user_pass = 'admin_user_pass'
+        create_default_roles()
+        cls.project_member = User.objects.create_user(username=cls.project_member_name,
+                                                      password=cls.project_member_pass)
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
-        # Todo: change super_user to project_admin.
-        super_user = User.objects.create_superuser(username=cls.super_user_name,
-                                                   password=cls.super_user_pass,
+        project_admin = User.objects.create_superuser(username=cls.admin_user_name,
+                                                   password=cls.admin_user_pass,
                                                    email='fizz@buzz.com')
-        cls.main_project = mommy.make('Project', users=[project_member, super_user])
+        cls.main_project = mommy.make('Project', users=[cls.project_member, project_admin])
         cls.main_project_label = mommy.make('Label', project=cls.main_project)
 
         sub_project = mommy.make('Project', users=[non_project_member])
-        other_project = mommy.make('Project', users=[super_user])
+        other_project = mommy.make('Project', users=[project_admin])
         mommy.make('Label', project=sub_project)
         cls.url = reverse(viewname='label_list', args=[cls.main_project.id])
         cls.other_url = reverse(viewname='label_list', args=[other_project.id])
         cls.data = {'text': 'example'}
+        assign_user_to_role(project_member=cls.project_member, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_labels_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -183,15 +231,15 @@ class TestLabelListAPI(APITestCase):
         self.assertEqual(num_labels, len(self.main_project.labels.all()))
         self.assertEqual(label['id'], self.main_project_label.id)
 
-    def test_allows_superuser_to_create_label(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
+    def test_allows_admin_to_create_label(self):
+        self.client.login(username=self.admin_user_name,
+                          password=self.admin_user_pass)
         response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_can_create_multiple_labels_without_shortcut_key(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
+        self.client.login(username=self.admin_user_name,
+                          password=self.admin_user_pass)
         labels = [
             {'text': 'Ruby', 'prefix_key': None, 'suffix_key': None},
             {'text': 'PHP', 'prefix_key': None, 'suffix_key': None}
@@ -201,19 +249,43 @@ class TestLabelListAPI(APITestCase):
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_can_create_same_label_in_multiple_projects(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
+        self.client.login(username=self.admin_user_name,
+                          password=self.admin_user_pass)
         label = {'text': 'LOC', 'prefix_key': None, 'suffix_key': 'l'}
         response = self.client.post(self.url, format='json', data=label)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         response = self.client.post(self.other_url, format='json', data=label)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_can_create_same_suffix_with_different_prefix(self):
+        self.client.login(username=self.admin_user_name,
+                          password=self.admin_user_pass)
+        label = {'text': 'Person', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        label = {'text': 'Percentage', 'prefix_key': 'ctrl', 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_cannot_create_same_shortcut_key(self):
+        self.client.login(username=self.admin_user_name,
+                          password=self.admin_user_pass)
+        label = {'text': 'Person', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        label = {'text': 'Percentage', 'prefix_key': None, 'suffix_key': 'p'}
+        response = self.client.post(self.url, format='json', data=label)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_disallows_project_member_to_create_label(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
         response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
 
 
 class TestLabelDetailAPI(APITestCase):
@@ -226,10 +298,10 @@ class TestLabelDetailAPI(APITestCase):
         cls.non_project_member_pass = 'non_project_member_pass'
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
-        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
-                                                      password=cls.non_project_member_pass)
+        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
         # Todo: change super_user to project_admin.
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
@@ -238,6 +310,9 @@ class TestLabelDetailAPI(APITestCase):
         cls.label = mommy.make('Label', project=project)
         cls.url = reverse(viewname='label_detail', args=[project.id, cls.label.id])
         cls.data = {'text': 'example'}
+        create_default_roles()
+        assign_user_to_role(project_member=project_member, project=project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_label_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -275,6 +350,10 @@ class TestLabelDetailAPI(APITestCase):
         response = self.client.delete(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
 
 class TestDocumentListAPI(APITestCase):
 
@@ -286,11 +365,11 @@ class TestDocumentListAPI(APITestCase):
         cls.non_project_member_pass = 'non_project_member_pass'
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
-        # Todo: change super_user to project_admin.
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
@@ -307,6 +386,10 @@ class TestDocumentListAPI(APITestCase):
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
         cls.random_order_project_url = reverse(viewname='doc_list', args=[cls.random_order_project.id])
         cls.data = {'text': 'example'}
+        assign_user_to_role(project_member=project_member, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=project_member, project=cls.random_order_project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_docs_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -365,6 +448,10 @@ class TestDocumentListAPI(APITestCase):
         response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
 
 class TestDocumentDetailAPI(APITestCase):
 
@@ -376,6 +463,7 @@ class TestDocumentDetailAPI(APITestCase):
         cls.non_project_member_pass = 'non_project_member_pass'
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
@@ -388,6 +476,8 @@ class TestDocumentDetailAPI(APITestCase):
         cls.doc = mommy.make('Document', project=project)
         cls.url = reverse(viewname='doc_detail', args=[project.id, cls.doc.id])
         cls.data = {'text': 'example'}
+        assign_user_to_role(project_member=project_member, project=project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_doc_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -425,39 +515,65 @@ class TestDocumentDetailAPI(APITestCase):
         response = self.client.delete(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
 
 class TestApproveLabelsAPI(APITestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.project_member_name = 'project_member_name'
-        cls.project_member_pass = 'project_member_pass'
-        cls.super_user_name = 'super_user_name'
-        cls.super_user_pass = 'super_user_pass'
-        project_member = User.objects.create_user(username=cls.project_member_name,
-                                                  password=cls.project_member_pass)
-        # Todo: change super_user to project_admin.
-        super_user = User.objects.create_superuser(username=cls.super_user_name,
-                                                   password=cls.super_user_pass,
-                                                   email='fizz@buzz.com')
-        project = mommy.make('TextClassificationProject', users=[project_member, super_user])
+        cls.annotator_name = 'annotator_name'
+        cls.annotator_pass = 'annotator_pass'
+        cls.approver_name = 'approver_name_name'
+        cls.approver_pass = 'approver_pass'
+        cls.project_admin_name = 'project_admin_name'
+        cls.project_admin_pass = 'project_admin_pass'
+        annotator = User.objects.create_user(username=cls.annotator_name,
+                                             password=cls.annotator_pass)
+        approver = User.objects.create_user(username=cls.approver_name,
+                                            password=cls.approver_pass)
+        project_admin = User.objects.create_user(username=cls.project_admin_name,
+                                                 password=cls.project_admin_pass)
+        project = mommy.make('TextClassificationProject', users=[annotator, approver, project_admin])
         cls.doc = mommy.make('Document', project=project)
         cls.url = reverse(viewname='approve_labels', args=[project.id, cls.doc.id])
+        create_default_roles()
+        assign_user_to_role(project_member=annotator, project=project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=approver, project=project,
+                            role_name=settings.ROLE_ANNOTATION_APPROVER)
+        assign_user_to_role(project_member=project_admin, project=project,
+                            role_name=settings.ROLE_PROJECT_ADMIN)
 
-    def test_allows_superuser_to_approve_and_disapprove_labels(self):
-        self.client.login(username=self.super_user_name, password=self.super_user_pass)
+    def test_allow_project_admin_to_approve_and_disapprove_labels(self):
+        self.client.login(username=self.project_admin_name, password=self.project_admin_pass)
 
         response = self.client.post(self.url, format='json', data={'approved': True})
-        self.assertEqual(response.data['annotation_approver'], self.super_user_name)
+        self.assertEqual(response.data['annotation_approver'], self.project_admin_name)
 
         response = self.client.post(self.url, format='json', data={'approved': False})
         self.assertIsNone(response.data['annotation_approver'])
 
-    def test_disallows_project_member_to_approve_and_disapprove_labels(self):
-        self.client.login(username=self.project_member_name, password=self.project_member_pass)
+    def test_allow_approver_to_approve_and_disapprove_labels(self):
+        self.client.login(username=self.approver_name, password=self.approver_pass)
+
+        response = self.client.post(self.url, format='json', data={'approved': True})
+        self.assertEqual(response.data['annotation_approver'], self.approver_name)
+
+        response = self.client.post(self.url, format='json', data={'approved': False})
+        self.assertIsNone(response.data['annotation_approver'])
+
+    def test_disallows_non_annotation_approver_to_approve_and_disapprove_labels(self):
+        self.client.login(username=self.annotator_name, password=self.annotator_pass)
 
         response = self.client.post(self.url, format='json', data={'approved': True})
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
 
 
 class TestAnnotationListAPI(APITestCase):
@@ -470,6 +586,7 @@ class TestAnnotationListAPI(APITestCase):
         cls.another_project_member_pass = 'another_project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
+        create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
         another_project_member = User.objects.create_user(username=cls.another_project_member_name,
@@ -491,6 +608,12 @@ class TestAnnotationListAPI(APITestCase):
         cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': main_project_label.id}
         cls.num_entity_of_project_member = SequenceAnnotation.objects.filter(document=main_project_doc,
                                                                              user=project_member).count()
+        cls.num_entity_of_another_project_member = SequenceAnnotation.objects.filter(
+            document=main_project_doc,
+            user=another_project_member).count()
+        cls.main_project = main_project
+        assign_user_to_role(project_member=project_member, project=main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_annotations_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -510,6 +633,15 @@ class TestAnnotationListAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(len(response.data), self.num_entity_of_project_member)
 
+    def test_returns_annotations_of_another_project_member_if_collaborative_project(self):
+        self._patch_project(self.main_project, 'collaborative_annotation', True)
+
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(len(response.data),
+                         self.num_entity_of_project_member + self.num_entity_of_another_project_member)
+
     def test_allows_project_member_to_create_annotation(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
@@ -522,6 +654,21 @@ class TestAnnotationListAPI(APITestCase):
         response = self.client.post(self.url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def _patch_project(self, project, attribute, value):
+        old_value = getattr(project, attribute, None)
+        setattr(project, attribute, value)
+        project.save()
+
+        def cleanup_project():
+            setattr(project, attribute, old_value)
+            project.save()
+
+        self.addCleanup(cleanup_project)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
 
 class TestAnnotationDetailAPI(APITestCase):
 
@@ -533,6 +680,7 @@ class TestAnnotationDetailAPI(APITestCase):
         cls.another_project_member_pass = 'another_project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
+        create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
         another_project_member = User.objects.create_user(username=cls.another_project_member_name,
@@ -559,6 +707,8 @@ class TestAnnotationDetailAPI(APITestCase):
                                                                       main_project_doc.id,
                                                                       another_entity.id])
         cls.post_data = {'start_offset': 0, 'end_offset': 10}
+        assign_user_to_role(project_member=project_member, project=main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_annotation_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -614,6 +764,10 @@ class TestAnnotationDetailAPI(APITestCase):
         response = self.client.delete(self.another_url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
 
 class TestSearch(APITestCase):
 
@@ -623,6 +777,7 @@ class TestSearch(APITestCase):
         cls.project_member_pass = 'project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
+        create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
@@ -641,6 +796,8 @@ class TestSearch(APITestCase):
         mommy.make('Document', text=cls.search_term, project=sub_project)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
         cls.data = {'q': cls.search_term}
+        assign_user_to_role(project_member=project_member, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_can_filter_doc_by_term(self):
         self.client.login(username=self.project_member_name,
@@ -686,6 +843,10 @@ class TestSearch(APITestCase):
         for d1, d2 in zip(response.data['results'], docs):
             self.assertEqual(d1['id'], d2['id'])
 
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
 
 class TestFilter(APITestCase):
 
@@ -693,6 +854,7 @@ class TestFilter(APITestCase):
     def setUpTestData(cls):
         cls.project_member_name = 'project_member_name'
         cls.project_member_pass = 'project_member_pass'
+        create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
         cls.main_project = mommy.make('SequenceLabelingProject', users=[project_member])
@@ -705,6 +867,8 @@ class TestFilter(APITestCase):
         mommy.make('SequenceAnnotation', document=doc2, user=project_member, label=cls.label2)
         cls.url = reverse(viewname='doc_list', args=[cls.main_project.id])
         cls.params = {'seq_annotations__label__id': cls.label1.id}
+        assign_user_to_role(project_member=project_member, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_can_filter_by_label(self):
         self.client.login(username=self.project_member_name,
@@ -735,6 +899,10 @@ class TestFilter(APITestCase):
         for d1, d2 in zip(response.data['results'], docs):
             self.assertEqual(d1['id'], d2['id'])
 
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
 
 class TestUploader(APITestCase):
 
@@ -743,6 +911,7 @@ class TestUploader(APITestCase):
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
         # Todo: change super_user to project_admin.
+        create_default_roles()
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
@@ -751,6 +920,12 @@ class TestUploader(APITestCase):
         cls.labeling_project = mommy.make('SequenceLabelingProject',
                                           users=[super_user], project_type=SEQUENCE_LABELING)
         cls.seq2seq_project = mommy.make('Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
+        assign_user_to_role(project_member=super_user, project=cls.classification_project,
+                            role_name=settings.ROLE_PROJECT_ADMIN)
+        assign_user_to_role(project_member=super_user, project=cls.labeling_project,
+                            role_name=settings.ROLE_PROJECT_ADMIN)
+        assign_user_to_role(project_member=super_user, project=cls.seq2seq_project,
+                            role_name=settings.ROLE_PROJECT_ADMIN)
 
     def setUp(self):
         self.client.login(username=self.super_user_name,
@@ -759,7 +934,7 @@ class TestUploader(APITestCase):
     def upload_test_helper(self, project_id, filename, file_format, expected_status, **kwargs):
         url = reverse(viewname='doc_uploader', args=[project_id])
 
-        with open(os.path.join(DATA_DIR, filename)) as f:
+        with open(os.path.join(DATA_DIR, filename), 'rb') as f:
             response = self.client.post(url, data={'file': f, 'format': file_format})
 
         self.assertEqual(response.status_code, expected_status)
@@ -797,9 +972,21 @@ class TestUploader(APITestCase):
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_csv_with_non_utf8_encoding(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.utf16.csv',
+                                file_format='csv',
+                                expected_status=status.HTTP_201_CREATED)
+
     def test_can_upload_seq2seq_csv(self):
         self.upload_test_helper(project_id=self.seq2seq_project.id,
                                 filename='example.csv',
+                                file_format='csv',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_single_column_csv(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column.csv',
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
@@ -814,6 +1001,43 @@ class TestUploader(APITestCase):
                                 filename='example.invalid.2.csv',
                                 file_format='csv',
                                 expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_can_upload_classification_excel(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_seq2seq_excel(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_single_column_excel(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_cannot_upload_excel_file_does_not_match_column_and_row(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.invalid.1.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    def test_cannot_upload_excel_file_has_too_many_columns(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example.invalid.2.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_400_BAD_REQUEST)
+
+    @override_settings(IMPORT_BATCH_SIZE=1)
+    def test_can_upload_small_batch_size(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='example_one_column_no_header.xlsx',
+                                file_format='excel',
+                                expected_status=status.HTTP_201_CREATED)
 
     def test_can_upload_classification_jsonl(self):
         self.upload_test_helper(project_id=self.classification_project.id,
@@ -868,6 +1092,10 @@ class TestUploader(APITestCase):
                                 filename='example.jsonl',
                                 file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
 
 
 @override_settings(CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER='LOCAL')
@@ -926,7 +1154,7 @@ class TestFeatures(APITestCase):
     def setUpTestData(cls):
         cls.user_name = 'user_name'
         cls.user_pass = 'user_pass'
-
+        create_default_roles()
         cls.user = User.objects.create_user(username=cls.user_name, password=cls.user_pass, email='fizz@buzz.com')
 
     def setUp(self):
@@ -994,6 +1222,7 @@ class TestDownloader(APITestCase):
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
         # Todo: change super_user to project_admin.
+        create_default_roles()
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
@@ -1066,6 +1295,7 @@ class TestStatisticsAPI(APITestCase):
     def setUpTestData(cls):
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
         # Todo: change super_user to project_admin.
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
@@ -1100,3 +1330,181 @@ class TestStatisticsAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertIn('user', response.data)
         self.assertIsInstance(response.data['user'], dict)
+
+
+class TestUserAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
+        User.objects.create_superuser(username=cls.super_user_name,
+                                      password=cls.super_user_pass,
+                                      email='fizz@buzz.com')
+        cls.url = reverse(viewname='user_list')
+
+    def test_returns_user_count(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(1, len(response.data))
+
+
+class TestRoleAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user_name = 'user_name'
+        cls.user_pass = 'user_pass'
+        cls.project_admin_name = 'project_admin_name'
+        cls.project_admin_pass = 'project_admin_pass'
+        create_default_roles()
+        cls.user = User.objects.create_user(username=cls.user_name,
+                                            password=cls.user_pass)
+        User.objects.create_superuser(username=cls.project_admin_name,
+                                      password=cls.project_admin_pass,
+                                      email='fizz@buzz.com')
+        cls.url = reverse(viewname='roles')
+
+    def test_cannot_create_multiple_roles_with_same_name(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        roles = [
+            {'name': 'examplerole', 'description': 'example'},
+            {'name': 'examplerole', 'description': 'example'}
+        ]
+        self.client.post(self.url, format='json', data=roles[0])
+        second_response = self.client.post(self.url, format='json', data=roles[1])
+        self.assertEqual(second_response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_nonadmin_cannot_create_role(self):
+        self.client.login(username=self.user_name,
+                          password=self.user_pass)
+        data = {'name': 'testrole', 'description': 'example'}
+        response = self.client.post(self.url, format='json', data=data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_can_create_role(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        data = {'name': 'testrole', 'description': 'example'}
+        response = self.client.post(self.url, format='json', data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_admin_can_get_roles(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class TestRoleMappingListAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.second_project_member_name = 'second_project_member_name'
+        cls.second_project_member_pass = 'second_project_member_pass'
+        cls.project_admin_name = 'project_admin_name'
+        cls.project_admin_pass = 'project_admin_pass'
+        create_default_roles()
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                      password=cls.project_member_pass)
+        cls.second_project_member = User.objects.create_user(username=cls.second_project_member_name,
+                                                      password=cls.second_project_member_pass)
+        project_admin = User.objects.create_user(username=cls.project_admin_name,
+                                                   password=cls.project_admin_pass)
+        cls.main_project = mommy.make('Project', users=[project_member, project_admin, cls.second_project_member])
+        cls.other_project = mommy.make('Project', users=[cls.second_project_member, project_admin])
+        cls.admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
+        cls.role = mommy.make('Role', name='otherrole')
+        mommy.make('RoleMapping', role=cls.admin_role, project=cls.main_project, user=project_admin)
+        cls.data = {'user': project_member.id, 'role': cls.admin_role.id, 'project': cls.main_project.id}
+        cls.other_url = reverse(viewname='rolemapping_list', args=[cls.other_project.id])
+        cls.url = reverse(viewname='rolemapping_list', args=[cls.main_project.id])
+
+    def test_returns_mappings_to_project_admin(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_allows_superuser_to_create_mapping(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.post(self.url, format='json', data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_do_not_allow_nonadmin_to_create_mapping(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.post(self.url, format='json', data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_do_not_return_mappings_to_nonadmin(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestRoleMappingDetailAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_admin_name = 'project_admin_name'
+        cls.project_admin_pass = 'project_admin_pass'
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        create_default_roles()
+        project_admin = User.objects.create_user(username=cls.project_admin_name,
+                                                   password=cls.project_admin_pass)
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                      password=cls.project_member_pass)
+        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
+        project = mommy.make('Project', users=[project_admin, project_member])
+        admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
+        annotator_role = Role.objects.get(name=settings.ROLE_ANNOTATOR)
+        cls.rolemapping = mommy.make('RoleMapping', role=admin_role, project=project, user=project_admin)
+        cls.url = reverse(viewname='rolemapping_detail', args=[project.id, cls.rolemapping.id])
+        cls.data = {'role': annotator_role.id }
+
+    def test_returns_rolemapping_to_project_member(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data['id'], self.rolemapping.id)
+
+    def test_do_not_return_mapping_to_non_project_member(self):
+        self.client.login(username=self.non_project_member_name,
+                          password=self.non_project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_admin_to_update_mapping(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.patch(self.url, format='json', data=self.data)
+        self.assertEqual(response.data['role'], self.data['role'])
+
+    def test_disallows_project_member_to_update_mapping(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.patch(self.url, format='json', data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_admin_to_delete_mapping(self):
+        self.client.login(username=self.project_admin_name,
+                          password=self.project_admin_pass)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_disallows_project_member_to_delete_mapping(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.delete(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

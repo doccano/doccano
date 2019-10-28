@@ -2,12 +2,13 @@ from django.test import SimpleTestCase, TestCase, RequestFactory, override_setti
 from django.http import HttpRequest
 from ..views import SignupView
 from app import settings
-
+from api.tests.test_config import setenv
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class AddCSSTemplateTagTest(SimpleTestCase):
 
     def test_rendered(self):
+        with setenv('ALLOW_SIGNUP', 'True'):
             request = HttpRequest()
             request.method = 'GET'
             needle = '<input type="password" name="password1" class=" input" required id="id_password1">'
@@ -19,6 +20,7 @@ class ViewsTest(SimpleTestCase):
     """Class for testing views"""
 
     def test_mail_not_set_up(self):
+        with setenv('ALLOW_SIGNUP', 'True'):
             if hasattr(settings, 'EMAIL_HOST'):
                 has_EMAIL_HOST = True
                 EMAIL_HOST = settings.EMAIL_HOST
@@ -45,6 +47,7 @@ class ViewsTest(SimpleTestCase):
             self.assertInHTML(needle, str(response.content))
 
     def test_signup_not_allowed(self):
+        with setenv('ALLOW_SIGNUP', 'True'):
             ALLOW_SIGNUP = settings.ALLOW_SIGNUP
             settings.ALLOW_SIGNUP = False
             request = HttpRequest()
@@ -59,6 +62,7 @@ class ViewsDBTest(TestCase):
     """Class for testing views with DB queries"""
 
     def test_form_submission(self):
+        with setenv('ALLOW_SIGNUP', 'True'):
             self.factory = RequestFactory()
             if hasattr(settings, 'EMAIL_BACKEND'):
                 EMAIL_BACKEND = settings.EMAIL_BACKEND

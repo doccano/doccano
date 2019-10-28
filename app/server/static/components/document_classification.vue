@@ -33,8 +33,8 @@ block annotation-area
               button.delete.is-small(v-on:click="removeLabel(annotation)")
 
       hr
-      div.content(v-if="docs[pageNumber]")
-        span.text {{ docs[pageNumber].text }}
+      div.content
+        div.text.scrollable(ref="textbox", v-if="docs[pageNumber]") {{ docs[pageNumber].text }}
 </template>
 
 <style scoped>
