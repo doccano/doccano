@@ -11,6 +11,7 @@
       doccano
     </v-toolbar-title>
     <div class="flex-grow-1" />
+    <the-color-mode-switcher />
     <v-btn
       v-if="isAuthenticated"
       text
@@ -49,17 +50,16 @@
     >
       Sign in
     </v-btn>
-    <the-top-menu v-if="isAuthenticated" />
   </v-app-bar>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import TheTopMenu from '@/components/organisms/layout/TheTopMenu'
+import TheColorModeSwitcher from '@/components/organisms/layout/TheColorModeSwitcher'
 
 export default {
   components: {
-    TheTopMenu
+    TheColorModeSwitcher
   },
 
   data() {
