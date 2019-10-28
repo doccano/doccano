@@ -1,21 +1,41 @@
 <template>
-  <confirm-dialog
-    title="Delete Document"
-    message="Are you sure you want to delete these documents from this project?"
-    item-key="text"
-    :disabled="!isDocumentSelected"
-    :items="selected"
-    @ok="handleDeleteDocument()"
-  />
+  <div>
+    <v-btn
+      class="text-capitalize"
+      outlined
+      :disabled="!isDocumentSelected"
+      @click="dialog=true"
+    >
+      Delete
+    </v-btn>
+    <base-dialog :dialog="dialog">
+      <confirm-form
+        title="Delete Document"
+        message="Are you sure you want to delete these documents from this project?"
+        item-key="text"
+        :items="selected"
+        @ok="deleteDocument($route.params.id);dialog=false"
+        @cancel="dialog=false"
+      />
+    </base-dialog>
+  </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import ConfirmDialog from '@/components/organisms/utils/ConfirmDialog'
+import BaseDialog from '@/components/molecules/BaseDialog'
+import ConfirmForm from '@/components/organisms/utils/ConfirmForm'
 
 export default {
   components: {
-    ConfirmDialog
+    BaseDialog,
+    ConfirmForm
+  },
+
+  data() {
+    return {
+      dialog: false
+    }
   },
 
   computed: {
