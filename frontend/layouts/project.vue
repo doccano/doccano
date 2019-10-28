@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import TheSideBar from '~/components/organisms/TheSideBar'
-import TheHeader from '~/components/organisms/TheHeader'
+import TheSideBar from '~/components/organisms/layout/TheSideBar'
+import TheHeader from '~/components/organisms/layout/TheHeader'
 
 export default {
   components: {

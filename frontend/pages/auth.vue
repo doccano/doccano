@@ -16,7 +16,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import LoginForm from '@/components/organisms/LoginForm'
+import LoginForm from '@/components/organisms/auth/LoginForm'
 
 export default {
   components: {

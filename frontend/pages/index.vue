@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import FeatureCards from '@/components/organisms/FeatureCards'
-import TheTopBanner from '@/components/organisms/TheTopBanner'
-import TheBottomBanner from '@/components/organisms/TheBottomBanner'
+import FeatureCards from '@/components/organisms/home/FeatureCards'
+import TheTopBanner from '@/components/organisms/home/TheTopBanner'
+import TheBottomBanner from '@/components/organisms/home/TheBottomBanner'
 
 export default {
   components: {

@@ -14,7 +14,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import BaseModal from '@/components/molecules/BaseModal'
-import GuidelineCard from '@/components/organisms/GuidelineCard'
+import GuidelineCard from '@/components/organisms/annotation/GuidelineCard'
 
 export default {
   components: {

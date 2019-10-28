@@ -12,7 +12,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import EntityItemBox from '~/components/organisms/EntityItemBox'
+import EntityItemBox from '~/components/organisms/annotation/EntityItemBox'
 
 export default {
   components: {

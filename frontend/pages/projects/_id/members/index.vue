@@ -9,9 +9,9 @@
 </template>
 
 <script>
-import MemberList from '@/components/containers/MemberList'
-import MemberAdditionButton from '@/components/containers/MemberAdditionButton'
-import MemberDeletionButton from '@/components/containers/MemberDeletionButton'
+import MemberList from '@/components/containers/members/MemberList'
+import MemberAdditionButton from '@/components/containers/members/MemberAdditionButton'
+import MemberDeletionButton from '@/components/containers/members/MemberDeletionButton'
 
 export default {
   layout: 'project',

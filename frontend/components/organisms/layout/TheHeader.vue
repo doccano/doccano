@@ -55,7 +55,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import TheTopMenu from '@/components/organisms/TheTopMenu'
+import TheTopMenu from '@/components/organisms/layout/TheTopMenu'
 
 export default {
   components: {

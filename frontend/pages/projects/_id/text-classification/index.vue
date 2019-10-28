@@ -31,11 +31,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import TextClassification from '~/components/containers/TextClassification'
-import Paginator from '~/components/containers/Paginator'
-import GuidelineButton from '@/components/containers/GuidelineButton'
-import MetadataBox from '@/components/organisms/MetadataBox'
-import BottomNavigator from '@/components/organisms/BottomNavigator'
+import TextClassification from '~/components/containers/annotation/TextClassification'
+import Paginator from '~/components/containers/annotation/Paginator'
+import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
+import MetadataBox from '@/components/organisms/annotation/MetadataBox'
+import BottomNavigator from '@/components/organisms/annotation/BottomNavigator'
 
 export default {
   layout: 'annotation',

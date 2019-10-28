@@ -9,9 +9,9 @@
 </template>
 
 <script>
-import LabelList from '@/components/containers/LabelList'
-import LabelCreationButton from '@/components/containers/LabelCreationButton'
-import LabelDeletionButton from '@/components/containers/LabelDeletionButton'
+import LabelList from '@/components/containers/labels/LabelList'
+import LabelCreationButton from '@/components/containers/labels/LabelCreationButton'
+import LabelDeletionButton from '@/components/containers/labels/LabelDeletionButton'
 
 export default {
   layout: 'project',

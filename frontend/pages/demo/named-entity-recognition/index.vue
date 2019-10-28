@@ -25,8 +25,8 @@
 </template>
 
 <script>
-import EntityItemBox from '~/components/organisms/EntityItemBox'
-import MetadataBox from '@/components/organisms/MetadataBox'
+import EntityItemBox from '~/components/organisms/annotation/EntityItemBox'
+import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 
 export default {
   layout: 'demo',

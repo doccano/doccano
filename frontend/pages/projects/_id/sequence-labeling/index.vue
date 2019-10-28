@@ -35,11 +35,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import EntityItemBox from '~/components/containers/EntityItemBox'
-import Paginator from '~/components/containers/Paginator'
-import GuidelineButton from '@/components/containers/GuidelineButton'
-import MetadataBox from '@/components/organisms/MetadataBox'
-import BottomNavigator from '@/components/organisms/BottomNavigator'
+import EntityItemBox from '~/components/containers/annotation/EntityItemBox'
+import Paginator from '~/components/containers/annotation/Paginator'
+import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
+import MetadataBox from '@/components/organisms/annotation/MetadataBox'
+import BottomNavigator from '@/components/organisms/annotation/BottomNavigator'
 
 export default {
   layout: 'annotation',

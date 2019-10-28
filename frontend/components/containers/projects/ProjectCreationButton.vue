@@ -4,8 +4,8 @@
     :is-create="true"
   >
     <template v-slot="slotProps">
-      <label-creation-form
-        :create-label="createLabel"
+      <project-creation-form
+        :create-project="createProject"
         @close="slotProps.close"
       />
     </template>
@@ -15,16 +15,16 @@
 <script>
 import { mapActions } from 'vuex'
 import BaseModal from '@/components/molecules/BaseModal'
-import LabelCreationForm from '@/components/organisms/LabelCreationForm'
+import ProjectCreationForm from '@/components/organisms/projects/ProjectCreationForm'
 
 export default {
   components: {
     BaseModal,
-    LabelCreationForm
+    ProjectCreationForm
   },
 
   methods: {
-    ...mapActions('labels', ['createLabel'])
+    ...mapActions('projects', ['createProject'])
   }
 }
 </script>

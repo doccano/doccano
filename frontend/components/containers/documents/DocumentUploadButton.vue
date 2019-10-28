@@ -8,7 +8,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import DocumentUploadForm from '@/components/organisms/DocumentUploadForm'
+import DocumentUploadForm from '@/components/organisms/documents/DocumentUploadForm'
 
 export default {
   components: {

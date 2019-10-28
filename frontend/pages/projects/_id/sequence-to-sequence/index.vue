@@ -31,11 +31,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Seq2seqContainer from '~/components/containers/Seq2seqContainer'
-import Paginator from '~/components/containers/Paginator'
-import GuidelineButton from '@/components/containers/GuidelineButton'
-import MetadataBox from '@/components/organisms/MetadataBox'
-import BottomNavigator from '@/components/organisms/BottomNavigator'
+import Seq2seqContainer from '~/components/containers/annotation/Seq2seqContainer'
+import Paginator from '~/components/containers/annotation/Paginator'
+import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
+import MetadataBox from '@/components/organisms/annotation/MetadataBox'
+import BottomNavigator from '@/components/organisms/annotation/BottomNavigator'
 
 export default {
   layout: 'annotation',

@@ -17,7 +17,7 @@
 <script>
 import { mapActions } from 'vuex'
 import BaseModal from '@/components/molecules/BaseModal'
-import MemberAdditionForm from '@/components/organisms/MemberAdditionForm'
+import MemberAdditionForm from '@/components/organisms/members/MemberAdditionForm'
 import UserService from '@/services/user.service'
 
 export default {

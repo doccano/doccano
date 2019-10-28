@@ -17,7 +17,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import MultiClassClassification from '@/components/organisms/MultiClassClassification'
+import MultiClassClassification from '@/components/organisms/annotation/MultiClassClassification'
 
 export default {
   components: {

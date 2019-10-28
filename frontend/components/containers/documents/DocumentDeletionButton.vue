@@ -11,7 +11,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import ConfirmDialog from '@/components/organisms/ConfirmDialog'
+import ConfirmDialog from '@/components/organisms/utils/ConfirmDialog'
 
 export default {
   components: {

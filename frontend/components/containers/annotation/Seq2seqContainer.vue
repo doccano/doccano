@@ -21,7 +21,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import Seq2seqBox from '~/components/organisms/Seq2seqBox'
+import Seq2seqBox from '~/components/organisms/annotation/Seq2seqBox'
 
 export default {
   components: {

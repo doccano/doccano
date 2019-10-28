@@ -9,9 +9,9 @@
 </template>
 
 <script>
-import ProjectList from '@/components/containers/ProjectList'
-import ProjectDeletionButton from '@/components/containers/ProjectDeletionButton'
-import ProjectCreationButton from '@/components/containers/ProjectCreationButton'
+import ProjectList from '@/components/containers/projects/ProjectList'
+import ProjectDeletionButton from '@/components/containers/projects/ProjectDeletionButton'
+import ProjectCreationButton from '@/components/containers/projects/ProjectCreationButton'
 
 export default {
   layout: 'projects',

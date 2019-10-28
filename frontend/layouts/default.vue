@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import TheFooter from '@/components/organisms/TheFooter'
-import TheHeader from '@/components/organisms/TheHeader'
+import TheFooter from '@/components/organisms/layout/TheFooter'
+import TheHeader from '@/components/organisms/layout/TheHeader'
 
 export default {
   components: {

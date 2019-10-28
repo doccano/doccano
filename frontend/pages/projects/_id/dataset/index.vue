@@ -47,10 +47,10 @@
 import { mapActions, mapGetters, mapState } from 'vuex'
 import ActionMenu from '@/components/molecules/ActionMenu'
 import BaseDialog from '@/components/molecules/BaseDialog'
-import ConfirmForm from '@/components/organisms/ConfirmForm'
-import DocumentList from '@/components/containers/DocumentList'
-import DocumentUploadForm from '@/components/organisms/DocumentUploadForm'
-import DocumentExportForm from '@/components/organisms/DocumentExportForm'
+import ConfirmForm from '@/components/organisms/utils/ConfirmForm'
+import DocumentList from '@/components/containers/documents/DocumentList'
+import DocumentUploadForm from '@/components/organisms/documents/DocumentUploadForm'
+import DocumentExportForm from '@/components/organisms/documents/DocumentExportForm'
 
 export default {
   layout: 'project',
