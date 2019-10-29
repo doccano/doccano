@@ -42,8 +42,8 @@ export default {
       importDialog: false,
       exportDialog: false,
       menuItems: [
-        { title: 'Import', icon: 'backup', event: 'upload' },
-        { title: 'Export', icon: 'archive', event: 'download' }
+        { title: 'Import Dataset', icon: 'mdi-upload', event: 'upload' },
+        { title: 'Export Dataset', icon: 'mdi-download', event: 'download' }
       ]
     }
   },
