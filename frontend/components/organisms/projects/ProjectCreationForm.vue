@@ -82,6 +82,24 @@ export default {
     cancel() {
       this.$emit('close')
     },
+    getServerType() {
+      if (this.projectType === 'Text Classification') {
+        return 'DocumentClassification'
+      } else if (this.projectType === 'Sequence Labeling') {
+        return 'SequenceLabeling'
+      } else if (this.projectType === 'Sequence to sequence') {
+        return 'Seq2seq'
+      }
+    },
+    getResourceType() {
+      if (this.projectType === 'Text Classification') {
+        return 'TextClassificationProject'
+      } else if (this.projectType === 'Sequence Labeling') {
+        return 'SequenceLabelingProject'
+      } else if (this.projectType === 'Sequence to sequence') {
+        return 'Seq2seqProject'
+      }
+    },
     validate() {
       return this.$refs.form.validate()
     },
@@ -93,7 +111,11 @@ export default {
         this.createProject({
           name: this.name,
           description: this.description,
-          project_type: this.projectType
+          project_type: this.getServerType(),
+          guideline: 'Please write annotation guideline.',
+          resourcetype: this.getResourceType()
+          // randomize_document_order: this.randomizeDocumentOrder,
+          // collaborative_annotation: this.collaborativeAnnotation
         })
         this.reset()
         this.cancel()
