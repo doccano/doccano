@@ -4,10 +4,17 @@
     clipped-left
   >
     <slot name="leftDrawerIcon" />
-    <nuxt-link to="/" style="line-height:0;">
+    <nuxt-link
+      v-if="!isAuthenticated"
+      to="/"
+      style="line-height:0;"
+    >
       <img src="~/assets/icon.png" height="48">
     </nuxt-link>
-    <v-toolbar-title class="ml-2 d-none d-sm-flex">
+    <v-toolbar-title
+      v-if="!isAuthenticated"
+      class="ml-2 d-none d-sm-flex"
+    >
       doccano
     </v-toolbar-title>
     <div class="flex-grow-1" />
