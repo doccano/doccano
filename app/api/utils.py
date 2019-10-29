@@ -4,12 +4,12 @@ import itertools
 import json
 import re
 from collections import defaultdict
-from random import Random
 
 import conllu
 from chardet import UniversalDetector
 from django.db import transaction
 from django.conf import settings
+from colour import Color
 import pyexcel
 from rest_framework.renderers import JSONRenderer
 from seqeval.metrics.sequence_labeling import get_entities
@@ -66,7 +66,7 @@ class BaseStorage(object):
         return [label for label in labels if label not in created]
 
     @classmethod
-    def to_serializer_format(cls, labels, created, random_seed=None):
+    def to_serializer_format(cls, labels, created):
         existing_shortkeys = {(label.suffix_key, label.prefix_key)
                               for label in created.values()}
 
@@ -81,9 +81,10 @@ class BaseStorage(object):
                 serializer_label['prefix_key'] = shortkey[1]
                 existing_shortkeys.add(shortkey)
 
-            color = Color.random(seed=random_seed)
-            serializer_label['background_color'] = color.hex
-            serializer_label['text_color'] = color.contrast_color.hex
+            background_color = Color(pick_for=label)
+            text_color = Color('white') if background_color.get_luminance() < 0.5 else Color('black')
+            serializer_label['background_color'] = background_color.hex
+            serializer_label['text_color'] = text_color.hex
 
             serializer_labels.append(serializer_label)
 
@@ -448,47 +449,6 @@ class CSVPainter(JSONPainter):
             for a in annotations:
                 res.append({**d, **a})
         return res
-
-
-class Color:
-    def __init__(self, red, green, blue):
-        self.red = red
-        self.green = green
-        self.blue = blue
-
-    @property
-    def contrast_color(self):
-        """Generate black or white color.
-
-        Ensure that text and background color combinations provide
-        sufficient contrast when viewed by someone having color deficits or
-        when viewed on a black and white screen.
-
-        Algorithm from w3c:
-        * https://www.w3.org/TR/AERT/#color-contrast
-        """
-        return Color.white() if self.brightness < 128 else Color.black()
-
-    @property
-    def brightness(self):
-        return ((self.red * 299) + (self.green * 587) + (self.blue * 114)) / 1000
-
-    @property
-    def hex(self):
-        return '#{:02x}{:02x}{:02x}'.format(self.red, self.green, self.blue)
-
-    @classmethod
-    def white(cls):
-        return cls(red=255, green=255, blue=255)
-
-    @classmethod
-    def black(cls):
-        return cls(red=0, green=0, blue=0)
-
-    @classmethod
-    def random(cls, seed=None):
-        rgb = Random(seed).choices(range(256), k=3)
-        return cls(*rgb)
 
 
 def iterable_to_io(iterable, buffer_size=io.DEFAULT_BUFFER_SIZE):
