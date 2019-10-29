@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import FeatureCard from '@/components/organisms/home/FeatureCard'
+import FeatureCard from '@/components/organisms/layout/FeatureCard'
 
 export default {
   components: {
