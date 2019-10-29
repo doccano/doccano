@@ -81,9 +81,12 @@ export default {
     create() {
       if (this.validate()) {
         this.createLabel({
+          projectId: this.$route.params.id,
           text: this.labelName,
+          prefix_key: null,
           suffix_key: this.suffixKey,
-          background_color: this.color
+          background_color: this.color.slice(0, -2),
+          text_color: '#ffffff'
         })
         this.reset()
         this.cancel()
