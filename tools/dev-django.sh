@@ -20,7 +20,6 @@ apt-get update && apt-get install -y g++ unixodbc-dev # pyodbc build dependencie
 echo "Initializing database"
 "${venv}/bin/python" "${app}/manage.py" wait_for_db
 "${venv}/bin/python" "${app}/manage.py" migrate
-"${venv}/bin/python" "${app}/manage.py" create_roles
 
 if [[ -n "${ADMIN_USERNAME}" ]] && [[ -n "${ADMIN_PASSWORD}" ]] && [[ -n "${ADMIN_EMAIL}" ]]; then
   "${venv}/bin/python" "${app}/manage.py" create_admin \
@@ -30,6 +29,8 @@ if [[ -n "${ADMIN_USERNAME}" ]] && [[ -n "${ADMIN_PASSWORD}" ]] && [[ -n "${ADMI
     --noinput \
   || true
 fi
+
+"${venv}/bin/python" "${app}/manage.py" create_roles
 
 echo "Starting django"
 "${venv}/bin/python" -u "${app}/manage.py" runserver "$@"

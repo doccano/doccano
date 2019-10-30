@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db import IntegrityError
 from django.db.models import Subquery
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAdminUser
@@ -91,3 +92,31 @@ def is_in_role(role_name, user_id, project_id):
         project_id=project_id,
         role_id=Subquery(Role.objects.filter(name=role_name).values('id')),
     ).exists()
+
+
+def add_superuser_to_all_projects(*superuser):
+    users = [user for user in superuser if user.is_superuser]
+    if not users:
+        return
+
+    admin_role = Role.objects.filter(name=settings.ROLE_PROJECT_ADMIN).first()
+    if not admin_role:
+        return
+
+    projects = Project.objects.all()
+    if not projects:
+        return
+
+    try:
+        RoleMapping.objects.bulk_create(
+            [RoleMapping(role_id=admin_role.id, user_id=user.id, project_id=project.id)
+             for project in projects
+             for user in users]
+        )
+    except IntegrityError:
+        for project in projects:
+            for user in users:
+                try:
+                    RoleMapping.objects.create(role_id=admin_role.id, user_id=user.id, project_id=project.id)
+                except IntegrityError:
+                    pass

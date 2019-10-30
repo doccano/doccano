@@ -299,14 +299,10 @@ def add_superusers_to_project(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=User)
 def add_new_superuser_to_projects(sender, instance, created, **kwargs):
-    if created and instance.is_superuser:
-        admin_role = Role.objects.filter(name=settings.ROLE_PROJECT_ADMIN).first()
-        projects = Project.objects.all()
-        if admin_role and projects:
-            RoleMapping.objects.bulk_create(
-                [RoleMapping(role_id=admin_role.id, user_id=instance.id, project_id=project.id)
-                 for project in projects]
-            )
+    from .permissions import add_superuser_to_all_projects
+
+    if created:
+        add_superuser_to_all_projects(instance)
 
 
 @receiver(pre_delete, sender=RoleMapping)
