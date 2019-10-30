@@ -8,7 +8,7 @@
     <base-dialog :dialog="importDialog">
       <document-upload-form
         :upload-document="uploadDocument"
-        :formats="formatList"
+        :formats="getUploadFormat"
         @close="importDialog=false"
       />
     </base-dialog>
@@ -49,11 +49,16 @@ export default {
   },
 
   computed: {
-    ...mapGetters('documents', ['formatList'])
+    ...mapGetters('projects', ['getUploadFormat'])
+  },
+
+  created() {
+    this.setCurrentProject(this.$route.params.id)
   },
 
   methods: {
-    ...mapActions('documents', ['uploadDocument', 'exportDocument'])
+    ...mapActions('documents', ['uploadDocument', 'exportDocument']),
+    ...mapActions('projects', ['setCurrentProject'])
   }
 }
 </script>

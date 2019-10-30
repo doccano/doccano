@@ -12,6 +12,7 @@
         ref="form"
         v-model="valid"
       >
+        <h2>Select a file format</h2>
         <v-radio-group
           v-model="selectedFormat"
           :rules="fileFormatRules"
@@ -23,6 +24,13 @@
             :value="format"
           />
         </v-radio-group>
+        <code
+          v-if="selectedFormat"
+          class="mb-10 pa-5 highlight"
+        >
+          <span v-for="(example, index) in examples" :key="index">{{ example }}</span>
+        </code>
+        <h2>Select a file</h2>
         <v-file-input
           v-model="file"
           :accept="acceptType"
@@ -71,6 +79,10 @@ export default {
       } else {
         return '.txt,.csv,.json,.jsonl'
       }
+    },
+    examples() {
+      const format = this.formats.find(item => item.type === this.selectedFormat.type)
+      return format.examples
     }
   },
 
@@ -98,3 +110,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .highlight {
+    font-size: 100%;
+    width: 100%;
+  }
+  .highlight:before {
+    content: ''
+  }
+</style>

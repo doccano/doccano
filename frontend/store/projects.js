@@ -3,7 +3,7 @@ import ProjectService from '@/services/project.service'
 export const state = () => ({
   projects: [],
   selected: [],
-  current: null,
+  current: {},
   loading: false
 })
 
@@ -30,6 +30,94 @@ export const getters = {
         value: 'project_type'
       }
     ]
+  },
+  getUploadFormat(state) {
+    const plain = {
+      type: 'plain',
+      text: 'Plain text',
+      accept: '.txt',
+      examples: [
+        'EU rejects German call to boycott British lamb.\n',
+        'Peter Blackburn\n',
+        'President Obama'
+      ]
+    }
+    const csv = {
+      type: 'csv',
+      text: 'CSV',
+      accept: '.csv'
+    }
+    const json = {
+      type: 'json',
+      text: 'JSON',
+      accept: '.json,.jsonl'
+    }
+    const conll = {
+      type: 'conll',
+      text: 'CoNLL',
+      accept: '.conll'
+    }
+    if (state.current.project_type === 'DocumentClassification') {
+      json.examples = [
+        '{"text": "Terrible customer service.", "labels": ["negative"]}\n',
+        '{"text": "Really great transaction.", "labels": ["positive"]}\n',
+        '{"text": "Great price.", "labels": ["positive"]}'
+      ]
+      csv.examples = [
+        'text,label\n',
+        '"Terrible customer service.","negative"\n',
+        '"Really great transaction.","positive"\n',
+        '"Great price.","positive"'
+      ]
+      return [
+        plain,
+        csv,
+        json
+      ]
+    } else if (state.current.project_type === 'SequenceLabeling') {
+      json.examples = [
+        '{"text": "EU rejects German call to boycott British lamb.", "labels": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]}\n',
+        '{"text": "Peter Blackburn", "labels": [ [0, 15, "PERSON"] ]}\n',
+        '{"text": "President Obama", "labels": [ [10, 15, "PERSON"] ]}'
+      ]
+      conll.examples = [
+        'EU\tB-ORG\n',
+        'rejects\tO\n',
+        'German\tB-MISC\n',
+        'call\tO\n',
+        'to\tO\n',
+        'boycott\tO\n',
+        'British\tB-MISC\n',
+        'lamb\tO\n',
+        '.\tO\n\n',
+        'Peter\tB-PER\n',
+        'Blackburn\tI-PER'
+      ]
+      return [
+        plain,
+        json,
+        conll
+      ]
+    } else if (state.current.project_type === 'Seq2seq') {
+      json.examples = [
+        '{"text": "Hello!", "labels": ["こんにちは！"]}\n',
+        '{"text": "Good morning.", "labels": ["おはようございます。"]}\n',
+        '{"text": "See you.", "labels": ["さようなら。"]}'
+      ]
+      csv.examples = [
+        'text,label\n',
+        '"Hello!","こんにちは！"\n',
+        '"Good morning.","おはようございます。"\n',
+        '"See you.","さようなら。"'
+      ]
+      return [
+        plain,
+        csv,
+        json
+      ]
+    } else {
+      return []
+    }
   }
 }
 
