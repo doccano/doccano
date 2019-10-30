@@ -68,6 +68,10 @@ class IsProjectAdmin(RolePermission):
     role_name = settings.ROLE_PROJECT_ADMIN
 
 
+class IsViewerAndReadOnly(RolePermission):
+    role_name = settings.ROLE_VIEWER
+
+
 class IsAnnotatorAndReadOnly(RolePermission):
     role_name = settings.ROLE_ANNOTATOR
 

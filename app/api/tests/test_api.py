@@ -144,6 +144,8 @@ class TestProjectDetailAPI(APITestCase):
                           password=self.project_member_pass)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.data['id'], self.main_project.id)
+        self.assertTrue(response.data['current_users_role']['is_annotator'])
+        self.assertFalse(response.data['current_users_role']['is_viewer'])
 
     def test_do_not_return_main_project_to_sub_project_member(self):
         self.client.login(username=self.non_project_member_name,
@@ -594,6 +596,8 @@ class TestAnnotationListAPI(APITestCase):
         cls.another_project_member_pass = 'another_project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
+        cls.viewer_member_name = 'viewer_member_name'
+        cls.viewer_member_pass = 'viewer_member_pass'
         create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
@@ -601,8 +605,10 @@ class TestAnnotationListAPI(APITestCase):
                                                           password=cls.another_project_member_pass)
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
+        viewer_member = User.objects.create_user(username=cls.viewer_member_name,
+                                                 password=cls.viewer_member_pass)
 
-        main_project = mommy.make('SequenceLabelingProject', users=[project_member, another_project_member])
+        main_project = mommy.make('SequenceLabelingProject', users=[project_member, another_project_member, viewer_member])
         main_project_label = mommy.make('Label', project=main_project)
         main_project_doc = mommy.make('Document', project=main_project)
         mommy.make('SequenceAnnotation', document=main_project_doc, user=project_member)
@@ -622,10 +628,18 @@ class TestAnnotationListAPI(APITestCase):
         cls.main_project = main_project
         assign_user_to_role(project_member=project_member, project=main_project,
                             role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=viewer_member, project=main_project,
+                            role_name=settings.ROLE_VIEWER)
 
     def test_returns_annotations_to_project_member(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_returns_annotations_to_project_viewer(self):
+        self.client.login(username=self.viewer_member_name,
+                          password=self.viewer_member_pass)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -655,6 +669,12 @@ class TestAnnotationListAPI(APITestCase):
                           password=self.project_member_pass)
         response = self.client.post(self.url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_disallows_project_viewer_to_create_annotation(self):
+        self.client.login(username=self.viewer_member_name,
+                          password=self.viewer_member_pass)
+        response = self.client.post(self.url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_disallows_non_project_member_to_create_annotation(self):
         self.client.login(username=self.non_project_member_name,

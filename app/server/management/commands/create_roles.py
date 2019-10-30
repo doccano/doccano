@@ -11,7 +11,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            role_names = [settings.ROLE_PROJECT_ADMIN, settings.ROLE_ANNOTATOR, settings.ROLE_ANNOTATION_APPROVER]
+            role_names = [
+                settings.ROLE_PROJECT_ADMIN,
+                settings.ROLE_ANNOTATOR,
+                settings.ROLE_ANNOTATION_APPROVER,
+                settings.ROLE_VIEWER,
+            ]
         except KeyError as key_error:
             self.stderr.write(self.style.ERROR(f'Missing Key: "{key_error}"'))
             return
