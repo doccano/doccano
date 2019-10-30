@@ -123,11 +123,19 @@ export const actions = {
         commit('setLoading', false)
       })
   },
-  uploadDocument({ commit }, data) {
+  uploadDocument({ commit, dispatch }, data) {
     commit('setLoading', true)
-    DocumentService.uploadFile(data.projectId, data)
+    const formData = new FormData()
+    formData.append('file', data.file)
+    formData.append('format', data.format)
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+    DocumentService.uploadFile(data.projectId, formData, config)
       .then((response) => {
-        commit('addDocument', response)
+        dispatch('getDocumentList', data)
       })
       .catch((error) => {
         alert(error)

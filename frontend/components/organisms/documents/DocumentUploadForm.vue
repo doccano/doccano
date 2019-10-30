@@ -24,7 +24,7 @@
           />
         </v-radio-group>
         <v-file-input
-          :value="file"
+          v-model="file"
           :accept="acceptType"
           :rules="uploadFileRules"
           label="File input"
@@ -87,7 +87,8 @@ export default {
     create() {
       if (this.validate()) {
         this.uploadDocument({
-          format: this.selectedFormat,
+          projectId: this.$route.params.id,
+          format: this.selectedFormat.type,
           file: this.file
         })
         this.reset()
