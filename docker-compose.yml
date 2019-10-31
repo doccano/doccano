@@ -8,6 +8,7 @@ services:
       - venv:/src/venv
     command: ["/src/tools/dev-django.sh", "0.0.0.0:8000"]
     environment:
+      PYTHONUNBUFFERED: "1"
       ADMIN_USERNAME: "admin"
       ADMIN_PASSWORD: "password"
       ADMIN_EMAIL: "admin@example.com"
