@@ -15,6 +15,7 @@
     "no-new": "off",
     "no-param-reassign": "off",
     "no-plusplus": "off",
+    "no-unused-vars": ["error", {"argsIgnorePattern": "^_"}],
     "object-shorthand": "off",
     "prefer-destructuring": "off",
     "prefer-template": "off",

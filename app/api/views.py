@@ -1,3 +1,4 @@
+from celery.result import AsyncResult
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
@@ -11,16 +12,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
-from rest_framework_csv.renderers import CSVRenderer
 
+from . import tasks
 from .filters import DocumentFilter
 from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
-from .utils import JSONLRenderer
-from .utils import JSONPainter, CSVPainter
 
 IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
@@ -32,6 +31,21 @@ class Me(APIView):
     def get(self, request, *args, **kwargs):
         serializer = UserSerializer(request.user, context={'request': request})
         return Response(serializer.data)
+
+
+class TaskStatus(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        task = AsyncResult(kwargs["task_id"])
+        ready = task.ready()
+        error = ready and not task.successful()
+
+        return Response({
+            "ready": ready,
+            "result": task.result if ready and not error else None,
+            "error": {"text": str(task.result)} if error else None,
+        })
 
 
 class Features(APIView):
@@ -300,31 +314,18 @@ class CloudUploadAPI(APIView):
 
 class TextDownloadAPI(APIView):
     permission_classes = TextUploadAPI.permission_classes
-
-    renderer_classes = (CSVRenderer, JSONLRenderer)
+    download_formats = {'csv', 'json', 'json1'}
 
     def get(self, request, *args, **kwargs):
-        format = request.query_params.get('q')
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        documents = project.documents.all()
-        painter = self.select_painter(format)
-        # json1 format prints text labels while json format prints annotations with label ids
-        # json1 format - "labels": [[0, 15, "PERSON"], ..]
-        # json format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
-        if format == "json1":
-            labels = project.labels.all()
-            data = JSONPainter.paint_labels(documents, labels)
-        else:
-            data = painter.paint(documents)
-        return Response(data)
+        project_id = self.kwargs['project_id']
 
-    def select_painter(self, format):
-        if format == 'csv':
-            return CSVPainter()
-        elif format == 'json' or format == "json1":
-            return JSONPainter()
-        else:
-            raise ValidationError('format {} is invalid.'.format(format))
+        download_format = request.query_params.get('q')
+        if download_format not in self.download_formats:
+            raise ValidationError(f'format {download_format} is invalid.')
+
+        task = tasks.download_text.delay(download_format, project_id)
+
+        return Response({'task_id': task.task_id})
 
 
 class Users(APIView):

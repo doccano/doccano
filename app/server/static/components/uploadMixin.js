@@ -3,6 +3,8 @@ import hljsLanguages from './hljsLanguages';
 import HTTP, { defaultHttpClient } from './http';
 import Messages from './messages.vue';
 
+const sleep = ms => new Promise((resolve, _) => setTimeout(resolve, ms));
+
 hljsLanguages.forEach((languageName) => {
   /* eslint-disable import/no-dynamic-require, global-require */
   const languageModule = require(`highlight.js/lib/languages/${languageName}`);
@@ -85,9 +87,17 @@ export default {
     },
 
     handleError(error) {
-      const problems = Array.isArray(error.response.data)
-        ? error.response.data
-        : [error.response.data];
+      let problems;
+      if (error.response && error.response.data) {
+        problems = Array.isArray(error.response.data)
+          ? error.response.data
+          : [error.response.data];
+      } else if (error.message) {
+        problems = [{ detail: error.message }];
+      } else {
+        console.error('Unrecognized error type', error); // eslint-disable-line no-console
+        problems = [];
+      }
 
       problems.forEach((problem) => {
         if ('detail' in problem) {
@@ -98,36 +108,56 @@ export default {
       });
     },
 
-    download() {
+    async download() {
       this.isLoading = true;
-      const headers = {};
-      if (this.format === 'csv') {
-        headers.Accept = 'text/csv; charset=utf-8';
-        headers['Content-Type'] = 'text/csv; charset=utf-8';
-      } else {
-        headers.Accept = 'application/json';
-        headers['Content-Type'] = 'application/json';
-      }
-      HTTP({
-        url: 'docs/download',
-        method: 'GET',
-        responseType: 'blob',
-        params: {
-          q: this.format,
-        },
-        headers,
-      }).then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'file.' + this.format); // or any other extension
-        document.body.appendChild(link);
-        this.isLoading = false;
-        link.click();
-      }).catch((error) => {
+
+      let taskResponse;
+      try {
+        taskResponse = await HTTP({
+          url: 'docs/download',
+          method: 'GET',
+          params: {
+            q: this.format,
+          },
+        });
+      } catch (error) {
         this.isLoading = false;
         this.handleError(error);
-      });
+        return;
+      }
+
+      const taskId = taskResponse.data.task_id;
+
+      /* eslint-disable no-await-in-loop */
+      while (this.isLoading) {
+        let statusResponse;
+        try {
+          statusResponse = await defaultHttpClient.get(`/v1/tasks/status/${taskId}`);
+        } catch (error) {
+          this.isLoading = false;
+          this.handleError(error);
+          return;
+        }
+
+        if (statusResponse.data.error) {
+          this.isLoading = false;
+          this.handleError(new Error(statusResponse.data.error.text));
+          return;
+        }
+
+        if (statusResponse.data.ready) {
+          const url = window.URL.createObjectURL(new Blob([statusResponse.data.result]));
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `file.${this.format}`);
+          document.body.appendChild(link);
+          this.isLoading = false;
+          link.click();
+        } else {
+          await sleep(1000);
+        }
+      }
+      /* eslint-enable no-await-in-loop */
     },
   },
 };

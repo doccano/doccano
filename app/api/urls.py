@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.urlpatterns import format_suffix_patterns
 
-from .views import Me, Features, Users
+from .views import Me, Features, Users, TaskStatus
 from .views import ProjectList, ProjectDetail
 from .views import LabelList, LabelDetail, ApproveLabelsAPI
 from .views import DocumentList, DocumentDetail
@@ -44,6 +44,8 @@ urlpatterns = [
          RoleMappingList.as_view(), name='rolemapping_list'),
     path('projects/<int:project_id>/roles/<int:rolemapping_id>',
          RoleMappingDetail.as_view(), name='rolemapping_detail'),
+    path('tasks/status/<task_id>',
+         TaskStatus.as_view(), name='task_status'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])

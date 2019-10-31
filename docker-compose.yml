@@ -12,10 +12,22 @@ services:
       ADMIN_USERNAME: "admin"
       ADMIN_PASSWORD: "password"
       ADMIN_EMAIL: "admin@example.com"
+      CELERY_BROKER_URL: "amqp://doccano:doccano@rabbitmq"
       DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
       ALLOW_SIGNUP: "False"
     ports:
       - 8000:8000
+
+  celery:
+    image: python:3.6
+    volumes:
+      - .:/src
+      - venv:/src/venv
+    command: ["/src/tools/dev-celery.sh"]
+    environment:
+      PYTHONUNBUFFERED: "1"
+      CELERY_BROKER_URL: "amqp://doccano:doccano@rabbitmq"
+      DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
 
   webpack:
     image: node:8
@@ -38,6 +50,14 @@ services:
       POSTGRES_DB: "doccano"
     ports:
       - 5432:5432
+
+  rabbitmq:
+    image: rabbitmq:3.8
+    environment:
+      RABBITMQ_DEFAULT_USER: "doccano"
+      RABBITMQ_DEFAULT_PASS: "doccano"
+    ports:
+      - 5672:5672
 
 volumes:
   node_modules:

@@ -14,7 +14,7 @@ from os import path
 
 import django_heroku
 import dj_database_url
-from environs import Env
+from environs import Env, EnvError
 from furl import furl
 
 
@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'social_django',
     'polymorphic',
     'webpack_loader',
+    'django_celery_results',
 ]
 
 CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env('CLOUD_BROWSER_LIBCLOUD_PROVIDER', None)
@@ -252,6 +253,19 @@ LOGOUT_REDIRECT_URL = '/'
 
 django_heroku.settings(locals(), test_runner=False)
 
+DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191
+CELERY_RESULT_BACKEND = 'django-db'
+try:
+    CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+except EnvError:
+    try:
+        CELERY_BROKER_URL = f"sqla+{env('DATABASE_URL')}"
+    except EnvError:
+        CELERY_BROKER_URL = f"sqla+sqlite:///{DATABASES['default']['NAME']}"
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(
     env='DATABASE_URL',
@@ -271,9 +285,14 @@ if DATABASES['default'].get('ENGINE') == 'django.db.backends.mysql':
             .setdefault('ssl', {}).setdefault('ca', env('MYSQL_SSL_CA', None))
 
 # default to a sensible modern driver for Azure SQL
-if DATABASES['default'].get('ENGINE') == 'sql_server.pyodbc':
-    DATABASES['default'].setdefault('OPTIONS', {})\
-        .setdefault('driver', 'ODBC Driver 17 for SQL Server')
+if DATABASES['default'].get('ENGINE') == 'sql_server.pyodbc':  # pragma: no cover
+    mssql_driver = 'ODBC Driver 17 for SQL Server'
+    mssql_db_options = DATABASES['default'].setdefault('OPTIONS', {})\
+        .setdefault('driver', mssql_driver)
+    celery_broker_url = furl(CELERY_BROKER_URL)
+    celery_broker_url.args['driver'] = mssql_driver
+    CELERY_BROKER_URL = str(celery_broker_url)
+    del mssql_driver, mssql_db_options, celery_broker_url
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
