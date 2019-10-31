@@ -8,14 +8,14 @@
     <base-dialog :dialog="importDialog">
       <document-upload-form
         :upload-document="uploadDocument"
-        :formats="getUploadFormat"
+        :formats="getImportFormat"
         @close="importDialog=false"
       />
     </base-dialog>
     <base-dialog :dialog="exportDialog">
       <document-export-form
         :export-document="exportDocument"
-        :formats="['json']"
+        :formats="getExportFormat"
         @close="exportDialog=false"
       />
     </base-dialog>
@@ -49,7 +49,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['getUploadFormat'])
+    ...mapGetters('projects', ['getImportFormat', 'getExportFormat'])
   },
 
   created() {

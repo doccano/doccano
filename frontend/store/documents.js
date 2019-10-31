@@ -148,7 +148,7 @@ export const actions = {
     commit('setLoading', true)
     DocumentService.exportFile(data.projectId, data.format)
       .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const url = window.URL.createObjectURL(new Blob([response]))
         const link = document.createElement('a')
         link.href = url
         link.setAttribute('download', 'file.' + data.format)

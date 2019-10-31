@@ -31,7 +31,7 @@ export const getters = {
       }
     ]
   },
-  getUploadFormat(state) {
+  getImportFormat(state) {
     const plain = {
       type: 'plain',
       text: 'Plain text',
@@ -112,6 +112,70 @@ export const getters = {
       ]
       return [
         plain,
+        csv,
+        json
+      ]
+    } else {
+      return []
+    }
+  },
+  getExportFormat(state) {
+    const csv = {
+      type: 'csv',
+      text: 'CSV'
+    }
+    const json = {
+      type: 'json',
+      text: 'JSON'
+    }
+    const jsonl = {
+      type: 'json1',
+      text: 'JSON(Text label)'
+    }
+    if (state.current.project_type === 'DocumentClassification') {
+      json.examples = [
+        '{"id": 1, "text": "Terrible customer service.", "annotations": [{"id": 1, "label": 1, "user": 1}]}\n',
+        '{"id": 2, "text": "Really great transaction.", "annotations": [{"id": 2, "label": 2, "user": 1}]}\n',
+        '{"id": 3, "text": "Great price.", "annotations": [{"id": 3, "label": 2, "user": 1}]}'
+      ]
+      csv.examples = [
+        'id,text,label,user\n',
+        '1,"Terrible customer service.",1,1\n',
+        '2,"Really great transaction.",2,1\n',
+        '3,"Great price.",2,1'
+      ]
+      return [
+        csv,
+        json
+      ]
+    } else if (state.current.project_type === 'SequenceLabeling') {
+      json.examples = [
+        '{"id": 1, "text": "EU rejects ...", "annotations": [{"id": 1, "label": 2, "start_offset": 0, "end_offset": 2, "user": 1}]}\n',
+        '{"id": 2, "text": "Peter Blackburn", "annotations": [{"id": 2, "label": 1, "start_offset": 0, "end_offset": 15, "user": 1}]}\n',
+        '{"id": 3, "text": "President Obama", "annotations": [{"id": 3, "label": 1, "start_offset": 10, "end_offset": 15, "user": 1}]}'
+      ]
+      jsonl.examples = [
+        '{"id": 1, "text": "EU rejects ...", "labels": [[0,2,"ORG"], [11,17, "MISC"], [34,41,"ORG"]]}\n',
+        '{"id": 2, "text": "Peter Blackburn", "labels": [[0, 15, "PERSON"]]}\n',
+        '{"id": 3, "text": "President Obama", "labels": [[10, 15, "PERSON"]]}\n'
+      ]
+      return [
+        json,
+        jsonl
+      ]
+    } else if (state.current.project_type === 'Seq2seq') {
+      json.examples = [
+        '{"id": 1, "text": "Hello!", "annotations": [{"id": 1, "label": "こんにちは！", "user": 1}]}\n',
+        '{"id": 2, "text": "Good morning.", "annotations": [{"id": 2, "label": "おはようございます。", "user": 1}]}\n',
+        '{"id": 3, "text": "See you.", "annotations": [{"id": 3, "label": "さようなら。", "user": 1}]}'
+      ]
+      csv.examples = [
+        'id,text,label,user\n',
+        '1,"Hello!","こんにちは！",1\n',
+        '2,"Good morning.","おはようございます。",1\n',
+        '3,"See you.","さようなら。",1'
+      ]
+      return [
         csv,
         json
       ]

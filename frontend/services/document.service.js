@@ -21,8 +21,8 @@ class DocumentService {
     return this.request.patch(`/projects/${projectId}/docs/${docId}`, payload)
   }
 
-  uploadFile(projectId, payload) {
-    return this.request.post(`/projects/${projectId}/docs/upload`, payload)
+  uploadFile(projectId, payload, config = {}) {
+    return this.request.post(`/projects/${projectId}/docs/upload`, payload, config)
   }
 
   exportFile(projectId, format) {

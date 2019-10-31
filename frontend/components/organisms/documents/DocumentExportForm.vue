@@ -12,6 +12,7 @@
         ref="form"
         v-model="valid"
       >
+        <h2>Select a file format</h2>
         <v-radio-group
           v-model="selectedFormat"
           :rules="fileFormatRules"
@@ -19,10 +20,16 @@
           <v-radio
             v-for="(format, i) in formats"
             :key="i"
-            :label="format"
+            :label="format.text"
             :value="format"
           />
         </v-radio-group>
+        <code
+          v-if="selectedFormat"
+          class="mb-10 pa-5 highlight"
+        >
+          <span v-for="(example, index) in selectedFormat.examples" :key="index">{{ example }}</span>
+        </code>
       </v-form>
     </template>
   </base-card>
@@ -82,7 +89,7 @@ export default {
       if (this.validate()) {
         this.exportDocument({
           projectId: this.$route.params.id,
-          format: this.selectedFormat
+          format: this.selectedFormat.type
         })
         this.reset()
         this.cancel()
@@ -91,3 +98,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .highlight {
+    font-size: 100%;
+    width: 100%;
+  }
+  .highlight:before {
+    content: ''
+  }
+</style>

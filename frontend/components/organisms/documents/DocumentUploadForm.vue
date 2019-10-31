@@ -28,7 +28,7 @@
           v-if="selectedFormat"
           class="mb-10 pa-5 highlight"
         >
-          <span v-for="(example, index) in examples" :key="index">{{ example }}</span>
+          <span v-for="(example, index) in selectedFormat.examples" :key="index">{{ example }}</span>
         </code>
         <h2>Select a file</h2>
         <v-file-input
@@ -79,10 +79,6 @@ export default {
       } else {
         return '.txt,.csv,.json,.jsonl'
       }
-    },
-    examples() {
-      const format = this.formats.find(item => item.type === this.selectedFormat.type)
-      return format.examples
     }
   },
 

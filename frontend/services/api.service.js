@@ -32,7 +32,7 @@ class ApiService {
   }
 
   get(url, config = {}) {
-    return this.request('GET', url, config)
+    return this.request('GET', url, {}, config)
   }
 
   post(url, data, config = {}) {
