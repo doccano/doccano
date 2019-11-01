@@ -1,25 +1,37 @@
 <template>
-  <base-modal
-    text="Show guideline"
-  >
-    <template v-if="currentProject" v-slot="slotProps">
+  <div>
+    <v-btn
+      class="text-capitalize"
+      outlined
+      @click="dialog=true"
+    >
+      Show guideline
+    </v-btn>
+    <base-dialog :dialog="dialog">
       <guideline-card
+        v-if="currentProject"
         :guideline-text="currentProject.guideline"
-        @close="slotProps.close"
+        @close="dialog=false"
       />
-    </template>
-  </base-modal>
+    </base-dialog>
+  </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import BaseModal from '@/components/molecules/BaseModal'
+import BaseDialog from '@/components/molecules/BaseDialog'
 import GuidelineCard from '@/components/organisms/annotation/GuidelineCard'
 
 export default {
   components: {
-    BaseModal,
+    BaseDialog,
     GuidelineCard
+  },
+
+  data() {
+    return {
+      dialog: false
+    }
   },
 
   computed: {
