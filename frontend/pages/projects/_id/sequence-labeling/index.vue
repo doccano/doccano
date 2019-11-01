@@ -6,6 +6,7 @@
         class="d-none d-sm-flex"
       >
         <v-col>
+          <approve-button />
           <filter-button />
           <guideline-button />
         </v-col>
@@ -38,6 +39,7 @@
 import { mapGetters } from 'vuex'
 import EntityItemBox from '~/components/containers/annotation/EntityItemBox'
 import Paginator from '~/components/containers/annotation/Paginator'
+import ApproveButton from '@/components/containers/annotation/ApproveButton'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
@@ -49,6 +51,7 @@ export default {
   middleware: 'check-auth',
 
   components: {
+    ApproveButton,
     BottomNavigator,
     EntityItemBox,
     FilterButton,
