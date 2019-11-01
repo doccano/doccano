@@ -6,6 +6,7 @@
         class="d-none d-sm-flex"
       >
         <v-col>
+          <filter-button />
           <guideline-button />
         </v-col>
         <v-spacer />
@@ -38,6 +39,7 @@ import { mapGetters } from 'vuex'
 import EntityItemBox from '~/components/containers/annotation/EntityItemBox'
 import Paginator from '~/components/containers/annotation/Paginator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
+import FilterButton from '@/components/containers/annotation/FilterButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import BottomNavigator from '@/components/organisms/annotation/BottomNavigator'
 
@@ -49,6 +51,7 @@ export default {
   components: {
     BottomNavigator,
     EntityItemBox,
+    FilterButton,
     Paginator,
     GuidelineButton,
     MetadataBox
