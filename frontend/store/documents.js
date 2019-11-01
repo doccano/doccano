@@ -16,25 +16,6 @@ export const getters = {
   isDocumentSelected(state) {
     return state.selected.length > 0
   },
-  formatList() {
-    return [
-      {
-        type: 'csv',
-        text: 'Upload a CSV file from your computer',
-        accept: '.csv'
-      },
-      {
-        type: 'plain',
-        text: 'Upload text items from your computer',
-        accept: '.txt'
-      },
-      {
-        type: 'json',
-        text: 'Upload a JSON file from your computer',
-        accept: '.json,.jsonl'
-      }
-    ]
-  },
   headers() {
     return [
       {
@@ -50,6 +31,9 @@ export const getters = {
         sortable: false
       }
     ]
+  },
+  approved(state) {
+    return state.items[state.current].annotation_approver !== null
   },
   parsedDoc(state) {
     if ('data' in state.parsed) {
@@ -222,6 +206,19 @@ export const actions = {
     AnnotationService.deleteAnnotation(payload.projectId, documentId, payload.annotationId)
       .then((response) => {
         commit('deleteAnnotation', payload.annotationId)
+      })
+      .catch((error) => {
+        alert(error)
+      })
+  },
+  approve({ commit, getters }, payload) {
+    const documentId = getters.currentDoc.id
+    const data = {
+      approved: !getters.currentDoc.annotation_approver
+    }
+    DocumentService.approveDocument(payload.projectId, documentId, data)
+      .then((response) => {
+        commit('updateDocument', response)
       })
       .catch((error) => {
         alert(error)

@@ -43,6 +43,10 @@ class DocumentService {
     }
     return this.request.get(`/projects/${projectId}/docs/download`, config)
   }
+
+  approveDocument(projectId, docId, payload) {
+    return this.request.post(`/projects/${projectId}/docs/${docId}/approve-labels`, payload)
+  }
 }
 
 export default new DocumentService()

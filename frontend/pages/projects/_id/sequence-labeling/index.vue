@@ -5,8 +5,8 @@
         no-gutters
         class="d-none d-sm-flex"
       >
-        <v-col>
-          <approve-button />
+        <v-col v-if="currentDoc">
+          <approve-button :approved="approved" />
           <filter-button />
           <guideline-button />
         </v-col>
@@ -61,7 +61,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('documents', ['currentDoc'])
+    ...mapGetters('documents', ['currentDoc', 'approved'])
   },
 
   validate({ params }) {

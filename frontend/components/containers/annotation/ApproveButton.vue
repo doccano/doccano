@@ -6,13 +6,13 @@
         min-width="36"
         outlined
         v-on="on"
-        @click="dialog=true"
+        @click="approveDocument"
       >
         <v-icon v-if="approved">
-          mdi-checkbox-blank-circle-outline
+          mdi-check-circle-outline
         </v-icon>
         <v-icon v-else>
-          mdi-check-circle-outline
+          mdi-checkbox-blank-circle-outline
         </v-icon>
       </v-btn>
     </template>
@@ -21,10 +21,23 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
-  data() {
-    return {
-      approved: true
+  props: {
+    approved: {
+      type: Boolean,
+      default: false,
+      required: true
+    }
+  },
+
+  methods: {
+    ...mapActions('documents', ['approve']),
+    approveDocument() {
+      this.approve({
+        projectId: this.$route.params.id
+      })
     }
   }
 }
