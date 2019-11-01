@@ -31,6 +31,17 @@ export const getters = {
       }
     ]
   },
+  getLink(state) {
+    if (state.current.project_type === 'DocumentClassification') {
+      return 'text-classification'
+    } else if (state.current.project_type === 'SequenceLabeling') {
+      return 'sequence-labeling'
+    } else if (state.current.project_type === 'Seq2seq') {
+      return 'sequence-to-sequence'
+    } else {
+      return ''
+    }
+  },
   getImportFormat(state) {
     const plain = {
       type: 'plain',

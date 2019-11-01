@@ -12,7 +12,7 @@
       clipped
       color=""
     >
-      <the-side-bar />
+      <the-side-bar :link="getLink" />
     </v-navigation-drawer>
 
     <v-content>
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 
@@ -41,8 +42,23 @@ export default {
     TheSideBar,
     TheHeader
   },
-  data: () => ({
-    drawerLeft: false
-  })
+
+  data() {
+    return {
+      drawerLeft: false
+    }
+  },
+
+  computed: {
+    ...mapGetters('projects', ['getLink'])
+  },
+
+  created() {
+    this.setCurrentProject(this.$route.params.id)
+  },
+
+  methods: {
+    ...mapActions('projects', ['setCurrentProject'])
+  }
 }
 </script>

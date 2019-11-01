@@ -1,5 +1,15 @@
 <template>
   <v-list dense>
+    <v-btn
+      color="ms-4 my-1 mb-2 primary text-capitalize"
+      :to="to"
+      nuxt
+    >
+      <v-icon left>
+        mdi-play-circle-outline
+      </v-icon>
+      Start annotation
+    </v-btn>
     <template v-for="(item, i) in items">
       <v-divider
         v-if="item.divider"
@@ -29,6 +39,14 @@
 
 <script>
 export default {
+  props: {
+    link: {
+      type: String,
+      default: '',
+      required: true
+    }
+  },
+
   data() {
     return {
       items: [
@@ -39,6 +57,12 @@ export default {
         { icon: 'mdi-book-open-outline', text: 'Guideline', link: 'guideline' },
         { icon: 'mdi-chart-bar', text: 'Statistics', link: 'statistics' }
       ]
+    }
+  },
+
+  computed: {
+    to() {
+      return `/projects/${this.$route.params.id}/${this.link}`
     }
   }
 }
