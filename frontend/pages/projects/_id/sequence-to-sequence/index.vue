@@ -40,7 +40,7 @@ import BottomNavigator from '@/components/organisms/annotation/BottomNavigator'
 export default {
   layout: 'annotation',
 
-  middleware: 'check-auth',
+  middleware: ['check-auth', 'auth'],
 
   components: {
     Seq2seqContainer,
