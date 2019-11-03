@@ -57,11 +57,37 @@
     >
       Sign in
     </v-btn>
+    <v-menu
+      v-if="isAuthenticated"
+      bottom
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn
+          icon
+          v-on="on"
+        >
+          <v-icon>mdi-dots-vertical</v-icon>
+        </v-btn>
+      </template>
+
+      <v-list>
+        <v-list-item @click="signout">
+          <v-list-item-icon>
+            <v-icon>mdi-logout</v-icon>
+          </v-list-item-icon>
+          <v-list-item-content>
+            <v-list-item-title>
+              Sign out
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </v-app-bar>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import TheColorModeSwitcher from '@/components/organisms/layout/TheColorModeSwitcher'
 
 export default {
@@ -82,12 +108,14 @@ export default {
 
   computed: {
     ...mapGetters('auth', ['isAuthenticated'])
+  },
+
+  methods: {
+    ...mapActions('auth', ['logout']),
+    signout() {
+      this.logout()
+      this.$router.push('/')
+    }
   }
 }
 </script>
-
-<style scoped>
-.top{
-  text-decoration: none;
-}
-</style>
