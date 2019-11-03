@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Welcome doccano!
+      Welcome to doccano!
     </v-card-title>
     <v-stepper
       v-model="e6"
