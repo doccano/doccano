@@ -29,6 +29,12 @@ export const getters = {
         align: 'left',
         value: 'meta',
         sortable: false
+      },
+      {
+        text: 'Action',
+        align: 'left',
+        value: 'action',
+        sortable: false
       }
     ]
   },
