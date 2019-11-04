@@ -1,5 +1,6 @@
 import Cookie from 'js-cookie'
 import ApiService from '@/services/api.service'
+import AuthService from '@/services/auth.service'
 
 export const state = () => ({
   token: null
@@ -22,9 +23,7 @@ export const getters = {
 
 export const actions = {
   authenticateUser({ commit }, authData) {
-    const authUrl = 'http://127.0.0.1:8000/v1/auth-token'
-    return this.$axios
-      .$post(authUrl, authData)
+    return AuthService.postCredential(authData)
       .then((result) => {
         commit('setToken', result.token)
         localStorage.setItem('token', result.token)

@@ -16,10 +16,6 @@ class ApiService {
     this.instance.defaults.headers.common = {}
   }
 
-  neko() {
-    return this.instance
-  }
-
   request(method, url, data = {}, config = {}) {
     return this.instance({
       method,
