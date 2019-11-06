@@ -71,23 +71,28 @@ export default {
   watch: {
     options: {
       handler() {
-        this.getDocumentList({
-          projectId: this.$route.params.id,
+        this.updateSearchOptions({
           limit: this.options.itemsPerPage,
           offset: (this.options.page - 1) * this.options.itemsPerPage
+        })
+        this.getDocumentList({
+          projectId: this.$route.params.id
         })
       },
       deep: true
     },
     search() {
-      this.getDocumentList({
-        projectId: this.$route.params.id,
+      this.updateSearchOptions({
         q: this.search
+      })
+      this.getDocumentList({
+        projectId: this.$route.params.id
       })
     }
   },
 
   created() {
+    this.initSearchOptions()
     this.getDocumentList({
       projectId: this.$route.params.id
     })
@@ -95,7 +100,7 @@ export default {
 
   methods: {
     ...mapActions('documents', ['getDocumentList', 'updateDocument']),
-    ...mapMutations('documents', ['updateSelected', 'updateSearchOptions', 'setCurrent']),
+    ...mapMutations('documents', ['updateSelected', 'updateSearchOptions', 'setCurrent', 'initSearchOptions']),
 
     handleUpdateDocument(payload) {
       const data = {
@@ -113,9 +118,9 @@ export default {
       this.updateSearchOptions({ limit, offset, q })
       this.$router.push('/projects/' + this.$route.params.id + '/' + this.getLink)
       this.setCurrent(index)
-      // const checkpoint = {}
-      // checkpoint[this.$route.params.id] = index
-      // localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
+      const checkpoint = {}
+      checkpoint[this.$route.params.id] = index + 1
+      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
     }
   }
 }

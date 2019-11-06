@@ -70,7 +70,9 @@ export default {
   },
 
   created() {
-    this.getMemberList()
+    this.getMemberList({
+      projectId: this.$route.params.id
+    })
   },
 
   methods: {

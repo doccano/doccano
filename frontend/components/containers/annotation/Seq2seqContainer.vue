@@ -32,12 +32,6 @@ export default {
     ...mapGetters('documents', ['currentDoc'])
   },
 
-  created() {
-    this.getDocumentList({
-      projectId: this.$route.params.id
-    })
-  },
-
   methods: {
     ...mapActions('documents', ['getDocumentList', 'deleteAnnotation', 'updateAnnotation', 'addAnnotation']),
     _deleteAnnotation(annotationId) {

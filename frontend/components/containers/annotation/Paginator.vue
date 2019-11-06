@@ -31,7 +31,7 @@ export default {
   data() {
     return {
       page: 1,
-      limit: 5
+      limit: 10
     }
   },
 
@@ -54,10 +54,12 @@ export default {
       localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
     },
     offset() {
-      this.getDocumentList({
-        projectId: this.$route.params.id,
+      this.updateSearchOptions({
         limit: this.limit,
         offset: this.offset
+      })
+      this.getDocumentList({
+        projectId: this.$route.params.id
       })
     },
     current() {
@@ -69,15 +71,13 @@ export default {
     const checkpoint = JSON.parse(localStorage.getItem('checkpoint'))
     this.page = checkpoint ? checkpoint[this.$route.params.id] : 1
     this.getDocumentList({
-      projectId: this.$route.params.id,
-      limit: this.limit,
-      offset: this.offset
+      projectId: this.$route.params.id
     })
   },
 
   methods: {
     ...mapActions('documents', ['getDocumentList']),
-    ...mapMutations('documents', ['setCurrent']),
+    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions']),
     prevPage() {
       this.page -= 1
     },

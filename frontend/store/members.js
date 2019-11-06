@@ -52,9 +52,9 @@ export const mutations = {
 }
 
 export const actions = {
-  getMemberList({ commit }, config) {
+  getMemberList({ commit }, payload) {
     commit('setLoading', true)
-    return MemberService.getMemberList()
+    return MemberService.getMemberList(payload.projectId)
       .then((response) => {
         commit('setMemberList', response)
       })

@@ -103,6 +103,13 @@ export const mutations = {
   },
   updateSearchOptions(state, payload) {
     state.searchOptions = Object.assign(state.searchOptions, payload)
+  },
+  initSearchOptions(state) {
+    state.searchOptions = {
+      limit: 10,
+      offset: 0,
+      q: ''
+    }
   }
 }
 

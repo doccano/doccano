@@ -28,11 +28,9 @@ export default {
   },
 
   created() {
-    const payload = {
+    this.getLabelList({
       projectId: this.$route.params.id
-    }
-    this.getLabelList(payload)
-    this.getDocumentList(payload)
+    })
   },
 
   methods: {
