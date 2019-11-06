@@ -318,6 +318,15 @@ class TextDownloadAPI(APIView):
             raise ValidationError('format {} is invalid.'.format(format))
 
 
+class LabelDownloadAPI(APIView):
+    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        labels = project.labels.all()
+        return Response({"labels": LabelSerializer(labels, many=True).data})
+
+
 class Users(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
@@ -353,12 +362,3 @@ class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = RoleMappingSerializer
     lookup_url_kwarg = 'rolemapping_id'
     permission_classes = [IsAuthenticated & IsProjectAdmin]
-
-
-class LabelDownloadAPI(APIView):
-    permission_classes = (IsAuthenticated, IsProjectUser, IsAdminUser)
-
-    def get(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        labels = project.labels.all()
-        return Response({"labels": LabelSerializer(labels, many=True).data})
