@@ -9,7 +9,12 @@ export const state = () => ({
   selectedFormat: null,
   parsed: {},
   current: 0,
-  total: 0
+  total: 0,
+  searchOptions: {
+    limit: 10,
+    offset: 0,
+    q: ''
+  }
 })
 
 export const getters = {
@@ -95,12 +100,16 @@ export const mutations = {
   updateAnnotation(state, payload) {
     const item = state.items[state.current].annotations.find(item => item.id === payload.id)
     Object.assign(item, payload)
+  },
+  updateSearchOptions(state, payload) {
+    state.searchOptions = Object.assign(state.searchOptions, payload)
   }
 }
 
 export const actions = {
-  getDocumentList({ commit }, payload) {
+  getDocumentList({ commit, state }, payload) {
     commit('setLoading', true)
+    payload = Object.assign(payload, state.searchOptions)
     return DocumentService.getDocumentList(payload)
       .then((response) => {
         commit('setDocumentList', response.results)

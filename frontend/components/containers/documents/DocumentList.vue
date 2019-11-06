@@ -43,7 +43,7 @@
       <v-btn
         small
         color="primary text-capitalize"
-        @click="$router.push('/projects')"
+        @click="goToAnnotationPage(item)"
       >
         Annotate
       </v-btn>
@@ -64,7 +64,8 @@ export default {
 
   computed: {
     ...mapState('documents', ['items', 'selected', 'loading', 'total']),
-    ...mapGetters('documents', ['headers'])
+    ...mapGetters('documents', ['headers']),
+    ...mapGetters('projects', ['getLink'])
   },
 
   watch: {
@@ -94,7 +95,7 @@ export default {
 
   methods: {
     ...mapActions('documents', ['getDocumentList', 'updateDocument']),
-    ...mapMutations('documents', ['updateSelected']),
+    ...mapMutations('documents', ['updateSelected', 'updateSearchOptions', 'setCurrent']),
 
     handleUpdateDocument(payload) {
       const data = {
@@ -102,6 +103,19 @@ export default {
         ...payload
       }
       this.updateDocument(data)
+    },
+
+    goToAnnotationPage(doc) {
+      const index = this.items.findIndex(item => item.id === doc.id)
+      const limit = this.options.itemsPerPage
+      const offset = (this.options.page - 1) * limit
+      const q = this.search
+      this.updateSearchOptions({ limit, offset, q })
+      this.$router.push('/projects/' + this.$route.params.id + '/' + this.getLink)
+      this.setCurrent(index)
+      // const checkpoint = {}
+      // checkpoint[this.$route.params.id] = index
+      // localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
     }
   }
 }
