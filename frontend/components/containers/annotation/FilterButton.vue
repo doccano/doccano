@@ -40,16 +40,44 @@
 </template>
 
 <script>
+import { mapMutations, mapActions, mapGetters } from 'vuex'
 export default {
   data() {
     return {
       selected: 0,
       items: [
-        { title: 'All' },
-        { title: 'Done' },
-        { title: 'Undone' }
+        { title: 'All', param: '' },
+        { title: 'Done', param: 'false' },
+        { title: 'Undone', param: 'true' }
       ]
     }
+  },
+
+  computed: {
+    ...mapGetters('projects', ['getFilterOption'])
+  },
+
+  watch: {
+    selected() {
+      alert(this.selected)
+      this.initSearchOptions()
+      this.updateSearchOptions({
+        isChecked: this.items[this.selected].param,
+        filterName: this.getFilterOption
+      })
+      this.getDocumentList({
+        projectId: this.$route.params.id
+      })
+      this.setCurrent(0)
+      const checkpoint = {}
+      checkpoint[this.$route.params.id] = this.page
+      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
+    }
+  },
+
+  methods: {
+    ...mapActions('documents', ['getDocumentList']),
+    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions', 'initSearchOptions'])
   }
 }
 </script>

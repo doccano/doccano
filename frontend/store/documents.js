@@ -13,7 +13,9 @@ export const state = () => ({
   searchOptions: {
     limit: 10,
     offset: 0,
-    q: ''
+    q: '',
+    isChecked: '',
+    filterName: ''
   }
 })
 
@@ -108,7 +110,9 @@ export const mutations = {
     state.searchOptions = {
       limit: 10,
       offset: 0,
-      q: ''
+      q: '',
+      isChecked: '',
+      filterName: ''
     }
   }
 }

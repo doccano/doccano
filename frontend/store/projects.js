@@ -31,6 +31,17 @@ export const getters = {
       }
     ]
   },
+  getFilterOption(state) {
+    if (state.current.project_type === 'DocumentClassification') {
+      return 'doc_annotations__isnull'
+    } else if (state.current.project_type === 'SequenceLabeling') {
+      return 'seq_annotations__isnull'
+    } else if (state.current.project_type === 'Seq2seq') {
+      return 'seq2seq_annotations__isnull'
+    } else {
+      return ''
+    }
+  },
   getLink(state) {
     if (state.current.project_type === 'DocumentClassification') {
       return 'text-classification'
