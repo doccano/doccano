@@ -59,7 +59,6 @@ export default {
 
   watch: {
     selected() {
-      alert(this.selected)
       this.initSearchOptions()
       this.updateSearchOptions({
         isChecked: this.items[this.selected].param,

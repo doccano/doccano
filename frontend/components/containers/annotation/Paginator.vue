@@ -69,7 +69,7 @@ export default {
 
   created() {
     const checkpoint = JSON.parse(localStorage.getItem('checkpoint'))
-    this.page = checkpoint ? checkpoint[this.$route.params.id] : 1
+    this.page = checkpoint[this.$route.params.id] ? checkpoint[this.$route.params.id] : 1
     this.getDocumentList({
       projectId: this.$route.params.id
     })
