@@ -29,18 +29,32 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
   data() {
     return {
-      search: ''
+      search: '',
+      headers: [
+        {
+          text: 'Name',
+          align: 'left',
+          value: 'name'
+        },
+        {
+          text: 'Description',
+          value: 'description'
+        },
+        {
+          text: 'Type',
+          value: 'project_type'
+        }
+      ]
     }
   },
 
   computed: {
-    ...mapState('projects', ['projects', 'selected', 'loading']),
-    ...mapGetters('projects', ['headers'])
+    ...mapState('projects', ['projects', 'selected', 'loading'])
   },
 
   async created() {

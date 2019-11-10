@@ -14,23 +14,6 @@ export const getters = {
   currentProject(state) {
     return state.current
   },
-  headers() {
-    return [
-      {
-        text: 'Name',
-        align: 'left',
-        value: 'name'
-      },
-      {
-        text: 'Description',
-        value: 'description'
-      },
-      {
-        text: 'Type',
-        value: 'project_type'
-      }
-    ]
-  },
   getFilterOption(state) {
     if (state.current.project_type === 'DocumentClassification') {
       return 'doc_annotations__isnull'

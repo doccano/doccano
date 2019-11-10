@@ -9,20 +9,6 @@ export const state = () => ({
 export const getters = {
   isMemberSelected(state) {
     return state.selected.length > 0
-  },
-  headers() {
-    return [
-      {
-        text: 'Name',
-        align: 'left',
-        sortable: false,
-        value: 'username'
-      },
-      {
-        text: 'Role',
-        value: 'role'
-      }
-    ]
   }
 }
 

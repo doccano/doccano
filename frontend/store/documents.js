@@ -1,13 +1,10 @@
 import DocumentService from '@/services/document.service'
 import AnnotationService from '@/services/annotation.service'
-import CSVParser from '@/services/parsers/csv.service'
 
 export const state = () => ({
   items: [],
   selected: [],
   loading: false,
-  selectedFormat: null,
-  parsed: {},
   current: 0,
   total: 0,
   searchOptions: {
@@ -23,37 +20,8 @@ export const getters = {
   isDocumentSelected(state) {
     return state.selected.length > 0
   },
-  headers() {
-    return [
-      {
-        text: 'Text',
-        align: 'left',
-        value: 'text',
-        sortable: false
-      },
-      {
-        text: 'Metadata',
-        align: 'left',
-        value: 'meta',
-        sortable: false
-      },
-      {
-        text: 'Action',
-        align: 'left',
-        value: 'action',
-        sortable: false
-      }
-    ]
-  },
   approved(state) {
     return state.items[state.current].annotation_approver !== null
-  },
-  parsedDoc(state) {
-    if ('data' in state.parsed) {
-      return state.parsed.data
-    } else {
-      return []
-    }
   },
   currentDoc(state) {
     return state.items[state.current]
@@ -88,10 +56,6 @@ export const mutations = {
   },
   setTotalItems(state, payload) {
     state.total = payload
-  },
-  parseFile(state, text) {
-    const parser = new CSVParser()
-    state.parsed = parser.parse(text)
   },
   addAnnotation(state, payload) {
     state.items[state.current].annotations.push(payload)
@@ -192,20 +156,6 @@ export const actions = {
         })
     }
     commit('resetSelected')
-  },
-  nextPage({ commit }) {
-  },
-  prevPage({ commit }) {
-  },
-  parseFile({ commit }, data) {
-    const reader = new FileReader()
-    reader.readAsText(data, 'UTF-8')
-    reader.onload = (e) => {
-      commit('parseFile', e.target.result)
-    }
-    reader.onerror = (e) => {
-      alert(e)
-    }
   },
   addAnnotation({ commit, state }, payload) {
     const documentId = state.items[state.current].id

@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
+import { mapState, mapActions, mapMutations } from 'vuex'
 import { roleRules } from '@/rules/index'
 
 export default {
@@ -58,6 +58,18 @@ export default {
         'Admin',
         'Member'
       ],
+      headers: [
+        {
+          text: 'Name',
+          align: 'left',
+          sortable: false,
+          value: 'username'
+        },
+        {
+          text: 'Role',
+          value: 'role'
+        }
+      ],
       search: '',
       newRole: null,
       roleRules
@@ -65,8 +77,7 @@ export default {
   },
 
   computed: {
-    ...mapState('members', ['items', 'selected', 'loading']),
-    ...mapGetters('members', ['headers'])
+    ...mapState('members', ['items', 'selected', 'loading'])
   },
 
   created() {

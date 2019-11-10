@@ -58,13 +58,32 @@ export default {
   data() {
     return {
       search: '',
-      options: {}
+      options: {},
+      headers: [
+        {
+          text: 'Text',
+          align: 'left',
+          value: 'text',
+          sortable: false
+        },
+        {
+          text: 'Metadata',
+          align: 'left',
+          value: 'meta',
+          sortable: false
+        },
+        {
+          text: 'Action',
+          align: 'left',
+          value: 'action',
+          sortable: false
+        }
+      ]
     }
   },
 
   computed: {
     ...mapState('documents', ['items', 'selected', 'loading', 'total']),
-    ...mapGetters('documents', ['headers']),
     ...mapGetters('projects', ['getLink'])
   },
 
