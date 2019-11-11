@@ -41,7 +41,7 @@ import BarChart from '@/components/molecules/BarChart'
 export default {
   layout: 'project',
 
-  middleware: ['check-auth', 'auth'],
+  middleware: ['check-auth', 'auth', 'check-admin'],
 
   components: {
     DoughnutChart,
