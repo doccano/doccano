@@ -4,19 +4,23 @@
       {{ page }} of {{ total }}
     </span>
     <v-btn
+      v-shortkey.once="['arrowleft']"
       text
       :disabled="page===1"
       fab
       small
+      @shortkey="prevPage"
       @click="prevPage"
     >
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
     <v-btn
+      v-shortkey.once="['arrowright']"
       text
       :disabled="page===total"
       fab
       small
+      @shortkey="nextPage"
       @click="nextPage"
     >
       <v-icon>mdi-chevron-right</v-icon>
@@ -25,7 +29,9 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapState, mapActions, mapMutations } from 'vuex'
+Vue.use(require('vue-shortkey'))
 
 export default {
   data() {
@@ -79,10 +85,10 @@ export default {
     ...mapActions('documents', ['getDocumentList']),
     ...mapMutations('documents', ['setCurrent', 'updateSearchOptions']),
     prevPage() {
-      this.page -= 1
+      this.page = Math.max(this.page - 1, 1)
     },
     nextPage() {
-      this.page += 1
+      this.page = Math.min(this.page + 1, this.total)
     }
   }
 }
