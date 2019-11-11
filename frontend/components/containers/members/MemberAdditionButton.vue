@@ -7,6 +7,7 @@
       <member-addition-form
         :add-member="addMember"
         :items="items"
+        :roles="roles"
         @close="slotProps.close"
         @search-user="searchUser"
       />
@@ -15,7 +16,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import BaseModal from '@/components/molecules/BaseModal'
 import MemberAdditionForm from '@/components/organisms/members/MemberAdditionForm'
 import UserService from '@/services/user.service'
@@ -32,8 +33,17 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters('roles', ['roles'])
+  },
+
+  created() {
+    this.getRoleList()
+  },
+
   methods: {
     ...mapActions('members', ['addMember']),
+    ...mapActions('roles', ['getRoleList']),
 
     searchUser(username) {
       UserService.getUserList(username)

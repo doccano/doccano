@@ -9,9 +9,9 @@ class MemberService {
     return this.request.get(`/projects/${projectId}/roles`)
   }
 
-  addMember(projectId, userId, role) {
+  addMember(projectId, user, role) {
     const data = {
-      id: userId,
+      user,
       role
     }
     return this.request.post(`/projects/${projectId}/roles`, data)

@@ -17,7 +17,6 @@
           :items="items"
           :loading="isLoading"
           :search-input.sync="username"
-          :rules="userNameRules"
           color="white"
           hide-no-data
           hide-selected
@@ -31,7 +30,10 @@
           v-model="role"
           :items="roles"
           :rules="roleRules"
+          item-text="name"
+          item-value="id"
           label="Role"
+          return-object
           prepend-icon="mdi-account-card-details-outline"
         />
       </v-form>
@@ -41,7 +43,7 @@
 
 <script>
 import BaseCard from '@/components/molecules/BaseCard'
-import { userNameRules, roleRules } from '@/rules/index'
+import { roleRules } from '@/rules/index'
 
 export default {
   components: {
@@ -57,6 +59,11 @@ export default {
       type: Array,
       default: () => {},
       required: true
+    },
+    roles: {
+      type: Array,
+      default: () => {},
+      required: true
     }
   },
   data() {
@@ -66,8 +73,6 @@ export default {
       role: null,
       isLoading: false,
       selectedUser: null,
-      roles: ['Admin', 'Member'],
-      userNameRules,
       roleRules
     }
   },
@@ -93,7 +98,7 @@ export default {
         this.addMember({
           userId: this.selectedUser.id,
           projectId: this.$route.params.id,
-          role: this.role
+          role: this.role.id
         })
         this.reset()
         this.cancel()
