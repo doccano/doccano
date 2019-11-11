@@ -5,6 +5,10 @@ class UserService {
     this.request = ApiService
   }
 
+  getMe() {
+    return this.request.get('/me')
+  }
+
   getUserList(query) {
     return this.request.get(`/users?q=${query}`)
   }
