@@ -12,7 +12,10 @@
       clipped
       color=""
     >
-      <the-side-bar :link="getLink" />
+      <the-side-bar
+        :link="getLink"
+        :role="getCurrentUserRole"
+      />
     </v-navigation-drawer>
 
     <v-content>
@@ -50,7 +53,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink'])
+    ...mapGetters('projects', ['getLink', 'getCurrentUserRole'])
   },
 
   created() {

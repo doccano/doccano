@@ -14,6 +14,9 @@ export const getters = {
   currentProject(state) {
     return state.current
   },
+  getCurrentUserRole(state) {
+    return state.current.current_users_role || {}
+  },
   getFilterOption(state) {
     if (state.current.project_type === 'DocumentClassification') {
       return 'doc_annotations__isnull'

@@ -11,14 +11,8 @@
       Start annotation
     </v-btn>
     <template v-for="(item, i) in items">
-      <v-divider
-        v-if="item.divider"
-        :key="i"
-        dark
-        class="my-4"
-      />
       <v-list-item
-        v-else
+        v-if="isVisible(item)"
         :key="i"
         @click="$router.push('/projects/' + $route.params.id + '/' + item.link)"
       >
@@ -44,18 +38,23 @@ export default {
       type: String,
       default: '',
       required: true
+    },
+    role: {
+      type: Object,
+      default: () => {},
+      required: true
     }
   },
 
   data() {
     return {
       items: [
-        { icon: 'mdi-home', text: 'Home', link: '' },
-        { icon: 'mdi-database', text: 'Dataset', link: 'dataset' },
-        { icon: 'label', text: 'Labels', link: 'labels' },
-        { icon: 'person', text: 'Members', link: 'members' },
-        { icon: 'mdi-book-open-outline', text: 'Guideline', link: 'guideline' },
-        { icon: 'mdi-chart-bar', text: 'Statistics', link: 'statistics' }
+        { icon: 'mdi-home', text: 'Home', link: '', adminOnly: false },
+        { icon: 'mdi-database', text: 'Dataset', link: 'dataset', adminOnly: true },
+        { icon: 'label', text: 'Labels', link: 'labels', adminOnly: true },
+        { icon: 'person', text: 'Members', link: 'members', adminOnly: true },
+        { icon: 'mdi-book-open-outline', text: 'Guideline', link: 'guideline', adminOnly: true },
+        { icon: 'mdi-chart-bar', text: 'Statistics', link: 'statistics', adminOnly: true }
       ]
     }
   },
@@ -63,6 +62,12 @@ export default {
   computed: {
     to() {
       return `/projects/${this.$route.params.id}/${this.link}`
+    }
+  },
+
+  methods: {
+    isVisible(item) {
+      return !item.adminOnly || this.role.is_project_admin
     }
   }
 }
