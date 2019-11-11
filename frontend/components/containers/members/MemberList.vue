@@ -20,14 +20,13 @@
         filled
       />
     </template>
-    <template v-slot:item.role="{ item }">
+    <template v-slot:item.rolename="{ item }">
       <v-edit-dialog
-        :return-value.sync="item.role"
+        :return-value.sync="item"
         large
-        persistent
-        @save="updateRole({ id: item.id, role: newRole })"
+        @save="updateRole({ id: item.id })"
       >
-        <div>{{ item.role }}</div>
+        <div>{{ item.rolename }}</div>
         <template v-slot:input>
           <div class="mt-4 title">
             Update Role
@@ -35,10 +34,13 @@
         </template>
         <template v-slot:input>
           <v-select
-            :value="item.role"
+            :value="getRole(item)"
             :items="roles"
             :rules="roleRules"
+            item-text="name"
+            item-value="id"
             label="Role"
+            return-object
             @input="setNewRole"
           />
         </template>
@@ -48,16 +50,12 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { roleRules } from '@/rules/index'
 
 export default {
   data() {
     return {
-      roles: [
-        'Admin',
-        'Member'
-      ],
       headers: [
         {
           text: 'Name',
@@ -67,7 +65,7 @@ export default {
         },
         {
           text: 'Role',
-          value: 'role'
+          value: 'rolename'
         }
       ],
       search: '',
@@ -77,29 +75,40 @@ export default {
   },
 
   computed: {
-    ...mapState('members', ['items', 'selected', 'loading'])
+    ...mapState('members', ['items', 'selected', 'loading']),
+    ...mapGetters('roles', ['roles'])
   },
 
   created() {
     this.getMemberList({
       projectId: this.$route.params.id
     })
+    this.getRoleList()
   },
 
   methods: {
     ...mapActions('members', ['getMemberList', 'updateMemberRole']),
     ...mapMutations('members', ['updateSelected']),
+    ...mapActions('roles', ['getRoleList']),
+
+    getRole(item) {
+      return {
+        id: item.role,
+        userId: item.user,
+        mappingId: item.id
+      }
+    },
 
     setNewRole(value) {
       this.newRole = value
     },
 
     updateRole(payload) {
-      const data = {
+      this.updateMemberRole({
         projectId: this.$route.params.id,
-        ...payload
-      }
-      this.updateMemberRole(data)
+        id: payload.id,
+        role: this.newRole.id
+      })
     }
   }
 }

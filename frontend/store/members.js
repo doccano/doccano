@@ -61,7 +61,7 @@ export const actions = {
       })
   },
   updateMemberRole({ commit }, member) {
-    MemberService.updateMemberRole(member.projectId, member.id, member.role) // Todo: replace project id
+    MemberService.updateMemberRole(member.projectId, member.id, member.role)
       .then((response) => {
         commit('updateMember', response)
       })

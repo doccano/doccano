@@ -6,7 +6,7 @@ class MemberService {
   }
 
   getMemberList(projectId) {
-    return this.request.get(`/projects/${projectId}/users`)
+    return this.request.get(`/projects/${projectId}/roles`)
   }
 
   addMember(projectId, userId, role) {
@@ -14,18 +14,18 @@ class MemberService {
       id: userId,
       role
     }
-    return this.request.post(`/projects/${projectId}/users`, data)
+    return this.request.post(`/projects/${projectId}/roles`, data)
   }
 
   deleteMember(projectId, userId) {
-    return this.request.delete(`/projects/${projectId}/users/${userId}`)
+    return this.request.delete(`/projects/${projectId}/roles/${userId}`)
   }
 
-  updateMemberRole(projectId, userId, role) {
+  updateMemberRole(projectId, mappingId, role) {
     const data = {
       role
     }
-    return this.request.patch(`/projects/${projectId}/users/${userId}`, data)
+    return this.request.patch(`/projects/${projectId}/roles/${mappingId}`, data)
   }
 }
 
