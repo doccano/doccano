@@ -21,17 +21,24 @@
         </v-stepper-step>
         <v-stepper-content :step="index + 1">
           <v-card
-            color="grey lighten-1"
+            v-if="item.videoId"
             class="mb-12"
-            height="200px"
-          />
+            width="560"
+            height="315"
+          >
+            <youtube
+              ref="youtube"
+              :video-id="item.videoId"
+            />
+          </v-card>
           <v-btn
-            color="primary"
+            color="primary mt-5"
             @click="next"
           >
             Continue
           </v-btn>
           <v-btn
+            class="mt-5"
             text
             @click="prev"
           >
@@ -53,13 +60,13 @@ export default {
     return {
       e6: 1,
       items: [
-        { title: 'Import a dataset' },
-        { title: 'Create labels for this project' },
-        { title: 'Add members for collaborative work' },
-        { title: 'Define a guideline for the work' },
-        { title: 'Annotate the dataset' },
-        { title: 'View statistics' },
-        { title: 'Export the dataset' }
+        { title: 'Import a dataset', videoId: 'dA4ID1DSxCE' },
+        { title: 'Create labels for this project', videoId: '1bSML270quU' },
+        { title: 'Add members for collaborative work', videoId: 'NI09dcBz-qA' },
+        { title: 'Define a guideline for the work', videoId: 'AvvX3Xs32nA' },
+        { title: 'Annotate the dataset', videoId: 'F3XoSdyiMhA' },
+        { title: 'View statistics', videoId: 'kfRpa0mNQMY' },
+        { title: 'Export the dataset', videoId: 'Pfy_QcHEeQ4' }
       ]
     }
   },
