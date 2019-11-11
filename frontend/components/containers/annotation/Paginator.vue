@@ -3,28 +3,40 @@
     <span>
       {{ page }} of {{ total }}
     </span>
-    <v-btn
-      v-shortkey.once="['arrowleft']"
-      text
-      :disabled="page===1"
-      fab
-      small
-      @shortkey="prevPage"
-      @click="prevPage"
-    >
-      <v-icon>mdi-chevron-left</v-icon>
-    </v-btn>
-    <v-btn
-      v-shortkey.once="['arrowright']"
-      text
-      :disabled="page===total"
-      fab
-      small
-      @shortkey="nextPage"
-      @click="nextPage"
-    >
-      <v-icon>mdi-chevron-right</v-icon>
-    </v-btn>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          v-shortkey.once="['arrowleft']"
+          text
+          :disabled="page===1"
+          fab
+          small
+          v-on="on"
+          @shortkey="prevPage"
+          @click="prevPage"
+        >
+          <v-icon>mdi-chevron-left</v-icon>
+        </v-btn>
+      </template>
+      <span>←</span>
+    </v-tooltip>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          v-shortkey.once="['arrowright']"
+          text
+          :disabled="page===total"
+          fab
+          small
+          v-on="on"
+          @shortkey="nextPage"
+          @click="nextPage"
+        >
+          <v-icon>mdi-chevron-right</v-icon>
+        </v-btn>
+      </template>
+      <span>→</span>
+    </v-tooltip>
   </div>
 </template>
 
