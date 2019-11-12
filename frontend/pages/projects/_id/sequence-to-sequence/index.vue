@@ -35,7 +35,7 @@ import Seq2seqContainer from '~/components/containers/annotation/Seq2seqContaine
 import Paginator from '~/components/containers/annotation/Paginator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
-import BottomNavigator from '@/components/organisms/annotation/BottomNavigator'
+import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
 
 export default {
   layout: 'annotation',

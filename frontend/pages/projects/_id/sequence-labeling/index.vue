@@ -43,7 +43,7 @@ import ApproveButton from '@/components/containers/annotation/ApproveButton'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
-import BottomNavigator from '@/components/organisms/annotation/BottomNavigator'
+import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
 
 export default {
   layout: 'annotation',

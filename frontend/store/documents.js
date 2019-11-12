@@ -21,7 +21,11 @@ export const getters = {
     return state.selected.length > 0
   },
   approved(state) {
-    return state.items[state.current].annotation_approver !== null
+    if (state.items[state.current]) {
+      return state.items[state.current].annotation_approver !== null
+    } else {
+      return false
+    }
   },
   currentDoc(state) {
     return state.items[state.current]
