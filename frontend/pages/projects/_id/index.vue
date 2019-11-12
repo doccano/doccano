@@ -21,7 +21,7 @@
         </v-stepper-step>
         <v-stepper-content :step="index + 1">
           <v-card
-            v-if="item.videoId"
+            v-if="e6 === index + 1"
             class="mb-12"
             width="560"
             height="315"
