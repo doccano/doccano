@@ -1,5 +1,5 @@
 <template>
-  <div class="highlight-container highlight-container--bottom-labels" @click="open">
+  <div class="highlight-container highlight-container--bottom-labels" @click="open" @touchend="open">
     <entity-item
       v-for="(chunk, i) in chunks"
       :key="i"
@@ -140,8 +140,8 @@ export default {
     show(e) {
       e.preventDefault()
       this.showMenu = false
-      this.x = e.clientX
-      this.y = e.clientY
+      this.x = e.clientX || e.changedTouches[0].clientX
+      this.y = e.clientY || e.changedTouches[0].clientY
       this.$nextTick(() => {
         this.showMenu = true
       })
