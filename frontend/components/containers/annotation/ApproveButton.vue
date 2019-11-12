@@ -9,14 +9,15 @@
         @click="approveDocument"
       >
         <v-icon v-if="approved">
-          mdi-check-circle-outline
+          mdi-check
         </v-icon>
         <v-icon v-else>
-          mdi-checkbox-blank-circle-outline
+          mdi-close
         </v-icon>
       </v-btn>
     </template>
-    <span>Approve</span>
+    <span v-if="approved">Checked</span>
+    <span v-else>Not checked</span>
   </v-tooltip>
 </template>
 
