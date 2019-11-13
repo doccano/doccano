@@ -30,7 +30,6 @@ export const actions = {
         Cookie.set('jwt', result.data.token)
         ApiService.setHeader(result.data.token)
       })
-      .catch(e => alert(e))
   },
   initAuth({ commit, dispatch }, req) {
     let token

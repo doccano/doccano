@@ -10,14 +10,23 @@
         ref="form"
         v-model="valid"
       >
+        <v-alert
+          v-show="showError"
+          v-model="showError"
+          type="error"
+          dismissible
+        >
+          Incorrect username or password.
+        </v-alert>
         <v-text-field
           v-model="username"
           :rules="userNameRules"
-          label="Login"
-          name="login"
+          label="Username"
+          name="username"
           prepend-icon="person"
           type="text"
           autofocus
+          @keyup.enter="tryLogin"
         />
         <v-text-field
           id="password"
@@ -27,6 +36,7 @@
           name="password"
           prepend-icon="lock"
           type="password"
+          @keyup.enter="tryLogin"
         />
       </v-form>
     </template>
@@ -54,7 +64,8 @@ export default {
       username: '',
       password: '',
       userNameRules,
-      passwordRules
+      passwordRules,
+      showError: false
     }
   },
 
@@ -70,6 +81,9 @@ export default {
         })
           .then((result) => {
             this.$router.push('/projects')
+          })
+          .catch(() => {
+            this.showError = true
           })
       }
     }
