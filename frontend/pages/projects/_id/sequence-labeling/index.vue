@@ -15,7 +15,6 @@
           <paginator />
         </v-col>
       </v-row>
-      <bottom-navigator class="d-flex d-sm-none" />
       <v-row justify="center">
         <v-col cols="12" md="9">
           <v-card>
@@ -43,7 +42,6 @@ import ApproveButton from '@/components/containers/annotation/ApproveButton'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
-import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
 
 export default {
   layout: 'annotation',
@@ -52,7 +50,6 @@ export default {
 
   components: {
     ApproveButton,
-    BottomNavigator,
     EntityItemBox,
     FilterButton,
     Paginator,

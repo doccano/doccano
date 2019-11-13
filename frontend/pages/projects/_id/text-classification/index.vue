@@ -13,7 +13,6 @@
           <paginator />
         </v-col>
       </v-row>
-      <bottom-navigator class="d-flex d-sm-none" />
       <v-row justify="center">
         <v-col cols="12" md="9">
           <text-classification />
@@ -35,7 +34,6 @@ import TextClassification from '~/components/containers/annotation/TextClassific
 import Paginator from '~/components/containers/annotation/Paginator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
-import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
 
 export default {
   layout: 'annotation',
@@ -43,7 +41,6 @@ export default {
   middleware: ['check-auth', 'auth'],
 
   components: {
-    BottomNavigator,
     TextClassification,
     Paginator,
     GuidelineButton,

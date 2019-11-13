@@ -13,7 +13,6 @@
           <paginator />
         </v-col>
       </v-row>
-      <bottom-navigator class="d-flex d-sm-none" />
       <v-row justify="center">
         <v-col cols="12" md="9">
           <seq2seq-container />
@@ -35,7 +34,6 @@ import Seq2seqContainer from '~/components/containers/annotation/Seq2seqContaine
 import Paginator from '~/components/containers/annotation/Paginator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
-import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
 
 export default {
   layout: 'annotation',
@@ -46,8 +44,7 @@ export default {
     Seq2seqContainer,
     Paginator,
     GuidelineButton,
-    MetadataBox,
-    BottomNavigator
+    MetadataBox
   },
 
   computed: {

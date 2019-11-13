@@ -19,6 +19,7 @@
     </v-navigation-drawer>
 
     <nuxt />
+    <bottom-navigator class="d-flex d-sm-none" />
   </v-app>
 </template>
 
@@ -26,11 +27,13 @@
 import { mapActions, mapGetters } from 'vuex'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
 import TheHeader from '~/components/organisms/layout/TheHeader'
+import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
 
 export default {
   components: {
     TheSideBar,
-    TheHeader
+    TheHeader,
+    BottomNavigator
   },
   data() {
     return {

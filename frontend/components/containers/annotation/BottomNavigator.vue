@@ -1,9 +1,8 @@
 <template>
   <v-bottom-navigation
+    app
     absolute
     hide-on-scroll
-    background-color="transparent"
-    class="elevation-0"
   >
     <v-btn @click="prevPage">
       <span>Prev</span>
