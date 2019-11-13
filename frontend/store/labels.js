@@ -52,12 +52,9 @@ export const actions = {
       })
   },
   createLabel({ commit }, data) {
-    LabelService.addLabel(data.projectId, data)
+    return LabelService.addLabel(data.projectId, data)
       .then((response) => {
         commit('addLabel', response.data)
-      })
-      .catch((error) => {
-        alert(error)
       })
   },
   updateLabel({ commit }, data) {

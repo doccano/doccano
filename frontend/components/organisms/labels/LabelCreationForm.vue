@@ -12,6 +12,15 @@
         ref="form"
         v-model="valid"
       >
+        <v-alert
+          v-show="showError"
+          v-model="showError"
+          type="error"
+          dismissible
+        >
+          The label could not be created.
+          You cannot use same label name or shortcut key.
+        </v-alert>
         <v-text-field
           v-model="labelName"
           :rules="labelNameRules"
@@ -64,7 +73,8 @@ export default {
       suffixKey: '',
       color: '',
       labelNameRules,
-      colorRules
+      colorRules,
+      showError: false
     }
   },
 
@@ -88,8 +98,13 @@ export default {
           background_color: this.color.slice(0, -2),
           text_color: '#ffffff'
         })
-        this.reset()
-        this.cancel()
+          .then(() => {
+            this.reset()
+            this.cancel()
+          })
+          .catch(() => {
+            this.showError = true
+          })
       }
     }
   }
