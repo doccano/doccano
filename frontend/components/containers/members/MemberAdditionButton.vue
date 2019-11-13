@@ -48,7 +48,7 @@ export default {
     searchUser(username) {
       UserService.getUserList(username)
         .then((response) => {
-          this.items = response
+          this.items = response.data
         })
         .catch((error) => {
           alert(error)

@@ -23,8 +23,8 @@ class ApiService {
       data,
       ...config
     })
-      .then(response => response.data)
-      .catch(error => error)
+    // .then(response => response.data)
+    // .catch(error => error)
   }
 
   get(url, config = {}) {

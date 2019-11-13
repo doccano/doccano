@@ -56,7 +56,7 @@ export const actions = {
     commit('setLoading', true)
     StatisticsService.getStatistics(payload)
       .then((response) => {
-        commit('setStatistics', response)
+        commit('setStatistics', response.data)
       })
       .catch((error) => {
         alert(error)

@@ -62,13 +62,15 @@ export default {
     validate() {
       return this.$refs.form.validate()
     },
-    async tryLogin() {
+    tryLogin() {
       if (this.validate()) {
-        await this.login({
+        this.login({
           username: this.username,
           password: this.password
         })
-        this.$router.push('/projects')
+          .then((result) => {
+            this.$router.push('/projects')
+          })
       }
     }
   }

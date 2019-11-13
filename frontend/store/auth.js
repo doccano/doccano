@@ -25,10 +25,10 @@ export const actions = {
   authenticateUser({ commit }, authData) {
     return AuthService.postCredential(authData)
       .then((result) => {
-        commit('setToken', result.token)
-        localStorage.setItem('token', result.token)
-        Cookie.set('jwt', result.token)
-        ApiService.setHeader(result.token)
+        commit('setToken', result.data.token)
+        localStorage.setItem('token', result.data.token)
+        Cookie.set('jwt', result.data.token)
+        ApiService.setHeader(result.data.token)
       })
       .catch(e => alert(e))
   },

@@ -25,7 +25,7 @@ export const actions = {
     commit('setLoading', true)
     return RoleService.getRoleList()
       .then((response) => {
-        commit('setRoleList', response)
+        commit('setRoleList', response.data)
       })
       .catch((error) => {
         alert(error)

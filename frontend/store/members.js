@@ -42,7 +42,7 @@ export const actions = {
     commit('setLoading', true)
     return MemberService.getMemberList(payload.projectId)
       .then((response) => {
-        commit('setMemberList', response)
+        commit('setMemberList', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -54,7 +54,7 @@ export const actions = {
   addMember({ commit }, data) {
     MemberService.addMember(data.projectId, data.userId, data.role)
       .then((response) => {
-        commit('addMember', response)
+        commit('addMember', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -63,7 +63,7 @@ export const actions = {
   updateMemberRole({ commit }, member) {
     MemberService.updateMemberRole(member.projectId, member.id, member.role)
       .then((response) => {
-        commit('updateMember', response)
+        commit('updateMember', response.data)
       })
       .catch((error) => {
         alert(error)

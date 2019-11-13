@@ -42,7 +42,7 @@ export const actions = {
     commit('setLoading', true)
     return LabelService.getLabelList(payload.projectId)
       .then((response) => {
-        commit('setLabelList', response)
+        commit('setLabelList', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -54,7 +54,7 @@ export const actions = {
   createLabel({ commit }, data) {
     LabelService.addLabel(data.projectId, data)
       .then((response) => {
-        commit('addLabel', response)
+        commit('addLabel', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -63,7 +63,7 @@ export const actions = {
   updateLabel({ commit }, data) {
     LabelService.updateLabel(data.projectId, data.id, data)
       .then((response) => {
-        commit('updateLabel', response)
+        commit('updateLabel', response.data)
       })
       .catch((error) => {
         alert(error)

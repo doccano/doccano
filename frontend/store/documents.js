@@ -91,8 +91,8 @@ export const actions = {
     payload = Object.assign(payload, state.searchOptions)
     return DocumentService.getDocumentList(payload)
       .then((response) => {
-        commit('setDocumentList', response.results)
-        commit('setTotalItems', response.count)
+        commit('setDocumentList', response.data.results)
+        commit('setTotalItems', response.data.count)
       })
       .catch((error) => {
         alert(error)
@@ -126,7 +126,7 @@ export const actions = {
     commit('setLoading', true)
     DocumentService.exportFile(data.projectId, data.format)
       .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response]))
+        const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
         link.setAttribute('download', 'file.' + data.format)
@@ -143,7 +143,7 @@ export const actions = {
   updateDocument({ commit }, data) {
     DocumentService.updateDocument(data.projectId, data.id, data)
       .then((response) => {
-        commit('updateDocument', response)
+        commit('updateDocument', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -165,7 +165,7 @@ export const actions = {
     const documentId = state.items[state.current].id
     AnnotationService.addAnnotation(payload.projectId, documentId, payload)
       .then((response) => {
-        commit('addAnnotation', response)
+        commit('addAnnotation', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -175,7 +175,7 @@ export const actions = {
     const documentId = state.items[state.current].id
     AnnotationService.updateAnnotation(payload.projectId, documentId, payload.annotationId, payload)
       .then((response) => {
-        commit('updateAnnotation', response)
+        commit('updateAnnotation', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -198,7 +198,7 @@ export const actions = {
     }
     DocumentService.approveDocument(payload.projectId, documentId, data)
       .then((response) => {
-        commit('updateDocument', response)
+        commit('updateDocument', response.data)
       })
       .catch((error) => {
         alert(error)

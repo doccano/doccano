@@ -226,7 +226,7 @@ export const actions = {
     commit('setLoading', true)
     ProjectService.getProjectList()
       .then((response) => {
-        commit('setProjectList', response)
+        commit('setProjectList', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -238,7 +238,7 @@ export const actions = {
   createProject({ commit }, project) {
     ProjectService.createProject(project)
       .then((response) => {
-        commit('createProject', response)
+        commit('createProject', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -247,7 +247,7 @@ export const actions = {
   updateProject({ commit }, data) {
     ProjectService.updateProject(data.projectId, data)
       .then((response) => {
-        commit('updateProject', response)
+        commit('updateProject', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -268,7 +268,7 @@ export const actions = {
   setCurrentProject({ commit }, projectId) {
     return ProjectService.fetchProjectById(projectId)
       .then((response) => {
-        commit('setCurrent', response)
+        commit('setCurrent', response.data)
       })
       .catch((error) => {
         alert(error)
@@ -277,7 +277,7 @@ export const actions = {
   updateCurrentProject({ commit }, data) {
     ProjectService.updateProject(data.projectId, data)
       .then((response) => {
-        commit('setCurrent', response)
+        commit('setCurrent', response.data)
       })
       .catch((error) => {
         alert(error)
