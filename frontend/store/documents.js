@@ -111,12 +111,9 @@ export const actions = {
         'Content-Type': 'multipart/form-data'
       }
     }
-    DocumentService.uploadFile(data.projectId, formData, config)
+    return DocumentService.uploadFile(data.projectId, formData, config)
       .then((response) => {
         dispatch('getDocumentList', data)
-      })
-      .catch((error) => {
-        alert(error)
       })
       .finally(() => {
         commit('setLoading', false)

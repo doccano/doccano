@@ -12,6 +12,15 @@
         ref="form"
         v-model="valid"
       >
+        <v-alert
+          v-show="showError"
+          v-model="showError"
+          type="error"
+          dismissible
+        >
+          The file could not be uploaded. Maybe invalid format.
+          Please check available formats carefully.
+        </v-alert>
         <h2>Select a file format</h2>
         <v-radio-group
           v-model="selectedFormat"
@@ -68,7 +77,8 @@ export default {
       file: null,
       selectedFormat: null,
       fileFormatRules,
-      uploadFileRules
+      uploadFileRules,
+      showError: false
     }
   },
 
@@ -99,8 +109,13 @@ export default {
           format: this.selectedFormat.type,
           file: this.file
         })
-        this.reset()
-        this.cancel()
+          .then((response) => {
+            this.reset()
+            this.cancel()
+          })
+          .catch(() => {
+            this.showError = true
+          })
       }
     }
   }
