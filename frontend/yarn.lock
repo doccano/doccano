@@ -1119,6 +1119,13 @@
   dependencies:
     eslint-loader "^2.1.2"
 
+"@nuxtjs/google-analytics@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@nuxtjs/google-analytics/-/google-analytics-2.2.1.tgz#c5bcf486fe04168d4bb044e6f3fe317d7a3a8d50"
+  integrity sha512-li2Xd9G1v6+wdAiAM+G7USTrQ+/ND/fmf02cKs5IRLbKxba+RHDePKu4s5kvWyrgeczgZRaL+Tm4s24mGDYS6g==
+  dependencies:
+    vue-analytics "^5.17.2"
+
 "@nuxtjs/proxy@^1.3.3":
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/@nuxtjs/proxy/-/proxy-1.3.3.tgz#3de3d9f073e8e57167168100940be2a824a220e0"
@@ -9779,6 +9786,11 @@ vm-browserify@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/vm-browserify/-/vm-browserify-1.1.0.tgz#bd76d6a23323e2ca8ffa12028dc04559c75f9019"
   integrity sha512-iq+S7vZJE60yejDYM0ek6zg308+UZsdtPExWP9VZoCFCz1zkJoXFnAX7aZfd/ZwrkidzdUZL0C/ryW+JwAiIGw==
+
+vue-analytics@^5.17.2:
+  version "5.17.5"
+  resolved "https://registry.yarnpkg.com/vue-analytics/-/vue-analytics-5.17.5.tgz#4c03806755132801d4469e220cbf82353c2252db"
+  integrity sha512-BIrnsHy4nf82htNofSnm4B2SaWNlDDmBZsCq0YhSdWLk203qSXBD+z1RrGrE9KAH7YcbH9HE+aBCV9eXWBC02g==
 
 vue-chartjs@^3.4.2:
   version "3.4.2"

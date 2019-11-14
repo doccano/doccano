@@ -55,6 +55,12 @@ export default {
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module'
   ],
+
+  buildModules: [
+    ['@nuxtjs/google-analytics', {
+      id: 'UA-125643874-2'
+    }]
+  ],
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
