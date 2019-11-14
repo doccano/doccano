@@ -29,8 +29,8 @@
           fab
           small
           v-on="on"
-          @shortkey="nextPage"
-          @click="nextPage"
+          @shortkey="nextPage(total)"
+          @click="nextPage(total)"
         >
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
@@ -42,35 +42,16 @@
 
 <script>
 import Vue from 'vue'
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 Vue.use(require('vue-shortkey'))
 
 export default {
-  data() {
-    return {
-      page: 1,
-      limit: 10
-    }
-  },
-
   computed: {
     ...mapState('documents', ['items', 'total']),
-
-    offset() {
-      return Math.floor((this.page - 1) / this.limit) * this.limit
-    },
-
-    current() {
-      return (this.page - 1) % this.limit
-    }
+    ...mapGetters('pagination', ['current', 'limit', 'offset', 'page'])
   },
 
   watch: {
-    page() {
-      const checkpoint = {}
-      checkpoint[this.$route.params.id] = this.page
-      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
-    },
     offset() {
       this.updateSearchOptions({
         limit: this.limit,
@@ -86,8 +67,9 @@ export default {
   },
 
   created() {
-    const checkpoint = JSON.parse(localStorage.getItem('checkpoint'))
-    this.page = checkpoint[this.$route.params.id] ? checkpoint[this.$route.params.id] : 1
+    this.initPage({
+      projectId: this.$route.params.id
+    })
     this.getDocumentList({
       projectId: this.$route.params.id
     })
@@ -95,13 +77,8 @@ export default {
 
   methods: {
     ...mapActions('documents', ['getDocumentList']),
-    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions']),
-    prevPage() {
-      this.page = Math.max(this.page - 1, 1)
-    },
-    nextPage() {
-      this.page = Math.min(this.page + 1, this.total)
-    }
+    ...mapActions('pagination', ['prevPage', 'nextPage', 'initPage']),
+    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions'])
   }
 }
 </script>
