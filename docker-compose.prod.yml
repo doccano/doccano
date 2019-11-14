@@ -1,0 +1,42 @@
+version: "3"
+services:
+
+  backend:
+    build: ./app
+    command: ["/app/tools/run.sh", "0.0.0.0:8000"]
+    volumes:
+      - ./app/:/app/
+    environment:
+      ADMIN_USERNAME: "admin"
+      ADMIN_PASSWORD: "password"
+      ADMIN_EMAIL: "admin@example.com"
+      DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
+      ALLOW_SIGNUP: "False" 
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - static_volume:/home/app/web/staticfiles
+    ports:
+      - 1337:80
+    depends_on:
+      - backend
+
+  postgres:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: "doccano"
+      POSTGRES_PASSWORD: "doccano"
+      POSTGRES_DB: "doccano"
+    ports:
+      - 5432:5432
+
+volumes:
+  postgres_data:
+  static_volume:
