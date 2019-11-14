@@ -15,4 +15,3 @@ RUN npm install
 
 # build project
 RUN npm run build
-RUN ls -l

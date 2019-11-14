@@ -12,10 +12,11 @@ services:
       ADMIN_EMAIL: "admin@example.com"
       DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
       ALLOW_SIGNUP: "False" 
-    ports:
-      - 8000:8000
     depends_on:
       - postgres
+    networks:
+      - network-backend
+      - network-frontend
 
   frontend:
     build: ./frontend
@@ -28,9 +29,11 @@ services:
       - static_volume:/home/app/web/staticfiles
       - www:/var/www/html:ro
     ports:
-      - 1337:80
+      - 80:80
     depends_on:
       - backend
+    networks:
+      - network-frontend
 
   postgres:
     image: postgres:12.0-alpine
@@ -40,10 +43,14 @@ services:
       POSTGRES_USER: "doccano"
       POSTGRES_PASSWORD: "doccano"
       POSTGRES_DB: "doccano"
-    ports:
-      - 5432:5432
+    networks:
+      - network-backend
 
 volumes:
   postgres_data:
   static_volume:
   www:
+
+networks:
+  network-backend:
+  network-frontend:
