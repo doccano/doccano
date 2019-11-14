@@ -5,7 +5,9 @@
         no-gutters
         class="d-none d-sm-flex"
       >
-        <v-col>
+        <v-col v-if="currentDoc">
+          <approve-button :approved="approved" />
+          <filter-button />
           <guideline-button />
         </v-col>
         <v-spacer />
@@ -34,6 +36,8 @@ import Seq2seqContainer from '~/components/containers/annotation/Seq2seqContaine
 import Paginator from '~/components/containers/annotation/Paginator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
+import FilterButton from '@/components/containers/annotation/FilterButton'
+import ApproveButton from '@/components/containers/annotation/ApproveButton'
 
 export default {
   layout: 'annotation',
@@ -41,6 +45,8 @@ export default {
   middleware: ['check-auth', 'auth'],
 
   components: {
+    ApproveButton,
+    FilterButton,
     Seq2seqContainer,
     Paginator,
     GuidelineButton,
@@ -48,7 +54,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('documents', ['currentDoc'])
+    ...mapGetters('documents', ['currentDoc', 'approved'])
   },
 
   validate({ params }) {
