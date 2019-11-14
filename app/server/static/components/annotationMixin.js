@@ -1,7 +1,7 @@
 import * as marked from 'marked';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
-import HTTP, { defaultHttpClient } from './http';
+import HTTP from './http';
 import Preview from './preview.vue';
 
 const getOffsetFromUrl = (url) => {
@@ -11,6 +11,19 @@ const getOffsetFromUrl = (url) => {
   }
 
   return parseInt(offsetMatch[1], 10);
+};
+
+const removeHost = (url) => {
+  if (!url) {
+    return url;
+  }
+
+  const hostMatch = url.match(/^https?:\/\/[^/]*\/(.*)$/);
+  if (hostMatch == null) {
+    return url;
+  }
+
+  return `${window.location.origin}/${hostMatch[1]}`;
 };
 
 const storeOffsetInUrl = (offset) => {
@@ -36,6 +49,28 @@ const storeOffsetInUrl = (offset) => {
   window.location.href = href;
 };
 
+const getLimitFromUrl = (url, prevLimit) => {
+  try {
+    const limitMatch = url.match(/[?#].*limit=(\d+)/);
+
+    return parseInt(limitMatch[1], 10);
+  } catch (err) {
+    return prevLimit;
+  }
+};
+
+const getSidebarTotal = (count, limit) => (
+  count !== 0 && limit !== 0
+    ? Math.ceil(count / limit)
+    : 0
+);
+
+const getSidebarPage = (offset, limit) => (
+  limit !== 0
+    ? Math.ceil(offset / limit) + 1
+    : 0
+);
+
 export default {
   components: { VueJsonPretty, Preview },
 
@@ -53,13 +88,23 @@ export default {
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
       count: 0,
-      isSuperuser: false,
+      prevLimit: 0,
+      paginationPages: 0,
+      paginationPage: 0,
+      isAnnotationApprover: false,
       isMetadataActive: false,
       isAnnotationGuidelineActive: false,
     };
   },
 
   methods: {
+    resetScrollbar() {
+      const textbox = this.$refs.textbox;
+      if (textbox) {
+        textbox.scrollTop = 0;
+      }
+    },
+
     async nextPage() {
       this.pageNumber += 1;
       if (this.pageNumber === this.docs.length) {
@@ -70,6 +115,8 @@ export default {
         } else {
           this.pageNumber = this.docs.length - 1;
         }
+      } else {
+        this.resetScrollbar();
       }
     },
 
@@ -83,17 +130,49 @@ export default {
         } else {
           this.pageNumber = 0;
         }
+      } else {
+        this.resetScrollbar();
       }
+    },
+
+    async nextPagination() {
+      if (this.next) {
+        this.url = this.next;
+        await this.search();
+        this.pageNumber = 0;
+      } else {
+        this.pageNumber = this.docs.length - 1;
+      }
+      this.resetScrollbar();
+    },
+
+    async prevPagination() {
+      if (this.prev) {
+        this.url = this.prev;
+        await this.search();
+        this.pageNumber = this.docs.length - this.limit;
+      } else {
+        this.pageNumber = 0;
+      }
+      this.resetScrollbar();
     },
 
     async search() {
       await HTTP.get(this.url).then((response) => {
         this.docs = response.data.results;
-        this.next = response.data.next;
-        this.prev = response.data.previous;
+        this.next = removeHost(response.data.next);
+        this.prev = removeHost(response.data.previous);
         this.count = response.data.count;
         this.annotations = this.docs.map(doc => doc.annotations);
         this.offset = getOffsetFromUrl(this.url);
+        this.prevLimit = this.limit;
+        if (this.next || this.prevLimit) {
+          this.limit = getLimitFromUrl(this.next, this.prevLimit);
+        } else {
+          this.limit = this.count;
+        }
+        this.paginationPages = getSidebarTotal(this.count, this.limit);
+        this.paginationPage = getSidebarPage(this.offset, this.limit);
       });
     },
 
@@ -174,9 +253,8 @@ export default {
     });
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
-    });
-    defaultHttpClient.get('/v1/me').then((response) => {
-      this.isSuperuser = response.data.is_superuser;
+      const roles = response.data.current_users_role;
+      this.isAnnotationApprover = roles.is_annotation_approver || roles.is_project_admin;
     });
     this.submit();
   },

@@ -12,6 +12,17 @@ body {
   border-right: 1px solid #DEDEDE;
 }
 
+.scrollable {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.sidebar-scrollable {
+  max-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .messages {
   display: block;
   background-color: #fff;

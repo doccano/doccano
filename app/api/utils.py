@@ -4,11 +4,13 @@ import itertools
 import json
 import re
 from collections import defaultdict
-from random import Random
 
 import conllu
+from chardet import UniversalDetector
 from django.db import transaction
 from django.conf import settings
+from colour import Color
+import pyexcel
 from rest_framework.renderers import JSONRenderer
 from seqeval.metrics.sequence_labeling import get_entities
 
@@ -64,7 +66,7 @@ class BaseStorage(object):
         return [label for label in labels if label not in created]
 
     @classmethod
-    def to_serializer_format(cls, labels, created, random_seed=None):
+    def to_serializer_format(cls, labels, created):
         existing_shortkeys = {(label.suffix_key, label.prefix_key)
                               for label in created.values()}
 
@@ -79,9 +81,10 @@ class BaseStorage(object):
                 serializer_label['prefix_key'] = shortkey[1]
                 existing_shortkeys.add(shortkey)
 
-            color = Color.random(seed=random_seed)
-            serializer_label['background_color'] = color.hex
-            serializer_label['text_color'] = color.contrast_color.hex
+            background_color = Color(pick_for=label)
+            text_color = Color('white') if background_color.get_luminance() < 0.5 else Color('black')
+            serializer_label['background_color'] = background_color.hex
+            serializer_label['text_color'] = text_color.hex
 
             serializer_labels.append(serializer_label)
 
@@ -244,7 +247,8 @@ class CoNLLParser(FileParser):
     """
     def parse(self, file):
         data = []
-        file = io.TextIOWrapper(file, encoding='utf-8')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
 
         # Add check exception
 
@@ -299,7 +303,8 @@ class PlainTextParser(FileParser):
     ```
     """
     def parse(self, file):
-        file = io.TextIOWrapper(file, encoding='utf-8')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
         while True:
             batch = list(itertools.islice(file, settings.IMPORT_BATCH_SIZE))
             if not batch:
@@ -322,15 +327,35 @@ class CSVParser(FileParser):
     ```
     """
     def parse(self, file):
-        file = io.TextIOWrapper(file, encoding='utf-8')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
         reader = csv.reader(file)
+        yield from ExcelParser.parse_excel_csv_reader(reader)
+
+
+class ExcelParser(FileParser):
+    def parse(self, file):
+        excel_book = pyexcel.iget_book(file_type="xlsx", file_content=file.read())
+        # Handle multiple sheets
+        for sheet_name in excel_book.sheet_names():
+            reader = excel_book[sheet_name].to_array()
+            yield from self.parse_excel_csv_reader(reader)
+
+    @staticmethod
+    def parse_excel_csv_reader(reader):
         columns = next(reader)
         data = []
+        if len(columns) == 1 and columns[0] != 'text':
+            data.append({'text': columns[0]})
         for i, row in enumerate(reader, start=2):
             if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
-            if len(row) == len(columns) and len(row) >= 2:
+            # Only text column
+            if len(row) == len(columns) and len(row) == 1:
+                data.append({'text': row[0]})
+            # Text, labels and metadata columns
+            elif len(row) == len(columns) and len(row) >= 2:
                 text, label = row[:2]
                 meta = json.dumps(dict(zip(columns[2:], row[2:])))
                 j = {'text': text, 'labels': [label], 'meta': meta}
@@ -344,7 +369,8 @@ class CSVParser(FileParser):
 class JSONParser(FileParser):
 
     def parse(self, file):
-        file = io.TextIOWrapper(file, encoding='utf-8')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
         data = []
         for i, line in enumerate(file, start=1):
             if len(data) >= settings.IMPORT_BATCH_SIZE:
@@ -352,7 +378,6 @@ class JSONParser(FileParser):
                 data = []
             try:
                 j = json.loads(line)
-                #j  = json.loads(line.decode('utf-8'))
                 j['meta'] = json.dumps(j.get('meta', {}))
                 data.append(j)
             except json.decoder.JSONDecodeError:
@@ -426,47 +451,6 @@ class CSVPainter(JSONPainter):
         return res
 
 
-class Color:
-    def __init__(self, red, green, blue):
-        self.red = red
-        self.green = green
-        self.blue = blue
-
-    @property
-    def contrast_color(self):
-        """Generate black or white color.
-
-        Ensure that text and background color combinations provide
-        sufficient contrast when viewed by someone having color deficits or
-        when viewed on a black and white screen.
-
-        Algorithm from w3c:
-        * https://www.w3.org/TR/AERT/#color-contrast
-        """
-        return Color.white() if self.brightness < 128 else Color.black()
-
-    @property
-    def brightness(self):
-        return ((self.red * 299) + (self.green * 587) + (self.blue * 114)) / 1000
-
-    @property
-    def hex(self):
-        return '#{:02x}{:02x}{:02x}'.format(self.red, self.green, self.blue)
-
-    @classmethod
-    def white(cls):
-        return cls(red=255, green=255, blue=255)
-
-    @classmethod
-    def black(cls):
-        return cls(red=0, green=0, blue=0)
-
-    @classmethod
-    def random(cls, seed=None):
-        rgb = Random(seed).choices(range(256), k=3)
-        return cls(*rgb)
-
-
 def iterable_to_io(iterable, buffer_size=io.DEFAULT_BUFFER_SIZE):
     """See https://stackoverflow.com/a/20260030/3817588."""
     class IterStream(io.RawIOBase):
@@ -487,3 +471,34 @@ def iterable_to_io(iterable, buffer_size=io.DEFAULT_BUFFER_SIZE):
                 return 0    # indicate EOF
 
     return io.BufferedReader(IterStream(), buffer_size=buffer_size)
+
+
+class EncodedIO(io.RawIOBase):
+    def __init__(self, fobj, buffer_size=io.DEFAULT_BUFFER_SIZE, default_encoding='utf-8'):
+        buffer = b''
+        detector = UniversalDetector()
+
+        while True:
+            read = fobj.read(buffer_size)
+            detector.feed(read)
+            buffer += read
+            if detector.done or len(read) < buffer_size:
+                break
+
+        if detector.done:
+            self.encoding = detector.result['encoding']
+        else:
+            self.encoding = default_encoding
+
+        self._fobj = fobj
+        self._buffer = buffer
+
+    def readable(self):
+        return self._fobj.readable()
+
+    def readinto(self, b):
+        l = len(b)
+        chunk = self._buffer or self._fobj.read(l)
+        output, self._buffer = chunk[:l], chunk[l:]
+        b[:len(output)] = output
+        return len(output)

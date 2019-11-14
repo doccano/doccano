@@ -53,6 +53,17 @@
               )
               | Randomize document order per user
 
+          div.field
+            label.checkbox
+              input(
+                v-model="collaborativeAnnotation"
+                name="collaborative_annotation"
+                type="checkbox"
+                style="margin-right: 0.25em;"
+                required
+              )
+              | Share annotations across all users
+
         footer.modal-card-foot.pt20.pb20.pr20.pl20.has-background-white-ter
           button.button.is-primary(v-on:click="create()") Create
           button.button(v-on:click="isActive = !isActive") Cancel
@@ -111,10 +122,10 @@
                         td.is-vertical
                           span.tag.is-normal {{ project.project_type }}
 
-                        td.is-vertical(v-if="isSuperuser")
+                        td.is-vertical(v-if="isProjectAdmin.get(project.id)")
                           a(v-bind:href="'/projects/' + project.id + '/docs'") Edit
 
-                        td.is-vertical(v-if="isSuperuser")
+                        td.is-vertical(v-if="isProjectAdmin.get(project.id)")
                           a.has-text-danger(v-on:click="setProject(project)") Delete
 </template>
 
@@ -140,6 +151,8 @@ export default {
     username: '',
     isSuperuser: false,
     randomizeDocumentOrder: false,
+    collaborativeAnnotation: false,
+    isProjectAdmin: null,
   }),
 
   computed: {
@@ -156,6 +169,10 @@ export default {
       this.items = projects.data;
       this.username = me.data.username;
       this.isSuperuser = me.data.is_superuser;
+      this.isProjectAdmin = new Map(this.items.map((project) => {
+        const isProjectAdmin = project.current_users_role.is_project_admin;
+        return [project.id, isProjectAdmin];
+      }));
     });
   },
 
@@ -192,6 +209,7 @@ export default {
         description: this.description,
         project_type: this.projectType,
         randomize_document_order: this.randomizeDocumentOrder,
+        collaborative_annotation: this.collaborativeAnnotation,
         guideline: 'Please write annotation guideline.',
         resourcetype: this.resourceType(),
       };

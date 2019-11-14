@@ -252,6 +252,9 @@ export default {
     },
 
     addLabel() {
+      if (this.newLabel.prefix_key === '') {
+        this.newLabel.prefix_key = null;
+      }
       HTTP.post('labels', this.newLabel)
         .then((response) => {
           this.cancelCreate();

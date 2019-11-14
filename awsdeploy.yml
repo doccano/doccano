@@ -24,8 +24,8 @@ Resources:
   App:
     Type: 'AWS::EC2::Instance'
     Properties:
-      InstanceType: t2.micro
-      ImageId: ami-0ac019f4fcb7cb7e6
+      InstanceType: !Ref InstanceType
+      ImageId: !Ref Ubuntu16Ami
       KeyName: !Ref KeyName
       SecurityGroups:
         - !Ref AppSG
@@ -84,7 +84,7 @@ Resources:
             - |
               sudo docker pull chakkiworks/doccano:latest
             - >
-              sudo docker run -d --name doccano --env-file /env.list -p 80:80
+              sudo docker run -d --name doccano --env-file /env.list -p 80:8000
               chakkiworks/doccano:latest
             - >
               sudo docker exec doccano tools/create-admin.sh ${ADMIN} ${EMAIL}
@@ -92,6 +92,67 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Designer':
         id: 3547c02e-5393-4b26-a9af-6f00dc2cbcdb
+  DescribeImagesRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DescribeImages
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Action: ec2:DescribeImages
+                Effect: Allow
+                Resource: "*"
+  GetLatestAMI:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.6
+      Handler: index.handler
+      Role: !Sub ${DescribeImagesRole.Arn}
+      Timeout: 60
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          import json
+          import traceback
+
+          def handler(event, context):
+            try:
+              response = boto3.client('ec2').describe_images(
+                  Owners=[event['ResourceProperties']['Owner']],
+                  Filters=[
+                    {'Name': 'name', 'Values': [event['ResourceProperties']['Name']]},
+                    {'Name': 'architecture', 'Values': [event['ResourceProperties']['Architecture']]},
+                    {'Name': 'root-device-type', 'Values': ['ebs']},
+                  ],
+              )
+
+              amis = sorted(response['Images'],
+                            key=lambda x: x['CreationDate'],
+                            reverse=True)
+              id = amis[0]['ImageId']
+
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, {}, id)
+            except:
+              traceback.print_last()
+              cfnresponse.send(event, context, cfnresponse.FAIL, {}, "ok")
+  Ubuntu16Ami:
+    Type: Custom::FindAMI
+    Properties:
+      ServiceToken: !Sub ${GetLatestAMI.Arn}
+      Owner: "099720109477"
+      Name: "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20190913"
+      Architecture: "x86_64"
 Metadata:
   'AWS::CloudFormation::Designer':
     116a7f7b-14c5-489a-a3c8-faf276be7ab0:
@@ -124,6 +185,9 @@ Parameters:
       - t2.micro
       - t2.small
       - t2.medium
+      - t3.micro
+      - t3.small
+      - t3.medium
     ConstraintDescription: must be a valid EC2 instance type.
   KeyName:
     Description: Name of an EC2 KeyPair to enable SSH access to the instance.

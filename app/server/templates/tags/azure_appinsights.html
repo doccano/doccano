@@ -7,6 +7,9 @@ var appInsights=window.appInsights||function(a){
       {% if DEBUG %}
       enableDebug: true,
       {% endif %}
+      {% if azure_appinsights_endpoint %}
+      endpointUrl: "{{ azure_appinsights_endpoint }}",
+      {% endif %}
       instrumentationKey: "{{ azure_appinsights_ikey }}"
   });
 window.appInsights=appInsights,appInsights.queue&&0===appInsights.queue.length&&appInsights.trackPageView();

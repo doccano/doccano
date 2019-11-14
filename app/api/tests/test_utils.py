@@ -6,26 +6,7 @@ from seqeval.metrics.sequence_labeling import get_entities
 
 from ..models import Label, Document
 from ..utils import BaseStorage, ClassificationStorage, SequenceLabelingStorage, Seq2seqStorage, CoNLLParser
-from ..utils import Color, iterable_to_io
-
-
-class TestColor(TestCase):
-    def test_random_color(self):
-        color = Color.random()
-        self.assertTrue(0 <= color.red <= 255)
-        self.assertTrue(0 <= color.green <= 255)
-        self.assertTrue(0 <= color.blue <= 255)
-
-    def test_hex(self):
-        color = Color(red=255, green=192, blue=203)
-        self.assertEqual(color.hex, '#ffc0cb')
-
-    def test_contrast_color(self):
-        color = Color(red=255, green=192, blue=203)
-        self.assertEqual(color.contrast_color.hex, '#000000')
-
-        color = Color(red=199, green=21, blue=133)
-        self.assertEqual(color.contrast_color.hex, '#ffffff')
+from ..utils import iterable_to_io
 
 
 class TestBaseStorage(TestCase):
@@ -48,15 +29,14 @@ class TestBaseStorage(TestCase):
         labels = ['positive']
         created = {}
 
-        actual = BaseStorage.to_serializer_format(labels, created, random_seed=123)
+        actual = BaseStorage.to_serializer_format(labels, created)
 
-        self.assertEqual(actual, [{
-            'text': 'positive',
-            'prefix_key': None,
-            'suffix_key': 'p',
-            'background_color': '#0d1668',
-            'text_color': '#ffffff',
-        }])
+        self.assertEqual(len(actual), 1)
+        self.assertEqual(actual[0]['text'], 'positive')
+        self.assertIsNone(actual[0]['prefix_key'])
+        self.assertEqual(actual[0]['suffix_key'], 'p')
+        self.assertIsNotNone(actual[0]['background_color'])
+        self.assertIsNotNone(actual[0]['text_color'])
 
     def test_get_shortkey_without_existing_shortkey(self):
         label = 'positive'

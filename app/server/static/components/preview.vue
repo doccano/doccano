@@ -24,7 +24,7 @@ export default {
 
   computed: {
     fileExtension() {
-      const filename = this.url.split('/').pop();
+      const filename = new URL(this.url).pathname.split('/').pop();
       const extension = filename.match(/[^#?]+/)[0].split('.').pop();
       return extension.toLowerCase();
     },

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'widget_tweaks',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_filters',
     'social_django',
     'polymorphic',
@@ -174,6 +175,10 @@ SOCIAL_AUTH_PIPELINE = [
     'server.social_auth.fetch_azuread_permissions',
 ]
 
+ROLE_PROJECT_ADMIN = env('ROLE_PROJECT_ADMIN', 'project_admin')
+ROLE_ANNOTATOR = env('ROLE_ANNOTATOR', 'annotator')
+ROLE_ANNOTATION_APPROVER = env('ROLE_ANNOTATION_APPROVER', 'annotation_approver')
+
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -210,8 +215,12 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 5,
+    'PAGE_SIZE': env.int('DOCCANO_PAGE_SIZE', default=5),
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'SEARCH_PARAM': 'q',
     'DEFAULT_RENDERER_CLASSES': (
@@ -274,6 +283,7 @@ GOOGLE_TRACKING_ID = env('GOOGLE_TRACKING_ID', 'UA-125643874-2').strip()
 AZURE_APPINSIGHTS_IKEY = env('AZURE_APPINSIGHTS_IKEY', None)
 APPLICATION_INSIGHTS = {
     'ikey': AZURE_APPINSIGHTS_IKEY if AZURE_APPINSIGHTS_IKEY else None,
+    'endpoint': env('AZURE_APPINSIGHTS_ENDPOINT', None),
 }
 
 ## necessary for email verification setup

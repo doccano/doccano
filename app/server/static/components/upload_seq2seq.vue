@@ -22,6 +22,16 @@ block select-format-area
     )
     | JSONL
 
+  label.radio
+    input(
+      type="radio"
+      name="format"
+      value="excel"
+      v-bind:checked="format === 'excel'"
+      v-model="format"
+    )
+    | Excel
+
 block example-format-area
   pre.code-block(v-show="format === 'plain'")
     code.plaintext
