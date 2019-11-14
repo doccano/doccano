@@ -30,6 +30,10 @@ export default {
     '~/api/index.js'
   ],
 
+  env: {
+    baseUrl: process.env.NODE_ENV !== 'production' ? '/v1' : 'http://127.0.0.1:8000/v1'
+  },
+
   /*
   ** Customize the progress-bar color
   */

@@ -1,11 +1,9 @@
 import axios from 'axios'
-const baseURL = 'http://127.0.0.1:8000/v1' // Todo: change URL by development/staging/production.
-// const baseURL = '/v1'
 
 class ApiService {
   constructor() {
     this.instance = axios.create({
-      baseURL
+      baseURL: process.env.baseUrl
     })
   }
 
@@ -24,8 +22,6 @@ class ApiService {
       data,
       ...config
     })
-    // .then(response => response.data)
-    // .catch(error => error)
   }
 
   get(url, config = {}) {
