@@ -17,10 +17,16 @@ services:
     depends_on:
       - postgres
 
+  frontend:
+    build: ./frontend
+    volumes:
+      - www:/app/dist
+
   nginx:
     build: ./nginx
     volumes:
       - static_volume:/home/app/web/staticfiles
+      - www:/var/www/html:ro
     ports:
       - 1337:80
     depends_on:
@@ -40,3 +46,4 @@ services:
 volumes:
   postgres_data:
   static_volume:
+  www:
