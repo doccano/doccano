@@ -29,7 +29,7 @@ router.post('/', (req, res) => {
 
 // Get a label.
 router.get('/:labelId', (req, res) => {
-  const label = db.find(item => item.id === parseInt(req.params.labelId))
+  const label = db.find(item => item.id === parseInt(req.params.labelId, 10))
   if (label) {
     res.json(label)
   } else {
@@ -39,7 +39,7 @@ router.get('/:labelId', (req, res) => {
 
 // Update a label.
 router.patch('/:labelId', (req, res) => {
-  const labelIndex = db.findIndex(item => item.id === parseInt(req.params.labelId))
+  const labelIndex = db.findIndex(item => item.id === parseInt(req.params.labelId, 10))
   if (labelIndex !== -1) {
     // db[labelIndex] = req.body
     Object.assign(db[labelIndex], req.body)
@@ -51,9 +51,9 @@ router.patch('/:labelId', (req, res) => {
 
 // Delete a label.
 router.delete('/:labelId', (req, res, next) => {
-  const label = db.find(item => item.id === parseInt(req.params.labelId))
+  const label = db.find(item => item.id === parseInt(req.params.labelId, 10))
   if (label) {
-    db = db.filter(item => item.id !== parseInt(req.params.labelId))
+    db = db.filter(item => item.id !== parseInt(req.params.labelId, 10))
     res.json(label)
   } else {
     res.status(404).json({ detail: 'Not found.' })

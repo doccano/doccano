@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
 
 // Add a project user.
 router.post('/', (req, res) => {
-  const user = users.find(item => item.id === parseInt(req.body.id))
+  const user = users.find(item => item.id === parseInt(req.body.id, 10))
   const member = {
     ...user,
     role: req.body.role
@@ -30,7 +30,7 @@ router.post('/', (req, res) => {
 
 // Update a project user.
 router.put('/:userId', (req, res) => {
-  const projectIndex = db.findIndex(item => item.id === parseInt(req.params.userId))
+  const projectIndex = db.findIndex(item => item.id === parseInt(req.params.userId, 10))
   if (projectIndex !== -1) {
     db[projectIndex] = req.body
     res.json(db[projectIndex])
@@ -41,7 +41,7 @@ router.put('/:userId', (req, res) => {
 
 // Partially update a project user.
 router.patch('/:userId', (req, res) => {
-  const projectIndex = db.findIndex(item => item.id === parseInt(req.params.userId))
+  const projectIndex = db.findIndex(item => item.id === parseInt(req.params.userId, 10))
   if (projectIndex !== -1) {
     db[projectIndex].role = req.body.role
     res.json(db[projectIndex])
@@ -52,9 +52,9 @@ router.patch('/:userId', (req, res) => {
 
 // Delete a project user.
 router.delete('/:userId', (req, res, next) => {
-  const project = db.find(item => item.id === parseInt(req.params.userId))
+  const project = db.find(item => item.id === parseInt(req.params.userId, 10))
   if (project) {
-    db = db.filter(item => item.id !== parseInt(req.params.userId))
+    db = db.filter(item => item.id !== parseInt(req.params.userId, 10))
     res.json(project)
   } else {
     res.status(404).json({ detail: 'Not found.' })

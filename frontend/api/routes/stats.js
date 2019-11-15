@@ -1,7 +1,7 @@
 const fs = require('fs')
 const express = require('express')
 const router = express.Router()
-let db = JSON.parse(fs.readFileSync('./api/db/stats.json', 'utf8'))
+const db = JSON.parse(fs.readFileSync('./api/db/stats.json', 'utf8'))
 
 // Get statistics.
 router.get('/', (req, res) => {

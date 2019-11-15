@@ -42,7 +42,7 @@ router.get('/download', (req, res) => {
 
 // Update a document partially.
 router.patch('/:docId', (req, res) => {
-  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId))
+  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId, 10))
   if (docIndex !== -1) {
     Object.assign(db.results[docIndex], req.body)
     res.json(db.results[docIndex])
@@ -53,7 +53,7 @@ router.patch('/:docId', (req, res) => {
 
 // Get a doc.
 router.get('/:docId', (req, res) => {
-  const doc = db.results.find(item => item.id === parseInt(req.params.docId))
+  const doc = db.results.find(item => item.id === parseInt(req.params.docId, 10))
   if (doc) {
     res.json(doc)
   } else {
@@ -63,7 +63,7 @@ router.get('/:docId', (req, res) => {
 
 // Update a doc.
 router.put('/:docId', (req, res) => {
-  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId))
+  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId, 10))
   if (docIndex !== -1) {
     db.results[docIndex] = req.body
     res.json(db.results[docIndex])
@@ -74,9 +74,9 @@ router.put('/:docId', (req, res) => {
 
 // Delete a doc.
 router.delete('/:docId', (req, res, next) => {
-  const doc = db.results.find(item => item.id === parseInt(req.params.docId))
+  const doc = db.results.find(item => item.id === parseInt(req.params.docId, 10))
   if (doc) {
-    db.results = db.results.filter(item => item.id !== parseInt(req.params.docId))
+    db.results = db.results.filter(item => item.id !== parseInt(req.params.docId, 10))
     res.json(doc)
   } else {
     res.status(404).json({ detail: 'Not found.' })
@@ -85,7 +85,7 @@ router.delete('/:docId', (req, res, next) => {
 
 // Add an annotation.
 router.post('/:docId/annotations', (req, res, next) => {
-  const doc = db.results.find(item => item.id === parseInt(req.params.docId))
+  const doc = db.results.find(item => item.id === parseInt(req.params.docId, 10))
   if (doc) {
     const annotation = {
       id: Math.floor(Math.random() * 10000),
@@ -93,7 +93,7 @@ router.post('/:docId/annotations', (req, res, next) => {
       start_offset: req.body.start_offset,
       end_offset: req.body.end_offset,
       user: 1,
-      document: parseInt(req.params.docId),
+      document: parseInt(req.params.docId, 10),
       text: req.body.text
     }
     doc.annotations.push(annotation)
@@ -105,11 +105,11 @@ router.post('/:docId/annotations', (req, res, next) => {
 
 // Delete an annotation.
 router.delete('/:docId/annotations/:annotationId', (req, res, next) => {
-  const doc = db.results.find(item => item.id === parseInt(req.params.docId))
-  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId))
+  const doc = db.results.find(item => item.id === parseInt(req.params.docId, 10))
+  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId, 10))
   if (doc) {
-    const annotation = doc.annotations.find(item => item.id === parseInt(req.params.annotationId))
-    doc.annotations = doc.annotations.filter(item => item.id !== parseInt(req.params.annotationId))
+    const annotation = doc.annotations.find(item => item.id === parseInt(req.params.annotationId, 10))
+    doc.annotations = doc.annotations.filter(item => item.id !== parseInt(req.params.annotationId, 10))
     db.results[docIndex] = doc
     res.json(annotation)
   } else {
@@ -119,10 +119,10 @@ router.delete('/:docId/annotations/:annotationId', (req, res, next) => {
 
 // Update an annotation.
 router.patch('/:docId/annotations/:annotationId', (req, res, next) => {
-  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId))
+  const docIndex = db.results.findIndex(item => item.id === parseInt(req.params.docId, 10))
   if (docIndex !== -1) {
     const doc = db.results[docIndex]
-    const annotationIndex = doc.annotations.findIndex(item => item.id === parseInt(req.params.annotationId))
+    const annotationIndex = doc.annotations.findIndex(item => item.id === parseInt(req.params.annotationId, 10))
     Object.assign(db.results[docIndex].annotations[annotationIndex], req.body)
     res.json(db.results[docIndex].annotations[annotationIndex])
   } else {

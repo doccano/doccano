@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
 
 // Get a user.
 router.get('/:userId', (req, res) => {
-  const user = db.find(item => item.id === parseInt(req.params.userId))
+  const user = db.find(item => item.id === parseInt(req.params.userId, 10))
   if (user) {
     res.json(user)
   } else {
