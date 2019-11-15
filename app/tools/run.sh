@@ -2,10 +2,15 @@
 
 set -o errexit
 
+if [[ ! -d "staticfiles" ]]; then
+  echo "Making staticfiles"
+  python manage.py collectstatic --noinput;
+fi
+
 echo "Initializing database"
 python manage.py wait_for_db
 python manage.py migrate
-# python manage.py create_roles
+python manage.py create_roles
 
 if [[ -n "${ADMIN_USERNAME}" ]] && [[ -n "${ADMIN_PASSWORD}" ]] && [[ -n "${ADMIN_EMAIL}" ]]; then
   python manage.py create_admin \

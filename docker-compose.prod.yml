@@ -6,6 +6,7 @@ services:
     command: ["/app/tools/run.sh", "0.0.0.0:8000"]
     volumes:
       - ./app/:/app/
+      - static_volume:/app/staticfiles
     environment:
       ADMIN_USERNAME: "admin"
       ADMIN_PASSWORD: "password"
@@ -26,8 +27,8 @@ services:
   nginx:
     build: ./nginx
     volumes:
-      - static_volume:/home/app/web/staticfiles
       - www:/var/www/html:ro
+      - static_volume:/static
     ports:
       - 80:80
     depends_on:
