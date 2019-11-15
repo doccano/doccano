@@ -1,0 +1,10 @@
+**/bundle/
+**/node_modules/
+**/webpack-stats.json
+
+**/*.sqlite3
+**/.env
+**/junitxml/
+**/staticfiles/
+**/venv/
+**/__pycache__/

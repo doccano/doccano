@@ -1,0 +1,114 @@
+[
+    {
+        "id": 1,
+        "name": "CoNLL 2003",
+        "description": "This is a project for NER.",
+        "guideline": "Please write annotation guideline.",
+        "users": [
+            1
+        ],
+        "project_type": "SequenceLabeling",
+        "image": "/static/assets/images/cats/sequence_labeling.jpg",
+        "updated_at": "2019-07-09T06:19:29.789091Z",
+        "randomize_document_order": false,
+        "resourcetype": "SequenceLabelingProject"
+    },
+    {
+        "id": 2,
+        "name": "Test",
+        "description": "test",
+        "guideline": "Please write annotation guideline.",
+        "users": [
+            1
+        ],
+        "project_type": "SequenceLabeling",
+        "image": "/static/assets/images/cats/sequence_labeling.jpg",
+        "updated_at": "2019-07-22T05:08:45.202301Z",
+        "randomize_document_order": false,
+        "resourcetype": "SequenceLabelingProject"
+    },
+    {
+        "id": 3,
+        "name": "Pane",
+        "description": "pane",
+        "guideline": "Please write annotation guideline.",
+        "users": [
+            1
+        ],
+        "project_type": "DocumentClassification",
+        "image": "/static/assets/images/cats/text_classification.jpg",
+        "updated_at": "2019-07-22T05:12:52.843046Z",
+        "randomize_document_order": false,
+        "resourcetype": "TextClassificationProject"
+    },
+    {
+        "id": 4,
+        "name": "seq2seq",
+        "description": "test",
+        "guideline": "Please write annotation guideline.",
+        "users": [
+            1
+        ],
+        "project_type": "Seq2seq",
+        "image": "/static/assets/images/cats/seq2seq.jpg",
+        "updated_at": "2019-07-29T06:35:28.705326Z",
+        "randomize_document_order": false,
+        "resourcetype": "Seq2seqProject"
+    },
+    {
+        "id": 5,
+        "name": "NLPBook",
+        "description": "nlp book用のプロジェクト",
+        "guideline": "Please write annotation guideline.",
+        "users": [
+            1
+        ],
+        "project_type": "SequenceLabeling",
+        "image": "/static/assets/images/cats/sequence_labeling.jpg",
+        "updated_at": "2019-08-01T01:46:35.938419Z",
+        "randomize_document_order": false,
+        "resourcetype": "SequenceLabelingProject"
+    },
+    {
+        "id": 6,
+        "name": "test",
+        "description": "test",
+        "guideline": "Please write annotation guideline.",
+        "users": [
+            1
+        ],
+        "project_type": "SequenceLabeling",
+        "image": "/static/assets/images/cats/sequence_labeling.jpg",
+        "updated_at": "2019-08-01T04:15:09.998495Z",
+        "randomize_document_order": false,
+        "resourcetype": "SequenceLabelingProject"
+    },
+    {
+        "id": 7,
+        "name": "neko",
+        "description": "kkk",
+        "guideline": "Please write annotation guideline.",
+        "users": [
+            1
+        ],
+        "project_type": "SequenceLabeling",
+        "image": "/static/assets/images/cats/sequence_labeling.jpg",
+        "updated_at": "2019-08-19T05:53:00.026794Z",
+        "randomize_document_order": false,
+        "resourcetype": "SequenceLabelingProject"
+    },
+    {
+        "id": 8,
+        "name": "classification",
+        "description": "nekoneko",
+        "guideline": "Please write annotation guideline.",
+        "users": [
+            1
+        ],
+        "project_type": "DocumentClassification",
+        "image": "/static/assets/images/cats/text_classification.jpg",
+        "updated_at": "2019-08-21T02:49:48.790813Z",
+        "randomize_document_order": false,
+        "resourcetype": "TextClassificationProject"
+    }
+]
