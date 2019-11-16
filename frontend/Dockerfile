@@ -3,9 +3,6 @@ FROM node:13.1.0
 # set work directory
 WORKDIR /app
 
-# set environment variables
-# ENV PYTHONDONTWRITEBYTECODE 1
-
 # copy project
 COPY . /app/
 

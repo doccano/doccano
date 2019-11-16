@@ -3,16 +3,16 @@ services:
 
   backend:
     build: ./app
-    command: ["/app/tools/run.sh", "0.0.0.0:8000"]
+    command: ["/app/tools/run.sh"]
     volumes:
-      - ./app/:/app/
       - static_volume:/app/staticfiles
     environment:
       ADMIN_USERNAME: "admin"
       ADMIN_PASSWORD: "password"
       ADMIN_EMAIL: "admin@example.com"
       DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
-      ALLOW_SIGNUP: "False" 
+      ALLOW_SIGNUP: "False"
+      DEBUG: "False"
     depends_on:
       - postgres
     networks:

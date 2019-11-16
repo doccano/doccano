@@ -2,10 +2,8 @@
 
 set -o errexit
 
-if [[ ! -d "staticfiles" ]]; then
-  echo "Making staticfiles"
-  python manage.py collectstatic --noinput;
-fi
+echo "Making staticfiles"
+python manage.py collectstatic --noinput
 
 echo "Initializing database"
 python manage.py wait_for_db
