@@ -1,8 +1,8 @@
 <template>
   <v-card>
-    <v-card-title>
-      <label-creation-button />
-      <label-deletion-button />
+    <v-card-title class="mb-2">
+      <label-action-menu />
+      <label-deletion-button class="ms-2" />
     </v-card-title>
     <label-list />
   </v-card>
@@ -10,7 +10,7 @@
 
 <script>
 import LabelList from '@/components/containers/labels/LabelList'
-import LabelCreationButton from '@/components/containers/labels/LabelCreationButton'
+import LabelActionMenu from '@/components/containers/labels/LabelActionMenu'
 import LabelDeletionButton from '@/components/containers/labels/LabelDeletionButton'
 
 export default {
@@ -20,7 +20,7 @@ export default {
 
   components: {
     LabelList,
-    LabelCreationButton,
+    LabelActionMenu,
     LabelDeletionButton
   },
 
