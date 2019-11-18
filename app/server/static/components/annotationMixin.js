@@ -87,6 +87,7 @@ export default {
       url: '',
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
+      ordering: '',
       count: 0,
       prevLimit: 0,
       paginationPages: 0,
@@ -188,7 +189,7 @@ export default {
 
     async submit() {
       const state = this.getState();
-      this.url = `docs?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
+      this.url = `docs?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}&ordering=${this.ordering}`;
       await this.search();
       this.pageNumber = 0;
     },
@@ -231,6 +232,11 @@ export default {
 
   watch: {
     picked() {
+      this.submit();
+    },
+
+    ordering() {
+      this.offset = 0;
       this.submit();
     },
 
