@@ -682,12 +682,18 @@ class TestAnnotationDetailAPI(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
         cls.project_member_name = 'project_member_name'
         cls.project_member_pass = 'project_member_pass'
         cls.another_project_member_name = 'another_project_member_name'
         cls.another_project_member_pass = 'another_project_member_pass'
         cls.non_project_member_name = 'non_project_member_name'
         cls.non_project_member_pass = 'non_project_member_pass'
+        # Todo: change super_user to project_admin.
+        super_user = User.objects.create_superuser(username=cls.super_user_name,
+                                                   password=cls.super_user_pass,
+                                                   email='fizz@buzz.com')
         create_default_roles()
         project_member = User.objects.create_user(username=cls.project_member_name,
                                                   password=cls.project_member_pass)
@@ -697,7 +703,7 @@ class TestAnnotationDetailAPI(APITestCase):
                                                       password=cls.non_project_member_pass)
 
         main_project = mommy.make('SequenceLabelingProject',
-                                  users=[project_member, another_project_member])
+                                  users=[super_user, project_member, another_project_member])
         main_project_doc = mommy.make('Document', project=main_project)
         main_project_entity = mommy.make('SequenceAnnotation',
                                          document=main_project_doc, user=project_member)
@@ -753,6 +759,12 @@ class TestAnnotationDetailAPI(APITestCase):
                           password=self.project_member_pass)
         response = self.client.patch(self.another_url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allows_superuser_to_delete_annotation_of_another_member(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.delete(self.another_url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_allows_project_member_to_delete_annotation(self):
         self.client.login(username=self.project_member_name,
