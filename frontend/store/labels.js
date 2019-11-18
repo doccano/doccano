@@ -77,5 +77,40 @@ export const actions = {
         })
     }
     commit('resetSelected')
+  },
+  importLabels({ commit }, payload) {
+    commit('setLoading', true)
+    const formData = new FormData()
+    formData.append('file', payload.file)
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const labels = JSON.parse(e.target.result)
+      for (const label of labels) {
+        LabelService.addLabel(payload.projectId, label)
+          .then((response) => {
+            commit('addLabel', response.data)
+          })
+      }
+    }
+    reader.readAsText(payload.file)
+    commit('setLoading', false)
+  },
+  exportLabels({ commit }, payload) {
+    commit('setLoading', true)
+    LabelService.getLabelList(payload.projectId)
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([JSON.stringify(response.data)]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `project_${payload.projectId}_labels.json`)
+        document.body.appendChild(link)
+        link.click()
+      })
+      .catch((error) => {
+        alert(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
+      })
   }
 }
