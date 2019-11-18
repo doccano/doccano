@@ -270,6 +270,9 @@ if DATABASES['default'].get('ENGINE') == 'sql_server.pyodbc':
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', False)
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', False)
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', [])
 
 # Allow all host headers
 # ALLOWED_HOSTS = ['*']
