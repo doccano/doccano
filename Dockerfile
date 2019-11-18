@@ -1,21 +1,31 @@
 ARG PYTHON_VERSION="3.6"
 FROM python:${PYTHON_VERSION}-stretch AS builder
 
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
 ARG NODE_VERSION="8.x"
+# hadolint ignore=DL3008
 RUN curl -sL "https://deb.nodesource.com/setup_${NODE_VERSION}" | bash - \
  && apt-get install --no-install-recommends -y \
       nodejs
+
+ARG HADOLINT_VERSION=v1.17.1
+RUN curl -fsSL "https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-$(uname -m)" -o /usr/local/bin/hadolint  \
+  && chmod +x /usr/local/bin/hadolint
 
 COPY tools/install-mssql.sh /doccano/tools/install-mssql.sh
 RUN /doccano/tools/install-mssql.sh --dev
 
 COPY app/server/static/package*.json /doccano/app/server/static/
-RUN cd /doccano/app/server/static \
- && npm ci
+WORKDIR /doccano/app/server/static
+RUN npm ci
 
 COPY requirements.txt /
 RUN pip install -r /requirements.txt \
  && pip wheel -r /requirements.txt -w /deps
+
+COPY Dockerfile /
+RUN hadolint /Dockerfile
 
 COPY . /doccano
 
@@ -24,12 +34,12 @@ RUN tools/ci.sh
 
 FROM builder AS cleaner
 
-RUN cd /doccano/app/server/static \
- && SOURCE_MAP=False DEBUG=False npm run build \
+WORKDIR /doccano/app/server/static
+RUN SOURCE_MAP=False DEBUG=False npm run build \
  && rm -rf components pages node_modules .*rc package*.json webpack.config.js
 
-RUN cd /doccano \
- && python app/manage.py collectstatic --noinput
+WORKDIR /doccano
+RUN python app/manage.py collectstatic --noinput
 
 FROM python:${PYTHON_VERSION}-slim-stretch AS runtime
 
@@ -39,6 +49,7 @@ RUN /doccano/tools/install-mssql.sh
 RUN useradd -ms /bin/sh doccano
 
 COPY --from=builder /deps /deps
+# hadolint ignore=DL3013
 RUN pip install --no-cache-dir /deps/*.whl
 
 COPY --from=cleaner --chown=doccano:doccano /doccano /doccano
