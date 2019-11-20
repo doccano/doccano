@@ -38,6 +38,14 @@
           data-test="project-type"
           required
         />
+        <v-checkbox
+          v-model="enableRandomizeDocOrder"
+          label="Randomize document order"
+        />
+        <v-checkbox
+          v-model="enableShareAnnotation"
+          label="Share annotations across all users"
+        />
       </v-form>
     </template>
   </base-card>
@@ -72,6 +80,8 @@ export default {
       name: '',
       description: '',
       projectType: null,
+      enableShareAnnotation: false,
+      enableRandomizeDocOrder: false,
       projectNameRules,
       projectTypeRules,
       descriptionRules
@@ -113,9 +123,9 @@ export default {
           description: this.description,
           project_type: this.getServerType(),
           guideline: 'Please write annotation guideline.',
-          resourcetype: this.getResourceType()
-          // randomize_document_order: this.randomizeDocumentOrder,
-          // collaborative_annotation: this.collaborativeAnnotation
+          resourcetype: this.getResourceType(),
+          randomize_document_order: this.enableRandomizeDocOrder,
+          collaborative_annotation: this.enableShareAnnotation
         })
         this.reset()
         this.cancel()
