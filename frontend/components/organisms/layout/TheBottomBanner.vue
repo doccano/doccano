@@ -17,7 +17,7 @@
             md7
           >
             <v-img
-              src="http://doccano.herokuapp.com/static/images/named_entity_recognition.6fb82064e7aa.png"
+              src="/images/ner_demo.png"
               max-height="380"
               contain
               class="ma-5"
