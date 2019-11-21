@@ -321,7 +321,7 @@ class TextDownloadAPI(APIView):
 
         download_format = request.query_params.get('q')
         if download_format not in self.download_formats:
-            raise ValidationError(f'format {download_format} is invalid.')
+            raise ValidationError('format {} is invalid.'.format(download_format))
 
         task = tasks.download_text.delay(download_format, project_id)
 

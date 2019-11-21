@@ -259,9 +259,9 @@ try:
     CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 except EnvError:
     try:
-        CELERY_BROKER_URL = f"sqla+{env('DATABASE_URL')}"
+        CELERY_BROKER_URL = 'sqla+{}'.format(env('DATABASE_URL'))
     except EnvError:
-        CELERY_BROKER_URL = f"sqla+sqlite:///{DATABASES['default']['NAME']}"
+        CELERY_BROKER_URL = 'sqla+sqlite:///{}'.format(DATABASES['default']['NAME'])
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
