@@ -5,6 +5,7 @@
 !.coveragerc
 !.flake8
 !requirements.txt
+!Dockerfile
 
 app/**/bundle/
 app/**/node_modules/

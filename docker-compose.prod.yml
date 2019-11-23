@@ -1,0 +1,57 @@
+version: "3.7"
+services:
+
+  backend:
+    build: ./app
+    command: ["/app/tools/run.sh"]
+    volumes:
+      - static_volume:/app/staticfiles
+    environment:
+      ADMIN_USERNAME: "admin"
+      ADMIN_PASSWORD: "password"
+      ADMIN_EMAIL: "admin@example.com"
+      DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
+      ALLOW_SIGNUP: "False"
+      DEBUG: "False"
+    depends_on:
+      - postgres
+    networks:
+      - network-backend
+      - network-frontend
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - www:/app/dist
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - www:/var/www/html:ro
+      - static_volume:/static
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+    networks:
+      - network-frontend
+
+  postgres:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: "doccano"
+      POSTGRES_PASSWORD: "doccano"
+      POSTGRES_DB: "doccano"
+    networks:
+      - network-backend
+
+volumes:
+  postgres_data:
+  static_volume:
+  www:
+
+networks:
+  network-backend:
+  network-frontend:

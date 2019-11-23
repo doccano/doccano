@@ -1,0 +1,12 @@
+[
+    {
+        "id": 1,
+        "username": "Barack Obama",
+        "role": "Admin"
+    },
+    {
+        "id": 2,
+        "username": "George W. Bush",
+        "role": "Member"
+    }
+]

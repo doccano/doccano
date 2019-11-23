@@ -1,17 +1,17 @@
 # Welcome to doccano
 
-## Text Annotation for Human
+## Text Annotation for Humans
 
-doccano is an open source text annotation tool for human. It provides annotation features for text classification, sequence labeling and sequence to sequence. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create project, upload data and start annotation. You can build dataset in hours.
+doccano is an open source text annotation tool built for human beings. It provides annotation features for text classification, sequence labeling and sequence to sequence. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create project, upload your data and start annotating. You can build a dataset in hours.
 
 
 ## Demo
 
-You can enjoy [annotation demo](http://doccano.herokuapp.com).
+You can enjoy this [annotation demo](http://doccano.herokuapp.com).
 
 ### [Named entity recognition](https://doccano.herokuapp.com/demo/named-entity-recognition/)
 
-First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can quickly annotate text spans.
+First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate them. Since doccano supports shortcut keys, you can quickly annotate text spans.
 
 ![Named Entity Recognition](./named_entity_annotation.gif)
 
@@ -23,7 +23,7 @@ Second demo is one of the text classification tasks, topic classification. Since
 
 ### [Machine translation](https://doccano.herokuapp.com/demo/translation/)
 
-Final demo is one of the sequence to sequence tasks, machine translation. Since there may be more than one responses in sequence to sequence tasks, you can create multi responses.
+Final demo is one of the sequence to sequence tasks, machine translation. Since there may be more than one responses in sequence to sequence tasks, you can create multiple responses.
 
 ![Machine Translation](./translation.gif)
 

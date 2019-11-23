@@ -1,7 +1,7 @@
 import * as marked from 'marked';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
-import HTTP, { defaultHttpClient } from './http';
+import HTTP from './http';
 import Preview from './preview.vue';
 
 const getOffsetFromUrl = (url) => {
@@ -87,11 +87,12 @@ export default {
       url: '',
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
+      ordering: '',
       count: 0,
       prevLimit: 0,
       paginationPages: 0,
       paginationPage: 0,
-      isSuperuser: false,
+      isAnnotationApprover: false,
       isMetadataActive: false,
       isAnnotationGuidelineActive: false,
     };
@@ -188,7 +189,7 @@ export default {
 
     async submit() {
       const state = this.getState();
-      this.url = `docs?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
+      this.url = `docs?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}&ordering=${this.ordering}`;
       await this.search();
       this.pageNumber = 0;
     },
@@ -234,9 +235,14 @@ export default {
       this.submit();
     },
 
+    ordering() {
+      this.offset = 0;
+      this.submit();
+    },
+
     annotations() {
       // fetch progress info.
-      HTTP.get('statistics').then((response) => {
+      HTTP.get('statistics?include=total&include=remaining').then((response) => {
         this.total = response.data.total;
         this.remaining = response.data.remaining;
       });
@@ -253,9 +259,8 @@ export default {
     });
     HTTP.get().then((response) => {
       this.guideline = response.data.guideline;
-    });
-    defaultHttpClient.get('/v1/me').then((response) => {
-      this.isSuperuser = response.data.is_superuser;
+      const roles = response.data.current_users_role;
+      this.isAnnotationApprover = roles.is_annotation_approver || roles.is_project_admin;
     });
     this.submit();
   },

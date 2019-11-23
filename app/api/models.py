@@ -1,7 +1,10 @@
 import string
 
 from django.db import models
+from django.dispatch import receiver
+from django.db.models.signals import post_save, pre_delete
 from django.urls import reverse
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
@@ -237,3 +240,81 @@ class Seq2seqAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user', 'text')
+
+
+class Role(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+
+class RoleMapping(models.Model):
+    user = models.ForeignKey(User, related_name='role_mappings', on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name='role_mappings', on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        other_rolemappings = self.project.role_mappings.exclude(id=self.id)
+
+        if other_rolemappings.filter(user=self.user, project=self.project).exists():
+            raise ValidationError('This user is already assigned to a role in this project.')
+
+    class Meta:
+        unique_together = ("user", "project", "role")
+
+
+@receiver(post_save, sender=RoleMapping)
+def add_linked_project(sender, instance, created, **kwargs):
+    if not created:
+        return
+    userInstance = instance.user
+    projectInstance = instance.project
+    if userInstance and projectInstance:
+        user = User.objects.get(pk=userInstance.pk)
+        project = Project.objects.get(pk=projectInstance.pk)
+        user.projects.add(project)
+        user.save()
+
+
+@receiver(post_save)
+def add_superusers_to_project(sender, instance, created, **kwargs):
+    if not created:
+        return
+    if sender not in Project.__subclasses__():
+        return
+    superusers = User.objects.filter(is_superuser=True)
+    admin_role = Role.objects.filter(name=settings.ROLE_PROJECT_ADMIN).first()
+    if superusers and admin_role:
+        RoleMapping.objects.bulk_create(
+            [RoleMapping(role_id=admin_role.id, user_id=superuser.id, project_id=instance.id)
+             for superuser in superusers]
+        )
+
+
+@receiver(post_save, sender=User)
+def add_new_superuser_to_projects(sender, instance, created, **kwargs):
+    if created and instance.is_superuser:
+        admin_role = Role.objects.filter(name=settings.ROLE_PROJECT_ADMIN).first()
+        projects = Project.objects.all()
+        if admin_role and projects:
+            RoleMapping.objects.bulk_create(
+                [RoleMapping(role_id=admin_role.id, user_id=instance.id, project_id=project.id)
+                 for project in projects]
+            )
+
+
+@receiver(pre_delete, sender=RoleMapping)
+def delete_linked_project(sender, instance, using, **kwargs):
+    userInstance = instance.user
+    projectInstance = instance.project
+    if userInstance and projectInstance:
+        user = User.objects.get(pk=userInstance.pk)
+        project = Project.objects.get(pk=projectInstance.pk)
+        user.projects.remove(project)
+        user.save()

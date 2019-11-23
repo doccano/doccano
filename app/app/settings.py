@@ -175,6 +175,10 @@ SOCIAL_AUTH_PIPELINE = [
     'server.social_auth.fetch_azuread_permissions',
 ]
 
+ROLE_PROJECT_ADMIN = env('ROLE_PROJECT_ADMIN', 'project_admin')
+ROLE_ANNOTATOR = env('ROLE_ANNOTATOR', 'annotator')
+ROLE_ANNOTATION_APPROVER = env('ROLE_ANNOTATION_APPROVER', 'annotation_approver')
+
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -266,6 +270,9 @@ if DATABASES['default'].get('ENGINE') == 'sql_server.pyodbc':
 
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', False)
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', False)
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', [])
 
 # Allow all host headers
 # ALLOWED_HOSTS = ['*']

@@ -9,7 +9,7 @@ from django.core.mail import EmailMessage
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 
-from app import settings
+from django.conf import settings
 
 
 class SignupView(TemplateView):
