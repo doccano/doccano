@@ -1,23 +1,28 @@
 <template>
-  <v-card>
+  <v-card
+    v-if="currentDoc && items"
+    v-shortkey="multiKeys"
+    @shortkey="addOrRemoveLabel"
+  >
     <v-card-title>
       <multi-class-classification
-        v-if="currentDoc"
         :labels="items"
         :annotations="currentDoc.annotations"
         :add-label="addLabel"
         :delete-label="removeLabel"
       />
     </v-card-title>
-    <v-card-text v-if="currentDoc" class="title">
+    <v-card-text class="title">
       {{ currentDoc.text }}
     </v-card-text>
   </v-card>
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import MultiClassClassification from '@/components/organisms/annotation/MultiClassClassification'
+Vue.use(require('vue-shortkey'))
 
 export default {
   components: {
@@ -26,7 +31,14 @@ export default {
 
   computed: {
     ...mapState('labels', ['items']),
-    ...mapGetters('documents', ['currentDoc'])
+    ...mapGetters('documents', ['currentDoc']),
+    multiKeys() {
+      const multiKeys = {}
+      for (const item of this.items) {
+        multiKeys[item.id] = [item.suffix_key]
+      }
+      return multiKeys
+    }
   },
 
   created() {
@@ -59,6 +71,15 @@ export default {
         projectId: this.$route.params.id
       }
       this.addAnnotation(payload)
+    },
+    addOrRemoveLabel(event) {
+      const label = this.items.find(item => item.id === parseInt(event.srcKey, 10))
+      const annotation = this.currentDoc.annotations.find(item => item.label === label.id)
+      if (annotation) {
+        this.removeLabel(annotation.id)
+      } else {
+        this.addLabel(label.id)
+      }
     }
   }
 }
