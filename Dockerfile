@@ -48,11 +48,17 @@ RUN /doccano/tools/install-mssql.sh
 
 RUN useradd -ms /bin/sh doccano
 
+RUN mkdir /data \
+ && chown doccano:doccano /data
+
 COPY --from=builder /deps /deps
 # hadolint ignore=DL3013
 RUN pip install --no-cache-dir /deps/*.whl
 
 COPY --from=cleaner --chown=doccano:doccano /doccano /doccano
+
+VOLUME /data
+ENV DATABASE_URL="sqlite:////data/doccano.db"
 
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
