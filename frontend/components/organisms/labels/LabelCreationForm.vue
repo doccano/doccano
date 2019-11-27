@@ -5,7 +5,7 @@
     cancel-text="Cancel"
     :disabled="!valid"
     @agree="create"
-    @cancel="cancel"
+    @cancel="reset"
   >
     <template #content>
       <v-form
@@ -87,6 +87,7 @@ export default {
     },
     reset() {
       this.$refs.form.reset()
+      this.cancel('close')
     },
     create() {
       if (this.validate()) {
@@ -94,13 +95,12 @@ export default {
           projectId: this.$route.params.id,
           text: this.labelName,
           prefix_key: null,
-          suffix_key: this.suffixKey,
-          background_color: this.color.slice(0, -2),
+          suffix_key: this.suffixKey ? this.suffixKey : null,
+          background_color: this.color.slice(0, 7), // #12345678 -> #123456
           text_color: '#ffffff'
         })
           .then(() => {
             this.reset()
-            this.cancel()
           })
           .catch(() => {
             this.showError = true
