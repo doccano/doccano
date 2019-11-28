@@ -29,7 +29,7 @@ export const mutations = {
     localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
   },
   loadPage(state) {
-    const checkpoint = JSON.parse(localStorage.getItem('checkpoint'))
+    const checkpoint = JSON.parse(localStorage.getItem('checkpoint')) || {}
     state.page = checkpoint[state.projectId] ? checkpoint[state.projectId] : 1
   },
   setProjectId(state, projectId) {
