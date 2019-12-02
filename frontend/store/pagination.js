@@ -48,6 +48,10 @@ export const actions = {
     commit('updatePage', page)
     commit('savePage')
   },
+  movePage({ commit }, newPage) {
+    commit('updatePage', newPage)
+    commit('savePage')
+  },
   initPage({ commit }, payload) {
     commit('setProjectId', payload.projectId)
     commit('loadPage')
