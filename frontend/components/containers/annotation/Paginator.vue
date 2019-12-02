@@ -1,8 +1,27 @@
 <template>
   <div class="v-data-footer">
-    <span>
-      {{ page }} of {{ total }}
-    </span>
+    <v-edit-dialog
+      large
+      persistent
+      @save="changePage"
+    >
+      <span>{{ page }} of {{ total }}</span>
+      <template v-slot:input>
+        <div class="mt-4 title">
+          Move Page
+        </div>
+      </template>
+      <template v-slot:input>
+        <v-text-field
+          v-model="newPage"
+          :rules="rules"
+          label="Edit"
+          single-line
+          counter
+          autofocus
+        />
+      </template>
+    </v-edit-dialog>
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-btn
@@ -46,9 +65,27 @@ import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 Vue.use(require('vue-shortkey'))
 
 export default {
+  data() {
+    return {
+      editedPage: null,
+      rules: [
+        value => (value && parseInt(value, 10) > 0 && parseInt(value, 10) <= this.total) || 'Invalid page number!'
+      ]
+    }
+  },
+
   computed: {
     ...mapState('documents', ['items', 'total']),
-    ...mapGetters('pagination', ['current', 'limit', 'offset', 'page'])
+    ...mapGetters('pagination', ['current', 'limit', 'offset', 'page']),
+    newPage: {
+      get: function () {
+        return this.page
+      },
+      set: function (newValue) {
+        const value = parseInt(newValue, 10)
+        this.editedPage = value
+      }
+    }
   },
 
   watch: {
@@ -77,8 +114,14 @@ export default {
 
   methods: {
     ...mapActions('documents', ['getDocumentList']),
-    ...mapActions('pagination', ['prevPage', 'nextPage', 'initPage']),
-    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions'])
+    ...mapActions('pagination', ['prevPage', 'nextPage', 'initPage', 'movePage']),
+    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions']),
+    changePage() {
+      if (!this.editedPage || this.editedPage < 0 || this.editedPage > this.total) {
+        return
+      }
+      this.movePage(this.editedPage)
+    }
   }
 }
 </script>
