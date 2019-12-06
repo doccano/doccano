@@ -273,7 +273,13 @@ export default {
     },
 
     compiledMarkdown() {
-      return marked(this.guideline, {
+      const documentMetadata = this.documentMetadata;
+
+      const guideline = documentMetadata && documentMetadata.guideline
+        ? documentMetadata.guideline
+        : this.guideline;
+
+      return marked(guideline, {
         sanitize: true,
       });
     },
