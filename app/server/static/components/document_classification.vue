@@ -72,6 +72,10 @@ export default {
       if (annotation) {
         this.removeLabel(annotation);
       } else {
+        if (this.singleClassClassification && annotations.length >= 1) {
+          await Promise.all(annotations.map(item => this.removeLabel(item)));
+        }
+
         const docId = this.docs[this.pageNumber].id;
         const payload = {
           label: label.id,

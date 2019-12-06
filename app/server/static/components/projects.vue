@@ -64,6 +64,17 @@
               )
               | Share annotations across all users
 
+          div.field(v-if="projectType === 'DocumentClassification'")
+            label.checkbox
+              input(
+                v-model="singleClassClassification"
+                name="single_class_classification"
+                type="checkbox"
+                style="margin-right: 0.25em;"
+                required
+              )
+              | Single-class classification
+
         footer.modal-card-foot.pt20.pb20.pr20.pl20.has-background-white-ter
           button.button.is-primary(v-on:click="create()") Create
           button.button(v-on:click="isActive = !isActive") Cancel
@@ -150,6 +161,7 @@ export default {
     projectNameError: '',
     username: '',
     isSuperuser: false,
+    singleClassClassification: false,
     randomizeDocumentOrder: false,
     collaborativeAnnotation: false,
     isProjectAdmin: null,
@@ -208,6 +220,7 @@ export default {
         name: this.projectName,
         description: this.description,
         project_type: this.projectType,
+        single_class_classification: this.singleClassClassification,
         randomize_document_order: this.randomizeDocumentOrder,
         collaborative_annotation: this.collaborativeAnnotation,
         guideline: 'Please write annotation guideline.',

@@ -32,6 +32,7 @@ class Project(PolymorphicModel):
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
     randomize_document_order = models.BooleanField(default=False)
     collaborative_annotation = models.BooleanField(default=False)
+    single_class_classification = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('upload', args=[self.id])
