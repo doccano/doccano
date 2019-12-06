@@ -297,6 +297,18 @@ export default {
         : 'Click to approve annotations';
     },
 
+    displayDocumentMetadata() {
+      let documentMetadata = this.documentMetadata;
+      if (documentMetadata == null) {
+        return null;
+      }
+
+      documentMetadata = { ...documentMetadata };
+      delete documentMetadata.guideline;
+      delete documentMetadata.documentSourceUrl;
+      return documentMetadata;
+    },
+
     documentMetadata() {
       const document = this.docs[this.pageNumber];
       if (document == null || document.meta == null) {
