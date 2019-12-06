@@ -58,10 +58,6 @@ export default {
   mixins: [annotationMixin],
 
   methods: {
-    getAnnotation(label) {
-      return this.annotations[this.pageNumber].find(annotation => annotation.label === label.id);
-    },
-
     async submit() {
       const state = this.getState();
       this.url = `docs?q=${this.searchQuery}&doc_annotations__isnull=${state}&offset=${this.offset}&ordering=${this.ordering}`;
@@ -70,7 +66,9 @@ export default {
     },
 
     async addLabel(label) {
-      const annotation = this.getAnnotation(label);
+      const annotations = this.annotations[this.pageNumber];
+      const annotation = annotations.find(item => item.label === label.id);
+
       if (annotation) {
         this.removeLabel(annotation);
       } else {
