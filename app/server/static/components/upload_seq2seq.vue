@@ -4,6 +4,16 @@ extends ./upload.pug
 block select-format-area
   label.radio
     input(
+      v-model="format"
+      v-bind:checked="format == 'plain'"
+      type="radio"
+      name="format"
+      value="plain"
+    )
+    | Plain
+
+  label.radio
+    input(
       type="radio"
       name="format"
       value="csv"
