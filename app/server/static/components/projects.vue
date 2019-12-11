@@ -40,6 +40,7 @@
                 option(value="DocumentClassification") document classification
                 option(value="SequenceLabeling") sequence labeling
                 option(value="Seq2seq") sequence to sequence
+                option(value="Speech2text") speech to text
             p.help.is-danger {{ projectTypeError }}
 
           div.field
@@ -95,6 +96,7 @@
                         option Text Classification
                         option Sequence Labeling
                         option Seq2seq
+                        option Speech to text
 
               div.card-table
                 div.content
@@ -200,6 +202,9 @@ export default {
       if (projectType === 'Seq2seq') {
         return this.selected === 'Seq2seq';
       }
+      if (projectType === 'Speech2text') {
+        return this.selected === 'Speech to text';
+      }
       return false;
     },
 
@@ -242,6 +247,9 @@ export default {
       }
       if (this.projectType === 'Seq2seq') {
         return 'Seq2seqProject';
+      }
+      if (this.projectType === 'Speech2text') {
+        return 'Speech2textProject';
       }
       return '';
     },

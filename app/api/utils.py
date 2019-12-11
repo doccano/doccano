@@ -217,6 +217,31 @@ class Seq2seqStorage(BaseStorage):
         return annotations
 
 
+class Speech2textStorage(BaseStorage):
+    """Store json for speech2text.
+
+    The format is as follows:
+    {"audio": "data:audio/mpeg;base64,...", "transcription": "こんにちは、世界!"}
+    ...
+    """
+    @transaction.atomic
+    def save(self, user):
+        for data in self.data:
+            doc = self.save_doc([{'text': audio['audio']} for audio in data])
+            annotations = self.make_annotations(doc, data)
+            self.save_annotation(annotations, user)
+
+    @classmethod
+    def make_annotations(cls, docs, data):
+        annotations = []
+        for doc, datum in zip(docs, data):
+            try:
+                annotations.append({'document': doc.id, 'text': datum['transcription']})
+            except KeyError:
+                continue
+        return annotations
+
+
 class FileParser(object):
 
     def parse(self, file):
