@@ -6,7 +6,7 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 from rest_framework.exceptions import ValidationError
 
 
-from .models import Label, Project, Document, RoleMapping, Role
+from .models import Label, Project, Document, RoleMapping, Role, Comment
 from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
@@ -62,6 +62,7 @@ class LabelSerializer(serializers.ModelSerializer):
 class DocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
+    comments = serializers.SerializerMethodField()
 
     def get_annotations(self, instance):
         request = self.context.get('request')
@@ -79,9 +80,13 @@ class DocumentSerializer(serializers.ModelSerializer):
         approver = instance.annotations_approved_by
         return approver.username if approver else None
 
+    @classmethod
+    def get_comments(cls, instance):
+        return CommentSerializer(instance.comments, many=True).data
+
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver')
+        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver', 'comments')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -211,3 +216,10 @@ class RoleMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoleMapping
         fields = ('id', 'user', 'role', 'username', 'rolename')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'user')
+        read_only_fields = ('user', 'document')

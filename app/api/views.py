@@ -14,10 +14,11 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework_csv.renderers import CSVRenderer
 
 from .filters import DocumentFilter
-from .models import Project, Label, Document, RoleMapping, Role
+from .models import Project, Label, Document, RoleMapping, Role, Comment
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
+from .permissions import IsOwnComment
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
-from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
+from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer, CommentSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
@@ -204,6 +205,27 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
         model = project.get_annotation_class()
         self.queryset = model.objects.all()
         return self.queryset
+
+
+class CommentList(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+
+    def get_queryset(self):
+        return Comment.objects.filter(
+            document_id=self.kwargs['doc_id'],
+            user_id=self.request.user.id,
+        ).all()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user, document_id=self.kwargs['doc_id'])
+
+
+class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    lookup_url_kwarg = 'comment_id'
+    permission_classes = [IsAuthenticated & IsInProjectOrAdmin & IsOwnComment]
 
 
 class TextUploadAPI(APIView):
