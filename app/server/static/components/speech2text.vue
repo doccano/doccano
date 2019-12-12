@@ -15,7 +15,7 @@ block annotation-area
 
   section
     header.header
-      input.textarea(
+      textarea.textarea(
         v-model="transcription"
         v-debounce="syncTranscription"
         type="text"
@@ -84,31 +84,29 @@ export default {
       this.transcription = text || '';
     },
 
-    async syncTranscription(transcription) {
-      this.transcription = transcription.trim();
-
+    async syncTranscription(text) {
       const docId = this.docs[this.pageNumber].id;
       const annotations = this.annotations[this.pageNumber];
+      const hasTranscription = text.trim().length > 0;
 
-      if (!this.transcription && !this.annotation) {
+      if (!hasTranscription && !this.annotation) {
         return;
       }
 
-      if (!this.transcription && this.annotation) {
+      if (!hasTranscription && this.annotation) {
         await HTTP.delete(`docs/${docId}/annotations/${this.annotation.id}`);
         annotations.splice(0, annotations.length);
         return;
       }
 
-      let response;
       if (this.annotation) {
-        const annotation = { ...this.annotation, text: this.transcription };
-        response = await HTTP.put(`docs/${docId}/annotations/${this.annotation.id}`, annotation);
+        const annotation = { ...this.annotation, text };
+        await HTTP.put(`docs/${docId}/annotations/${this.annotation.id}`, annotation);
       } else {
-        const annotation = { text: this.transcription };
-        response = await HTTP.post(`docs/${docId}/annotations`, annotation);
+        const annotation = { text };
+        const response = await HTTP.post(`docs/${docId}/annotations`, annotation);
+        annotations.unshift({ ...response.data, text });
       }
-      annotations.unshift(response.data);
     },
 
     async submit() {
