@@ -841,13 +841,13 @@ class TestCommentListAPI(APITestCase):
     def test_does_not_allow_deletion_by_non_project_member(self):
         self.client.login(username=self.non_project_member_name,
                           password=self.non_project_member_pass)
-        response = self.client.delete(f"{self.url}/{self.comment.id}", format='json')
+        response = self.client.delete('{}/{}'.format(self.url, self.comment.id), format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_does_not_allow_deletion_of_non_owned_comment(self):
         self.client.login(username=self.another_project_member_name,
                           password=self.another_project_member_pass)
-        response = self.client.delete(f"{self.url}/{self.comment.id}", format='json')
+        response = self.client.delete('{}/{}'.format(self.url, self.comment.id), format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_create_update_delete_comment(self):
@@ -857,7 +857,7 @@ class TestCommentListAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['user'], self.project_member.id)
         self.assertEqual(response.data['text'], 'comment')
-        url = f"{self.url}/{response.data['id']}"
+        url = '{}/{}'.format(self.url, response.data['id'])
 
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
