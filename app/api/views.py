@@ -18,7 +18,7 @@ from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
-from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
@@ -243,6 +243,8 @@ class TextUploadAPI(APIView):
             return CoNLLParser()
         elif file_format == 'excel':
             return ExcelParser()
+        elif file_format == 'audio':
+            return AudioParser()
         else:
             raise ValidationError('format {} is invalid.'.format(file_format))
 

@@ -12,6 +12,16 @@ block select-format-area
     )
     | JSONL
 
+  label.radio
+    input(
+      type="radio"
+      name="format"
+      value="audio"
+      v-bind:checked="format === 'audio'"
+      v-model="format"
+    )
+    | Audio
+
 block example-format-area
   pre.code-block(v-show="format === 'json'")
     code.json
