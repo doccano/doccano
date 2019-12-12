@@ -22,14 +22,17 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('text', models.TextField()),
-                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='speech2text_annotations', to='api.Document')),
+                ('document', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                               related_name='speech2text_annotations', to='api.Document')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='Speech2textProject',
             fields=[
-                ('project_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='api.Project')),
+                ('project_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE,
+                                                     parent_link=True, primary_key=True, serialize=False,
+                                                     to='api.Project')),
             ],
             options={
                 'abstract': False,
@@ -40,7 +43,10 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='project_type',
-            field=models.CharField(choices=[('DocumentClassification', 'document classification'), ('SequenceLabeling', 'sequence labeling'), ('Seq2seq', 'sequence to sequence'), ('Speech2text', 'speech to text')], max_length=30),
+            field=models.CharField(choices=[('DocumentClassification', 'document classification'),
+                                            ('SequenceLabeling', 'sequence labeling'),
+                                            ('Seq2seq', 'sequence to sequence'),
+                                            ('Speech2text', 'speech to text')], max_length=30),
         ),
         migrations.AlterUniqueTogether(
             name='speech2textannotation',
