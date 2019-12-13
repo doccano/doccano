@@ -59,10 +59,17 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'prefix_key', 'suffix_key', 'background_color', 'text_color')
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'user')
+        read_only_fields = ('user', 'document')
+
+
 class DocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
-    comments = serializers.SerializerMethodField()
+    comments = CommentSerializer(many=True, read_only=True)
 
     def get_annotations(self, instance):
         request = self.context.get('request')
@@ -79,10 +86,6 @@ class DocumentSerializer(serializers.ModelSerializer):
     def get_annotation_approver(cls, instance):
         approver = instance.annotations_approved_by
         return approver.username if approver else None
-
-    @classmethod
-    def get_comments(cls, instance):
-        return CommentSerializer(instance.comments, many=True).data
 
     class Meta:
         model = Document
@@ -216,10 +219,3 @@ class RoleMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoleMapping
         fields = ('id', 'user', 'role', 'username', 'rolename')
-
-
-class CommentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Comment
-        fields = ('id', 'text', 'user')
-        read_only_fields = ('user', 'document')
