@@ -1332,10 +1332,8 @@ class TestStatisticsAPI(APITestCase):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
         response = self.client.get(self.url, format='json')
-        total = self.doc.count()
-        remaining = self.doc.filter(doc_annotations__isnull=True).count()
-        self.assertEqual(response.data['total'], total)
-        self.assertEqual(response.data['remaining'], remaining)
+        self.assertEqual(response.data['total'], 2)
+        self.assertEqual(response.data['remaining'], 1)
 
     def test_returns_user_count(self):
         self.client.login(username=self.super_user_name,
