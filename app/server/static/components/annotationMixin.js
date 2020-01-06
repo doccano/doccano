@@ -114,6 +114,9 @@ export default {
         this.comments = comments;
       } else if (commentId && hasText) {
         await HTTP.patch(`docs/${docId}/comments/${commentId}`, { text });
+        const comments = this.comments.slice();
+        comments[this.pageNumber].text = text;
+        this.comments = comments;
       } else {
         const response = await HTTP.post(`docs/${docId}/comments`, { text });
         const comments = this.comments.slice();
