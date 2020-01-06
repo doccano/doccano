@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Count, F
+from django.db.models import Count, F, Q
 from libcloud.base import DriverType, get_driver
 from libcloud.storage.types import ContainerDoesNotExistError, ObjectDoesNotExistError
 from rest_framework import generics, filters, status
@@ -90,9 +90,11 @@ class StatisticsAPI(APIView):
         docs = project.documents
         annotation_class = project.get_annotation_class()
         total = docs.count()
-        done = annotation_class.objects.filter(document_id__in=docs.all(),
-            user_id=self.request.user).\
-            aggregate(Count('document', distinct=True))['document__count']
+        annotation_filter = Q(document_id__in=docs.all())
+        if not project.collaborative_annotation:
+            annotation_filter &= Q(user_id=self.request.user)
+        done = annotation_class.objects.filter(annotation_filter)\
+            .aggregate(Count('document', distinct=True))['document__count']
         remaining = total - done
         return {'total': total, 'remaining': remaining}
 

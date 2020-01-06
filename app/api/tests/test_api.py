@@ -1371,24 +1371,38 @@ class TestDownloader(APITestCase):
                                   expected_status=status.HTTP_400_BAD_REQUEST)
 
 
-class TestStatisticsAPI(APITestCase):
+class TestStatisticsAPI(APITestCase, TestUtilsMixin):
 
     @classmethod
     def setUpTestData(cls):
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
+        cls.other_user_name = 'other_user_name'
+        cls.other_user_pass = 'other_user_pass'
         create_default_roles()
         # Todo: change super_user to project_admin.
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
 
-        main_project = mommy.make('TextClassificationProject', users=[super_user])
-        doc1 = mommy.make('Document', project=main_project)
-        mommy.make('Document', project=main_project)
+        other_user = User.objects.create_user(username=cls.other_user_name,
+                                              password=cls.other_user_pass,
+                                              email='bar@buzz.com')
+
+        cls.project = mommy.make('TextClassificationProject', users=[super_user, other_user])
+        doc1 = mommy.make('Document', project=cls.project)
+        doc2 = mommy.make('Document', project=cls.project)
         mommy.make('DocumentAnnotation', document=doc1, user=super_user)
-        cls.url = reverse(viewname='statistics', args=[main_project.id])
-        cls.doc = Document.objects.filter(project=main_project)
+        mommy.make('DocumentAnnotation', document=doc2, user=other_user)
+        cls.url = reverse(viewname='statistics', args=[cls.project.id])
+        cls.doc = Document.objects.filter(project=cls.project)
+
+        assign_user_to_role(project_member=other_user, project=cls.project,
+                            role_name=settings.ROLE_ANNOTATOR)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
 
     def test_returns_exact_progress(self):
         self.client.login(username=self.super_user_name,
@@ -1396,6 +1410,15 @@ class TestStatisticsAPI(APITestCase):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.data['total'], 2)
         self.assertEqual(response.data['remaining'], 1)
+
+    def test_returns_exact_progress_with_collaborative_annotation(self):
+        self._patch_project(self.project, 'collaborative_annotation', True)
+
+        self.client.login(username=self.other_user_name,
+                          password=self.other_user_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data['total'], 2)
+        self.assertEqual(response.data['remaining'], 0)
 
     def test_returns_user_count(self):
         self.client.login(username=self.super_user_name,
