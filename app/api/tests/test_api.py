@@ -417,26 +417,29 @@ class TestDocumentListAPI(APITestCase):
         mommy.make('DocumentAnnotation', document=doc1, user=project_member)
         mommy.make('DocumentAnnotation', document=doc2, user=project_member)
 
-    def test_returns_docs_to_project_member(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
+    def _test_list(self, url, username, password, expected_num_results):
+        self.client.login(username=username, password=password)
+        response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json().get('results')), 3)
+        self.assertEqual(len(response.json().get('results')), expected_num_results)
+
+    def test_returns_docs_to_project_member(self):
+        self._test_list(self.url,
+                        username=self.project_member_name,
+                        password=self.project_member_pass,
+                        expected_num_results=3)
 
     def test_returns_docs_to_project_member_filtered_to_active(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get('{}?doc_annotations__isnull=true'.format(self.url), format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json().get('results')), 1)
+        self._test_list('{}?doc_annotations__isnull=true'.format(self.url),
+                        username=self.project_member_name,
+                        password=self.project_member_pass,
+                        expected_num_results=1)
 
     def test_returns_docs_to_project_member_filtered_to_completed(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get('{}?doc_annotations__isnull=false'.format(self.url), format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.json().get('results')), 2)
+        self._test_list('{}?doc_annotations__isnull=false'.format(self.url),
+                        username=self.project_member_name,
+                        password=self.project_member_pass,
+                        expected_num_results=2)
 
     def test_returns_docs_in_consistent_order_for_all_users(self):
         self.client.login(username=self.project_member_name, password=self.project_member_pass)
@@ -472,10 +475,10 @@ class TestDocumentListAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_do_not_return_docs_of_other_projects(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.data['count'], self.main_project.documents.count())
+        self._test_list(self.url,
+                        username=self.project_member_name,
+                        password=self.project_member_pass,
+                        expected_num_results=self.main_project.documents.count())
 
     def test_allows_superuser_to_create_doc(self):
         self.client.login(username=self.super_user_name,
