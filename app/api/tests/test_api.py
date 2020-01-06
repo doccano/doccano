@@ -29,6 +29,19 @@ def remove_all_role_mappings():
     RoleMapping.objects.all().delete()
 
 
+class TestUtilsMixin:
+    def _patch_project(self, project, attribute, value):
+        old_value = getattr(project, attribute, None)
+        setattr(project, attribute, value)
+        project.save()
+
+        def cleanup_project():
+            setattr(project, attribute, old_value)
+            project.save()
+
+        self.addCleanup(cleanup_project)
+
+
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class TestProjectListAPI(APITestCase):
 
@@ -604,7 +617,7 @@ class TestApproveLabelsAPI(APITestCase):
         remove_all_role_mappings()
 
 
-class TestAnnotationListAPI(APITestCase):
+class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
 
     @classmethod
     def setUpTestData(cls):
