@@ -383,6 +383,8 @@ class TestDocumentListAPI(APITestCase):
                                                    email='fizz@buzz.com')
 
         cls.main_project = mommy.make('TextClassificationProject', users=[project_member, super_user])
+        doc1 = mommy.make('Document', project=cls.main_project)
+        doc2 = mommy.make('Document', project=cls.main_project)
         mommy.make('Document', project=cls.main_project)
 
         cls.random_order_project = mommy.make('TextClassificationProject', users=[project_member, super_user],
@@ -399,11 +401,29 @@ class TestDocumentListAPI(APITestCase):
         assign_user_to_role(project_member=project_member, project=cls.random_order_project,
                             role_name=settings.ROLE_ANNOTATOR)
 
+        mommy.make('DocumentAnnotation', document=doc1, user=project_member)
+        mommy.make('DocumentAnnotation', document=doc2, user=project_member)
+
     def test_returns_docs_to_project_member(self):
         self.client.login(username=self.project_member_name,
                           password=self.project_member_pass)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json().get('results')), 3)
+
+    def test_returns_docs_to_project_member_filtered_to_active(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get('{}?doc_annotations__isnull=true'.format(self.url), format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json().get('results')), 1)
+
+    def test_returns_docs_to_project_member_filtered_to_completed(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.get('{}?doc_annotations__isnull=false'.format(self.url), format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json().get('results')), 2)
 
     def test_returns_docs_in_consistent_order_for_all_users(self):
         self.client.login(username=self.project_member_name, password=self.project_member_pass)
@@ -414,7 +434,7 @@ class TestDocumentListAPI(APITestCase):
         user2_documents = self.client.get(self.url, format='json').json().get('results')
         self.client.logout()
 
-        self.assertEqual(user1_documents, user2_documents)
+        self.assertEqual([doc['id'] for doc in user1_documents], [doc['id'] for doc in user2_documents])
 
     def test_can_return_docs_in_consistent_random_order(self):
         self.client.login(username=self.project_member_name, password=self.project_member_pass)
