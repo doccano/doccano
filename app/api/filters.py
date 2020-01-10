@@ -12,7 +12,7 @@ class DocumentFilter(FilterSet):
     def filter_annotations(self, queryset, field_name, value):
         queryset = queryset.annotate(num_annotations=
             Count(field_name, filter=
-                Q(**{ f"{field_name}__user": self.request.user})))
+                Q(**{ f"{field_name}__user": self.request.user}) | Q(project__collaborative_annotation=True)))
 
         should_have_annotations = not value
         if should_have_annotations:
