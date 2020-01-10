@@ -106,7 +106,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
                   'updated_at', 'randomize_document_order', 'collaborative_annotation')
-        read_only_fields = ('image', 'updated_at', 'current_users_role')
+        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
 
 
 class TextClassificationProjectSerializer(ProjectSerializer):
@@ -115,7 +115,7 @@ class TextClassificationProjectSerializer(ProjectSerializer):
         model = TextClassificationProject
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
                   'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class SequenceLabelingProjectSerializer(ProjectSerializer):
@@ -124,7 +124,7 @@ class SequenceLabelingProjectSerializer(ProjectSerializer):
         model = SequenceLabelingProject
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
                   'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class Seq2seqProjectSerializer(ProjectSerializer):
@@ -133,7 +133,7 @@ class Seq2seqProjectSerializer(ProjectSerializer):
         model = Seq2seqProject
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
                   'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
