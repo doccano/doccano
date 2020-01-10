@@ -111,6 +111,20 @@ class TestProjectListAPI(APITestCase):
                           password=self.super_user_pass)
         response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertFalse(response.json().get('collaborative_annotation'))
+        self.assertFalse(response.json().get('randomize_document_order'))
+
+    def test_allows_superuser_to_create_project_with_flags(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        response = self.client.post(self.url, format='json', data=dict(
+            collaborative_annotation=True,
+            randomize_document_order=True,
+            **self.data,
+        ))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.json().get('collaborative_annotation'))
+        self.assertTrue(response.json().get('randomize_document_order'))
 
     def test_disallows_project_member_to_create_project(self):
         self.client.login(username=self.main_project_member_name,
