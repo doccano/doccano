@@ -120,7 +120,6 @@ class TextClassificationProjectSerializer(ProjectSerializer):
 
 class SequenceLabelingProjectSerializer(ProjectSerializer):
 
-
     class Meta:
         model = SequenceLabelingProject
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
