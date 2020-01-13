@@ -1054,6 +1054,21 @@ class TestUploader(APITestCase):
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_classification_csv_with_out_of_order_columns(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example_out_of_order_columns.csv',
+                                file_format='csv',
+                                expected_status=status.HTTP_201_CREATED)
+
+        self.label_test_helper(
+            project_id=self.classification_project.id,
+            expected_labels=[
+                {'text': 'Positive'},
+                {'text': 'Negative'},
+            ],
+            expected_label_keys=[],
+        )
+
     def test_can_upload_csv_with_non_utf8_encoding(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.utf16.csv',

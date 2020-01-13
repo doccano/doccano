@@ -356,8 +356,9 @@ class ExcelParser(FileParser):
                 data.append({'text': row[0]})
             # Text, labels and metadata columns
             elif len(row) == len(columns) and len(row) >= 2:
-                text, label = row[:2]
-                meta = json.dumps(dict(zip(columns[2:], row[2:])))
+                datum = dict(zip(columns, row))
+                text, label = datum.pop('text'), datum.pop('label')
+                meta = json.dumps(datum)
                 j = {'text': text, 'labels': [label], 'meta': meta}
                 data.append(j)
             else:
