@@ -95,11 +95,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         }
         queryset = RoleMapping.objects.values("role_id__name")
         if queryset:
-            users_role = get_object_or_404(
-                queryset, project=instance.id, user=self.context.get("request").user.id
+            users_role = queryset.filter(
+                project=instance.id, user=self.context.get("request").user.id
             )
-            for key, val in role_abstractor.items():
-                role_abstractor[key] = users_role["role_id__name"] == val
+            for user_role in users_role:
+                role_abstractor[f'is_{user_role["role_id__name"]}'] = True
         return role_abstractor
 
     class Meta:
