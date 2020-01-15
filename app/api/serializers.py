@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 from rest_framework.exceptions import ValidationError
@@ -98,8 +97,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             users_role = queryset.filter(
                 project=instance.id, user=self.context.get("request").user.id
             )
+            prefix = 'is_'
             for user_role in users_role:
-                role_abstractor[f'is_{user_role["role_id__name"]}'] = True
+                key = prefix + user_role["role_id__name"]
+                role_abstractor[key] = True
         return role_abstractor
 
     class Meta:
@@ -119,7 +120,6 @@ class TextClassificationProjectSerializer(ProjectSerializer):
 
 
 class SequenceLabelingProjectSerializer(ProjectSerializer):
-
 
     class Meta:
         model = SequenceLabelingProject
