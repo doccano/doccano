@@ -19,7 +19,7 @@ class DocumentAdmin(admin.ModelAdmin):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'project_type', 'randomize_document_order')
+    list_display = ('name', 'description', 'project_type', 'randomize_document_order', 'collaborative_annotation')
     ordering = ('project_type',)
     search_fields = ('name',)
 
