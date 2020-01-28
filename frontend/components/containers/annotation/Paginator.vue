@@ -60,9 +60,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
-Vue.use(require('vue-shortkey'))
 
 export default {
   data() {

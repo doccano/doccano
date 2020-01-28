@@ -35,9 +35,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { idealColor } from '~/plugins/utils.js'
-Vue.use(require('vue-shortkey'))
 
 export default {
   props: {
