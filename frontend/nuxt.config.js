@@ -48,7 +48,8 @@ export default {
   */
   plugins: [
     '~/plugins/filters.js',
-    '~/plugins/vue-youtube.js'
+    '~/plugins/vue-youtube.js',
+    '~/plugins/vue-shortkey.js'
   ],
   /*
   ** Nuxt.js modules

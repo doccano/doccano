@@ -43,9 +43,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import EntityItem from '~/components/molecules/EntityItem'
-Vue.use(require('vue-shortkey'))
 
 export default {
   components: {
