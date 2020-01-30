@@ -150,6 +150,8 @@ class DocumentList(generics.ListCreateAPIView):
         queryset = project.documents
         if project.randomize_document_order:
             queryset = queryset.annotate(sort_id=F('id') % self.request.user.id).order_by('sort_id')
+        else:
+            queryset = queryset.order_by('id')
 
         return queryset
 
