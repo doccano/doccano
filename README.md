@@ -82,6 +82,16 @@ All data created in the container will persist across restarts.
 
 Access <http://127.0.0.1:8000/>.
 
+### For Developers
+
+```bash
+$ git clone https://github.com/doccano/doccano.git
+$ cd doccano
+$ docker-compose -f docker-compose.dev.yml up
+```
+
+Access <http://127.0.0.1:8000/>.
+
 ## One-click Deployment
 
 | Service | Button |
