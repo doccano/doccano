@@ -1,9 +1,9 @@
 <template>
   <base-card
-    title="Login"
-    agree-text="Login"
     :disabled="!valid"
     @agree="tryLogin"
+    title="Login"
+    agree-text="Login"
   >
     <template #content>
       <v-form
@@ -21,22 +21,22 @@
         <v-text-field
           v-model="username"
           :rules="userNameRules"
+          @keyup.enter="tryLogin"
           label="Username"
           name="username"
           prepend-icon="person"
           type="text"
           autofocus
-          @keyup.enter="tryLogin"
         />
         <v-text-field
           id="password"
           v-model="password"
           :rules="passwordRules"
+          @keyup.enter="tryLogin"
           label="Password"
           name="password"
           prepend-icon="lock"
           type="password"
-          @keyup.enter="tryLogin"
         />
       </v-form>
     </template>

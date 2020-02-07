@@ -1,11 +1,11 @@
 <template>
   <confirm-dialog
-    title="Remove Member"
-    message="Are you sure you want to remove these members?"
-    item-key="username"
     :disabled="!isMemberSelected"
     :items="selected"
     @ok="handleRemoveMember()"
+    title="Remove Member"
+    message="Are you sure you want to remove these members?"
+    item-key="username"
   />
 </template>
 

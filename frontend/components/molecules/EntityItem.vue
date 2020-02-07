@@ -5,8 +5,8 @@
     offset-y
   >
     <template v-slot:activator="{ on }">
-      <span class="highlight bottom" :style="{ borderColor: color }" v-on="on">
-        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span class="highlight__label" :data-label="label" :style="{ backgroundColor: color, color: textColor }" />
+      <span :style="{ borderColor: color }" v-on="on" class="highlight bottom">
+        <span class="highlight__content">{{ content }}<v-icon @click.stop="remove" class="delete">mdi-close-circle</v-icon></span><span :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label" />
       </span>
     </template>
     <v-list

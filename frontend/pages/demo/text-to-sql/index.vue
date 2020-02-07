@@ -27,8 +27,8 @@
 </template>
 
 <script>
-import Seq2seqBox from '~/components/organisms/annotation/Seq2seqBox'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
+import Seq2seqBox from '~/components/organisms/annotation/Seq2seqBox'
 
 export default {
   layout: 'demo',

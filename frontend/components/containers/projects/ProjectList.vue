@@ -5,10 +5,10 @@
     :items="projects"
     :search="search"
     :loading="loading"
+    @input="update"
     loading-text="Loading... Please wait"
     item-key="id"
     show-select
-    @input="update"
   >
     <template v-slot:top>
       <v-text-field

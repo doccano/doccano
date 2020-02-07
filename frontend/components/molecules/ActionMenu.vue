@@ -5,8 +5,8 @@
   >
     <template v-slot:activator="{ on }">
       <v-btn
-        color="primary text-capitalize"
         v-on="on"
+        color="primary text-capitalize"
       >
         {{ text }}
         <v-icon>mdi-menu-down</v-icon>

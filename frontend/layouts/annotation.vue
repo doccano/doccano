@@ -54,14 +54,14 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import TheSideBar from '~/components/organisms/layout/TheSideBar'
-import TheHeader from '~/components/organisms/layout/TheHeader'
 import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
-import Paginator from '~/components/containers/annotation/Paginator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
+import Paginator from '~/components/containers/annotation/Paginator'
+import TheHeader from '~/components/organisms/layout/TheHeader'
+import TheSideBar from '~/components/organisms/layout/TheSideBar'
 
 export default {
   middleware: ['check-auth', 'auth'],

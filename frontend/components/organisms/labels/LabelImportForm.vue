@@ -1,11 +1,11 @@
 <template>
   <base-card
-    title="Upload Label"
-    agree-text="Upload"
-    cancel-text="Cancel"
     :disabled="!valid"
     @agree="create"
     @cancel="cancel"
+    title="Upload Label"
+    agree-text="Upload"
+    cancel-text="Cancel"
   >
     <template #content>
       <v-form
@@ -24,8 +24,8 @@
         <h2>Select a file</h2>
         <v-file-input
           v-model="file"
-          accept=".json"
           :rules="uploadFileRules"
+          accept=".json"
           label="File input"
         />
       </v-form>

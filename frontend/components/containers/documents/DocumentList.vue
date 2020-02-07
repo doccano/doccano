@@ -3,7 +3,6 @@
     :value="selected"
     :headers="headers"
     :items="items"
-    item-key="id"
     :options.sync="options"
     :server-items-length="total"
     :search="search"
@@ -11,9 +10,10 @@
     :footer-props="{
       'items-per-page-options': [10, 50, 100]
     }"
+    @input="updateSelected"
+    item-key="id"
     loading-text="Loading... Please wait"
     show-select
-    @input="updateSelected"
   >
     <template v-slot:top>
       <v-text-field
@@ -32,18 +32,18 @@
         <template v-slot:input>
           <v-textarea
             :value="item.text"
+            @change="handleUpdateDocument({ id: item.id, text: $event })"
             label="Edit"
             autofocus
-            @change="handleUpdateDocument({ id: item.id, text: $event })"
           />
         </template>
       </v-edit-dialog>
     </template>
     <template v-slot:item.action="{ item }">
       <v-btn
+        @click="goToAnnotationPage(item)"
         small
         color="primary text-capitalize"
-        @click="goToAnnotationPage(item)"
       >
         Annotate
       </v-btn>

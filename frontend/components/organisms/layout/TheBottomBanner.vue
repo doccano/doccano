@@ -34,10 +34,10 @@
               <v-menu open-on-hover offset-y>
                 <template v-slot:activator="{ on }">
                   <v-btn
+                    v-on="on"
                     class="blue lighten-2"
                     dark
                     large
-                    v-on="on"
                   >
                     Try demo
                     <v-icon>mdi-menu-down</v-icon>
