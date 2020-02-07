@@ -40,7 +40,7 @@ $ cd doccano
 $ docker-compose -f docker-compose.prod.yml up
 ```
 
-Access <http://0.0.0.0/>.
+Go to <http://0.0.0.0/>.
 
 _Note the superuser account credentials located in the `docker-compose.prod.yml` file:_
 ```yml
@@ -80,9 +80,11 @@ docker container start doccano
 To stop the container, run `docker container stop doccano -t 5`.
 All data created in the container will persist across restarts.
 
-Access <http://127.0.0.1:8000/>.
+Go to <http://127.0.0.1:8000/>.
 
 ### For Developers
+
+You can setup local development environment as follows:
 
 ```bash
 $ git clone https://github.com/doccano/doccano.git
@@ -90,7 +92,7 @@ $ cd doccano
 $ docker-compose -f docker-compose.dev.yml up
 ```
 
-Access <http://127.0.0.1:8000/>.
+Go to <http://127.0.0.1:3000/>.
 
 ## One-click Deployment
 
