@@ -1,21 +1,21 @@
 <template>
   <div>
     <v-btn
-      class="text-capitalize"
-      outlined
       :disabled="!isDocumentSelected"
       @click="dialog=true"
+      class="text-capitalize"
+      outlined
     >
       Delete
     </v-btn>
     <base-dialog :dialog="dialog">
       <confirm-form
-        title="Delete Document"
-        message="Are you sure you want to delete these documents from this project?"
-        item-key="text"
         :items="selected"
         @ok="deleteDocument($route.params.id);dialog=false"
         @cancel="dialog=false"
+        title="Delete Document"
+        message="Are you sure you want to delete these documents from this project?"
+        item-key="text"
       />
     </base-dialog>
   </div>

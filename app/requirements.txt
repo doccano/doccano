@@ -6,6 +6,7 @@ coverage==4.5.3
 dj-database-url==0.5.0
 Django==2.1.11
 django-cloud-browser==0.5.0
+django-cors-headers==3.1.1
 django-filter==2.0.0
 django-heroku==0.3.1
 django-webpack-loader==0.6.0

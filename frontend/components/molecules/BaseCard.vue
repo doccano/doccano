@@ -13,21 +13,21 @@
       <v-spacer />
       <v-btn
         v-if="cancelText"
+        @click="cancel"
         class="text-capitalize"
         text
         color="primary"
         data-test="cancel-button"
-        @click="cancel"
       >
         {{ cancelText }}
       </v-btn>
       <v-btn
         v-if="agreeText"
+        :disabled="disabled"
+        @click="agree"
         class="text-none"
         text
-        :disabled="disabled"
         data-test="delete-button"
-        @click="agree"
       >
         {{ agreeText }}
       </v-btn>

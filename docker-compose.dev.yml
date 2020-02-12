@@ -1,0 +1,55 @@
+version: "3.7"
+services:
+
+  backend:
+    image: python:3.6
+    volumes:
+      - .:/src
+      - venv:/src/venv
+    command: ["/src/app/tools/dev-django.sh", "0.0.0.0:8000"]
+    environment:
+      ADMIN_USERNAME: "admin"
+      ADMIN_PASSWORD: "password"
+      ADMIN_EMAIL: "admin@example.com"
+      DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
+      ALLOW_SIGNUP: "False"
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    networks:
+      - network-backend
+      - network-frontend
+
+  frontend:
+    image: node:13.2.0
+    command: ["/src/frontend/dev-nuxt.sh"]
+    volumes:
+      - .:/src
+      - node_modules:/src/frontend/node_modules
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    networks:
+      - network-frontend
+
+  postgres:
+    image: postgres:12.0-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: "doccano"
+      POSTGRES_PASSWORD: "doccano"
+      POSTGRES_DB: "doccano"
+    networks:
+      - network-backend
+
+volumes:
+  postgres_data:
+  node_modules:
+  venv:
+
+networks:
+  network-backend:
+  network-frontend:

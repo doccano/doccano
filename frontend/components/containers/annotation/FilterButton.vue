@@ -4,10 +4,10 @@
       <v-tooltip bottom>
         <template v-slot:activator="{ on: tooltip }">
           <v-btn
+            v-on="{ ...tooltip, ...menu }"
             class="text-capitalize ps-1 pe-1"
             min-width="36"
             outlined
-            v-on="{ ...tooltip, ...menu }"
           >
             <v-icon>
               mdi-filter

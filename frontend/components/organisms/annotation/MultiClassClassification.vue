@@ -2,12 +2,12 @@
   <v-combobox
     :value="annotatedLabels"
     :items="labels"
+    @input="add"
     item-text="text"
     label="Label"
     hide-selected
     chips
     multiple
-    @input="add"
   >
     <template v-slot:selection="{ attrs, item, select, selected }">
       <v-chip
@@ -15,9 +15,9 @@
         :input-value="selected"
         :color="item.background_color"
         :text-color="textColor(item.background_color)"
-        close
         @click="select"
         @click:close="remove(item.id)"
+        close
       >
         {{ item.text }}
       </v-chip>
