@@ -50,13 +50,11 @@ ADMIN_PASSWORD: "password"
 
 > Note: If you want to add annotators, see [Frequently Asked Questions](https://github.com/doccano/doccano/wiki/Frequently-Asked-Questions#i-want-to-add-annotators)
 
-<!--
 _Note for Windows developers: Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings._
 
 ```bash
 git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 ```
--->
 
 ### Docker
 
