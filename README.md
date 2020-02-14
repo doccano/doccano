@@ -61,12 +61,12 @@ git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 As a one-time setup, create a Docker container for Doccano:
 
 ```bash
-docker pull chakkiworks/doccano
+docker pull doccano/doccano
 docker container create --name doccano \
   -e "ADMIN_USERNAME=admin" \
   -e "ADMIN_EMAIL=admin@example.com" \
   -e "ADMIN_PASSWORD=password" \
-  -p 8000:8000 chakkiworks/doccano
+  -p 8000:8000 doccano/doccano
 ```
 
 Next, start Doccano by running the container:
