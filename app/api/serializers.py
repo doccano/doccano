@@ -86,21 +86,24 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     current_users_role = serializers.SerializerMethodField()
+    role_names = {
+        setting.replace('ROLE_', 'is_').lower(): getattr(settings, setting)
+        for setting in dir(settings)
+        if setting.startswith('ROLE_')
+    }
 
     def get_current_users_role(self, instance):
-        role_abstractor = {
-            "is_project_admin": settings.ROLE_PROJECT_ADMIN,
-            "is_annotator": settings.ROLE_ANNOTATOR,
-            "is_annotation_approver": settings.ROLE_ANNOTATION_APPROVER,
-        }
+        user_roles = {}
         queryset = RoleMapping.objects.values("role_id__name")
         if queryset:
             users_role = get_object_or_404(
                 queryset, project=instance.id, user=self.context.get("request").user.id
             )
-            for key, val in role_abstractor.items():
-                role_abstractor[key] = users_role["role_id__name"] == val
-        return role_abstractor
+            for role_indicator, role_name in self.role_names.items():
+                user_has_role = users_role["role_id__name"] == role_name
+                user_roles[role_indicator] = user_has_role
+
+        return user_roles
 
     class Meta:
         model = Project
