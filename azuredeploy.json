@@ -102,7 +102,7 @@
     "dockerImageName": {
       "type": "string",
       "minLength": 1,
-      "defaultValue": "chakkiworks/doccano:latest",
+      "defaultValue": "doccano/doccano:latest",
       "metadata": {
         "description": "The Docker image to deploy."
       }

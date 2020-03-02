@@ -24,7 +24,7 @@ az group deployment create \
       adminUserName="${DOCCANO_ADMIN_USERNAME}" \
       adminContactEmail="${DOCCANO_ADMIN_CONTACT_EMAIL}" \
       adminPassword="${DOCCANO_ADMIN_PASSWORD}" \
-      dockerImageName="${DOCKER_REGISTRY:-${DOCKER_USERNAME:-chakkiworks}}/doccano:${1:-latest}" \
+      dockerImageName="${DOCKER_REGISTRY:-${DOCKER_USERNAME:-doccano}}/doccano:${1:-latest}" \
       dockerRegistry="${DOCKER_REGISTRY}" \
       dockerRegistryUserName="${DOCKER_USERNAME}" \
       dockerRegistryPassword="${DOCKER_PASSWORD}" \

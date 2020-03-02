@@ -23,7 +23,7 @@
               large
               outlined
               color="white"
-              href="https://github.com/chakki-works/doccano"
+              href="https://github.com/doccano/doccano"
             >
               <v-icon left>
                 mdi-github-circle
