@@ -82,10 +82,10 @@ Resources:
             - |
               set +a
             - |
-              sudo docker pull chakkiworks/doccano:latest
+              sudo docker pull doccano/doccano:latest
             - >
               sudo docker run -d --name doccano --env-file /env.list -p 80:8000
-              chakkiworks/doccano:latest
+              doccano/doccano:latest
             - >
               sudo docker exec doccano tools/create-admin.sh ${ADMIN} ${EMAIL}
               ${PASSWORD}

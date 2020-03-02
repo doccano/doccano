@@ -4,7 +4,7 @@ about: For the problem that you faced when installing doccano which none of the 
 
 ---
 
-<!-- Before submitting an issue, make sure to check the docs and closed issues and FAQ to see if any of the solutions work for you. https://github.com/chakki-works/doccano/wiki/Frequently-Asked-Questions -->
+<!-- Before submitting an issue, make sure to check the docs and closed issues and FAQ to see if any of the solutions work for you. https://github.com/doccano/doccano/wiki/Frequently-Asked-Questions -->
 
 How to reproduce the problem
 ---------

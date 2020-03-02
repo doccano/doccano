@@ -1,4 +1,4 @@
-This document aims to instruct how to setup OAuth for doccano. doccano now supports social login via GitHub and Active Directory by [#75](https://github.com/chakki-works/doccano/pull/75). In this document, we show GitHub OAuth as an example. 
+This document aims to instruct how to setup OAuth for doccano. doccano now supports social login via GitHub and Active Directory by [#75](https://github.com/doccano/doccano/pull/75). In this document, we show GitHub OAuth as an example. 
 
 
 ## Create OAuth App

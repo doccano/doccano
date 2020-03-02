@@ -5,7 +5,7 @@
 First of all, you have to clone the repository:
 
 ```bash
-git clone https://github.com/chakki-works/doccano.git
+git clone https://github.com/doccano/doccano.git
 cd doccano
 ```
 
@@ -14,7 +14,7 @@ To install doccano, there are three options:
 ### Option1: Pull the production Docker image
 
 ```bash
-docker pull chakkiworks/doccano
+docker pull doccano/doccano
 ```
 
 ### Option2: Pull the development Docker-Compose images
@@ -54,7 +54,7 @@ Depending on your installation method, there are two options:
 First, run a Docker container:
 
 ```bash
-docker run -d --name doccano -p 8000:80 chakkiworks/doccano
+docker run -d --name doccano -p 8000:80 doccano/doccano
 ```
 
 Then, execute `create-admin.sh` script for creating a superuser.
