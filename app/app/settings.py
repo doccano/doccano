@@ -14,8 +14,6 @@ from os import path
 
 import django_heroku
 import dj_database_url
-import ldap
-from django_auth_ldap.config import LDAPSearch
 from environs import Env
 from furl import furl
 
@@ -153,14 +151,10 @@ AUTH_LDAP_SERVER_URI = env('AUTH_LDAP_SERVER_URI', None)
 if AUTH_LDAP_SERVER_URI:
     AUTHENTICATION_BACKENDS.append('django_auth_ldap.backend.LDAPBackend')
     AUTH_LDAP_ALWAYS_UPDATE_USER = env.bool('AUTH_LDAP_ALWAYS_UPDATE_USER', True)
-    AUTH_LDAP_BIND_DN = env('AUTH_LDAP_BIND_DN', None)
-    AUTH_LDAP_BIND_PASSWORD = env('AUTH_LDAP_BIND_PASSWORD', None)
-    AUTH_LDAP_USER_SEARCH = LDAPSearch(
-        env('AUTH_LDAP_USER_SEARCH_DN', None),
-        ldap.SCOPE_SUBTREE,
-        env('AUTH_LDAP_USER_SEARCH_BIND', None)
-    )
-    AUTH_LDAP_USER_ATTR_MAP = env('AUTH_LDAP_USER_ATTR_MAP', None)
+    AUTH_LDAP_BIND_DN = env('AUTH_LDAP_BIND_DN', '')
+    AUTH_LDAP_BIND_PASSWORD = env('AUTH_LDAP_BIND_PASSWORD', '')
+    AUTH_LDAP_USER_DN_TEMPLATE = env('AUTH_LDAP_USER_DN_TEMPLATE', None)
+    AUTH_LDAP_USER_ATTR_MAP = env('AUTH_LDAP_USER_ATTR_MAP', {})
 
 
 SOCIAL_AUTH_GITHUB_KEY = env('OAUTH_GITHUB_KEY', None)
