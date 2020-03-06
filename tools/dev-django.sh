@@ -15,6 +15,7 @@ fi
 
 echo "Installing dependencies"
 apt-get update && apt-get install -y g++ unixodbc-dev # pyodbc build dependencies
+apt-get install -y ldap-utils # ldap dependencies
 "${venv}/bin/pip" install -r "${root}/requirements.txt"
 
 echo "Initializing database"
