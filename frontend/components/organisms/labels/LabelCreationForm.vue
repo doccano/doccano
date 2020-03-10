@@ -63,7 +63,8 @@ export default {
     },
     keys: {
       type: Array,
-      default: () => 'abcdefghijklmnopqrstuvwxyz'.split('')
+      default: () => [],
+      required: true
     }
   },
   data() {

@@ -9,6 +9,9 @@ export const state = () => ({
 export const getters = {
   isLabelSelected(state) {
     return state.selected.length > 0
+  },
+  shortkeys() {
+    return '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
   }
 }
 
