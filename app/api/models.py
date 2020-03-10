@@ -150,7 +150,7 @@ class Label(models.Model):
         ('ctrl shift', 'ctrl shift')
     )
     SUFFIX_KEYS = tuple(
-        (c, c) for c in string.ascii_lowercase
+        (c, c) for c in string.digits + string.ascii_lowercase
     )
 
     text = models.CharField(max_length=100)

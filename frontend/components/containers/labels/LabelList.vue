@@ -40,7 +40,7 @@
         <template v-slot:input>
           <v-select
             :value="item.suffix_key"
-            :items="keys"
+            :items="shortkeys"
             @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
             label="Key"
           />
@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import { colorRules, labelNameRules } from '@/rules/index'
 import { idealColor } from '~/plugins/utils'
 
@@ -105,10 +105,7 @@ export default {
 
   computed: {
     ...mapState('labels', ['items', 'selected', 'loading']),
-
-    keys() {
-      return 'abcdefghijklmnopqrstuvwxyz'.split('')
-    }
+    ...mapGetters('labels', ['shortkeys'])
   },
 
   created() {
