@@ -48,7 +48,7 @@ export default {
 
   data() {
     return {
-      drawerLeft: false
+      drawerLeft: null
     }
   },
 
