@@ -1,3 +1,7 @@
+html {
+  overflow-y: auto;
+}
+
 html,
 body {
   /*font-family: arial, 'Open Sans', serif;*/
@@ -21,6 +25,14 @@ body {
   max-height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.card-content .scrollable {
+  padding: 1.5rem;
+}
+
+.card-content {
+  padding: 0;
 }
 
 .messages {
@@ -162,7 +174,8 @@ body {
 }
 
 .content .text-sequence {
-  white-space: normal; /* Not render newlines for sequence labelling */
+  /* white-space: normal; /* Not render newlines for sequence labelling */
+  white-space: pre-wrap; /* Rendering newlines for sequence labelling */
   height: auto;
 }
 
