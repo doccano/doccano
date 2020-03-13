@@ -17,6 +17,16 @@ class AnnotationManager(Manager):
 
         return label_count, user_count
 
+    def get_docs_per_user(self, project):
+        docs_count = Counter()
+        docs = project.documents.all()
+        annotations = self.filter(document_id__in=docs.all())
+
+        for d in annotations.values('document__id', 'user__username').annotate(Count('user')):
+            docs_count[d['user__username']] += 1
+
+        return docs_count
+
 
 class Seq2seqAnnotationManager(Manager):
 
@@ -31,3 +41,13 @@ class Seq2seqAnnotationManager(Manager):
             user_count[d['user__username']] += d['user__count']
 
         return label_count, user_count
+
+    def get_docs_per_user(self, project):
+        docs_count = Counter()
+        docs = project.documents.all()
+        annotations = self.filter(document_id__in=docs.all())
+
+        for d in annotations.values('document__id', 'user__username').annotate(Count('user')):
+            docs_count[d['user__username']] += 1
+
+        return docs_count

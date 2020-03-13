@@ -5,20 +5,20 @@
         div.card
 
           header.card-header
-            p.card-header-title Label stats
+            p.card-header-title Project stats
             a.card-header-icon(href="#", aria-label="more options")
               span.icon
                 i.fas.fa-angle-down(aria-hidden="true")
 
           div.card-content.columns
-            div.column.is-8
+            div.column.is-6
               line-chart(v-bind:chart-data="labelData")
-            div.column.is-4
+            div.column.is-6
               h2.subtitle Annotation Progress
               doughnut-chart(v-bind:chart-data="progressData")
 
     div.columns
-      div.column.is-8
+      div.column.is-12
         div.card
 
           header.card-header
@@ -27,8 +27,11 @@
               span.icon
                 i.fas.fa-angle-down(aria-hidden="true")
 
-          div.card-content
-            line-chart(v-bind:chart-data="userData")
+          div.card-content.columns
+            div.column.is-6
+              line-chart(v-bind:chart-data="userData")
+            div.column.is-6
+              line-chart(v-bind:chart-data="docsData")
 </template>
 
 <script>
@@ -101,13 +104,15 @@ export default {
   data: () => ({
     labelData: null,
     userData: null,
+    docsData: null,
     progressData: null,
   }),
 
   created() {
     HTTP.get('statistics').then((response) => {
       this.labelData = this.makeData(response.data.label, 'Label stats');
-      this.userData = this.makeData(response.data.user, 'User stats');
+      this.userData = this.makeData(response.data.user, 'Labels annotated');
+      this.docsData = this.makeData(response.data.docs, 'Docs annotated');
       const complete = response.data.total - response.data.remaining;
       const incomplete = response.data.remaining;
       this.progressData = {

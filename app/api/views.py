@@ -77,6 +77,10 @@ class StatisticsAPI(APIView):
             response['label'] = label_count
             response['user'] = user_count
 
+        if not include or 'docs' in include:
+            doc_count = self.docs_per_user(p)
+            response['docs'] = doc_count
+
         if not include or 'total' in include or 'remaining' in include:
             progress = self.progress(project=p)
             response.update(progress)
@@ -101,6 +105,10 @@ class StatisticsAPI(APIView):
     def label_per_data(self, project):
         annotation_class = project.get_annotation_class()
         return annotation_class.objects.get_label_per_data(project=project)
+
+    def docs_per_user(self, project):
+        annotation_class = project.get_annotation_class()
+        return annotation_class.objects.get_docs_per_user(project=project)
 
 
 class ApproveLabelsAPI(APIView):
