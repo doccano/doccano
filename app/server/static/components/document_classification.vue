@@ -21,7 +21,7 @@ block annotation-area
                 kbd {{ shortcutKey(label) | simpleShortcut }}
 
     div.card-content
-      div.field.is-grouped.is-grouped-multiline
+      div.field.is-grouped.is-grouped-multiline.doc-labels
         div.control(v-for="annotation in annotations[pageNumber]")
           div.tags.has-addons(v-if="id2label[annotation.label]")
             span.tag.is-medium(

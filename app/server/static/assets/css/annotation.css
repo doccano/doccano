@@ -307,4 +307,9 @@ body {
   align-items: center;
 }
 
+.doc-labels {
+  padding: 25px;
+  padding-bottom: 0;
+}
+
 [v-cloak] { display: none; }
