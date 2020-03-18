@@ -18,7 +18,7 @@ from seqeval.metrics.sequence_labeling import get_entities
 
 from .exceptions import FileParseException
 from .models import Label
-from .serializers import DocumentSerializer, LabelSerializer
+from .serializers import DocumentSerializer, LabelSerializer, UserSerializer
 
 
 def extract_label(tag):
@@ -454,42 +454,45 @@ class JSONLRenderer(JSONRenderer):
 
 class JSONPainter(object):
 
-    def paint(self, documents):
-        serializer = DocumentSerializer(documents, many=True)
+    def paint(self, project):
+        documents = project.documents.all()
+        labels = project.labels.all()
+        users = project.users.all()
+        documents_srl = DocumentSerializer(documents, many=True)
+        users_srl = UserSerializer(users, many=True)
+        labels_srl = LabelSerializer(labels, many=True)
+        id2username = {x['id']:x['username'] for x in users_srl.data}
+        id2label = {x['id']:x['text'] for x in labels_srl.data}
         data = []
-        for d in serializer.data:
+        for d in documents_srl.data:
             d['meta'] = json.loads(d['meta'])
             for a in d['annotations']:
                 a.pop('id')
                 a.pop('prob')
                 a.pop('document')
+                if 'label' in a:
+                    a['label'] = id2label[a['label']]
+                a['user'] = id2username[a['user']]
             data.append(d)
         return data
 
-    @staticmethod
-    def paint_labels(documents, labels):
-        serializer_labels = LabelSerializer(labels, many=True)
-        serializer = DocumentSerializer(documents, many=True)
-        data = []
-        for d in serializer.data:
+class JSONLPainter(JSONPainter):
+
+    def paint(self, project):
+        data = super().paint(project)
+        for d in data:
             labels = []
             for a in d['annotations']:
-                label_obj = [x for x in serializer_labels.data if x['id'] == a['label']][0]
-                label_text = label_obj['text']
-                label_start = a['start_offset']
-                label_end = a['end_offset']
-                labels.append([label_start, label_end, label_text])
+                labels.append([a['start_offset'], a['end_offset'], a['label']])
             d.pop('annotations')
             d['labels'] = labels
-            d['meta'] = json.loads(d['meta'])
-            data.append(d)
         return data
 
 
 class CSVPainter(JSONPainter):
 
-    def paint(self, documents):
-        data = super().paint(documents)
+    def paint(self, project):
+        data = super().paint(project)
         res = []
         for d in data:
             annotations = d.pop('annotations')
