@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'polymorphic',
     'webpack_loader',
     'corsheaders',
+    'drf_yasg'
 ]
 
 CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env('CLOUD_BROWSER_LIBCLOUD_PROVIDER', None)
