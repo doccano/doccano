@@ -170,6 +170,7 @@ class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
 class AnnotationList(generics.ListCreateAPIView):
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    swagger_schema = None
 
     def get_serializer_class(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -197,6 +198,7 @@ class AnnotationList(generics.ListCreateAPIView):
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'annotation_id'
     permission_classes = [IsAuthenticated & (((IsAnnotator | IsAnnotationApprover) & IsOwnAnnotation) | IsProjectAdmin)]
+    swagger_schema = None
 
     def get_serializer_class(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])

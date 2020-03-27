@@ -46,4 +46,4 @@ urlpatterns = [
          RoleMappingDetail.as_view(), name='rolemapping_detail'),
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])
+# urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])
