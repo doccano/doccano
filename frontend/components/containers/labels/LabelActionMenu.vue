@@ -15,7 +15,7 @@
     </base-dialog>
     <base-dialog :dialog="importDialog">
       <label-import-form
-        :import-label="importLabels"
+        :upload-label="uploadLabel"
         @close="importDialog=false"
       />
     </base-dialog>
@@ -58,7 +58,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('labels', ['createLabel', 'importLabels', 'exportLabels']),
+    ...mapActions('labels', ['createLabel', 'uploadLabel', 'exportLabels']),
     ...mapActions('projects', ['setCurrentProject']),
 
     handleDownload() {

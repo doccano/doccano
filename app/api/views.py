@@ -1,5 +1,8 @@
+import json
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import transaction
+from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404, redirect
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, F, Q
@@ -368,3 +371,24 @@ class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = RoleMappingSerializer
     lookup_url_kwarg = 'rolemapping_id'
     permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+
+class LabelUploadAPI(APIView):
+    parser_classes = (MultiPartParser,)
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        if 'file' not in request.data:
+            raise ParseError('Empty content')
+        labels = json.load(request.data['file'])
+        project = get_object_or_404(Project, pk=kwargs['project_id'])
+        try:
+            for label in labels:
+                serializer = LabelSerializer(data=label)
+                serializer.is_valid(raise_exception=True)
+                serializer.save(project=project)
+            return Response(status=status.HTTP_201_CREATED)
+        except IntegrityError:
+            content = {'error': 'IntegrityError: you cannot create a label with same name or shortkey.'}
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
