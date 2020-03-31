@@ -31,7 +31,7 @@
       </v-list-item>
     </v-list>
   </v-menu>
-  <span v-else>{{ content }}</span>
+  <span v-else :class="[newline ? 'newline' : '']">{{ content }}</span>
 </template>
 
 <script>
@@ -56,6 +56,9 @@ export default {
       type: Array,
       default: () => [],
       required: true
+    },
+    newline: {
+      type: Boolean
     }
   },
   data() {
@@ -141,5 +144,8 @@ export default {
   font-size: 14px;
   -webkit-font-smoothing: subpixel-antialiased;
   letter-spacing: .1em;
+}
+.newline {
+  width: 100%;
 }
 </style>
