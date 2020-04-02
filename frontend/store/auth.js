@@ -27,6 +27,7 @@ export const actions = {
       .then((result) => {
         commit('setToken', result.data.token)
         localStorage.setItem('token', result.data.token)
+        localStorage.setItem('name', authData.username)
         Cookie.set('jwt', result.data.token)
         ApiService.setHeader(result.data.token)
       })
@@ -55,6 +56,7 @@ export const actions = {
     Cookie.remove('jwt')
     if (process.client) {
       localStorage.removeItem('token')
+      localStorage.removeItem('name')
     }
   }
 }

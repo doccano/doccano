@@ -62,15 +62,12 @@
       bottom
     >
       <template v-slot:activator="{ on }">
-        <v-btn
-          v-on="on"
-          icon
-        >
-          <v-icon>mdi-dots-vertical</v-icon>
+        <v-btn v-on="on" outlined>
+          {{ username }}
         </v-btn>
       </template>
 
-      <v-list>
+      <v-list dense>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -102,7 +99,8 @@ export default {
         { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
         { title: 'Translation', link: 'translation' },
         { title: 'Text to SQL', link: 'text-to-sql' }
-      ]
+      ],
+      username: localStorage.getItem('name')
     }
   },
 
