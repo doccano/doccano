@@ -59,15 +59,15 @@
     </v-btn>
     <v-menu
       v-if="isAuthenticated"
-      bottom
+      offset-y
     >
       <template v-slot:activator="{ on }">
-        <v-btn v-on="on" outlined>
-          {{ username }}
+        <v-btn v-on="on" on icon>
+          <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
-
-      <v-list dense>
+      <v-list>
+        <v-subheader>{{ username }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 import TheColorModeSwitcher from '@/components/organisms/layout/TheColorModeSwitcher'
 
 export default {
@@ -99,13 +99,13 @@ export default {
         { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
         { title: 'Translation', link: 'translation' },
         { title: 'Text to SQL', link: 'text-to-sql' }
-      ],
-      username: localStorage.getItem('name')
+      ]
     }
   },
 
   computed: {
-    ...mapGetters('auth', ['isAuthenticated'])
+    ...mapGetters('auth', ['isAuthenticated']),
+    ...mapState('auth', ['username'])
   },
 
   methods: {
