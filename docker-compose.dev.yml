@@ -13,6 +13,7 @@ services:
       ADMIN_EMAIL: "admin@example.com"
       DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
       ALLOW_SIGNUP: "False"
+      DEBUG: "True"
     ports:
       - 8000:8000
     depends_on:
