@@ -59,7 +59,6 @@ export default {
 
   watch: {
     selected() {
-      this.initSearchOptions()
       this.updateSearchOptions({
         isChecked: this.items[this.selected].param,
         filterName: this.getFilterOption
@@ -72,6 +71,10 @@ export default {
       checkpoint[this.$route.params.id] = this.page
       localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
     }
+  },
+
+  created() {
+    this.initSearchOptions()
   },
 
   methods: {
