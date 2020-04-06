@@ -4,6 +4,7 @@
       <v-btn
         v-on="on"
         @click="approveDocument"
+        :disabled="disabled"
         class="text-capitalize ps-1 pe-1"
         min-width="36"
         outlined
@@ -30,6 +31,10 @@ export default {
       type: Boolean,
       default: false,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
 
