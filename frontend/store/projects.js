@@ -57,7 +57,7 @@ export const getters = {
     }
     const json = {
       type: 'json',
-      text: 'JSON',
+      text: 'JSONL',
       accept: '.json,.jsonl'
     }
     const conll = {
@@ -134,11 +134,11 @@ export const getters = {
     }
     const json = {
       type: 'json',
-      text: 'JSON'
+      text: 'JSONL'
     }
     const jsonl = {
       type: 'json1',
-      text: 'JSON(Text label)'
+      text: 'JSONL(Text label)'
     }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [
