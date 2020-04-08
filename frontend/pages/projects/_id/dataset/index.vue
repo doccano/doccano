@@ -16,8 +16,6 @@ import DocumentDeletionButton from '@/components/containers/documents/DocumentDe
 export default {
   layout: 'project',
 
-  middleware: ['check-auth', 'auth', 'check-admin'],
-
   components: {
     DocumentList,
     DocumentActionMenu,

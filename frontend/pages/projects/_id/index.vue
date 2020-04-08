@@ -54,8 +54,6 @@
 export default {
   layout: 'project',
 
-  middleware: ['check-auth', 'auth'],
-
   data() {
     return {
       e6: 1,

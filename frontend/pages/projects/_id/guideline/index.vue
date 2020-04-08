@@ -17,8 +17,6 @@ import { mapState, mapActions } from 'vuex'
 export default {
   layout: 'project',
 
-  middleware: ['check-auth', 'auth', 'check-admin'],
-
   components: {
     Editor
   },

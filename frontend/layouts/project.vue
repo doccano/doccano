@@ -41,6 +41,8 @@ import TheSideBar from '~/components/organisms/layout/TheSideBar'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 
 export default {
+  middleware: ['check-auth', 'auth', 'check-admin'],
+
   components: {
     TheSideBar,
     TheHeader
