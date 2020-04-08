@@ -30,13 +30,15 @@ mysqlclient==1.4.2.post1
 psycopg2-binary==2.7.7
 pyexcel==0.5.14
 pyexcel-xlsx==0.5.7
+pyjwt>=1.7.1
 python-dateutil==2.7.3
+python-jose>=3.0.0
 pytz==2018.4
 requests==2.21.0
 six==1.11.0
 seqeval==0.0.6
 social-auth-app-django==3.1.0
-social-auth-core[azuread]==3.0.0
+social-auth-core==3.3.3
 text-unidecode==1.2
 unittest-xml-reporting==2.5.1
 vcrpy==2.0.1
