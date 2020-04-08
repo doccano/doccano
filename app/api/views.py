@@ -76,13 +76,13 @@ class StatisticsAPI(APIView):
         include = set(request.GET.getlist('include'))
         response = {}
 
-        if not include or 'label' in include or 'user' in include:
+        if not include or 'label' in include:
             label_count, user_count = self.label_per_data(p)
             response['label'] = label_count
             # TODO: Make user_label count chart
             response['user_label'] = user_count
 
-        if not include or 'total' in include or 'remaining' in include:
+        if not include or 'total' in include or 'remaining' in include or 'user' in include:
             progress = self.progress(project=p)
             response.update(progress)
 
