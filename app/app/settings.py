@@ -144,6 +144,8 @@ WSGI_APPLICATION = 'app.wsgi.application'
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.azuread_tenant.AzureADTenantOAuth2',
+    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.google_openidconnect.GoogleOpenIdConnect',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
@@ -163,6 +165,13 @@ AZUREAD_ADMIN_GROUP_ID = env('AZUREAD_ADMIN_GROUP_ID', None)
 if AZUREAD_ADMIN_GROUP_ID:
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_RESOURCE = 'https://graph.microsoft.com/'
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SCOPE = ['Directory.Read.All']
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env('OAUTH_GOOGLE_OAUTH2_KEY', None)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env('OAUTH_GOOGLE_OAUTH2_SECRET', None)
+
+if SOCIAL_AUTH_GOOGLE_OAUTH2_KEY:
+    # TODO: Not sure what should go here.
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [...]
 
 SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.social_details',

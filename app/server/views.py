@@ -104,6 +104,7 @@ class LoginView(BaseLoginView):
     extra_context = {
         'github_login': bool(settings.SOCIAL_AUTH_GITHUB_KEY),
         'aad_login': bool(settings.SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID),
+        'google_login': bool(settings.SOCIAL_AUTH_GOOGLE_OAUTH2_KEY),
         'allow_signup': bool(settings.ALLOW_SIGNUP),
     }
 

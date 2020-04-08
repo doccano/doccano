@@ -71,6 +71,12 @@
           <span>Login with Active Directory</span>
         </a>
         {% endif %}
+        {% if google_login %}
+        <a href="{% url 'social:begin' 'google' %}" class="button is-fullwidth mb10">
+          <span class="icon"><i class="fab fa-google"></i></span>
+          <span>Login with Google</span>
+        </a>
+        {% endif %}
       </div>
     </div>
   </div>
