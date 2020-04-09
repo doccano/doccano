@@ -99,7 +99,8 @@ export default {
         { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
         { title: 'Translation', link: 'translation' },
         { title: 'Text to SQL', link: 'text-to-sql' }
-      ]
+      ],
+      username: localStorage.getItem('username')
     }
   },
 

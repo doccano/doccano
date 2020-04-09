@@ -35,6 +35,7 @@ export const actions = {
         commit('setToken', result.data.token)
         commit('setUsername', authData.username)
         localStorage.setItem('token', result.data.token)
+        localStorage.setItem('username', authData.username)
         Cookie.set('jwt', result.data.token)
         ApiService.setHeader(result.data.token)
       })
@@ -64,6 +65,7 @@ export const actions = {
     Cookie.remove('jwt')
     if (process.client) {
       localStorage.removeItem('token')
+      localStorage.removeItem('username')
     }
   }
 }
