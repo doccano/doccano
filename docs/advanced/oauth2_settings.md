@@ -1,5 +1,6 @@
-This document aims to instruct how to setup OAuth for doccano. doccano now supports social login via GitHub and Active Directory by [#75](https://github.com/doccano/doccano/pull/75). In this document, we show GitHub OAuth as an example. 
+# How to use OAuth
 
+This document aims to instruct how to setup OAuth for doccano. doccano now supports social login via GitHub and Active Directory by [#75](https://github.com/doccano/doccano/pull/75). In this document, we show GitHub OAuth as an example. 
 
 ## Create OAuth App
 
@@ -15,7 +16,7 @@ This document aims to instruct how to setup OAuth for doccano. doccano now suppo
 ## Set enviromental variables
 
 Once the application is registered, your app's `Client ID` and `Client Secret` will be displayed on the following page:
-![image](https://user-images.githubusercontent.com/6737785/51811605-1073d480-22f1-11e9-8be0-726a8ee5e832.png)
+![image](../images/oauth/oauth_apps.png)
 
 1. Copy the `Client ID` and `Client Secret` from the Developer Applications of your app on GitHub.
 2. Set the `Client ID` and `Client Secret` to enviromental variables:
@@ -33,4 +34,4 @@ python manage.py runserver
 
 Go to login page:
 
-![image](https://user-images.githubusercontent.com/6737785/51812454-e7edd980-22f4-11e9-80c6-2f18fbc49108.png)
+![image](../images/oauth/login_page.png)

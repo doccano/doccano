@@ -4,8 +4,8 @@
 
 Two options to run doccano:
 
--   (Recommended) Docker Compose
--   Docker
+- (Recommended) Docker Compose
+- Docker
 
 ### Docker Compose
 

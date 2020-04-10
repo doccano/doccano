@@ -41,7 +41,6 @@ The directory structure of the frontend follows Nuxt.js one. See the Nuxt.js doc
 
 - [Nuxt.js/Directory Structure](https://nuxtjs.org/guide/directory-structure/)
 
-
 ## Backend API
 
 The directory structure of the backend api follows Django one. The important directories are as follows:
