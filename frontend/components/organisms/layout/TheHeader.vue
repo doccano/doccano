@@ -67,7 +67,7 @@
         </v-btn>
       </template>
       <v-list>
-        <v-subheader>{{ username }}</v-subheader>
+        <v-subheader>{{ getUsername }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -84,7 +84,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapState } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import TheColorModeSwitcher from '@/components/organisms/layout/TheColorModeSwitcher'
 
 export default {
@@ -99,14 +99,12 @@ export default {
         { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
         { title: 'Translation', link: 'translation' },
         { title: 'Text to SQL', link: 'text-to-sql' }
-      ],
-      username: localStorage.getItem('username')
+      ]
     }
   },
 
   computed: {
-    ...mapGetters('auth', ['isAuthenticated']),
-    ...mapState('auth', ['username'])
+    ...mapGetters('auth', ['isAuthenticated', 'getUsername'])
   },
 
   methods: {

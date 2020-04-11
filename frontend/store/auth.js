@@ -25,6 +25,9 @@ export const mutations = {
 export const getters = {
   isAuthenticated(state) {
     return state.token != null
+  },
+  getUsername() {
+    return localStorage.getItem('username')
   }
 }
 
