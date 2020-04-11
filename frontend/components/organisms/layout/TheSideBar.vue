@@ -1,5 +1,10 @@
 <template>
   <v-list dense>
+    <v-list-item>
+      <h1 style="text-transform:capitalize;">
+        {{ currentProject.name }}
+      </h1>
+    </v-list-item>
     <v-btn
       :to="to"
       color="ms-4 my-1 mb-2 primary text-capitalize"
@@ -32,6 +37,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   props: {
     link: {
@@ -62,7 +69,8 @@ export default {
   computed: {
     to() {
       return `/projects/${this.$route.params.id}/${this.link}`
-    }
+    },
+    ...mapGetters('projects', ['currentProject'])
   },
 
   methods: {
