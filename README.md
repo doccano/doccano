@@ -28,14 +28,25 @@ You can try the [annotation demo](http://doccano.herokuapp.com).
 
 Two options to run doccano:
 
-- (Recommended) Docker Compose
-- Docker
+- Production
+- Development
 
-### Docker Compose
+In any case, you need Docker and Docker Compose. Anyway, you need to clone the repository:
 
 ```bash
 $ git clone https://github.com/doccano/doccano.git
 $ cd doccano
+```
+
+_Note for Windows developers: Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings._
+
+```bash
+git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
+```
+
+### Production
+
+```bash
 $ docker-compose -f docker-compose.prod.yml up
 ```
 
@@ -50,11 +61,7 @@ ADMIN_PASSWORD: "password"
 
 > Note: If you want to add annotators, see [Frequently Asked Questions](./docs/faq.md)
 
-_Note for Windows developers: Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings._
-
-```bash
-git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
-```
+<!--
 
 ### Docker
 
@@ -80,13 +87,11 @@ All data created in the container will persist across restarts.
 
 Go to <http://127.0.0.1:8000/>.
 
-### For Developers
+-->
 
-You can setup local development environment as follows:
+### Development
 
 ```bash
-$ git clone https://github.com/doccano/doccano.git
-$ cd doccano
 $ docker-compose -f docker-compose.dev.yml up
 ```
 
