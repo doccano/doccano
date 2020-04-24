@@ -1,102 +1,92 @@
 # Getting started
 
-## Quick install guide
+## Usage
 
-First of all, you have to clone the repository:
+Two options to run doccano:
+
+- (Recommended) Docker Compose
+- Docker
+
+### Docker Compose
 
 ```bash
-git clone https://github.com/doccano/doccano.git
-cd doccano
+$ git clone https://github.com/doccano/doccano.git
+$ cd doccano
+$ docker-compose -f docker-compose.prod.yml up
 ```
 
-To install doccano, there are three options:
+Go to <http://0.0.0.0/>.
 
-### Option1: Pull the production Docker image
+_Note the superuser account credentials located in the `docker-compose.prod.yml` file:_
+```yml
+ADMIN_USERNAME: "admin"
+ADMIN_PASSWORD: "password"
+```
+
+> Note: If you want to add annotators, see [Frequently Asked Questions](https://github.com/doccano/doccano/wiki/Frequently-Asked-Questions#i-want-to-add-annotators)
+
+_Note for Windows developers: Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings._
+
+```bash
+git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
+```
+
+### Docker
+
+As a one-time setup, create a Docker container for Doccano:
 
 ```bash
 docker pull doccano/doccano
+docker container create --name doccano \
+  -e "ADMIN_USERNAME=admin" \
+  -e "ADMIN_EMAIL=admin@example.com" \
+  -e "ADMIN_PASSWORD=password" \
+  -p 8000:8000 doccano/doccano
 ```
 
-### Option2: Pull the development Docker-Compose images
+Next, start Doccano by running the container:
 
 ```bash
-docker-compose pull
+docker container start doccano
 ```
 
-### Option3: Setup Python environment
+To stop the container, run `docker container stop doccano -t 5`.
+All data created in the container will persist across restarts.
 
-First we need to install the dependencies. Run the following commands:
+Go to <http://127.0.0.1:8000/>.
+
+### For Developers
+
+You can setup local development environment as follows:
 
 ```bash
-pip install -r requirements.txt
-cd app
+$ git clone https://github.com/doccano/doccano.git
+$ cd doccano
+$ docker-compose -f docker-compose.dev.yml up
 ```
 
-Next we need to start the webpack server so that the frontend gets compiled continuously.
-Run the following commands in a new shell:
+Go to <http://127.0.0.1:3000/>.
+
+Or, you can setup via Python and Node.js:
+
+### Python
 
 ```bash
-cd server/static
-npm install
-npm run build
-# npm start  # for developers
-cd ..
+$ git clone https://github.com/doccano/doccano.git
+$ cd doccano/app
+$ pip install -r requirements.txt
+$ python manage.py migrate
+$ python manage.py create_roles
+$ python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+$ python manage.py runserver
 ```
 
-## Usage
-
-Let’s start the development server and explore it.
-
-Depending on your installation method, there are two options:
-
-### Option1: Running the Docker image as a Container
-
-First, run a Docker container:
+### Node.js
 
 ```bash
-docker run -d --name doccano -p 8000:80 doccano/doccano
+$ cd doccano/frontend
+$ yarn install
+$ yarn dev
 ```
 
-Then, execute `create-admin.sh` script for creating a superuser.
-
-```bash
-docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
-```
-
-### Option2: Running the development Docker-Compose stack
-
-We can use docker-compose to set up the webpack server, django server, database, etc. all in one command:
-
-```bash
-docker-compose up
-```
-
-Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see the login screen:
-
-![Login form](./login_form.png)
-
-### Option3: Running Django development server
-
-Before running, we need to make migration. Run the following command:
-
-```bash
-python manage.py migrate
-```
-
-Next we need to create a user who can login to the admin site. Run the following command:
-
-```bash
-python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
-```
-
-Developers can also validate that the project works as expected by running the tests:
-
-```bash
-python manage.py test server.tests
-```
-
-Finally, to start the server, run the following command:
-
-```bash
-python manage.py runserver
-```
+Go to <http://127.0.0.1:3000/>.

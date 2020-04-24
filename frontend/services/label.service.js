@@ -20,6 +20,10 @@ class LabelService {
   updateLabel(projectId, labelId, payload) {
     return this.request.patch(`/projects/${projectId}/labels/${labelId}`, payload)
   }
+
+  uploadFile(projectId, payload, config = {}) {
+    return this.request.post(`/projects/${projectId}/label-upload`, payload, config)
+  }
 }
 
 export default new LabelService()

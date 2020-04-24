@@ -14,6 +14,8 @@
         <v-text-field
           v-model="newText"
           @keyup.enter="create"
+          @compositionstart="compositionStart"
+          @compositionend="compositionEnd"
           prepend-inner-icon="mdi-pencil"
           label="New text"
           autofocus
@@ -88,7 +90,9 @@ export default {
           align: 'right',
           value: 'action'
         }
-      ]
+      ],
+      isComposing: false,
+      hasCompositionJustEnded: false
     }
   },
 
@@ -101,10 +105,21 @@ export default {
       }
     },
     create() {
+      if (this.isComposing || this.hasCompositionJustEnded) {
+        this.hasCompositionJustEnded = false
+        return
+      }
       if (this.newText.length > 0) {
         this.createAnnotation(this.newText)
         this.newText = ''
       }
+    },
+    compositionStart() {
+      this.isComposing = true
+    },
+    compositionEnd() {
+      this.isComposing = false
+      this.hasCompositionJustEnded = true
     }
   }
 }

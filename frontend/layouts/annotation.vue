@@ -24,8 +24,11 @@
           no-gutters
           class="d-none d-sm-flex"
         >
-          <v-col v-if="currentDoc">
-            <approve-button :approved="approved" />
+          <v-col>
+            <approve-button
+              :approved="approved"
+              :disabled="currentDoc ? false : true"
+            />
             <filter-button />
             <guideline-button />
           </v-col>

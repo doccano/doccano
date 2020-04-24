@@ -19,6 +19,7 @@ djangorestframework-csv==2.1.0
 djangorestframework-filters==0.10.2
 environs==4.1.0
 djangorestframework-xml==1.4.0
+drf-yasg==1.17.1
 Faker==0.9.1
 flake8==3.6.0
 furl==2.0.0

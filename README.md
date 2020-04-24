@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./docs/doccano.png">
+  <img src="./docs/images/logo/doccano.png">
 </div>
 
 # doccano
@@ -13,48 +13,55 @@ doccano is an open source text annotation tool for humans. It provides annotatio
 
 You can try the [annotation demo](http://doccano.herokuapp.com).
 
-![Named Entity Recognition](./docs/demo.gif)
-
+![Demo image](./docs/images/demo/demo.gif)
 
 ## Features
 
--   Collaborative annotation
--   Multi-language support
--   Mobile support
--   Emoji :smile: support
--   Dark theme
--   RESTful API
+- Collaborative annotation
+- Multi-language support
+- Mobile support
+- Emoji :smile: support
+- Dark theme
+- RESTful API
 
 ## Usage
 
 Two options to run doccano:
 
--   (Recommended) Docker Compose
--   Docker
+- Production
+- Development
 
-### Docker Compose
+In any case, you need Docker and Docker Compose. Anyway, you need to clone the repository:
 
 ```bash
 $ git clone https://github.com/doccano/doccano.git
 $ cd doccano
-$ docker-compose -f docker-compose.prod.yml up
 ```
-
-Go to <http://0.0.0.0/>.
-
-_Note the superuser account credentials located in the `docker-compose.prod.yml` file:_
-```yml
-ADMIN_USERNAME: "admin"
-ADMIN_PASSWORD: "password"
-```
-
-> Note: If you want to add annotators, see [Frequently Asked Questions](https://github.com/doccano/doccano/wiki/Frequently-Asked-Questions#i-want-to-add-annotators)
 
 _Note for Windows developers: Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings._
 
 ```bash
 git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 ```
+
+### Production
+
+```bash
+$ docker-compose -f docker-compose.prod.yml up
+```
+
+Go to <http://0.0.0.0/>.
+
+Note the superuser account credentials located in the `docker-compose.prod.yml` file:
+
+```yml
+ADMIN_USERNAME: "admin"
+ADMIN_PASSWORD: "password"
+```
+
+> Note: If you want to add annotators, see [Frequently Asked Questions](./docs/faq.md)
+
+<!--
 
 ### Docker
 
@@ -80,13 +87,11 @@ All data created in the container will persist across restarts.
 
 Go to <http://127.0.0.1:8000/>.
 
-### For Developers
+-->
 
-You can setup local development environment as follows:
+### Development
 
 ```bash
-$ git clone https://github.com/doccano/doccano.git
-$ cd doccano
 $ docker-compose -f docker-compose.dev.yml up
 ```
 
@@ -112,7 +117,7 @@ Here are some tips might be helpful. [How to Contribute to Doccano Project](http
 
 ## Citation
 
-```
+```tex
 @misc{doccano,
   title={{doccano}: Text Annotation Tool for Human},
   url={https://github.com/doccano/doccano},

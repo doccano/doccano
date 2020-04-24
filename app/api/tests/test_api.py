@@ -389,6 +389,53 @@ class TestLabelDetailAPI(APITestCase):
         remove_all_role_mappings()
 
 
+class TestLabelUploadAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
+        project_admin = User.objects.create_user(username=cls.super_user_name,
+                                                 password=cls.super_user_pass)
+        project = mommy.make('Project', users=[project_member, project_admin])
+        cls.url = reverse(viewname='label_upload', args=[project.id])
+        create_default_roles()
+        assign_user_to_role(project_member=project_admin, project=project, role_name=settings.ROLE_PROJECT_ADMIN)
+        assign_user_to_role(project_member=project_member, project=project, role_name=settings.ROLE_ANNOTATOR)
+
+    def help_to_upload_file(self, filename, expected_status):
+        with open(os.path.join(DATA_DIR, filename), 'rb') as f:
+            response = self.client.post(self.url, data={'file': f})
+        self.assertEqual(response.status_code, expected_status)
+
+    def test_allows_project_admin_to_upload_label(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        self.help_to_upload_file('valid_labels.json', status.HTTP_201_CREATED)
+
+    def test_disallows_project_member_to_upload_label(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        self.help_to_upload_file('valid_labels.json', status.HTTP_403_FORBIDDEN)
+
+    def test_try_to_upload_invalid_file(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        self.help_to_upload_file('invalid_labels.json', status.HTTP_400_BAD_REQUEST)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
+
 class TestDocumentListAPI(APITestCase, TestUtilsMixin):
 
     @classmethod

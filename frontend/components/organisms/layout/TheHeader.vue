@@ -59,18 +59,15 @@
     </v-btn>
     <v-menu
       v-if="isAuthenticated"
-      bottom
+      offset-y
     >
       <template v-slot:activator="{ on }">
-        <v-btn
-          v-on="on"
-          icon
-        >
+        <v-btn v-on="on" on icon>
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
-
       <v-list>
+        <v-subheader>{{ getUsername }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -107,7 +104,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', ['isAuthenticated'])
+    ...mapGetters('auth', ['isAuthenticated', 'getUsername'])
   },
 
   methods: {
