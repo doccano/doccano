@@ -178,10 +178,18 @@ if AZUREAD_ADMIN_GROUP_ID:
 SOCIAL_AUTH_OKTA_OAUTH2_KEY = env('OAUTH_OKTA_OAUTH2_KEY', None)
 SOCIAL_AUTH_OKTA_OAUTH2_SECRET = env('OAUTH_OKTA_OAUTH2_SECRET', None)
 SOCIAL_AUTH_OKTA_OAUTH2_API_URL = env('OAUTH_OKTA_OAUTH2_API_URL', None)
+OKTA_OAUTH2_ADMIN_GROUP_NAME = env('OKTA_OAUTH2_ADMIN_GROUP_NAME', None)
+
+if SOCIAL_AUTH_OKTA_OAUTH2_API_URL:
+    SOCIAL_AUTH_OKTA_OAUTH2_SCOPE = ["groups"]
 
 SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY = env('OAUTH_OKTA_OPENIDCONNECT_KEY', None)
 SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET = env('OAUTH_OKTA_OPENIDCONNECT_SECRET', None)
 SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL = env('OAUTH_OKTA_OPENIDCONNECT_API_URL', None)
+OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME = env('OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME', None)
+
+if SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL:
+    SOCIAL_AUTH_OKTA_OPENIDCONNECT_SCOPE = ["groups"]
 
 SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.social_details',
@@ -195,6 +203,8 @@ SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.user.user_details',
     'server.social_auth.fetch_github_permissions',
     'server.social_auth.fetch_azuread_permissions',
+    'server.social_auth.fetch_okta_oauth2_permissions',
+    'server.social_auth.fetch_okta_openidconnect_permissions',
 ]
 
 ROLE_PROJECT_ADMIN = env('ROLE_PROJECT_ADMIN', 'project_admin')
