@@ -21,3 +21,4 @@ Please check the following list.
 1. Add a user from [Django Admin site](https://djangobook.com/django-admin-site/).
 ![Add a user](./images/faq/add_user.png)
 2. Add the user to the project in the member page(`/projects/{project_id}/members`).
+3. **Logout from Django Admin site.** [You'll face login error without logout of Django Admin site](https://github.com/doccano/doccano/issues/723).
