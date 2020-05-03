@@ -21,3 +21,21 @@ Please check the following list.
 1. Add a user from [Django Admin site](https://djangobook.com/django-admin-site/).
 ![Add a user](./images/faq/add_user.png)
 2. Add the user to the project in the member page(`/projects/{project_id}/members`).
+
+## I want to rebuild my doccano with latest changes
+
+- `git pull` to fetch latest changes in master.
+- Delete `doccano_www` and `doccano_static_volume`. DON'T DELETE `doccano_postgres_data`. 
+```
+❯ docker volume ls
+DRIVER              VOLUME NAME
+local               doccano_node_modules
+local               doccano_postgres_data
+local               doccano_static_volume
+local               doccano_venv
+local               doccano_www
+❯ docker volume rm doccano_www
+❯ docker volume rm doccano_static_volume
+❯ docker-compose -f docker-compose.prod.yml build
+❯ docker-compose -f docker-compose.prod.yml up
+```
