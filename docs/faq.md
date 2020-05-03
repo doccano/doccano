@@ -22,10 +22,10 @@ Please check the following list.
 ![Add a user](./images/faq/add_user.png)
 2. Add the user to the project in the member page(`/projects/{project_id}/members`).
 
-## I want to rebuild my doccano with latest changes
+## I want to rebuild my Doccano with latest changes
 
 - `git pull` to fetch latest changes in master.
-- Delete `doccano_www` and `doccano_static_volume`. DON'T DELETE `doccano_postgres_data`. 
+- Delete `doccano_www` and `doccano_static_volume` volumes.
 ```
 ❯ docker volume ls
 DRIVER              VOLUME NAME
@@ -36,6 +36,7 @@ local               doccano_venv
 local               doccano_www
 ❯ docker volume rm doccano_www
 ❯ docker volume rm doccano_static_volume
-❯ docker-compose -f docker-compose.prod.yml build
+❯ docker-compose -f docker-compose.prod.yml build --no-cache
 ❯ docker-compose -f docker-compose.prod.yml up
 ```
+**Do not delete** `doccano_postgres_data` because it stores your projects data. 
