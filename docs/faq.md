@@ -23,10 +23,15 @@ Please check the following list.
 2. Add the user to the project in the member page(`/projects/{project_id}/members`).
 3. **Logout from Django Admin site.** [You'll face login error without logout of Django Admin site](https://github.com/doccano/doccano/issues/723).
 
-## I want to rebuild my Doccano with latest changes
+## I want to update to the latest doccano image
 
-- `git pull` to fetch latest changes in master.
-- Delete `doccano_www` and `doccano_static_volume` volumes.
+1. Execute `git pull` to reflect the latest doccano.
+2. Delete the volume that `doccano_www` and `doccano_static_volume`.  
+  **Do not delete `doccano_postgres_data` because it stores your projects data.**
+3. Rebuild the doccano image.
+
+The following commands are the procedure for 2~3.
+
 ```
 ❯ docker volume ls
 DRIVER              VOLUME NAME
@@ -39,4 +44,3 @@ local               doccano_www
 ❯ docker volume rm doccano_static_volume
 ❯ docker-compose -f docker-compose.prod.yml build --no-cache
 ```
-**Do not delete** `doccano_postgres_data` because it stores your projects data. 
