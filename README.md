@@ -59,7 +59,7 @@ ADMIN_USERNAME: "admin"
 ADMIN_PASSWORD: "password"
 ```
 
-> Note: If you want to add annotators, see [Frequently Asked Questions](./docs/faq.md)
+> Note: If you want to add annotators/annotation approvers, see [Frequently Asked Questions](./docs/faq.md#i-want-to-add-annotators-annotatorsannotation-approvers)
 
 <!--
 
