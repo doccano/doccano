@@ -57,7 +57,7 @@ In the app settings, please set the redirect URI to `{DOCCANO_URL}/social/comple
 Okta Application setup:
 ![image](../images/oauth/okta_oauth_app.png)
 
-Optionally, if you want to assign Doccano super users from Okta users, you can use Okta groups to assign them the policy. Ensure your Okta [authorization server can serve `groups` claims](https://developer.okta.com/docs/guides/customize-tokens-returned-from-okta/add-groups-claim-org-as/) and set the environment variable `OKTA_OAUTH2_ADMIN_GROUP_NAME`.
+Optionally, if you want to assign Doccano super users from Okta users, you can use Okta groups to assign them the policy. This will also assign the users the staff role, allowing them to access the Django admin page and app. Ensure your Okta [authorization server can serve `groups` claims](https://developer.okta.com/docs/guides/customize-tokens-returned-from-okta/add-groups-claim-org-as/) and set the environment variable `OKTA_OAUTH2_ADMIN_GROUP_NAME`.
 
 ```bash
 export OKTA_OAUTH2_ADMIN_GROUP_NAME=SUPERUSER_OKTA_GROUP_NAME
@@ -75,7 +75,7 @@ export OAUTH_OKTA_OPENIDCONNECT_API_URL=YOUR_BASE_URL
 
 In the app settings, please set the redirect URI to your app domain `/social/complete/okta-openidconnect/`. For example, if you are serving Doccano at `https://example.com`, the redirect URI should be `https://example.com/social/complete/okta-openidconnect/`. If using a local installation being served at port 8000, set the redirect URI to `http://127.0.0.1:8000/social/complete/okta-openidconnect/`.
 
-Optionally, if you want to assign Doccano super users from Okta users, you can use Okta groups to assign them the policy. Ensure your Okta [authorization server can serve `groups` claims](https://developer.okta.com/docs/guides/customize-tokens-returned-from-okta/add-groups-claim-org-as/) and set the environment variable `OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME`.
+Optionally, if you want to assign Doccano super users from Okta users, you can use Okta groups to assign them the policy. This will also assign the users the staff role, allowing them to access the Django admin page and app. Ensure your Okta [authorization server can serve `groups` claims](https://developer.okta.com/docs/guides/customize-tokens-returned-from-okta/add-groups-claim-org-as/) and set the environment variable `OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME`.
 
 ```bash
 export OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME=SUPERUSER_OKTA_GROUP_NAME

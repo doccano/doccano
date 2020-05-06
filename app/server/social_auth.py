@@ -75,7 +75,7 @@ def fetch_azuread_permissions(strategy, details, user=None, is_new=False, *args,
 # noinspection PyUnusedLocal
 def fetch_okta_oauth2_permissions(strategy, details, user=None, is_new=False, *args, **kwargs):
     org_url = getattr(settings, 'SOCIAL_AUTH_OKTA_OAUTH2_API_URL', '')
-    group_name = getattr(settings, "OKTA_OAUTH2_ADMIN_GROUP_NAME", "")
+    admin_group_name = getattr(settings, "OKTA_OAUTH2_ADMIN_GROUP_NAME", "")
     if not user or not isinstance(kwargs['backend'], OktaOAuth2):
         return
 
@@ -88,17 +88,22 @@ def fetch_okta_oauth2_permissions(strategy, details, user=None, is_new=False, *a
     response.raise_for_status()
     response = response.json()
 
-    is_superuser = group_name in response.get("groups", [])
+    is_superuser = admin_group_name in response.get("groups", [])
+    is_staff = admin_group_name in response.get("groups", [])
 
     if user.is_superuser != is_superuser:
         user.is_superuser = is_superuser
+        user.save()
+
+    if user.is_staff != is_staff:
+        user.is_staff = is_staff
         user.save()
 
 
 # noinspection PyUnusedLocal
 def fetch_okta_openidconnect_permissions(strategy, details, user=None, is_new=False, *args, **kwargs):
     org_url = getattr(settings, 'SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL', '')
-    group_name = getattr(settings, "OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME", "")
+    admin_group_name = getattr(settings, "OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME", "")
     if not user or not isinstance(kwargs['backend'], OktaOpenIdConnect):
         return
 
@@ -111,8 +116,13 @@ def fetch_okta_openidconnect_permissions(strategy, details, user=None, is_new=Fa
     response.raise_for_status()
     response = response.json()
 
-    is_superuser = group_name in response.get("groups", [])
+    is_superuser = admin_group_name in response.get("groups", [])
+    is_staff = admin_group_name in response.get("groups", [])
 
     if user.is_superuser != is_superuser:
         user.is_superuser = is_superuser
+        user.save()
+
+    if user.is_staff != is_staff:
+        user.is_staff = is_staff
         user.save()
