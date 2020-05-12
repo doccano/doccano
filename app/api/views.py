@@ -212,7 +212,7 @@ class AnnotationList(generics.ListCreateAPIView):
 
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'annotation_id'
-    permission_classes = [IsAuthenticated & (((IsAnnotator | IsAnnotationApprover) & IsOwnAnnotation) | IsProjectAdmin)]
+    permission_classes = [IsAuthenticated & (((IsAnnotator & IsOwnAnnotation) | IsAnnotationApprover)  | IsProjectAdmin)]
     swagger_schema = None
 
     def get_serializer_class(self):
