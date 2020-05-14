@@ -55,10 +55,15 @@ export const getters = {
       text: 'CSV',
       accept: '.csv'
     }
+    const jsonl = {
+      type: 'jsonl',
+      text: 'JSONL',
+      accept: '.jsonl,.json'
+    }
     const json = {
       type: 'json',
-      text: 'JSONL',
-      accept: '.json,.jsonl'
+      text: 'JSON',
+      accept: '.json'
     }
     const conll = {
       type: 'conll',
@@ -67,6 +72,13 @@ export const getters = {
     }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [
+        '[\n',
+        '{"text": "Terrible customer service.", "labels": ["negative"]},\n',
+        '{"text": "Really great transaction.", "labels": ["positive"]},\n',
+        '{"text": "Great price.", "labels": ["positive"]}\n',
+        ']'
+      ]
+      jsonl.examples = [
         '{"text": "Terrible customer service.", "labels": ["negative"]}\n',
         '{"text": "Really great transaction.", "labels": ["positive"]}\n',
         '{"text": "Great price.", "labels": ["positive"]}'
@@ -80,10 +92,18 @@ export const getters = {
       return [
         plain,
         csv,
-        json
+        json,
+        jsonl
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [
+        '[\n',
+        '{"text": "EU rejects German call to boycott British lamb.", "labels": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]},\n',
+        '{"text": "Peter Blackburn", "labels": [ [0, 15, "PERSON"] ]},\n',
+        '{"text": "President Obama", "labels": [ [10, 15, "PERSON"] ]}\n',
+        ']'
+      ]
+      jsonl.examples = [
         '{"text": "EU rejects German call to boycott British lamb.", "labels": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]}\n',
         '{"text": "Peter Blackburn", "labels": [ [0, 15, "PERSON"] ]}\n',
         '{"text": "President Obama", "labels": [ [10, 15, "PERSON"] ]}'
@@ -104,10 +124,18 @@ export const getters = {
       return [
         plain,
         json,
+        jsonl,
         conll
       ]
     } else if (state.current.project_type === 'Seq2seq') {
       json.examples = [
+        '[\n',
+        '{"text": "Hello!", "labels": ["こんにちは！"]},\n',
+        '{"text": "Good morning.", "labels": ["おはようございます。"]},\n',
+        '{"text": "See you.", "labels": ["さようなら。"]}\n',
+        ']'
+      ]
+      jsonl.examples = [
         '{"text": "Hello!", "labels": ["こんにちは！"]}\n',
         '{"text": "Good morning.", "labels": ["おはようございます。"]}\n',
         '{"text": "See you.", "labels": ["さようなら。"]}'
@@ -121,7 +149,8 @@ export const getters = {
       return [
         plain,
         csv,
-        json
+        json,
+        jsonl
       ]
     } else {
       return []

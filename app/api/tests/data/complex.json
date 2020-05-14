@@ -1,0 +1,7 @@
+[{"text": "Terrible meta customer service.", "labels": ["negative"]},
+{"text": "Great.", "labels": ["positive"]},{"text": "Great price.", "labels": ["positive"],"meta":{"1": "text with stuff"}},{"text": "Great price.", "labels": ["positive"], "meta" : {"1": "text with"}},
+{"text": "Terrible.", "labels": ["negative"]},{"text": "Great price.", "labels": ["positive"], "meta" : {"1": "text with"}},
+{"text": "Awesome.", "labels": ["positive"], "meta" : {"1": "meta"}},
+
+{"meta":{"1": "text with stuff"},"text": "Great price.", "labels": ["positive"]}
+]

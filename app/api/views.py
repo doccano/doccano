@@ -22,6 +22,7 @@ from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
+
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
@@ -281,7 +282,7 @@ class TextUploadAPI(APIView):
             return PlainTextParser()
         elif file_format == 'csv':
             return CSVParser()
-        elif file_format == 'json':
+        elif file_format == 'jsonl' or file_format == 'json':
             return JSONParser()
         elif file_format == 'conll':
             return CoNLLParser()

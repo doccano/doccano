@@ -410,12 +410,16 @@ class JSONParser(FileParser):
             if len(data) >= settings.IMPORT_BATCH_SIZE:
                 yield data
                 data = []
+            line = line.strip().strip(",").strip("[").strip("]")
             try:
-                j = json.loads(line)
-                j['meta'] = FileParser.encode_metadata(j.get('meta', {}))
-                data.append(j)
+                objects = json.loads(f"[{line}]")
+
             except json.decoder.JSONDecodeError:
                 raise FileParseException(line_num=i, line=line)
+            else:
+                for o in objects:
+                    o['meta'] = FileParser.encode_metadata(o.get('meta', {}))
+                    data.append(o)
         if data:
             yield data
 
@@ -431,6 +435,7 @@ class AudioParser(FileParser):
             'audio': f'data:{file_type};base64,{audio.decode("ascii")}',
             'meta': json.dumps({'filename': file.name}),
         }]
+
 
 
 class JSONLRenderer(JSONRenderer):

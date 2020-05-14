@@ -8,8 +8,9 @@ from rest_framework.test import APITestCase
 from model_mommy import mommy
 
 from ..models import User, SequenceAnnotation, Document, Role, RoleMapping
-from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
 from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser
+from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
+
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -1286,6 +1287,65 @@ class TestUploader(APITestCase):
                                 file_format='json',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_classification_json(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='classification.json',
+                                file_format='json',
+                                expected_status=status.HTTP_201_CREATED)
+
+        self.label_test_helper(
+            project_id=self.classification_project.id,
+            expected_labels=[
+                {'text': 'positive', 'suffix_key': 'p', 'prefix_key': None},
+                {'text': 'negative', 'suffix_key': 'n', 'prefix_key': None},
+                {'text': 'neutral', 'suffix_key': 'n', 'prefix_key': 'ctrl'},
+            ],
+            expected_label_keys=[
+                'background_color',
+                'text_color',
+            ])
+
+    def test_can_upload_labeling_json(self):
+        self.upload_test_helper(project_id=self.labeling_project.id,
+                                filename='labeling.json',
+                                file_format='json',
+                                expected_status=status.HTTP_201_CREATED)
+
+        self.label_test_helper(
+            project_id=self.labeling_project.id,
+            expected_labels=[
+                {'text': 'LOC', 'suffix_key': 'l', 'prefix_key': None},
+                {'text': 'ORG', 'suffix_key': 'o', 'prefix_key': None},
+                {'text': 'PER', 'suffix_key': 'p', 'prefix_key': None},
+            ],
+            expected_label_keys=[
+                'background_color',
+                'text_color',
+            ])
+
+    def test_can_upload_seq2seq_json(self):
+        self.upload_test_helper(project_id=self.seq2seq_project.id,
+                                filename='seq2seq.json',
+                                file_format='json',
+                                expected_status=status.HTTP_201_CREATED)
+
+    def test_can_upload_complex_classification_json(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='complex.json',
+                                file_format='json',
+                                expected_status=status.HTTP_201_CREATED)
+
+        self.label_test_helper(
+            project_id=self.classification_project.id,
+            expected_labels=[
+                {'text': 'positive', 'suffix_key': 'p', 'prefix_key': None},
+                {'text': 'negative', 'suffix_key': 'n', 'prefix_key': None}
+            ],
+            expected_label_keys=[
+                'background_color',
+                'text_color',
+            ])
+
     def test_can_upload_plain_text(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.txt',
@@ -1407,17 +1467,29 @@ class TestParser(APITestCase):
     def test_give_seq2seq_data_to_csv_parser(self):
         self.parser_helper(filename='example.csv', parser=CSVParser())
 
-    def test_give_classification_data_to_json_parser(self):
+    def test_give_classification_data_to_jsonl_parser(self):
         self.parser_helper(filename='classification.jsonl', parser=JSONParser())
 
-    def test_give_labeling_data_to_json_parser(self):
+    def test_give_labeling_data_to_jsonl_parser(self):
         self.parser_helper(filename='labeling.jsonl', parser=JSONParser())
 
-    def test_give_seq2seq_data_to_json_parser(self):
+    def test_give_seq2seq_data_to_jsonl_parser(self):
         self.parser_helper(filename='seq2seq.jsonl', parser=JSONParser())
 
-    def test_give_data_without_label_to_json_parser(self):
+    def test_give_data_without_label_to_jsonl_parser(self):
         self.parser_helper(filename='example.jsonl', parser=JSONParser(), include_label=False)
+
+    def test_give_classification_data_to_json_parser(self):
+        self.parser_helper(filename='classification.json', parser=JSONParser())
+
+    def test_give_labeling_data_to_json_parser(self):
+        self.parser_helper(filename='labeling.json', parser=JSONParser())
+
+    def test_give_seq2seq_data_to_json_parser(self):
+        self.parser_helper(filename='seq2seq.json', parser=JSONParser())
+
+    def test_give_data_without_label_to_json_parser(self):
+        self.parser_helper(filename='example.json', parser=JSONParser(), include_label=False)
 
 
 class TestDownloader(APITestCase):
