@@ -412,23 +412,30 @@ class JSONLRenderer(JSONRenderer):
 
 class JSONPainter(object):
 
-    def paint(self, documents):
+    def paint(self, documents, format):
         serializer = DocumentSerializer(documents, many=True)
         data = []
+        if format == 'json':
+            data.append([])
         for d in serializer.data:
             d['meta'] = json.loads(d['meta'])
             for a in d['annotations']:
                 a.pop('id')
                 a.pop('prob')
                 a.pop('document')
-            data.append(d)
+            if format == 'json':
+                data[0].append(d)
+            else:
+                data.append(d)
         return data
 
     @staticmethod
-    def paint_labels(documents, labels):
+    def paint_labels(documents, labels, format):
         serializer_labels = LabelSerializer(labels, many=True)
         serializer = DocumentSerializer(documents, many=True)
         data = []
+        if format == 'json':
+            data.append([])
         for d in serializer.data:
             labels = []
             for a in d['annotations']:
@@ -440,7 +447,10 @@ class JSONPainter(object):
             d.pop('annotations')
             d['labels'] = labels
             d['meta'] = json.loads(d['meta'])
-            data.append(d)
+            if format == 'json':
+                data[0].append(d)
+            else:
+                data.append(d)
         return data
 
 
