@@ -79,6 +79,11 @@ def fetch_okta_oauth2_permissions(strategy, details, user=None, is_new=False, *a
     if not user or not isinstance(kwargs['backend'], OktaOAuth2):
         return
 
+    # OktaOpenIdConnect inherits `OktaOAuth2`, so we have to explicitly skip OAuth2 trying
+    # to fetch permissions when using OIDC backend.
+    if isinstance(kwargs['backend'], OktaOpenIdConnect):
+        return
+
     response = requests.post(
         url=f"{org_url}/v1/userinfo",
         headers={
