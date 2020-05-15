@@ -329,20 +329,25 @@ class TextDownloadAPI(APIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         documents = project.documents.all()
         painter = self.select_painter(format)
-        # json1 format prints text labels while json format prints annotations with label ids
-        # json1 format - "labels": [[0, 15, "PERSON"], ..]
-        # json format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
-        if format == "json1":
+        # jsonltext and jsontext format - "labels": [[0, 15, "PERSON"], ..]
+        # json and jsonl format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
+        if format == 'jsonltext':
             labels = project.labels.all()
-            data = JSONPainter.paint_labels(documents, labels)
+            data = JSONPainter.paint_labels(documents, labels, 'jsonl')
+        elif format == 'jsontext':
+            labels = project.labels.all()
+            data = JSONPainter.paint_labels(documents, labels, 'json')
+        elif format == 'jsonl':
+            data = painter.paint(documents, 'jsonl')
         else:
-            data = painter.paint(documents)
+            data = painter.paint(documents, 'json')
+
         return Response(data)
 
     def select_painter(self, format):
         if format == 'csv':
             return CSVPainter()
-        elif format == 'json' or format == "json1":
+        elif format in ['json','jsonl','jsontext','jsonltext']:
             return JSONPainter()
         else:
             raise ValidationError('format {} is invalid.'.format(format))
