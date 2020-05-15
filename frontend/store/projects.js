@@ -134,14 +134,29 @@ export const getters = {
     }
     const json = {
       type: 'json',
-      text: 'JSONL'
+      text: 'JSON'
     }
     const jsonl = {
-      type: 'json1',
-      text: 'JSONL(Text label)'
+      type: 'jsonl',
+      text: 'JSONL'
+    }
+    const jsontext = {
+      type: 'jsontext',
+      text: 'JSON (Text label)'
+    }
+    const jsonltext = {
+      type: 'jsonltext',
+      text: 'JSONL (Text label)'
     }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [
+        '[\n',
+        '{"id": 1, "text": "Terrible customer service.", "annotations": [{"id": 1, "label": 1, "user": 1}]}\n',
+        '{"id": 2, "text": "Really great transaction.", "annotations": [{"id": 2, "label": 2, "user": 1}]}\n',
+        '{"id": 3, "text": "Great price.", "annotations": [{"id": 3, "label": 2, "user": 1}]}\n',
+        ']'
+      ]
+      jsonl.examples = [
         '{"id": 1, "text": "Terrible customer service.", "annotations": [{"id": 1, "label": 1, "user": 1}]}\n',
         '{"id": 2, "text": "Really great transaction.", "annotations": [{"id": 2, "label": 2, "user": 1}]}\n',
         '{"id": 3, "text": "Great price.", "annotations": [{"id": 3, "label": 2, "user": 1}]}'
@@ -154,28 +169,52 @@ export const getters = {
       ]
       return [
         csv,
+        jsonl,
         json
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [
+        '[\n',
+        '{"id": 1, "text": "EU rejects ...", "annotations": [{"id": 1, "label": 2, "start_offset": 0, "end_offset": 2, "user": 1}]}\n',
+        '{"id": 2, "text": "Peter Blackburn", "annotations": [{"id": 2, "label": 1, "start_offset": 0, "end_offset": 15, "user": 1}]}\n',
+        '{"id": 3, "text": "President Obama", "annotations": [{"id": 3, "label": 1, "start_offset": 10, "end_offset": 15, "user": 1}]}\n',
+        ']'
+      ]
+      jsonl.examples = [
         '{"id": 1, "text": "EU rejects ...", "annotations": [{"id": 1, "label": 2, "start_offset": 0, "end_offset": 2, "user": 1}]}\n',
         '{"id": 2, "text": "Peter Blackburn", "annotations": [{"id": 2, "label": 1, "start_offset": 0, "end_offset": 15, "user": 1}]}\n',
         '{"id": 3, "text": "President Obama", "annotations": [{"id": 3, "label": 1, "start_offset": 10, "end_offset": 15, "user": 1}]}'
       ]
-      jsonl.examples = [
+      jsontext.examples = [
+        '[\n',
+        '{"id": 1, "text": "EU rejects ...", "labels": [[0,2,"ORG"], [11,17, "MISC"], [34,41,"ORG"]]}\n',
+        '{"id": 2, "text": "Peter Blackburn", "labels": [[0, 15, "PERSON"]]}\n',
+        '{"id": 3, "text": "President Obama", "labels": [[10, 15, "PERSON"]]}\n',
+        ']'
+      ]
+      jsonltext.examples = [
         '{"id": 1, "text": "EU rejects ...", "labels": [[0,2,"ORG"], [11,17, "MISC"], [34,41,"ORG"]]}\n',
         '{"id": 2, "text": "Peter Blackburn", "labels": [[0, 15, "PERSON"]]}\n',
         '{"id": 3, "text": "President Obama", "labels": [[10, 15, "PERSON"]]}\n'
       ]
       return [
         json,
-        jsonl
+        jsonl,
+        jsontext,
+        jsonltext
       ]
     } else if (state.current.project_type === 'Seq2seq') {
-      json.examples = [
+      jsonl.examples = [
         '{"id": 1, "text": "Hello!", "annotations": [{"id": 1, "label": "こんにちは！", "user": 1}]}\n',
         '{"id": 2, "text": "Good morning.", "annotations": [{"id": 2, "label": "おはようございます。", "user": 1}]}\n',
         '{"id": 3, "text": "See you.", "annotations": [{"id": 3, "label": "さようなら。", "user": 1}]}'
+      ]
+      json.examples = [
+        '[\n',
+        '{"id": 1, "text": "Hello!", "annotations": [{"id": 1, "label": "こんにちは！", "user": 1}]}\n',
+        '{"id": 2, "text": "Good morning.", "annotations": [{"id": 2, "label": "おはようございます。", "user": 1}]}\n',
+        '{"id": 3, "text": "See you.", "annotations": [{"id": 3, "label": "さようなら。", "user": 1}]}\n',
+        ']'
       ]
       csv.examples = [
         'id,text,label,user\n',
@@ -185,7 +224,8 @@ export const getters = {
       ]
       return [
         csv,
-        json
+        json,
+        jsonl
       ]
     } else {
       return []
