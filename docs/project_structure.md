@@ -2,7 +2,7 @@
 
 The important files/directories are as follows:
 
-```bash
+```
 /
 ├── app/
 ├── frontend/
@@ -40,18 +40,27 @@ The `nginx` directory contains a NGINX configuration file and Docker container. 
 
 The `tools` directory contains some shell scripts. They are used for CI, CD and so on.
 
+Also, there are directories and files contain doccano v0.x codes.
+In the future, they will be integrated into the currect code or removed:
+
+```
+/
+├── app/
+├── └── server/
+└── docker-compose.prod.yml
+```
+
 ## Backend
 
 The directory structure of the backend follows [Django](https://www.djangoproject.com) one.
 The important directories are as follows:
 
-```bash
+```
 /
 ├── app/
 ├── ├── api/
 ├── ├── app/
-├── ├── authentification/
-└── └── server/
+└── └── authentification/
 ```
 
 **[app/api/](https://github.com/doccano/doccano/tree/master/app/api)**
@@ -66,10 +75,6 @@ The `app/app` directory contains Django project settings. See [Writing your firs
 **[app/authentification/](https://github.com/doccano/doccano/tree/master/app/authentification)**
 
 The `app/authentification` directory contains authentification application. It is mainly used for user signup.
-
-**[app/server/](https://github.com/doccano/doccano/tree/master/app/server)**
-
-The `app/server` directory contains doccano v0.x codes. In the future, this directory will be integrated into the `api` directory.
 
 ## Frontend
 
