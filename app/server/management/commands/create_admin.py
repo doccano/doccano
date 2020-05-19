@@ -21,7 +21,7 @@ class Command(createsuperuser.Command):
         try:
             super().handle(*args, **options)
             self.stderr.write(f'try executed')
-        except (IntegrityError, CommandError) as e:
+        except (IntegrityError, CommandError):
             pass
 
         if password:
