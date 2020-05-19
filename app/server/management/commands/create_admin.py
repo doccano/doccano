@@ -22,7 +22,7 @@ class Command(createsuperuser.Command):
             super().handle(*args, **options)
             self.stderr.write(f'try executed')
         except (IntegrityError, CommandError) as e:
-            self.stderr.write(f'User {username} already exists.')
+            pass
 
         if password:
             database = options.get('database')
