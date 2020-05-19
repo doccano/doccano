@@ -456,8 +456,8 @@ class JSONPainter(object):
 
 class CSVPainter(JSONPainter):
 
-    def paint(self, documents):
-        data = super().paint(documents)
+    def paint(self, documents, export_format='csv'):
+        data = super().paint(documents, export_format='csv')
         res = []
         for d in data:
             annotations = d.pop('annotations')

@@ -333,14 +333,14 @@ class TextDownloadAPI(APIView):
         # json and jsonl format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
         if format == 'jsonltext':
             labels = project.labels.all()
-            data = JSONPainter.paint_labels(documents, labels, 'jsonl')
+            data = JSONPainter.paint_labels(documents, labels, export_format='jsonl')
         elif format == 'jsontext':
             labels = project.labels.all()
-            data = JSONPainter.paint_labels(documents, labels, 'json')
+            data = JSONPainter.paint_labels(documents, labels, export_format='json')
         elif format == 'jsonl':
-            data = painter.paint(documents, 'jsonl')
+            data = painter.paint(documents, export_format='jsonl')
         else:
-            data = painter.paint(documents, 'json')
+            data = painter.paint(documents, export_format='json')
 
         return Response(data)
 
