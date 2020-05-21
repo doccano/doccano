@@ -40,7 +40,6 @@ local               doccano_postgres_data
 local               doccano_static_volume
 local               doccano_venv
 local               doccano_www
-❯ docker volume rm doccano_www
-❯ docker volume rm doccano_static_volume
+❯ docker volume rm doccano_node_modules doccano_static_volume doccano_venv doccano_www
 ❯ docker-compose -f docker-compose.prod.yml build --no-cache
 ```
