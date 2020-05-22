@@ -1,5 +1,10 @@
 FROM python:3.6
 
+ENV PORT 8000
+ENV WORKERS 1
+
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --workers $WORKERS --pythonpath app app.wsgi --timeout 300"]
+
 # set work directory
 WORKDIR /app
 
