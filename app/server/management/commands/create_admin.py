@@ -20,8 +20,11 @@ class Command(createsuperuser.Command):
 
         try:
             super().handle(*args, **options)
-        except (IntegrityError, CommandError):
-            self.stderr.write(f'User {username} already exists.')
+        except Exception as err:
+            if 'is already taken' in str(err):
+                self.stderr.write(f'User {username} already exists.')
+            else:
+                raise
 
         if password:
             database = options.get('database')
