@@ -120,7 +120,7 @@ Go to <http://127.0.0.1:3000/>.
 
 ### Add annotators (optionally)
 
-If you want to add annotators, see [Frequently Asked Questions](./docs/faq.md)
+If you want to add annotators/annotation approvers, see [Frequently Asked Questions](./docs/faq.md)
 
 ## One-click Deployment
 
