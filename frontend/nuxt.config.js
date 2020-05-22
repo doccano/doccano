@@ -35,7 +35,7 @@ export default {
   },
 
   env: {
-    baseUrl: process.env.NODE_ENV === 'production' ? '/v1' : 'http://127.0.0.1:8000/v1'
+    baseUrl: '/v1'
   },
 
   /*
@@ -75,7 +75,14 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    proxy: true
   },
+
+  proxy: {
+    // Use a fake value for use at build-time
+    '/v1/': { target: process.env.API_URL || 'http://127.0.0.1:12345' }
+  },
+
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module

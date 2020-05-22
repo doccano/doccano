@@ -1,5 +1,9 @@
 FROM node:13.2.0
 
+ENV NUXT_PORT 3000
+
+CMD ["/usr/local/bin/npm", "start"]
+
 # set work directory
 WORKDIR /app
 
@@ -7,8 +11,7 @@ WORKDIR /app
 COPY . /app/
 
 # install dependencies
-RUN npm install -g npm@latest
-RUN npm install
-
-# build project
-RUN npm run build
+RUN LAYER=build \
+  && npm install -g npm@latest \
+  && npm install \
+  && npm run build
