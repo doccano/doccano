@@ -44,7 +44,7 @@ _Note for Windows developers: Be sure to configure git to correctly handle line 
 git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 ```
 
-### Production
+### Production (compose)
 
 ```bash
 $ docker-compose -f docker-compose.prod.yml up
@@ -60,6 +60,67 @@ ADMIN_PASSWORD: "password"
 ```
 
 > Note: If you want to add annotators, see [Frequently Asked Questions](./docs/faq.md)
+
+### Production (services)
+
+When running in a service-oriented environment (Mesos/K8S) you may require a different setup where all _doccano_ components run from their own container.
+
+Once you have a database deployed (mssql/mysql/postgres) you can launch the two main components: the app (API) and frontend.
+
+```bash
+docker run -d --name doccano-pg -p 5432:5432 -v /tmp/doccano-postgres:/var/lib/postgresql/data -e POSTGRES_USER=doccano -e POSTGRES_PASSWORD=doccano -e POSTGRES_DB=doccano postgres:12.0-alpine
+```
+
+Initialize your database using the following:
+
+```bash
+DB_IP=$(docker inspect -f {{.NetworkSettings.IPAddress}} doccano-pg)
+docker run --rm -it -e DATABASE_URL="postgres://doccano:doccano@${DB_IP}:5432/doccano?sslmode=disable" doccano/doccano-app python manage.py migrate
+docker run --rm -it -e DATABASE_URL="postgres://doccano:doccano@${DB_IP}:5432/doccano?sslmode=disable" doccano/doccano-app python manage.py create_roles
+docker run --rm -it -e DATABASE_URL="postgres://doccano:doccano@${DB_IP}:5432/doccano?sslmode=disable" doccano/doccano-app python manage.py create_admin --username admin --password password --email none@none.local --noinput
+```
+
+Next, launch the API:
+
+```bash
+docker \
+  run \
+  -d \
+  --name doccano-app \
+  -p 8000:8000 \
+  -e "ADMIN_USERNAME=admin" \
+  -e "ADMIN_PASSWORD=password" \
+  -e "ADMIN_EMAIL=admin@example.com" \
+  -e "DATABASE_URL=postgres://doccano:doccano@${DB_IP}:5432/doccano?sslmode=disable" \
+  -e "ALLOW_SIGNUP=False" \
+  -e "DEBUG=False" \
+  doccano/doccano-app:latest
+```
+
+And get a `Token`:
+
+```bash
+curl -H 'content-type: application/json' -d '{"username":"admin","password":"password"}' http://localhost:8000/v1/auth-token
+```
+
+This would return something like: `{"token":"07486cb07feaad62da1080fc7162e3e92482f63d"}`. Use this token to manage _doccano_ annotations using just the API.
+
+Now launch the frontend:
+
+```bash
+APP_IP=$(docker inspect -f {{.NetworkSettings.IPAddress}} doccano-app)
+docker \
+  run \
+  -d \
+  --name doccano-frontend \
+  -p 3000:3000 \
+  -e API_URL=http://${APP_IP}:8000 \
+  doccano/doccano-frontend:latest
+```
+
+This assumes your services platform takes care of routing requests to these containers.
+
+When executing on your local machine, _doccano_ is now available at `http://localhost:3000`. Directly accessing the backend is possible using `http://localhost:8000`.
 
 <!--
 
