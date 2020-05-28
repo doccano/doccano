@@ -14,7 +14,9 @@ ENV PYTHONUNBUFFERED 1
 
 # install psycopg2 dependencies
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y python3-dev libpq-dev unixodbc-dev
+    && apt-get install --no-install-recommends -y python3-dev libpq-dev unixodbc-dev \
+    && mkdir -p /app/staticfiles \
+    && chmod 777 /app/staticfiles
 
 # install dependencies
 RUN pip install --upgrade pip setuptools
