@@ -161,10 +161,9 @@ class DocumentList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-
         queryset = project.documents
         if project.randomize_document_order:
-            queryset = queryset.annotate(sort_id=F('id') % self.request.user.id).order_by('sort_id')
+            queryset = queryset.annotate(sort_id=F('id') % max(2, self.request.user.id)).order_by('sort_id')
         else:
             queryset = queryset.order_by('id')
 
