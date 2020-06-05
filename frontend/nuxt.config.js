@@ -26,10 +26,6 @@ export default {
     ]
   },
 
-  serverMiddleware: [
-    '~/api/index.js'
-  ],
-
   server: {
     host: '0.0.0.0' // default: localhost
   },
