@@ -16,7 +16,9 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get update \
     && apt-get install --no-install-recommends -y python3-dev libpq-dev unixodbc-dev \
     && mkdir -p /app/staticfiles \
-    && chmod 777 /app/staticfiles
+    && chmod 777 /app/staticfiles \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # install dependencies
 RUN pip install --upgrade pip setuptools
