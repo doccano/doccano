@@ -26,7 +26,7 @@ Please check the following list.
 ## I want to update to the latest doccano image
 
 1. Execute `git pull` to reflect the latest doccano.
-2. Delete the volume that `doccano_www` and `doccano_static_volume`.  
+2. Delete the volume that `doccano_node_modules`, `doccano_static_volume`, `doccano_venv` and `doccano_www`.
   **Do not delete `doccano_postgres_data` because it stores your projects data.**
 3. Rebuild the doccano image.
 
