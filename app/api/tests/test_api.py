@@ -29,6 +29,16 @@ def remove_all_role_mappings():
     RoleMapping.objects.all().delete()
 
 
+class TestHealthEndpoint(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse(viewname='health')
+
+    def test_returns_green_status_on_health_endpoint(self):
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data['status'], 'green')
+
+
 class TestUtilsMixin:
     def _patch_project(self, project, attribute, value):
         old_value = getattr(project, attribute, None)

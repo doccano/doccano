@@ -12,7 +12,7 @@ set -eo pipefail
 
 # install build dependencies
 apt-get update
-apt-get install --no-install-recommends -y \
+apt-get install --no-install-recommends -y --allow-downgrades \
       curl=7.52.1-5+deb9u10 \
       gnupg=2.1.18-8~deb9u4 \
       apt-transport-https=1.4.9
