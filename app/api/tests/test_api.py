@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase
 from model_mommy import mommy
 
 from ..models import User, SequenceAnnotation, Document, Role, RoleMapping
-from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
+from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
 from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
@@ -1398,9 +1398,11 @@ class TestDownloader(APITestCase):
         cls.labeling_project = mommy.make('SequenceLabelingProject',
                                           users=[super_user], project_type=SEQUENCE_LABELING)
         cls.seq2seq_project = mommy.make('Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
+        cls.speech2text_project = mommy.make('Speech2textProject', users=[super_user], project_type=SPEECH2TEXT)
         cls.classification_url = reverse(viewname='doc_downloader', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_downloader', args=[cls.labeling_project.id])
         cls.seq2seq_url = reverse(viewname='doc_downloader', args=[cls.seq2seq_project.id])
+        cls.speech2text_url = reverse(viewname='doc_downloader', args=[cls.speech2text_project.id])
 
     def setUp(self):
         self.client.login(username=self.super_user_name,
@@ -1442,6 +1444,11 @@ class TestDownloader(APITestCase):
 
     def test_can_download_seq2seq_jsonl(self):
         self.download_test_helper(url=self.seq2seq_url,
+                                  format='json',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_can_download_speech2text_jsonl(self):
+        self.download_test_helper(url=self.speech2text_url,
                                   format='json',
                                   expected_status=status.HTTP_200_OK)
 

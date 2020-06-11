@@ -177,6 +177,20 @@ export default {
       });
     },
 
+    documentMetadataFor(i) {
+      const document = this.docs[i];
+      if (document == null || document.meta == null) {
+        return null;
+      }
+
+      const metadata = JSON.parse(document.meta);
+      if (isEmpty(metadata)) {
+        return null;
+      }
+
+      return metadata;
+    },
+
     getState() {
       if (this.picked === 'all') {
         return '';
@@ -292,17 +306,7 @@ export default {
     },
 
     documentMetadata() {
-      const document = this.docs[this.pageNumber];
-      if (document == null || document.meta == null) {
-        return null;
-      }
-
-      const metadata = JSON.parse(document.meta);
-      if (isEmpty(metadata)) {
-        return null;
-      }
-
-      return metadata;
+      return this.documentMetadataFor(this.pageNumber);
     },
 
     id2label() {

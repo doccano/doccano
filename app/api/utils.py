@@ -1,7 +1,9 @@
+import base64
 import csv
 import io
 import itertools
 import json
+import mimetypes
 import re
 from collections import defaultdict
 
@@ -217,6 +219,33 @@ class Seq2seqStorage(BaseStorage):
         return annotations
 
 
+class Speech2textStorage(BaseStorage):
+    """Store json for speech2text.
+
+    The format is as follows:
+    {"audio": "data:audio/mpeg;base64,...", "transcription": "こんにちは、世界!"}
+    ...
+    """
+    @transaction.atomic
+    def save(self, user):
+        for data in self.data:
+            for audio in data:
+                audio['text'] = audio.pop('audio')
+            doc = self.save_doc(data)
+            annotations = self.make_annotations(doc, data)
+            self.save_annotation(annotations, user)
+
+    @classmethod
+    def make_annotations(cls, docs, data):
+        annotations = []
+        for doc, datum in zip(docs, data):
+            try:
+                annotations.append({'document': doc.id, 'text': datum['transcription']})
+            except KeyError:
+                continue
+        return annotations
+
+
 class FileParser(object):
 
     def parse(self, file):
@@ -389,6 +418,19 @@ class JSONParser(FileParser):
                 raise FileParseException(line_num=i, line=line)
         if data:
             yield data
+
+
+class AudioParser(FileParser):
+    def parse(self, file):
+        file_type, _ = mimetypes.guess_type(file.name, strict=False)
+        if not file_type:
+            raise FileParseException(line_num=1, line='Unable to guess file type')
+
+        audio = base64.b64encode(file.read())
+        yield [{
+            'audio': f'data:{file_type};base64,{audio.decode("ascii")}',
+            'meta': json.dumps({'filename': file.name}),
+        }]
 
 
 class JSONLRenderer(JSONRenderer):
