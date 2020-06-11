@@ -73,7 +73,8 @@ div.columns(v-cloak="")
           href="#"
         )
           span.icon
-            i.fa.fa-check(v-show="annotations[index] && annotations[index].length")
+            i.fa.fa-thumbs-up(v-show="annotations[index] && docs[index].annotation_approver")
+            i.fa.fa-check(v-show="annotations[index] && annotations[index].length && !docs[index].annotation_approver")
           span.name {{ doc.text.slice(0, 60) }}...
 
   div.column.is-7.is-offset-1.message.hero.is-fullheight#message-pane

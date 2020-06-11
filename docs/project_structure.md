@@ -1,70 +1,82 @@
 # Project Structure
 
-In doccano v1.x, the application consists of a frontend and backend API. They are stored in the `frontend` and `app` directories.
+The important files/directories are as follows:
 
-```bash
-.
-├── app
+```
+/
+├── app/
+├── frontend/
+├── nginx/
+├── tools/
 ├── docker-compose.dev.yml
-├── docker-compose.prod.yml
-├── frontend
-├── nginx
-└── tools
+└── docker-compose.prod.yml
 ```
 
-The other important files/directories are as follows:
+Consider them:
 
-- [docker-compose.dev.yml](https://github.com/doccano/doccano/blob/master/docker-compose.dev.yml)
-- [docker-compose.prod.yml](https://github.com/doccano/doccano/blob/master/docker-compose.prod.yml)
-- [nginx](https://github.com/doccano/doccano/tree/master/nginx)
-- [tools](https://github.com/doccano/doccano/tree/master/tools)
+**[app/](https://github.com/doccano/doccano/tree/master/app)**
+
+The `app/api` directory contains backend code. See [below](#Backend).
+
+**[frontend/](https://github.com/doccano/doccano/tree/master/frontend)**
+
+The `app/api` directory contains frontend code. See [below](#Frontend).
 
 **[docker-compose.dev.yml](https://github.com/doccano/doccano/blob/master/docker-compose.dev.yml)**
 
-The `docker-compose.dev.yml` file contains configuration to run a development environment. Once we run the command `docker-compose -f docker-compose.dev.yml up`, compose runs backend API and frontend development containers.
+The `docker-compose.dev.yml` file contains [Docker Compose](https://docs.docker.com/compose) configuration to run a development environment.
+Once we run the command `docker-compose -f docker-compose.dev.yml up`, compose runs backend API and frontend development containers.
 
 **[docker-compose.prod.yml](https://github.com/doccano/doccano/blob/master/docker-compose.prod.yml)**
 
-The `docker-compose.prod.yml` file contains configuration to run a production environment. We adopted the three tier architecture. Once we run the command `docker-compose -f docker-compose.prod.yml up`, compose builds frontend and runs DBMS, backend API and web server containers.
+The `docker-compose.prod.yml` file contains [Docker Compose](https://docs.docker.com/compose) configuration to run a production environment.
+We adopted the three tier architecture. Once we run the command `docker-compose -f docker-compose.prod.yml up`, compose builds frontend and runs DBMS, backend API and web server containers.
 
 **[nginx](https://github.com/doccano/doccano/tree/master/nginx)**
 
-The `nginx` directory contains a nginx configuration file and Docker container. They are used only in `docker-compose.prod.yml`.
+The `nginx` directory contains a NGINX configuration file and Docker container. They are used only in `docker-compose.prod.yml`.
 
 **[tools](https://github.com/doccano/doccano/tree/master/tools)**
 
 The `tools` directory contains some shell scripts. They are used for CI, CD and so on.
 
-## Frontend
+Also, there are directories and files contain doccano v0.x codes.
+In the future, they will be integrated into the currect code or removed:
 
-The directory structure of the frontend follows Nuxt.js one. See the Nuxt.js documentation for details:
-
-- [Nuxt.js/Directory Structure](https://nuxtjs.org/guide/directory-structure/)
-
-## Backend API
-
-The directory structure of the backend api follows Django one. The important directories are as follows:
-
-```bash
-.
-├── api
-├── app
-├── authentification
-└── server
+```
+/
+├── app/
+├── └── server/
+└── docker-compose.yml
 ```
 
-**[app/api](https://github.com/doccano/doccano/tree/master/app/api)**
+## Backend
 
-The `api` directory contains backend API application. We use Django Rest Framework to implement the API. If you want to add new API, change the contents of this directory.
+The directory structure of the backend follows [Django](https://www.djangoproject.com) one.
+The important directories are as follows:
 
-**[app/app](https://github.com/doccano/doccano/tree/master/app/app)**
+```
+/
+├── app/
+├── ├── api/
+├── ├── app/
+└── └── authentification/
+```
 
-The `app` directory contains Django project settings. See [Writing your first Django app, part 1](https://docs.djangoproject.com/en/3.0/intro/tutorial01/#creating-a-project).
+**[app/api/](https://github.com/doccano/doccano/tree/master/app/api)**
 
-**[app/authentification](https://github.com/doccano/doccano/tree/master/app/authentification)**
+The `app/api` directory contains backend API application. We use [Django Rest Framework](https://www.django-rest-framework.org) to implement the API.
+If you want to add new API, change the contents of this directory.
 
-The `authentification` directory contains authentification application. It is mainly used for user signup.
+**[app/app/](https://github.com/doccano/doccano/tree/master/app/app)**
 
-**[app/server](https://github.com/doccano/doccano/tree/master/app/server)**
+The `app/app` directory contains Django project settings. See [Writing your first Django app, part 1](https://docs.djangoproject.com/en/3.0/intro/tutorial01/#creating-a-project).
 
-The `server` directory contains doccano v0.x codes. In the future, this directory will be integrated into the `api` directory.
+**[app/authentification/](https://github.com/doccano/doccano/tree/master/app/authentification)**
+
+The `app/authentification` directory contains authentification application. It is mainly used for user signup.
+
+## Frontend
+
+The `frontent` directory structure of the frontend follows [Nuxt.js](https://ru.nuxtjs.org) one.
+See the [Nuxt.js documentation](https://nuxtjs.org/guide/directory-structure/) for details.
