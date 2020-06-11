@@ -19,6 +19,9 @@
     </v-navigation-drawer>
 
     <v-content>
+      <v-overlay :value="loading">
+        <v-progress-circular indeterminate size="64" />
+      </v-overlay>
       <v-container fluid>
         <v-row
           no-gutters
