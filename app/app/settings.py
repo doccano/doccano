@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'social_django',
     'polymorphic',
     'webpack_loader',
+    'corsheaders',
+    'drf_yasg'
 ]
 
 CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env('CLOUD_BROWSER_LIBCLOUD_PROVIDER', None)
@@ -82,6 +84,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
     'applicationinsights.django.ApplicationInsightsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -296,12 +299,20 @@ APPLICATION_INSIGHTS = {
     'endpoint': env('AZURE_APPINSIGHTS_ENDPOINT', None),
 }
 
-## necessary for email verification setup
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = 'random@gmail.com'
-# EMAIL_HOST_PASSWORD = 'gfds6jk#4ljIr%G8%'
-# EMAIL_PORT = 587
-#
-## During development only
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# necessary for email verification of new accounts
+EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', False)
+EMAIL_HOST = env('EMAIL_HOST', None)
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', None)
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', None)
+EMAIL_PORT = env.int('EMAIL_PORT', 587)
+
+if not EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+if DEBUG:
+    CORS_ORIGIN_WHITELIST = (
+        'http://127.0.0.1:3000',
+        'http://0.0.0.0:3000',
+        'http://localhost:3000'
+    )

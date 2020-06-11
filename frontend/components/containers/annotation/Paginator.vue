@@ -1,9 +1,9 @@
 <template>
   <div class="v-data-footer">
     <v-edit-dialog
+      @save="changePage"
       large
       persistent
-      @save="changePage"
     >
       <span>{{ page }} of {{ total }}</span>
       <template v-slot:input>
@@ -26,13 +26,13 @@
       <template v-slot:activator="{ on }">
         <v-btn
           v-shortkey.once="['arrowleft']"
-          text
           :disabled="page===1"
-          fab
-          small
           v-on="on"
           @shortkey="prevPage"
           @click="prevPage"
+          text
+          fab
+          small
         >
           <v-icon>mdi-chevron-left</v-icon>
         </v-btn>
@@ -43,13 +43,13 @@
       <template v-slot:activator="{ on }">
         <v-btn
           v-shortkey.once="['arrowright']"
-          text
           :disabled="page===total"
-          fab
-          small
           v-on="on"
           @shortkey="nextPage(total)"
           @click="nextPage(total)"
+          text
+          fab
+          small
         >
           <v-icon>mdi-chevron-right</v-icon>
         </v-btn>
@@ -60,9 +60,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
-Vue.use(require('vue-shortkey'))
 
 export default {
   data() {

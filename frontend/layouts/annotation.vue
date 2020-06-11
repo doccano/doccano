@@ -19,13 +19,19 @@
     </v-navigation-drawer>
 
     <v-content>
+      <v-overlay :value="loading">
+        <v-progress-circular indeterminate size="64" />
+      </v-overlay>
       <v-container fluid>
         <v-row
           no-gutters
           class="d-none d-sm-flex"
         >
-          <v-col v-if="currentDoc">
-            <approve-button :approved="approved" />
+          <v-col>
+            <approve-button
+              :approved="approved"
+              :disabled="currentDoc ? false : true"
+            />
             <filter-button />
             <guideline-button />
           </v-col>
@@ -40,7 +46,7 @@
           </v-col>
           <v-col cols="12" md="3">
             <metadata-box
-              v-if="currentDoc"
+              v-if="currentDoc && !loading"
               :metadata="JSON.parse(currentDoc.meta)"
             />
           </v-col>
@@ -53,15 +59,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import TheSideBar from '~/components/organisms/layout/TheSideBar'
-import TheHeader from '~/components/organisms/layout/TheHeader'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
-import Paginator from '~/components/containers/annotation/Paginator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
+import Paginator from '~/components/containers/annotation/Paginator'
+import TheHeader from '~/components/organisms/layout/TheHeader'
+import TheSideBar from '~/components/organisms/layout/TheSideBar'
 
 export default {
   middleware: ['check-auth', 'auth'],
@@ -78,12 +84,13 @@ export default {
   },
   data() {
     return {
-      drawerLeft: false
+      drawerLeft: null
     }
   },
 
   computed: {
     ...mapGetters('projects', ['getLink', 'getCurrentUserRole']),
+    ...mapState('documents', ['loading']),
     ...mapGetters('documents', ['currentDoc', 'approved'])
   },
 

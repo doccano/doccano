@@ -1,14 +1,11 @@
-FROM node:13.1.0
+FROM node:13.2-alpine
 
-# set work directory
 WORKDIR /app
 
-# copy project
 COPY . /app/
 
-# install dependencies
-RUN npm install -g npm@latest
-RUN npm install
-
-# build project
-RUN npm run build
+RUN apk add -U git python3 make g++ \
+  && npm install -g npm@latest \
+  && npm install \
+  && npm run build \
+  && apk del git make g++

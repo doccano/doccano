@@ -26,9 +26,9 @@ export default {
     ]
   },
 
-  serverMiddleware: [
-    '~/api/index.js'
-  ],
+  server: {
+    host: '0.0.0.0' // default: localhost
+  },
 
   env: {
     baseUrl: process.env.NODE_ENV === 'production' ? '/v1' : 'http://127.0.0.1:8000/v1'
@@ -48,7 +48,8 @@ export default {
   */
   plugins: [
     '~/plugins/filters.js',
-    '~/plugins/vue-youtube.js'
+    '~/plugins/vue-youtube.js',
+    '~/plugins/vue-shortkey.js'
   ],
   /*
   ** Nuxt.js modules

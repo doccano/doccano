@@ -32,15 +32,15 @@
             />
           </v-card>
           <v-btn
-            color="primary mt-5"
             @click="next"
+            color="primary mt-5"
           >
             Continue
           </v-btn>
           <v-btn
+            @click="prev"
             class="mt-5"
             text
-            @click="prev"
           >
             Cancel
           </v-btn>
@@ -53,8 +53,6 @@
 <script>
 export default {
   layout: 'project',
-
-  middleware: ['check-auth', 'auth'],
 
   data() {
     return {

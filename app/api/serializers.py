@@ -106,35 +106,31 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
                   'updated_at', 'randomize_document_order', 'collaborative_annotation')
-        read_only_fields = ('image', 'updated_at', 'current_users_role')
+        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
 
 
 class TextClassificationProjectSerializer(ProjectSerializer):
 
     class Meta:
         model = TextClassificationProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
-                  'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        fields = ProjectSerializer.Meta.fields
+        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class SequenceLabelingProjectSerializer(ProjectSerializer):
 
-
     class Meta:
         model = SequenceLabelingProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
-                  'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        fields = ProjectSerializer.Meta.fields
+        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class Seq2seqProjectSerializer(ProjectSerializer):
 
     class Meta:
         model = Seq2seqProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
-                  'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        fields = ProjectSerializer.Meta.fields
+        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class Speech2textProjectSerializer(ProjectSerializer):

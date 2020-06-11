@@ -2,11 +2,12 @@
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
       <v-btn
+        v-on="on"
+        @click="approveDocument"
+        :disabled="disabled"
         class="text-capitalize ps-1 pe-1"
         min-width="36"
         outlined
-        v-on="on"
-        @click="approveDocument"
       >
         <v-icon v-if="approved">
           mdi-check
@@ -30,6 +31,10 @@ export default {
       type: Boolean,
       default: false,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
     }
   },
 

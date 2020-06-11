@@ -1,102 +1,92 @@
 # Getting started
 
-## Quick install guide
-
-First of all, you have to clone the repository:
-
-```bash
-git clone https://github.com/chakki-works/doccano.git
-cd doccano
-```
-
-To install doccano, there are three options:
-
-### Option1: Pull the production Docker image
-
-```bash
-docker pull chakkiworks/doccano
-```
-
-### Option2: Pull the development Docker-Compose images
-
-```bash
-docker-compose pull
-```
-
-### Option3: Setup Python environment
-
-First we need to install the dependencies. Run the following commands:
-
-```bash
-pip install -r requirements.txt
-cd app
-```
-
-Next we need to start the webpack server so that the frontend gets compiled continuously.
-Run the following commands in a new shell:
-
-```bash
-cd server/static
-npm install
-npm run build
-# npm start  # for developers
-cd ..
-```
-
 ## Usage
 
-Let’s start the development server and explore it.
+Two options to run doccano:
 
-Depending on your installation method, there are two options:
+- (Recommended) Docker Compose
+- Docker
 
-### Option1: Running the Docker image as a Container
-
-First, run a Docker container:
-
-```bash
-docker run -d --name doccano -p 8000:80 chakkiworks/doccano
-```
-
-Then, execute `create-admin.sh` script for creating a superuser.
+### Docker Compose
 
 ```bash
-docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
+$ git clone https://github.com/doccano/doccano.git
+$ cd doccano
+$ docker-compose -f docker-compose.prod.yml up
 ```
 
-### Option2: Running the development Docker-Compose stack
+Go to <http://0.0.0.0/>.
 
-We can use docker-compose to set up the webpack server, django server, database, etc. all in one command:
+_Note the superuser account credentials located in the `docker-compose.prod.yml` file:_
+```yml
+ADMIN_USERNAME: "admin"
+ADMIN_PASSWORD: "password"
+```
+
+> Note: If you want to add annotators, see [Frequently Asked Questions](https://github.com/doccano/doccano/wiki/Frequently-Asked-Questions#i-want-to-add-annotators)
+
+_Note for Windows developers: Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings._
 
 ```bash
-docker-compose up
+git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 ```
 
-Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see the login screen:
+### Docker
 
-![Login form](./login_form.png)
-
-### Option3: Running Django development server
-
-Before running, we need to make migration. Run the following command:
+As a one-time setup, create a Docker container for Doccano:
 
 ```bash
-python manage.py migrate
+docker pull doccano/doccano
+docker container create --name doccano \
+  -e "ADMIN_USERNAME=admin" \
+  -e "ADMIN_EMAIL=admin@example.com" \
+  -e "ADMIN_PASSWORD=password" \
+  -p 8000:8000 doccano/doccano
 ```
 
-Next we need to create a user who can login to the admin site. Run the following command:
+Next, start Doccano by running the container:
 
 ```bash
-python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+docker container start doccano
 ```
 
-Developers can also validate that the project works as expected by running the tests:
+To stop the container, run `docker container stop doccano -t 5`.
+All data created in the container will persist across restarts.
+
+Go to <http://127.0.0.1:8000/>.
+
+### For Developers
+
+You can setup local development environment as follows:
 
 ```bash
-python manage.py test server.tests
+$ git clone https://github.com/doccano/doccano.git
+$ cd doccano
+$ docker-compose -f docker-compose.dev.yml up
 ```
 
-Finally, to start the server, run the following command:
+Go to <http://127.0.0.1:3000/>.
+
+Or, you can setup via Python and Node.js:
+
+### Python
 
 ```bash
-python manage.py runserver
+$ git clone https://github.com/doccano/doccano.git
+$ cd doccano/app
+$ pip install -r requirements.txt
+$ python manage.py migrate
+$ python manage.py create_roles
+$ python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+$ python manage.py runserver
 ```
+
+### Node.js
+
+```bash
+$ cd doccano/frontend
+$ yarn install
+$ yarn dev
+```
+
+Go to <http://127.0.0.1:3000/>.

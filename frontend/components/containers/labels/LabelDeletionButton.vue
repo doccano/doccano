@@ -1,20 +1,20 @@
 <template>
   <div>
     <v-btn
-      class="text-capitalize"
-      outlined
       :disabled="!isLabelSelected"
       @click="dialog=true"
+      class="text-capitalize"
+      outlined
     >
       Delete
     </v-btn>
     <base-dialog :dialog="dialog">
       <confirm-form
+        :items="selected"
+        @ok="deleteLabel($route.params.id);dialog=false"
         title="Delete Label"
         message="Are you sure you want to delete these labels from this project?"
         item-key="text"
-        :items="selected"
-        @ok="deleteLabel($route.params.id);dialog=false"
       />
     </base-dialog>
   </div>

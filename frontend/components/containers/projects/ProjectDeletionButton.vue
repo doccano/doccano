@@ -1,11 +1,11 @@
 <template>
   <confirm-dialog
-    title="Delete Project"
-    message="Are you sure you want to delete these projects?"
-    item-key="name"
     :disabled="!isProjectSelected"
     :items="selected"
     @ok="handleDeleteProject"
+    title="Delete Project"
+    message="Are you sure you want to delete these projects?"
+    item-key="name"
   />
 </template>
 

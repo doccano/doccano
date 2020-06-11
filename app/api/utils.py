@@ -251,6 +251,10 @@ class FileParser(object):
     def parse(self, file):
         raise NotImplementedError()
 
+    @staticmethod
+    def encode_metadata(data):
+        return json.dumps(data, ensure_ascii=False)
+
 
 class CoNLLParser(FileParser):
     """Uploads CoNLL format file.
@@ -385,8 +389,9 @@ class ExcelParser(FileParser):
                 data.append({'text': row[0]})
             # Text, labels and metadata columns
             elif len(row) == len(columns) and len(row) >= 2:
-                text, label = row[:2]
-                meta = json.dumps(dict(zip(columns[2:], row[2:])))
+                datum = dict(zip(columns, row))
+                text, label = datum.pop('text'), datum.pop('label')
+                meta = FileParser.encode_metadata(datum)
                 j = {'text': text, 'labels': [label], 'meta': meta}
                 data.append(j)
             else:
@@ -407,7 +412,7 @@ class JSONParser(FileParser):
                 data = []
             try:
                 j = json.loads(line)
-                j['meta'] = json.dumps(j.get('meta', {}))
+                j['meta'] = FileParser.encode_metadata(j.get('meta', {}))
                 data.append(j)
             except json.decoder.JSONDecodeError:
                 raise FileParseException(line_num=i, line=line)

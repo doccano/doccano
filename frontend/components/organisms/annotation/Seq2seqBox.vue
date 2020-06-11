@@ -3,23 +3,25 @@
     <v-data-table
       :headers="headers"
       :items="annotations"
+      @input="update"
       item-key="id"
       hide-default-header
       hide-default-footer
       disable-pagination
       class="elevation-1"
-      @input="update"
     >
       <template v-slot:top>
         <v-text-field
           v-model="newText"
+          @keyup.enter="create"
+          @compositionstart="compositionStart"
+          @compositionend="compositionEnd"
           prepend-inner-icon="mdi-pencil"
           label="New text"
           autofocus
           single-line
           hide-details
           filled
-          @keyup.enter="create"
         />
       </template>
       <template v-slot:item.text="{ item }">
@@ -30,17 +32,17 @@
           <template v-slot:input>
             <v-textarea
               :value="item.text"
+              @change="update(item.id, $event)"
               label="Edit"
               autofocus
-              @change="update(item.id, $event)"
             />
           </template>
         </v-edit-dialog>
       </template>
       <template v-slot:item.action="{ item }">
         <v-icon
-          small
           @click="deleteAnnotation(item.id)"
+          small
         >
           delete
         </v-icon>
@@ -88,7 +90,9 @@ export default {
           align: 'right',
           value: 'action'
         }
-      ]
+      ],
+      isComposing: false,
+      hasCompositionJustEnded: false
     }
   },
 
@@ -101,10 +105,21 @@ export default {
       }
     },
     create() {
+      if (this.isComposing || this.hasCompositionJustEnded) {
+        this.hasCompositionJustEnded = false
+        return
+      }
       if (this.newText.length > 0) {
         this.createAnnotation(this.newText)
         this.newText = ''
       }
+    },
+    compositionStart() {
+      this.isComposing = true
+    },
+    compositionEnd() {
+      this.isComposing = false
+      this.hasCompositionJustEnded = true
     }
   }
 }

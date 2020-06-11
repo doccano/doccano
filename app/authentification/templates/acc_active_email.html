@@ -1,5 +1,5 @@
 {% autoescape off %}
 Hi {{ user.username }},
-Please click on the link to confirm your email,
-http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+Please click on the link to confirm your email and activate your Doccano account:
+{{ scheme }}://{{ domain }}{% url 'activate' uidb64=uid token=token %}
 {% endautoescape %}

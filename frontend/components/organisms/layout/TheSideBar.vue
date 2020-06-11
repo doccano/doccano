@@ -1,8 +1,8 @@
 <template>
   <v-list dense>
     <v-btn
-      color="ms-4 my-1 mb-2 primary text-capitalize"
       :to="to"
+      color="ms-4 my-1 mb-2 primary text-capitalize"
       nuxt
     >
       <v-icon left>

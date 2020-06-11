@@ -26,8 +26,8 @@
 </template>
 
 <script>
-import MultiClassClassification from '~/components/organisms/annotation/MultiClassClassification'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
+import MultiClassClassification from '~/components/organisms/annotation/MultiClassClassification'
 
 export default {
   layout: 'demo',

@@ -5,10 +5,10 @@
     :items="items"
     :search="search"
     :loading="loading"
+    @input="updateSelected"
     loading-text="Loading... Please wait"
     item-key="id"
     show-select
-    @input="updateSelected"
   >
     <template v-slot:top>
       <v-text-field
@@ -27,9 +27,9 @@
           <v-text-field
             :value="item.text"
             :rules="labelNameRules"
+            @change="handleUpdateLabel({ id: item.id, text: $event })"
             label="Edit"
             single-line
-            @change="handleUpdateLabel({ id: item.id, text: $event })"
           />
         </template>
       </v-edit-dialog>
@@ -40,9 +40,9 @@
         <template v-slot:input>
           <v-select
             :value="item.suffix_key"
-            :items="keys"
-            label="Key"
+            :items="shortkeys"
             @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
+            label="Key"
           />
         </template>
       </v-edit-dialog>
@@ -60,12 +60,12 @@
           <v-color-picker
             :value="item.backgroundColor"
             :rules="colorRules"
+            @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
             show-swatches
             hide-mode-switch
             width="800"
             mode="hexa"
             class="ma-2"
-            @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
           />
         </template>
       </v-edit-dialog>
@@ -74,7 +74,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import { colorRules, labelNameRules } from '@/rules/index'
 import { idealColor } from '~/plugins/utils'
 
@@ -105,10 +105,7 @@ export default {
 
   computed: {
     ...mapState('labels', ['items', 'selected', 'loading']),
-
-    keys() {
-      return 'abcdefghijklmnopqrstuvwxyz'.split('')
-    }
+    ...mapGetters('labels', ['shortkeys'])
   },
 
   created() {

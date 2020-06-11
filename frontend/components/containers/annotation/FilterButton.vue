@@ -4,10 +4,10 @@
       <v-tooltip bottom>
         <template v-slot:activator="{ on: tooltip }">
           <v-btn
+            v-on="{ ...tooltip, ...menu }"
             class="text-capitalize ps-1 pe-1"
             min-width="36"
             outlined
-            v-on="{ ...tooltip, ...menu }"
           >
             <v-icon>
               mdi-filter
@@ -59,7 +59,6 @@ export default {
 
   watch: {
     selected() {
-      this.initSearchOptions()
       this.updateSearchOptions({
         isChecked: this.items[this.selected].param,
         filterName: this.getFilterOption
@@ -72,6 +71,10 @@ export default {
       checkpoint[this.$route.params.id] = this.page
       localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
     }
+  },
+
+  created() {
+    this.initSearchOptions()
   },
 
   methods: {

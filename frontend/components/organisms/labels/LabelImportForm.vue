@@ -1,11 +1,11 @@
 <template>
   <base-card
-    title="Upload Label"
-    agree-text="Upload"
-    cancel-text="Cancel"
     :disabled="!valid"
     @agree="create"
     @cancel="cancel"
+    title="Upload Label"
+    agree-text="Upload"
+    cancel-text="Cancel"
   >
     <template #content>
       <v-form
@@ -21,11 +21,15 @@
           The file could not be uploaded. Maybe invalid format.
           Please check available formats carefully.
         </v-alert>
+        <h2>Example format</h2>
+        <code class="mb-10 pa-5 highlight">
+          <span>{{ exampleFormat }}</span>
+        </code>
         <h2>Select a file</h2>
         <v-file-input
           v-model="file"
-          accept=".json"
           :rules="uploadFileRules"
+          accept=".json"
           label="File input"
         />
       </v-form>
@@ -42,7 +46,7 @@ export default {
     BaseCard
   },
   props: {
-    importLabel: {
+    uploadLabel: {
       type: Function,
       default: () => {},
       required: true
@@ -54,6 +58,27 @@ export default {
       file: null,
       uploadFileRules,
       showError: false
+    }
+  },
+
+  computed: {
+    exampleFormat() {
+      const data = [
+        {
+          text: 'Dog',
+          suffix_key: 'a',
+          background_color: '#FF0000',
+          text_color: '#ffffff'
+        },
+        {
+          text: 'Cat',
+          suffix_key: 'c',
+          background_color: '#FF0000',
+          text_color: '#ffffff'
+        }
+      ]
+      console.log(JSON.stringify(data, null, 4))
+      return JSON.stringify(data, null, 4)
     }
   },
 
@@ -69,7 +94,7 @@ export default {
     },
     create() {
       if (this.validate()) {
-        this.importLabel({
+        this.uploadLabel({
           projectId: this.$route.params.id,
           file: this.file
         })
@@ -85,3 +110,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .highlight {
+    font-size: 100%;
+    width: 100%;
+  }
+  .highlight:before {
+    content: ''
+  }
+</style>

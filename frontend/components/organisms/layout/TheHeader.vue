@@ -17,12 +17,22 @@
     >
       doccano
     </v-toolbar-title>
+    <v-btn
+      v-if="isAuthenticated && isIndividualProject"
+      text
+      style="text-transform:none"
+    >
+      <v-icon small class="mr-1">
+        mdi-hexagon-multiple
+      </v-icon>
+      <span> {{ currentProject.name }}</span>
+    </v-btn>
     <div class="flex-grow-1" />
     <the-color-mode-switcher />
     <v-btn
       v-if="isAuthenticated"
-      text
       @click="$router.push('/projects')"
+      text
     >
       Projects
     </v-btn>
@@ -33,8 +43,8 @@
     >
       <template v-slot:activator="{ on }">
         <v-btn
-          text
           v-on="on"
+          text
         >
           Demo
           <v-icon>mdi-menu-down</v-icon>
@@ -52,25 +62,22 @@
     </v-menu>
     <v-btn
       v-if="!isAuthenticated"
-      outlined
       @click="$router.push('/auth')"
+      outlined
     >
       Sign in
     </v-btn>
     <v-menu
       v-if="isAuthenticated"
-      bottom
+      offset-y
     >
       <template v-slot:activator="{ on }">
-        <v-btn
-          icon
-          v-on="on"
-        >
+        <v-btn v-on="on" on icon>
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
-
       <v-list>
+        <v-subheader>{{ getUsername }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -107,7 +114,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', ['isAuthenticated'])
+    ...mapGetters('auth', ['isAuthenticated', 'getUsername']),
+    ...mapGetters('projects', ['currentProject']),
+
+    isIndividualProject() {
+      return this.$route.name.startsWith('projects-id')
+    }
   },
 
   methods: {

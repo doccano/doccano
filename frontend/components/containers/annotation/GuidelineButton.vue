@@ -3,11 +3,11 @@
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-btn
+          v-on="on"
+          @click="dialog=true"
           class="text-capitalize ps-1 pe-1"
           min-width="36"
           outlined
-          v-on="on"
-          @click="dialog=true"
         >
           <v-icon>
             mdi-book-open-outline

@@ -9,12 +9,13 @@
     <base-dialog :dialog="createDialog">
       <label-creation-form
         :create-label="createLabel"
+        :keys="shortkeys"
         @close="createDialog=false"
       />
     </base-dialog>
     <base-dialog :dialog="importDialog">
       <label-import-form
-        :import-label="importLabels"
+        :upload-label="uploadLabel"
         @close="importDialog=false"
       />
     </base-dialog>
@@ -22,7 +23,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import ActionMenu from '@/components/molecules/ActionMenu'
 import BaseDialog from '@/components/molecules/BaseDialog'
 import LabelCreationForm from '@/components/organisms/labels/LabelCreationForm'
@@ -48,12 +49,16 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters('labels', ['shortkeys'])
+  },
+
   created() {
     this.setCurrentProject(this.$route.params.id)
   },
 
   methods: {
-    ...mapActions('labels', ['createLabel', 'importLabels', 'exportLabels']),
+    ...mapActions('labels', ['createLabel', 'uploadLabel', 'exportLabels']),
     ...mapActions('projects', ['setCurrentProject']),
 
     handleDownload() {

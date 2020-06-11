@@ -5,10 +5,10 @@
     :items="items"
     :search="search"
     :loading="loading"
+    @input="updateSelected"
     loading-text="Loading... Please wait"
     item-key="id"
     show-select
-    @input="updateSelected"
   >
     <template v-slot:top>
       <v-text-field
@@ -23,8 +23,8 @@
     <template v-slot:item.rolename="{ item }">
       <v-edit-dialog
         :return-value.sync="item"
-        large
         @save="updateRole({ id: item.id })"
+        large
       >
         <div>{{ item.rolename }}</div>
         <template v-slot:input>
@@ -37,11 +37,11 @@
             :value="getRole(item)"
             :items="roles"
             :rules="roleRules"
+            @input="setNewRole"
             item-text="name"
             item-value="id"
             label="Role"
             return-object
-            @input="setNewRole"
           />
         </template>
       </v-edit-dialog>

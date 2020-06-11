@@ -2,11 +2,11 @@
 site_name: 'doccano'
 site_description: 'A Text Annotation tool for Humans'
 site_author: 'Hiroki Nakayama'
-site_url: 'https://chakki-works.github.io/doccano/'
+site_url: 'https://doccano.github.io/doccano/'
 
 # Repository
-repo_name: 'chakki-works/doccano'
-repo_url: 'https://github.com/chakki-works/doccano'
+repo_name: 'doccano/doccano'
+repo_url: 'https://github.com/doccano/doccano'
 
 # Copyright
 copyright: 'Copyright &copy; 2018 - 2019 Hiroki Nakayama'
@@ -30,6 +30,7 @@ nav:
   - Doccano: index.md
   - Getting started: getting-started.md
   - Tutorial: tutorial.md
+  - Project Structure: project_structure.md
   - Advanced:
     - AWS HTTPS settings: advanced/aws_https_settings.md
     - OAuth2 settings: advanced/oauth2_settings.md

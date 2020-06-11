@@ -9,6 +9,9 @@ export const state = () => ({
 export const getters = {
   isLabelSelected(state) {
     return state.selected.length > 0
+  },
+  shortkeys() {
+    return '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
   }
 }
 
@@ -108,6 +111,23 @@ export const actions = {
       })
       .catch((error) => {
         alert(error)
+      })
+      .finally(() => {
+        commit('setLoading', false)
+      })
+  },
+  uploadLabel({ commit, dispatch }, data) {
+    commit('setLoading', true)
+    const formData = new FormData()
+    formData.append('file', data.file)
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+    return LabelService.uploadFile(data.projectId, formData, config)
+      .then((response) => {
+        dispatch('getLabelList', data)
       })
       .finally(() => {
         commit('setLoading', false)

@@ -50,7 +50,6 @@ describe('ProjectCreationForm', () => {
   test('raise warning when passing no props', () => {
     const spy = jest.spyOn(console, 'error')
     spy.mockImplementation()
-    const wrapper = factory()
     expect(spy).toBeCalledWith(
       expect.stringContaining('[Vue warn]: Missing required prop')
     )
