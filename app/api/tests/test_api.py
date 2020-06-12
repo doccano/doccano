@@ -744,6 +744,18 @@ class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
         sub_project_doc = mommy.make('Document', project=sub_project)
         mommy.make('SequenceAnnotation', document=sub_project_doc)
 
+        cls.classification_project = mommy.make('TextClassificationProject',
+                                                users=[project_member, another_project_member])
+        cls.classification_project_label_1 = mommy.make('Label', project=cls.classification_project)
+        cls.classification_project_label_2 = mommy.make('Label', project=cls.classification_project)
+        cls.classification_project_document = mommy.make('Document', project=cls.classification_project)
+        cls.classification_project_url = reverse(
+            viewname='annotation_list', args=[cls.classification_project.id, cls.classification_project_document.id])
+        assign_user_to_role(project_member=project_member, project=cls.classification_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=another_project_member, project=cls.classification_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+
         cls.url = reverse(viewname='annotation_list', args=[main_project.id, main_project_doc.id])
         cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': main_project_label.id}
         cls.num_entity_of_project_member = SequenceAnnotation.objects.filter(document=main_project_doc,
@@ -793,6 +805,32 @@ class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
                           password=self.non_project_member_pass)
         response = self.client.post(self.url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_second_annotation_for_single_class_project(self):
+        self._patch_project(self.classification_project, 'single_class_classification', True)
+
+        self.client.login(username=self.project_member_name, password=self.project_member_pass)
+        response = self.client.post(self.classification_project_url, format='json',
+                                    data={'label': self.classification_project_label_1.id})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.post(self.classification_project_url, format='json',
+                                    data={'label': self.classification_project_label_2.id})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_disallows_second_annotation_for_single_class_shared_project(self):
+        self._patch_project(self.classification_project, 'single_class_classification', True)
+        self._patch_project(self.classification_project, 'collaborative_annotation', True)
+
+        self.client.login(username=self.project_member_name, password=self.project_member_pass)
+        response = self.client.post(self.classification_project_url, format='json',
+                                    data={'label': self.classification_project_label_1.id})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.client.login(username=self.another_project_member_name, password=self.another_project_member_pass)
+        response = self.client.post(self.classification_project_url, format='json',
+                                    data={'label': self.classification_project_label_2.id})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def _patch_project(self, project, attribute, value):
         old_value = getattr(project, attribute, None)

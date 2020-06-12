@@ -210,11 +210,27 @@ class AnnotationList(generics.ListCreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
+        self.check_single_class_classification(self.kwargs['project_id'], self.kwargs['doc_id'], request.user)
+
         request.data['document'] = self.kwargs['doc_id']
         return super().create(request, args, kwargs)
 
     def perform_create(self, serializer):
         serializer.save(document_id=self.kwargs['doc_id'], user=self.request.user)
+
+    @staticmethod
+    def check_single_class_classification(project_id, doc_id, user):
+        project = get_object_or_404(Project, pk=project_id)
+        if not project.single_class_classification:
+            return
+
+        model = project.get_annotation_class()
+        annotations = model.objects.filter(document_id=doc_id)
+        if not project.collaborative_annotation:
+            annotations = annotations.filter(user=user)
+
+        if annotations.exists():
+            raise ValidationError('requested to create duplicate annotation for single-class-classification project')
 
 
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
