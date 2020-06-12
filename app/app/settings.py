@@ -314,6 +314,7 @@ EMAIL_HOST = env('EMAIL_HOST', None)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', None)
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', None)
 EMAIL_PORT = env.int('EMAIL_PORT', 587)
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
 if not EMAIL_HOST:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

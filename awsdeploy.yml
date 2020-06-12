@@ -99,6 +99,10 @@ Resources:
             - !Ref WorkersCount
             - |+
 
+            - sudo tee -a /env.list <<< DEFAULT_FROM_EMAIL=
+            - !Ref FromEmail
+            - |+
+
             - |
               sudo docker pull doccano/doccano:latest
             - |
@@ -286,6 +290,11 @@ Parameters:
     MinLength: 1
     MaxLength: 3
     AllowedPattern: '^\d+$'
+  FromEmail:
+    Default: webmaster@localhost
+    Description: The email used to send from singup messages
+    Type: String
+    AllowedPattern: '^[\x20-\x45]?[\w-\+]+(\.[\w]+)*@[\w-]+(\.[\w]+)*(\.[a-z]{2,})?$'
 Outputs:
   PublicDNS:
     Value: !GetAtt 
