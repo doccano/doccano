@@ -95,6 +95,10 @@ Resources:
             - !Ref EMailHostPassword
             - |+
 
+            - sudo tee -a /env.list <<< WORKERS=
+            - !Ref WorkersCount
+            - |+
+
             - |
               sudo docker pull doccano/doccano:latest
             - |
@@ -275,6 +279,12 @@ Parameters:
     Type: String
     MinLength: 1
     MaxLength: 5
+    AllowedPattern: '^\d+$'
+  WorkersCount:
+    Description: Workers Count
+    Type: String
+    MinLength: 1
+    MaxLength: 3
     AllowedPattern: '^\d+$'
 Outputs:
   PublicDNS:
