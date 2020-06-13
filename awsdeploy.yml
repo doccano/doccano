@@ -119,7 +119,7 @@ Resources:
               sudo docker run -d --name doccano --env-file /env.list -p 80:8000
               ${DOCKER_IMAGE}
             - >
-              sudo docker exec doccano tools/create-admin.sh ${ADMIN} ${EMAIL}
+              sleep 3 && sudo docker exec doccano tools/create-admin.sh ${ADMIN} ${EMAIL}
               ${PASSWORD}
     Metadata:
       'AWS::CloudFormation::Designer':
