@@ -1,4 +1,4 @@
-FROM alpine:3.9.6
+FROM alpine:3.10
 
 CMD ["python3"]
 
@@ -14,4 +14,3 @@ RUN apk add -U bash python3 python3-dev libpq postgresql-dev unixodbc-dev musl-d
   && pip3 install --no-cache-dir -r requirements.txt \
   && ln -s /usr/bin/python3 /usr/bin/python \
   && apk del python3-dev postgresql-dev unixodbc-dev musl-dev g++ libffi-dev
-
