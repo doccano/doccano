@@ -30,7 +30,7 @@ before_install:
     fi
 
 install:
-    - pip install mkdocs==1.1 mkdocs-material==4.6.3
+    - pip install --no-cache-dir mkdocs==1.1 mkdocs-material==4.6.3
 
 script:
   - docker build --target=builder --tag=doccano-test .

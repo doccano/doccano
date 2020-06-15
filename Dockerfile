@@ -21,8 +21,8 @@ WORKDIR /doccano/app/server/static
 RUN npm ci
 
 COPY requirements.txt /
-RUN pip install -r /requirements.txt \
- && pip wheel -r /requirements.txt -w /deps
+RUN pip install --no-cache-dir -r /requirements.txt \
+ && pip wheel --no-cache-dir -r /requirements.txt -w /deps
 
 COPY Dockerfile /
 RUN hadolint /Dockerfile
