@@ -455,6 +455,11 @@ class JSONLRenderer(JSONRenderer):
 class JSONPainter(object):
 
     def paint(self, documents, export_format='jsonl'):
+        """ Paint the text and annotations for dataset export.
+
+        arguments:
+        export_format - distinguishes between jsonl and json formats, default is jsonl.
+        """
         serializer = DocumentSerializer(documents, many=True)
         data = []
         if export_format == 'json':
@@ -473,6 +478,11 @@ class JSONPainter(object):
 
     @staticmethod
     def paint_labels(documents, labels, export_format='jsonl'):
+        """ Paint the labels for dataset export.
+
+        arguments:
+        export_format - distinguishes between jsonl and json formats, default is jsonl.
+        """
         serializer_labels = LabelSerializer(labels, many=True)
         serializer = DocumentSerializer(documents, many=True)
         data = []
