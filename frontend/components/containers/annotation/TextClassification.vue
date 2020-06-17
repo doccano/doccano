@@ -1,6 +1,6 @@
 <template>
   <v-card
-    v-if="currentDoc && items"
+    v-if="isReady"
     v-shortkey="multiKeys"
     @shortkey="addOrRemoveLabel"
   >
@@ -31,6 +31,7 @@ export default {
 
   computed: {
     ...mapState('labels', ['items']),
+    ...mapState('documents', ['loading']),
     ...mapGetters('documents', ['currentDoc']),
     multiKeys() {
       const multiKeys = {}
@@ -38,6 +39,9 @@ export default {
         multiKeys[item.id] = [item.suffix_key]
       }
       return multiKeys
+    },
+    isReady() {
+      return this.currentDoc && this.items && !this.loading
     }
   },
 

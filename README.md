@@ -28,17 +28,29 @@ You can try the [annotation demo](http://doccano.herokuapp.com).
 
 Two options to run doccano:
 
-- Production
-- Development
+- production,
+- development.
 
-In any case, you need Docker and Docker Compose. Anyway, you need to clone the repository:
+To use doccano, please follow:
+
+### Install dependencies
+
+You need to install dependencies:
+
+- [Git](https://git-scm.com),
+- [Docker](https://www.docker.com),
+- [Docker Compose](https://docs.docker.com/compose).
+
+### Get the code
+
+You need to clone the repository:
 
 ```bash
 $ git clone https://github.com/doccano/doccano.git
 $ cd doccano
 ```
 
-_Note for Windows developers: Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings._
+_Note for Windows developers:_ Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings.
 
 ```bash
 git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
@@ -46,20 +58,20 @@ git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 
 ### Production
 
-```bash
-$ docker-compose -f docker-compose.prod.yml up
-```
-
-Go to <http://0.0.0.0/>.
-
-Note the superuser account credentials located in the `docker-compose.prod.yml` file:
+Set the superuser account credentials in the `docker-compose.prod.yml` file:
 
 ```yml
 ADMIN_USERNAME: "admin"
 ADMIN_PASSWORD: "password"
 ```
 
-> Note: If you want to add annotators, see [Frequently Asked Questions](./docs/faq.md)
+Run doccano:
+
+```bash
+$ docker-compose -f docker-compose.prod.yml up
+```
+
+Go to <http://0.0.0.0/>.
 
 <!--
 
@@ -91,11 +103,24 @@ Go to <http://127.0.0.1:8000/>.
 
 ### Development
 
+Set the superuser account credentials in the `docker-compose.dev.yml` file:
+
+```yml
+ADMIN_USERNAME: "admin"
+ADMIN_PASSWORD: "password"
+```
+
+Run Doccano:
+
 ```bash
 $ docker-compose -f docker-compose.dev.yml up
 ```
 
 Go to <http://127.0.0.1:3000/>.
+
+### Add annotators (optionally)
+
+If you want to add annotators/annotation approvers, see [Frequently Asked Questions](./docs/faq.md)
 
 ## One-click Deployment
 

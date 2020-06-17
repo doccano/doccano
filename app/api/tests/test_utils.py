@@ -4,9 +4,10 @@ from django.test import TestCase
 
 from seqeval.metrics.sequence_labeling import get_entities
 
+from ..exceptions import FileParseException
 from ..models import Label, Document
 from ..utils import BaseStorage, ClassificationStorage, SequenceLabelingStorage, Seq2seqStorage, CoNLLParser
-from ..utils import iterable_to_io
+from ..utils import AudioParser, iterable_to_io
 
 
 class TestBaseStorage(TestCase):
@@ -136,6 +137,26 @@ class TestCoNLLParser(TestCase):
             'text': 'EU rejects German call',
             'labels': [[0, 2, 'ORG'], [11, 17, 'MISC']]
         })
+
+
+class TestAudioParser(TestCase):
+    def test_parse_mp3(self):
+        f = io.BytesIO(b'...')
+        f.name = 'test.mp3'
+
+        actual = next(AudioParser().parse(f))
+
+        self.assertEqual(actual, [{
+            'audio': 'data:audio/mpeg;base64,Li4u',
+            'meta': '{"filename": "test.mp3"}',
+        }])
+
+    def test_parse_unknown(self):
+        f = io.BytesIO(b'...')
+        f.name = 'unknown.unknown'
+
+        with self.assertRaises(FileParseException):
+            next(AudioParser().parse(f))
 
 
 class TestIterableToIO(TestCase):

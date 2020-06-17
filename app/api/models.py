@@ -15,10 +15,12 @@ from .managers import AnnotationManager, Seq2seqAnnotationManager
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
+SPEECH2TEXT = 'Speech2text'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
+    (SPEECH2TEXT, 'speech to text'),
 )
 
 
@@ -32,6 +34,7 @@ class Project(PolymorphicModel):
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
     randomize_document_order = models.BooleanField(default=False)
     collaborative_annotation = models.BooleanField(default=False)
+    single_class_classification = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse('upload', args=[self.id])
@@ -143,6 +146,33 @@ class Seq2seqProject(Project):
         return Seq2seqStorage(data, self)
 
 
+class Speech2textProject(Project):
+
+    @property
+    def image(self):
+        return staticfiles_storage.url('images/cats/speech2text.jpg')
+
+    def get_bundle_name(self):
+        return 'speech2text'
+
+    def get_bundle_name_upload(self):
+        return 'upload_speech2text'
+
+    def get_bundle_name_download(self):
+        return 'download_speech2text'
+
+    def get_annotation_serializer(self):
+        from .serializers import Speech2textAnnotationSerializer
+        return Speech2textAnnotationSerializer
+
+    def get_annotation_class(self):
+        return Speech2textAnnotation
+
+    def get_storage(self, data):
+        from .utils import Speech2textStorage
+        return Speech2textStorage(data, self)
+
+
 class Label(models.Model):
     PREFIX_KEYS = (
         ('ctrl', 'ctrl'),
@@ -240,6 +270,14 @@ class Seq2seqAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user', 'text')
+
+
+class Speech2textAnnotation(Annotation):
+    document = models.ForeignKey(Document, related_name='speech2text_annotations', on_delete=models.CASCADE)
+    text = models.TextField()
+
+    class Meta:
+        unique_together = ('document', 'user')
 
 
 class Role(models.Model):

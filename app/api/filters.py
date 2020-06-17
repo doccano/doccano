@@ -8,6 +8,7 @@ class DocumentFilter(FilterSet):
     seq_annotations__isnull = BooleanFilter(field_name='seq_annotations', method='filter_annotations')
     doc_annotations__isnull = BooleanFilter(field_name='doc_annotations', method='filter_annotations')
     seq2seq_annotations__isnull = BooleanFilter(field_name='seq2seq_annotations', method='filter_annotations')
+    speech2text_annotations__isnull = BooleanFilter(field_name='speech2text_annotations', method='filter_annotations')
 
     def filter_annotations(self, queryset, field_name, value):
         queryset = queryset.annotate(num_annotations=
@@ -26,4 +27,5 @@ class DocumentFilter(FilterSet):
         model = Document
         fields = ('project', 'text', 'meta', 'created_at', 'updated_at',
                   'doc_annotations__label__id', 'seq_annotations__label__id',
-                  'doc_annotations__isnull', 'seq_annotations__isnull', 'seq2seq_annotations__isnull')
+                  'doc_annotations__isnull', 'seq_annotations__isnull', 'seq2seq_annotations__isnull',
+                  'speech2text_annotations__isnull')

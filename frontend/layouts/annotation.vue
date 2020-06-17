@@ -19,6 +19,9 @@
     </v-navigation-drawer>
 
     <v-content>
+      <v-overlay :value="loading">
+        <v-progress-circular indeterminate size="64" />
+      </v-overlay>
       <v-container fluid>
         <v-row
           no-gutters
@@ -43,7 +46,7 @@
           </v-col>
           <v-col cols="12" md="3">
             <metadata-box
-              v-if="currentDoc"
+              v-if="currentDoc && !loading"
               :metadata="JSON.parse(currentDoc.meta)"
             />
           </v-col>
@@ -56,7 +59,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
@@ -87,6 +90,7 @@ export default {
 
   computed: {
     ...mapGetters('projects', ['getLink', 'getCurrentUserRole']),
+    ...mapState('documents', ['loading']),
     ...mapGetters('documents', ['currentDoc', 'approved'])
   },
 
