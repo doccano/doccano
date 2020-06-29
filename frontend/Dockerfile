@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app/
 
-RUN apk add -U git python3 make g++ \
+RUN apk add -U bash git python3 make g++ \
   && npm install -g npm@latest \
   && npm install \
   && npm run build \
