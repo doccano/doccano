@@ -40,6 +40,12 @@ For the superuser account credentials, you have to set new password in the `dock
 ADMIN_PASSWORD: "new_password"
 ```
 
+## I want to change port number
+
+The following page will be useful:
+
+- [Clarify how to set port using docker-compose.prod.yml](https://github.com/doccano/doccano/issues/805)
+
 ## I want to update to the latest doccano image
 
 1. Execute `git pull` to reflect the latest doccano.
