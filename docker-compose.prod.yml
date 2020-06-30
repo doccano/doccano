@@ -23,6 +23,8 @@ services:
     build: ./frontend
     volumes:
       - www:/app/dist
+    environment:
+      GOOGLE_TRACKING_ID: ""
 
   nginx:
     build: ./nginx
