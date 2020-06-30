@@ -385,10 +385,10 @@ class ExcelParser(FileParser):
                 yield data
                 data = []
             # Only text column
-            if len(row) == len(columns) and len(row) == 1:
-                data.append({'text': row[0]})
+            if len(row) <= len(columns) and len(row) == 1:
+                data.append({'text': row[0] })
             # Text, labels and metadata columns
-            elif len(row) == len(columns) and len(row) >= 2:
+            elif len(row) <= len(columns) and len(row) >= 2:
                 datum = dict(zip(columns, row))
                 text, label = datum.pop('text'), datum.pop('label')
                 meta = FileParser.encode_metadata(datum)
