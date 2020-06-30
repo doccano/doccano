@@ -63,7 +63,7 @@ export default {
 
   buildModules: [
     ['@nuxtjs/google-analytics', {
-      id: 'UA-125643874-2'
+      id: process.env.GOOGLE_TRACKING_ID
     }]
   ],
   /*
