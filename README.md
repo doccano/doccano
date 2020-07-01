@@ -65,6 +65,12 @@ ADMIN_USERNAME: "admin"
 ADMIN_PASSWORD: "password"
 ```
 
+If you use Google Analytics, set the tracking:
+
+```yml
+GOOGLE_TRACKING_ID: "UA-12345678-1"
+```
+
 Run doccano:
 
 ```bash

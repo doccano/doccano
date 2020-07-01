@@ -18,10 +18,33 @@ Please check the following list.
 
 ## I want to add annotators annotators/annotation approvers
 
-1. Add a user from [Django Admin site](https://djangobook.com/django-admin-site/).
-![Add a user](./images/faq/add_user.png)
-2. **Logout from Django Admin site.** [You'll face login error without logout of Django Admin site](https://github.com/doccano/doccano/issues/723).
-3. Add the user to the project in the member page (`/projects/{project_id}/members`).
+1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin`).
+2. Add a user to `Users` table (`Add` link).
+3. **Logout from Django Admin site.** [You'll face login error without logout of Django Admin site](https://github.com/doccano/doccano/issues/723).
+4. Add the user to the project in the member page (`/projects/{project_id}/members`).
+
+## I want to change user's or admin's password
+
+For ordinary user:
+
+1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin`).
+2. Open `Users` table.
+3. Open user you want to change password.
+4. In `Password` property, you'll see: `Raw passwords are not stored, so there is no way to see this user's password, but you can change the password using *this form*.` Click `this form` link.
+5. Fill the form. Click `CHANGE PASSWORD` button.
+6. **Logout from Django Admin site.** [You'll face login error without logout of Django Admin site](https://github.com/doccano/doccano/issues/723).
+
+For the superuser account credentials, you have to set new password in the `docker-compose.dev.yml` and `docker-compose.prod.yml` files:
+
+```yml
+ADMIN_PASSWORD: "new_password"
+```
+
+## I want to change port number
+
+The following page will be useful:
+
+- [Clarify how to set port using docker-compose.prod.yml](https://github.com/doccano/doccano/issues/805)
 
 ## I want to update to the latest doccano image
 
