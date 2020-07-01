@@ -58,7 +58,7 @@
         </v-chip>
         <template v-slot:input>
           <v-color-picker
-            :value="item.backgroundColor"
+            :value="item.background_color"
             :rules="colorRules"
             @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
             show-swatches
