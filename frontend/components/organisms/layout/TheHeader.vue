@@ -17,6 +17,16 @@
     >
       doccano
     </v-toolbar-title>
+    <v-btn
+      v-if="isAuthenticated && isIndividualProject"
+      text
+      style="text-transform:none"
+    >
+      <v-icon small class="mr-1">
+        mdi-hexagon-multiple
+      </v-icon>
+      <span> {{ currentProject.name }}</span>
+    </v-btn>
     <div class="flex-grow-1" />
     <the-color-mode-switcher />
     <v-btn
@@ -67,7 +77,7 @@
         </v-btn>
       </template>
       <v-list>
-        <v-subheader>{{ getUsername }}</v-subheader>
+        <v-subheader>{{ getUsername() }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -104,7 +114,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'getUsername'])
+    ...mapGetters('auth', ['isAuthenticated', 'getUsername']),
+    ...mapGetters('projects', ['currentProject']),
+
+    isIndividualProject() {
+      return this.$route.name.startsWith('projects-id')
+    }
   },
 
   methods: {

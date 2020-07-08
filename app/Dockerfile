@@ -1,20 +1,16 @@
-FROM python:3.6
+FROM alpine:3.9.6
 
-# set work directory
+CMD ["python3"]
+
 WORKDIR /app
 
-# set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-# install psycopg2 dependencies
-RUN apt-get update \
-    && apt-get install --no-install-recommends -y python3-dev libpq-dev unixodbc-dev
-
-# install dependencies
-RUN pip install --upgrade pip setuptools
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-# copy project
 COPY . /app/
+
+RUN apk add -U --no-cache bash python3 python3-dev libpq postgresql-dev unixodbc-dev musl-dev g++ libffi-dev \
+  && pip3 install --upgrade --no-cache-dir pip setuptools \
+  && pip3 install --no-cache-dir -r requirements.txt \
+  && ln -s /usr/bin/python3 /usr/bin/python \
+  && apk del --no-cache python3-dev postgresql-dev unixodbc-dev musl-dev g++ libffi-dev

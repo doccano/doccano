@@ -12,6 +12,7 @@
       <confirm-form
         :items="selected"
         @ok="deleteLabel($route.params.id);dialog=false"
+        @cancel="dialog=false"
         title="Delete Label"
         message="Are you sure you want to delete these labels from this project?"
         item-key="text"
