@@ -20,7 +20,7 @@
 
 <script>
 import Vue from 'vue'
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import MultiClassClassification from '@/components/organisms/annotation/MultiClassClassification'
 Vue.use(require('vue-shortkey'))
 
@@ -33,6 +33,7 @@ export default {
     ...mapState('labels', ['items']),
     ...mapState('documents', ['loading']),
     ...mapGetters('documents', ['currentDoc']),
+    ...mapGetters('pagination', ['offset']),
     multiKeys() {
       const multiKeys = {}
       for (const item of this.items) {
@@ -46,6 +47,12 @@ export default {
   },
 
   created() {
+    this.updateSearchOptions({
+      offset: this.offset
+    })
+    this.getDocumentList({
+      projectId: this.$route.params.id
+    })
     this.getLabelList({
       projectId: this.$route.params.id
     })
@@ -54,6 +61,7 @@ export default {
   methods: {
     ...mapActions('labels', ['getLabelList']),
     ...mapActions('documents', ['getDocumentList', 'deleteAnnotation', 'updateAnnotation', 'addAnnotation']),
+    ...mapMutations('documents', ['updateSearchOptions']),
     removeLabel(annotationId) {
       const payload = {
         annotationId,
