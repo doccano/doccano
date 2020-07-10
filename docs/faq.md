@@ -42,9 +42,9 @@ ADMIN_PASSWORD: "new_password"
 
 ## I want to change port number
 
-The following page will be useful:
+On production, edit `docker-compose.prod.yml` file: change `80:80` substring in `nginx`/`ports` section to `<your_port>:80`.
 
-- [Clarify how to set port using docker-compose.prod.yml](https://github.com/doccano/doccano/issues/805)
+On development, edit `docker-compose.dev.yml` file: change `8000:8000` substring in `backend`/`ports` section to `<your_port>:8000`.
 
 ## I want to update to the latest doccano image
 
