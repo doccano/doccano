@@ -105,9 +105,6 @@ export default {
     this.initPage({
       projectId: this.$route.params.id
     })
-    this.getDocumentList({
-      projectId: this.$route.params.id
-    })
   },
 
   methods: {
