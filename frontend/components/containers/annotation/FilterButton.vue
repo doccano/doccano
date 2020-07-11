@@ -18,7 +18,7 @@
       </v-tooltip>
     </template>
     <v-list>
-      <v-list-item-group v-model="selected">
+      <v-list-item-group v-model="selected" mandatory>
         <v-list-item
           v-for="(item, i) in items"
           :key="i"
