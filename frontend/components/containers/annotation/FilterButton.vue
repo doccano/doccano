@@ -67,7 +67,7 @@ export default {
         projectId: this.$route.params.id
       })
       this.setCurrent(0)
-      this.movePage(this.page)
+      this.movePage(1)
     }
   },
 
