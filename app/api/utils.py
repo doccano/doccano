@@ -471,8 +471,8 @@ class JSONPainter(object):
                 a.pop('prob')
                 a.pop('document')
                 if 'label' in a:
-                    a['label'] = id2label[a['label']]
-                a['user'] = id2username[a['user']]
+                    a['label_name'] = id2label[a['label']]
+                a['user_name'] = id2username[a['user']]
             data.append(d)
         return data
 
