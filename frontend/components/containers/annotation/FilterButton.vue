@@ -67,9 +67,7 @@ export default {
         projectId: this.$route.params.id
       })
       this.setCurrent(0)
-      const checkpoint = {}
-      checkpoint[this.$route.params.id] = this.page
-      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
+      this.movePage(this.page)
     }
   },
 
@@ -79,6 +77,7 @@ export default {
 
   methods: {
     ...mapActions('documents', ['getDocumentList']),
+    ...mapActions('pagination', ['movePage']),
     ...mapMutations('documents', ['setCurrent', 'updateSearchOptions', 'initSearchOptions'])
   }
 }

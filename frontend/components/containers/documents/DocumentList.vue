@@ -119,6 +119,7 @@ export default {
 
   methods: {
     ...mapActions('documents', ['getDocumentList', 'updateDocument']),
+    ...mapActions('pagination', ['movePage']),
     ...mapMutations('documents', ['updateSelected', 'updateSearchOptions', 'setCurrent', 'initSearchOptions']),
 
     handleUpdateDocument(payload) {
@@ -137,9 +138,7 @@ export default {
       this.updateSearchOptions({ limit, offset, q })
       this.$router.push('/projects/' + this.$route.params.id + '/' + this.getLink)
       this.setCurrent(index)
-      const checkpoint = {}
-      checkpoint[this.$route.params.id] = offset + index + 1
-      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
+      this.movePage(offset + index + 1)
     }
   }
 }
