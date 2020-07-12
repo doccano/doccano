@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import Seq2seqBox from '~/components/organisms/annotation/Seq2seqBox'
 
 export default {
@@ -36,7 +36,17 @@ export default {
     }
   },
 
+  created() {
+    this.updateSearchOptions({
+      offset: this.offset
+    })
+    this.getDocumentList({
+      projectId: this.$route.params.id
+    })
+  },
+
   methods: {
+    ...mapMutations('documents', ['updateSearchOptions']),
     ...mapActions('documents', ['getDocumentList', 'deleteAnnotation', 'updateAnnotation', 'addAnnotation']),
     _deleteAnnotation(annotationId) {
       const payload = {

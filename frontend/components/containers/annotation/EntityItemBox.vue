@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapMutations, mapState } from 'vuex'
 import EntityItemBox from '~/components/organisms/annotation/EntityItemBox'
 
 export default {
@@ -29,6 +29,12 @@ export default {
   },
 
   created() {
+    this.updateSearchOptions({
+      offset: this.offset
+    })
+    this.getDocumentList({
+      projectId: this.$route.params.id
+    })
     this.getLabelList({
       projectId: this.$route.params.id
     })
@@ -37,6 +43,7 @@ export default {
   methods: {
     ...mapActions('labels', ['getLabelList']),
     ...mapActions('documents', ['getDocumentList', 'deleteAnnotation', 'updateAnnotation', 'addAnnotation']),
+    ...mapMutations('documents', ['updateSearchOptions']),
     removeEntity(annotationId) {
       const payload = {
         annotationId,
