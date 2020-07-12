@@ -111,6 +111,9 @@ export default {
   },
 
   created() {
+    this.initPage({
+      projectId: this.$route.params.id
+    })
     this.initSearchOptions()
     this.getDocumentList({
       projectId: this.$route.params.id
@@ -119,7 +122,7 @@ export default {
 
   methods: {
     ...mapActions('documents', ['getDocumentList', 'updateDocument']),
-    ...mapActions('pagination', ['movePage']),
+    ...mapActions('pagination', ['initPage', 'movePage']),
     ...mapMutations('documents', ['updateSelected', 'updateSearchOptions', 'setCurrent', 'initSearchOptions']),
 
     handleUpdateDocument(payload) {
