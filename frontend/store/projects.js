@@ -55,12 +55,6 @@ export const getters = {
       text: 'CSV',
       accept: '.csv'
     }
-    const fast = {
-      type: 'fast',
-      text: 'FAST',
-      accept: '.fast'
-    }
-
     const json = {
       type: 'json',
       text: 'JSONL',
@@ -70,6 +64,11 @@ export const getters = {
       type: 'conll',
       text: 'CoNLL',
       accept: '.conll'
+    }
+    const excel = {
+      type: 'excel',
+      text: 'Excel',
+      accept: '.xlsx'
     }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [
@@ -83,11 +82,17 @@ export const getters = {
         '"Really great transaction.","positive"\n',
         '"Great price.","positive"'
       ]
+      excel.examples = [
+        'text,label\n',
+        '"Terrible customer service.","negative"\n',
+        '"Really great transaction.","positive"\n',
+        '"Great price.","positive"'
+      ]
       return [
         plain,
         csv,
         json,
-        fast
+        excel
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [
@@ -125,10 +130,17 @@ export const getters = {
         '"Good morning.","おはようございます。"\n',
         '"See you.","さようなら。"'
       ]
+      excel.examples = [
+        'text,label\n',
+        '"Hello!","こんにちは！"\n',
+        '"Good morning.","おはようございます。"\n',
+        '"See you.","さようなら。"'
+      ]
       return [
         plain,
         csv,
-        json
+        json,
+        excel
       ]
     } else {
       return []
@@ -142,10 +154,6 @@ export const getters = {
     const json = {
       type: 'json',
       text: 'JSONL'
-    }
-    const fast = {
-      type: 'fast',
-      text: 'FAST'
     }
     const jsonl = {
       type: 'json1',
@@ -165,8 +173,7 @@ export const getters = {
       ]
       return [
         csv,
-        json,
-        fast
+        json
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [
