@@ -138,7 +138,7 @@ export default {
       this.$router.push('/projects/' + this.$route.params.id + '/' + this.getLink)
       this.setCurrent(index)
       const checkpoint = {}
-      checkpoint[this.$route.params.id] = offset + index + 1
+      checkpoint[this.$route.params.id] = index + 1
       localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
     }
   }
