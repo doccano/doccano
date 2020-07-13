@@ -345,6 +345,52 @@ class PlainTextParser(FileParser):
             yield [{'text': line.strip()} for line in batch]
 
 
+class FastTextParser(FileParser):
+    """Uploads fast text.
+
+    The file format is as follows:
+    ```
+   todo
+    ...
+    ```
+    """
+    def parseFastText(self, testInput):
+        items = testInput.split()
+        labels = []
+        text = []
+        for item in items:
+            if '__label__' in item:
+              labels.append(item)
+            else:
+              text.append(item)
+       
+        return (' '.join(text))
+    
+    def parseFastLabels(self, testInput):
+        items = testInput.split()
+        labels = []
+        text = []
+        for item in items:
+            if '__label__' in item:
+              labels.append(item.replace('__label__', ''))
+            else:
+              text.append(item)
+        return labels
+ 
+    def parse(self, file):
+        #raise FileParseException(line_num=1, line='Unable to guess FAST')
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
+        while True:
+            batch = list(itertools.islice(file, settings.IMPORT_BATCH_SIZE))
+        
+            if not batch:
+                break
+            
+            
+            yield [{'text': self.parseFastText(line), 'labels': self.parseFastLabels(line)} for line in batch]
+
+
 class CSVParser(FileParser):
     """Uploads csv file.
 
@@ -486,6 +532,55 @@ class JSONPainter(object):
         return data
 
 
+class FASTPainter(JSONPainter):
+    
+    def paint(self, documents):
+        serializer = DocumentSerializer(documents, many=True)
+        serializer_labels = LabelSerializer(labels, many=True)
+        data = []
+        
+        for d in serializer.data:
+            answer = ""
+            print(serializer.data)
+            d['meta'] = json.loads(d['meta'])
+            for a in d['annotations']:
+                a.pop('id')
+                a.pop('prob')
+                a.pop('document')
+                a.pop('user')
+                
+            d.pop('id')
+          
+            answer += d['text']
+            data.append(answer)
+            print(d)
+        return data
+    
+    @staticmethod
+    def paint_labels(documents, labels):
+        serializer_labels = LabelSerializer(labels, many=True)
+        serializer = DocumentSerializer(documents, many=True)
+        data = []
+    
+        for d in serializer.data:
+            answer = ""
+            labels = []
+            for a in d['annotations']:
+                label_obj = [x for x in serializer_labels.data if x['id'] == a['label']][0]
+                label_text = label_obj['text']
+
+                labels.append('__label__' + label_text)
+            answer += ''.join(labels)
+            d.pop('annotations')
+            d['labels'] = labels
+            answer += ' '
+            answer += d['text']
+     
+         
+            print(data)
+            data.append(answer.strip('"'))
+        return data
+
 class CSVPainter(JSONPainter):
 
     def paint(self, documents):
@@ -495,6 +590,7 @@ class CSVPainter(JSONPainter):
             annotations = d.pop('annotations')
             for a in annotations:
                 res.append({**d, **a})
+        print(res)
         return res
 
 

@@ -9,7 +9,7 @@ from model_mommy import mommy
 
 from ..models import User, SequenceAnnotation, Document, Role, RoleMapping
 from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
-from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser
+from ..utils import PlainTextParser, FastTextParser, CoNLLParser, JSONParser, CSVParser
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 

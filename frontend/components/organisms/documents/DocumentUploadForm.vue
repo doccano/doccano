@@ -87,7 +87,7 @@ export default {
       if (this.selectedFormat) {
         return this.selectedFormat.accept
       } else {
-        return '.txt,.csv,.json,.jsonl'
+        return '.txt,.csv,.json,.jsonl,.fast'
       }
     }
   },

@@ -22,9 +22,9 @@ from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
-from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, iterable_to_io
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser,FastTextParser, CoNLLParser, AudioParser, iterable_to_io
 from .utils import JSONLRenderer
-from .utils import JSONPainter, CSVPainter
+from .utils import JSONPainter, FASTPainter
 
 IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
@@ -279,6 +279,8 @@ class TextUploadAPI(APIView):
     def select_parser(cls, file_format):
         if file_format == 'plain':
             return PlainTextParser()
+        elif file_format == 'fast':
+            return FastTextParser()
         elif file_format == 'csv':
             return CSVParser()
         elif file_format == 'json':
@@ -345,6 +347,7 @@ class CloudUploadAPI(APIView):
 
 
 class TextDownloadAPI(APIView):
+   
     permission_classes = TextUploadAPI.permission_classes
 
     renderer_classes = (CSVRenderer, JSONLRenderer)
@@ -360,13 +363,20 @@ class TextDownloadAPI(APIView):
         if format == "json1":
             labels = project.labels.all()
             data = JSONPainter.paint_labels(documents, labels)
+        if format == 'fast':
+            labels = project.labels.all()
+            data = FASTPainter.paint_labels(documents, labels)
         else:
             data = painter.paint(documents)
         return Response(data)
 
     def select_painter(self, format):
+        print(format)
         if format == 'csv':
-            return CSVPainter()
+            return ()
+        elif format == 'fast':
+            print("selected fast")
+            return FASTPainter()
         elif format == 'json' or format == "json1":
             return JSONPainter()
         else:

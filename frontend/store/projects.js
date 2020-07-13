@@ -55,6 +55,12 @@ export const getters = {
       text: 'CSV',
       accept: '.csv'
     }
+    const fast = {
+      type: 'fast',
+      text: 'FAST',
+      accept: '.fast'
+    }
+
     const json = {
       type: 'json',
       text: 'JSONL',
@@ -80,7 +86,8 @@ export const getters = {
       return [
         plain,
         csv,
-        json
+        json,
+        fast
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [
@@ -136,6 +143,10 @@ export const getters = {
       type: 'json',
       text: 'JSONL'
     }
+    const fast = {
+      type: 'fast',
+      text: 'FAST'
+    }
     const jsonl = {
       type: 'json1',
       text: 'JSONL(Text label)'
@@ -154,7 +165,8 @@ export const getters = {
       ]
       return [
         csv,
-        json
+        json,
+        fast
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [
