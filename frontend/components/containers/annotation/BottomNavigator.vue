@@ -24,7 +24,7 @@
       <v-icon>mdi-book-open-outline</v-icon>
     </v-btn> -->
 
-    <v-btn @click="nextPage(total)">
+    <v-btn @click="nextPage">
       <span>Next</span>
       <v-icon>mdi-chevron-right</v-icon>
     </v-btn>
@@ -32,42 +32,29 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
-
 export default {
-  computed: {
-    ...mapState('documents', ['items', 'total']),
-    ...mapGetters('pagination', ['current', 'limit', 'offset', 'page'])
-  },
-
-  watch: {
-    offset() {
-      this.updateSearchOptions({
-        limit: this.limit,
-        offset: this.offset
-      })
-      this.getDocumentList({
-        projectId: this.$route.params.id
-      })
+  props: {
+    value: {
+      type: Number,
+      default: 1,
+      required: true
     },
-    current() {
-      this.setCurrent(this.current)
+    length: {
+      type: Number,
+      default: 1,
+      required: true
     }
   },
 
-  created() {
-    this.initPage({
-      projectId: this.$route.params.id
-    })
-    this.getDocumentList({
-      projectId: this.$route.params.id
-    })
-  },
-
   methods: {
-    ...mapActions('documents', ['getDocumentList']),
-    ...mapActions('pagination', ['prevPage', 'nextPage', 'initPage']),
-    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions'])
+    prevPage() {
+      const page = Math.max(this.value - 1, 1)
+      this.$emit('input', page)
+    },
+    nextPage() {
+      const page = Math.min(this.value + 1, this.length)
+      this.$emit('input', page)
+    }
   }
 }
 </script>

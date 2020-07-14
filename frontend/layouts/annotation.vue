@@ -37,7 +37,10 @@
           </v-col>
           <v-spacer />
           <v-col>
-            <paginator />
+            <pagination
+              v-model="page"
+              :length="total"
+            />
           </v-col>
         </v-row>
         <v-row justify="center">
@@ -54,18 +57,22 @@
       </v-container>
     </v-content>
 
-    <bottom-navigator class="d-flex d-sm-none" />
+    <bottom-navigator
+      v-model="page"
+      :length="total"
+      class="d-flex d-sm-none"
+    />
   </v-app>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
-import Paginator from '~/components/containers/annotation/Paginator'
+import Pagination from '~/components/containers/annotation/Pagination'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
 
@@ -76,7 +83,7 @@ export default {
     TheSideBar,
     TheHeader,
     BottomNavigator,
-    Paginator,
+    Pagination,
     GuidelineButton,
     FilterButton,
     ApproveButton,
@@ -84,14 +91,54 @@ export default {
   },
   data() {
     return {
-      drawerLeft: null
+      drawerLeft: null,
+      limit: 10
     }
   },
 
   computed: {
     ...mapGetters('projects', ['getLink', 'getCurrentUserRole']),
-    ...mapState('documents', ['loading']),
-    ...mapGetters('documents', ['currentDoc', 'approved'])
+    ...mapState('documents', ['loading', 'total']),
+    ...mapGetters('documents', ['currentDoc', 'approved']),
+    page: {
+      get() {
+        return parseInt(this.$route.query.page, 10)
+      },
+      set(newValue) {
+        const value = parseInt(newValue, 10)
+        this.$router.push({
+          query: {
+            page: value
+          }
+        })
+      }
+    },
+    offset() {
+      return Math.floor((this.page - 1) / this.limit) * this.limit
+    },
+    current() {
+      return (this.page - 1) % this.limit
+    }
+  },
+
+  watch: {
+    offset: {
+      handler() {
+        this.getDocumentList({
+          projectId: this.$route.params.id,
+          limit: this.limit,
+          offset: this.offset,
+          q: this.$route.query.q
+        })
+      },
+      immediate: true
+    },
+    current: {
+      handler() {
+        this.setCurrent(this.current)
+      },
+      immediate: true
+    }
   },
 
   created() {
@@ -99,11 +146,13 @@ export default {
   },
 
   methods: {
-    ...mapActions('projects', ['setCurrentProject'])
+    ...mapActions('projects', ['setCurrentProject']),
+    ...mapActions('documents', ['getDocumentList']),
+    ...mapMutations('documents', ['setCurrent'])
   },
 
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   }
 }
 </script>
