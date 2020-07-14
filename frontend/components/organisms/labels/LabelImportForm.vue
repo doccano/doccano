@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
-    @agree="create"
-    @cancel="cancel"
     title="Upload Label"
     agree-text="Upload"
     cancel-text="Cancel"
+    @agree="create"
+    @cancel="cancel"
   >
     <template #content>
       <v-form

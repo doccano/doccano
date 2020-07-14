@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
-    @agree="download"
-    @cancel="cancel"
     title="Export Data"
     agree-text="Export"
     cancel-text="Cancel"
+    @agree="download"
+    @cancel="cancel"
   >
     <template #content>
       <v-form

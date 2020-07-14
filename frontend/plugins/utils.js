@@ -1,4 +1,4 @@
-export const idealColor = function (hexString) {
+export const idealColor = function(hexString) {
   // W3c offers a formula for calculating ideal color:
   // https://www.w3.org/TR/AERT/#color-contrast
   const r = parseInt(hexString.substr(1, 2), 16)

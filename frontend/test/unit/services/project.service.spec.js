@@ -4,7 +4,7 @@ import ProjectService from '@/services/project.service.js'
 describe('Project.service', () => {
   const mockAxios = new MockAdapter(ProjectService.request.instance)
 
-  test('can get project list', async () => {
+  test('can get project list', async() => {
     const data = [
       {
         id: 1,
@@ -24,7 +24,7 @@ describe('Project.service', () => {
     expect(response).toEqual(data)
   })
 
-  test('can create a project', async () => {
+  test('can create a project', async() => {
     const data = {
       name: 'test project',
       description: 'test description',
@@ -37,7 +37,7 @@ describe('Project.service', () => {
     expect(response.title).toEqual(data.title)
   })
 
-  test('can delete a project', async () => {
+  test('can delete a project', async() => {
     const projectId = 1
     mockAxios.onDelete(`/projects/${projectId}`).reply(204, {})
     const response = await ProjectService.deleteProject(projectId)

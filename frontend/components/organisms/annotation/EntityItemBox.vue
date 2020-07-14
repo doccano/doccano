@@ -1,5 +1,5 @@
 <template>
-  <div @click="open" @touchend="open" class="highlight-container highlight-container--bottom-labels">
+  <div class="highlight-container highlight-container--bottom-labels" @click="open" @touchend="open">
     <entity-item
       v-for="(chunk, i) in chunks"
       :key="i"
