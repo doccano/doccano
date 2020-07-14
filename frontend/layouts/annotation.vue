@@ -121,6 +121,15 @@ export default {
     },
     current() {
       return (this.page - 1) % this.limit
+    },
+    searchOptions() {
+      // a bit tricky.
+      // see https://github.com/vuejs/vue/issues/844#issuecomment-265315349
+      return JSON.stringify({
+        page: this.page,
+        q: this.q,
+        isChecked: this.filterOption
+      })
     }
   },
 
@@ -140,6 +149,9 @@ export default {
         this.setCurrent(this.current)
       },
       immediate: true
+    },
+    searchOptions() {
+      this.saveSearchOptions(JSON.parse(this.searchOptions))
     }
   },
 
@@ -151,6 +163,7 @@ export default {
     ...mapActions('projects', ['setCurrentProject']),
     ...mapActions('documents', ['getDocumentList']),
     ...mapMutations('documents', ['setCurrent']),
+    ...mapMutations('projects', ['saveSearchOptions']),
     search() {
       this.getDocumentList({
         projectId: this.$route.params.id,

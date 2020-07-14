@@ -209,6 +209,10 @@ export const getters = {
     } else {
       return []
     }
+  },
+  loadSearchOptions(state) {
+    const checkpoint = JSON.parse(localStorage.getItem('checkpoint')) || {}
+    return checkpoint[state.current.id] ? checkpoint[state.current.id] : { page: 1 }
   }
 }
 
@@ -237,6 +241,11 @@ export const mutations = {
   },
   setCurrent(state, payload) {
     state.current = payload
+  },
+  saveSearchOptions(state, options) {
+    const checkpoint = {}
+    checkpoint[state.current.id] = options
+    localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
   }
 }
 
