@@ -32,7 +32,9 @@
               :approved="approved"
               :disabled="currentDoc ? false : true"
             />
-            <filter-button />
+            <filter-button
+              v-model="filterOption"
+            />
             <guideline-button />
           </v-col>
           <v-spacer />
@@ -92,12 +94,13 @@ export default {
   data() {
     return {
       drawerLeft: null,
+      filterOption: null,
       limit: 10
     }
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink', 'getCurrentUserRole']),
+    ...mapGetters('projects', ['getLink', 'getCurrentUserRole', 'getFilterOption']),
     ...mapState('documents', ['loading', 'total']),
     ...mapGetters('documents', ['currentDoc', 'approved']),
     page: {
@@ -124,14 +127,13 @@ export default {
   watch: {
     offset: {
       handler() {
-        this.getDocumentList({
-          projectId: this.$route.params.id,
-          limit: this.limit,
-          offset: this.offset,
-          q: this.$route.query.q
-        })
+        this.search()
       },
       immediate: true
+    },
+    filterOption() {
+      this.page = 1
+      this.search()
     },
     current: {
       handler() {
@@ -148,7 +150,17 @@ export default {
   methods: {
     ...mapActions('projects', ['setCurrentProject']),
     ...mapActions('documents', ['getDocumentList']),
-    ...mapMutations('documents', ['setCurrent'])
+    ...mapMutations('documents', ['setCurrent']),
+    search() {
+      this.getDocumentList({
+        projectId: this.$route.params.id,
+        limit: this.limit,
+        offset: this.offset,
+        q: this.$route.query.q,
+        isChecked: this.filterOption,
+        filterName: this.getFilterOption
+      })
+    }
   },
 
   validate({ params, query }) {

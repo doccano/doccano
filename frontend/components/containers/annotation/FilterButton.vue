@@ -40,7 +40,6 @@
 </template>
 
 <script>
-import { mapMutations, mapActions, mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -53,33 +52,10 @@ export default {
     }
   },
 
-  computed: {
-    ...mapGetters('projects', ['getFilterOption'])
-  },
-
   watch: {
     selected() {
-      this.updateSearchOptions({
-        isChecked: this.items[this.selected].param,
-        filterName: this.getFilterOption
-      })
-      this.getDocumentList({
-        projectId: this.$route.params.id
-      })
-      this.setCurrent(0)
-      const checkpoint = {}
-      checkpoint[this.$route.params.id] = this.page
-      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
+      this.$emit('input', this.items[this.selected].param)
     }
-  },
-
-  created() {
-    this.initSearchOptions()
-  },
-
-  methods: {
-    ...mapActions('documents', ['getDocumentList']),
-    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions', 'initSearchOptions'])
   }
 }
 </script>
