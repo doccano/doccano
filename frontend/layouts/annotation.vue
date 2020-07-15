@@ -94,7 +94,6 @@ export default {
   data() {
     return {
       drawerLeft: null,
-      filterOption: null,
       limit: 10
     }
   },
@@ -111,7 +110,22 @@ export default {
         const value = parseInt(newValue, 10)
         this.$router.push({
           query: {
-            page: value
+            isChecked: this.$route.query.isChecked,
+            page: value,
+            q: this.$route.query.q
+          }
+        })
+      }
+    },
+    filterOption: {
+      get() {
+        return this.$route.query.isChecked
+      },
+      set(newValue) {
+        this.$router.push({
+          query: {
+            isChecked: newValue,
+            q: this.$route.query.q
           }
         })
       }
@@ -123,11 +137,11 @@ export default {
       return (this.page - 1) % this.limit
     },
     searchOptions() {
-      // a bit tricky.
+      // a bit tricky technique to capture variables change simultaneously.
       // see https://github.com/vuejs/vue/issues/844#issuecomment-265315349
       return JSON.stringify({
         page: this.page,
-        q: this.q,
+        q: this.$route.query.q,
         isChecked: this.filterOption
       })
     }
@@ -160,8 +174,8 @@ export default {
   },
 
   methods: {
-    ...mapActions('projects', ['setCurrentProject']),
     ...mapActions('documents', ['getDocumentList']),
+    ...mapActions('projects', ['setCurrentProject']),
     ...mapMutations('documents', ['setCurrent']),
     ...mapMutations('projects', ['saveSearchOptions']),
     search() {
