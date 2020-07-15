@@ -126,6 +126,7 @@ export default {
         this.$router.push({
           query: {
             isChecked: newValue,
+            page: 1,
             q: this.$route.query.q
           }
         })

@@ -41,9 +41,16 @@
 
 <script>
 export default {
+  props: {
+    value: {
+      type: String,
+      default: '',
+      required: true
+    }
+  },
+
   data() {
     return {
-      selected: 0,
       items: [
         { title: 'All', param: '' },
         { title: 'Done', param: 'false' },
@@ -52,9 +59,15 @@ export default {
     }
   },
 
-  watch: {
-    selected() {
-      this.$emit('input', this.items[this.selected].param)
+  computed: {
+    selected: {
+      get() {
+        const index = this.items.findIndex(item => item.param === this.value)
+        return index === -1 ? 0 : index
+      },
+      set(value) {
+        this.$emit('input', this.items[value].param)
+      }
     }
   }
 }
