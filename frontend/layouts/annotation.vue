@@ -91,6 +91,7 @@ export default {
     ApproveButton,
     MetadataBox
   },
+
   data() {
     return {
       drawerLeft: null,
@@ -104,10 +105,10 @@ export default {
     ...mapGetters('documents', ['currentDoc', 'approved']),
     page: {
       get() {
-        return parseInt(this.$route.query.page, 10)
+        return Math.min(parseInt(this.$route.query.page, 10), this.total)
       },
       set(newValue) {
-        const value = parseInt(newValue, 10)
+        const value = Math.min(parseInt(newValue, 10), this.total)
         this.$router.push({
           query: {
             isChecked: this.$route.query.isChecked,
@@ -188,10 +189,6 @@ export default {
         filterName: this.getFilterOption
       })
     }
-  },
-
-  validate({ params, query }) {
-    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   }
 }
 </script>
