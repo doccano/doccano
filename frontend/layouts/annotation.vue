@@ -18,7 +18,7 @@
       />
     </v-navigation-drawer>
 
-    <v-content>
+    <v-main>
       <v-overlay :value="loading">
         <v-progress-circular indeterminate size="64" />
       </v-overlay>
@@ -57,7 +57,7 @@
           </v-col>
         </v-row>
       </v-container>
-    </v-content>
+    </v-main>
 
     <bottom-navigator
       v-model="page"

@@ -23,7 +23,6 @@ export default {
   },
 
   validate({ params, query }) {
-    console.log(query)
     return /^\d+$/.test(params.id) && /^\d+|$/.test(query.limit) && /^\d+|$/.test(query.offset)
   }
 }
