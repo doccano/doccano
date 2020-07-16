@@ -43,7 +43,7 @@
       <template v-slot:activator="{ on }">
         <v-btn
           v-shortkey.once="['arrowright']"
-          :disabled="value===length"
+          :disabled="value===length || length===0"
           text
           fab
           small

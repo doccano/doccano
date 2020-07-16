@@ -4,7 +4,10 @@
     absolute
     hide-on-scroll
   >
-    <v-btn @click="prevPage">
+    <v-btn
+      :disabled="value===1"
+      @click="prevPage"
+    >
       <span>Prev</span>
       <v-icon>mdi-chevron-left</v-icon>
     </v-btn>
@@ -24,7 +27,10 @@
       <v-icon>mdi-book-open-outline</v-icon>
     </v-btn> -->
 
-    <v-btn @click="nextPage">
+    <v-btn
+      :disabled="value===length || length===0"
+      @click="nextPage"
+    >
       <span>Next</span>
       <v-icon>mdi-chevron-right</v-icon>
     </v-btn>
