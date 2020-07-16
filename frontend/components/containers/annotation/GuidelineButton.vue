@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import BaseDialog from '@/components/molecules/BaseDialog'
 import GuidelineCard from '@/components/organisms/annotation/GuidelineCard'
 
@@ -45,14 +45,6 @@ export default {
 
   computed: {
     ...mapGetters('projects', ['currentProject'])
-  },
-
-  created() {
-    this.setCurrentProject(this.$route.params.id)
-  },
-
-  methods: {
-    ...mapActions('projects', ['setCurrentProject'])
   }
 }
 </script>

@@ -79,7 +79,7 @@ import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
 
 export default {
-  middleware: ['check-auth', 'auth'],
+  middleware: ['check-auth', 'auth', 'set-project'],
 
   components: {
     TheSideBar,
@@ -90,6 +90,17 @@ export default {
     FilterButton,
     ApproveButton,
     MetadataBox
+  },
+
+  fetch() {
+    this.getDocumentList({
+      projectId: this.$route.params.id,
+      limit: this.limit,
+      offset: this.offset,
+      q: this.$route.query.q,
+      isChecked: this.filterOption,
+      filterName: this.getFilterOption
+    })
   },
 
   data() {
@@ -105,14 +116,13 @@ export default {
     ...mapGetters('documents', ['currentDoc', 'approved']),
     page: {
       get() {
-        return Math.min(parseInt(this.$route.query.page, 10), this.total)
+        return parseInt(this.$route.query.page, 10)
       },
-      set(newValue) {
-        const value = Math.min(parseInt(newValue, 10), this.total)
+      set(value) {
         this.$router.push({
           query: {
             isChecked: this.$route.query.isChecked,
-            page: value,
+            page: parseInt(value, 10),
             q: this.$route.query.q
           }
         })
@@ -122,10 +132,10 @@ export default {
       get() {
         return this.$route.query.isChecked
       },
-      set(newValue) {
+      set(value) {
         this.$router.push({
           query: {
-            isChecked: newValue,
+            isChecked: value,
             page: 1,
             q: this.$route.query.q
           }
@@ -150,15 +160,20 @@ export default {
   },
 
   watch: {
-    offset: {
-      handler() {
-        this.search()
-      },
-      immediate: true
+    total() {
+      // To validate the range of page variable on reloading the annotation page.
+      if (this.page > this.total) {
+        this.$router.push({
+          path: `/projects/${this.$route.params.id}/`
+        })
+      }
+    },
+    offset() {
+      this.$fetch()
     },
     filterOption() {
       this.page = 1
-      this.search()
+      this.$fetch()
     },
     current: {
       handler() {
@@ -171,25 +186,10 @@ export default {
     }
   },
 
-  created() {
-    this.setCurrentProject(this.$route.params.id)
-  },
-
   methods: {
     ...mapActions('documents', ['getDocumentList']),
-    ...mapActions('projects', ['setCurrentProject']),
     ...mapMutations('documents', ['setCurrent']),
-    ...mapMutations('projects', ['saveSearchOptions']),
-    search() {
-      this.getDocumentList({
-        projectId: this.$route.params.id,
-        limit: this.limit,
-        offset: this.offset,
-        q: this.$route.query.q,
-        isChecked: this.filterOption,
-        filterName: this.getFilterOption
-      })
-    }
+    ...mapMutations('projects', ['saveSearchOptions'])
   }
 }
 </script>
