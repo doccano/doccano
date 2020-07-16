@@ -243,7 +243,7 @@ export const mutations = {
     state.current = payload
   },
   saveSearchOptions(state, options) {
-    const checkpoint = {}
+    const checkpoint = JSON.parse(localStorage.getItem('checkpoint')) || {}
     checkpoint[state.current.id] = options
     localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
   }
