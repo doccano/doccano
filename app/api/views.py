@@ -24,7 +24,7 @@ from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer,
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, iterable_to_io
 from .utils import JSONLRenderer
-from .utils import JSONPainter, CSVPainter
+from .utils import JSONPainter, JSONLPainter, CSVPainter
 
 IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
@@ -349,29 +349,18 @@ class TextDownloadAPI(APIView):
 
     renderer_classes = (CSVRenderer, JSONLRenderer)
 
+    painters = {'csv': CSVPainter(), 'json': JSONPainter(), 'json1': JSONLPainter()}
+
     def get(self, request, *args, **kwargs):
         format = request.query_params.get('q')
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         documents = project.documents.all()
-        painter = self.select_painter(format)
-        # json1 format prints text labels while json format prints annotations with label ids
-        # json1 format - "labels": [[0, 15, "PERSON"], ..]
-        # json format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
-        if format == "json1":
-            labels = project.labels.all()
-            data = JSONPainter.paint_labels(documents, labels)
-        else:
-            data = painter.paint(documents)
-        return Response(data)
-
-    def select_painter(self, format):
-        if format == 'csv':
-            return CSVPainter()
-        elif format == 'json' or format == "json1":
-            return JSONPainter()
+        painter = self.painters.get(format)
+        if painter:
+            data = painter.paint(project)
+            return Response(data)
         else:
             raise ValidationError('format {} is invalid.'.format(format))
-
 
 class Users(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
