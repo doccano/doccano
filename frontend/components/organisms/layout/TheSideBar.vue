@@ -10,11 +10,14 @@
       </v-icon>
       Start annotation
     </v-btn>
-    <template v-for="(item, i) in items">
+    <v-list-item-group
+      v-model="selected"
+      mandatory
+    >
       <v-list-item
-        v-if="isVisible(item)"
+        v-for="(item, i) in filteredItems"
         :key="i"
-        @click="$router.push('/projects/' + $route.params.id + '/' + item.link)"
+        @click="$router.push(`/projects/${$route.params.id}/${item.link}`)"
       >
         <v-list-item-action>
           <v-icon>
@@ -27,7 +30,7 @@
           </v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-    </template>
+    </v-list-item-group>
   </v-list>
 </template>
 
@@ -50,6 +53,7 @@ export default {
 
   data() {
     return {
+      selected: 0,
       items: [
         { icon: 'mdi-home', text: 'Home', link: '', adminOnly: false },
         { icon: 'mdi-database', text: 'Dataset', link: 'dataset', adminOnly: true },
@@ -62,7 +66,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['loadSearchOptions'])
+    ...mapGetters('projects', ['loadSearchOptions']),
+    filteredItems() {
+      return this.items.filter(item => this.isVisible(item))
+    }
   },
 
   methods: {
