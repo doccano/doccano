@@ -5,34 +5,38 @@
       @upload="importDialog=true"
       @download="exportDialog=true"
     />
-    <base-dialog :dialog="importDialog">
+    <v-dialog
+      v-model="importDialog"
+      width="800"
+    >
       <document-upload-form
         :upload-document="uploadDocument"
         :formats="getImportFormat"
         @close="importDialog=false"
       />
-    </base-dialog>
-    <base-dialog :dialog="exportDialog">
+    </v-dialog>
+    <v-dialog
+      v-model="exportDialog"
+      width="800"
+    >
       <document-export-form
         :export-document="exportDocument"
         :formats="getExportFormat"
         @close="exportDialog=false"
       />
-    </base-dialog>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import ActionMenu from '@/components/molecules/ActionMenu'
-import BaseDialog from '@/components/molecules/BaseDialog'
 import DocumentUploadForm from '@/components/organisms/documents/DocumentUploadForm'
 import DocumentExportForm from '@/components/organisms/documents/DocumentExportForm'
 
 export default {
   components: {
     ActionMenu,
-    BaseDialog,
     DocumentUploadForm,
     DocumentExportForm
   },
