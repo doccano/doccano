@@ -1,9 +1,9 @@
 <template>
   <v-list dense>
     <v-btn
-      :to="to"
       color="ms-4 my-1 mb-2 primary text-capitalize"
       nuxt
+      @click="toLabeling"
     >
       <v-icon left>
         mdi-play-circle-outline
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   props: {
     link: {
@@ -60,14 +62,18 @@ export default {
   },
 
   computed: {
-    to() {
-      return `/projects/${this.$route.params.id}/${this.link}`
-    }
+    ...mapGetters('projects', ['loadSearchOptions'])
   },
 
   methods: {
     isVisible(item) {
       return !item.adminOnly || this.role.is_project_admin
+    },
+    toLabeling() {
+      this.$router.push({
+        path: `/projects/${this.$route.params.id}/${this.link}`,
+        query: this.loadSearchOptions
+      })
     }
   }
 }

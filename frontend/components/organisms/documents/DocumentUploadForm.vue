@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
-    @agree="create"
-    @cancel="cancel"
     title="Upload Data"
     agree-text="Upload"
     cancel-text="Cancel"
+    @agree="create"
+    @cancel="cancel"
   >
     <template #content>
       <v-form
@@ -33,12 +33,16 @@
             :value="format"
           />
         </v-radio-group>
-        <code
+        <v-sheet
           v-if="selectedFormat"
-          class="mb-10 pa-5 highlight"
+          :dark="!$vuetify.theme.dark"
+          :light="$vuetify.theme.dark"
+          class="mb-5 pa-5"
         >
-          <span v-for="(example, index) in selectedFormat.examples" :key="index">{{ example }}</span>
-        </code>
+          <span v-for="(example, index) in selectedFormat.examples" :key="index">
+            {{ example }}<br>
+          </span>
+        </v-sheet>
         <h2>Select a file</h2>
         <v-file-input
           v-model="file"
@@ -121,13 +125,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .highlight {
-    font-size: 100%;
-    width: 100%;
-  }
-  .highlight:before {
-    content: ''
-  }
-</style>

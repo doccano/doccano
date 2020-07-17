@@ -31,8 +31,8 @@
     <the-color-mode-switcher />
     <v-btn
       v-if="isAuthenticated"
-      @click="$router.push('/projects')"
       text
+      @click="$router.push('/projects')"
     >
       Projects
     </v-btn>
@@ -43,8 +43,8 @@
     >
       <template v-slot:activator="{ on }">
         <v-btn
-          v-on="on"
           text
+          v-on="on"
         >
           Demo
           <v-icon>mdi-menu-down</v-icon>
@@ -62,8 +62,8 @@
     </v-menu>
     <v-btn
       v-if="!isAuthenticated"
-      @click="$router.push('/auth')"
       outlined
+      @click="$router.push('/auth')"
     >
       Sign in
     </v-btn>
@@ -72,7 +72,7 @@
       offset-y
     >
       <template v-slot:activator="{ on }">
-        <v-btn v-on="on" on icon>
+        <v-btn on icon v-on="on">
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>

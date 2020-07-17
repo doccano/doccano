@@ -14,6 +14,10 @@ export default {
 
   components: {
     EntityItemBox
+  },
+
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   }
 }
 </script>

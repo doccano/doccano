@@ -4,9 +4,9 @@ function makeData(object, label) {
   const labels = object ? Object.keys(object) : []
   const counts = object ? Object.values(object) : []
   return {
-    labels: labels,
+    labels,
     datasets: [{
-      label: label,
+      label,
       backgroundColor: '#00d1b2',
       data: counts
     }]

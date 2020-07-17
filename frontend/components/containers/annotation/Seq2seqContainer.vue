@@ -48,7 +48,7 @@ export default {
     _updateAnnotation(annotationId, text) {
       const payload = {
         annotationId,
-        text: text,
+        text,
         projectId: this.$route.params.id
       }
       this.updateAnnotation(payload)

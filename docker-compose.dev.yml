@@ -23,7 +23,7 @@ services:
       - network-frontend
 
   frontend:
-    image: node:13.2.0
+    image: node:13.7.0
     command: ["/src/frontend/dev-nuxt.sh"]
     volumes:
       - .:/src

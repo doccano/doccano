@@ -10,6 +10,10 @@ export default {
 
   components: {
     TextClassification
+  },
+
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   }
 }
 </script>

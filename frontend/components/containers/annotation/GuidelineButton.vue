@@ -3,11 +3,11 @@
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-btn
-          v-on="on"
-          @click="dialog=true"
           class="text-capitalize ps-1 pe-1"
           min-width="36"
           outlined
+          v-on="on"
+          @click="dialog=true"
         >
           <v-icon>
             mdi-book-open-outline
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import BaseDialog from '@/components/molecules/BaseDialog'
 import GuidelineCard from '@/components/organisms/annotation/GuidelineCard'
 
@@ -45,14 +45,6 @@ export default {
 
   computed: {
     ...mapGetters('projects', ['currentProject'])
-  },
-
-  created() {
-    this.setCurrentProject(this.$route.params.id)
-  },
-
-  methods: {
-    ...mapActions('projects', ['setCurrentProject'])
   }
 }
 </script>
