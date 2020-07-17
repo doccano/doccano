@@ -16,24 +16,25 @@
       </template>
       <span>Show guideline</span>
     </v-tooltip>
-    <base-dialog :dialog="dialog">
+    <v-dialog
+      v-model="dialog"
+      width="800"
+    >
       <guideline-card
         v-if="currentProject"
         :guideline-text="currentProject.guideline"
         @close="dialog=false"
       />
-    </base-dialog>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import BaseDialog from '@/components/molecules/BaseDialog'
 import GuidelineCard from '@/components/organisms/annotation/GuidelineCard'
 
 export default {
   components: {
-    BaseDialog,
     GuidelineCard
   },
 

@@ -8,7 +8,10 @@
     >
       Delete
     </v-btn>
-    <base-dialog :dialog="dialog">
+    <v-dialog
+      v-model="dialog"
+      width="800"
+    >
       <confirm-form
         :items="selected"
         title="Delete Label"
@@ -17,18 +20,16 @@
         @ok="deleteLabel($route.params.id);dialog=false"
         @cancel="dialog=false"
       />
-    </base-dialog>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
-import BaseDialog from '@/components/molecules/BaseDialog'
 import ConfirmForm from '@/components/organisms/utils/ConfirmForm'
 
 export default {
   components: {
-    BaseDialog,
     ConfirmForm
   },
 
