@@ -483,7 +483,7 @@ class JSONLPainter(JSONPainter):
         for d in data:
             labels = []
             for a in d['annotations']:
-                labels.append([a['start_offset'], a['end_offset'], a['label']])
+                labels.append([a['start_offset'], a['end_offset'], a['label_name']])
             d.pop('annotations')
             d['labels'] = labels
         return data
