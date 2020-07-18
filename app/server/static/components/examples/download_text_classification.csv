@@ -1,4 +1,4 @@
-id,text,label,user
-1,"Terrible customer service.",1,1
-2,"Really great transaction.",2,1
-3,"Great price.",2,1
+id,text,label,label_name,user,user_name,annotation_approver
+1,"Terrible customer service.",1,negative,1,user1,supervisor
+2,"Really great transaction.",2,positive,1,user1,supervisor
+3,"Great price.",2,positive,1,user1,supervisor

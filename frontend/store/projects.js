@@ -161,15 +161,15 @@ export const getters = {
     }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [
-        '{"id": 1, "text": "Terrible customer service.", "annotations": [{"id": 1, "label": 1, "user": 1}]}\n',
-        '{"id": 2, "text": "Really great transaction.", "annotations": [{"id": 2, "label": 2, "user": 1}]}\n',
-        '{"id": 3, "text": "Great price.", "annotations": [{"id": 3, "label": 2, "user": 1}]}'
+        '{"id": 1, "text": "Terrible customer service.", "annotations": [{"id": 1, "label": 1, "label_name": "negative", "user": 1, "user_name": "user1"}], "annotation_approver": "supervisor"}\n',
+        '{"id": 2, "text": "Really great transaction.", "annotations": [{"id": 2, "label": 2, "label_name": "positive", "user": 1, "user_name": "user1"}], "annotation_approver": "supervisor"}\n',
+        '{"id": 3, "text": "Great price.", "annotations": [{"id": 3, "label": 2, "label_name": "positive", "user": 1, "user_name": "user1"}], "annotation_approver": "supervisor"}'
       ]
       csv.examples = [
-        'id,text,label,user\n',
-        '1,"Terrible customer service.",1,1\n',
-        '2,"Really great transaction.",2,1\n',
-        '3,"Great price.",2,1'
+        'id,text,label,label_name,user,user_name,annotation_approver\n',
+        '1,"Terrible customer service.",1,negative,1,user1,supervisor\n',
+        '2,"Really great transaction.",2,positive,1,user1,supervisor\n',
+        '3,"Great price.",2,positive,1,user1,supervisor'
       ]
       return [
         csv,
@@ -177,9 +177,9 @@ export const getters = {
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [
-        '{"id": 1, "text": "EU rejects ...", "annotations": [{"id": 1, "label": 2, "start_offset": 0, "end_offset": 2, "user": 1}]}\n',
-        '{"id": 2, "text": "Peter Blackburn", "annotations": [{"id": 2, "label": 1, "start_offset": 0, "end_offset": 15, "user": 1}]}\n',
-        '{"id": 3, "text": "President Obama", "annotations": [{"id": 3, "label": 1, "start_offset": 10, "end_offset": 15, "user": 1}]}'
+        '{"id": 1, "text": "EU rejects ...", "annotations": [{"id": 1, "label": 2, "label_name": "ORG", "start_offset": 0, "end_offset": 2, "user": 1, "user_name": "user1"}], "meta": {}, "annotation_approver": "supervisor"}\n',
+        '{"id": 2, "text": "Peter Blackburn", "annotations": [{"id": 2, "label": 1, "label_name": "PERSON", "start_offset": 0, "end_offset": 15, "user": 1, "user_name": "user1"}], "meta": {}, "annotation_approver": "supervisor"}\n',
+        '{"id": 3, "text": "President Obama", "annotations": [{"id": 3, "label": 1, "label_name": "PERSON", "start_offset": 10, "end_offset": 15, "user": 1, "user_name": "user1"}], "meta": {}, "annotation_approver": "supervisor"}'
       ]
       jsonl.examples = [
         '{"id": 1, "text": "EU rejects ...", "labels": [[0,2,"ORG"], [11,17, "MISC"], [34,41,"ORG"]]}\n',
