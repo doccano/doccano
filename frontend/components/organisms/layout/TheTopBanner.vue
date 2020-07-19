@@ -26,7 +26,7 @@
               href="https://github.com/doccano/doccano"
             >
               <v-icon left>
-                mdi-github-circle
+                mdi-github
               </v-icon>
               GitHub
             </v-btn>
