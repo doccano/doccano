@@ -96,12 +96,17 @@ def fetch_okta_oauth2_permissions(strategy, details, user=None, is_new=False, *a
     is_superuser = admin_group_name in response.get("groups", [])
     is_staff = admin_group_name in response.get("groups", [])
 
+    user_changed = False
+
     if user.is_superuser != is_superuser:
         user.is_superuser = is_superuser
-        user.save()
+        user_changed = user_changed or True
 
     if user.is_staff != is_staff:
         user.is_staff = is_staff
+        user_changed = user_changed or True
+
+    if user_changed:
         user.save()
 
 
@@ -124,10 +129,15 @@ def fetch_okta_openidconnect_permissions(strategy, details, user=None, is_new=Fa
     is_superuser = admin_group_name in response.get("groups", [])
     is_staff = admin_group_name in response.get("groups", [])
 
+    user_changed = False
+
     if user.is_superuser != is_superuser:
         user.is_superuser = is_superuser
-        user.save()
+        user_changed = user_changed or True
 
     if user.is_staff != is_staff:
         user.is_staff = is_staff
+        user_changed = user_changed or True
+
+    if user_changed:
         user.save()
