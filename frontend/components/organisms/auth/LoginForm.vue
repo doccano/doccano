@@ -16,7 +16,7 @@
           type="error"
           dismissible
         >
-          Incorrect username or password.
+          Incorrect username or password or something went wrong.
         </v-alert>
         <v-text-field
           v-model="username"
