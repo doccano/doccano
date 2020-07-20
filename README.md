@@ -142,7 +142,7 @@ If you want to add annotators/annotation approvers, see [Frequently Asked Questi
 
 ## Documentation
 
-See [here](./docs).
+See [here](https://doccano.github.io/doccano/).
 
 ## Contribution
 
