@@ -235,8 +235,15 @@ class AnnotationList(generics.ListCreateAPIView):
 
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'annotation_id'
-    permission_classes = [IsAuthenticated & (((IsAnnotator & IsOwnAnnotation) | IsAnnotationApprover)  | IsProjectAdmin)]
     swagger_schema = None
+
+    def get_permissions(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        if project.collaborative_annotation:
+            self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+        else:
+            self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin & IsOwnAnnotation]
+        return super().get_permissions()
 
     def get_serializer_class(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])

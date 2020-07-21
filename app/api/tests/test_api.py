@@ -880,9 +880,11 @@ class TestAnnotationDetailAPI(APITestCase):
         another_entity = mommy.make('SequenceAnnotation',
                                     document=main_project_doc, user=another_project_member)
 
-        sub_project = mommy.make('SequenceLabelingProject', users=[non_project_member])
-        sub_project_doc = mommy.make('Document', project=sub_project)
-        mommy.make('SequenceAnnotation', document=sub_project_doc)
+        shared_project = mommy.make('SequenceLabelingProject',
+                                    collaborative_annotation=True,
+                                    users=[project_member, another_project_member])
+        shared_project_doc = mommy.make('Document', project=shared_project)
+        shared_entity = mommy.make('SequenceAnnotation', document=shared_project_doc, user=another_project_member)
 
         cls.url = reverse(viewname='annotation_detail', args=[main_project.id,
                                                               main_project_doc.id,
@@ -890,9 +892,12 @@ class TestAnnotationDetailAPI(APITestCase):
         cls.another_url = reverse(viewname='annotation_detail', args=[main_project.id,
                                                                       main_project_doc.id,
                                                                       another_entity.id])
+        cls.shared_url = reverse(viewname='annotation_detail', args=[shared_project.id,
+                                                                     shared_project_doc.id,
+                                                                     shared_entity.id])
         cls.post_data = {'start_offset': 0, 'end_offset': 10}
-        assign_user_to_role(project_member=project_member, project=main_project,
-                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=project_member, project=main_project, role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=project_member, project=shared_project, role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_annotation_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -953,6 +958,18 @@ class TestAnnotationDetailAPI(APITestCase):
                           password=self.project_member_pass)
         response = self.client.delete(self.another_url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allow_member_to_update_others_annotation_in_shared_project(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.patch(self.shared_url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_allow_member_to_delete_others_annotation_in_shared_project(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.delete(self.shared_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     @classmethod
     def doCleanups(cls):
