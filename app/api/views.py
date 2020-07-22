@@ -20,7 +20,7 @@ from rest_framework_csv.renderers import CSVRenderer
 from .filters import DocumentFilter
 from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
-from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
+from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer, ApproverSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, iterable_to_io
 from .utils import JSONLRenderer
@@ -133,7 +133,7 @@ class ApproveLabelsAPI(APIView):
         document = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         document.annotations_approved_by = self.request.user if approved else None
         document.save()
-        return Response(DocumentSerializer(document).data)
+        return Response(ApproverSerializer(document).data)
 
 
 class LabelList(generics.ListCreateAPIView):

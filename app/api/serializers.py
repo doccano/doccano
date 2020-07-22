@@ -84,6 +84,13 @@ class DocumentSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver')
 
 
+class ApproverSerializer(DocumentSerializer):
+
+    class Meta:
+        model = Document
+        fields = ('id', 'annotation_approver')
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     current_users_role = serializers.SerializerMethodField()
 
