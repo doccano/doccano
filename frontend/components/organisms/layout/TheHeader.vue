@@ -118,7 +118,7 @@ export default {
     ...mapGetters('projects', ['currentProject']),
 
     isIndividualProject() {
-      return this.$route.name.startsWith('projects-id')
+      return this.$route.name && this.$route.name.startsWith('projects-id')
     }
   },
 
