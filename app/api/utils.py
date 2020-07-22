@@ -386,9 +386,9 @@ class ExcelParser(FileParser):
                 data = []
             # Only text column
             if len(row) <= len(columns) and len(row) == 1:
-                data.append({'text': row[0] })
+                data.append({'text': row[0]})
             # Text, labels and metadata columns
-            elif len(row) <= len(columns) and len(row) >= 2:
+            elif 2 <= len(row) <= len(columns):
                 datum = dict(zip(columns, row))
                 text, label = datum.pop('text'), datum.pop('label')
                 meta = FileParser.encode_metadata(datum)
