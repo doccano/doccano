@@ -17,6 +17,10 @@ export const getters = {
   getCurrentUserRole(state) {
     return state.current.current_users_role || {}
   },
+  canViewApproveButton(state) {
+    const role = state.current.current_users_role
+    return role && !role.is_annotator
+  },
   getFilterOption(state) {
     if (state.current.project_type === 'DocumentClassification') {
       return 'doc_annotations__isnull'

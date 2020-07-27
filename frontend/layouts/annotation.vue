@@ -29,6 +29,7 @@
         >
           <v-col>
             <approve-button
+              v-if="canViewApproveButton"
               :approved="approved"
               :disabled="currentDoc ? false : true"
             />
@@ -111,7 +112,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink', 'getCurrentUserRole', 'getFilterOption']),
+    ...mapGetters('projects', ['getLink', 'getCurrentUserRole', 'getFilterOption', 'canViewApproveButton']),
     ...mapState('documents', ['loading', 'total']),
     ...mapGetters('documents', ['currentDoc', 'approved']),
     page: {
