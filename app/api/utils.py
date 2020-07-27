@@ -392,7 +392,10 @@ class ExcelParser(FileParser):
                 datum = dict(zip(columns, row))
                 text, label = datum.pop('text'), datum.pop('label')
                 meta = FileParser.encode_metadata(datum)
-                j = {'text': text, 'labels': [label], 'meta': meta}
+                if label != '':
+                    j = {'text': text, 'labels': [label], 'meta': meta}
+                else:
+                    j = {'text': text, 'meta': meta}
                 data.append(j)
             else:
                 raise FileParseException(line_num=i, line=row)
