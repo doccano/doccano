@@ -391,37 +391,24 @@ class ExcelParser(FileParser):
             # Text, labels and metadata columns
             elif len(row) == len(columns) and len(row) >= 2:
                 datum = dict(zip(columns, row))
-                annotation_approver = user = id_ = user_name = label_name = None
-                skip = False
                 #Check for optional import columns
-                if 'annotation_approver' in datum:
-                    annotation_approver = datum.pop('annotation_approver')
-                if 'user' in datum:
-                    user = datum.pop('user')
-                if 'label_name' in datum:
-                    label_name = datum.pop('label_name')
-                if 'user_name' in datum:
-                    user_name = datum.pop('user_name')
-                if 'id' in datum:
-                    id_ = datum.pop('id')
-                    if id_ == previous_id:
+                label_name = datum.pop('label_name',None)
+                user = datum.pop('user',None)
+                datum.pop('user_name',None)
+                annotation_approver = datum.pop('annotation_approver',None)
+                label = datum.pop('label',None)
+                text = datum.pop('text')
+                id_ = datum.pop('id',None)
+                if id_ == previous_id and id_ is not None:
+                    if data:
+                        #Fix me
                         j = data[-1]
                         j['labels'].append(label_name)
-                        skip = True
-                    previous_id = id_
-                if 'label' in datum:
-                    label = datum.pop('label')
-
-                text = datum.pop('text')
-
-
+                        continue
+                previous_id = id_
                 meta = FileParser.encode_metadata(datum)
-                if not skip:
-                    if label_name is None:
-                        j = {'text': text, 'labels': [label], 'meta': meta, 'user': user, 'annotation_approver': annotation_approver, 'id': id_}
-                    else:
-                        j = {'text': text, 'labels': [label_name], 'meta': meta, 'user': user, 'annotation_approver': annotation_approver, 'id': id_}
-                    data.append(j)
+                j = {'text': text, 'labels': [label_name or label], 'meta': meta, 'user': user, 'annotation_approver': annotation_approver, 'id': id_}
+                data.append(j)
             else:
                 raise FileParseException(line_num=i, line=row)
 
