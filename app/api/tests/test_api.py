@@ -1212,11 +1212,11 @@ class TestUploader(APITestCase):
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
-    def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
+    def test_can_upload_csv_file_does_not_match_column_and_row(self):
         self.upload_test_helper(project_id=self.classification_project.id,
-                                filename='example.invalid.1.csv',
+                                filename='example_column_and_row_not_matching.csv',
                                 file_format='csv',
-                                expected_status=status.HTTP_400_BAD_REQUEST)
+                                expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_csv_file_has_too_many_columns(self):
         self.upload_test_helper(project_id=self.classification_project.id,
@@ -1242,11 +1242,11 @@ class TestUploader(APITestCase):
                                 file_format='excel',
                                 expected_status=status.HTTP_201_CREATED)
 
-    def test_cannot_upload_excel_file_does_not_match_column_and_row(self):
+    def test_can_upload_excel_file_does_not_match_column_and_row(self):
         self.upload_test_helper(project_id=self.classification_project.id,
-                                filename='example.invalid.1.xlsx',
+                                filename='example_column_and_row_not_matching.xlsx',
                                 file_format='excel',
-                                expected_status=status.HTTP_400_BAD_REQUEST)
+                                expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_excel_file_has_too_many_columns(self):
         self.upload_test_helper(project_id=self.classification_project.id,
@@ -1419,10 +1419,10 @@ class TestParser(APITestCase):
                                parser=CoNLLParser())
 
     def test_give_classification_data_to_csv_parser(self):
-        self.parser_helper(filename='example.csv', parser=CSVParser())
+        self.parser_helper(filename='example.csv', parser=CSVParser(), include_label=False)
 
     def test_give_seq2seq_data_to_csv_parser(self):
-        self.parser_helper(filename='example.csv', parser=CSVParser())
+        self.parser_helper(filename='example.csv', parser=CSVParser(), include_label=False)
 
     def test_give_classification_data_to_json_parser(self):
         self.parser_helper(filename='classification.jsonl', parser=JSONParser())
