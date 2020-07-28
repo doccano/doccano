@@ -35,7 +35,8 @@ requests==2.21.0
 six==1.11.0
 seqeval==0.0.6
 social-auth-app-django==4.0.0
-social-auth-core[azuread,openidconnect]==3.3.3text-unidecode==1.2
+social-auth-core[azuread,openidconnect]==3.3.3
+text-unidecode==1.2
 unittest-xml-reporting==2.5.1
 vcrpy==2.0.1
 vcrpy-unittest==0.1.7
