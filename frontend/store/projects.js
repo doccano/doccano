@@ -8,8 +8,9 @@ export const state = () => ({
 })
 
 export const getters = {
-  isProjectSelected(state) {
-    return state.selected.length > 0
+  isDeletable(state) {
+    const isProjectAdministrator = project => project.current_users_role.is_project_admin
+    return state.selected.length > 0 && state.selected.every(isProjectAdministrator)
   },
   currentProject(state) {
     return state.current
