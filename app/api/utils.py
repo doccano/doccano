@@ -401,7 +401,7 @@ class ExcelParser(FileParser):
                 id_ = datum.pop('id', None)
                 if id_ == previous_id and id_ is not None:
                     if data:
-                        #Fix me
+                        #This CAN fail when the dataset is longer than the batch limit
                         j = data[-1]
                         j['labels'].append(label_name)
                         continue
