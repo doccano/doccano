@@ -392,13 +392,13 @@ class ExcelParser(FileParser):
             elif len(row) == len(columns) and len(row) >= 2:
                 datum = dict(zip(columns, row))
                 #Check for optional import columns
-                label_name = datum.pop('label_name',None)
-                user = datum.pop('user',None)
-                datum.pop('user_name',None)
-                annotation_approver = datum.pop('annotation_approver',None)
-                label = datum.pop('label',None)
+                label_name = datum.pop('label_name', None)
+                user = datum.pop('user', None)
+                datum.pop('user_name', None)
+                annotation_approver = datum.pop('annotation_approver', None)
+                label = datum.pop('label', None)
                 text = datum.pop('text')
-                id_ = datum.pop('id',None)
+                id_ = datum.pop('id', None)
                 if id_ == previous_id and id_ is not None:
                     if data:
                         #Fix me
@@ -406,6 +406,12 @@ class ExcelParser(FileParser):
                         j['labels'].append(label_name)
                         continue
                 previous_id = id_
+
+                for remainingKeys in datum:
+                    previousKey = remainingKeys
+                    newKey = remainingKeys.replace('meta.','')
+                    datum[newKey] = datum.pop(previousKey)
+
                 meta = FileParser.encode_metadata(datum)
                 j = {'text': text, 'labels': [label_name or label], 'meta': meta, 'user': user, 'annotation_approver': annotation_approver, 'id': id_}
                 data.append(j)
