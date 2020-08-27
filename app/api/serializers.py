@@ -177,7 +177,7 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DocumentAnnotation
-        fields = ('id', 'prob', 'label', 'user', 'document')
+        fields = ('id', 'prob', 'label', 'user', 'document', 'created_at', 'updated_at')
         read_only_fields = ('user', )
 
 
@@ -188,7 +188,7 @@ class SequenceAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SequenceAnnotation
-        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user', 'document')
+        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user', 'document', 'created_at', 'updated_at')
         read_only_fields = ('user',)
 
 
@@ -197,7 +197,7 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seq2seqAnnotation
-        fields = ('id', 'text', 'user', 'document', 'prob')
+        fields = ('id', 'text', 'user', 'document', 'prob', 'created_at', 'updated_at')
         read_only_fields = ('user',)
 
 
@@ -206,7 +206,7 @@ class Speech2textAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Speech2textAnnotation
-        fields = ('id', 'prob', 'text', 'user', 'document')
+        fields = ('id', 'prob', 'text', 'user', 'document', 'created_at', 'updated_at')
         read_only_fields = ('user',)
 
 
