@@ -407,10 +407,11 @@ class ExcelParser(FileParser):
                         continue
                 previous_id = id_
 
-                for remainingKeys in datum:
-                    previousKey = remainingKeys
-                    newKey = remainingKeys.replace('meta.','')
-                    datum[newKey] = datum.pop(previousKey)
+                for keys in datum:
+                    previous_key = keys
+                    if 'meta.' in keys:
+                        keys = keys.replace('meta.', '')
+                        datum[keys] = datum.pop(previous_key)
 
                 meta = FileParser.encode_metadata(datum)
                 j = {'text': text, 'labels': [label_name or label], 'meta': meta, 'user': user, 'annotation_approver': annotation_approver, 'id': id_}
@@ -423,7 +424,6 @@ class ExcelParser(FileParser):
 
 
 class JSONParser(FileParser):
-
     def parse(self, file):
         file = EncodedIO(file)
         file = io.TextIOWrapper(file, encoding=file.encoding)
@@ -476,7 +476,8 @@ class JSONLRenderer(JSONRenderer):
 
 class JSONPainter(object):
 
-    def paint(self, project):
+    @classmethod
+    def paint(cls, project):
         documents = project.documents.all()
         labels = project.labels.all()
         users = project.users.all()
