@@ -13,6 +13,7 @@ import 'tui-editor/dist/tui-editor-contents.css'
 import 'codemirror/lib/codemirror.css'
 import { Editor } from '@toast-ui/vue-editor'
 import { mapState, mapActions } from 'vuex'
+import '@/assets/style/editor.css'
 
 export default {
   layout: 'project',
