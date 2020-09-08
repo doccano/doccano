@@ -22,6 +22,7 @@
     "codemirror": "^5.55.0",
     "js-cookie": "^2.2.1",
     "nuxt": "^2.11.0",
+    "nuxt-i18n": "^6.13.12",
     "papaparse": "^5.2.0",
     "tui-editor": "^1.4.10",
     "vue-chartjs": "^3.5.0",
