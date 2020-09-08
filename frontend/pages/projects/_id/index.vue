@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Welcome to doccano!
+      {{ $t('home.welcome') }}
     </v-card-title>
     <v-stepper
       v-model="e6"

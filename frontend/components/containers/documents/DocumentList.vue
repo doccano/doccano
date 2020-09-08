@@ -137,7 +137,7 @@ export default {
       const offset = (this.options.page - 1) * this.options.itemsPerPage
       const page = offset + index + 1
       this.$router.push({
-        path: `/projects/${this.$route.params.id}/${this.getLink}`,
+        path: this.localePath(`/projects/${this.$route.params.id}/${this.getLink}`),
         query: {
           page,
           q: this.search

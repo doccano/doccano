@@ -29,6 +29,33 @@
     </v-btn>
     <div class="flex-grow-1" />
     <the-color-mode-switcher />
+    <v-menu
+      open-on-hover
+      offset-y
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn
+          text
+          v-on="on"
+        >
+          {{ $i18n.locale }}
+          <v-icon>mdi-menu-down</v-icon>
+        </v-btn>
+      </template>
+      <v-list
+        v-for="locale in $i18n.locales"
+        :key="locale.code"
+      >
+        <v-list-item>
+          <nuxt-link
+            style="text-decoration: none; color: inherit;"
+            :to="switchLocalePath(locale.code)"
+          >
+            {{ locale.name }}
+          </nuxt-link>
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <v-btn
       v-if="isAuthenticated"
       text
