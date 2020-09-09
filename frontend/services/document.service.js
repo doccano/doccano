@@ -17,6 +17,10 @@ class DocumentService {
     return this.request.delete(`/projects/${projectId}/docs/${docId}`)
   }
 
+  deleteAllDocuments(projectId) {
+    return this.request.delete(`/projects/${projectId}/docs`)
+  }
+
   updateDocument(projectId, docId, payload) {
     return this.request.patch(`/projects/${projectId}/docs/${docId}`, payload)
   }

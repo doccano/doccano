@@ -29,6 +29,9 @@ export const getters = {
   },
   currentDoc(state) {
     return state.items[state.current]
+  },
+  hasDocuments(state) {
+    return state.items.length > 0
   }
 }
 
@@ -44,6 +47,10 @@ export const mutations = {
   },
   deleteDocument(state, documentId) {
     state.items = state.items.filter(item => item.id !== documentId)
+  },
+  deleteAllDocuments(state, projectId) {
+    state.items = []
+    state.total = 0
   },
   updateSelected(state, selected) {
     state.selected = selected
@@ -157,6 +164,15 @@ export const actions = {
         })
     }
     commit('resetSelected')
+  },
+  deleteAllDocuments({ commit, state }, projectId) {
+    DocumentService.deleteAllDocuments(projectId)
+      .then((response) => {
+        commit('deleteAllDocuments')
+      })
+      .catch((error) => {
+        alert(error)
+      })
   },
   addAnnotation({ commit, state }, payload) {
     const documentId = state.items[state.current].id
