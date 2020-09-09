@@ -181,6 +181,12 @@ class DocumentList(generics.ListCreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
 
+    def delete(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        queryset = project.documents
+        queryset.all().delete()
+        return Response('deleted')
+
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Document.objects.all()
