@@ -25,6 +25,9 @@ Parameters:
       - t2.medium
       - t2.large
     ConstraintDescription: must be a valid EC2 instance type.
+  LatestAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -119,7 +122,7 @@ Resources:
           - 0
           - Fn::GetAZs: { Ref: "AWS::Region" }
       KeyName: !Ref KeyName
-      ImageId: ami-0873b46c45c11058d
+      ImageId: !Ref LatestAmiId
       InstanceType: !Ref InstanceType
       Monitoring: true
       SecurityGroupIds:
