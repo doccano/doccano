@@ -1,6 +1,7 @@
 export default {
   mainTitle: 'Annotation de texte pour les humains',
   getStarted: 'Démarrer',
+  startAnnotation: 'Commencer Annotation',
   featuresTitle: 'Les meilleures caractéristiques',
   featuresTitle1: 'Collaboration des équipes',
   featuresText1: 'Annotation avec vos coéquipiers',

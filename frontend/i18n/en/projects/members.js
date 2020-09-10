@@ -1,6 +1,7 @@
 export default {
   members: 'Members',
   role: 'Role',
+  updateRole: 'Update Role',
   addMember: 'Add Member',
   userSearchAPIs: 'User Search APIs',
   userSearchPrompt: 'Start typing to search',

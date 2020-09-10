@@ -13,5 +13,6 @@ export default {
   export: 'Export',
   signOut: 'Sign Out',
   description: 'Description',
-  type: 'Type'
+  type: 'Type',
+  loading: 'Loading... Please wait'
 }

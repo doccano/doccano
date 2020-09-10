@@ -1,6 +1,7 @@
 export default {
   members: 'Membres',
   role: 'Rôle',
+  updateRole: 'Mettre à jour le rôle',
   addMember: 'Ajouter un membre',
   userSearchAPIs: 'Rechercher des utilisateurs (avec l\'IPA)',
   userSearchPrompt: 'Commencez à taper pour rechercher',

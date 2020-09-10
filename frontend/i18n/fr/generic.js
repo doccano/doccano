@@ -13,5 +13,6 @@ export default {
   export: 'Exporter',
   signOut: 'Déconnexion',
   description: 'Description',
-  type: 'Type'
+  type: 'Type',
+  loading: 'Chargement... veuillez patienter'
 }
