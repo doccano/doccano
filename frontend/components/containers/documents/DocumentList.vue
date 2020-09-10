@@ -8,6 +8,7 @@
     :search="search"
     :loading="loading"
     :footer-props="{
+      'showFirstLastPage': true,
       'items-per-page-options': [10, 50, 100]
     }"
     item-key="id"
