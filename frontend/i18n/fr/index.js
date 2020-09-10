@@ -1,5 +1,7 @@
 import home from './home'
+import toastui from './toastui'
 
 export default {
-  home
+  home,
+  toastui
 }
