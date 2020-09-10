@@ -15,7 +15,7 @@
         <v-text-field
           v-model="newPage"
           :rules="rules"
-          label="Edit"
+          :label="$t('generic.edit')"
           single-line
           counter
           autofocus

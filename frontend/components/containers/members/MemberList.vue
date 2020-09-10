@@ -44,7 +44,7 @@
             :rules="roleRules($t('rules.roleRules'))"
             item-text="name"
             item-value="id"
-            label="Role"
+            :label="$t('members.role')"
             return-object
             @input="setNewRole"
           />

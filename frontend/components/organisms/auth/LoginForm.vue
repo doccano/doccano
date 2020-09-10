@@ -21,7 +21,7 @@
         <v-text-field
           v-model="username"
           :rules="userNameRules($t('rules.userNameRules'))"
-          label="Username"
+          :label="$t('user.username')"
           name="username"
           prepend-icon="person"
           type="text"
@@ -32,7 +32,7 @@
           id="password"
           v-model="password"
           :rules="passwordRules($t('rules.passwordRules'))"
-          label="Password"
+          :label="$t('user.password')"
           name="password"
           prepend-icon="lock"
           type="password"

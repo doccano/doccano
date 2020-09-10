@@ -1,9 +1,9 @@
 <template>
   <base-card
     :disabled="!valid"
-    title="Add Project"
-    agree-text="Create"
-    cancel-text="Cancel"
+    :title="$t('overview.createProjectTitle')"
+    :agree-text="$t('overview.create')"
+    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
   >
@@ -15,7 +15,7 @@
         <v-text-field
           v-model="name"
           :rules="projectNameRules($t('rules.projectNameRules'))"
-          label="Project name"
+          :label="$t('overview.projectName')"
           prepend-icon="mdi-account-multiple"
           data-test="project-name"
           required
@@ -24,7 +24,7 @@
         <v-text-field
           v-model="description"
           :rules="descriptionRules($t('rules.descriptionRules'))"
-          label="Description"
+          :label="$t('generic.description')"
           prepend-icon="mdi-clipboard-text"
           data-test="project-description"
           required
@@ -33,18 +33,18 @@
           v-model="projectType"
           :items="projectTypes"
           :rules="projectTypeRules($t('rules.projectTypeRules'))"
-          label="projectType"
+          :label="$t('overview.projectType')"
           prepend-icon="mdi-keyboard"
           data-test="project-type"
           required
         />
         <v-checkbox
           v-model="enableRandomizeDocOrder"
-          label="Randomize document order"
+          :label="$t('overview.randomizeDocOrder')"
         />
         <v-checkbox
           v-model="enableShareAnnotation"
-          label="Share annotations across all users"
+          :label="$t('overview.shareAnnotations')"
         />
       </v-form>
     </template>
@@ -122,7 +122,7 @@ export default {
           name: this.name,
           description: this.description,
           project_type: this.getServerType(),
-          guideline: 'Please write annotation guideline.',
+          guideline: this.$t('guideline.writeGuidelinePrompt'),
           resourcetype: this.getResourceType(),
           randomize_document_order: this.enableRandomizeDocOrder,
           collaborative_annotation: this.enableShareAnnotation

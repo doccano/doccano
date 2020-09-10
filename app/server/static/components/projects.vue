@@ -228,7 +228,7 @@ export default {
         single_class_classification: this.singleClassClassification,
         randomize_document_order: this.randomizeDocumentOrder,
         collaborative_annotation: this.collaborativeAnnotation,
-        guideline: 'Please write annotation guideline.',
+        guideline: this.$t('guideline.writeGuidelinePrompt'),
         resourcetype: this.resourceType(),
       };
       defaultHttpClient.post('/v1/projects', payload)

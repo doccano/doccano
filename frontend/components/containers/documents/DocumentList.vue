@@ -35,7 +35,7 @@
         <template v-slot:input>
           <v-textarea
             :value="item.text"
-            label="Edit"
+            :label="$t('generic.edit')"
             autofocus
             @change="handleUpdateDocument({ id: item.id, text: $event })"
           />

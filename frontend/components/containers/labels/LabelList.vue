@@ -19,7 +19,7 @@
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
@@ -32,7 +32,7 @@
           <v-text-field
             :value="item.text"
             :rules="labelNameRules($t('rules.labelNameRules'))"
-            label="Edit"
+            :label="$t('generic.edit')"
             single-line
             @change="handleUpdateLabel({ id: item.id, text: $event })"
           />
@@ -46,7 +46,7 @@
           <v-select
             :value="item.suffix_key"
             :items="shortkeys"
-            label="Key"
+            :label="$t('annotation.key')"
             @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
           />
         </template>

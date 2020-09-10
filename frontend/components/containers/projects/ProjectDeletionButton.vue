@@ -2,8 +2,10 @@
   <confirm-dialog
     :disabled="!isDeletable"
     :items="selected"
-    title="Delete Project"
-    message="Are you sure you want to delete these projects?"
+    :title="$t('overview.deleteProjectTitle')"
+    :message="$t('overview.deleteProjectMessage')"
+    :buttonTrueText="$t('generic.yes')"
+    :buttonFalseText="$t('generic.cancel')"
     item-key="name"
     @ok="handleDeleteProject"
   />

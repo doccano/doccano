@@ -34,7 +34,7 @@ export default {
   props: {
     text: {
       type: String,
-      default: this.$t('generic.actions')
+      default: 'Actions'
     },
     items: {
       type: Array,
