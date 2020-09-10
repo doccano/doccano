@@ -9,7 +9,8 @@
     :loading="loading"
     :footer-props="{
       'showFirstLastPage': true,
-      'items-per-page-options': [10, 50, 100]
+      'items-per-page-options': [10, 50, 100],
+      'items-per-page-text': $t('vuetify.itemsPerPageText')
     }"
     item-key="id"
     loading-text="Loading... Please wait"

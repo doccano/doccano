@@ -1,6 +1,7 @@
 import home from './home'
 import header from './header'
 import generic from './generic'
+import vuetify from './vuetify'
 import annotation from './projects/annotation'
 import dataset from './projects/dataset'
 import errors from './projects/errors'
@@ -15,6 +16,7 @@ export default {
   home,
   header,
   generic,
+  vuetify,
   annotation,
   dataset,
   errors,
