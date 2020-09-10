@@ -1,9 +1,9 @@
 <template>
   <base-card
     :disabled="!valid"
-    title="Upload Label"
-    agree-text="Upload"
-    cancel-text="Cancel"
+    :title="$t('labels.importTitle')"
+    :agree-text="$t('generic.upload')"
+    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
   >
@@ -18,10 +18,9 @@
           type="error"
           dismissible
         >
-          The file could not be uploaded. Maybe invalid format.
-          Please check available formats carefully.
+          {{ $t('errors.fileCannotUpload') }}
         </v-alert>
-        <h2>Example format</h2>
+        <h2>{{ $t('labels.importMessage1') }}</h2>
         <v-sheet
           v-if="exampleFormat"
           :dark="!$vuetify.theme.dark"
@@ -30,12 +29,12 @@
         >
           <pre>{{ exampleFormat }}</pre>
         </v-sheet>
-        <h2>Select a file</h2>
+        <h2>{{ $t('labels.importMessage2') }}</h2>
         <v-file-input
           v-model="file"
-          :rules="uploadFileRules"
+          :rules="uploadFileRules($t('rules.uploadFileRules'))"
           accept=".json"
-          label="File input"
+          :label="$t('labels.filePlaceholder')"
         />
       </v-form>
     </template>

@@ -41,7 +41,7 @@
           <v-select
             :value="getRole(item)"
             :items="roles"
-            :rules="roleRules"
+            :rules="roleRules($t('rules.roleRules'))"
             item-text="name"
             item-value="id"
             label="Role"

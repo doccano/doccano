@@ -31,7 +31,7 @@
         <template v-slot:input>
           <v-text-field
             :value="item.text"
-            :rules="labelNameRules"
+            :rules="labelNameRules($t('rules.labelNameRules'))"
             label="Edit"
             single-line
             @change="handleUpdateLabel({ id: item.id, text: $event })"
@@ -64,7 +64,7 @@
         <template v-slot:input>
           <v-color-picker
             :value="item.background_color"
-            :rules="colorRules"
+            :rules="colorRules($t('rules.colorRules'))"
             show-swatches
             hide-mode-switch
             width="800"

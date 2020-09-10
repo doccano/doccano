@@ -15,7 +15,7 @@
         <h2>Select a file format</h2>
         <v-radio-group
           v-model="selectedFormat"
-          :rules="fileFormatRules"
+          :rules="fileFormatRules($t('rules.fileFormatRules'))"
         >
           <v-radio
             v-for="(format, i) in formats"

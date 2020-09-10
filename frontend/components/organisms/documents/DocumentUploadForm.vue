@@ -18,13 +18,12 @@
           type="error"
           dismissible
         >
-          The file could not be uploaded. Maybe invalid format.
-          Please check available formats carefully.
+          {{ $t('errors.fileCannotUpload') }}
         </v-alert>
         <h2>Select a file format</h2>
         <v-radio-group
           v-model="selectedFormat"
-          :rules="fileFormatRules"
+          :rules="fileFormatRules($t('rules.fileFormatRules'))"
         >
           <v-radio
             v-for="(format, i) in formats"
@@ -47,8 +46,8 @@
         <v-file-input
           v-model="file"
           :accept="acceptType"
-          :rules="uploadFileRules"
-          label="File input"
+          :rules="uploadFileRules($t('rules.uploadFileRules'))"
+          :label="$t('labels.filePlaceholder')"
         />
       </v-form>
     </template>

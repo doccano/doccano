@@ -20,7 +20,7 @@
         </v-alert>
         <v-text-field
           v-model="username"
-          :rules="userNameRules"
+          :rules="userNameRules($t('rules.userNameRules'))"
           label="Username"
           name="username"
           prepend-icon="person"
@@ -31,7 +31,7 @@
         <v-text-field
           id="password"
           v-model="password"
-          :rules="passwordRules"
+          :rules="passwordRules($t('rules.passwordRules'))"
           label="Password"
           name="password"
           prepend-icon="lock"

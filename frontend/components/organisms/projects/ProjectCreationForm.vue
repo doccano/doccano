@@ -14,7 +14,7 @@
       >
         <v-text-field
           v-model="name"
-          :rules="projectNameRules"
+          :rules="projectNameRules($t('rules.projectNameRules'))"
           label="Project name"
           prepend-icon="mdi-account-multiple"
           data-test="project-name"
@@ -23,7 +23,7 @@
         />
         <v-text-field
           v-model="description"
-          :rules="descriptionRules"
+          :rules="descriptionRules($t('rules.descriptionRules'))"
           label="Description"
           prepend-icon="mdi-clipboard-text"
           data-test="project-description"
@@ -32,7 +32,7 @@
         <v-select
           v-model="projectType"
           :items="projectTypes"
-          :rules="projectTypeRules"
+          :rules="projectTypeRules($t('rules.projectTypeRules'))"
           label="projectType"
           prepend-icon="mdi-keyboard"
           data-test="project-type"
