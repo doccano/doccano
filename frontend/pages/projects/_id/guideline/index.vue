@@ -18,6 +18,9 @@ import '@/assets/style/editor.css'
 
 export default {
   layout: 'project',
+  components: {
+    Editor
+  },
   data() {
     return {
       editorOptions: {
@@ -25,10 +28,6 @@ export default {
       }
     }
   },
-  components: {
-    Editor
-  },
-
   validate({ params }) {
     return /^\d+$/.test(params.id)
   },
