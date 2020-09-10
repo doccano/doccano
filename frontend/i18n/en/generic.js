@@ -11,5 +11,7 @@ export default {
   name: 'Name',
   import: 'Import',
   export: 'Export',
-  signOut: 'Sign Out'
+  signOut: 'Sign Out',
+  description: 'Description',
+  type: 'Type'
 }

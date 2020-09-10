@@ -2,7 +2,6 @@ export default {
   create: 'Create',
   createProjectTitle: 'Add Project',
   projectName: 'Project name',
-  projectDescription: 'Description',
   projectType: 'Project type',
   textClassification: 'Text Classification',
   sequenceLabeling: 'Sequence Labeling',
@@ -12,8 +11,5 @@ export default {
   delete: 'Delete',
   deleteProjectTitle: 'Delete Project',
   deleteProjectMessage: 'Are you sure you want to delete these projects?',
-  search: 'Search',
-  name: 'Name',
-  description: 'Description',
-  type: 'Type'
+  search: 'Search'
 }
