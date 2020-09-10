@@ -8,7 +8,7 @@
       <v-icon left>
         mdi-play-circle-outline
       </v-icon>
-      Start annotation
+      {{ $t('home.startAnnotation') }}
     </v-btn>
     <v-list-item-group
       v-model="selected"
@@ -55,12 +55,12 @@ export default {
     return {
       selected: 0,
       items: [
-        { icon: 'mdi-home', text: 'Home', link: '', adminOnly: false },
-        { icon: 'mdi-database', text: 'Dataset', link: 'dataset', adminOnly: true },
-        { icon: 'label', text: 'Labels', link: 'labels', adminOnly: true },
-        { icon: 'person', text: 'Members', link: 'members', adminOnly: true },
-        { icon: 'mdi-book-open-outline', text: 'Guideline', link: 'guideline', adminOnly: true },
-        { icon: 'mdi-chart-bar', text: 'Statistics', link: 'statistics', adminOnly: true }
+        { icon: 'mdi-home', text: this.$t('projectHome.home'), link: '', adminOnly: false },
+        { icon: 'mdi-database', text: this.$t('dataset.dataset'), link: 'dataset', adminOnly: true },
+        { icon: 'label', text: this.$t('labels.labels'), link: 'labels', adminOnly: true },
+        { icon: 'person', text: this.$t('members.members'), link: 'members', adminOnly: true },
+        { icon: 'mdi-book-open-outline', text: this.$t('guideline.guideline'), link: 'guideline', adminOnly: true },
+        { icon: 'mdi-chart-bar', text: this.$t('statistics.statistics'), link: 'statistics', adminOnly: true }
       ]
     }
   },

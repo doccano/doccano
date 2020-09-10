@@ -6,7 +6,7 @@
       outlined
       @click="dialog=true"
     >
-      Delete
+      {{ $t('generic.delete') }}
     </v-btn>
     <v-dialog
       v-model="dialog"

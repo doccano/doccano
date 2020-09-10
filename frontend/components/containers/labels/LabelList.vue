@@ -5,7 +5,12 @@
     :items="items"
     :search="search"
     :loading="loading"
-    loading-text="Loading... Please wait"
+    :loading-text="$t('generic.loading')"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-text': $t('vuetify.itemsPerPageText')
+    }"
     item-key="id"
     show-select
     @input="updateSelected"
@@ -84,16 +89,16 @@ export default {
       search: '',
       headers: [
         {
-          text: 'Name',
+          text: this.$t('generic.name'),
           align: 'left',
           value: 'text'
         },
         {
-          text: 'Shortkey',
+          text: this.$t('labels.shortkey'),
           value: 'suffix_key'
         },
         {
-          text: 'Color',
+          text: this.$t('labels.color'),
           sortable: false,
           value: 'background_color'
         }

@@ -6,7 +6,7 @@
       outlined
       @click="dialog=true"
     >
-      Delete
+      {{ $t('generic.delete') }}
     </v-btn>
     <v-dialog
       v-model="dialog"
@@ -15,7 +15,7 @@
       <confirm-form
         :items="selected"
         title="Delete Label"
-        message="Are you sure you want to delete these labels from this project?"
+        :message="$t('labels.deleteMessage')"
         item-key="text"
         @ok="deleteLabel($route.params.id);dialog=false"
         @cancel="dialog=false"

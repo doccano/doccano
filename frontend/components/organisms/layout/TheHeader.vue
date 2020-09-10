@@ -61,7 +61,7 @@
       text
       @click="$router.push('/projects')"
     >
-      Projects
+      {{ $t('header.projects') }}
     </v-btn>
     <v-menu
       v-if="!isAuthenticated"
