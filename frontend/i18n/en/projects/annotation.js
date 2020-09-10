@@ -9,5 +9,6 @@ export default {
   guidelinePopupTitle: 'Annotation Guideline',
   metadataDefaultMessage: 'No data available',
   key: 'Key',
-  value: 'Value'
+  value: 'Value',
+  newText: 'New text'
 }

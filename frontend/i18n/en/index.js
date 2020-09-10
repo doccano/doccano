@@ -1,7 +1,9 @@
 import home from './home'
 import header from './header'
 import generic from './generic'
+import rules from './rules'
 import toastui from './toastui'
+import user from './user'
 import vuetify from './vuetify'
 import annotation from './projects/annotation'
 import dataset from './projects/dataset'
@@ -17,7 +19,9 @@ export default {
   home,
   header,
   generic,
+  rules,
   toastui,
+  user,
   vuetify,
   annotation,
   dataset,

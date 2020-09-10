@@ -1,7 +1,7 @@
 export default {
   createProjectTitle: 'Ajouter un projet',
   projectName: 'Nom du projet',
-  projectType: 'Project type',
+  projectType: 'Type de projet',
   textClassification: 'Classification des textes',
   sequenceLabeling: 'Étiquetage des séquences',
   sequenceToSequence: 'Séquence à séquence',

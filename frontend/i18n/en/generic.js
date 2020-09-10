@@ -2,6 +2,7 @@ export default {
   continue: 'Continue',
   yes: 'Yes',
   save: 'Save',
+  edit: 'Edit',
   create: 'Create',
   cancel: 'Cancel',
   upload: 'Upload',

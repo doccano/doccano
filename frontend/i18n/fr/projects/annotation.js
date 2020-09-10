@@ -9,5 +9,6 @@ export default {
   guidelinePopupTitle: 'Ligne directrice pour les annotations',
   metadataDefaultMessage: 'Aucune donnée disponible',
   key: 'Clé',
-  value: 'Valeur'
+  value: 'Valeur',
+  newText: 'Nouveau texte'
 }
