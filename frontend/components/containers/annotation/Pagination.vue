@@ -25,6 +25,25 @@
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-btn
+          v-shortkey.once="['shift', 'arrowleft']"
+          :disabled="value===1"
+          text
+          fab
+          small
+          v-on="on"
+          @shortkey="firstPage"
+          @click="firstPage"
+        >
+          <v-icon>mdi-page-first</v-icon>
+        </v-btn>
+      </template>
+      <span>
+        <v-icon>mdi-page-first</v-icon>
+      </span>
+    </v-tooltip>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn
           v-shortkey.once="['arrowleft']"
           :disabled="value===1"
           text
@@ -55,6 +74,25 @@
         </v-btn>
       </template>
       <span>→</span>
+    </v-tooltip>
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
+        <v-btn
+          v-shortkey.once="['shift', 'arrowright']"
+          :disabled="value===length || length===0"
+          text
+          fab
+          small
+          v-on="on"
+          @shortkey="lastPage"
+          @click="lastPage"
+        >
+          <v-icon>mdi-page-last</v-icon>
+        </v-btn>
+      </template>
+      <span>
+        <v-icon>mdi-page-last</v-icon>
+      </span>
     </v-tooltip>
   </div>
 </template>
@@ -108,6 +146,12 @@ export default {
     nextPage() {
       const page = Math.min(this.value + 1, this.length)
       this.$emit('input', page)
+    },
+    firstPage() {
+      this.$emit('input', 1)
+    },
+    lastPage() {
+      this.$emit('input', this.length)
     }
   }
 }
