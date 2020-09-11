@@ -14,8 +14,10 @@
     >
       <confirm-form
         :items="selected"
-        title="Delete Document"
-        message="Are you sure you want to delete these documents from this project?"
+        :title="$t('dataset.deleteDocumentsTitle')"
+        :message="$t('dataset.deleteDocumentsMessage')"
+        :buttonTrueText="$t('generic.yes')"
+        :buttonFalseText="$t('generic.cancel')"
         item-key="text"
         @ok="deleteDocument($route.params.id);dialog=false"
         @cancel="dialog=false"

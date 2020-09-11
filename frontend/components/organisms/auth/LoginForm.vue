@@ -1,8 +1,8 @@
 <template>
   <base-card
     :disabled="!valid"
-    title="Login"
-    agree-text="Login"
+    :title="$t('user.login')"
+    :agree-text="$t('user.login')"
     @agree="tryLogin"
   >
     <template #content>
@@ -80,7 +80,7 @@ export default {
           password: this.password
         })
           .then((result) => {
-            this.$router.push('/projects')
+            this.$router.push(this.localePath('/projects'))
           })
           .catch(() => {
             this.showError = true

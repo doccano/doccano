@@ -2,6 +2,7 @@
   <div>
     <action-menu
       :items="menuItems"
+      :text="$t('dataset.actions')"
       @upload="importDialog=true"
       @download="exportDialog=true"
     />

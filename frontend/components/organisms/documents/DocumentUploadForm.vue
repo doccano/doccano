@@ -1,9 +1,9 @@
 <template>
   <base-card
     :disabled="!valid"
-    title="Upload Data"
-    agree-text="Upload"
-    cancel-text="Cancel"
+    :title="$t('dataset.importDataTitle')"
+    :agree-text="$t('generic.upload')"
+    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
   >
@@ -20,7 +20,7 @@
         >
           {{ $t('errors.fileCannotUpload') }}
         </v-alert>
-        <h2>Select a file format</h2>
+        <h2>{{ $t('dataset.importDataMessage1') }}</h2>
         <v-radio-group
           v-model="selectedFormat"
           :rules="fileFormatRules($t('rules.fileFormatRules'))"
@@ -42,7 +42,7 @@
             {{ example }}<br>
           </span>
         </v-sheet>
-        <h2>Select a file</h2>
+        <h2>{{ $t('dataset.importDataMessage2') }}</h2>
         <v-file-input
           v-model="file"
           :accept="acceptType"

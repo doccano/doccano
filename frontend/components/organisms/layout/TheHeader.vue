@@ -59,7 +59,7 @@
     <v-btn
       v-if="isAuthenticated"
       text
-      @click="$router.push('/projects')"
+      @click="$router.push(localePath('/projects'))"
     >
       {{ $t('header.projects') }}
     </v-btn>
@@ -90,7 +90,7 @@
     <v-btn
       v-if="!isAuthenticated"
       outlined
-      @click="$router.push('/auth')"
+      @click="$router.push(localePath('/auth'))"
     >
       Sign in
     </v-btn>
@@ -111,7 +111,7 @@
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>
-              Sign out
+              {{ $t('user.signOut') }}
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>

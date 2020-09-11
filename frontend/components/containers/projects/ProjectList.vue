@@ -25,7 +25,7 @@
       />
     </template>
     <template v-slot:item.name="{ item }">
-      <nuxt-link :to="`/projects/${item.id}`">
+      <nuxt-link :to="localePath(`/projects/${item.id}`)">
         <span>{{ item.name }}</span>
       </nuxt-link>
     </template>

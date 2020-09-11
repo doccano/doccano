@@ -17,7 +17,7 @@
       <v-list-item
         v-for="(item, i) in filteredItems"
         :key="i"
-        @click="$router.push(`/projects/${$route.params.id}/${item.link}`)"
+        @click="$router.push(localePath(`/projects/${$route.params.id}/${item.link}`))"
       >
         <v-list-item-action>
           <v-icon>
@@ -78,7 +78,7 @@ export default {
     },
     toLabeling() {
       this.$router.push({
-        path: `/projects/${this.$route.params.id}/${this.link}`,
+        path: this.localePath(`/projects/${this.$route.params.id}/${this.link}`),
         query: this.loadSearchOptions
       })
     }
