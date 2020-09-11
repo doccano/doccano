@@ -22,6 +22,6 @@ export default {
   detectBrowserLanguage: {
     useCookie: true,
     cookieKey: 'i18n_redirected',
-    onlyOnRoot: true,  // for SEO purposes
+    onlyOnRoot: true // for SEO purposes
   }
 }
