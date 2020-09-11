@@ -14,7 +14,7 @@
           </v-icon>
         </v-btn>
       </template>
-      <span>Show guideline</span>
+      <span>{{ $t('annotation.guidelineTooltip') }}</span>
     </v-tooltip>
     <v-dialog
       v-model="dialog"

@@ -73,7 +73,7 @@
           text
           v-on="on"
         >
-          Demo
+          {{ $t('home.demoDropDown') }}
           <v-icon>mdi-menu-down</v-icon>
         </v-btn>
       </template>
@@ -92,7 +92,7 @@
       outlined
       @click="$router.push(localePath('/auth'))"
     >
-      Sign in
+      {{ $t('user.login') }}
     </v-btn>
     <v-menu
       v-if="isAuthenticated"
@@ -132,10 +132,10 @@ export default {
   data() {
     return {
       items: [
-        { title: 'Named Entity Recognition', link: 'named-entity-recognition' },
-        { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
-        { title: 'Translation', link: 'translation' },
-        { title: 'Text to SQL', link: 'text-to-sql' }
+        { title: this.$t('home.demoNER'), link: 'named-entity-recognition' },
+        { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
+        { title: this.$t('home.demoTranslation'), link: 'translation' },
+        { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' }
       ]
     }
   },

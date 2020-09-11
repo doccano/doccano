@@ -4,8 +4,8 @@
     :items="selected"
     :title="$t('members.removeMember')"
     :message="$t('members.removePrompt')"
-    :buttonTrueText="$t('generic.yes')"
-    :buttonFalseText="$t('generic.cancel')"
+    :button-true-text="$t('generic.yes')"
+    :button-false-text="$t('generic.cancel')"
     item-key="username"
     @ok="handleRemoveMember()"
   />

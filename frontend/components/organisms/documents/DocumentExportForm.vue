@@ -12,7 +12,7 @@
         ref="form"
         v-model="valid"
       >
-        <h2>Select a file format</h2>
+        <h2>{{ $t('dataset.importDataMessage1') }}</h2>
         <v-radio-group
           v-model="selectedFormat"
           :rules="fileFormatRules($t('rules.fileFormatRules'))"

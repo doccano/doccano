@@ -18,8 +18,7 @@
           type="error"
           dismissible
         >
-          The label could not be created.
-          You cannot use same label name or shortcut key.
+          {{ $t('errors.labelCannotCreate') }}
         </v-alert>
         <v-text-field
           v-model="labelName"

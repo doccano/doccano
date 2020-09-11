@@ -4,8 +4,8 @@
     :items="selected"
     :title="$t('overview.deleteProjectTitle')"
     :message="$t('overview.deleteProjectMessage')"
-    :buttonTrueText="$t('generic.yes')"
-    :buttonFalseText="$t('generic.cancel')"
+    :button-true-text="$t('generic.yes')"
+    :button-false-text="$t('generic.cancel')"
     item-key="name"
     @ok="handleDeleteProject"
   />

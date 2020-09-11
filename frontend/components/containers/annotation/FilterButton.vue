@@ -14,7 +14,7 @@
             </v-icon>
           </v-btn>
         </template>
-        <span>Select a filter</span>
+        <span>{{ $t('annotation.selectFilterTooltip') }}</span>
       </v-tooltip>
     </template>
     <v-list>

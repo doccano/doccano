@@ -1,7 +1,7 @@
 <template>
   <base-modal
     :is-create="true"
-    text="Create"
+    :text="$t('generic.create')"
   >
     <template v-slot="slotProps">
       <project-creation-form
