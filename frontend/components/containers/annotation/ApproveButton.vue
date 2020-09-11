@@ -2,7 +2,7 @@
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
       <v-btn
-        v-shortkey.once="['a']"
+        v-shortkey.once="['enter']"
         :disabled="disabled"
         class="text-capitalize ps-1 pe-1"
         min-width="36"
