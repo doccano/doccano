@@ -1,7 +1,9 @@
 export default {
   statistics: 'Statistics',
-  completed: 'Completed',
-  incomplete: 'Incomplete',
+  progress: [
+    'Completed',
+    'Incomplete'
+  ],
   labelStats: 'Label stats',
   userStats: 'User stats'
 }

@@ -29,25 +29,27 @@ export const mutations = {
 
 export const getters = {
   progress(state) {
-    const complete = state.stats.total - state.stats.remaining
-    const incomplete = state.stats.remaining
-    return {
-      datasets: [{
-        data: [complete, incomplete],
-        backgroundColor: ['#00d1b2', '#ffdd57']
-      }],
-
-      labels: [
-        'Completed',
-        'Incomplete'
-      ]
+    return (labels) => {
+      const complete = state.stats.total - state.stats.remaining
+      const incomplete = state.stats.remaining
+      return {
+        datasets: [{
+          data: [complete, incomplete],
+          backgroundColor: ['#00d1b2', '#ffdd57']
+        }],
+        labels
+      }
     }
   },
   labelStats(state) {
-    return makeData(state.stats.label, 'Label stats')
+    return (label) => {
+      return makeData(state.stats.label, label)
+    }
   },
   userStats(state) {
-    return makeData(state.stats.user, 'User stats')
+    return (label) => {
+      return makeData(state.stats.user, label)
+    }
   }
 }
 
