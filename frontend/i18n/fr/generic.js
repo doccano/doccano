@@ -12,7 +12,6 @@ export default {
   name: 'Nom',
   import: 'Importer',
   export: 'Exporter',
-  signOut: 'Déconnexion',
   description: 'Description',
   type: 'Type',
   loading: 'Chargement... veuillez patienter'

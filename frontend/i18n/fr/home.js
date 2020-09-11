@@ -7,7 +7,7 @@ export default {
   featuresText1: 'Annotation avec vos coéquipiers',
   featuresTitle2: 'Toute langue',
   featuresText2: 'Annotation dans n\'importe quelle langue',
-  featuresTitle3: 'Open Source',
+  featuresTitle3: 'Source ouverte',
   featuresText3: 'Annotation gratuite et personnalisable',
   footerTitle: 'Réalisez vos idées rapidement',
   demoDropDown: 'Essayer la démo',

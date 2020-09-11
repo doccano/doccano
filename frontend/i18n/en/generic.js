@@ -12,7 +12,6 @@ export default {
   name: 'Name',
   import: 'Import',
   export: 'Export',
-  signOut: 'Sign Out',
   description: 'Description',
   type: 'Type',
   loading: 'Loading... Please wait'
