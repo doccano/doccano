@@ -53,8 +53,14 @@ export default {
 
   data() {
     return {
-      selected: 0,
-      items: [
+      selected: 0
+    }
+  },
+
+  computed: {
+    ...mapGetters('projects', ['loadSearchOptions']),
+    filteredItems() {
+      const items = [
         { icon: 'mdi-home', text: this.$t('projectHome.home'), link: '', adminOnly: false },
         { icon: 'mdi-database', text: this.$t('dataset.dataset'), link: 'dataset', adminOnly: true },
         { icon: 'label', text: this.$t('labels.labels'), link: 'labels', adminOnly: true },
@@ -62,13 +68,7 @@ export default {
         { icon: 'mdi-book-open-outline', text: this.$t('guideline.guideline'), link: 'guideline', adminOnly: true },
         { icon: 'mdi-chart-bar', text: this.$t('statistics.statistics'), link: 'statistics', adminOnly: true }
       ]
-    }
-  },
-
-  computed: {
-    ...mapGetters('projects', ['loadSearchOptions']),
-    filteredItems() {
-      return this.items.filter(item => this.isVisible(item))
+      return items.filter(item => this.isVisible(item))
     }
   },
 
