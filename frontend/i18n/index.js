@@ -18,5 +18,10 @@ export default {
   defaultLocale: 'en',
   vueI18n: {
     fallbackLocale: 'en'
+  },
+  detectBrowserLanguage: {
+    useCookie: true,
+    cookieKey: 'i18n_redirected',
+    onlyOnRoot: true,  // for SEO purposes
   }
 }
