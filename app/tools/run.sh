@@ -3,13 +3,14 @@
 set -o errexit
 
 echo "Making staticfiles"
-python manage.py collectstatic --noinput
+if [[ ! -d "staticfiles" ]]; then python manage.py collectstatic --noinput; fi
 
 echo "Initializing database"
 python manage.py wait_for_db
 python manage.py migrate
 python manage.py create_roles
 
+echo "Creating admin"
 if [[ -n "${ADMIN_USERNAME}" ]] && [[ -n "${ADMIN_PASSWORD}" ]] && [[ -n "${ADMIN_EMAIL}" ]]; then
   python manage.py create_admin \
     --username "${ADMIN_USERNAME}" \
@@ -20,4 +21,5 @@ if [[ -n "${ADMIN_USERNAME}" ]] && [[ -n "${ADMIN_PASSWORD}" ]] && [[ -n "${ADMI
 fi
 
 echo "Starting django"
-gunicorn --bind 0.0.0.0:8000 app.wsgi --timeout 300
+gunicorn --bind="0.0.0.0:${PORT:-8000}" --workers="${WORKERS:-1}" app.wsgi --timeout 300
+
