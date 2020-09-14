@@ -30,6 +30,8 @@
           <v-col>
             <approve-button
               v-if="canViewApproveButton"
+              v-model="page"
+              :length="total"
               :approved="approved"
               :disabled="currentDoc ? false : true"
             />
