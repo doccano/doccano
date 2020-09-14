@@ -9,7 +9,7 @@
       <v-flex xs12 sm4 class="my-3">
         <div class="text-xs-center">
           <h2 class="headline">
-            {{ $t('featuresTitle') }}
+            {{ $t('home.featuresTitle') }}
           </h2>
         </div>
       </v-flex>

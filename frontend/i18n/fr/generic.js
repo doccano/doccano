@@ -1,6 +1,7 @@
 export default {
   continue: 'Continuer',
   yes: 'Oui',
+  all: 'Tout',
   save: 'Enregistrer',
   edit: 'Éditer',
   create: 'Créer',
