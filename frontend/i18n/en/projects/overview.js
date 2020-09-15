@@ -1,5 +1,4 @@
 export default {
-  create: 'Create',
   createProjectTitle: 'Add Project',
   projectName: 'Project name',
   projectType: 'Project type',
@@ -11,5 +10,10 @@ export default {
   delete: 'Delete',
   deleteProjectTitle: 'Delete Project',
   deleteProjectMessage: 'Are you sure you want to delete these projects?',
-  search: 'Search'
+  search: 'Search',
+  projectTypes: [
+    'Text Classification',
+    'Sequence Labeling',
+    'Sequence to sequence'
+  ]
 }

@@ -2,7 +2,7 @@
   <base-card
     :disabled="!valid"
     :title="$t('overview.createProjectTitle')"
-    :agree-text="$t('overview.create')"
+    :agree-text="$t('generic.create')"
     :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
@@ -31,7 +31,7 @@
         />
         <v-select
           v-model="projectType"
-          :items="projectTypes"
+          :items="$t('overview.projectTypes')"
           :rules="projectTypeRules($t('rules.projectTypeRules'))"
           :label="$t('overview.projectType')"
           prepend-icon="mdi-keyboard"

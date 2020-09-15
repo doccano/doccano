@@ -9,7 +9,8 @@
     :footer-props="{
       'showFirstLastPage': true,
       'items-per-page-options': [5, 10, 15, $t('generic.all')],
-      'items-per-page-text': $t('vuetify.itemsPerPageText')
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
     }"
     item-key="id"
     show-select
@@ -42,16 +43,16 @@ export default {
       search: '',
       headers: [
         {
-          text: 'Name',
+          text: this.$t('generic.name'),
           align: 'left',
           value: 'name'
         },
         {
-          text: 'Description',
+          text: this.$t('generic.description'),
           value: 'description'
         },
         {
-          text: 'Type',
+          text: this.$t('generic.type'),
           value: 'project_type'
         }
       ]
