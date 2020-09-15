@@ -46,14 +46,12 @@
         v-for="locale in $i18n.locales"
         :key="locale.code"
       >
-        <v-list-item>
-          <nuxt-link
-            style="text-decoration: none; color: inherit;"
-            :to="switchLocalePath(locale.code)"
-          >
-            {{ locale.name }}
-          </nuxt-link>
-        </v-list-item>
+        <nuxt-link
+          class="v-list-item v-list-item--link theme--dark"
+          :to="switchLocalePath(locale.code)"
+        >
+          {{ locale.name }}
+        </nuxt-link>
       </v-list>
     </v-menu>
     <v-btn
