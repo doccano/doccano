@@ -64,14 +64,6 @@ export default {
       type: Function,
       default: () => {},
       required: true
-    },
-    projectTypes: {
-      type: Array,
-      default: () => [
-        'Text Classification',
-        'Sequence Labeling',
-        'Sequence to sequence'
-      ] // Todo: Get project types from backend server.
     }
   },
   data() {
@@ -93,20 +85,20 @@ export default {
       this.$emit('close')
     },
     getServerType() {
-      if (this.projectType === 'Text Classification') {
+      if (this.projectType === this.$t('overview.textClassification')) {
         return 'DocumentClassification'
-      } else if (this.projectType === 'Sequence Labeling') {
+      } else if (this.projectType === this.$t('overview.sequenceLabeling')) {
         return 'SequenceLabeling'
-      } else if (this.projectType === 'Sequence to sequence') {
+      } else if (this.projectType === this.$t('overview.sequenceToSequence')) {
         return 'Seq2seq'
       }
     },
     getResourceType() {
-      if (this.projectType === 'Text Classification') {
+      if (this.projectType === this.$t('overview.textClassification')) {
         return 'TextClassificationProject'
-      } else if (this.projectType === 'Sequence Labeling') {
+      } else if (this.projectType === this.$t('overview.sequenceLabeling')) {
         return 'SequenceLabelingProject'
-      } else if (this.projectType === 'Sequence to sequence') {
+      } else if (this.projectType === this.$t('overview.sequenceToSequence')) {
         return 'Seq2seqProject'
       }
     },
