@@ -29,31 +29,7 @@
     </v-btn>
     <div class="flex-grow-1" />
     <the-color-mode-switcher />
-    <v-menu
-      open-on-hover
-      offset-y
-    >
-      <template v-slot:activator="{ on }">
-        <v-btn
-          text
-          v-on="on"
-        >
-          {{ $i18n.locale }}
-          <v-icon>mdi-menu-down</v-icon>
-        </v-btn>
-      </template>
-      <v-list
-        v-for="locale in $i18n.locales"
-        :key="locale.code"
-      >
-        <nuxt-link
-          class="v-list-item v-list-item--link theme--dark"
-          :to="switchLocalePath(locale.code)"
-        >
-          {{ locale.name }}
-        </nuxt-link>
-      </v-list>
-    </v-menu>
+    <locale-menu />
     <v-btn
       v-if="isAuthenticated"
       text
@@ -121,10 +97,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import TheColorModeSwitcher from '@/components/organisms/layout/TheColorModeSwitcher'
+import LocaleMenu from '@/components/organisms/layout/LocaleMenu'
 
 export default {
   components: {
-    TheColorModeSwitcher
+    TheColorModeSwitcher,
+    LocaleMenu
   },
 
   data() {
