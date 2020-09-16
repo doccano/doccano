@@ -6,6 +6,7 @@ export default {
   edit: 'Edit',
   create: 'Create',
   cancel: 'Cancel',
+  close: 'Close',
   upload: 'Upload',
   add: 'Add',
   delete: 'Delete',

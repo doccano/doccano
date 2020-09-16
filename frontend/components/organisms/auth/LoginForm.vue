@@ -16,7 +16,7 @@
           type="error"
           dismissible
         >
-          Incorrect username or password or something went wrong.
+          {{ $t('errors.invalidUserOrPass') }}
         </v-alert>
         <v-text-field
           v-model="username"

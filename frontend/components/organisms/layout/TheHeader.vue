@@ -151,7 +151,7 @@ export default {
     ...mapActions('auth', ['logout']),
     signout() {
       this.logout()
-      this.$router.push('/')
+      this.$router.push(this.localePath('/'))
     }
   }
 }

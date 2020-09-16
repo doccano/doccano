@@ -1,7 +1,7 @@
 <template>
   <base-card
-    title="Annotation Guideline"
-    cancel-text="Close"
+    :title="$t('annotation.guidelinePopupTitle')"
+    :cancel-text="$t('generic.close')"
     @cancel="close"
   >
     <template #content>
