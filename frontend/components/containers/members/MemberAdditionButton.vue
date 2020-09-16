@@ -7,7 +7,7 @@
       <member-addition-form
         :add-member="addMember"
         :items="items"
-        :roles="roles"
+        :roles="getTranslatedRoles(roles, $t('members.roles'))"
         @close="slotProps.close"
         @search-user="searchUser"
       />
@@ -20,6 +20,7 @@ import { mapActions, mapGetters } from 'vuex'
 import BaseModal from '@/components/molecules/BaseModal'
 import MemberAdditionForm from '@/components/organisms/members/MemberAdditionForm'
 import UserService from '@/services/user.service'
+import { translatedRoles } from '~/plugins/utils'
 
 export default {
   components: {
@@ -53,6 +54,9 @@ export default {
         .catch((error) => {
           alert(error)
         })
+    },
+    getTranslatedRoles(roles, mappings) {
+      return translatedRoles(roles, mappings)
     }
   }
 }

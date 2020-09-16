@@ -30,7 +30,7 @@
           v-model="role"
           :items="roles"
           :rules="roleRules($t('rules.roleRules'))"
-          item-text="name"
+          item-text="translatedName"
           item-value="id"
           :label="$t('members.role')"
           return-object

@@ -9,7 +9,9 @@
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
       'showFirstLastPage': true,
-      'items-per-page-text': $t('vuetify.itemsPerPageText')
+      'items-per-page-options': [5, 10, 15, $t('generic.all')],
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
     }"
     item-key="id"
     show-select
@@ -31,7 +33,7 @@
         large
         @save="updateRole({ id: item.id })"
       >
-        <div>{{ item.rolename }}</div>
+        <div>{{ translateRole(item.rolename, $t('members.roles')) }}</div>
         <template v-slot:input>
           <div class="mt-4 title">
             {{ $t('members.updateRole') }}
@@ -57,6 +59,7 @@
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { roleRules } from '@/rules/index'
+import { translateRole } from '~/plugins/utils'
 
 export default {
   data() {
@@ -114,6 +117,10 @@ export default {
         id: payload.id,
         role: this.newRole.id
       })
+    },
+
+    translateRole(role, mappings) {
+      return translateRole(role, mappings)
     }
   }
 }
