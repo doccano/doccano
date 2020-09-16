@@ -9,7 +9,9 @@
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
       'showFirstLastPage': true,
-      'items-per-page-text': $t('vuetify.itemsPerPageText')
+      'items-per-page-options': [5, 10, 15, $t('generic.all')],
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
     }"
     item-key="id"
     show-select
