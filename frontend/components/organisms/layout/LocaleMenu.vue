@@ -17,7 +17,8 @@
       :key="locale.code"
     >
       <nuxt-link
-        class="v-list-item v-list-item--link theme--dark"
+        class="v-list-item v-list-item--link"
+        :class="$vuetify.theme.dark ? 'theme--dark' : 'theme--light'"
         :to="switchLocalePath(locale.code)"
       >
         {{ locale.name }}
