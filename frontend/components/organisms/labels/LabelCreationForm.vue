@@ -1,7 +1,7 @@
 <template>
   <base-card
     :disabled="!valid"
-    :title="$t('projects.createLabel')"
+    :title="$t('projectHome.createLabels')"
     :agree-text="$t('generic.create')"
     :cancel-text="$t('generic.cancel')"
     @agree="create"
@@ -22,7 +22,7 @@
         </v-alert>
         <v-text-field
           v-model="labelName"
-          :rules="labelNameRules"
+          :rules="labelNameRules($t('rules.labelNameRules'))"
           :label="$t('labels.labelName')"
           prepend-icon="label"
         />
@@ -34,7 +34,7 @@
         />
         <v-color-picker
           v-model="color"
-          :rules="colorRules"
+          :rules="colorRules($t('rules.colorRules'))"
           show-swatches
           hide-mode-switch
           width="800"
