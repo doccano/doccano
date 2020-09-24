@@ -3,7 +3,7 @@ export default {
     colorRequired: 'Color is required'
   },
   labelNameRules: {
-    labelRequied: 'Label name is required',
+    labelRequired: 'Label name is required',
     labelLessThan30Chars: 'Label name must be less than 30 characters'
   },
   userNameRules: {

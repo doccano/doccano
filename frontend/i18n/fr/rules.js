@@ -3,7 +3,7 @@ export default {
     colorRequired: 'La couleur est obligatoire'
   },
   labelNameRules: {
-    labelRequied: 'Le nom de l\'étiquette est obligatoire',
+    labelRequired: 'Le nom de l\'étiquette est obligatoire',
     labelLessThan30Chars: 'Le nom de l\'étiquette doit comporter moins de 30 caractères'
   },
   userNameRules: {
