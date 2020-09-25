@@ -12,6 +12,9 @@ export const getters = {
     const isProjectAdministrator = project => project.current_users_role.is_project_admin
     return state.selected.length > 0 && state.selected.every(isProjectAdministrator)
   },
+  isEmpty(state) {
+    return Object.keys(state.current).length === 0 && state.current.constructor === Object
+  },
   currentProject(state) {
     return state.current
   },
