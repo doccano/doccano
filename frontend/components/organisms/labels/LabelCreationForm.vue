@@ -1,7 +1,7 @@
 <template>
   <base-card
     :disabled="!valid"
-    :title="$t('projectHome.createLabels')"
+    :title="$t('labels.createLabel')"
     :agree-text="$t('generic.create')"
     :cancel-text="$t('generic.cancel')"
     @agree="create"
