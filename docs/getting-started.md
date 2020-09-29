@@ -2,34 +2,12 @@
 
 ## Usage
 
-Two options to run doccano:
+doccano has two options to run:
 
 - (Recommended) Docker Compose
 - Docker
 
-### Docker Compose
-
-```bash
-$ git clone https://github.com/doccano/doccano.git
-$ cd doccano
-$ docker-compose -f docker-compose.prod.yml up
-```
-
-Go to <http://0.0.0.0/>.
-
-_Note the superuser account credentials located in the `docker-compose.prod.yml` file:_
-```yml
-ADMIN_USERNAME: "admin"
-ADMIN_PASSWORD: "password"
-```
-
-> Note: If you want to add annotators, see [Frequently Asked Questions](https://github.com/doccano/doccano/wiki/Frequently-Asked-Questions#i-want-to-add-annotators)
-
-_Note for Windows developers: Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings._
-
-```bash
-git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
-```
+The usage of docker compose version is explained in the [README.md](https://github.com/doccano/doccano/blob/master/README.md#usage). We highly recommend that you should use docker compose version. However, we explain the usage of Docker version and Python/Node version for the additional information.
 
 ### Docker
 
