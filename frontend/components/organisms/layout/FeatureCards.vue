@@ -9,7 +9,7 @@
       <v-flex xs12 sm4 class="my-3">
         <div class="text-xs-center">
           <h2 class="headline">
-            The best features
+            {{ $t('home.featuresTitle') }}
           </h2>
         </div>
       </v-flex>
@@ -48,18 +48,18 @@ export default {
       featureCards: [
         {
           imageSrc: '/images/feature3.png',
-          title: 'Team Collaboration',
-          text: 'Annotation with your team mates'
+          title: this.$t('home.featuresTitle1'),
+          text: this.$t('home.featuresText1')
         },
         {
           imageSrc: '/images/feature2.png',
-          title: 'Any Language',
-          text: 'Annotation with any language'
+          title: this.$t('home.featuresTitle2'),
+          text: this.$t('home.featuresText2')
         },
         {
           imageSrc: '/images/feature1.png',
-          title: 'Open Source',
-          text: 'Annotation with free and customizable'
+          title: this.$t('home.featuresTitle3'),
+          text: this.$t('home.featuresText3')
         }
       ]
     }

@@ -1,8 +1,8 @@
 <template>
   <base-card
     :disabled="!valid"
-    title="Login"
-    agree-text="Login"
+    :title="$t('user.login')"
+    :agree-text="$t('user.login')"
     @agree="tryLogin"
   >
     <template #content>
@@ -16,12 +16,12 @@
           type="error"
           dismissible
         >
-          Incorrect username or password or something went wrong.
+          {{ $t('errors.invalidUserOrPass') }}
         </v-alert>
         <v-text-field
           v-model="username"
-          :rules="userNameRules"
-          label="Username"
+          :rules="userNameRules($t('rules.userNameRules'))"
+          :label="$t('user.username')"
           name="username"
           prepend-icon="person"
           type="text"
@@ -31,8 +31,8 @@
         <v-text-field
           id="password"
           v-model="password"
-          :rules="passwordRules"
-          label="Password"
+          :rules="passwordRules($t('rules.passwordRules'))"
+          :label="$t('user.password')"
           name="password"
           prepend-icon="lock"
           type="password"
@@ -80,7 +80,7 @@ export default {
           password: this.password
         })
           .then((result) => {
-            this.$router.push('/projects')
+            this.$router.push(this.localePath('/projects'))
           })
           .catch(() => {
             this.showError = true

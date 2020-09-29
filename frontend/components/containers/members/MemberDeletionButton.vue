@@ -2,8 +2,10 @@
   <confirm-dialog
     :disabled="!isMemberSelected"
     :items="selected"
-    title="Remove Member"
-    message="Are you sure you want to remove these members?"
+    :title="$t('members.removeMember')"
+    :message="$t('members.removePrompt')"
+    :button-true-text="$t('generic.yes')"
+    :button-false-text="$t('generic.cancel')"
     item-key="username"
     @ok="handleRemoveMember()"
   />

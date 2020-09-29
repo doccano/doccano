@@ -19,8 +19,8 @@
         </v-icon>
       </v-btn>
     </template>
-    <span v-if="approved">Checked</span>
-    <span v-else>Not checked</span>
+    <span v-if="approved">{{ $t('annotation.checkedTooltip') }}</span>
+    <span v-else>{{ $t('annotation.notCheckedTooltip') }}</span>
   </v-tooltip>
 </template>
 

@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      Welcome to doccano!
+      {{ $t('projectHome.welcome') }}
     </v-card-title>
     <v-stepper
       v-model="e6"
@@ -35,14 +35,14 @@
             color="primary mt-5"
             @click="next"
           >
-            Continue
+            {{ $t('generic.continue') }}
           </v-btn>
           <v-btn
             class="mt-5"
             text
             @click="prev"
           >
-            Cancel
+            {{ $t('generic.cancel') }}
           </v-btn>
         </v-stepper-content>
       </div>
@@ -58,13 +58,13 @@ export default {
     return {
       e6: 1,
       items: [
-        { title: 'Import a dataset', videoId: 'dA4ID1DSxCE' },
-        { title: 'Create labels for this project', videoId: '1bSML270quU' },
-        { title: 'Add members for collaborative work', videoId: 'NI09dcBz-qA' },
-        { title: 'Define a guideline for the work', videoId: 'AvvX3Xs32nA' },
-        { title: 'Annotate the dataset', videoId: 'F3XoSdyiMhA' },
-        { title: 'View statistics', videoId: 'kfRpa0mNQMY' },
-        { title: 'Export the dataset', videoId: 'Pfy_QcHEeQ4' }
+        { title: this.$t('projectHome.importData'), videoId: 'dA4ID1DSxCE' },
+        { title: this.$t('projectHome.createLabels'), videoId: '1bSML270quU' },
+        { title: this.$t('projectHome.addMembers'), videoId: 'NI09dcBz-qA' },
+        { title: this.$t('projectHome.defineGuideline'), videoId: 'AvvX3Xs32nA' },
+        { title: this.$t('projectHome.annotateDataset'), videoId: 'F3XoSdyiMhA' },
+        { title: this.$t('projectHome.viewStatistics'), videoId: 'kfRpa0mNQMY' },
+        { title: this.$t('projectHome.exportDataset'), videoId: 'Pfy_QcHEeQ4' }
       ]
     }
   },

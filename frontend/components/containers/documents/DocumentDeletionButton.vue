@@ -6,7 +6,7 @@
       outlined
       @click="dialog=true"
     >
-      Delete
+      {{ $t('generic.delete') }}
     </v-btn>
     <v-dialog
       v-model="dialog"
@@ -14,8 +14,10 @@
     >
       <confirm-form
         :items="selected"
-        title="Delete Document"
-        message="Are you sure you want to delete these documents from this project?"
+        :title="$t('dataset.deleteDocumentsTitle')"
+        :message="$t('dataset.deleteDocumentsMessage')"
+        :button-true-text="$t('generic.yes')"
+        :button-false-text="$t('generic.cancel')"
         item-key="text"
         @ok="deleteDocument($route.params.id);dialog=false"
         @cancel="dialog=false"

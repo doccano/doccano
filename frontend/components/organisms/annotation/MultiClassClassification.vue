@@ -3,7 +3,7 @@
     v-model="annotatedLabels"
     :items="labels"
     item-text="text"
-    label="Label"
+    :label="$t('labels.labels')"
     hide-selected
     chips
     multiple

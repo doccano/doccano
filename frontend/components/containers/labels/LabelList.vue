@@ -5,7 +5,14 @@
     :items="items"
     :search="search"
     :loading="loading"
-    loading-text="Loading... Please wait"
+    :loading-text="$t('generic.loading')"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-options': [5, 10, 15, $t('generic.all')],
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
+    }"
     item-key="id"
     show-select
     @input="updateSelected"
@@ -14,7 +21,7 @@
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
@@ -26,8 +33,8 @@
         <template v-slot:input>
           <v-text-field
             :value="item.text"
-            :rules="labelNameRules"
-            label="Edit"
+            :rules="labelNameRules($t('rules.labelNameRules'))"
+            :label="$t('generic.edit')"
             single-line
             @change="handleUpdateLabel({ id: item.id, text: $event })"
           />
@@ -41,7 +48,7 @@
           <v-select
             :value="item.suffix_key"
             :items="shortkeys"
-            label="Key"
+            :label="$t('annotation.key')"
             @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
           />
         </template>
@@ -59,7 +66,7 @@
         <template v-slot:input>
           <v-color-picker
             :value="item.background_color"
-            :rules="colorRules"
+            :rules="colorRules($t('rules.colorRules'))"
             show-swatches
             hide-mode-switch
             width="800"
@@ -84,16 +91,16 @@ export default {
       search: '',
       headers: [
         {
-          text: 'Name',
+          text: this.$t('generic.name'),
           align: 'left',
           value: 'text'
         },
         {
-          text: 'Shortkey',
+          text: this.$t('labels.shortkey'),
           value: 'suffix_key'
         },
         {
-          text: 'Color',
+          text: this.$t('labels.color'),
           sortable: false,
           value: 'background_color'
         }

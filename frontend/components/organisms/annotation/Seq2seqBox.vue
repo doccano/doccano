@@ -14,7 +14,7 @@
         <v-text-field
           v-model="newText"
           prepend-inner-icon="mdi-pencil"
-          label="New text"
+          :label="$t('annotation.newText')"
           autofocus
           single-line
           hide-details
@@ -32,7 +32,7 @@
           <template v-slot:input>
             <v-textarea
               :value="item.text"
-              label="Edit"
+              :label="$t('generic.edit')"
               autofocus
               @change="update(item.id, $event)"
             />
@@ -44,7 +44,7 @@
           small
           @click="deleteAnnotation(item.id)"
         >
-          delete
+          {{ $t('generic.delete') }}
         </v-icon>
       </template>
     </v-data-table>

@@ -14,7 +14,7 @@
             </v-icon>
           </v-btn>
         </template>
-        <span>Select a filter</span>
+        <span>{{ $t('annotation.selectFilterTooltip') }}</span>
       </v-tooltip>
     </template>
     <v-list>
@@ -52,9 +52,9 @@ export default {
   data() {
     return {
       items: [
-        { title: 'All', param: '' },
-        { title: 'Done', param: 'false' },
-        { title: 'Undone', param: 'true' }
+        { title: this.$t('annotation.filterOption1'), param: '' },
+        { title: this.$t('annotation.filterOption2'), param: 'false' },
+        { title: this.$t('annotation.filterOption3'), param: 'true' }
       ]
     }
   },

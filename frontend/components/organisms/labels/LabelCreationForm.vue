@@ -1,9 +1,9 @@
 <template>
   <base-card
     :disabled="!valid"
-    title="Create Label"
-    agree-text="Create"
-    cancel-text="Cancel"
+    :title="$t('labels.createLabel')"
+    :agree-text="$t('generic.create')"
+    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="reset"
   >
@@ -18,24 +18,23 @@
           type="error"
           dismissible
         >
-          The label could not be created.
-          You cannot use same label name or shortcut key.
+          {{ $t('errors.labelCannotCreate') }}
         </v-alert>
         <v-text-field
           v-model="labelName"
-          :rules="labelNameRules"
-          label="Label name"
+          :rules="labelNameRules($t('rules.labelNameRules'))"
+          :label="$t('labels.labelName')"
           prepend-icon="label"
         />
         <v-select
           v-model="suffixKey"
           :items="keys"
-          label="Key"
+          :label="$t('labels.key')"
           prepend-icon="mdi-keyboard"
         />
         <v-color-picker
           v-model="color"
-          :rules="colorRules"
+          :rules="colorRules($t('rules.colorRules'))"
           show-swatches
           hide-mode-switch
           width="800"

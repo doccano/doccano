@@ -2,6 +2,7 @@
   <div>
     <action-menu
       :items="menuItems"
+      :text="$t('dataset.actions')"
       @create="createDialog=true"
       @upload="importDialog=true"
       @download="handleDownload"
@@ -46,9 +47,9 @@ export default {
       createDialog: false,
       importDialog: false,
       menuItems: [
-        { title: 'Create a Label', icon: 'mdi-pencil', event: 'create' },
-        { title: 'Import Labels', icon: 'mdi-upload', event: 'upload' },
-        { title: 'Export Labels', icon: 'mdi-download', event: 'download' }
+        { title: this.$t('labels.createLabel'), icon: 'mdi-pencil', event: 'create' },
+        { title: this.$t('labels.importLabels'), icon: 'mdi-upload', event: 'upload' },
+        { title: this.$t('labels.exportLabels'), icon: 'mdi-download', event: 'download' }
       ]
     }
   },

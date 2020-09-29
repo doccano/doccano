@@ -4,6 +4,7 @@
     v-model="editorText"
     preview-style="vertical"
     height="inherit"
+    :options="editorOptions"
   />
 </template>
 
@@ -17,11 +18,16 @@ import '@/assets/style/editor.css'
 
 export default {
   layout: 'project',
-
   components: {
     Editor
   },
-
+  data() {
+    return {
+      editorOptions: {
+        language: this.$t('toastui.localeCode')
+      }
+    }
+  },
   validate({ params }) {
     return /^\d+$/.test(params.id)
   },

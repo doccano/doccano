@@ -1,9 +1,9 @@
 <template>
   <base-card
     :disabled="!valid"
-    title="Add Member"
-    agree-text="Add"
-    cancel-text="Cancel"
+    :title="$t('members.addMember')"
+    :agree-text="$t('generic.add')"
+    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
   >
@@ -21,18 +21,18 @@
           hide-no-data
           hide-selected
           item-text="username"
-          label="User Search APIs"
-          placeholder="Start typing to Search"
+          :label="$t('members.userSearchAPIs')"
+          :placeholder="$t('members.userSearchPrompt')"
           prepend-icon="mdi-account"
           return-object
         />
         <v-select
           v-model="role"
           :items="roles"
-          :rules="roleRules"
-          item-text="name"
+          :rules="roleRules($t('rules.roleRules'))"
+          item-text="translatedName"
           item-value="id"
-          label="Role"
+          :label="$t('members.role')"
           return-object
           prepend-icon="mdi-account-card-details-outline"
         />

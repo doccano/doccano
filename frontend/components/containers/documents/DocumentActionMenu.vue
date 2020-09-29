@@ -2,6 +2,7 @@
   <div>
     <action-menu
       :items="menuItems"
+      :text="$t('dataset.actions')"
       @upload="importDialog=true"
       @download="exportDialog=true"
     />
@@ -46,8 +47,8 @@ export default {
       importDialog: false,
       exportDialog: false,
       menuItems: [
-        { title: 'Import Dataset', icon: 'mdi-upload', event: 'upload' },
-        { title: 'Export Dataset', icon: 'mdi-download', event: 'download' }
+        { title: this.$t('dataset.importDataset'), icon: 'mdi-upload', event: 'upload' },
+        { title: this.$t('dataset.exportDataset'), icon: 'mdi-download', event: 'download' }
       ]
     }
   },

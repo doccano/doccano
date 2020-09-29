@@ -7,12 +7,14 @@
     :server-items-length="total"
     :search="search"
     :loading="loading"
+    :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
       'showFirstLastPage': true,
-      'items-per-page-options': [10, 50, 100]
+      'items-per-page-options': [10, 50, 100],
+      'items-per-page-text': $t('vuetify.itemsPerPageText')
     }"
     item-key="id"
-    loading-text="Loading... Please wait"
+    :loading-text="$t('generic.loading')"
     show-select
     @input="updateSelected"
   >
@@ -20,7 +22,7 @@
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
@@ -33,7 +35,7 @@
         <template v-slot:input>
           <v-textarea
             :value="item.text"
-            label="Edit"
+            :label="$t('generic.edit')"
             autofocus
             @change="handleUpdateDocument({ id: item.id, text: $event })"
           />
@@ -46,7 +48,7 @@
         color="primary text-capitalize"
         @click="toLabeling(item)"
       >
-        Annotate
+        {{ $t('dataset.annotate') }}
       </v-btn>
     </template>
   </v-data-table>
@@ -69,19 +71,19 @@ export default {
       options: {},
       headers: [
         {
-          text: 'Text',
+          text: this.$t('dataset.text'),
           align: 'left',
           value: 'text',
           sortable: false
         },
         {
-          text: 'Metadata',
+          text: this.$t('dataset.metadata'),
           align: 'left',
           value: 'meta',
           sortable: false
         },
         {
-          text: 'Action',
+          text: this.$t('dataset.action'),
           align: 'left',
           value: 'action',
           sortable: false
@@ -138,7 +140,7 @@ export default {
       const offset = (this.options.page - 1) * this.options.itemsPerPage
       const page = offset + index + 1
       this.$router.push({
-        path: `/projects/${this.$route.params.id}/${this.getLink}`,
+        path: this.localePath(`/projects/${this.$route.params.id}/${this.getLink}`),
         query: {
           page,
           q: this.search

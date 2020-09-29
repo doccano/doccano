@@ -28,7 +28,7 @@
             md5
           >
             <h1 class="mb-2 display-1 text-xs-center">
-              Realize your ideas quickly
+              {{ $t('home.footerTitle') }}
             </h1>
             <div class="mt-4">
               <v-menu open-on-hover offset-y>
@@ -39,7 +39,7 @@
                     large
                     v-on="on"
                   >
-                    Try demo
+                    {{ $t('home.demoDropDown') }}
                     <v-icon>mdi-menu-down</v-icon>
                   </v-btn>
                 </template>
@@ -47,7 +47,7 @@
                   <v-list-item
                     v-for="(item, index) in items"
                     :key="index"
-                    @click="$router.push('/demo/' + item.link)"
+                    @click="$router.push(localePath('/demo/' + item.link))"
                   >
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                   </v-list-item>
@@ -66,10 +66,10 @@ export default {
   data() {
     return {
       items: [
-        { title: 'Named Entity Recognition', link: 'named-entity-recognition' },
-        { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
-        { title: 'Translation', link: 'translation' },
-        { title: 'Text to SQL', link: 'text-to-sql' }
+        { title: this.$t('home.demoNER'), link: 'named-entity-recognition' },
+        { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
+        { title: this.$t('home.demoTranslation'), link: 'translation' },
+        { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' }
       ]
     }
   }
