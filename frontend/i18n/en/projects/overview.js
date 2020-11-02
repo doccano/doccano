@@ -4,7 +4,7 @@ export default {
   projectType: 'Project type',
   textClassification: 'Text Classification',
   sequenceLabeling: 'Sequence Labeling',
-  sequenceToSequence: 'Sequence to Sequence',
+  sequenceToSequence: 'Sequence to sequence',
   randomizeDocOrder: 'Randomize document order',
   shareAnnotations: 'Share annotations across all users',
   delete: 'Delete',
