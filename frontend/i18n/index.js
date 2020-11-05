@@ -7,6 +7,12 @@ export default {
       file: 'en'
     },
     {
+      name: '中文',
+      code: 'zh',
+      iso: 'zh-CA',
+      file: 'zh'
+    },
+    {
       name: 'Français',
       code: 'fr',
       iso: 'fr-CA',
@@ -15,9 +21,9 @@ export default {
   ],
   lazy: true,
   langDir: 'i18n/',
-  defaultLocale: 'en',
+  defaultLocale: 'zh',
   vueI18n: {
-    fallbackLocale: 'en'
+    fallbackLocale: 'zh'
   },
   detectBrowserLanguage: {
     useCookie: true,
