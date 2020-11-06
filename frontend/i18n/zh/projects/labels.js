@@ -3,7 +3,7 @@ export default {
   shortkey: '短键',
   color: '颜色',
   createLabel: '创建标签',
-  importLabels: '创建标签',
+  importLabels: '导入标签',
   exportLabels: '导出标签',
   labelName: '标签名',
   labelMessage: '请输入标签名',
