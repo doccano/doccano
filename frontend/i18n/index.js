@@ -21,9 +21,9 @@ export default {
   ],
   lazy: true,
   langDir: 'i18n/',
-  defaultLocale: 'zh',
+  defaultLocale: 'en',
   vueI18n: {
-    fallbackLocale: 'zh'
+    fallbackLocale: 'en'
   },
   detectBrowserLanguage: {
     useCookie: true,
