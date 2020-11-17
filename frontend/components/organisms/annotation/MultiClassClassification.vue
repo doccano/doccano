@@ -7,6 +7,8 @@
     hide-selected
     chips
     multiple
+    :search-input.sync="search"
+    @change="search=''"
   >
     <template v-slot:selection="{ attrs, item, select, selected }">
       <v-chip
@@ -48,6 +50,12 @@ export default {
       type: Function,
       default: () => ([]),
       required: true
+    }
+  },
+
+  data() {
+    return {
+      search: ''
     }
   },
 
