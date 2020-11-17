@@ -423,6 +423,49 @@ class JSONParser(FileParser):
             yield data
 
 
+class FasttextParser(FileParser):
+    """
+    Parse files in fastText format.
+    Labels are marked with the __label__ prefix 
+    and the corresponding text comes afterwards in the same line
+    For example:
+    ```
+    __label__dog poodle
+    __label__house mansion 
+    ```
+    """
+    def parse(self, file):
+        file = EncodedIO(file)
+        file = io.TextIOWrapper(file, encoding=file.encoding)
+        data = []
+        for i, line in enumerate(file, start=0):
+            if len(data) >= settings.IMPORT_BATCH_SIZE:
+                yield data
+                data = []
+
+            # Search Labels, check correct syntax and append
+            labels = []
+            tokens = line.rstrip().split(" ")
+            for token in tokens:
+                if token.startswith('__label__'):
+                    if token == '__label__':
+                        raise FileParseException(line_num=i, line=line) 
+                    labels.append(token[len('__label__'):])
+                else:
+                    break
+
+            # Check if text for labels is given
+            if len(tokens) == len(labels):
+                raise FileParseException(line_num=i, line=line)
+
+            text = " ".join(tokens[len(labels):])
+            data.append({'text': text, 'labels': labels})
+
+        if data:
+            yield data
+        
+
+
 class AudioParser(FileParser):
     def parse(self, file):
         file_type, _ = mimetypes.guess_type(file.name, strict=False)
