@@ -238,9 +238,7 @@ export default {
       const approved = !this.documentAnnotationsAreApproved;
 
       HTTP.post(`docs/${document.id}/approve-labels`, { approved }).then((response) => {
-        const documents = this.docs.slice();
-        documents[this.pageNumber] = response.data;
-        this.docs = documents;
+        Object.assign(this.docs[this.pageNumber], response.data);
       });
     },
   },
