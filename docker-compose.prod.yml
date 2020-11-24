@@ -39,7 +39,7 @@ services:
       - network-frontend
 
   postgres:
-    image: postgres:12.0-alpine
+    image: postgres:13.1-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
