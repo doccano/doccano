@@ -1,5 +1,7 @@
 import collections
 import json
+import random
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -106,7 +108,6 @@ class StatisticsAPI(APIView):
             set_user_data[ind_obj['user__username']].add(ind_obj['document__id'])
         return {i: len(set_user_data[i]) for i in set_user_data}
 
-
     def progress(self, project):
         docs = project.documents
         annotation_class = project.get_annotation_class()
@@ -171,7 +172,9 @@ class DocumentList(generics.ListCreateAPIView):
 
         queryset = project.documents
         if project.randomize_document_order:
-            queryset = queryset.annotate(sort_id=F('id') % self.request.user.id).order_by('sort_id')
+            random.seed(self.request.user.id)
+            value = random.randrange(2, 20)
+            queryset = queryset.annotate(sort_id=F('id') % value).order_by('sort_id', 'id')
         else:
             queryset = queryset.order_by('id')
 
