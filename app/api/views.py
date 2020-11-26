@@ -108,7 +108,6 @@ class StatisticsAPI(APIView):
             set_user_data[ind_obj['user__username']].add(ind_obj['document__id'])
         return {i: len(set_user_data[i]) for i in set_user_data}
 
-
     def progress(self, project):
         docs = project.documents
         annotation_class = project.get_annotation_class()
