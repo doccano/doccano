@@ -47,7 +47,7 @@
         <template v-slot:input>
           <v-select
             :value="item.suffix_key"
-            :items="shortkeys"
+            :items="availableShortkeys(item.suffix_key)"
             :label="$t('annotation.key')"
             @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
           />
@@ -131,6 +131,12 @@ export default {
         ...payload
       }
       this.updateLabel(data)
+    },
+
+    availableShortkeys(suffixKey) {
+      const usedKeys = this.items.map(item => item.suffix_key)
+      const unusedKeys = this.shortkeys.filter(item => item === suffixKey || !usedKeys.includes(item))
+      return unusedKeys
     },
 
     textColor(backgroundColor) {
