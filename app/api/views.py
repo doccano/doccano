@@ -22,7 +22,7 @@ from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer, ApproverSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
-from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, FasttextParser, iterable_to_io
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, FastTextParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
@@ -297,7 +297,7 @@ class TextUploadAPI(APIView):
         elif file_format == 'audio':
             return AudioParser()
         elif file_format == 'fastText':
-            return FasttextParser()
+            return FastTextParser()
         else:
             raise ValidationError('format {} is invalid.'.format(file_format))
 

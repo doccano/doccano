@@ -423,15 +423,15 @@ class JSONParser(FileParser):
             yield data
 
 
-class FasttextParser(FileParser):
+class FastTextParser(FileParser):
     """
     Parse files in fastText format.
-    Labels are marked with the __label__ prefix 
+    Labels are marked with the __label__ prefix
     and the corresponding text comes afterwards in the same line
     For example:
     ```
     __label__dog poodle
-    __label__house mansion 
+    __label__house mansion
     ```
     """
     def parse(self, file):
@@ -443,27 +443,26 @@ class FasttextParser(FileParser):
                 yield data
                 data = []
 
-            # Search Labels, check correct syntax and append
+            # Search labels and text, check correct syntax and append
             labels = []
-            tokens = line.rstrip().split(" ")
-            for token in tokens:
+            text = []
+            for token in line.rstrip().split(" "):
                 if token.startswith('__label__'):
                     if token == '__label__':
-                        raise FileParseException(line_num=i, line=line) 
+                        raise FileParseException(line_num=i, line=line)
                     labels.append(token[len('__label__'):])
                 else:
-                    break
+                    text.append(token)
 
             # Check if text for labels is given
-            if len(tokens) == len(labels):
+            if not text:
                 raise FileParseException(line_num=i, line=line)
 
-            text = " ".join(tokens[len(labels):])
-            data.append({'text': text, 'labels': labels})
+            data.append({'text': " ".join(text), 'labels': labels})
 
         if data:
             yield data
-        
+
 
 
 class AudioParser(FileParser):

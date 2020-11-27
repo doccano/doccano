@@ -80,7 +80,7 @@ export const getters = {
     }
     const fastText = {
       type: 'fastText',
-      text: 'Fasttext',
+      text: 'FastText',
       accept: '.txt'
     }
     if (state.current.project_type === 'DocumentClassification') {
