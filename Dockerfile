@@ -14,7 +14,6 @@ RUN apk add -U --no-cache git python3 make g++ \
 FROM python:${PYTHON_VERSION}-slim-buster AS backend-builder
 
 RUN apt-get update && \
-    apt-get upgrade -y && \
     apt-get install -y --no-install-recommends netcat libpq-dev unixodbc-dev g++ && \
     apt-get clean
 
