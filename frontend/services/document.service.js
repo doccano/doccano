@@ -30,6 +30,9 @@ class DocumentService {
     if (format === 'csv') {
       headers.Accept = 'text/csv; charset=utf-8'
       headers['Content-Type'] = 'text/csv; charset=utf-8'
+    } else if (format === 'txt') {
+      headers.Accept = 'text/plain; charset=utf-8'
+      headers['Content-Type'] = 'text/plain; charset=utf-8'
     } else {
       headers.Accept = 'application/json'
       headers['Content-Type'] = 'application/json'

@@ -180,6 +180,11 @@ export const getters = {
       text: 'JSONL(Text label)',
       suffix: 'jsonl'
     }
+    const fastText = {
+      type: 'txt',
+      text: 'FastText',
+      suffix: 'txt'
+    }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [
         '{"id": 1, "text": "Terrible customer service.", "annotations": [{"id": 1, "label": 1, "user": 1}]}\n',
@@ -192,9 +197,14 @@ export const getters = {
         '2,"Really great transaction.",2,1\n',
         '3,"Great price.",2,1'
       ]
+      fastText.examples = [
+        '__label__pet dog cat \n',
+        '__label__car VW BMW'
+      ]
       return [
         csv,
-        json
+        json,
+        fastText
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [

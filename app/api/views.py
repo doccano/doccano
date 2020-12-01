@@ -24,9 +24,9 @@ from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer, ApproverSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
-from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, FastTextParser, iterable_to_io
-from .utils import JSONLRenderer
-from .utils import JSONPainter, CSVPainter
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, FastTextParser, CoNLLParser, AudioParser, iterable_to_io
+from .utils import JSONLRenderer, PlainTextRenderer
+from .utils import JSONPainter, CSVPainter, FastTextPainter
 
 IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
@@ -359,7 +359,7 @@ class CloudUploadAPI(APIView):
 class TextDownloadAPI(APIView):
     permission_classes = TextUploadAPI.permission_classes
 
-    renderer_classes = (CSVRenderer, JSONLRenderer)
+    renderer_classes = (CSVRenderer, JSONLRenderer, PlainTextRenderer)
 
     def get(self, request, *args, **kwargs):
         format = request.query_params.get('q')
@@ -369,9 +369,9 @@ class TextDownloadAPI(APIView):
         # jsonl-textlabel format prints text labels while jsonl format prints annotations with label ids
         # jsonl-textlabel format - "labels": [[0, 15, "PERSON"], ..]
         # jsonl format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
-        if format == 'jsonl':
+        if format in ('jsonl', 'txt'):
             labels = project.labels.all()
-            data = JSONPainter.paint_labels(documents, labels)
+            data = painter.paint_labels(documents, labels)
         else:
             data = painter.paint(documents)
         return Response(data)
@@ -381,6 +381,8 @@ class TextDownloadAPI(APIView):
             return CSVPainter()
         elif format == 'jsonl' or format == 'json':
             return JSONPainter()
+        elif format == 'txt':
+            return FastTextPainter()
         else:
             raise ValidationError('format {} is invalid.'.format(format))
 
