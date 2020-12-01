@@ -15,8 +15,8 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path, include
-from django.contrib.auth.views import PasswordResetView, LogoutView
+from django.urls import path, include, re_path
+from django.contrib.auth.views import PasswordResetView, LogoutView, TemplateView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -43,6 +43,7 @@ urlpatterns = [
     path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
     path('api-auth/', include('rest_framework.urls')),
     path('v1/', include('api.urls')),
+    re_path('', TemplateView.as_view(template_name='index.html')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]
 
