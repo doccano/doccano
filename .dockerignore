@@ -1,5 +1,6 @@
 *
 !app/
+!frontend/
 !tests/
 !tools/
 !.coveragerc
@@ -18,3 +19,8 @@ app/**/staticfiles/
 app/**/venv/
 app/**/__pycache__/
 tests/**/__pycache__/
+
+frontend/.nuxt/
+frontend/coverage/
+frontend/dist/
+frontend/node_modules/
