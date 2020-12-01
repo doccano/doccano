@@ -5,9 +5,9 @@ python:
 
 env:
   - DATABASE=sqlite
-  - DATABASE=postgres
-  - DATABASE=mssql
-  - DATABASE=mysql
+  # - DATABASE=postgres
+  # - DATABASE=mssql
+  # - DATABASE=mysql
 
 services:
   - docker
