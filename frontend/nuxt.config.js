@@ -124,6 +124,7 @@ export default {
     /*
     ** You can extend webpack config here
     */
+    publicPath: '/static/_nuxt/',
     extend(config, ctx) {
       config.module.rules.push({
         test: /\.(txt|csv|conll|jsonl)$/i,
