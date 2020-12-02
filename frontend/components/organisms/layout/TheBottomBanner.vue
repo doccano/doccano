@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-parallax
-      src="/images/vbanner.jpg"
+      :src="require(`~/assets/vbanner.jpg`)"
       height="400"
       dark
     >
@@ -17,7 +17,7 @@
             md7
           >
             <v-img
-              src="/images/ner_demo.png"
+              :src="require(`~/assets/ner_demo.png`)"
               max-height="380"
               contain
               class="ma-5"

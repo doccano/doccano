@@ -5,9 +5,9 @@ python:
 
 env:
   - DATABASE=sqlite
-  - DATABASE=postgres
-  - DATABASE=mssql
-  - DATABASE=mysql
+  # - DATABASE=postgres
+  # - DATABASE=mssql
+  # - DATABASE=mysql
 
 services:
   - docker
@@ -33,7 +33,7 @@ install:
     - pip install --no-cache-dir mkdocs==1.1 mkdocs-material==4.6.3
 
 script:
-  - docker build --target=builder --tag=doccano-test .
+  - docker build --target=runtime --tag=doccano-test .
   - >
     if [[ "${DATABASE}" != "sqlite" ]]; then
       docker run --network doccano -e DATABASE_URL="${DATABASE_URL}" -it doccano-test sh -c 'app/manage.py wait_for_db && app/manage.py migrate && app/manage.py test api.tests server.tests'

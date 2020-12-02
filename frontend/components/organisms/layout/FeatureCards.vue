@@ -23,7 +23,7 @@
               md4
             >
               <feature-card
-                :image-src="item.imageSrc"
+                :image-src="require(`~/assets/${item.imageSrc}`)"
                 :title="item.title"
                 :text="item.text"
               />
@@ -47,17 +47,17 @@ export default {
     return {
       featureCards: [
         {
-          imageSrc: '/images/feature3.png',
+          imageSrc: 'feature3.png',
           title: this.$t('home.featuresTitle1'),
           text: this.$t('home.featuresText1')
         },
         {
-          imageSrc: '/images/feature2.png',
+          imageSrc: 'feature2.png',
           title: this.$t('home.featuresTitle2'),
           text: this.$t('home.featuresText2')
         },
         {
-          imageSrc: '/images/feature1.png',
+          imageSrc: 'feature1.png',
           title: this.$t('home.featuresTitle3'),
           text: this.$t('home.featuresText3')
         }

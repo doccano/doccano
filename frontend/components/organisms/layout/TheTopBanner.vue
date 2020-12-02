@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-parallax
-      src="/images/vbanner.jpg"
+      :src="require(`~/assets/vbanner.jpg`)"
       height="400"
       dark
     >
