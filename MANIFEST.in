@@ -1,0 +1,7 @@
+include app/manage.py
+include app/requirements.txt
+include README.md
+graft app/staticfiles
+graft app/client
+graft app/doccano
+global-exclude *.pyc

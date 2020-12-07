@@ -12,15 +12,9 @@ def main():
     parser.add_argument('--workers', type=int, default=1)
     args = parser.parse_args()
 
-    print('Create staticfiles.')
-    # subprocess.call(['python', 'manage.py', 'collectstatic', '--noinput'], shell=False)
-
-    print('Setup databse.')
+    print('Setup Database.')
     base = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-    #base = os.path.abspath(os.path.dirname(__file__))
-    # manage_path = os.path.join(base, 'app/manage.py')
     manage_path = os.path.join(base, 'manage.py')
-    print(manage_path)
     subprocess.call(['python', manage_path, 'wait_for_db'], shell=False)
     subprocess.call(['python', manage_path, 'migrate'], shell=False)
     subprocess.call(['python', manage_path, 'create_roles'], shell=False)
@@ -33,11 +27,8 @@ def main():
                      '--noinput'], shell=False)
 
     print(f'Starting server with port {args.port}.')
-    subprocess.call(['gunicorn',
-                     '--bind', f'0.0.0.0:{args.port}',
-                     '--workers', str(args.workers),
-                     'app.wsgi',
-                     '--timeout', '300'], shell=False)
+    os.environ['DEBUG'] = 'False'
+    subprocess.call(['python', manage_path, 'runserver', f'0.0.0.0:{args.port}'])
 
 
 if __name__ == '__main__':

@@ -1,7 +1,0 @@
-include manage.py
-include requirements.txt
-include README.md
-graft staticfiles
-graft client
-graft doccano
-global-exclude *.pyc

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import io
 import os
-import sys
 
 from setuptools import find_packages, setup
 
@@ -17,16 +16,12 @@ here = os.path.abspath(os.path.dirname(__file__))
 with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = '\n' + f.read()
 
-if sys.argv[-1] == 'publish':
-    os.system('python setup.py sdist bdist_wheel upload')
-    sys.exit()
-
 # required = ['requests', 'boto3', 'pydantic', 'jinja2']
-required = [line.rstrip() for line in io.open(os.path.join(here, 'requirements.txt')) if not line.startswith('psy')]
+required = [line.rstrip() for line in io.open(os.path.join(here, 'app/requirements.txt')) if not line.startswith('psy')]
 
 setup(
     name=NAME,
-    use_scm_version={'root': '..'},
+    use_scm_version=True,
     setup_requires=['setuptools_scm'],
     description=DESCRIPTION,
     long_description=long_description,
@@ -37,7 +32,7 @@ setup(
     packages=find_packages(exclude=('*.tests',)),
     entry_points={
         'console_scripts': [
-            'doccano = doccano.doccano:main'
+            'doccano = app.doccano.doccano:main'
         ]
     },
     install_requires=required,
