@@ -26,28 +26,67 @@ You can try the [annotation demo](http://doccano.herokuapp.com).
 
 ## Usage
 
-Two options to run doccano:
+Three options to run doccano:
 
-- production,
-- development.
+- pip(experimental)
+- Docker
+- Docker Compose
+  - production
+  - development
 
-To use doccano, please follow:
+For docker and docker compose, you need to install dependencies:
 
-### Install dependencies
+- [Git](https://git-scm.com)
+- [Docker](https://www.docker.com)
+- [Docker Compose](https://docs.docker.com/compose)
 
-You need to install dependencies:
+### pip installation
 
-- [Git](https://git-scm.com),
-- [Docker](https://www.docker.com),
-- [Docker Compose](https://docs.docker.com/compose).
+To install doccano, simply run:
 
-### Get the code
+```bash
+pip install doccano
+```
+
+After installation, simply run the following command:
+
+```bash
+doccano
+```
+
+Go to <http://0.0.0.0:{YOUR_PORT}/>.
+
+### Docker
+
+As a one-time setup, create a Docker container as follows:
+
+```bash
+docker pull doccano/doccano
+docker container create --name doccano \
+  -e "ADMIN_USERNAME=admin" \
+  -e "ADMIN_EMAIL=admin@example.com" \
+  -e "ADMIN_PASSWORD=password" \
+  -p 8000:8000 doccano/doccano
+```
+
+Next, start doccano by running the container:
+
+```bash
+docker container start doccano
+```
+
+To stop the container, run `docker container stop doccano -t 5`.
+All data created in the container will persist across restarts.
+
+Go to <http://127.0.0.1:8000/>.
+
+### Docker Compose
 
 You need to clone the repository:
 
 ```bash
-$ git clone https://github.com/doccano/doccano.git
-$ cd doccano
+git clone https://github.com/doccano/doccano.git
+cd doccano
 ```
 
 _Note for Windows developers:_ Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings.
@@ -56,7 +95,7 @@ _Note for Windows developers:_ Be sure to configure git to correctly handle line
 git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 ```
 
-### Production
+#### Production
 
 Set the superuser account credentials in the `docker-compose.prod.yml` file:
 
@@ -79,35 +118,7 @@ $ docker-compose -f docker-compose.prod.yml up
 
 Go to <http://0.0.0.0/>.
 
-<!--
-
-### Docker
-
-As a one-time setup, create a Docker container for Doccano:
-
-```bash
-docker pull doccano/doccano
-docker container create --name doccano \
-  -e "ADMIN_USERNAME=admin" \
-  -e "ADMIN_EMAIL=admin@example.com" \
-  -e "ADMIN_PASSWORD=password" \
-  -p 8000:8000 doccano/doccano
-```
-
-Next, start Doccano by running the container:
-
-```bash
-docker container start doccano
-```
-
-To stop the container, run `docker container stop doccano -t 5`.
-All data created in the container will persist across restarts.
-
-Go to <http://127.0.0.1:8000/>.
-
--->
-
-### Development
+#### Development
 
 Set the superuser account credentials in the `docker-compose.dev.yml` file:
 

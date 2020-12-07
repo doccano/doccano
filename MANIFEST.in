@@ -1,0 +1,19 @@
+include app/manage.py
+include app/requirements.txt
+include README.md
+exclude *.yml
+exclude *.yaml
+
+graft app/staticfiles
+graft app/client
+graft app/doccano
+
+prune app/staticfiles/bundle
+prune app/staticfiles/assets
+prune app/staticfiles/components
+prune app/server/static
+prune frontend
+prune docs
+prune nginx
+prune tools
+global-exclude *.pyc
