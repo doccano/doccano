@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./docs/images/logo/doccano.png">
+  <img src="https://raw.githubusercontent.com/doccano/doccano/master/docs/images/logo/doccano.png">
 </div>
 
 # doccano
@@ -13,7 +13,7 @@ doccano is an open source text annotation tool for humans. It provides annotatio
 
 You can try the [annotation demo](http://doccano.herokuapp.com).
 
-![Demo image](./docs/images/demo/demo.gif)
+![Demo image](https://raw.githubusercontent.com/doccano/doccano/master/docs/images/demo/demo.gif)
 
 ## Features
 
@@ -54,7 +54,7 @@ After installation, simply run the following command:
 doccano
 ```
 
-Go to <http://0.0.0.0:{YOUR_PORT}/>.
+Go to <http://0.0.0.0:8000/>.
 
 ### Docker
 

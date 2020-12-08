@@ -4,13 +4,13 @@ import subprocess
 
 
 def main():
-    parser = argparse.ArgumentParser(description='doccano.')
+    parser = argparse.ArgumentParser(description='doccano, text annotation for machine learning practitioners.')
     parser.add_argument('--username', type=str, default='admin', help='admin username')
     parser.add_argument('--password', type=str, default='password', help='admin password')
     parser.add_argument('--email', type=str, default='example@example.com', help='admin email')
-    parser.add_argument('--port', type=int, default=8000, help='port')
-    parser.add_argument('--workers', type=int, default=1, help='workers')
-    parser.add_argument('--database_url', type=str, default='sqlite:///doccano.db', help='data store')
+    parser.add_argument('--port', type=int, default=8000, help='port number')
+    # parser.add_argument('--workers', type=int, default=1, help='the number of workers')
+    parser.add_argument('--database_url', type=str, default='sqlite:///doccano.db', help='the database URL')
     args = parser.parse_args()
 
     os.environ.setdefault('DEBUG', 'False')
