@@ -284,7 +284,7 @@ if (spec := importlib.util.find_spec(name)) is not None:
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module
     spec.loader.exec_module(module)
-    django_heroku.settings(locals(), test_runner=False)
+    module.settings(locals(), test_runner=False)
 
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(
