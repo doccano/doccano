@@ -10,9 +10,10 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
+import importlib.util
+import sys
 from os import path
 
-import django_heroku
 import dj_database_url
 from environs import Env
 from furl import furl
@@ -53,13 +54,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'server.apps.ServerConfig',
     'api.apps.ApiConfig',
-    'widget_tweaks',
+    # 'widget_tweaks',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'social_django',
     'polymorphic',
-    'webpack_loader',
+    # 'webpack_loader',
     'corsheaders',
     'drf_yasg'
 ]
@@ -83,7 +84,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'applicationinsights.django.ApplicationInsightsMiddleware',
+    # 'applicationinsights.django.ApplicationInsightsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
 
@@ -277,7 +278,13 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/projects/'
 LOGOUT_REDIRECT_URL = '/'
 
-django_heroku.settings(locals(), test_runner=False)
+# dynamic import to avoid installing psycopg2 on pip installation.
+name = 'django_heroku'
+if (spec := importlib.util.find_spec(name)) is not None:
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    django_heroku.settings(locals(), test_runner=False)
 
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(
@@ -309,7 +316,7 @@ CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', False)
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', [])
 
 # Allow all host headers
-# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']
 
 # Size of the batch for creating documents
 # on the import phase
