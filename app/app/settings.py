@@ -280,7 +280,8 @@ LOGOUT_REDIRECT_URL = '/'
 
 # dynamic import to avoid installing psycopg2 on pip installation.
 name = 'django_heroku'
-if (spec := importlib.util.find_spec(name)) is not None:
+spec = importlib.util.find_spec(name)
+if spec is not None:
     module = importlib.util.module_from_spec(spec)
     sys.modules[name] = module
     spec.loader.exec_module(module)
