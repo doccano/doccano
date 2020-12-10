@@ -2,7 +2,7 @@ version: "3.7"
 services:
 
   backend:
-    image: python:3.6
+    image: python:3.8.6-buster
     volumes:
       - .:/src
       - venv:/src/venv
