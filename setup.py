@@ -16,9 +16,26 @@ here = os.path.abspath(os.path.dirname(__file__))
 with io.open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = '\n' + f.read()
 
-# Todo: make a cleaned requirements.txt
-required = [line.rstrip() for line in io.open(os.path.join(here, 'app/requirements.txt'))
-            if not line.startswith(('psycopg2', 'django-heroku', 'django-mssql-backend'))]
+required = [
+    'apache-libcloud>=3.2.0',
+    'colour>=0.1.5',
+    'conllu>=4.2.2',
+    'dj-database-url>=0.5.0',
+    'django-cors-headers>=3.5.0',
+    'django-filter>=2.4.0',
+    'django-rest-polymorphic>=0.1.9',
+    'djangorestframework-csv>=2.1.0',
+    'djangorestframework-xml>=2.0.0',
+    'drf-yasg>=1.20.0',
+    'environs>=9.2.0',
+    'furl>=2.1.0',
+    'pyexcel>=0.6.6',
+    'pyexcel-xlsx>=0.6.0',
+    'python-jose>=3.2.0',
+    'seqeval>=1.2.2',
+    'social-auth-app-django>=4.0.0',
+    'whitenoise>=5.2.0'
+]
 
 setup(
     name=NAME,
