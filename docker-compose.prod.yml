@@ -23,10 +23,9 @@ services:
     build: ./frontend
     environment:
       API_URL: "http://backend:8000"
+      GOOGLE_TRACKING_ID: ""
     volumes:
       - www:/app/dist
-    environment:
-      GOOGLE_TRACKING_ID: ""
 
   nginx:
     build: ./nginx
