@@ -1,0 +1,18 @@
+name: Sync multiple branches
+on:
+  push:
+    branches:
+      - 'master'
+jobs:
+  sync-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Merge master -> CloudRunButton
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          from_branch: master
+          target_branch: CloudRunButton
+          github_token: ${{ secrets.GITHUB_TOKEN }}
