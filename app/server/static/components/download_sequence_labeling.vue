@@ -16,8 +16,8 @@ block select-format-area
     input(
       type="radio"
       name="format"
-      value="json1"
-      v-bind:checked="format == 'json1'"
+      value="jsonl"
+      v-bind:checked="format == 'jsonl'"
       v-model="format"
     )
     | JSON(Text-Labels)
@@ -28,7 +28,7 @@ block example-format-area
       include ./examples/download_sequence_labeling.jsonl
       | ...
 
-  pre.code-block(v-show="format == 'json1'")
+  pre.code-block(v-show="format == 'jsonl'")
     code.json
       include ./examples/download_sequence_labeling.json1l
       | ...

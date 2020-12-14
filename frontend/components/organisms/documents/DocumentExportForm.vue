@@ -98,7 +98,8 @@ export default {
         this.exportDocument({
           projectId: this.$route.params.id,
           fileName: this.selectedFileName,
-          format: this.selectedFormat.type
+          format: this.selectedFormat.type,
+          suffix: this.selectedFormat.suffix
         })
         this.reset()
         this.cancel()
