@@ -1,22 +1,27 @@
 <template>
-  <entity-item-box
-    v-if="isReady"
-    :labels="items"
-    :text="currentDoc.text"
-    :entities="currentDoc.annotations"
-    :delete-annotation="removeEntity"
-    :update-entity="updateEntity"
-    :add-entity="addEntity"
-  />
+  <div>
+    <clear-annotations-button />
+    <entity-item-box
+      v-if="isReady"
+      :labels="items"
+      :text="currentDoc.text"
+      :entities="currentDoc.annotations"
+      :delete-annotation="removeEntity"
+      :update-entity="updateEntity"
+      :add-entity="addEntity"
+    />
+  </div>
 </template>
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
+import ClearAnnotationsButton from '@/components/containers/annotation/ClearAnnotationsButton.vue'
 import EntityItemBox from '~/components/organisms/annotation/EntityItemBox'
 
 export default {
   components: {
-    EntityItemBox
+    EntityItemBox,
+    ClearAnnotationsButton
   },
 
   computed: {

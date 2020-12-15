@@ -13,6 +13,10 @@ class DocumentService {
     return this.request.post(`/projects/${projectId}/docs`, payload)
   }
 
+  deleteAllDocuments(projectId) {
+    return this.request.delete(`/projects/${projectId}/docs`)
+  }
+
   deleteDocument(projectId, docId) {
     return this.request.delete(`/projects/${projectId}/docs/${docId}`)
   }

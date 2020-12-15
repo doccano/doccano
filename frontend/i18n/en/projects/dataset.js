@@ -15,5 +15,7 @@ export default {
   exportDataMessage: 'Select a file format',
   deleteDocumentsTitle: 'Delete Document',
   deleteDocumentsMessage: 'Are you sure you want to delete these documents from this project?',
+  deleteBulkDocumentsTitle: 'Delete All Documents',
+  deleteBulkDocumentsMessage: 'Are you sure you want to delete all documents from this project?',
   pageText: '{0}-{1} of {2}'
 }
