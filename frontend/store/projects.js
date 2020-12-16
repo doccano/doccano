@@ -78,6 +78,11 @@ export const getters = {
       text: 'Excel',
       accept: '.xlsx'
     }
+    const fastText = {
+      type: 'fastText',
+      text: 'FastText',
+      accept: '.txt'
+    }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [
         '{"text": "Terrible customer service.", "labels": ["negative"]}\n',
@@ -96,11 +101,16 @@ export const getters = {
         '"Really great transaction.","positive"\n',
         '"Great price.","positive"'
       ]
+      fastText.examples = [
+        '__label__[label name] text \n',
+        '__label_president Obama Trump'
+      ]
       return [
         plain,
         csv,
         json,
-        excel
+        excel,
+        fastText
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [

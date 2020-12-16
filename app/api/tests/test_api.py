@@ -9,7 +9,7 @@ from model_mommy import mommy
 
 from ..models import User, SequenceAnnotation, Document, Role, RoleMapping
 from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
-from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser
+from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser, FastTextParser
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -1435,6 +1435,17 @@ class TestParser(APITestCase):
 
     def test_give_data_without_label_to_json_parser(self):
         self.parser_helper(filename='example.jsonl', parser=JSONParser(), include_label=False)
+
+    def test_give_labeling_data_to_fasttext_parser(self):
+        self.parser_helper(filename='example_fasttext.txt', parser=FastTextParser())
+
+    def test_give_data_without_label_name_to_fasttext_parser(self):
+        with self.assertRaises(FileParseException):
+            self.parser_helper(filename='example_fasttext_label_tag_without_name.txt', parser=FastTextParser())
+
+    def test_give_data_without_text_to_fasttext_parser(self):
+        with self.assertRaises(FileParseException):
+            self.parser_helper(filename='example_fasttext_without_text.txt', parser=FastTextParser())
 
 
 class TestDownloader(APITestCase):
