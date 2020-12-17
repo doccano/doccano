@@ -39,6 +39,7 @@
               v-model="filterOption"
             />
             <guideline-button />
+            <clear-annotations-button />
           </v-col>
           <v-spacer />
           <v-col>
@@ -73,6 +74,7 @@
 <script>
 import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
+import ClearAnnotationsButton from '@/components/containers/annotation/ClearAnnotationsButton.vue'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
@@ -92,7 +94,8 @@ export default {
     GuidelineButton,
     FilterButton,
     ApproveButton,
-    MetadataBox
+    MetadataBox,
+    ClearAnnotationsButton
   },
 
   fetch() {

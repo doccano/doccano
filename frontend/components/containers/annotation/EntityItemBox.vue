@@ -1,6 +1,5 @@
 <template>
   <div>
-    <clear-annotations-button />
     <entity-item-box
       v-if="isReady"
       :labels="items"
@@ -15,13 +14,11 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import ClearAnnotationsButton from '@/components/containers/annotation/ClearAnnotationsButton.vue'
 import EntityItemBox from '~/components/organisms/annotation/EntityItemBox'
 
 export default {
   components: {
-    EntityItemBox,
-    ClearAnnotationsButton
+    EntityItemBox
   },
 
   computed: {
