@@ -1518,9 +1518,9 @@ class TestDownloader(APITestCase):
                                   format='json',
                                   expected_status=status.HTTP_200_OK)
 
-    def test_can_download_labelling_json1(self):
+    def test_can_download_labelling_jsonl(self):
         self.download_test_helper(url=self.labeling_url,
-                                  format='json1',
+                                  format='jsonl',
                                   expected_status=status.HTTP_200_OK)
 
     def test_can_download_plain_text(self):

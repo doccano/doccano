@@ -167,15 +167,18 @@ export const getters = {
   getExportFormat(state) {
     const csv = {
       type: 'csv',
-      text: 'CSV'
+      text: 'CSV',
+      suffix: 'csv'
     }
     const json = {
       type: 'json',
-      text: 'JSONL'
+      text: 'JSONL',
+      suffix: 'jsonl'
     }
     const jsonl = {
-      type: 'json1',
-      text: 'JSONL(Text label)'
+      type: 'jsonl',
+      text: 'JSONL(Text label)',
+      suffix: 'jsonl'
     }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [

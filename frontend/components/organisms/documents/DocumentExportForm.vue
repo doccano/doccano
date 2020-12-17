@@ -14,6 +14,7 @@
       >
         <h2>{{ $t('dataset.importDataMessage1') }}</h2>
         <v-radio-group
+          ref="format"
           v-model="selectedFormat"
           :rules="fileFormatRules($t('rules.fileFormatRules'))"
         >
@@ -34,6 +35,8 @@
             {{ example }}<br>
           </span>
         </v-sheet>
+        <h2>{{ $t('dataset.exportDataMessage2') }}</h2>
+        <v-text-field v-model="selectedFileName" placeholder="Name the file" />
       </v-form>
     </template>
   </base-card>
@@ -64,6 +67,7 @@ export default {
       valid: false,
       file: null,
       selectedFormat: null,
+      selectedFileName: 'project_' + this.$route.params.id + '_dataset',
       fileFormatRules,
       uploadFileRules
     }
@@ -87,13 +91,15 @@ export default {
       return this.$refs.form.validate()
     },
     reset() {
-      this.$refs.form.reset()
+      this.$refs.format.reset()
     },
     download() {
       if (this.validate()) {
         this.exportDocument({
           projectId: this.$route.params.id,
-          format: this.selectedFormat.type
+          fileName: this.selectedFileName,
+          format: this.selectedFormat.type,
+          suffix: this.selectedFormat.suffix
         })
         this.reset()
         this.cancel()

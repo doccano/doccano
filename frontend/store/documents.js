@@ -126,7 +126,7 @@ export const actions = {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', 'file.' + data.format)
+        link.setAttribute('download', data.fileName + '.' + data.suffix)
         document.body.appendChild(link)
         link.click()
       })
