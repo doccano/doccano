@@ -15,7 +15,7 @@ fi
 
 echo "Installing dependencies"
 apt-get update && apt-get install -y g++ unixodbc-dev # pyodbc build dependencies
-"${venv}/bin/pip" install --no-cache-dir -r "${root}/requirements.txt"
+"${venv}/bin/pip" install --no-cache-dir -r "${app}/requirements.txt"
 
 echo "Initializing database"
 "${venv}/bin/python" "${app}/manage.py" wait_for_db
