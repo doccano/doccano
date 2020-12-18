@@ -3,7 +3,8 @@
     <v-card-title class="mb-2">
       <document-action-menu />
       <document-deletion-button class="ms-2" />
-      <document-bulk-deletion-button class="ms-2" />
+      <v-spacer />
+      <document-bulk-deletion-button />
     </v-card-title>
     <document-list />
   </v-card>
