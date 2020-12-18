@@ -122,7 +122,7 @@ export const actions = {
   },
   exportDocument({ commit }, data) {
     commit('setLoading', true)
-    DocumentService.exportFile(data.projectId, data.format)
+    DocumentService.exportFile(data.projectId, data.format, data.onlyApproved)
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')

@@ -37,6 +37,12 @@
         </v-sheet>
         <h2>{{ $t('dataset.exportDataMessage2') }}</h2>
         <v-text-field v-model="selectedFileName" placeholder="Name the file" />
+        <v-checkbox
+          v-model="onlyApproved"
+          label="Export only approved documents"
+          color="success"
+          hide-details
+        />
       </v-form>
     </template>
   </base-card>
@@ -68,6 +74,7 @@ export default {
       file: null,
       selectedFormat: null,
       selectedFileName: 'project_' + this.$route.params.id + '_dataset',
+      onlyApproved: false,
       fileFormatRules,
       uploadFileRules
     }
@@ -99,6 +106,7 @@ export default {
           projectId: this.$route.params.id,
           fileName: this.selectedFileName,
           format: this.selectedFormat.type,
+          onlyApproved: this.onlyApproved,
           suffix: this.selectedFormat.suffix
         })
         this.reset()

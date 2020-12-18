@@ -374,9 +374,15 @@ class TextDownloadAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         format = request.query_params.get('q')
+        only_approved = request.query_params.get('onlyApproved')
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        documents = project.documents.all()
+        documents = (
+            project.documents.exclude(annotations_approved_by = None)
+            if only_approved == 'true'
+            else project.documents.all()
+        )
         painter = self.select_painter(format)
+
         # jsonl-textlabel format prints text labels while jsonl format prints annotations with label ids
         # jsonl-textlabel format - "labels": [[0, 15, "PERSON"], ..]
         # jsonl format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]

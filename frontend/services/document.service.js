@@ -29,7 +29,7 @@ class DocumentService {
     return this.request.post(`/projects/${projectId}/docs/upload`, payload, config)
   }
 
-  exportFile(projectId, format) {
+  exportFile(projectId, format, onlyApproved) {
     const headers = {}
     if (format === 'csv') {
       headers.Accept = 'text/csv; charset=utf-8'
@@ -41,7 +41,8 @@ class DocumentService {
     const config = {
       responseType: 'blob',
       params: {
-        q: format
+        q: format,
+        onlyApproved
       },
       headers
     }
