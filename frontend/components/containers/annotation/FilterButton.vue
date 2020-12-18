@@ -6,7 +6,7 @@
           <v-btn
             class="text-capitalize ps-1 pe-1"
             min-width="36"
-            outlined
+            icon
             v-on="{ ...tooltip, ...menu }"
           >
             <v-icon>
