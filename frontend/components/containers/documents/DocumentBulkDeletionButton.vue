@@ -3,7 +3,7 @@
     <v-btn
       :disabled="!total"
       class="text-capitalize"
-      outlined
+      color="error"
       @click="dialog=true"
     >
       {{ $t('generic.deleteAll') }}
@@ -17,7 +17,6 @@
         :message="$t('dataset.deleteBulkDocumentsMessage')"
         :button-true-text="$t('generic.yes')"
         :button-false-text="$t('generic.cancel')"
-        item-key="text"
         @ok="deleteAllDocuments($route.params.id);dialog=false"
         @cancel="dialog=false"
       />
