@@ -17,6 +17,10 @@ class AnnotationService {
     return this.request.delete(`/projects/${projectId}/docs/${docId}/annotations/${annotationId}`)
   }
 
+  clearAnnotations(projectId, docid) {
+    return this.request.delete(`/projects/${projectId}/docs/${docid}/annotations`)
+  }
+
   updateAnnotation(projectId, docId, annotationId, payload) {
     return this.request.patch(`/projects/${projectId}/docs/${docId}/annotations/${annotationId}`, payload)
   }

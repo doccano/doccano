@@ -31,7 +31,6 @@ export const getters = {
     return state.items[state.current]
   }
 }
-
 export const mutations = {
   setCurrent(state, payload) {
     state.current = payload
@@ -67,6 +66,9 @@ export const mutations = {
   deleteAnnotation(state, annotationId) {
     state.items[state.current].annotations = state.items[state.current].annotations.filter(item => item.id !== annotationId)
   },
+  clearAnnotations(state) {
+    state.items[state.current].annotations = []
+  },
   updateAnnotation(state, payload) {
     const item = state.items[state.current].annotations.find(item => item.id === payload.id)
     Object.assign(item, payload)
@@ -88,7 +90,6 @@ export const mutations = {
 export const actions = {
   getDocumentList({ commit, state }, payload) {
     commit('setLoading', true)
-    // payload = Object.assign(payload, state.searchOptions)
     return DocumentService.getDocumentList(payload)
       .then((response) => {
         commit('setDocumentList', response.data.results)
@@ -146,6 +147,17 @@ export const actions = {
         alert(error)
       })
   },
+  deleteAllDocuments({ commit, state }, projectId) {
+    DocumentService.deleteAllDocuments(projectId)
+      .then((response) => {
+        commit('setDocumentList', [])
+        commit('setTotalItems', 0)
+        commit('resetSelected')
+      })
+      .catch((error) => {
+        alert(error)
+      })
+  },
   deleteDocument({ commit, state }, projectId) {
     for (const document of state.selected) {
       DocumentService.deleteDocument(projectId, document.id)
@@ -183,6 +195,16 @@ export const actions = {
     AnnotationService.deleteAnnotation(payload.projectId, documentId, payload.annotationId)
       .then((response) => {
         commit('deleteAnnotation', payload.annotationId)
+      })
+      .catch((error) => {
+        alert(error)
+      })
+  },
+  clearAnnotations({ commit, state }, projectId) {
+    const documentId = state.items[state.current].id
+    AnnotationService.clearAnnotations(projectId, documentId)
+      .then((response) => {
+        commit('clearAnnotations')
       })
       .catch((error) => {
         alert(error)

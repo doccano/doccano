@@ -184,6 +184,12 @@ class DocumentList(generics.ListCreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
 
+    def delete(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        queryset = project.documents
+        queryset.all().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Document.objects.all()
@@ -220,6 +226,11 @@ class AnnotationList(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(document_id=self.kwargs['doc_id'], user=self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        queryset.all().delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @staticmethod
     def check_single_class_classification(project_id, doc_id, user):
