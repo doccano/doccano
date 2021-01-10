@@ -1,47 +1,53 @@
-ARG PYTHON_VERSION="3.6"
-FROM python:${PYTHON_VERSION}-stretch AS builder
+ARG PYTHON_VERSION="3.8.6"
+ARG NODE_VERSION="13.7"
+FROM node:${NODE_VERSION}-alpine AS frontend-builder
 
-ARG NODE_VERSION="8.x"
-RUN curl -sL "https://deb.nodesource.com/setup_${NODE_VERSION}" | bash - \
- && apt-get install --no-install-recommends -y \
-      nodejs
+COPY frontend/ /frontend/
+WORKDIR /frontend
+ENV PUBLIC_PATH="/static/_nuxt/"
 
-COPY tools/install-mssql.sh /doccano/tools/install-mssql.sh
-RUN /doccano/tools/install-mssql.sh --dev
+# hadolint ignore=DL3018
+RUN apk add -U --no-cache git python3 make g++ \
+ && yarn install \
+ && yarn build \
+ && apk del --no-cache git make g++
 
-COPY app/server/static/package*.json /doccano/app/server/static/
-RUN cd /doccano/app/server/static \
- && npm ci
+FROM python:${PYTHON_VERSION}-slim-buster AS backend-builder
 
-COPY requirements.txt /
-RUN pip install -r /requirements.txt \
- && pip wheel -r /requirements.txt -w /deps
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    netcat=1.10-41.1 \
+    libpq-dev=11.9-0+deb10u1 \
+    unixodbc-dev=2.3.6-0.1 \
+    g++=4:8.3.0-1 \
+    libssl-dev=1.1.1d-0+deb10u4 \
+ && apt-get clean
 
-COPY . /doccano
+COPY /app/requirements.txt /
+# hadolint ignore=DL3013
+RUN pip install --no-cache-dir -U pip \
+ && pip install --no-cache-dir -r /requirements.txt \
+ && pip wheel --no-cache-dir -r /requirements.txt -w /deps
 
-WORKDIR /doccano
-RUN tools/ci.sh
-
-FROM builder AS cleaner
-
-RUN cd /doccano/app/server/static \
- && SOURCE_MAP=False DEBUG=False npm run build \
- && rm -rf components pages node_modules .*rc package*.json webpack.config.js
-
-RUN cd /doccano \
- && python app/manage.py collectstatic --noinput
-
-FROM python:${PYTHON_VERSION}-slim-stretch AS runtime
-
-COPY --from=builder /doccano/tools/install-mssql.sh /doccano/tools/install-mssql.sh
-RUN /doccano/tools/install-mssql.sh
+FROM python:${PYTHON_VERSION}-slim-buster AS runtime
 
 RUN useradd -ms /bin/sh doccano
 
-COPY --from=builder /deps /deps
-RUN pip install --no-cache-dir /deps/*.whl
+RUN mkdir /data \
+ && chown doccano:doccano /data
 
-COPY --from=cleaner --chown=doccano:doccano /doccano /doccano
+COPY --from=backend-builder /deps /deps
+# hadolint ignore=DL3013
+RUN pip install --no-cache-dir -U pip \
+ && pip install --no-cache-dir /deps/*.whl
+
+COPY --chown=doccano:doccano . /doccano
+WORKDIR /doccano
+COPY --from=frontend-builder /frontend/dist /doccano/app/client/dist
+RUN python app/manage.py collectstatic --noinput
+
+VOLUME /data
+ENV DATABASE_URL="sqlite:////data/doccano.db"
 
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"

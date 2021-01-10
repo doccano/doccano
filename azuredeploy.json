@@ -33,6 +33,7 @@
     "adminPassword": {
       "type": "securestring",
       "minLength": 16,
+      "maxLength": 50,
       "metadata": {
         "description": "The password for the admin account."
       }
@@ -50,6 +51,21 @@
       ],
       "metadata": {
         "description": "The SKU of the webapp hosting tier."
+      }
+    },
+    "sendgridSku": {
+      "type": "string",
+      "defaultValue": "free",
+      "allowedValues": [
+        "free",
+        "bronze",
+        "silver",
+        "gold",
+        "platinum",
+        "premier"
+      ],
+      "metadata": {
+        "description": "The SKU of the Sendgrid email account."
       }
     },
     "databaseCores": {
@@ -86,7 +102,7 @@
     "dockerImageName": {
       "type": "string",
       "minLength": 1,
-      "defaultValue": "chakkiworks/doccano:latest",
+      "defaultValue": "doccano/doccano:latest",
       "metadata": {
         "description": "The Docker image to deploy."
       }
@@ -124,11 +140,29 @@
     "databaseUserCredentials" : "[concat(uriComponent(concat(parameters('adminUserName'), '@', variables('databaseServerName'))), ':', parameters('adminPassword'))]",
     "databaseFqdn" : "[concat( variables('databaseServerName'), '.postgres.database.azure.com:', variables('databaseServerPort'))]",
     "databaseConnectionString": "[concat('pgsql://', variables('databaseUserCredentials'), '@', variables('databaseFqdn'), '/', parameters('databaseName'))]",
+    "sendgridAccountName": "[concat(parameters('appName'),'-email')]",
     "appServicePlanName": "[concat(parameters('appName'),'-hosting')]",
     "analyticsName": "[concat(parameters('appName'),'-analytics')]",
     "appFqdn": "[concat(parameters('appName'),'.azurewebsites.net')]"
   },
   "resources": [
+    {
+      "name": "[variables('sendgridAccountName')]",
+      "type": "Sendgrid.Email/accounts",
+      "apiVersion": "2015-01-01",
+      "location": "[variables('location')]",
+      "plan": {
+        "name": "[parameters('sendgridSku')]",
+        "publisher": "Sendgrid",
+        "product": "sendgrid_azure",
+        "promotionCode": ""
+      },
+      "properties": {
+        "acceptMarketingEmails": false,
+        "email": "[parameters('adminContactEmail')]",
+        "password": "[parameters('adminPassword')]"
+      }
+    },
     {
       "type": "Microsoft.Insights/components",
       "apiVersion": "2015-05-01",
@@ -207,6 +241,7 @@
       "kind": "app,linux,container",
       "location": "[variables('location')]",
       "dependsOn": [
+        "[resourceId('Sendgrid.Email/accounts', variables('sendgridAccountName'))]",
         "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('databaseServerName'))]",
         "[resourceId('Microsoft.Insights/components', variables('analyticsName'))]",
         "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
@@ -260,6 +295,26 @@
             {
               "name": "ADMIN_PASSWORD",
               "value": "[parameters('adminPassword')]"
+            },
+            {
+              "name": "EMAIL_USE_TLS",
+              "value": "True"
+            },
+            {
+              "name": "EMAIL_HOST",
+              "value": "[reference(resourceId('Sendgrid.Email/accounts', variables('sendgridAccountName'))).smtpServer]"
+            },
+            {
+              "name": "EMAIL_HOST_USER",
+              "value": "[reference(resourceId('Sendgrid.Email/accounts', variables('sendgridAccountName'))).username]"
+            },
+            {
+              "name": "EMAIL_HOST_PASSWORD",
+              "value": "[parameters('adminPassword')]"
+            },
+            {
+              "name": "EMAIL_PORT",
+              "value": "587"
             },
             {
               "name": "DEBUG",

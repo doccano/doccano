@@ -1,4 +1,4 @@
-# Introduction
+# Roadmap
 
 Doccano is a fast-moving, community supported project. This roadmap provides guidance about priorities and focus areas of the doccano team and lists the functionality expected in upcoming releases of doccano. Many of these areas are driven by community use cases, and we welcome further contributions to doccano.
 
@@ -38,7 +38,6 @@ This is a list of features on the short term roadmap and beyond:
 * Implement RBAC and enable to assign a role to a user by project administrators.
 * Enhance annotation statistics.
 
-
 ### Annotation
 
 * Increase the number of annotation tasks such as relation extraction, entity linking, aspect-based sentiment analysis, visual question answering and so on.
@@ -47,7 +46,6 @@ This is a list of features on the short term roadmap and beyond:
 * Enable to annotate by keyword search or some rules.
 * Control sort order on the frontend.
 * More documentation and tutorials.
-
 
 ### Upload and download
 
@@ -63,8 +61,7 @@ This is a list of features on the short term roadmap and beyond:
 * Enable to customize font and font-family.
 * Enable to customize label color per user.
 * Enable to customize site theme per user.
- 
- 
+
 ### Entire project
 
 * Design Vue component and use it to implement frontend.
@@ -82,4 +79,3 @@ This is a list of features on the short term roadmap and beyond:
 * Gather and highlight novel doccano use cases.
 
 Track the progress of these features in the GitHub project tracker.
-

@@ -264,7 +264,13 @@ export default {
         })
         .catch((error) => {
           console.log(error); // eslint-disable-line no-console
-          this.messages.push('You cannot use same label name or shortcut key.');
+          if (error.response.data.non_field_errors) {
+            error.response.data.non_field_errors.forEach((msg) => {
+              this.messages.push(msg);
+            });
+          } else {
+            this.messages.push('You cannot use same label name or shortcut key.');
+          }
         });
     },
 
@@ -312,7 +318,13 @@ export default {
         })
         .catch((error) => {
           console.log(error); // eslint-disable-line no-console
-          this.messages.push('You cannot use same label name or shortcut key.');
+          if (error.response.data.non_field_errors) {
+            error.response.data.non_field_errors.forEach((msg) => {
+              this.messages.push(msg);
+            });
+          } else {
+            this.messages.push('You cannot use same label name or shortcut key.');
+          }
         });
     },
 

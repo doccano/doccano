@@ -9,7 +9,7 @@ from django.core.mail import EmailMessage
 from django.views.generic import TemplateView
 from django.shortcuts import redirect
 
-from app import settings
+from django.conf import settings
 
 
 class SignupView(TemplateView):
@@ -39,6 +39,7 @@ class SignupView(TemplateView):
             message = render_to_string('acc_active_email.html', {
                 'user': user,
                 'domain': current_site.domain,
+                'scheme': request.scheme,
                 'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
                 'token': account_activation_token.make_token(user),
             })

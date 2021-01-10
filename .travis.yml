@@ -5,8 +5,9 @@ python:
 
 env:
   - DATABASE=sqlite
-  - DATABASE=postgres
-  - DATABASE=mssql
+  # - DATABASE=postgres
+  # - DATABASE=mssql
+  # - DATABASE=mysql
 
 services:
   - docker
@@ -22,13 +23,17 @@ before_install:
       docker run --rm --name=mssql --network=doccano -d -e ACCEPT_EULA=y -e SA_PASSWORD=sUp3rS3cr3t mcr.microsoft.com/mssql/server:2017-latest
       docker exec -it mssql sh -c "while ! /opt/mssql-tools/bin/sqlcmd -U SA -P sUp3rS3cr3t -Q 'CREATE DATABASE db;'; do sleep 3; done"
       export DATABASE_URL="mssql://SA:sUp3rS3cr3t@mssql:1433/db?sslmode=disable"
+
+    elif [[ "${DATABASE}" = "mysql" ]]; then
+      docker run --rm --name=mysql --network=doccano -d -e MYSQL_DATABASE=db -e MYSQL_ROOT_PASSWORD=mysqlr00t mysql:5.7
+      export DATABASE_URL="mysql://root:mysqlr00t@mysql:3306/db"
     fi
 
 install:
-    - pip install mkdocs mkdocs-material
+    - pip install --no-cache-dir mkdocs==1.1 mkdocs-material==4.6.3
 
 script:
-  - docker build --target=builder --tag=doccano-test .
+  - docker build --target=runtime --tag=doccano-test .
   - >
     if [[ "${DATABASE}" != "sqlite" ]]; then
       docker run --network doccano -e DATABASE_URL="${DATABASE_URL}" -it doccano-test sh -c 'app/manage.py wait_for_db && app/manage.py migrate && app/manage.py test api.tests server.tests'
@@ -41,13 +46,13 @@ deploy:
   - provider: script
     script: tools/cd.sh travis-${TRAVIS_BUILD_NUMBER}
     on:
-      repo: chakki-works/doccano
+      repo: doccano/doccano
       branch: master
 
   - provider: script
     script: tools/cd.sh ${TRAVIS_TAG}
     on:
-      repo: chakki-works/doccano
+      repo: doccano/doccano
       tags: true
 
   - provider: pages
@@ -55,5 +60,5 @@ deploy:
     github_token: $GITHUB_TOKEN
     local_dir: site
     on:
-        repo: chakki-works/doccano
+        repo: doccano/doccano
         branch: master

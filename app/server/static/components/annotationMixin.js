@@ -1,7 +1,7 @@
 import * as marked from 'marked';
 import VueJsonPretty from 'vue-json-pretty';
 import isEmpty from 'lodash.isempty';
-import HTTP, { defaultHttpClient } from './http';
+import HTTP from './http';
 import Preview from './preview.vue';
 
 const getOffsetFromUrl = (url) => {
@@ -87,11 +87,13 @@ export default {
       url: '',
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
+      ordering: '',
       count: 0,
       prevLimit: 0,
       paginationPages: 0,
       paginationPage: 0,
-      isSuperuser: false,
+      singleClassClassification: false,
+      isAnnotationApprover: false,
       isMetadataActive: false,
       isAnnotationGuidelineActive: false,
     };
@@ -176,6 +178,20 @@ export default {
       });
     },
 
+    documentMetadataFor(i) {
+      const document = this.docs[i];
+      if (document == null || document.meta == null) {
+        return null;
+      }
+
+      const metadata = JSON.parse(document.meta);
+      if (isEmpty(metadata)) {
+        return null;
+      }
+
+      return metadata;
+    },
+
     getState() {
       if (this.picked === 'all') {
         return '';
@@ -188,14 +204,14 @@ export default {
 
     async submit() {
       const state = this.getState();
-      this.url = `docs?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}`;
+      this.url = `docs?q=${this.searchQuery}&is_checked=${state}&offset=${this.offset}&ordering=${this.ordering}`;
       await this.search();
       this.pageNumber = 0;
     },
 
     removeLabel(annotation) {
       const docId = this.docs[this.pageNumber].id;
-      HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then(() => {
+      return HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then(() => {
         const index = this.annotations[this.pageNumber].indexOf(annotation);
         this.annotations[this.pageNumber].splice(index, 1);
       });
@@ -222,9 +238,7 @@ export default {
       const approved = !this.documentAnnotationsAreApproved;
 
       HTTP.post(`docs/${document.id}/approve-labels`, { approved }).then((response) => {
-        const documents = this.docs.slice();
-        documents[this.pageNumber] = response.data;
-        this.docs = documents;
+        Object.assign(this.docs[this.pageNumber], response.data);
       });
     },
   },
@@ -234,9 +248,14 @@ export default {
       this.submit();
     },
 
+    ordering() {
+      this.offset = 0;
+      this.submit();
+    },
+
     annotations() {
       // fetch progress info.
-      HTTP.get('statistics').then((response) => {
+      HTTP.get('statistics?include=total&include=remaining').then((response) => {
         this.total = response.data.total;
         this.remaining = response.data.remaining;
       });
@@ -252,10 +271,10 @@ export default {
       this.labels = response.data;
     });
     HTTP.get().then((response) => {
+      this.singleClassClassification = response.data.single_class_classification;
       this.guideline = response.data.guideline;
-    });
-    defaultHttpClient.get('/v1/me').then((response) => {
-      this.isSuperuser = response.data.is_superuser;
+      const roles = response.data.current_users_role;
+      this.isAnnotationApprover = roles.is_annotation_approver || roles.is_project_admin;
     });
     this.submit();
   },
@@ -287,17 +306,7 @@ export default {
     },
 
     documentMetadata() {
-      const document = this.docs[this.pageNumber];
-      if (document == null || document.meta == null) {
-        return null;
-      }
-
-      const metadata = JSON.parse(document.meta);
-      if (isEmpty(metadata)) {
-        return null;
-      }
-
-      return metadata;
+      return this.documentMetadataFor(this.pageNumber);
     },
 
     id2label() {

@@ -55,6 +55,15 @@ div.columns(v-cloak="")
       div.main.pt0.pb0.pr20.pl20
         span About {{ count }} results (page {{ paginationPage }} of {{ paginationPages }})
 
+      div.main.pt0.pb0.pr20.pl20
+        div.select
+          select(v-model="ordering")
+            option(value="", disabled, selected) Sort by
+            option(value="created_at") Created : Ascending
+            option(value="-created_at") Created : Descending
+            option(value="updated_at") Updated : Ascending
+            option(value="-updated_at") Updated : Descending
+
       div.main.sidebar-scrollable
         a.item(
           v-for="(doc, index) in docs"
@@ -64,8 +73,11 @@ div.columns(v-cloak="")
           href="#"
         )
           span.icon
-            i.fa.fa-check(v-show="annotations[index] && annotations[index].length")
-          span.name {{ doc.text.slice(0, 60) }}...
+            i.fa.fa-thumbs-up(v-show="annotations[index] && docs[index].annotation_approver")
+            i.fa.fa-check(v-show="annotations[index] && annotations[index].length && !docs[index].annotation_approver")
+          span.name
+            span(v-if="documentMetadataFor(index) && documentMetadataFor(index).filename") {{ documentMetadataFor(index).filename }}
+            span(v-else) {{ doc.text.slice(0, 60) }}...
 
   div.column.is-7.is-offset-1.message.hero.is-fullheight#message-pane
 
@@ -114,7 +126,7 @@ div.columns(v-cloak="")
 
       div.column.is-1.has-text-right
         a.button.tooltip.is-tooltip-bottom(
-          v-if="isSuperuser"
+          v-if="isAnnotationApprover"
           v-on:click="approveDocumentAnnotations"
           v-bind:data-tooltip="documentAnnotationsApprovalTooltip"
         )

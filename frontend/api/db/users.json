@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "username": "Barack Obama"
+    },
+    {
+        "id": 2,
+        "username": "George W. Bush"
+    },
+    {
+        "id": 3,
+        "username": "Bill Clinton"
+    },
+    {
+        "id": 4,
+        "username": "Donald Trump"
+    },
+    {
+        "id": 5,
+        "username": "George H. W. Bush"
+    }
+]

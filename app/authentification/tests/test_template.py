@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase, TestCase, RequestFactory, override_settings
 from django.http import HttpRequest
 from ..views import SignupView
-from app import settings
+from django.conf import settings
 from api.tests.test_config import setenv
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')

@@ -1,0 +1,109 @@
+<template>
+  <base-card
+    :disabled="!valid"
+    :title="$t('members.addMember')"
+    :agree-text="$t('generic.add')"
+    :cancel-text="$t('generic.cancel')"
+    @agree="create"
+    @cancel="cancel"
+  >
+    <template #content>
+      <v-form
+        ref="form"
+        v-model="valid"
+      >
+        <v-autocomplete
+          v-model="selectedUser"
+          :items="items"
+          :loading="isLoading"
+          :search-input.sync="username"
+          color="white"
+          hide-no-data
+          hide-selected
+          item-text="username"
+          :label="$t('members.userSearchAPIs')"
+          :placeholder="$t('members.userSearchPrompt')"
+          prepend-icon="mdi-account"
+          return-object
+        />
+        <v-select
+          v-model="role"
+          :items="roles"
+          :rules="roleRules($t('rules.roleRules'))"
+          item-text="translatedName"
+          item-value="id"
+          :label="$t('members.role')"
+          return-object
+          prepend-icon="mdi-account-card-details-outline"
+        />
+      </v-form>
+    </template>
+  </base-card>
+</template>
+
+<script>
+import BaseCard from '@/components/molecules/BaseCard'
+import { roleRules } from '@/rules/index'
+
+export default {
+  components: {
+    BaseCard
+  },
+  props: {
+    addMember: {
+      type: Function,
+      default: () => {},
+      required: true
+    },
+    items: {
+      type: Array,
+      default: () => {},
+      required: true
+    },
+    roles: {
+      type: Array,
+      default: () => {},
+      required: true
+    }
+  },
+  data() {
+    return {
+      valid: false,
+      username: '',
+      role: null,
+      isLoading: false,
+      selectedUser: null,
+      roleRules
+    }
+  },
+
+  watch: {
+    username(val) {
+      this.$emit('search-user', val)
+    }
+  },
+
+  methods: {
+    cancel() {
+      this.$emit('close')
+    },
+    validate() {
+      return this.$refs.form.validate()
+    },
+    reset() {
+      this.$refs.form.reset()
+    },
+    create() {
+      if (this.validate()) {
+        this.addMember({
+          userId: this.selectedUser.id,
+          projectId: this.$route.params.id,
+          role: this.role.id
+        })
+        this.reset()
+        this.cancel()
+      }
+    }
+  }
+}
+</script>

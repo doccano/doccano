@@ -1,12 +1,12 @@
 # Project information
 site_name: 'doccano'
-site_description: 'A Text Annotation tool for Human'
+site_description: 'A Text Annotation tool for Humans'
 site_author: 'Hiroki Nakayama'
-site_url: 'https://chakki-works.github.io/doccano/'
+site_url: 'https://doccano.github.io/doccano/'
 
 # Repository
-repo_name: 'chakki-works/doccano'
-repo_url: 'https://github.com/chakki-works/doccano'
+repo_name: 'doccano/doccano'
+repo_url: 'https://github.com/doccano/doccano'
 
 # Copyright
 copyright: 'Copyright &copy; 2018 - 2019 Hiroki Nakayama'
@@ -20,9 +20,9 @@ theme:
 
 extra:
   social:
-    - type: 'github'
+    - icon: 'fontawesome/brands/github'
       link: 'https://github.com/Hironsan'
-    - type: 'twitter'
+    - icon: 'fontawesome/brands/github'
       link: 'https://twitter.com/Hironsan13'
 
 # Page tree
@@ -30,13 +30,12 @@ nav:
   - Doccano: index.md
   - Getting started: getting-started.md
   - Tutorial: tutorial.md
+  - Project Structure: project_structure.md
   - Advanced:
     - AWS HTTPS settings: advanced/aws_https_settings.md
     - OAuth2 settings: advanced/oauth2_settings.md
   #- Release notes: release-notes.md
   #- Author's notes: authors-notes.md
   - FAQ: faq.md
-  - Contributing: CONTRIBUTING.md
   - Code of Conduct: CODE_OF_CONDUCT.md
   - Roadmap: roadmap.md
-  - License: LICENSE.md
