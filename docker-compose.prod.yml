@@ -5,7 +5,6 @@ services:
     build:
       context: .
       dockerfile: app/Dockerfile.prod
-    # command: ["/app/tools/run.sh"]
     volumes:
       - static_volume:/app/staticfiles
     environment:
@@ -21,18 +20,14 @@ services:
       - network-backend
       - network-frontend
 
-  frontend:
-    build: ./frontend
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
     environment:
       API_URL: "http://backend:8000"
       GOOGLE_TRACKING_ID: ""
     volumes:
-      - www:/app/dist
-
-  nginx:
-    build: ./nginx
-    volumes:
-      - www:/var/www/html:ro
       - static_volume:/static
     ports:
       - 80:80
@@ -55,7 +50,6 @@ services:
 volumes:
   postgres_data:
   static_volume:
-  www:
 
 networks:
   network-backend:

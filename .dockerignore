@@ -1,6 +1,7 @@
 *
 !app/
 !frontend/
+!nginx/
 !tests/
 !tools/
 !.coveragerc
