@@ -2,8 +2,10 @@ version: "3.7"
 services:
 
   backend:
-    build: ./app
-    command: ["/app/tools/run.sh"]
+    build:
+      context: .
+      dockerfile: app/Dockerfile.prod
+    # command: ["/app/tools/run.sh"]
     volumes:
       - static_volume:/app/staticfiles
     environment:

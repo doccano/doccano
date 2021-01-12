@@ -8,7 +8,8 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY . /app/
+COPY ./app/ /app/
+COPY ./Pipfile* /app/
 
 # hadolint ignore=DL3013
 RUN apt-get update \
@@ -17,6 +18,12 @@ RUN apt-get update \
     libpq-dev=11.9-0+deb10u1 \
     unixodbc-dev=2.3.6-0.1 \
     g++=4:8.3.0-1 \
- && pip install --no-cache-dir -U pip setuptools \
- && pip install --no-cache-dir -r requirements.txt \
- && apt-get clean
+ && pip install --no-cache-dir pipenv==2020.11.15 \
+ && pipenv install --system --deploy \
+ && pip uninstall -y pipenv virtualenv-clone virtualenv \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY tools/ /opt/bin/
+
+ENTRYPOINT [ "/opt/bin/run.sh" ]
