@@ -23,9 +23,12 @@ RUN apt-get update \
     libssl-dev=1.1.1d-0+deb10u4 \
  && apt-get clean
 
-COPY /app/requirements.txt /
+WORKDIR /tmp
+COPY Pipfile* /tmp/
+
 # hadolint ignore=DL3013
-RUN pip install --no-cache-dir -U pip \
+RUN pip install --no-cache-dir -U pip pipenv==2020.11.15 \
+ && pipenv lock -r > /requirements.txt \
  && pip install --no-cache-dir -r /requirements.txt \
  && pip wheel --no-cache-dir -r /requirements.txt -w /deps
 
@@ -39,7 +42,8 @@ RUN mkdir /data \
 COPY --from=backend-builder /deps /deps
 # hadolint ignore=DL3013
 RUN pip install --no-cache-dir -U pip \
- && pip install --no-cache-dir /deps/*.whl
+ && pip install --no-cache-dir /deps/*.whl \
+ && rm -rf /deps
 
 COPY --chown=doccano:doccano . /doccano
 WORKDIR /doccano
