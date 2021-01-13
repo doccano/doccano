@@ -25,7 +25,8 @@ services:
 
   frontend:
     image: node:13.7.0
-    command: ["/src/frontend/dev-nuxt.sh"]
+    command: ["/src/tools/dev-nuxt.sh"]
+    working_dir: /src/frontend
     environment:
       API_URL: "http://backend:8000"
     volumes:
