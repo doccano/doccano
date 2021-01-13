@@ -1,12 +1,14 @@
 *
 !app/
 !frontend/
+!nginx/
 !tests/
 !tools/
 !.coveragerc
 !.flake8
-!requirements.txt
 !Dockerfile
+!Pipfile.lock
+!Pipfile
 
 app/**/bundle/
 app/**/node_modules/

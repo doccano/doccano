@@ -2,11 +2,12 @@ version: "3.7"
 services:
 
   backend:
-    image: python:3.8.6-buster
+    build:
+      context: .
+      dockerfile: app/Dockerfile.dev
     volumes:
       - .:/src
-      - venv:/src/venv
-    command: ["/src/app/tools/dev-django.sh", "0.0.0.0:8000"]
+      - venv:/root/.local/share
     environment:
       ADMIN_USERNAME: "admin"
       ADMIN_PASSWORD: "password"
@@ -24,7 +25,8 @@ services:
 
   frontend:
     image: node:13.7.0
-    command: ["/src/frontend/dev-nuxt.sh"]
+    command: ["/src/tools/dev-nuxt.sh"]
+    working_dir: /src/frontend
     environment:
       API_URL: "http://backend:8000"
     volumes:
