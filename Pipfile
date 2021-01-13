@@ -42,6 +42,7 @@ python-jose = "*"
 pyexcel-xlsx = "*"
 lockfile = "*"
 gunicorn = "*"
+fasteners = "*"
 
 [requires]
 python_version = "3.8"
