@@ -32,17 +32,17 @@ export default {
       default: null
     }
   },
+  data() {
+    return {
+      pageNotFound: '404 Not Found',
+      otherError: 'The page you were looking for wasn\'t allowed to access.'
+    }
+  },
   head() {
     const title =
       this.error.statusCode === 404 ? this.pageNotFound : this.otherError
     return {
       title
-    }
-  },
-  data() {
-    return {
-      pageNotFound: '404 Not Found',
-      otherError: 'The page you were looking for wasn\'t allowed to access.'
     }
   }
 }

@@ -1,13 +1,15 @@
 <template>
-  <entity-item-box
-    v-if="isReady"
-    :labels="items"
-    :text="currentDoc.text"
-    :entities="currentDoc.annotations"
-    :delete-annotation="removeEntity"
-    :update-entity="updateEntity"
-    :add-entity="addEntity"
-  />
+  <div>
+    <entity-item-box
+      v-if="isReady"
+      :labels="items"
+      :text="currentDoc.text"
+      :entities="currentDoc.annotations"
+      :delete-annotation="removeEntity"
+      :update-entity="updateEntity"
+      :add-entity="addEntity"
+    />
+  </div>
 </template>
 
 <script>
@@ -21,9 +23,10 @@ export default {
 
   computed: {
     ...mapState('labels', ['items', 'loading']),
+    ...mapState('documents', { documentLoading: 'loading' }),
     ...mapGetters('documents', ['currentDoc']),
     isReady() {
-      return !!this.currentDoc && !this.loading
+      return !!this.currentDoc && !this.loading && !this.documentLoading
     }
   },
 

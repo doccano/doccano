@@ -23,9 +23,9 @@
       </v-btn>
       <v-btn
         v-if="agreeText"
+        :disabled="disabled"
         class="text-none"
         text
-        :disabled="disabled"
         data-test="delete-button"
         @click="agree"
       >

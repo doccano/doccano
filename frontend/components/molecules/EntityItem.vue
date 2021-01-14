@@ -5,8 +5,8 @@
     offset-y
   >
     <template v-slot:activator="{ on }">
-      <span class="highlight bottom" :style="{ borderColor: color }" v-on="on">
-        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span class="highlight__label" :data-label="label" :style="{ backgroundColor: color, color: textColor }" />
+      <span :style="{ borderColor: color }" class="highlight bottom" v-on="on">
+        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label" />
       </span>
     </template>
     <v-list
@@ -31,13 +31,11 @@
       </v-list-item>
     </v-list>
   </v-menu>
-  <span v-else>{{ content }}</span>
+  <span v-else :class="[newline ? 'newline' : '']">{{ content }}</span>
 </template>
 
 <script>
-import Vue from 'vue'
 import { idealColor } from '~/plugins/utils.js'
-Vue.use(require('vue-shortkey'))
 
 export default {
   props: {
@@ -58,6 +56,9 @@ export default {
       type: Array,
       default: () => [],
       required: true
+    },
+    newline: {
+      type: Boolean
     }
   },
   data() {
@@ -143,5 +144,8 @@ export default {
   font-size: 14px;
   -webkit-font-smoothing: subpixel-antialiased;
   letter-spacing: .1em;
+}
+.newline {
+  width: 100%;
 }
 </style>

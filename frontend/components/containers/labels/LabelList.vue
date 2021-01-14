@@ -5,7 +5,14 @@
     :items="items"
     :search="search"
     :loading="loading"
-    loading-text="Loading... Please wait"
+    :loading-text="$t('generic.loading')"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-options': [5, 10, 15, $t('generic.all')],
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
+    }"
     item-key="id"
     show-select
     @input="updateSelected"
@@ -14,7 +21,7 @@
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
@@ -26,8 +33,8 @@
         <template v-slot:input>
           <v-text-field
             :value="item.text"
-            :rules="labelNameRules"
-            label="Edit"
+            :rules="labelNameRules($t('rules.labelNameRules'))"
+            :label="$t('generic.edit')"
             single-line
             @change="handleUpdateLabel({ id: item.id, text: $event })"
           />
@@ -40,8 +47,8 @@
         <template v-slot:input>
           <v-select
             :value="item.suffix_key"
-            :items="keys"
-            label="Key"
+            :items="availableShortkeys(item.suffix_key)"
+            :label="$t('annotation.key')"
             @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
           />
         </template>
@@ -58,8 +65,8 @@
         </v-chip>
         <template v-slot:input>
           <v-color-picker
-            :value="item.backgroundColor"
-            :rules="colorRules"
+            :value="item.background_color"
+            :rules="colorRules($t('rules.colorRules'))"
             show-swatches
             hide-mode-switch
             width="800"
@@ -74,7 +81,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 import { colorRules, labelNameRules } from '@/rules/index'
 import { idealColor } from '~/plugins/utils'
 
@@ -84,16 +91,16 @@ export default {
       search: '',
       headers: [
         {
-          text: 'Name',
+          text: this.$t('generic.name'),
           align: 'left',
           value: 'text'
         },
         {
-          text: 'Shortkey',
+          text: this.$t('labels.shortkey'),
           value: 'suffix_key'
         },
         {
-          text: 'Color',
+          text: this.$t('labels.color'),
           sortable: false,
           value: 'background_color'
         }
@@ -105,10 +112,7 @@ export default {
 
   computed: {
     ...mapState('labels', ['items', 'selected', 'loading']),
-
-    keys() {
-      return 'abcdefghijklmnopqrstuvwxyz'.split('')
-    }
+    ...mapGetters('labels', ['shortkeys'])
   },
 
   created() {
@@ -127,6 +131,12 @@ export default {
         ...payload
       }
       this.updateLabel(data)
+    },
+
+    availableShortkeys(suffixKey) {
+      const usedKeys = this.items.map(item => item.suffix_key)
+      const unusedKeys = this.shortkeys.filter(item => item === suffixKey || !usedKeys.includes(item))
+      return unusedKeys
     },
 
     textColor(backgroundColor) {

@@ -94,6 +94,7 @@ export default {
       prevLimit: 0,
       paginationPages: 0,
       paginationPage: 0,
+      singleClassClassification: false,
       isAnnotationApprover: false,
       isCommentActive: false,
       isMetadataActive: false,
@@ -213,6 +214,20 @@ export default {
       });
     },
 
+    documentMetadataFor(i) {
+      const document = this.docs[i];
+      if (document == null || document.meta == null) {
+        return null;
+      }
+
+      const metadata = JSON.parse(document.meta);
+      if (isEmpty(metadata)) {
+        return null;
+      }
+
+      return metadata;
+    },
+
     getState() {
       if (this.picked === 'all') {
         return '';
@@ -232,7 +247,7 @@ export default {
 
     removeLabel(annotation) {
       const docId = this.docs[this.pageNumber].id;
-      HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then(() => {
+      return HTTP.delete(`docs/${docId}/annotations/${annotation.id}`).then(() => {
         const index = this.annotations[this.pageNumber].indexOf(annotation);
         this.annotations[this.pageNumber].splice(index, 1);
       });
@@ -259,9 +274,7 @@ export default {
       const approved = !this.documentAnnotationsAreApproved;
 
       HTTP.post(`docs/${document.id}/approve-labels`, { approved }).then((response) => {
-        const documents = this.docs.slice();
-        documents[this.pageNumber] = response.data;
-        this.docs = documents;
+        Object.assign(this.docs[this.pageNumber], response.data);
       });
     },
 
@@ -307,6 +320,7 @@ export default {
       this.labels = response.data;
     });
     HTTP.get().then((response) => {
+      this.singleClassClassification = response.data.single_class_classification;
       this.guideline = response.data.guideline;
       const roles = response.data.current_users_role;
       this.isAnnotationApprover = roles.is_annotation_approver || roles.is_project_admin;
@@ -341,17 +355,7 @@ export default {
     },
 
     documentMetadata() {
-      const document = this.docs[this.pageNumber];
-      if (document == null || document.meta == null) {
-        return null;
-      }
-
-      const metadata = JSON.parse(document.meta);
-      if (isEmpty(metadata)) {
-        return null;
-      }
-
-      return metadata;
+      return this.documentMetadataFor(this.pageNumber);
     },
 
     id2label() {

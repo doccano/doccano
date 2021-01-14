@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid>
       <v-row justify="center">
         <v-col cols="12" md="9">
@@ -23,12 +23,12 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script>
-import Seq2seqBox from '~/components/organisms/annotation/Seq2seqBox'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
+import Seq2seqBox from '~/components/organisms/annotation/Seq2seqBox'
 
 export default {
   layout: 'demo',

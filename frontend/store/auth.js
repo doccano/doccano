@@ -3,7 +3,8 @@ import ApiService from '@/services/api.service'
 import AuthService from '@/services/auth.service'
 
 export const state = () => ({
-  token: null
+  token: null,
+  username: null
 })
 
 export const mutations = {
@@ -12,12 +13,21 @@ export const mutations = {
   },
   clearToken(state) {
     state.token = null
+  },
+  setUsername(state, username) {
+    state.username = username
+  },
+  clearUsername(state) {
+    state.username = null
   }
 }
 
 export const getters = {
   isAuthenticated(state) {
     return state.token != null
+  },
+  getUsername: () => () => {
+    return localStorage.getItem('username')
   }
 }
 
@@ -26,7 +36,9 @@ export const actions = {
     return AuthService.postCredential(authData)
       .then((result) => {
         commit('setToken', result.data.token)
+        commit('setUsername', authData.username)
         localStorage.setItem('token', result.data.token)
+        localStorage.setItem('username', authData.username)
         Cookie.set('jwt', result.data.token)
         ApiService.setHeader(result.data.token)
       })
@@ -52,9 +64,11 @@ export const actions = {
   },
   logout({ commit }) {
     commit('clearToken')
+    commit('clearUsername')
     Cookie.remove('jwt')
     if (process.client) {
       localStorage.removeItem('token')
+      localStorage.removeItem('username')
     }
   }
 }

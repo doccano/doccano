@@ -8,8 +8,8 @@ from rest_framework.test import APITestCase
 from model_mommy import mommy
 
 from ..models import User, SequenceAnnotation, Document, Role, RoleMapping
-from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
-from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser
+from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
+from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser, FastTextParser
 from ..exceptions import FileParseException
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
@@ -27,6 +27,29 @@ def assign_user_to_role(project_member, project, role_name):
 
 def remove_all_role_mappings():
     RoleMapping.objects.all().delete()
+
+
+class TestHealthEndpoint(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.url = reverse(viewname='health')
+
+    def test_returns_green_status_on_health_endpoint(self):
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data['status'], 'green')
+
+
+class TestUtilsMixin:
+    def _patch_project(self, project, attribute, value):
+        old_value = getattr(project, attribute, None)
+        setattr(project, attribute, value)
+        project.save()
+
+        def cleanup_project():
+            setattr(project, attribute, old_value)
+            project.save()
+
+        self.addCleanup(cleanup_project)
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -98,6 +121,19 @@ class TestProjectListAPI(APITestCase):
                           password=self.super_user_pass)
         response = self.client.post(self.url, format='json', data=self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertFalse(response.json().get('collaborative_annotation'))
+        self.assertFalse(response.json().get('randomize_document_order'))
+
+    def test_allows_superuser_to_create_project_with_flags(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        data = dict(self.data)
+        data['collaborative_annotation'] = True
+        data['randomize_document_order'] = True
+        response = self.client.post(self.url, format='json', data=data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(response.json().get('collaborative_annotation'))
+        self.assertTrue(response.json().get('randomize_document_order'))
 
     def test_disallows_project_member_to_create_project(self):
         self.client.login(username=self.main_project_member_name,
@@ -363,7 +399,54 @@ class TestLabelDetailAPI(APITestCase):
         remove_all_role_mappings()
 
 
-class TestDocumentListAPI(APITestCase):
+class TestLabelUploadAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project_member_name = 'project_member_name'
+        cls.project_member_pass = 'project_member_pass'
+        cls.non_project_member_name = 'non_project_member_name'
+        cls.non_project_member_pass = 'non_project_member_pass'
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
+        project_member = User.objects.create_user(username=cls.project_member_name,
+                                                  password=cls.project_member_pass)
+        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
+        project_admin = User.objects.create_user(username=cls.super_user_name,
+                                                 password=cls.super_user_pass)
+        project = mommy.make('Project', users=[project_member, project_admin])
+        cls.url = reverse(viewname='label_upload', args=[project.id])
+        create_default_roles()
+        assign_user_to_role(project_member=project_admin, project=project, role_name=settings.ROLE_PROJECT_ADMIN)
+        assign_user_to_role(project_member=project_member, project=project, role_name=settings.ROLE_ANNOTATOR)
+
+    def help_to_upload_file(self, filename, expected_status):
+        with open(os.path.join(DATA_DIR, filename), 'rb') as f:
+            response = self.client.post(self.url, data={'file': f})
+        self.assertEqual(response.status_code, expected_status)
+
+    def test_allows_project_admin_to_upload_label(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        self.help_to_upload_file('valid_labels.json', status.HTTP_201_CREATED)
+
+    def test_disallows_project_member_to_upload_label(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        self.help_to_upload_file('valid_labels.json', status.HTTP_403_FORBIDDEN)
+
+    def test_try_to_upload_invalid_file(self):
+        self.client.login(username=self.super_user_name,
+                          password=self.super_user_pass)
+        self.help_to_upload_file('invalid_labels.json', status.HTTP_400_BAD_REQUEST)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
+
+class TestDocumentListAPI(APITestCase, TestUtilsMixin):
 
     @classmethod
     def setUpTestData(cls):
@@ -383,6 +466,8 @@ class TestDocumentListAPI(APITestCase):
                                                    email='fizz@buzz.com')
 
         cls.main_project = mommy.make('TextClassificationProject', users=[project_member, super_user])
+        doc1 = mommy.make('Document', project=cls.main_project)
+        doc2 = mommy.make('Document', project=cls.main_project)
         mommy.make('Document', project=cls.main_project)
 
         cls.random_order_project = mommy.make('TextClassificationProject', users=[project_member, super_user],
@@ -399,11 +484,58 @@ class TestDocumentListAPI(APITestCase):
         assign_user_to_role(project_member=project_member, project=cls.random_order_project,
                             role_name=settings.ROLE_ANNOTATOR)
 
-    def test_returns_docs_to_project_member(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
+        mommy.make('DocumentAnnotation', document=doc1, user=project_member)
+        mommy.make('DocumentAnnotation', document=doc2, user=project_member)
+
+    def _test_list(self, url, username, password, expected_num_results):
+        self.client.login(username=username, password=password)
+        response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.json().get('results')), expected_num_results)
+
+    def test_returns_docs_to_project_member(self):
+        self._test_list(self.url,
+                        username=self.project_member_name,
+                        password=self.project_member_pass,
+                        expected_num_results=3)
+
+    def test_returns_docs_to_project_member_filtered_to_active(self):
+        self._test_list('{}?doc_annotations__isnull=true'.format(self.url),
+                        username=self.project_member_name,
+                        password=self.project_member_pass,
+                        expected_num_results=1)
+
+    def test_returns_docs_to_project_member_filtered_to_completed(self):
+        self._test_list('{}?doc_annotations__isnull=false'.format(self.url),
+                        username=self.project_member_name,
+                        password=self.project_member_pass,
+                        expected_num_results=2)
+
+    def test_returns_docs_to_project_member_filtered_to_active_with_collaborative_annotation(self):
+        self._test_list('{}?doc_annotations__isnull=true'.format(self.url),
+                        username=self.super_user_name,
+                        password=self.super_user_pass,
+                        expected_num_results=3)
+
+        self._patch_project(self.main_project, 'collaborative_annotation', True)
+
+        self._test_list('{}?doc_annotations__isnull=true'.format(self.url),
+                        username=self.super_user_name,
+                        password=self.super_user_pass,
+                        expected_num_results=1)
+
+    def test_returns_docs_to_project_member_filtered_to_completed_with_collaborative_annotation(self):
+        self._test_list('{}?doc_annotations__isnull=false'.format(self.url),
+                        username=self.super_user_name,
+                        password=self.super_user_pass,
+                        expected_num_results=0)
+
+        self._patch_project(self.main_project, 'collaborative_annotation', True)
+
+        self._test_list('{}?doc_annotations__isnull=false'.format(self.url),
+                        username=self.super_user_name,
+                        password=self.super_user_pass,
+                        expected_num_results=2)
 
     def test_returns_docs_in_consistent_order_for_all_users(self):
         self.client.login(username=self.project_member_name, password=self.project_member_pass)
@@ -414,7 +546,7 @@ class TestDocumentListAPI(APITestCase):
         user2_documents = self.client.get(self.url, format='json').json().get('results')
         self.client.logout()
 
-        self.assertEqual(user1_documents, user2_documents)
+        self.assertEqual([doc['id'] for doc in user1_documents], [doc['id'] for doc in user2_documents])
 
     def test_can_return_docs_in_consistent_random_order(self):
         self.client.login(username=self.project_member_name, password=self.project_member_pass)
@@ -439,10 +571,10 @@ class TestDocumentListAPI(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_do_not_return_docs_of_other_projects(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.data['count'], self.main_project.documents.count())
+        self._test_list(self.url,
+                        username=self.project_member_name,
+                        password=self.project_member_pass,
+                        expected_num_results=self.main_project.documents.count())
 
     def test_allows_superuser_to_create_doc(self):
         self.client.login(username=self.super_user_name,
@@ -584,7 +716,7 @@ class TestApproveLabelsAPI(APITestCase):
         remove_all_role_mappings()
 
 
-class TestAnnotationListAPI(APITestCase):
+class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
 
     @classmethod
     def setUpTestData(cls):
@@ -611,6 +743,18 @@ class TestAnnotationListAPI(APITestCase):
         sub_project = mommy.make('SequenceLabelingProject', users=[non_project_member])
         sub_project_doc = mommy.make('Document', project=sub_project)
         mommy.make('SequenceAnnotation', document=sub_project_doc)
+
+        cls.classification_project = mommy.make('TextClassificationProject',
+                                                users=[project_member, another_project_member])
+        cls.classification_project_label_1 = mommy.make('Label', project=cls.classification_project)
+        cls.classification_project_label_2 = mommy.make('Label', project=cls.classification_project)
+        cls.classification_project_document = mommy.make('Document', project=cls.classification_project)
+        cls.classification_project_url = reverse(
+            viewname='annotation_list', args=[cls.classification_project.id, cls.classification_project_document.id])
+        assign_user_to_role(project_member=project_member, project=cls.classification_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=another_project_member, project=cls.classification_project,
+                            role_name=settings.ROLE_ANNOTATOR)
 
         cls.url = reverse(viewname='annotation_list', args=[main_project.id, main_project_doc.id])
         cls.post_data = {'start_offset': 0, 'end_offset': 1, 'label': main_project_label.id}
@@ -662,6 +806,32 @@ class TestAnnotationListAPI(APITestCase):
         response = self.client.post(self.url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_disallows_second_annotation_for_single_class_project(self):
+        self._patch_project(self.classification_project, 'single_class_classification', True)
+
+        self.client.login(username=self.project_member_name, password=self.project_member_pass)
+        response = self.client.post(self.classification_project_url, format='json',
+                                    data={'label': self.classification_project_label_1.id})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        response = self.client.post(self.classification_project_url, format='json',
+                                    data={'label': self.classification_project_label_2.id})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_disallows_second_annotation_for_single_class_shared_project(self):
+        self._patch_project(self.classification_project, 'single_class_classification', True)
+        self._patch_project(self.classification_project, 'collaborative_annotation', True)
+
+        self.client.login(username=self.project_member_name, password=self.project_member_pass)
+        response = self.client.post(self.classification_project_url, format='json',
+                                    data={'label': self.classification_project_label_1.id})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        self.client.login(username=self.another_project_member_name, password=self.another_project_member_pass)
+        response = self.client.post(self.classification_project_url, format='json',
+                                    data={'label': self.classification_project_label_2.id})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def _patch_project(self, project, attribute, value):
         old_value = getattr(project, attribute, None)
         setattr(project, attribute, value)
@@ -710,9 +880,11 @@ class TestAnnotationDetailAPI(APITestCase):
         another_entity = mommy.make('SequenceAnnotation',
                                     document=main_project_doc, user=another_project_member)
 
-        sub_project = mommy.make('SequenceLabelingProject', users=[non_project_member])
-        sub_project_doc = mommy.make('Document', project=sub_project)
-        mommy.make('SequenceAnnotation', document=sub_project_doc)
+        shared_project = mommy.make('SequenceLabelingProject',
+                                    collaborative_annotation=True,
+                                    users=[project_member, another_project_member])
+        shared_project_doc = mommy.make('Document', project=shared_project)
+        shared_entity = mommy.make('SequenceAnnotation', document=shared_project_doc, user=another_project_member)
 
         cls.url = reverse(viewname='annotation_detail', args=[main_project.id,
                                                               main_project_doc.id,
@@ -720,9 +892,12 @@ class TestAnnotationDetailAPI(APITestCase):
         cls.another_url = reverse(viewname='annotation_detail', args=[main_project.id,
                                                                       main_project_doc.id,
                                                                       another_entity.id])
+        cls.shared_url = reverse(viewname='annotation_detail', args=[shared_project.id,
+                                                                     shared_project_doc.id,
+                                                                     shared_entity.id])
         cls.post_data = {'start_offset': 0, 'end_offset': 10}
-        assign_user_to_role(project_member=project_member, project=main_project,
-                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=project_member, project=main_project, role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=project_member, project=shared_project, role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_annotation_to_project_member(self):
         self.client.login(username=self.project_member_name,
@@ -783,6 +958,18 @@ class TestAnnotationDetailAPI(APITestCase):
                           password=self.project_member_pass)
         response = self.client.delete(self.another_url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_allow_member_to_update_others_annotation_in_shared_project(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.patch(self.shared_url, format='json', data=self.post_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_allow_member_to_delete_others_annotation_in_shared_project(self):
+        self.client.login(username=self.project_member_name,
+                          password=self.project_member_pass)
+        response = self.client.delete(self.shared_url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     @classmethod
     def doCleanups(cls):
@@ -1081,6 +1268,21 @@ class TestUploader(APITestCase):
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
+    def test_can_upload_classification_csv_with_out_of_order_columns(self):
+        self.upload_test_helper(project_id=self.classification_project.id,
+                                filename='example_out_of_order_columns.csv',
+                                file_format='csv',
+                                expected_status=status.HTTP_201_CREATED)
+
+        self.label_test_helper(
+            project_id=self.classification_project.id,
+            expected_labels=[
+                {'text': 'Positive'},
+                {'text': 'Negative'},
+            ],
+            expected_label_keys=[],
+        )
+
     def test_can_upload_csv_with_non_utf8_encoding(self):
         self.upload_test_helper(project_id=self.classification_project.id,
                                 filename='example.utf16.csv',
@@ -1099,11 +1301,11 @@ class TestUploader(APITestCase):
                                 file_format='csv',
                                 expected_status=status.HTTP_201_CREATED)
 
-    def test_cannot_upload_csv_file_does_not_match_column_and_row(self):
+    def test_can_upload_csv_file_does_not_match_column_and_row(self):
         self.upload_test_helper(project_id=self.classification_project.id,
-                                filename='example.invalid.1.csv',
+                                filename='example_column_and_row_not_matching.csv',
                                 file_format='csv',
-                                expected_status=status.HTTP_400_BAD_REQUEST)
+                                expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_csv_file_has_too_many_columns(self):
         self.upload_test_helper(project_id=self.classification_project.id,
@@ -1129,11 +1331,11 @@ class TestUploader(APITestCase):
                                 file_format='excel',
                                 expected_status=status.HTTP_201_CREATED)
 
-    def test_cannot_upload_excel_file_does_not_match_column_and_row(self):
+    def test_can_upload_excel_file_does_not_match_column_and_row(self):
         self.upload_test_helper(project_id=self.classification_project.id,
-                                filename='example.invalid.1.xlsx',
+                                filename='example_column_and_row_not_matching.xlsx',
                                 file_format='excel',
-                                expected_status=status.HTTP_400_BAD_REQUEST)
+                                expected_status=status.HTTP_201_CREATED)
 
     def test_cannot_upload_excel_file_has_too_many_columns(self):
         self.upload_test_helper(project_id=self.classification_project.id,
@@ -1306,10 +1508,10 @@ class TestParser(APITestCase):
                                parser=CoNLLParser())
 
     def test_give_classification_data_to_csv_parser(self):
-        self.parser_helper(filename='example.csv', parser=CSVParser())
+        self.parser_helper(filename='example.csv', parser=CSVParser(), include_label=False)
 
     def test_give_seq2seq_data_to_csv_parser(self):
-        self.parser_helper(filename='example.csv', parser=CSVParser())
+        self.parser_helper(filename='example.csv', parser=CSVParser(), include_label=False)
 
     def test_give_classification_data_to_json_parser(self):
         self.parser_helper(filename='classification.jsonl', parser=JSONParser())
@@ -1322,6 +1524,17 @@ class TestParser(APITestCase):
 
     def test_give_data_without_label_to_json_parser(self):
         self.parser_helper(filename='example.jsonl', parser=JSONParser(), include_label=False)
+
+    def test_give_labeling_data_to_fasttext_parser(self):
+        self.parser_helper(filename='example_fasttext.txt', parser=FastTextParser())
+
+    def test_give_data_without_label_name_to_fasttext_parser(self):
+        with self.assertRaises(FileParseException):
+            self.parser_helper(filename='example_fasttext_label_tag_without_name.txt', parser=FastTextParser())
+
+    def test_give_data_without_text_to_fasttext_parser(self):
+        with self.assertRaises(FileParseException):
+            self.parser_helper(filename='example_fasttext_without_text.txt', parser=FastTextParser())
 
 
 class TestDownloader(APITestCase):
@@ -1340,9 +1553,11 @@ class TestDownloader(APITestCase):
         cls.labeling_project = mommy.make('SequenceLabelingProject',
                                           users=[super_user], project_type=SEQUENCE_LABELING)
         cls.seq2seq_project = mommy.make('Seq2seqProject', users=[super_user], project_type=SEQ2SEQ)
+        cls.speech2text_project = mommy.make('Speech2textProject', users=[super_user], project_type=SPEECH2TEXT)
         cls.classification_url = reverse(viewname='doc_downloader', args=[cls.classification_project.id])
         cls.labeling_url = reverse(viewname='doc_downloader', args=[cls.labeling_project.id])
         cls.seq2seq_url = reverse(viewname='doc_downloader', args=[cls.seq2seq_project.id])
+        cls.speech2text_url = reverse(viewname='doc_downloader', args=[cls.speech2text_project.id])
 
     def setUp(self):
         self.client.login(username=self.super_user_name,
@@ -1387,9 +1602,14 @@ class TestDownloader(APITestCase):
                                   format='json',
                                   expected_status=status.HTTP_200_OK)
 
-    def test_can_download_labelling_json1(self):
+    def test_can_download_speech2text_jsonl(self):
+        self.download_test_helper(url=self.speech2text_url,
+                                  format='json',
+                                  expected_status=status.HTTP_200_OK)
+
+    def test_can_download_labelling_jsonl(self):
         self.download_test_helper(url=self.labeling_url,
-                                  format='json1',
+                                  format='jsonl',
                                   expected_status=status.HTTP_200_OK)
 
     def test_can_download_plain_text(self):
@@ -1398,33 +1618,54 @@ class TestDownloader(APITestCase):
                                   expected_status=status.HTTP_400_BAD_REQUEST)
 
 
-class TestStatisticsAPI(APITestCase):
+class TestStatisticsAPI(APITestCase, TestUtilsMixin):
 
     @classmethod
     def setUpTestData(cls):
         cls.super_user_name = 'super_user_name'
         cls.super_user_pass = 'super_user_pass'
+        cls.other_user_name = 'other_user_name'
+        cls.other_user_pass = 'other_user_pass'
         create_default_roles()
         # Todo: change super_user to project_admin.
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                                    password=cls.super_user_pass,
                                                    email='fizz@buzz.com')
 
-        main_project = mommy.make('TextClassificationProject', users=[super_user])
-        doc1 = mommy.make('Document', project=main_project)
-        mommy.make('Document', project=main_project)
+        other_user = User.objects.create_user(username=cls.other_user_name,
+                                              password=cls.other_user_pass,
+                                              email='bar@buzz.com')
+
+        cls.project = mommy.make('TextClassificationProject', users=[super_user, other_user])
+        doc1 = mommy.make('Document', project=cls.project)
+        doc2 = mommy.make('Document', project=cls.project)
         mommy.make('DocumentAnnotation', document=doc1, user=super_user)
-        cls.url = reverse(viewname='statistics', args=[main_project.id])
-        cls.doc = Document.objects.filter(project=main_project)
+        mommy.make('DocumentAnnotation', document=doc2, user=other_user)
+        cls.url = reverse(viewname='statistics', args=[cls.project.id])
+        cls.doc = Document.objects.filter(project=cls.project)
+
+        assign_user_to_role(project_member=other_user, project=cls.project,
+                            role_name=settings.ROLE_ANNOTATOR)
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
 
     def test_returns_exact_progress(self):
         self.client.login(username=self.super_user_name,
                           password=self.super_user_pass)
         response = self.client.get(self.url, format='json')
-        total = self.doc.count()
-        remaining = self.doc.filter(doc_annotations__isnull=True).count()
-        self.assertEqual(response.data['total'], total)
-        self.assertEqual(response.data['remaining'], remaining)
+        self.assertEqual(response.data['total'], 2)
+        self.assertEqual(response.data['remaining'], 1)
+
+    def test_returns_exact_progress_with_collaborative_annotation(self):
+        self._patch_project(self.project, 'collaborative_annotation', True)
+
+        self.client.login(username=self.other_user_name,
+                          password=self.other_user_pass)
+        response = self.client.get(self.url, format='json')
+        self.assertEqual(response.data['total'], 2)
+        self.assertEqual(response.data['remaining'], 0)
 
     def test_returns_user_count(self):
         self.client.login(username=self.super_user_name,

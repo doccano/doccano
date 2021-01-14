@@ -6,7 +6,8 @@ class AuthService {
   }
 
   postCredential(data) {
-    return this.request.post(`/auth-token`, data)
+    this.request.removeHeader()
+    return this.request.post('/auth-token', data)
   }
 }
 

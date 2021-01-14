@@ -56,7 +56,6 @@ describe('ProjectList', () => {
   test('raise warning when passing props', () => {
     const spy = jest.spyOn(console, 'error')
     spy.mockImplementation()
-    const wrapper = shallowMount(ProjectList)
     expect(spy).toBeCalledWith(
       expect.stringContaining('[Vue warn]: Missing required prop')
     )

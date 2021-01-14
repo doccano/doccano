@@ -3,13 +3,13 @@
     v-model="dialog"
     width="800px"
   >
-    <template v-slot:activator="{ on }">
+    <template v-slot:activator="{}">
       <v-btn
-        class="mb-2 text-capitalize"
         :class="classObject"
         :color="color"
         :outlined="isOutlined"
         :disabled="disabled"
+        class="mb-2 text-capitalize"
         @click="dialog=true"
       >
         {{ text }}

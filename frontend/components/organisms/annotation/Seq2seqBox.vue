@@ -14,12 +14,14 @@
         <v-text-field
           v-model="newText"
           prepend-inner-icon="mdi-pencil"
-          label="New text"
+          :label="$t('annotation.newText')"
           autofocus
           single-line
           hide-details
           filled
           @keyup.enter="create"
+          @compositionstart="compositionStart"
+          @compositionend="compositionEnd"
         />
       </template>
       <template v-slot:item.text="{ item }">
@@ -30,7 +32,7 @@
           <template v-slot:input>
             <v-textarea
               :value="item.text"
-              label="Edit"
+              :label="$t('generic.edit')"
               autofocus
               @change="update(item.id, $event)"
             />
@@ -42,7 +44,7 @@
           small
           @click="deleteAnnotation(item.id)"
         >
-          delete
+          {{ $t('generic.delete') }}
         </v-icon>
       </template>
     </v-data-table>
@@ -88,7 +90,9 @@ export default {
           align: 'right',
           value: 'action'
         }
-      ]
+      ],
+      isComposing: false,
+      hasCompositionJustEnded: false
     }
   },
 
@@ -101,10 +105,21 @@ export default {
       }
     },
     create() {
+      if (this.isComposing || this.hasCompositionJustEnded) {
+        this.hasCompositionJustEnded = false
+        return
+      }
       if (this.newText.length > 0) {
         this.createAnnotation(this.newText)
         this.newText = ''
       }
+    },
+    compositionStart() {
+      this.isComposing = true
+    },
+    compositionEnd() {
+      this.isComposing = false
+      this.hasCompositionJustEnded = true
     }
   }
 }

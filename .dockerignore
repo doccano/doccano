@@ -1,11 +1,14 @@
 *
 !app/
+!frontend/
+!nginx/
 !tests/
 !tools/
 !.coveragerc
 !.flake8
-!requirements.txt
 !Dockerfile
+!Pipfile.lock
+!Pipfile
 
 app/**/bundle/
 app/**/node_modules/
@@ -18,3 +21,8 @@ app/**/staticfiles/
 app/**/venv/
 app/**/__pycache__/
 tests/**/__pycache__/
+
+frontend/.nuxt/
+frontend/coverage/
+frontend/dist/
+frontend/node_modules/

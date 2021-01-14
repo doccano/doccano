@@ -6,7 +6,7 @@
           <v-btn
             class="text-capitalize ps-1 pe-1"
             min-width="36"
-            outlined
+            icon
             v-on="{ ...tooltip, ...menu }"
           >
             <v-icon>
@@ -14,11 +14,11 @@
             </v-icon>
           </v-btn>
         </template>
-        <span>Select a filter</span>
+        <span>{{ $t('annotation.selectFilterTooltip') }}</span>
       </v-tooltip>
     </template>
     <v-list>
-      <v-list-item-group v-model="selected">
+      <v-list-item-group v-model="selected" mandatory>
         <v-list-item
           v-for="(item, i) in items"
           :key="i"
@@ -40,43 +40,35 @@
 </template>
 
 <script>
-import { mapMutations, mapActions, mapGetters } from 'vuex'
 export default {
+  props: {
+    value: {
+      type: String,
+      default: '',
+      required: true
+    }
+  },
+
   data() {
     return {
-      selected: 0,
       items: [
-        { title: 'All', param: '' },
-        { title: 'Done', param: 'false' },
-        { title: 'Undone', param: 'true' }
+        { title: this.$t('annotation.filterOption1'), param: '' },
+        { title: this.$t('annotation.filterOption2'), param: 'false' },
+        { title: this.$t('annotation.filterOption3'), param: 'true' }
       ]
     }
   },
 
   computed: {
-    ...mapGetters('projects', ['getFilterOption'])
-  },
-
-  watch: {
-    selected() {
-      this.initSearchOptions()
-      this.updateSearchOptions({
-        isChecked: this.items[this.selected].param,
-        filterName: this.getFilterOption
-      })
-      this.getDocumentList({
-        projectId: this.$route.params.id
-      })
-      this.setCurrent(0)
-      const checkpoint = {}
-      checkpoint[this.$route.params.id] = this.page
-      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
+    selected: {
+      get() {
+        const index = this.items.findIndex(item => item.param === this.value)
+        return index === -1 ? 0 : index
+      },
+      set(value) {
+        this.$emit('input', this.items[value].param)
+      }
     }
-  },
-
-  methods: {
-    ...mapActions('documents', ['getDocumentList']),
-    ...mapMutations('documents', ['setCurrent', 'updateSearchOptions', 'initSearchOptions'])
   }
 }
 </script>

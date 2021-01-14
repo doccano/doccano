@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-parallax
-      src="/images/vbanner.jpg"
+      :src="require(`~/assets/vbanner.jpg`)"
       height="400"
       dark
     >
@@ -16,17 +16,17 @@
         </v-flex>
         <v-flex>
           <h1 class="mb-2 display-1 text-xs-center">
-            Text Annotation for Human
+            {{ $t('home.mainTitle') }}
           </h1>
           <div class="mt-4">
             <v-btn
               large
               outlined
               color="white"
-              href="https://github.com/chakki-works/doccano"
+              href="https://github.com/doccano/doccano"
             >
               <v-icon left>
-                mdi-github-circle
+                mdi-github
               </v-icon>
               GitHub
             </v-btn>
@@ -34,9 +34,9 @@
               class="blue lighten-2 ml-5"
               dark
               large
-              href="/auth"
+              :href="localePath('/auth')"
             >
-              Get Started
+              {{ $t('home.getStarted') }}
             </v-btn>
           </div>
         </v-flex>

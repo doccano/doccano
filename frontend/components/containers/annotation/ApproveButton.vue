@@ -2,10 +2,13 @@
   <v-tooltip bottom>
     <template v-slot:activator="{ on }">
       <v-btn
+        v-shortkey.once="['enter']"
+        :disabled="disabled"
         class="text-capitalize ps-1 pe-1"
         min-width="36"
-        outlined
+        icon
         v-on="on"
+        @shortkey="approveNextPage"
         @click="approveDocument"
       >
         <v-icon v-if="approved">
@@ -16,8 +19,8 @@
         </v-icon>
       </v-btn>
     </template>
-    <span v-if="approved">Checked</span>
-    <span v-else>Not checked</span>
+    <span v-if="approved">{{ $t('annotation.checkedTooltip') }}</span>
+    <span v-else>{{ $t('annotation.notCheckedTooltip') }}</span>
   </v-tooltip>
 </template>
 
@@ -30,6 +33,20 @@ export default {
       type: Boolean,
       default: false,
       required: true
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    value: {
+      type: Number,
+      default: 1,
+      required: true
+    },
+    length: {
+      type: Number,
+      default: 1,
+      required: true
     }
   },
 
@@ -39,6 +56,12 @@ export default {
       this.approve({
         projectId: this.$route.params.id
       })
+    },
+    /** Approves document and moves to the next page */
+    approveNextPage() {
+      const page = Math.min(this.value + 1, this.length)
+      this.$emit('input', page)
+      this.approveDocument()
     }
   }
 }

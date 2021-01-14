@@ -1,7 +1,7 @@
 <template>
   <base-card
-    title="Annotation Guideline"
-    cancel-text="Close"
+    :title="$t('annotation.guidelinePopupTitle')"
+    :cancel-text="$t('generic.close')"
     @cancel="close"
   >
     <template #content>
@@ -17,6 +17,7 @@ import 'tui-editor/dist/tui-editor-contents.css'
 import 'highlight.js/styles/github.css'
 import { Viewer } from '@toast-ui/vue-editor'
 import BaseCard from '@/components/molecules/BaseCard'
+import '@/assets/style/editor.css'
 
 export default {
   components: {

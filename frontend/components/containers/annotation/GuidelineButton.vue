@@ -5,7 +5,7 @@
         <v-btn
           class="text-capitalize ps-1 pe-1"
           min-width="36"
-          outlined
+          icon
           v-on="on"
           @click="dialog=true"
         >
@@ -14,26 +14,27 @@
           </v-icon>
         </v-btn>
       </template>
-      <span>Show guideline</span>
+      <span>{{ $t('annotation.guidelineTooltip') }}</span>
     </v-tooltip>
-    <base-dialog :dialog="dialog">
+    <v-dialog
+      v-model="dialog"
+      width="800"
+    >
       <guideline-card
         v-if="currentProject"
         :guideline-text="currentProject.guideline"
         @close="dialog=false"
       />
-    </base-dialog>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import BaseDialog from '@/components/molecules/BaseDialog'
+import { mapGetters } from 'vuex'
 import GuidelineCard from '@/components/organisms/annotation/GuidelineCard'
 
 export default {
   components: {
-    BaseDialog,
     GuidelineCard
   },
 
@@ -45,14 +46,6 @@ export default {
 
   computed: {
     ...mapGetters('projects', ['currentProject'])
-  },
-
-  created() {
-    this.setCurrentProject(this.$route.params.id)
-  },
-
-  methods: {
-    ...mapActions('projects', ['setCurrentProject'])
   }
 }
 </script>

@@ -73,8 +73,11 @@ div.columns(v-cloak="")
           href="#"
         )
           span.icon
-            i.fa.fa-check(v-show="annotations[index] && annotations[index].length")
-          span.name {{ doc.text.slice(0, 60) }}...
+            i.fa.fa-thumbs-up(v-show="annotations[index] && docs[index].annotation_approver")
+            i.fa.fa-check(v-show="annotations[index] && annotations[index].length && !docs[index].annotation_approver")
+          span.name
+            span(v-if="documentMetadataFor(index) && documentMetadataFor(index).filename") {{ documentMetadataFor(index).filename }}
+            span(v-else) {{ doc.text.slice(0, 60) }}...
 
   div.column.is-7.is-offset-1.message.hero.is-fullheight#message-pane
 

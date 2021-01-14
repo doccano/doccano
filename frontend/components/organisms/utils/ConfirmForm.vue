@@ -41,12 +41,12 @@ export default {
     items: {
       type: Array,
       default: () => [],
-      required: true
+      required: false
     },
     itemKey: {
       type: String,
       default: '',
-      required: true
+      required: false
     },
     buttonTrueText: {
       type: String,

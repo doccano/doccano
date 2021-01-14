@@ -1,9 +1,9 @@
 <template>
   <base-card
+    :disabled="!valid"
     title="Export Data"
     agree-text="Export"
     cancel-text="Cancel"
-    :disabled="!valid"
     @agree="download"
     @cancel="cancel"
   >
@@ -12,10 +12,11 @@
         ref="form"
         v-model="valid"
       >
-        <h2>Select a file format</h2>
+        <h2>{{ $t('dataset.importDataMessage1') }}</h2>
         <v-radio-group
+          ref="format"
           v-model="selectedFormat"
-          :rules="fileFormatRules"
+          :rules="fileFormatRules($t('rules.fileFormatRules'))"
         >
           <v-radio
             v-for="(format, i) in formats"
@@ -24,12 +25,24 @@
             :value="format"
           />
         </v-radio-group>
-        <code
+        <v-sheet
           v-if="selectedFormat"
-          class="mb-10 pa-5 highlight"
+          :dark="!$vuetify.theme.dark"
+          :light="$vuetify.theme.dark"
+          class="mb-5 pa-5"
         >
-          <span v-for="(example, index) in selectedFormat.examples" :key="index">{{ example }}</span>
-        </code>
+          <span v-for="(example, index) in selectedFormat.examples" :key="index">
+            {{ example }}<br>
+          </span>
+        </v-sheet>
+        <h2>{{ $t('dataset.exportDataMessage2') }}</h2>
+        <v-text-field v-model="selectedFileName" placeholder="Name the file" />
+        <v-checkbox
+          v-model="onlyApproved"
+          label="Export only approved documents"
+          color="success"
+          hide-details
+        />
       </v-form>
     </template>
   </base-card>
@@ -60,6 +73,8 @@ export default {
       valid: false,
       file: null,
       selectedFormat: null,
+      selectedFileName: 'project_' + this.$route.params.id + '_dataset',
+      onlyApproved: false,
       fileFormatRules,
       uploadFileRules
     }
@@ -83,13 +98,16 @@ export default {
       return this.$refs.form.validate()
     },
     reset() {
-      this.$refs.form.reset()
+      this.$refs.format.reset()
     },
     download() {
       if (this.validate()) {
         this.exportDocument({
           projectId: this.$route.params.id,
-          format: this.selectedFormat.type
+          fileName: this.selectedFileName,
+          format: this.selectedFormat.type,
+          onlyApproved: this.onlyApproved,
+          suffix: this.selectedFormat.suffix
         })
         this.reset()
         this.cancel()
@@ -98,13 +116,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .highlight {
-    font-size: 100%;
-    width: 100%;
-  }
-  .highlight:before {
-    content: ''
-  }
-</style>

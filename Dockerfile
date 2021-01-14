@@ -1,61 +1,54 @@
-ARG PYTHON_VERSION="3.6"
-FROM python:${PYTHON_VERSION}-stretch AS builder
+ARG PYTHON_VERSION="3.8.6"
+ARG NODE_VERSION="13.7"
+FROM node:${NODE_VERSION}-alpine AS frontend-builder
 
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+COPY frontend/ /frontend/
+WORKDIR /frontend
+ENV PUBLIC_PATH="/static/_nuxt/"
 
-ARG NODE_VERSION="8.x"
-# hadolint ignore=DL3008
-RUN curl -sL "https://deb.nodesource.com/setup_${NODE_VERSION}" | bash - \
- && apt-get install --no-install-recommends -y \
-      nodejs
+# hadolint ignore=DL3018
+RUN apk add -U --no-cache git python3 make g++ \
+ && yarn install \
+ && yarn build \
+ && apk del --no-cache git make g++
 
-ARG HADOLINT_VERSION=v1.17.1
-RUN curl -fsSL "https://github.com/hadolint/hadolint/releases/download/${HADOLINT_VERSION}/hadolint-Linux-$(uname -m)" -o /usr/local/bin/hadolint  \
-  && chmod +x /usr/local/bin/hadolint
+FROM python:${PYTHON_VERSION}-slim-buster AS backend-builder
 
-COPY tools/install-mssql.sh /doccano/tools/install-mssql.sh
-RUN /doccano/tools/install-mssql.sh --dev
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    netcat=1.10-41.1 \
+    libpq-dev=11.9-0+deb10u1 \
+    unixodbc-dev=2.3.6-0.1 \
+    g++=4:8.3.0-1 \
+    libssl-dev=1.1.1d-0+deb10u4 \
+ && apt-get clean
 
-COPY app/server/static/package*.json /doccano/app/server/static/
-WORKDIR /doccano/app/server/static
-RUN npm ci
+WORKDIR /tmp
+COPY Pipfile* /tmp/
 
-COPY requirements.txt /
-RUN pip install -r /requirements.txt \
- && pip wheel -r /requirements.txt -w /deps
+# hadolint ignore=DL3013
+RUN pip install --no-cache-dir -U pip pipenv==2020.11.15 \
+ && pipenv lock -r > /requirements.txt \
+ && pip install --no-cache-dir -r /requirements.txt \
+ && pip wheel --no-cache-dir -r /requirements.txt -w /deps
 
-COPY Dockerfile /
-RUN hadolint /Dockerfile
-
-COPY . /doccano
-
-WORKDIR /doccano
-RUN tools/ci.sh
-
-FROM builder AS cleaner
-
-WORKDIR /doccano/app/server/static
-RUN SOURCE_MAP=False DEBUG=False npm run build \
- && rm -rf components pages node_modules .*rc package*.json webpack.config.js
-
-WORKDIR /doccano
-RUN python app/manage.py collectstatic --noinput
-
-FROM python:${PYTHON_VERSION}-slim-stretch AS runtime
-
-COPY --from=builder /doccano/tools/install-mssql.sh /doccano/tools/install-mssql.sh
-RUN /doccano/tools/install-mssql.sh
+FROM python:${PYTHON_VERSION}-slim-buster AS runtime
 
 RUN useradd -ms /bin/sh doccano
 
 RUN mkdir /data \
  && chown doccano:doccano /data
 
-COPY --from=builder /deps /deps
+COPY --from=backend-builder /deps /deps
 # hadolint ignore=DL3013
-RUN pip install --no-cache-dir /deps/*.whl
+RUN pip install --no-cache-dir -U pip \
+ && pip install --no-cache-dir /deps/*.whl \
+ && rm -rf /deps
 
-COPY --from=cleaner --chown=doccano:doccano /doccano /doccano
+COPY --chown=doccano:doccano . /doccano
+WORKDIR /doccano
+COPY --from=frontend-builder /frontend/dist /doccano/app/client/dist
+RUN python app/manage.py collectstatic --noinput
 
 VOLUME /data
 ENV DATABASE_URL="sqlite:////data/doccano.db"

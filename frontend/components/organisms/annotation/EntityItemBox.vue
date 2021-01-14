@@ -4,6 +4,7 @@
       v-for="(chunk, i) in chunks"
       :key="i"
       :content="chunk.text"
+      :newline="chunk.newline"
       :label="chunk.label"
       :color="chunk.color"
       :labels="labels"
@@ -43,9 +44,7 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import EntityItem from '~/components/molecules/EntityItem'
-Vue.use(require('vue-shortkey'))
 
 export default {
   components: {
@@ -98,16 +97,12 @@ export default {
     },
 
     chunks() {
-      const chunks = []
+      let chunks = []
       const entities = this.sortedEntities
       let startOffset = 0
       for (const entity of entities) {
         // add non-entities to chunks.
-        chunks.push({
-          label: null,
-          color: null,
-          text: this.text.slice(startOffset, entity.start_offset)
-        })
+        chunks = chunks.concat(this.makeChunks(this.text.slice(startOffset, entity.start_offset)))
         startOffset = entity.end_offset
 
         // add entities to chunks.
@@ -120,11 +115,7 @@ export default {
         })
       }
       // add the rest of text.
-      chunks.push({
-        label: null,
-        color: null,
-        text: this.text.slice(startOffset, this.text.length)
-      })
+      chunks = chunks.concat(this.makeChunks(this.text.slice(startOffset, this.text.length)))
       return chunks
     },
 
@@ -137,6 +128,31 @@ export default {
     }
   },
   methods: {
+    makeChunks(text) {
+      const chunks = []
+      const snippets = text.split('\n')
+      for (const snippet of snippets.slice(0, -1)) {
+        chunks.push({
+          label: null,
+          color: null,
+          text: snippet + '\n',
+          newline: false
+        })
+        chunks.push({
+          label: null,
+          color: null,
+          text: '',
+          newline: true
+        })
+      }
+      chunks.push({
+        label: null,
+        color: null,
+        text: snippets.slice(-1)[0],
+        newline: false
+      })
+      return chunks
+    },
     show(e) {
       e.preventDefault()
       this.showMenu = false

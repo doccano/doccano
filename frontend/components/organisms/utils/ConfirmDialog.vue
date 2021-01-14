@@ -1,7 +1,7 @@
 <template>
   <base-modal
-    text="Delete"
     :disabled="disabled"
+    :text="$t('generic.delete')"
   >
     <template v-slot="slotProps">
       <base-card

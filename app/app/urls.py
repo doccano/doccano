@@ -16,20 +16,29 @@ Including another URLconf
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include, re_path
-from django.contrib.auth.views import PasswordResetView, LogoutView
-from server.views import LoginView
+from django.contrib.auth.views import TemplateView
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
+
+# TODO: adds AnnotationList and AnnotationDetail endpoint.
+schema_view = get_schema_view(
+   openapi.Info(
+      title="doccano API",
+      default_version='v1',
+      description="doccano API description",
+      license=openapi.License(name="MIT License"),
+   ),
+   public=True,
+)
 
 urlpatterns = [
-    path('', include('authentification.urls')),
-    path('', include('server.urls')),
     path('admin/', admin.site.urls),
     path('social/', include('social_django.urls')),
-    path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
-    path('password_reset/', PasswordResetView.as_view(), name='password_reset'),
     path('api-auth/', include('rest_framework.urls')),
     path('v1/', include('api.urls')),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path('', TemplateView.as_view(template_name='index.html')),
 ]
 
 if 'cloud_browser' in settings.INSTALLED_APPS:

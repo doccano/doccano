@@ -5,7 +5,14 @@
     :items="items"
     :search="search"
     :loading="loading"
-    loading-text="Loading... Please wait"
+    :loading-text="$t('generic.loading')"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-options': [5, 10, 15, $t('generic.all')],
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
+    }"
     item-key="id"
     show-select
     @input="updateSelected"
@@ -14,7 +21,7 @@
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
@@ -26,20 +33,20 @@
         large
         @save="updateRole({ id: item.id })"
       >
-        <div>{{ item.rolename }}</div>
+        <div>{{ translateRole(item.rolename, $t('members.roles')) }}</div>
         <template v-slot:input>
           <div class="mt-4 title">
-            Update Role
+            {{ $t('members.updateRole') }}
           </div>
         </template>
         <template v-slot:input>
           <v-select
             :value="getRole(item)"
             :items="roles"
-            :rules="roleRules"
+            :rules="roleRules($t('rules.roleRules'))"
             item-text="name"
             item-value="id"
-            label="Role"
+            :label="$t('members.role')"
             return-object
             @input="setNewRole"
           />
@@ -52,19 +59,20 @@
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { roleRules } from '@/rules/index'
+import { translateRole } from '~/plugins/utils'
 
 export default {
   data() {
     return {
       headers: [
         {
-          text: 'Name',
+          text: this.$t('generic.name'),
           align: 'left',
           sortable: false,
           value: 'username'
         },
         {
-          text: 'Role',
+          text: this.$t('members.role'),
           value: 'rolename'
         }
       ],
@@ -109,6 +117,10 @@ export default {
         id: payload.id,
         role: this.newRole.id
       })
+    },
+
+    translateRole(role, mappings) {
+      return translateRole(role, mappings)
     }
   }
 }

@@ -3,15 +3,18 @@
     :value="selected"
     :headers="headers"
     :items="items"
-    item-key="id"
     :options.sync="options"
     :server-items-length="total"
     :search="search"
     :loading="loading"
+    :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
-      'items-per-page-options': [10, 50, 100]
+      'showFirstLastPage': true,
+      'items-per-page-options': [10, 50, 100],
+      'items-per-page-text': $t('vuetify.itemsPerPageText')
     }"
-    loading-text="Loading... Please wait"
+    item-key="id"
+    :loading-text="$t('generic.loading')"
     show-select
     @input="updateSelected"
   >
@@ -19,7 +22,7 @@
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
@@ -32,7 +35,7 @@
         <template v-slot:input>
           <v-textarea
             :value="item.text"
-            label="Edit"
+            :label="$t('generic.edit')"
             autofocus
             @change="handleUpdateDocument({ id: item.id, text: $event })"
           />
@@ -43,9 +46,9 @@
       <v-btn
         small
         color="primary text-capitalize"
-        @click="goToAnnotationPage(item)"
+        @click="toLabeling(item)"
       >
-        Annotate
+        {{ $t('dataset.annotate') }}
       </v-btn>
     </template>
   </v-data-table>
@@ -55,25 +58,32 @@
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 
 export default {
+  async fetch() {
+    await this.getDocumentList({
+      projectId: this.$route.params.id,
+      ...this.$route.query
+    })
+  },
+
   data() {
     return {
-      search: '',
+      search: this.$route.query.q,
       options: {},
       headers: [
         {
-          text: 'Text',
+          text: this.$t('dataset.text'),
           align: 'left',
           value: 'text',
           sortable: false
         },
         {
-          text: 'Metadata',
+          text: this.$t('dataset.metadata'),
           align: 'left',
           value: 'meta',
           sortable: false
         },
         {
-          text: 'Action',
+          text: this.$t('dataset.action'),
           align: 'left',
           value: 'action',
           sortable: false
@@ -88,38 +98,34 @@ export default {
   },
 
   watch: {
+    '$route.query': '$fetch',
     options: {
-      handler() {
-        this.updateSearchOptions({
-          limit: this.options.itemsPerPage,
-          offset: (this.options.page - 1) * this.options.itemsPerPage
-        })
-        this.getDocumentList({
-          projectId: this.$route.params.id
+      handler(newvalue, oldvalue) {
+        this.$router.push({
+          query: {
+            limit: this.options.itemsPerPage,
+            offset: (this.options.page - 1) * this.options.itemsPerPage,
+            q: this.search
+          }
         })
       },
       deep: true
     },
     search() {
-      this.updateSearchOptions({
-        q: this.search
+      this.$router.push({
+        query: {
+          limit: this.options.itemsPerPage,
+          offset: 0,
+          q: this.search
+        }
       })
-      this.getDocumentList({
-        projectId: this.$route.params.id
-      })
+      this.options.page = 1
     }
-  },
-
-  created() {
-    this.initSearchOptions()
-    this.getDocumentList({
-      projectId: this.$route.params.id
-    })
   },
 
   methods: {
     ...mapActions('documents', ['getDocumentList', 'updateDocument']),
-    ...mapMutations('documents', ['updateSelected', 'updateSearchOptions', 'setCurrent', 'initSearchOptions']),
+    ...mapMutations('documents', ['updateSelected']),
 
     handleUpdateDocument(payload) {
       const data = {
@@ -129,17 +135,17 @@ export default {
       this.updateDocument(data)
     },
 
-    goToAnnotationPage(doc) {
+    toLabeling(doc) {
       const index = this.items.findIndex(item => item.id === doc.id)
-      const limit = this.options.itemsPerPage
-      const offset = (this.options.page - 1) * limit
-      const q = this.search
-      this.updateSearchOptions({ limit, offset, q })
-      this.$router.push('/projects/' + this.$route.params.id + '/' + this.getLink)
-      this.setCurrent(index)
-      const checkpoint = {}
-      checkpoint[this.$route.params.id] = index + 1
-      localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
+      const offset = (this.options.page - 1) * this.options.itemsPerPage
+      const page = offset + index + 1
+      this.$router.push({
+        path: this.localePath(`/projects/${this.$route.params.id}/${this.getLink}`),
+        query: {
+          page,
+          q: this.search
+        }
+      })
     }
   }
 }

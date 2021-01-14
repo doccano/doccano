@@ -24,7 +24,7 @@
         {% for doc in object_list %}
         <tr>
           <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
-          <td>{{ doc.text|truncatechars:200 }}</td>
+          <td>{{ doc.text|truncatechars:100 }}</td>
           <td>
             <p class="control">
               <button class="button is-text delete-document-button" data-delete-document-id="{{ doc.id }}">

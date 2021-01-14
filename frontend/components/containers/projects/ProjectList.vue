@@ -5,7 +5,13 @@
     :items="projects"
     :search="search"
     :loading="loading"
-    loading-text="Loading... Please wait"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-options': [5, 10, 15, $t('generic.all')],
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
+    }"
     item-key="id"
     show-select
     @input="update"
@@ -14,14 +20,14 @@
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
       />
     </template>
     <template v-slot:item.name="{ item }">
-      <nuxt-link :to="`/projects/${item.id}`">
+      <nuxt-link :to="localePath(`/projects/${item.id}`)">
         <span>{{ item.name }}</span>
       </nuxt-link>
     </template>
@@ -37,16 +43,16 @@ export default {
       search: '',
       headers: [
         {
-          text: 'Name',
+          text: this.$t('generic.name'),
           align: 'left',
           value: 'name'
         },
         {
-          text: 'Description',
+          text: this.$t('generic.description'),
           value: 'description'
         },
         {
-          text: 'Type',
+          text: this.$t('generic.type'),
           value: 'project_type'
         }
       ]

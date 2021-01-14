@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
     <v-container fluid>
       <v-row justify="center">
         <v-col cols="12" md="9">
@@ -22,12 +22,12 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script>
-import MultiClassClassification from '~/components/organisms/annotation/MultiClassClassification'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
+import MultiClassClassification from '~/components/organisms/annotation/MultiClassClassification'
 
 export default {
   layout: 'demo',

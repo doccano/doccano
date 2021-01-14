@@ -1,6 +1,6 @@
 <template>
   <v-card
-    v-if="currentDoc && items"
+    v-if="isReady"
     v-shortkey="multiKeys"
     @shortkey="addOrRemoveLabel"
   >
@@ -12,9 +12,7 @@
         :delete-label="removeLabel"
       />
     </v-card-title>
-    <v-card-text class="title">
-      {{ currentDoc.text }}
-    </v-card-text>
+    <v-card-text class="title highlight" v-text="currentDoc.text" />
   </v-card>
 </template>
 
@@ -31,6 +29,7 @@ export default {
 
   computed: {
     ...mapState('labels', ['items']),
+    ...mapState('documents', ['loading']),
     ...mapGetters('documents', ['currentDoc']),
     multiKeys() {
       const multiKeys = {}
@@ -38,6 +37,9 @@ export default {
         multiKeys[item.id] = [item.suffix_key]
       }
       return multiKeys
+    },
+    isReady() {
+      return this.currentDoc && this.items && !this.loading
     }
   },
 
@@ -84,3 +86,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.highlight {
+  white-space: pre-wrap;
+}
+</style>
