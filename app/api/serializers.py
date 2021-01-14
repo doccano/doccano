@@ -7,8 +7,8 @@ from rest_framework.exceptions import ValidationError
 
 
 from .models import Label, Project, Document, RoleMapping, Role
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, Speech2textProject
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, Speech2textAnnotation
+from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
+from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -84,13 +84,6 @@ class DocumentSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver')
 
 
-class ApproverSerializer(DocumentSerializer):
-
-    class Meta:
-        model = Document
-        fields = ('id', 'annotation_approver')
-
-
 class ProjectSerializer(serializers.ModelSerializer):
     current_users_role = serializers.SerializerMethodField()
 
@@ -112,7 +105,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
-                  'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification')
+                  'updated_at', 'randomize_document_order', 'collaborative_annotation')
         read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
 
 
@@ -140,22 +133,12 @@ class Seq2seqProjectSerializer(ProjectSerializer):
         read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
-class Speech2textProjectSerializer(ProjectSerializer):
-
-    class Meta:
-        model = Speech2textProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
-                  'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
-
-
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
     model_serializer_mapping = {
         Project: ProjectSerializer,
         TextClassificationProject: TextClassificationProjectSerializer,
         SequenceLabelingProject: SequenceLabelingProjectSerializer,
-        Seq2seqProject: Seq2seqProjectSerializer,
-        Speech2textProject: Speech2textProjectSerializer,
+        Seq2seqProject: Seq2seqProjectSerializer
     }
 
 
@@ -177,7 +160,7 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = DocumentAnnotation
-        fields = ('id', 'prob', 'label', 'user', 'document', 'created_at', 'updated_at')
+        fields = ('id', 'prob', 'label', 'user', 'document')
         read_only_fields = ('user', )
 
 
@@ -188,7 +171,7 @@ class SequenceAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SequenceAnnotation
-        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user', 'document', 'created_at', 'updated_at')
+        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user', 'document')
         read_only_fields = ('user',)
 
 
@@ -197,16 +180,7 @@ class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Seq2seqAnnotation
-        fields = ('id', 'text', 'user', 'document', 'prob', 'created_at', 'updated_at')
-        read_only_fields = ('user',)
-
-
-class Speech2textAnnotationSerializer(serializers.ModelSerializer):
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
-
-    class Meta:
-        model = Speech2textAnnotation
-        fields = ('id', 'prob', 'text', 'user', 'document', 'created_at', 'updated_at')
+        fields = ('id', 'text', 'user', 'document', 'prob')
         read_only_fields = ('user',)
 
 

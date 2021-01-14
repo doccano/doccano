@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-parallax
-      :src="require(`~/assets/vbanner.jpg`)"
+      src="/images/vbanner.jpg"
       height="400"
       dark
     >
@@ -17,7 +17,7 @@
             md7
           >
             <v-img
-              :src="require(`~/assets/ner_demo.png`)"
+              src="/images/ner_demo.png"
               max-height="380"
               contain
               class="ma-5"
@@ -28,18 +28,18 @@
             md5
           >
             <h1 class="mb-2 display-1 text-xs-center">
-              {{ $t('home.footerTitle') }}
+              Realize your ideas quickly
             </h1>
             <div class="mt-4">
               <v-menu open-on-hover offset-y>
                 <template v-slot:activator="{ on }">
                   <v-btn
+                    v-on="on"
                     class="blue lighten-2"
                     dark
                     large
-                    v-on="on"
                   >
-                    {{ $t('home.demoDropDown') }}
+                    Try demo
                     <v-icon>mdi-menu-down</v-icon>
                   </v-btn>
                 </template>
@@ -47,7 +47,7 @@
                   <v-list-item
                     v-for="(item, index) in items"
                     :key="index"
-                    @click="$router.push(localePath('/demo/' + item.link))"
+                    @click="$router.push('/demo/' + item.link)"
                   >
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                   </v-list-item>
@@ -66,10 +66,10 @@ export default {
   data() {
     return {
       items: [
-        { title: this.$t('home.demoNER'), link: 'named-entity-recognition' },
-        { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
-        { title: this.$t('home.demoTranslation'), link: 'translation' },
-        { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' }
+        { title: 'Named Entity Recognition', link: 'named-entity-recognition' },
+        { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
+        { title: 'Translation', link: 'translation' },
+        { title: 'Text to SQL', link: 'text-to-sql' }
       ]
     }
   }

@@ -1,15 +1,13 @@
 <template>
-  <div>
-    <entity-item-box
-      v-if="isReady"
-      :labels="items"
-      :text="currentDoc.text"
-      :entities="currentDoc.annotations"
-      :delete-annotation="removeEntity"
-      :update-entity="updateEntity"
-      :add-entity="addEntity"
-    />
-  </div>
+  <entity-item-box
+    v-if="isReady"
+    :labels="items"
+    :text="currentDoc.text"
+    :entities="currentDoc.annotations"
+    :delete-annotation="removeEntity"
+    :update-entity="updateEntity"
+    :add-entity="addEntity"
+  />
 </template>
 
 <script>

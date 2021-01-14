@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <the-header />
-    <v-main>
+    <v-content>
       <v-container
         fluid
         fill-height
@@ -14,7 +14,7 @@
           </v-flex>
         </v-layout>
       </v-container>
-    </v-main>
+    </v-content>
   </v-app>
 </template>
 

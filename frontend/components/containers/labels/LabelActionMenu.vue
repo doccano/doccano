@@ -2,42 +2,37 @@
   <div>
     <action-menu
       :items="menuItems"
-      :text="$t('dataset.actions')"
       @create="createDialog=true"
       @upload="importDialog=true"
       @download="handleDownload"
     />
-    <v-dialog
-      v-model="createDialog"
-      width="800"
-    >
+    <base-dialog :dialog="createDialog">
       <label-creation-form
         :create-label="createLabel"
         :keys="shortkeys"
         @close="createDialog=false"
       />
-    </v-dialog>
-    <v-dialog
-      v-model="importDialog"
-      width="800"
-    >
+    </base-dialog>
+    <base-dialog :dialog="importDialog">
       <label-import-form
         :upload-label="uploadLabel"
         @close="importDialog=false"
       />
-    </v-dialog>
+    </base-dialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import ActionMenu from '@/components/molecules/ActionMenu'
+import BaseDialog from '@/components/molecules/BaseDialog'
 import LabelCreationForm from '@/components/organisms/labels/LabelCreationForm'
 import LabelImportForm from '@/components/organisms/labels/LabelImportForm'
 
 export default {
   components: {
     ActionMenu,
+    BaseDialog,
     LabelCreationForm,
     LabelImportForm
   },
@@ -47,9 +42,9 @@ export default {
       createDialog: false,
       importDialog: false,
       menuItems: [
-        { title: this.$t('labels.createLabel'), icon: 'mdi-pencil', event: 'create' },
-        { title: this.$t('labels.importLabels'), icon: 'mdi-upload', event: 'upload' },
-        { title: this.$t('labels.exportLabels'), icon: 'mdi-download', event: 'download' }
+        { title: 'Create a Label', icon: 'mdi-pencil', event: 'create' },
+        { title: 'Import Labels', icon: 'mdi-upload', event: 'upload' },
+        { title: 'Export Labels', icon: 'mdi-download', event: 'download' }
       ]
     }
   },

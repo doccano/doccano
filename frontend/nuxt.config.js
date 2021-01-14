@@ -1,5 +1,4 @@
 import colors from 'vuetify/es5/util/colors'
-import i18n from './i18n'
 
 export default {
   mode: 'spa',
@@ -27,12 +26,16 @@ export default {
     ]
   },
 
+  serverMiddleware: [
+    '~/api/index.js'
+  ],
+
   server: {
     host: '0.0.0.0' // default: localhost
   },
 
   env: {
-    baseUrl: '/v1'
+    baseUrl: process.env.NODE_ENV === 'production' ? '/v1' : 'http://127.0.0.1:8000/v1'
   },
 
   /*
@@ -56,7 +59,6 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
-    ['nuxt-i18n', i18n],
     '@nuxtjs/vuetify',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
@@ -65,7 +67,7 @@ export default {
 
   buildModules: [
     ['@nuxtjs/google-analytics', {
-      id: process.env.GOOGLE_TRACKING_ID
+      id: 'UA-125643874-2'
     }]
   ],
   /*
@@ -73,14 +75,6 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    proxy: true
-  },
-
-  proxy: {
-    // Use a fake value for use at build-time
-    '/v1/': {
-      target: process.env.API_URL || 'http://127.0.0.1:8000'
-    }
   },
   /*
   ** vuetify module configuration
@@ -124,7 +118,6 @@ export default {
     /*
     ** You can extend webpack config here
     */
-    publicPath: process.env.PUBLIC_PATH || '/_nuxt/',
     extend(config, ctx) {
       config.module.rules.push({
         test: /\.(txt|csv|conll|jsonl)$/i,

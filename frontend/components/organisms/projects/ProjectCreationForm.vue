@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
-    :title="$t('overview.createProjectTitle')"
-    :agree-text="$t('generic.create')"
-    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
+    title="Add Project"
+    agree-text="Create"
+    cancel-text="Cancel"
   >
     <template #content>
       <v-form
@@ -14,8 +14,8 @@
       >
         <v-text-field
           v-model="name"
-          :rules="projectNameRules($t('rules.projectNameRules'))"
-          :label="$t('overview.projectName')"
+          :rules="projectNameRules"
+          label="Project name"
           prepend-icon="mdi-account-multiple"
           data-test="project-name"
           required
@@ -23,28 +23,28 @@
         />
         <v-text-field
           v-model="description"
-          :rules="descriptionRules($t('rules.descriptionRules'))"
-          :label="$t('generic.description')"
+          :rules="descriptionRules"
+          label="Description"
           prepend-icon="mdi-clipboard-text"
           data-test="project-description"
           required
         />
         <v-select
           v-model="projectType"
-          :items="$t('overview.projectTypes')"
-          :rules="projectTypeRules($t('rules.projectTypeRules'))"
-          :label="$t('overview.projectType')"
+          :items="projectTypes"
+          :rules="projectTypeRules"
+          label="projectType"
           prepend-icon="mdi-keyboard"
           data-test="project-type"
           required
         />
         <v-checkbox
           v-model="enableRandomizeDocOrder"
-          :label="$t('overview.randomizeDocOrder')"
+          label="Randomize document order"
         />
         <v-checkbox
           v-model="enableShareAnnotation"
-          :label="$t('overview.shareAnnotations')"
+          label="Share annotations across all users"
         />
       </v-form>
     </template>
@@ -64,6 +64,14 @@ export default {
       type: Function,
       default: () => {},
       required: true
+    },
+    projectTypes: {
+      type: Array,
+      default: () => [
+        'Text Classification',
+        'Sequence Labeling',
+        'Sequence to sequence'
+      ] // Todo: Get project types from backend server.
     }
   },
   data() {
@@ -85,20 +93,20 @@ export default {
       this.$emit('close')
     },
     getServerType() {
-      if (this.projectType === this.$t('overview.textClassification')) {
+      if (this.projectType === 'Text Classification') {
         return 'DocumentClassification'
-      } else if (this.projectType === this.$t('overview.sequenceLabeling')) {
+      } else if (this.projectType === 'Sequence Labeling') {
         return 'SequenceLabeling'
-      } else if (this.projectType === this.$t('overview.sequenceToSequence')) {
+      } else if (this.projectType === 'Sequence to sequence') {
         return 'Seq2seq'
       }
     },
     getResourceType() {
-      if (this.projectType === this.$t('overview.textClassification')) {
+      if (this.projectType === 'Text Classification') {
         return 'TextClassificationProject'
-      } else if (this.projectType === this.$t('overview.sequenceLabeling')) {
+      } else if (this.projectType === 'Sequence Labeling') {
         return 'SequenceLabelingProject'
-      } else if (this.projectType === this.$t('overview.sequenceToSequence')) {
+      } else if (this.projectType === 'Sequence to sequence') {
         return 'Seq2seqProject'
       }
     },
@@ -114,7 +122,7 @@ export default {
           name: this.name,
           description: this.description,
           project_type: this.getServerType(),
-          guideline: this.$t('guideline.writeGuidelinePrompt'),
+          guideline: 'Please write annotation guideline.',
           resourcetype: this.getResourceType(),
           randomize_document_order: this.enableRandomizeDocOrder,
           collaborative_annotation: this.enableShareAnnotation

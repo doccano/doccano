@@ -71,18 +71,6 @@
           <span>Login with Active Directory</span>
         </a>
         {% endif %}
-        {% if okta_oauth_login %}
-        <a href="{% url 'social:begin' 'okta-oauth2' %}" class="button is-fullwidth mb10">
-          <span class="icon"><i class="fab fa-openid"></i></span>
-          <span>Login with Okta</span>
-        </a>
-        {% endif %}
-        {% if okta_openidconnect_login %}
-        <a href="{% url 'social:begin' 'okta-openidconnect' %}" class="button is-fullwidth mb10">
-          <span class="icon"><i class="fab fa-openid"></i></span>
-          <span>Login with Okta</span>
-        </a>
-        {% endif %}
       </div>
     </div>
   </div>

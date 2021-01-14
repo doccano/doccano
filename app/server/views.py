@@ -104,8 +104,6 @@ class LoginView(BaseLoginView):
     extra_context = {
         'github_login': bool(settings.SOCIAL_AUTH_GITHUB_KEY),
         'aad_login': bool(settings.SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID),
-        'okta_oauth_login': bool(settings.SOCIAL_AUTH_OKTA_OAUTH2_KEY),
-        'okta_openidconnect_login': bool(settings.SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY),
         'allow_signup': bool(settings.ALLOW_SIGNUP),
     }
 

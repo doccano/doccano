@@ -1,8 +1,8 @@
 <template>
   <v-btn
+    @click="isDark=!isDark"
     icon
     fab
-    @click="isDark=!isDark"
   >
     <v-icon v-if="isDark">
       mdi-moon-waxing-crescent

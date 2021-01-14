@@ -5,23 +5,16 @@
     :items="items"
     :search="search"
     :loading="loading"
-    :loading-text="$t('generic.loading')"
-    :no-data-text="$t('vuetify.noDataAvailable')"
-    :footer-props="{
-      'showFirstLastPage': true,
-      'items-per-page-options': [5, 10, 15, $t('generic.all')],
-      'items-per-page-text': $t('vuetify.itemsPerPageText'),
-      'page-text': $t('dataset.pageText')
-    }"
+    @input="updateSelected"
+    loading-text="Loading... Please wait"
     item-key="id"
     show-select
-    @input="updateSelected"
   >
     <template v-slot:top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        :label="$t('generic.search')"
+        label="Search"
         single-line
         hide-details
         filled
@@ -30,25 +23,25 @@
     <template v-slot:item.rolename="{ item }">
       <v-edit-dialog
         :return-value.sync="item"
-        large
         @save="updateRole({ id: item.id })"
+        large
       >
-        <div>{{ translateRole(item.rolename, $t('members.roles')) }}</div>
+        <div>{{ item.rolename }}</div>
         <template v-slot:input>
           <div class="mt-4 title">
-            {{ $t('members.updateRole') }}
+            Update Role
           </div>
         </template>
         <template v-slot:input>
           <v-select
             :value="getRole(item)"
             :items="roles"
-            :rules="roleRules($t('rules.roleRules'))"
+            :rules="roleRules"
+            @input="setNewRole"
             item-text="name"
             item-value="id"
-            :label="$t('members.role')"
+            label="Role"
             return-object
-            @input="setNewRole"
           />
         </template>
       </v-edit-dialog>
@@ -59,20 +52,19 @@
 <script>
 import { mapState, mapActions, mapMutations, mapGetters } from 'vuex'
 import { roleRules } from '@/rules/index'
-import { translateRole } from '~/plugins/utils'
 
 export default {
   data() {
     return {
       headers: [
         {
-          text: this.$t('generic.name'),
+          text: 'Name',
           align: 'left',
           sortable: false,
           value: 'username'
         },
         {
-          text: this.$t('members.role'),
+          text: 'Role',
           value: 'rolename'
         }
       ],
@@ -117,10 +109,6 @@ export default {
         id: payload.id,
         role: this.newRole.id
       })
-    },
-
-    translateRole(role, mappings) {
-      return translateRole(role, mappings)
     }
   }
 }

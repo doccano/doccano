@@ -17,25 +17,14 @@
     >
       doccano
     </v-toolbar-title>
-    <v-btn
-      v-if="isAuthenticated && isIndividualProject"
-      text
-      style="text-transform:none"
-    >
-      <v-icon small class="mr-1">
-        mdi-hexagon-multiple
-      </v-icon>
-      <span> {{ currentProject.name }}</span>
-    </v-btn>
     <div class="flex-grow-1" />
     <the-color-mode-switcher />
-    <locale-menu />
     <v-btn
       v-if="isAuthenticated"
+      @click="$router.push('/projects')"
       text
-      @click="$router.push(localePath('/projects'))"
     >
-      {{ $t('header.projects') }}
+      Projects
     </v-btn>
     <v-menu
       v-if="!isAuthenticated"
@@ -44,10 +33,10 @@
     >
       <template v-slot:activator="{ on }">
         <v-btn
-          text
           v-on="on"
+          text
         >
-          {{ $t('home.demoDropDown') }}
+          Demo
           <v-icon>mdi-menu-down</v-icon>
         </v-btn>
       </template>
@@ -63,29 +52,29 @@
     </v-menu>
     <v-btn
       v-if="!isAuthenticated"
+      @click="$router.push('/auth')"
       outlined
-      @click="$router.push(localePath('/auth'))"
     >
-      {{ $t('user.login') }}
+      Sign in
     </v-btn>
     <v-menu
       v-if="isAuthenticated"
       offset-y
     >
       <template v-slot:activator="{ on }">
-        <v-btn on icon v-on="on">
+        <v-btn v-on="on" on icon>
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
       <v-list>
-        <v-subheader>{{ getUsername() }}</v-subheader>
+        <v-subheader>{{ getUsername }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>
-              {{ $t('user.signOut') }}
+              Sign out
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -97,39 +86,32 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import TheColorModeSwitcher from '@/components/organisms/layout/TheColorModeSwitcher'
-import LocaleMenu from '@/components/organisms/layout/LocaleMenu'
 
 export default {
   components: {
-    TheColorModeSwitcher,
-    LocaleMenu
+    TheColorModeSwitcher
   },
 
   data() {
     return {
       items: [
-        { title: this.$t('home.demoNER'), link: 'named-entity-recognition' },
-        { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
-        { title: this.$t('home.demoTranslation'), link: 'translation' },
-        { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' }
+        { title: 'Named Entity Recognition', link: 'named-entity-recognition' },
+        { title: 'Sentiment Analysis', link: 'sentiment-analysis' },
+        { title: 'Translation', link: 'translation' },
+        { title: 'Text to SQL', link: 'text-to-sql' }
       ]
     }
   },
 
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'getUsername']),
-    ...mapGetters('projects', ['currentProject']),
-
-    isIndividualProject() {
-      return this.$route.name && this.$route.name.startsWith('projects-id')
-    }
+    ...mapGetters('auth', ['isAuthenticated', 'getUsername'])
   },
 
   methods: {
     ...mapActions('auth', ['logout']),
     signout() {
       this.logout()
-      this.$router.push(this.localePath('/'))
+      this.$router.push('/')
     }
   }
 }

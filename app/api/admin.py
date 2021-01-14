@@ -9,13 +9,13 @@ from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqP
 class LabelAdmin(admin.ModelAdmin):
     list_display = ('text', 'project', 'text_color', 'background_color')
     ordering = ('project',)
-    search_fields = ('text',)
+    search_fields = ('project',)
 
 
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ('text', 'project', 'meta')
     ordering = ('project',)
-    search_fields = ('text',)
+    search_fields = ('project',)
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -27,19 +27,19 @@ class ProjectAdmin(admin.ModelAdmin):
 class SequenceAnnotationAdmin(admin.ModelAdmin):
     list_display = ('document', 'label', 'start_offset', 'user')
     ordering = ('document',)
-    search_fields = ('document__text',)
+    search_fields = ('document',)
 
 
 class DocumentAnnotationAdmin(admin.ModelAdmin):
     list_display = ('document', 'label', 'user')
     ordering = ('document',)
-    search_fields = ('document__text',)
+    search_fields = ('document',)
 
 
 class Seq2seqAnnotationAdmin(admin.ModelAdmin):
     list_display = ('document', 'text', 'user')
     ordering = ('document',)
-    search_fields = ('document__text',)
+    search_fields = ('document',)
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -51,7 +51,7 @@ class RoleAdmin(admin.ModelAdmin):
 class RoleMappingAdmin(admin.ModelAdmin):
     list_display = ('user', 'role', 'project', )
     ordering = ('user',)
-    search_fields = ('user__username',)
+    search_fields = ('user',)
 
 
 admin.site.register(DocumentAnnotation, DocumentAnnotationAdmin)

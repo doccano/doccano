@@ -1,5 +1,4 @@
-text,label,meta
-AAA
-BBB,Positive,The following is meta data
+text,label
+AAA,Positive
+BBB,Positive
 CCC,Negative
-DDD,,This is meta data

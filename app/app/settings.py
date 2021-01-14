@@ -10,10 +10,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
-import importlib.util
-import sys
 from os import path
 
+import django_heroku
 import dj_database_url
 from environs import Env
 from furl import furl
@@ -52,12 +51,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'server.apps.ServerConfig',
     'api.apps.ApiConfig',
+    'widget_tweaks',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'social_django',
     'polymorphic',
+    'webpack_loader',
     'corsheaders',
     'drf_yasg'
 ]
@@ -81,7 +83,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    # 'applicationinsights.django.ApplicationInsightsMiddleware',
+    'applicationinsights.django.ApplicationInsightsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
 
@@ -90,7 +92,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [path.join(BASE_DIR, 'client/dist')],
+        'DIRS': [path.join(BASE_DIR, 'server/templates'), path.join(BASE_DIR, 'authentification/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,29 +118,34 @@ STATIC_URL = '/static/'
 STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-    path.join(BASE_DIR, 'client/dist/static'),
+    static_path
+    for static_path in (
+        path.join(BASE_DIR, 'server', 'static', 'assets'),
+        path.join(BASE_DIR, 'server', 'static', 'static'),
+    )
+    if path.isdir(static_path)
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+WEBPACK_LOADER = {
+    'DEFAULT': {
+        'CACHE': not DEBUG,
+        'BUNDLE_DIR_NAME': 'bundle/',
+        'STATS_FILE': path.join(BASE_DIR, 'server', 'static', 'webpack-stats.json'),
+        'POLL_INTERVAL': 0.1,
+        'TIMEOUT': None,
+        'IGNORE': [r'.*\.hot-update.js', r'.+\.map']
+    }
+}
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.azuread_tenant.AzureADTenantOAuth2',
-    'social_core.backends.okta.OktaOAuth2',
-    'social_core.backends.okta_openidconnect.OktaOpenIdConnect',
     'django.contrib.auth.backends.ModelBackend',
 ]
-
-HEADER_AUTH_USER_NAME = env('HEADER_AUTH_USER_NAME', '')
-HEADER_AUTH_USER_GROUPS = env('HEADER_AUTH_USER_GROUPS', '')
-HEADER_AUTH_ADMIN_GROUP_NAME = env('HEADER_AUTH_ADMIN_GROUP_NAME', '')
-HEADER_AUTH_GROUPS_SEPERATOR = env('HEADER_AUTH_GROUPS_SEPERATOR', default=',')
-
-if HEADER_AUTH_USER_NAME and HEADER_AUTH_USER_GROUPS and HEADER_AUTH_ADMIN_GROUP_NAME:
-    MIDDLEWARE.append('server.middleware.HeaderAuthMiddleware')
-    AUTHENTICATION_BACKENDS.append('django.contrib.auth.backends.RemoteUserBackend')
 
 SOCIAL_AUTH_GITHUB_KEY = env('OAUTH_GITHUB_KEY', None)
 SOCIAL_AUTH_GITHUB_SECRET = env('OAUTH_GITHUB_SECRET', None)
@@ -157,22 +164,6 @@ if AZUREAD_ADMIN_GROUP_ID:
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_RESOURCE = 'https://graph.microsoft.com/'
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SCOPE = ['Directory.Read.All']
 
-SOCIAL_AUTH_OKTA_OAUTH2_KEY = env('OAUTH_OKTA_OAUTH2_KEY', None)
-SOCIAL_AUTH_OKTA_OAUTH2_SECRET = env('OAUTH_OKTA_OAUTH2_SECRET', None)
-SOCIAL_AUTH_OKTA_OAUTH2_API_URL = env('OAUTH_OKTA_OAUTH2_API_URL', None)
-OKTA_OAUTH2_ADMIN_GROUP_NAME = env('OKTA_OAUTH2_ADMIN_GROUP_NAME', None)
-
-if SOCIAL_AUTH_OKTA_OAUTH2_API_URL:
-    SOCIAL_AUTH_OKTA_OAUTH2_SCOPE = ["groups"]
-
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY = env('OAUTH_OKTA_OPENIDCONNECT_KEY', None)
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET = env('OAUTH_OKTA_OPENIDCONNECT_SECRET', None)
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL = env('OAUTH_OKTA_OPENIDCONNECT_API_URL', None)
-OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME = env('OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME', None)
-
-if SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL:
-    SOCIAL_AUTH_OKTA_OPENIDCONNECT_SCOPE = ["groups"]
-
 SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
@@ -185,8 +176,6 @@ SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.user.user_details',
     'server.social_auth.fetch_github_permissions',
     'server.social_auth.fetch_azuread_permissions',
-    'server.social_auth.fetch_okta_oauth2_permissions',
-    'server.social_auth.fetch_okta_openidconnect_permissions',
 ]
 
 ROLE_PROJECT_ADMIN = env('ROLE_PROJECT_ADMIN', 'project_admin')
@@ -264,14 +253,7 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/projects/'
 LOGOUT_REDIRECT_URL = '/'
 
-# dynamic import to avoid installing psycopg2 on pip installation.
-name = 'django_heroku'
-spec = importlib.util.find_spec(name)
-if spec is not None:
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    module.settings(locals(), test_runner=False)
+django_heroku.settings(locals(), test_runner=False)
 
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(
@@ -303,7 +285,7 @@ CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', False)
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', [])
 
 # Allow all host headers
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
 
 # Size of the batch for creating documents
 # on the import phase
@@ -323,7 +305,6 @@ EMAIL_HOST = env('EMAIL_HOST', None)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', None)
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', None)
 EMAIL_PORT = env.int('EMAIL_PORT', 587)
-DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
 if not EMAIL_HOST:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -12,10 +12,10 @@ set -eo pipefail
 
 # install build dependencies
 apt-get update
-apt-get install --no-install-recommends -y --allow-downgrades \
-      curl \
+apt-get install --no-install-recommends -y \
+      curl=7.52.1-5+deb9u10 \
       gnupg=2.1.18-8~deb9u4 \
-      apt-transport-https
+      apt-transport-https=1.4.9
 
 # install dependency to compile django-pyodbc-azure
 if [[ "${mode}" = "dev" ]]; then

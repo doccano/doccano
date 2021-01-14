@@ -18,10 +18,7 @@
       />
     </v-navigation-drawer>
 
-    <v-main>
-      <v-overlay :value="loading">
-        <v-progress-circular indeterminate size="64" />
-      </v-overlay>
+    <v-content>
       <v-container fluid>
         <v-row
           no-gutters
@@ -29,24 +26,15 @@
         >
           <v-col>
             <approve-button
-              v-if="canViewApproveButton"
-              v-model="page"
-              :length="total"
               :approved="approved"
               :disabled="currentDoc ? false : true"
             />
-            <filter-button
-              v-model="filterOption"
-            />
+            <filter-button />
             <guideline-button />
-            <clear-annotations-button />
           </v-col>
           <v-spacer />
           <v-col>
-            <pagination
-              v-model="page"
-              :length="total"
-            />
+            <paginator />
           </v-col>
         </v-row>
         <v-row justify="center">
@@ -61,141 +49,58 @@
           </v-col>
         </v-row>
       </v-container>
-    </v-main>
+    </v-content>
 
-    <bottom-navigator
-      v-model="page"
-      :length="total"
-      class="d-flex d-sm-none"
-    />
+    <bottom-navigator class="d-flex d-sm-none" />
   </v-app>
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
+import { mapActions, mapGetters, mapState } from 'vuex'
 import BottomNavigator from '@/components/containers/annotation/BottomNavigator'
-import ClearAnnotationsButton from '@/components/containers/annotation/ClearAnnotationsButton.vue'
 import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
-import Pagination from '~/components/containers/annotation/Pagination'
+import Paginator from '~/components/containers/annotation/Paginator'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
 
 export default {
-  middleware: ['check-auth', 'auth', 'set-project'],
+  middleware: ['check-auth', 'auth'],
 
   components: {
     TheSideBar,
     TheHeader,
     BottomNavigator,
-    Pagination,
+    Paginator,
     GuidelineButton,
     FilterButton,
     ApproveButton,
-    MetadataBox,
-    ClearAnnotationsButton
+    MetadataBox
   },
-
-  fetch() {
-    this.getDocumentList({
-      projectId: this.$route.params.id,
-      limit: this.limit,
-      offset: this.offset,
-      q: this.$route.query.q,
-      isChecked: this.filterOption,
-      filterName: this.getFilterOption
-    })
-  },
-
   data() {
     return {
-      drawerLeft: null,
-      limit: 10
+      drawerLeft: null
     }
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink', 'getCurrentUserRole', 'getFilterOption', 'canViewApproveButton']),
-    ...mapState('documents', ['loading', 'total']),
-    ...mapGetters('documents', ['currentDoc', 'approved']),
-    page: {
-      get() {
-        return parseInt(this.$route.query.page, 10)
-      },
-      set(value) {
-        this.$router.push({
-          query: {
-            isChecked: this.$route.query.isChecked,
-            page: parseInt(value, 10),
-            q: this.$route.query.q
-          }
-        })
-      }
-    },
-    filterOption: {
-      get() {
-        return this.$route.query.isChecked
-      },
-      set(value) {
-        this.$router.push({
-          query: {
-            isChecked: value,
-            page: 1,
-            q: this.$route.query.q
-          }
-        })
-      }
-    },
-    offset() {
-      return Math.floor((this.page - 1) / this.limit) * this.limit
-    },
-    current() {
-      return (this.page - 1) % this.limit
-    },
-    searchOptions() {
-      // a bit tricky technique to capture variables change simultaneously.
-      // see https://github.com/vuejs/vue/issues/844#issuecomment-265315349
-      return JSON.stringify({
-        page: this.page,
-        q: this.$route.query.q,
-        isChecked: this.filterOption
-      })
-    }
+    ...mapGetters('projects', ['getLink', 'getCurrentUserRole']),
+    ...mapState('documents', ['loading']),
+    ...mapGetters('documents', ['currentDoc', 'approved'])
   },
 
-  watch: {
-    total() {
-      // To validate the range of page variable on reloading the annotation page.
-      if (this.total !== 0 && this.page > this.total) {
-        this.$router.push({
-          path: this.localePath(`/projects/${this.$route.params.id}/`)
-        })
-      }
-    },
-    offset() {
-      this.$fetch()
-    },
-    filterOption() {
-      this.page = 1
-      this.$fetch()
-    },
-    current: {
-      handler() {
-        this.setCurrent(this.current)
-      },
-      immediate: true
-    },
-    searchOptions() {
-      this.saveSearchOptions(JSON.parse(this.searchOptions))
-    }
+  created() {
+    this.setCurrentProject(this.$route.params.id)
   },
 
   methods: {
-    ...mapActions('documents', ['getDocumentList']),
-    ...mapMutations('documents', ['setCurrent']),
-    ...mapMutations('projects', ['saveSearchOptions'])
+    ...mapActions('projects', ['setCurrentProject'])
+  },
+
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   }
 }
 </script>

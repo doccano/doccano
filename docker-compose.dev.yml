@@ -2,12 +2,11 @@ version: "3.7"
 services:
 
   backend:
-    build:
-      context: .
-      dockerfile: app/Dockerfile.dev
+    image: python:3.6
     volumes:
       - .:/src
-      - venv:/root/.local/share
+      - venv:/src/venv
+    command: ["/src/app/tools/dev-django.sh", "0.0.0.0:8000"]
     environment:
       ADMIN_USERNAME: "admin"
       ADMIN_PASSWORD: "password"
@@ -24,11 +23,8 @@ services:
       - network-frontend
 
   frontend:
-    image: node:13.7.0
-    command: ["/src/tools/dev-nuxt.sh"]
-    working_dir: /src/frontend
-    environment:
-      API_URL: "http://backend:8000"
+    image: node:13.2.0
+    command: ["/src/frontend/dev-nuxt.sh"]
     volumes:
       - .:/src
       - node_modules:/src/frontend/node_modules
@@ -40,7 +36,7 @@ services:
       - network-frontend
 
   postgres:
-    image: postgres:13.1-alpine
+    image: postgres:12.0-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:

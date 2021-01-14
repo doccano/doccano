@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
-    :title="$t('dataset.importDataTitle')"
-    :agree-text="$t('generic.upload')"
-    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
+    title="Upload Data"
+    agree-text="Upload"
+    cancel-text="Cancel"
   >
     <template #content>
       <v-form
@@ -18,12 +18,13 @@
           type="error"
           dismissible
         >
-          {{ $t('errors.fileCannotUpload') }}
+          The file could not be uploaded. Maybe invalid format.
+          Please check available formats carefully.
         </v-alert>
-        <h2>{{ $t('dataset.importDataMessage1') }}</h2>
+        <h2>Select a file format</h2>
         <v-radio-group
           v-model="selectedFormat"
-          :rules="fileFormatRules($t('rules.fileFormatRules'))"
+          :rules="fileFormatRules"
         >
           <v-radio
             v-for="(format, i) in formats"
@@ -32,22 +33,18 @@
             :value="format"
           />
         </v-radio-group>
-        <v-sheet
+        <code
           v-if="selectedFormat"
-          :dark="!$vuetify.theme.dark"
-          :light="$vuetify.theme.dark"
-          class="mb-5 pa-5"
+          class="mb-10 pa-5 highlight"
         >
-          <span v-for="(example, index) in selectedFormat.examples" :key="index">
-            {{ example }}<br>
-          </span>
-        </v-sheet>
-        <h2>{{ $t('dataset.importDataMessage2') }}</h2>
+          <span v-for="(example, index) in selectedFormat.examples" :key="index">{{ example }}</span>
+        </code>
+        <h2>Select a file</h2>
         <v-file-input
           v-model="file"
           :accept="acceptType"
-          :rules="uploadFileRules($t('rules.uploadFileRules'))"
-          :label="$t('labels.filePlaceholder')"
+          :rules="uploadFileRules"
+          label="File input"
         />
       </v-form>
     </template>
@@ -124,3 +121,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .highlight {
+    font-size: 100%;
+    width: 100%;
+  }
+  .highlight:before {
+    content: ''
+  }
+</style>

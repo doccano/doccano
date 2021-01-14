@@ -4,7 +4,6 @@
     :items="metaArray"
     item-key="key"
     hide-default-footer
-    :no-data-text="$t('vuetify.noDataAvailable')"
     disable-pagination
     class="elevation-1"
   />
@@ -24,13 +23,13 @@ export default {
     return {
       headers: [
         {
-          text: this.$t('annotation.key'),
+          text: 'Key',
           align: 'left',
           value: 'key',
           sortable: false
         },
         {
-          text: this.$t('annotation.value'),
+          text: 'Value',
           align: 'left',
           value: 'value',
           sortable: false

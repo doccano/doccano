@@ -31,6 +31,7 @@ export const getters = {
     return state.items[state.current]
   }
 }
+
 export const mutations = {
   setCurrent(state, payload) {
     state.current = payload
@@ -66,9 +67,6 @@ export const mutations = {
   deleteAnnotation(state, annotationId) {
     state.items[state.current].annotations = state.items[state.current].annotations.filter(item => item.id !== annotationId)
   },
-  clearAnnotations(state) {
-    state.items[state.current].annotations = []
-  },
   updateAnnotation(state, payload) {
     const item = state.items[state.current].annotations.find(item => item.id === payload.id)
     Object.assign(item, payload)
@@ -90,6 +88,7 @@ export const mutations = {
 export const actions = {
   getDocumentList({ commit, state }, payload) {
     commit('setLoading', true)
+    payload = Object.assign(payload, state.searchOptions)
     return DocumentService.getDocumentList(payload)
       .then((response) => {
         commit('setDocumentList', response.data.results)
@@ -122,12 +121,12 @@ export const actions = {
   },
   exportDocument({ commit }, data) {
     commit('setLoading', true)
-    DocumentService.exportFile(data.projectId, data.format, data.onlyApproved)
+    DocumentService.exportFile(data.projectId, data.format)
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', data.fileName + '.' + data.suffix)
+        link.setAttribute('download', 'file.' + data.format)
         document.body.appendChild(link)
         link.click()
       })
@@ -142,17 +141,6 @@ export const actions = {
     DocumentService.updateDocument(data.projectId, data.id, data)
       .then((response) => {
         commit('updateDocument', response.data)
-      })
-      .catch((error) => {
-        alert(error)
-      })
-  },
-  deleteAllDocuments({ commit, state }, projectId) {
-    DocumentService.deleteAllDocuments(projectId)
-      .then((response) => {
-        commit('setDocumentList', [])
-        commit('setTotalItems', 0)
-        commit('resetSelected')
       })
       .catch((error) => {
         alert(error)
@@ -195,16 +183,6 @@ export const actions = {
     AnnotationService.deleteAnnotation(payload.projectId, documentId, payload.annotationId)
       .then((response) => {
         commit('deleteAnnotation', payload.annotationId)
-      })
-      .catch((error) => {
-        alert(error)
-      })
-  },
-  clearAnnotations({ commit, state }, projectId) {
-    const documentId = state.items[state.current].id
-    AnnotationService.clearAnnotations(projectId, documentId)
-      .then((response) => {
-        commit('clearAnnotations')
       })
       .catch((error) => {
         alert(error)

@@ -1,7 +1,5 @@
 import collections
 import json
-import random
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -13,7 +11,7 @@ from libcloud.base import DriverType, get_driver
 from libcloud.storage.types import ContainerDoesNotExistError, ObjectDoesNotExistError
 from rest_framework import generics, filters, status
 from rest_framework.exceptions import ParseError, ValidationError
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
@@ -22,21 +20,14 @@ from rest_framework_csv.renderers import CSVRenderer
 from .filters import DocumentFilter
 from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
-from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer, ApproverSerializer
+from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
-from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, FastTextParser, iterable_to_io
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
 IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
-
-
-class Health(APIView):
-    permission_classes = (IsAuthenticatedOrReadOnly,)
-
-    def get(self, request, *args, **kwargs):
-        return Response({'status': 'green'})
 
 
 class Me(APIView):
@@ -108,6 +99,7 @@ class StatisticsAPI(APIView):
             set_user_data[ind_obj['user__username']].add(ind_obj['document__id'])
         return {i: len(set_user_data[i]) for i in set_user_data}
 
+
     def progress(self, project):
         docs = project.documents
         annotation_class = project.get_annotation_class()
@@ -134,7 +126,7 @@ class ApproveLabelsAPI(APIView):
         document = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         document.annotations_approved_by = self.request.user if approved else None
         document.save()
-        return Response(ApproverSerializer(document).data)
+        return Response(DocumentSerializer(document).data)
 
 
 class LabelList(generics.ListCreateAPIView):
@@ -172,9 +164,7 @@ class DocumentList(generics.ListCreateAPIView):
 
         queryset = project.documents
         if project.randomize_document_order:
-            random.seed(self.request.user.id)
-            value = random.randrange(2, 20)
-            queryset = queryset.annotate(sort_id=F('id') % value).order_by('sort_id', 'id')
+            queryset = queryset.annotate(sort_id=F('id') % self.request.user.id).order_by('sort_id')
         else:
             queryset = queryset.order_by('id')
 
@@ -183,12 +173,6 @@ class DocumentList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
-
-    def delete(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        queryset = project.documents
-        queryset.all().delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -219,45 +203,17 @@ class AnnotationList(generics.ListCreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        self.check_single_class_classification(self.kwargs['project_id'], self.kwargs['doc_id'], request.user)
-
         request.data['document'] = self.kwargs['doc_id']
         return super().create(request, args, kwargs)
 
     def perform_create(self, serializer):
         serializer.save(document_id=self.kwargs['doc_id'], user=self.request.user)
 
-    def delete(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        queryset.all().delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @staticmethod
-    def check_single_class_classification(project_id, doc_id, user):
-        project = get_object_or_404(Project, pk=project_id)
-        if not project.single_class_classification:
-            return
-
-        model = project.get_annotation_class()
-        annotations = model.objects.filter(document_id=doc_id)
-        if not project.collaborative_annotation:
-            annotations = annotations.filter(user=user)
-
-        if annotations.exists():
-            raise ValidationError('requested to create duplicate annotation for single-class-classification project')
-
 
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'annotation_id'
+    permission_classes = [IsAuthenticated & (((IsAnnotator | IsAnnotationApprover) & IsOwnAnnotation) | IsProjectAdmin)]
     swagger_schema = None
-
-    def get_permissions(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        if project.collaborative_annotation:
-            self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
-        else:
-            self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin & IsOwnAnnotation]
-        return super().get_permissions()
 
     def get_serializer_class(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -308,10 +264,6 @@ class TextUploadAPI(APIView):
             return CoNLLParser()
         elif file_format == 'excel':
             return ExcelParser()
-        elif file_format == 'audio':
-            return AudioParser()
-        elif file_format == 'fastText':
-            return FastTextParser()
         else:
             raise ValidationError('format {} is invalid.'.format(file_format))
 
@@ -374,19 +326,13 @@ class TextDownloadAPI(APIView):
 
     def get(self, request, *args, **kwargs):
         format = request.query_params.get('q')
-        only_approved = request.query_params.get('onlyApproved')
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        documents = (
-            project.documents.exclude(annotations_approved_by = None)
-            if only_approved == 'true'
-            else project.documents.all()
-        )
+        documents = project.documents.all()
         painter = self.select_painter(format)
-
-        # jsonl-textlabel format prints text labels while jsonl format prints annotations with label ids
-        # jsonl-textlabel format - "labels": [[0, 15, "PERSON"], ..]
-        # jsonl format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
-        if format == 'jsonl':
+        # json1 format prints text labels while json format prints annotations with label ids
+        # json1 format - "labels": [[0, 15, "PERSON"], ..]
+        # json format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
+        if format == "json1":
             labels = project.labels.all()
             data = JSONPainter.paint_labels(documents, labels)
         else:
@@ -396,7 +342,7 @@ class TextDownloadAPI(APIView):
     def select_painter(self, format):
         if format == 'csv':
             return CSVPainter()
-        elif format == 'jsonl' or format == 'json':
+        elif format == 'json' or format == "json1":
             return JSONPainter()
         else:
             raise ValidationError('format {} is invalid.'.format(format))

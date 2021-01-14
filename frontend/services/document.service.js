@@ -5,16 +5,12 @@ class DocumentService {
     this.request = ApiService
   }
 
-  getDocumentList({ projectId, limit = 10, offset = 0, q = '', isChecked = '', filterName = '' }) {
+  getDocumentList({ projectId, limit, offset, q = '', isChecked = '', filterName = '' }) {
     return this.request.get(`/projects/${projectId}/docs?limit=${limit}&offset=${offset}&q=${q}&${filterName}=${isChecked}`)
   }
 
   addDocument(projectId, payload) {
     return this.request.post(`/projects/${projectId}/docs`, payload)
-  }
-
-  deleteAllDocuments(projectId) {
-    return this.request.delete(`/projects/${projectId}/docs`)
   }
 
   deleteDocument(projectId, docId) {
@@ -29,7 +25,7 @@ class DocumentService {
     return this.request.post(`/projects/${projectId}/docs/upload`, payload, config)
   }
 
-  exportFile(projectId, format, onlyApproved) {
+  exportFile(projectId, format) {
     const headers = {}
     if (format === 'csv') {
       headers.Accept = 'text/csv; charset=utf-8'
@@ -41,8 +37,7 @@ class DocumentService {
     const config = {
       responseType: 'blob',
       params: {
-        q: format,
-        onlyApproved
+        q: format
       },
       headers
     }

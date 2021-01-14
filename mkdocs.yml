@@ -20,9 +20,9 @@ theme:
 
 extra:
   social:
-    - icon: 'fontawesome/brands/github'
+    - type: 'github'
       link: 'https://github.com/Hironsan'
-    - icon: 'fontawesome/brands/github'
+    - type: 'twitter'
       link: 'https://twitter.com/Hironsan13'
 
 # Page tree

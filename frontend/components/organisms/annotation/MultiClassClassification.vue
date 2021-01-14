@@ -1,14 +1,13 @@
 <template>
   <v-combobox
-    v-model="annotatedLabels"
+    :value="annotatedLabels"
     :items="labels"
+    @input="add"
     item-text="text"
-    :label="$t('labels.labels')"
+    label="Label"
     hide-selected
     chips
     multiple
-    :search-input.sync="search"
-    @change="search=''"
   >
     <template v-slot:selection="{ attrs, item, select, selected }">
       <v-chip
@@ -16,9 +15,9 @@
         :input-value="selected"
         :color="item.background_color"
         :text-color="textColor(item.background_color)"
-        close
         @click="select"
         @click:close="remove(item.id)"
+        close
       >
         {{ item.text }}
       </v-chip>
@@ -53,33 +52,17 @@ export default {
     }
   },
 
-  data() {
-    return {
-      search: ''
-    }
-  },
-
   computed: {
-    annotatedLabels: {
-      get() {
-        const labelIds = this.annotations.map(item => item.label)
-        return this.labels.filter(item => labelIds.includes(item.id))
-      },
-      set(newValue) {
-        if (newValue.length > this.annotations.length) {
-          const label = newValue[newValue.length - 1]
-          if (typeof label === 'object') {
-            this.add(label)
-          } else {
-            newValue.pop()
-          }
-        } else {
-          const label = this.annotatedLabels.find(x => !newValue.some(y => y.id === x.id))
-          if (typeof label === 'object') {
-            this.remove(label.id)
-          }
-        }
+    annotatedLabels() {
+      const labelIds = this.annotations.map(item => item.label)
+      return this.labels.filter(item => labelIds.includes(item.id))
+    },
+    labelObject() {
+      const obj = {}
+      for (const label of this.labels) {
+        obj[label.id] = label
       }
+      return obj
     }
   },
 
@@ -87,7 +70,8 @@ export default {
     textColor(backgroundColor) {
       return idealColor(backgroundColor)
     },
-    add(label) {
+    add(labels) {
+      const label = labels[labels.length - 1]
       this.addLabel(label.id)
     },
     remove(labelId) {

@@ -2,36 +2,33 @@
   <div>
     <v-btn
       :disabled="!isDocumentSelected"
+      @click="dialog=true"
       class="text-capitalize"
       outlined
-      @click="dialog=true"
     >
-      {{ $t('generic.delete') }}
+      Delete
     </v-btn>
-    <v-dialog
-      v-model="dialog"
-      width="800"
-    >
+    <base-dialog :dialog="dialog">
       <confirm-form
         :items="selected"
-        :title="$t('dataset.deleteDocumentsTitle')"
-        :message="$t('dataset.deleteDocumentsMessage')"
-        :button-true-text="$t('generic.yes')"
-        :button-false-text="$t('generic.cancel')"
-        item-key="text"
         @ok="deleteDocument($route.params.id);dialog=false"
         @cancel="dialog=false"
+        title="Delete Document"
+        message="Are you sure you want to delete these documents from this project?"
+        item-key="text"
       />
-    </v-dialog>
+    </base-dialog>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import BaseDialog from '@/components/molecules/BaseDialog'
 import ConfirmForm from '@/components/organisms/utils/ConfirmForm'
 
 export default {
   components: {
+    BaseDialog,
     ConfirmForm
   },
 

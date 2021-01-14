@@ -5,23 +5,16 @@
     :items="items"
     :search="search"
     :loading="loading"
-    :loading-text="$t('generic.loading')"
-    :no-data-text="$t('vuetify.noDataAvailable')"
-    :footer-props="{
-      'showFirstLastPage': true,
-      'items-per-page-options': [5, 10, 15, $t('generic.all')],
-      'items-per-page-text': $t('vuetify.itemsPerPageText'),
-      'page-text': $t('dataset.pageText')
-    }"
+    @input="updateSelected"
+    loading-text="Loading... Please wait"
     item-key="id"
     show-select
-    @input="updateSelected"
   >
     <template v-slot:top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        :label="$t('generic.search')"
+        label="Search"
         single-line
         hide-details
         filled
@@ -33,10 +26,10 @@
         <template v-slot:input>
           <v-text-field
             :value="item.text"
-            :rules="labelNameRules($t('rules.labelNameRules'))"
-            :label="$t('generic.edit')"
-            single-line
+            :rules="labelNameRules"
             @change="handleUpdateLabel({ id: item.id, text: $event })"
+            label="Edit"
+            single-line
           />
         </template>
       </v-edit-dialog>
@@ -47,9 +40,9 @@
         <template v-slot:input>
           <v-select
             :value="item.suffix_key"
-            :items="availableShortkeys(item.suffix_key)"
-            :label="$t('annotation.key')"
+            :items="shortkeys"
             @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
+            label="Key"
           />
         </template>
       </v-edit-dialog>
@@ -65,14 +58,14 @@
         </v-chip>
         <template v-slot:input>
           <v-color-picker
-            :value="item.background_color"
-            :rules="colorRules($t('rules.colorRules'))"
+            :value="item.backgroundColor"
+            :rules="colorRules"
+            @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
             show-swatches
             hide-mode-switch
             width="800"
             mode="hexa"
             class="ma-2"
-            @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
           />
         </template>
       </v-edit-dialog>
@@ -91,16 +84,16 @@ export default {
       search: '',
       headers: [
         {
-          text: this.$t('generic.name'),
+          text: 'Name',
           align: 'left',
           value: 'text'
         },
         {
-          text: this.$t('labels.shortkey'),
+          text: 'Shortkey',
           value: 'suffix_key'
         },
         {
-          text: this.$t('labels.color'),
+          text: 'Color',
           sortable: false,
           value: 'background_color'
         }
@@ -131,12 +124,6 @@ export default {
         ...payload
       }
       this.updateLabel(data)
-    },
-
-    availableShortkeys(suffixKey) {
-      const usedKeys = this.items.map(item => item.suffix_key)
-      const unusedKeys = this.shortkeys.filter(item => item === suffixKey || !usedKeys.includes(item))
-      return unusedKeys
     },
 
     textColor(backgroundColor) {

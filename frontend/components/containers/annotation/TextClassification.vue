@@ -12,7 +12,9 @@
         :delete-label="removeLabel"
       />
     </v-card-title>
-    <v-card-text class="title highlight" v-text="currentDoc.text" />
+    <v-card-text class="title">
+      {{ currentDoc.text }}
+    </v-card-text>
   </v-card>
 </template>
 
@@ -86,9 +88,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.highlight {
-  white-space: pre-wrap;
-}
-</style>

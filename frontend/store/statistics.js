@@ -4,9 +4,9 @@ function makeData(object, label) {
   const labels = object ? Object.keys(object) : []
   const counts = object ? Object.values(object) : []
   return {
-    labels,
+    labels: labels,
     datasets: [{
-      label,
+      label: label,
       backgroundColor: '#00d1b2',
       data: counts
     }]
@@ -29,27 +29,25 @@ export const mutations = {
 
 export const getters = {
   progress(state) {
-    return (labels) => {
-      const complete = state.stats.total - state.stats.remaining
-      const incomplete = state.stats.remaining
-      return {
-        datasets: [{
-          data: [complete, incomplete],
-          backgroundColor: ['#00d1b2', '#ffdd57']
-        }],
-        labels
-      }
+    const complete = state.stats.total - state.stats.remaining
+    const incomplete = state.stats.remaining
+    return {
+      datasets: [{
+        data: [complete, incomplete],
+        backgroundColor: ['#00d1b2', '#ffdd57']
+      }],
+
+      labels: [
+        'Completed',
+        'Incomplete'
+      ]
     }
   },
   labelStats(state) {
-    return (label) => {
-      return makeData(state.stats.label, label)
-    }
+    return makeData(state.stats.label, 'Label stats')
   },
   userStats(state) {
-    return (label) => {
-      return makeData(state.stats.user, label)
-    }
+    return makeData(state.stats.user, 'User stats')
   }
 }
 

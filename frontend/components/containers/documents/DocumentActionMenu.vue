@@ -2,42 +2,37 @@
   <div>
     <action-menu
       :items="menuItems"
-      :text="$t('dataset.actions')"
       @upload="importDialog=true"
       @download="exportDialog=true"
     />
-    <v-dialog
-      v-model="importDialog"
-      width="800"
-    >
+    <base-dialog :dialog="importDialog">
       <document-upload-form
         :upload-document="uploadDocument"
         :formats="getImportFormat"
         @close="importDialog=false"
       />
-    </v-dialog>
-    <v-dialog
-      v-model="exportDialog"
-      width="800"
-    >
+    </base-dialog>
+    <base-dialog :dialog="exportDialog">
       <document-export-form
         :export-document="exportDocument"
         :formats="getExportFormat"
         @close="exportDialog=false"
       />
-    </v-dialog>
+    </base-dialog>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import ActionMenu from '@/components/molecules/ActionMenu'
+import BaseDialog from '@/components/molecules/BaseDialog'
 import DocumentUploadForm from '@/components/organisms/documents/DocumentUploadForm'
 import DocumentExportForm from '@/components/organisms/documents/DocumentExportForm'
 
 export default {
   components: {
     ActionMenu,
+    BaseDialog,
     DocumentUploadForm,
     DocumentExportForm
   },
@@ -47,8 +42,8 @@ export default {
       importDialog: false,
       exportDialog: false,
       menuItems: [
-        { title: this.$t('dataset.importDataset'), icon: 'mdi-upload', event: 'upload' },
-        { title: this.$t('dataset.exportDataset'), icon: 'mdi-download', event: 'download' }
+        { title: 'Import Dataset', icon: 'mdi-upload', event: 'upload' },
+        { title: 'Export Dataset', icon: 'mdi-download', event: 'download' }
       ]
     }
   },

@@ -2,34 +2,32 @@
   <div>
     <v-btn
       :disabled="!isLabelSelected"
+      @click="dialog=true"
       class="text-capitalize"
       outlined
-      @click="dialog=true"
     >
-      {{ $t('generic.delete') }}
+      Delete
     </v-btn>
-    <v-dialog
-      v-model="dialog"
-      width="800"
-    >
+    <base-dialog :dialog="dialog">
       <confirm-form
         :items="selected"
-        title="Delete Label"
-        :message="$t('labels.deleteMessage')"
-        item-key="text"
         @ok="deleteLabel($route.params.id);dialog=false"
-        @cancel="dialog=false"
+        title="Delete Label"
+        message="Are you sure you want to delete these labels from this project?"
+        item-key="text"
       />
-    </v-dialog>
+    </base-dialog>
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex'
+import BaseDialog from '@/components/molecules/BaseDialog'
 import ConfirmForm from '@/components/organisms/utils/ConfirmForm'
 
 export default {
   components: {
+    BaseDialog,
     ConfirmForm
   },
 

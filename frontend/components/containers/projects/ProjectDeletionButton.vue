@@ -1,13 +1,11 @@
 <template>
   <confirm-dialog
-    :disabled="!isDeletable"
+    :disabled="!isProjectSelected"
     :items="selected"
-    :title="$t('overview.deleteProjectTitle')"
-    :message="$t('overview.deleteProjectMessage')"
-    :button-true-text="$t('generic.yes')"
-    :button-false-text="$t('generic.cancel')"
-    item-key="name"
     @ok="handleDeleteProject"
+    title="Delete Project"
+    message="Are you sure you want to delete these projects?"
+    item-key="name"
   />
 </template>
 
@@ -22,7 +20,7 @@ export default {
 
   computed: {
     ...mapState('projects', ['selected']),
-    ...mapGetters('projects', ['isDeletable'])
+    ...mapGetters('projects', ['isProjectSelected'])
   },
 
   methods: {

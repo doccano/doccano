@@ -9,8 +9,8 @@
         :color="color"
         :outlined="isOutlined"
         :disabled="disabled"
-        class="mb-2 text-capitalize"
         @click="dialog=true"
+        class="mb-2 text-capitalize"
       >
         {{ text }}
       </v-btn>

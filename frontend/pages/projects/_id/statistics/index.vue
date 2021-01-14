@@ -6,7 +6,7 @@
     >
       <v-card>
         <doughnut-chart
-          :chart-data="progressLocale()"
+          :chart-data="progress"
         />
       </v-card>
     </v-col>
@@ -16,7 +16,7 @@
     >
       <v-card>
         <bar-chart
-          :chart-data="labelStatsLocale()"
+          :chart-data="labelStats"
         />
       </v-card>
     </v-col>
@@ -26,7 +26,7 @@
     >
       <v-card>
         <bar-chart
-          :chart-data="userStatsLocale()"
+          :chart-data="userStats"
         />
       </v-card>
     </v-col>
@@ -58,16 +58,7 @@ export default {
   },
 
   methods: {
-    ...mapActions('statistics', ['fetchStatistics']),
-    progressLocale() {
-      return this.progress(this.$t('statistics.progress'))
-    },
-    labelStatsLocale() {
-      return this.labelStats(this.$t('statistics.labelStats'))
-    },
-    userStatsLocale() {
-      return this.userStats(this.$t('statistics.userStats'))
-    }
+    ...mapActions('statistics', ['fetchStatistics'])
   },
 
   validate({ params }) {
