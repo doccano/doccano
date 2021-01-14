@@ -13,14 +13,15 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
-    "no-console": "off",
-    "no-restricted-syntax": [
-      "error",
+    'no-console': 'off',
+    'no-restricted-syntax': [
+      'error',
       {
-        "selector": "CallExpression[callee.object.name='console'][callee.property.name!=/^(log|warn|error|info|trace)$/]",
-        "message": "Unexpected property on console object was called"
+        selector: "CallExpression[callee.object.name='console'][callee.property.name!=/^(log|warn|error|info|trace)$/]",
+        message: 'Unexpected property on console object was called'
       }
     ],
-    "vue/valid-template-root": "off"
+    'vue/valid-template-root': 'off',
+    'space-before-function-paren': ['error', 'never']
   }
 }

@@ -26,10 +26,6 @@ export default {
     ]
   },
 
-  serverMiddleware: [
-    '~/api/index.js'
-  ],
-
   server: {
     host: '0.0.0.0' // default: localhost
   },
@@ -67,7 +63,7 @@ export default {
 
   buildModules: [
     ['@nuxtjs/google-analytics', {
-      id: 'UA-125643874-2'
+      id: process.env.GOOGLE_TRACKING_ID
     }]
   ],
   /*

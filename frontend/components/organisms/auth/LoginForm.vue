@@ -1,9 +1,9 @@
 <template>
   <base-card
     :disabled="!valid"
-    @agree="tryLogin"
     title="Login"
     agree-text="Login"
+    @agree="tryLogin"
   >
     <template #content>
       <v-form
@@ -16,27 +16,27 @@
           type="error"
           dismissible
         >
-          Incorrect username or password.
+          Incorrect username or password or something went wrong.
         </v-alert>
         <v-text-field
           v-model="username"
           :rules="userNameRules"
-          @keyup.enter="tryLogin"
           label="Username"
           name="username"
           prepend-icon="person"
           type="text"
           autofocus
+          @keyup.enter="tryLogin"
         />
         <v-text-field
           id="password"
           v-model="password"
           :rules="passwordRules"
-          @keyup.enter="tryLogin"
           label="Password"
           name="password"
           prepend-icon="lock"
           type="password"
+          @keyup.enter="tryLogin"
         />
       </v-form>
     </template>

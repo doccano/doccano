@@ -16,7 +16,7 @@
         </v-flex>
         <v-flex>
           <h1 class="mb-2 display-1 text-xs-center">
-            Text Annotation for Human
+            Text Annotation for Humans
           </h1>
           <div class="mt-4">
             <v-btn
@@ -26,7 +26,7 @@
               href="https://github.com/doccano/doccano"
             >
               <v-icon left>
-                mdi-github-circle
+                mdi-github
               </v-icon>
               GitHub
             </v-btn>

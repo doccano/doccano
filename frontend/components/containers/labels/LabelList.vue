@@ -5,10 +5,10 @@
     :items="items"
     :search="search"
     :loading="loading"
-    @input="updateSelected"
     loading-text="Loading... Please wait"
     item-key="id"
     show-select
+    @input="updateSelected"
   >
     <template v-slot:top>
       <v-text-field
@@ -27,9 +27,9 @@
           <v-text-field
             :value="item.text"
             :rules="labelNameRules"
-            @change="handleUpdateLabel({ id: item.id, text: $event })"
             label="Edit"
             single-line
+            @change="handleUpdateLabel({ id: item.id, text: $event })"
           />
         </template>
       </v-edit-dialog>
@@ -41,8 +41,8 @@
           <v-select
             :value="item.suffix_key"
             :items="shortkeys"
-            @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
             label="Key"
+            @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
           />
         </template>
       </v-edit-dialog>
@@ -58,14 +58,14 @@
         </v-chip>
         <template v-slot:input>
           <v-color-picker
-            :value="item.backgroundColor"
+            :value="item.background_color"
             :rules="colorRules"
-            @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
             show-swatches
             hide-mode-switch
             width="800"
             mode="hexa"
             class="ma-2"
+            @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
           />
         </template>
       </v-edit-dialog>

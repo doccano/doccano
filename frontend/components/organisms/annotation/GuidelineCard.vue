@@ -1,8 +1,8 @@
 <template>
   <base-card
-    @cancel="close"
     title="Annotation Guideline"
     cancel-text="Close"
+    @cancel="close"
   >
     <template #content>
       <viewer

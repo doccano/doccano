@@ -3,25 +3,25 @@
     <v-data-table
       :headers="headers"
       :items="annotations"
-      @input="update"
       item-key="id"
       hide-default-header
       hide-default-footer
       disable-pagination
       class="elevation-1"
+      @input="update"
     >
       <template v-slot:top>
         <v-text-field
           v-model="newText"
-          @keyup.enter="create"
-          @compositionstart="compositionStart"
-          @compositionend="compositionEnd"
           prepend-inner-icon="mdi-pencil"
           label="New text"
           autofocus
           single-line
           hide-details
           filled
+          @keyup.enter="create"
+          @compositionstart="compositionStart"
+          @compositionend="compositionEnd"
         />
       </template>
       <template v-slot:item.text="{ item }">
@@ -32,17 +32,17 @@
           <template v-slot:input>
             <v-textarea
               :value="item.text"
-              @change="update(item.id, $event)"
               label="Edit"
               autofocus
+              @change="update(item.id, $event)"
             />
           </template>
         </v-edit-dialog>
       </template>
       <template v-slot:item.action="{ item }">
         <v-icon
-          @click="deleteAnnotation(item.id)"
           small
+          @click="deleteAnnotation(item.id)"
         >
           delete
         </v-icon>

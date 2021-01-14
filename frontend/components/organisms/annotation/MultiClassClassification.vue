@@ -1,8 +1,7 @@
 <template>
   <v-combobox
-    :value="annotatedLabels"
+    v-model="annotatedLabels"
     :items="labels"
-    @input="add"
     item-text="text"
     label="Label"
     hide-selected
@@ -15,9 +14,9 @@
         :input-value="selected"
         :color="item.background_color"
         :text-color="textColor(item.background_color)"
+        close
         @click="select"
         @click:close="remove(item.id)"
-        close
       >
         {{ item.text }}
       </v-chip>
@@ -53,16 +52,26 @@ export default {
   },
 
   computed: {
-    annotatedLabels() {
-      const labelIds = this.annotations.map(item => item.label)
-      return this.labels.filter(item => labelIds.includes(item.id))
-    },
-    labelObject() {
-      const obj = {}
-      for (const label of this.labels) {
-        obj[label.id] = label
+    annotatedLabels: {
+      get() {
+        const labelIds = this.annotations.map(item => item.label)
+        return this.labels.filter(item => labelIds.includes(item.id))
+      },
+      set(newValue) {
+        if (newValue.length > this.annotations.length) {
+          const label = newValue[newValue.length - 1]
+          if (typeof label === 'object') {
+            this.add(label)
+          } else {
+            newValue.pop()
+          }
+        } else {
+          const label = this.annotatedLabels.find(x => !newValue.some(y => y.id === x.id))
+          if (typeof label === 'object') {
+            this.remove(label.id)
+          }
+        }
       }
-      return obj
     }
   },
 
@@ -70,8 +79,7 @@ export default {
     textColor(backgroundColor) {
       return idealColor(backgroundColor)
     },
-    add(labels) {
-      const label = labels[labels.length - 1]
+    add(label) {
       this.addLabel(label.id)
     },
     remove(labelId) {

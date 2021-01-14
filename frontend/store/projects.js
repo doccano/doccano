@@ -65,6 +65,11 @@ export const getters = {
       text: 'CoNLL',
       accept: '.conll'
     }
+    const excel = {
+      type: 'excel',
+      text: 'Excel',
+      accept: '.xlsx'
+    }
     if (state.current.project_type === 'DocumentClassification') {
       json.examples = [
         '{"text": "Terrible customer service.", "labels": ["negative"]}\n',
@@ -77,10 +82,17 @@ export const getters = {
         '"Really great transaction.","positive"\n',
         '"Great price.","positive"'
       ]
+      excel.examples = [
+        'text,label\n',
+        '"Terrible customer service.","negative"\n',
+        '"Really great transaction.","positive"\n',
+        '"Great price.","positive"'
+      ]
       return [
         plain,
         csv,
-        json
+        json,
+        excel
       ]
     } else if (state.current.project_type === 'SequenceLabeling') {
       json.examples = [
@@ -118,10 +130,17 @@ export const getters = {
         '"Good morning.","おはようございます。"\n',
         '"See you.","さようなら。"'
       ]
+      excel.examples = [
+        'text,label\n',
+        '"Hello!","こんにちは！"\n',
+        '"Good morning.","おはようございます。"\n',
+        '"See you.","さようなら。"'
+      ]
       return [
         plain,
         csv,
-        json
+        json,
+        excel
       ]
     } else {
       return []
@@ -190,6 +209,10 @@ export const getters = {
     } else {
       return []
     }
+  },
+  loadSearchOptions(state) {
+    const checkpoint = JSON.parse(localStorage.getItem('checkpoint')) || {}
+    return checkpoint[state.current.id] ? checkpoint[state.current.id] : { page: 1 }
   }
 }
 
@@ -218,6 +241,11 @@ export const mutations = {
   },
   setCurrent(state, payload) {
     state.current = payload
+  },
+  saveSearchOptions(state, options) {
+    const checkpoint = JSON.parse(localStorage.getItem('checkpoint')) || {}
+    checkpoint[state.current.id] = options
+    localStorage.setItem('checkpoint', JSON.stringify(checkpoint))
   }
 }
 

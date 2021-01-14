@@ -11,7 +11,7 @@ from libcloud.base import DriverType, get_driver
 from libcloud.storage.types import ContainerDoesNotExistError, ObjectDoesNotExistError
 from rest_framework import generics, filters, status
 from rest_framework.exceptions import ParseError, ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
@@ -20,14 +20,21 @@ from rest_framework_csv.renderers import CSVRenderer
 from .filters import DocumentFilter
 from .models import Project, Label, Document, RoleMapping, Role
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover
-from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer
+from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer, ApproverSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
-from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, iterable_to_io
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, iterable_to_io
 from .utils import JSONLRenderer
 from .utils import JSONPainter, CSVPainter
 
 IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
+
+
+class Health(APIView):
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def get(self, request, *args, **kwargs):
+        return Response({'status': 'green'})
 
 
 class Me(APIView):
@@ -126,7 +133,7 @@ class ApproveLabelsAPI(APIView):
         document = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         document.annotations_approved_by = self.request.user if approved else None
         document.save()
-        return Response(DocumentSerializer(document).data)
+        return Response(ApproverSerializer(document).data)
 
 
 class LabelList(generics.ListCreateAPIView):
@@ -203,17 +210,40 @@ class AnnotationList(generics.ListCreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
+        self.check_single_class_classification(self.kwargs['project_id'], self.kwargs['doc_id'], request.user)
+
         request.data['document'] = self.kwargs['doc_id']
         return super().create(request, args, kwargs)
 
     def perform_create(self, serializer):
         serializer.save(document_id=self.kwargs['doc_id'], user=self.request.user)
 
+    @staticmethod
+    def check_single_class_classification(project_id, doc_id, user):
+        project = get_object_or_404(Project, pk=project_id)
+        if not project.single_class_classification:
+            return
+
+        model = project.get_annotation_class()
+        annotations = model.objects.filter(document_id=doc_id)
+        if not project.collaborative_annotation:
+            annotations = annotations.filter(user=user)
+
+        if annotations.exists():
+            raise ValidationError('requested to create duplicate annotation for single-class-classification project')
+
 
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'annotation_id'
-    permission_classes = [IsAuthenticated & (((IsAnnotator | IsAnnotationApprover) & IsOwnAnnotation) | IsProjectAdmin)]
     swagger_schema = None
+
+    def get_permissions(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        if project.collaborative_annotation:
+            self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+        else:
+            self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin & IsOwnAnnotation]
+        return super().get_permissions()
 
     def get_serializer_class(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -264,6 +294,8 @@ class TextUploadAPI(APIView):
             return CoNLLParser()
         elif file_format == 'excel':
             return ExcelParser()
+        elif file_format == 'audio':
+            return AudioParser()
         else:
             raise ValidationError('format {} is invalid.'.format(file_format))
 

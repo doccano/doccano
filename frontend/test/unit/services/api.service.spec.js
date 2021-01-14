@@ -5,7 +5,7 @@ describe('Request', () => {
   const r = new ApiService('')
   const mockAxios = new MockAdapter(r.instance)
 
-  test('can get resources', async () => {
+  test('can get resources', async() => {
     const data = [
       {
         id: 1,
@@ -18,7 +18,7 @@ describe('Request', () => {
     expect(response).toEqual(data)
   })
 
-  test('can create a resource', async () => {
+  test('can create a resource', async() => {
     const data = {
       title: 'foo',
       body: 'bar'
@@ -28,7 +28,7 @@ describe('Request', () => {
     expect(response.title).toEqual(data.title)
   })
 
-  test('can update a resource', async () => {
+  test('can update a resource', async() => {
     const data = {
       id: 1,
       title: 'foo',
@@ -39,7 +39,7 @@ describe('Request', () => {
     expect(response.title).toEqual(data.title)
   })
 
-  test('can partially update a resource', async () => {
+  test('can partially update a resource', async() => {
     const data = {
       title: 'foo'
     }
@@ -48,7 +48,7 @@ describe('Request', () => {
     expect(response.title).toEqual(data.title)
   })
 
-  test('can delete a resource', async () => {
+  test('can delete a resource', async() => {
     mockAxios.onDelete('/posts/1').reply(204, {})
     const response = await r.delete('/posts/1')
     expect(response).toEqual({})
