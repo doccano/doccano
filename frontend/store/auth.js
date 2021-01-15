@@ -26,7 +26,7 @@ export const getters = {
   isAuthenticated(state) {
     return state.token != null
   },
-  getUsername: () => () => {
+  getUsername() {
     return localStorage.getItem('username')
   }
 }

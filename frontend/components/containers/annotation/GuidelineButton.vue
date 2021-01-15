@@ -3,11 +3,11 @@
     <v-tooltip bottom>
       <template v-slot:activator="{ on }">
         <v-btn
+          v-on="on"
+          @click="dialog=true"
           class="text-capitalize ps-1 pe-1"
           min-width="36"
           outlined
-          v-on="on"
-          @click="dialog=true"
         >
           <v-icon>
             mdi-book-open-outline
@@ -16,25 +16,24 @@
       </template>
       <span>Show guideline</span>
     </v-tooltip>
-    <v-dialog
-      v-model="dialog"
-      width="800"
-    >
+    <base-dialog :dialog="dialog">
       <guideline-card
         v-if="currentProject"
         :guideline-text="currentProject.guideline"
         @close="dialog=false"
       />
-    </v-dialog>
+    </base-dialog>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import BaseDialog from '@/components/molecules/BaseDialog'
 import GuidelineCard from '@/components/organisms/annotation/GuidelineCard'
 
 export default {
   components: {
+    BaseDialog,
     GuidelineCard
   },
 
@@ -46,6 +45,14 @@ export default {
 
   computed: {
     ...mapGetters('projects', ['currentProject'])
+  },
+
+  created() {
+    this.setCurrentProject(this.$route.params.id)
+  },
+
+  methods: {
+    ...mapActions('projects', ['setCurrentProject'])
   }
 }
 </script>

@@ -22,8 +22,8 @@ export default {
     DocumentDeletionButton
   },
 
-  validate({ params, query }) {
-    return /^\d+$/.test(params.id) && /^\d+|$/.test(query.limit) && /^\d+|$/.test(query.offset)
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   }
 }
 </script>

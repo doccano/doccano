@@ -1,9 +1,9 @@
 <template>
-  <v-main>
+  <v-content>
     <the-top-banner />
     <feature-cards />
     <the-bottom-banner />
-  </v-main>
+  </v-content>
 </template>
 
 <script>

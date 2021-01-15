@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card
-      v-if="isReady"
+      v-if="currentDoc"
       class="title mb-5"
     >
       <v-card-text class="title">
@@ -9,7 +9,7 @@
       </v-card-text>
     </v-card>
     <seq2seq-box
-      v-if="isReady"
+      v-if="currentDoc"
       :text="currentDoc.text"
       :annotations="currentDoc.annotations"
       :delete-annotation="_deleteAnnotation"
@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import Seq2seqBox from '~/components/organisms/annotation/Seq2seqBox'
 
 export default {
@@ -29,11 +29,7 @@ export default {
   },
 
   computed: {
-    ...mapState('documents', ['loading']),
-    ...mapGetters('documents', ['currentDoc']),
-    isReady() {
-      return this.currentDoc && !this.loading
-    }
+    ...mapGetters('documents', ['currentDoc'])
   },
 
   methods: {
@@ -48,7 +44,7 @@ export default {
     _updateAnnotation(annotationId, text) {
       const payload = {
         annotationId,
-        text,
+        text: text,
         projectId: this.$route.params.id
       }
       this.updateAnnotation(payload)

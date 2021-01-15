@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
+    @agree="download"
+    @cancel="cancel"
     title="Export Data"
     agree-text="Export"
     cancel-text="Cancel"
-    @agree="download"
-    @cancel="cancel"
   >
     <template #content>
       <v-form
@@ -24,16 +24,12 @@
             :value="format"
           />
         </v-radio-group>
-        <v-sheet
+        <code
           v-if="selectedFormat"
-          :dark="!$vuetify.theme.dark"
-          :light="$vuetify.theme.dark"
-          class="mb-5 pa-5"
+          class="mb-10 pa-5 highlight"
         >
-          <span v-for="(example, index) in selectedFormat.examples" :key="index">
-            {{ example }}<br>
-          </span>
-        </v-sheet>
+          <span v-for="(example, index) in selectedFormat.examples" :key="index">{{ example }}</span>
+        </code>
       </v-form>
     </template>
   </base-card>
@@ -102,3 +98,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .highlight {
+    font-size: 100%;
+    width: 100%;
+  }
+  .highlight:before {
+    content: ''
+  }
+</style>

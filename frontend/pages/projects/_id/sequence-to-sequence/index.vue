@@ -10,10 +10,6 @@ export default {
 
   components: {
     Seq2seqContainer
-  },
-
-  validate({ params, query }) {
-    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   }
 }
 </script>

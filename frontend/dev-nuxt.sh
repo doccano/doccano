@@ -10,10 +10,10 @@ app="${root}/frontend"
  
   if [[ ! -d node_modules/.bin ]]; then
     echo "Installing dependencies"
-    yarn install
+    npm install
   fi
 
   echo "Starting frontend server"
-  yarn lintfix
-  yarn dev
+  npm run lintfix
+  npm run dev
 )

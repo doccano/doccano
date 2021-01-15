@@ -40,7 +40,6 @@
                 option(value="DocumentClassification") document classification
                 option(value="SequenceLabeling") sequence labeling
                 option(value="Seq2seq") sequence to sequence
-                option(value="Speech2text") speech to text
             p.help.is-danger {{ projectTypeError }}
 
           div.field
@@ -64,17 +63,6 @@
                 required
               )
               | Share annotations across all users
-
-          div.field(v-if="projectType === 'DocumentClassification'")
-            label.checkbox
-              input(
-                v-model="singleClassClassification"
-                name="single_class_classification"
-                type="checkbox"
-                style="margin-right: 0.25em;"
-                required
-              )
-              | Single-class classification
 
         footer.modal-card-foot.pt20.pb20.pr20.pl20.has-background-white-ter
           button.button.is-primary(v-on:click="create()") Create
@@ -107,7 +95,6 @@
                         option Text Classification
                         option Sequence Labeling
                         option Seq2seq
-                        option Speech to text
 
               div.card-table
                 div.content
@@ -163,7 +150,6 @@ export default {
     projectNameError: '',
     username: '',
     isSuperuser: false,
-    singleClassClassification: false,
     randomizeDocumentOrder: false,
     collaborativeAnnotation: false,
     isProjectAdmin: null,
@@ -214,9 +200,6 @@ export default {
       if (projectType === 'Seq2seq') {
         return this.selected === 'Seq2seq';
       }
-      if (projectType === 'Speech2text') {
-        return this.selected === 'Speech to text';
-      }
       return false;
     },
 
@@ -225,7 +208,6 @@ export default {
         name: this.projectName,
         description: this.description,
         project_type: this.projectType,
-        single_class_classification: this.singleClassClassification,
         randomize_document_order: this.randomizeDocumentOrder,
         collaborative_annotation: this.collaborativeAnnotation,
         guideline: 'Please write annotation guideline.',
@@ -260,9 +242,6 @@ export default {
       }
       if (this.projectType === 'Seq2seq') {
         return 'Seq2seqProject';
-      }
-      if (this.projectType === 'Speech2text') {
-        return 'Speech2textProject';
       }
       return '';
     },

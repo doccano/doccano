@@ -1,11 +1,14 @@
-FROM node:13.7-alpine
+FROM node:13.2.0
 
+# set work directory
 WORKDIR /app
 
+# copy project
 COPY . /app/
 
-RUN apk add -U --no-cache git python3 make g++ \
-  # && npm install -g yarn@latest \
-  && yarn install \
-  && yarn build \
-  && apk del --no-cache git make g++
+# install dependencies
+RUN npm install -g npm@latest
+RUN npm install
+
+# build project
+RUN npm run build

@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
+    @agree="create"
+    @cancel="cancel"
     title="Upload Label"
     agree-text="Upload"
     cancel-text="Cancel"
-    @agree="create"
-    @cancel="cancel"
   >
     <template #content>
       <v-form
@@ -22,14 +22,9 @@
           Please check available formats carefully.
         </v-alert>
         <h2>Example format</h2>
-        <v-sheet
-          v-if="exampleFormat"
-          :dark="!$vuetify.theme.dark"
-          :light="$vuetify.theme.dark"
-          class="mb-5 pa-5"
-        >
-          <pre>{{ exampleFormat }}</pre>
-        </v-sheet>
+        <code class="mb-10 pa-5 highlight">
+          <span>{{ exampleFormat }}</span>
+        </code>
         <h2>Select a file</h2>
         <v-file-input
           v-model="file"
@@ -82,6 +77,7 @@ export default {
           text_color: '#ffffff'
         }
       ]
+      console.log(JSON.stringify(data, null, 4))
       return JSON.stringify(data, null, 4)
     }
   },
@@ -114,3 +110,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+  .highlight {
+    font-size: 100%;
+    width: 100%;
+  }
+  .highlight:before {
+    content: ''
+  }
+</style>
