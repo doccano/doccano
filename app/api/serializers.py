@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 
 
 from .models import Label, Project, Document, RoleMapping, Role, Comment
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
+from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, Speech2textProject
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, Speech2textAnnotation
 
 
