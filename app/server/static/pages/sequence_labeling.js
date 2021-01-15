@@ -1,6 +1,8 @@
 import Vue from 'vue';
+import vueDebounce from 'vue-debounce';
 import SequenceLabeling from '../components/sequence_labeling.vue';
 
+Vue.use(vueDebounce);
 Vue.use(require('vue-shortkey'), {
   prevent: ['input', 'textarea'],
 });

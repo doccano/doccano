@@ -39,6 +39,7 @@
               v-model="filterOption"
             />
             <guideline-button />
+            <comment-button />
             <clear-annotations-button />
           </v-col>
           <v-spacer />
@@ -79,6 +80,7 @@ import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
+import CommentButton from '@/components/containers/annotation/CommentButton'
 import Pagination from '~/components/containers/annotation/Pagination'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
@@ -95,7 +97,8 @@ export default {
     FilterButton,
     ApproveButton,
     MetadataBox,
-    ClearAnnotationsButton
+    ClearAnnotationsButton,
+    CommentButton
   },
 
   fetch() {

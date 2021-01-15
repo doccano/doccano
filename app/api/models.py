@@ -226,6 +226,14 @@ class Document(models.Model):
         return self.text[:50]
 
 
+class Comment(models.Model):
+    text = models.TextField()
+    document = models.ForeignKey(Document, related_name='comments', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class Annotation(models.Model):
     objects = AnnotationManager()
 

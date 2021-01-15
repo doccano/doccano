@@ -7,6 +7,8 @@ export default {
   filterOption3: 'Undone',
   guidelineTooltip: 'Show Guideline',
   guidelinePopupTitle: 'Annotation Guideline',
+  commentTooltip: 'Click to comment on document',
+  commentPopupTitle: 'Comment',
   metadataDefaultMessage: 'No data available',
   key: 'Key',
   value: 'Value',

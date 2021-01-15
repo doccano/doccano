@@ -111,6 +111,23 @@ div.columns(v-cloak="")
             v-bind:show-line="false"
           )
 
+    div.modal(v-bind:class="{ 'is-active': isCommentActive }")
+      div.modal-background
+      div.modal-card
+        header.modal-card-head
+          p.modal-card-title Document Comment
+          button.delete(
+            v-on:click="toggleCommentModal()"
+            aria-label="close"
+          )
+        section.modal-card-body.modal-card-body-footer
+          textarea.textarea(
+            v-model="comment"
+            v-debounce="syncComment"
+            type="text"
+            placeholder="Add document comment here..."
+          )
+
     div.columns.is-multiline.is-gapless.is-mobile.is-vertical-center
       div.column.is-3
         progress.progress.is-inline-block(
@@ -118,7 +135,7 @@ div.columns(v-cloak="")
           v-bind:value="achievement"
           max="100"
         ) 30%
-      div.column.is-6
+      div.column.is-5
         span.ml10
           strong {{ total - remaining }}
         | /
@@ -144,6 +161,13 @@ div.columns(v-cloak="")
         )
           span.icon
             i.fas.fa-box
+      div.column.is-1.has-text-right
+        a.button.tooltip.is-tooltip-bottom(
+          v-on:click="toggleCommentModal()"
+          v-bind:data-tooltip="'Click to comment on document.'"
+        )
+          span.icon
+            i.fas.fa-comment
 
     div.columns
       div.column

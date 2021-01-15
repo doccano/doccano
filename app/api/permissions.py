@@ -46,6 +46,15 @@ class IsOwnAnnotation(ProjectMixin, BasePermission):
         return annotation.exists()
 
 
+class IsOwnComment(ProjectMixin, BasePermission):
+    @classmethod
+    def has_object_permission(cls, request, view, obj):
+        if request.user.is_superuser:
+            return True
+
+        return obj.user.id == request.user.id
+
+
 class RolePermission(ProjectMixin, BasePermission):
     UNSAFE_METHODS = ('POST', 'PATCH', 'DELETE')
     unsafe_methods_check = True
