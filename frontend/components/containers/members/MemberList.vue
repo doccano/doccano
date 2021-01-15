@@ -5,16 +5,21 @@
     :items="items"
     :search="search"
     :loading="loading"
-    @input="updateSelected"
-    loading-text="Loading... Please wait"
+    :loading-text="$t('generic.loading')"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-text': $t('vuetify.itemsPerPageText')
+    }"
     item-key="id"
     show-select
+    @input="updateSelected"
   >
     <template v-slot:top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
@@ -23,25 +28,25 @@
     <template v-slot:item.rolename="{ item }">
       <v-edit-dialog
         :return-value.sync="item"
-        @save="updateRole({ id: item.id })"
         large
+        @save="updateRole({ id: item.id })"
       >
         <div>{{ item.rolename }}</div>
         <template v-slot:input>
           <div class="mt-4 title">
-            Update Role
+            {{ $t('members.updateRole') }}
           </div>
         </template>
         <template v-slot:input>
           <v-select
             :value="getRole(item)"
             :items="roles"
-            :rules="roleRules"
-            @input="setNewRole"
+            :rules="roleRules($t('rules.roleRules'))"
             item-text="name"
             item-value="id"
-            label="Role"
+            :label="$t('members.role')"
             return-object
+            @input="setNewRole"
           />
         </template>
       </v-edit-dialog>
@@ -58,13 +63,13 @@ export default {
     return {
       headers: [
         {
-          text: 'Name',
+          text: this.$t('generic.name'),
           align: 'left',
           sortable: false,
           value: 'username'
         },
         {
-          text: 'Role',
+          text: this.$t('members.role'),
           value: 'rolename'
         }
       ],

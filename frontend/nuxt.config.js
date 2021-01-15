@@ -1,4 +1,5 @@
 import colors from 'vuetify/es5/util/colors'
+import i18n from './i18n'
 
 export default {
   mode: 'spa',
@@ -25,10 +26,6 @@ export default {
       }
     ]
   },
-
-  serverMiddleware: [
-    '~/api/index.js'
-  ],
 
   server: {
     host: '0.0.0.0' // default: localhost
@@ -59,6 +56,7 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
+    ['nuxt-i18n', i18n],
     '@nuxtjs/vuetify',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
@@ -67,7 +65,7 @@ export default {
 
   buildModules: [
     ['@nuxtjs/google-analytics', {
-      id: 'UA-125643874-2'
+      id: process.env.GOOGLE_TRACKING_ID
     }]
   ],
   /*

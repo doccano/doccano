@@ -21,9 +21,10 @@ export default {
 
   computed: {
     ...mapState('labels', ['items', 'loading']),
+    ...mapState('documents', { documentLoading: 'loading' }),
     ...mapGetters('documents', ['currentDoc']),
     isReady() {
-      return !!this.currentDoc && !this.loading
+      return !!this.currentDoc && !this.loading && !this.documentLoading
     }
   },
 

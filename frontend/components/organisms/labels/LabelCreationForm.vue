@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
-    @agree="create"
-    @cancel="reset"
     title="Create Label"
     agree-text="Create"
     cancel-text="Cancel"
+    @agree="create"
+    @cancel="reset"
   >
     <template #content>
       <v-form
@@ -24,13 +24,13 @@
         <v-text-field
           v-model="labelName"
           :rules="labelNameRules"
-          label="Label name"
+          :label="$t('labels.labelName')"
           prepend-icon="label"
         />
         <v-select
           v-model="suffixKey"
           :items="keys"
-          label="Key"
+          :label="$t('labels.key')"
           prepend-icon="mdi-keyboard"
         />
         <v-color-picker

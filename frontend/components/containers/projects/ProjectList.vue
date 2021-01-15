@@ -5,16 +5,20 @@
     :items="projects"
     :search="search"
     :loading="loading"
-    @input="update"
-    loading-text="Loading... Please wait"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-text': $t('vuetify.itemsPerPageText')
+    }"
     item-key="id"
     show-select
+    @input="update"
   >
     <template v-slot:top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled

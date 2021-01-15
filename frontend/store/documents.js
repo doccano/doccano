@@ -88,7 +88,7 @@ export const mutations = {
 export const actions = {
   getDocumentList({ commit, state }, payload) {
     commit('setLoading', true)
-    payload = Object.assign(payload, state.searchOptions)
+    // payload = Object.assign(payload, state.searchOptions)
     return DocumentService.getDocumentList(payload)
       .then((response) => {
         commit('setDocumentList', response.data.results)

@@ -1,0 +1,38 @@
+interactions:
+- request:
+    body: ""
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '54'
+      Content-Type:
+      - application/json
+      User-Agent:
+      - python-requests/2.21.0
+    method: POST
+    uri: https://dev-000000.okta.com/oauth2/v1/userinfo
+  response:
+    body:
+      string: '{"sub":"agaga42hrey546","groups":["user-group"]}'
+    headers:
+      Cache-Control:
+      - no-cache, no-store
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Fri, 24 Apr 2020 02:54:39 GMT
+      Strict-Transport-Security:
+      - max-age=315360000
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+    status:
+      code: 200
+      message: OK
+version: 1

@@ -144,8 +144,19 @@ WSGI_APPLICATION = 'app.wsgi.application'
 AUTHENTICATION_BACKENDS = [
     'social_core.backends.github.GithubOAuth2',
     'social_core.backends.azuread_tenant.AzureADTenantOAuth2',
+    'social_core.backends.okta.OktaOAuth2',
+    'social_core.backends.okta_openidconnect.OktaOpenIdConnect',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+HEADER_AUTH_USER_NAME = env('HEADER_AUTH_USER_NAME', '')
+HEADER_AUTH_USER_GROUPS = env('HEADER_AUTH_USER_GROUPS', '')
+HEADER_AUTH_ADMIN_GROUP_NAME = env('HEADER_AUTH_ADMIN_GROUP_NAME', '')
+HEADER_AUTH_GROUPS_SEPERATOR = env('HEADER_AUTH_GROUPS_SEPERATOR', default=',')
+
+if HEADER_AUTH_USER_NAME and HEADER_AUTH_USER_GROUPS and HEADER_AUTH_ADMIN_GROUP_NAME:
+    MIDDLEWARE.append('server.middleware.HeaderAuthMiddleware')
+    AUTHENTICATION_BACKENDS.append('django.contrib.auth.backends.RemoteUserBackend')
 
 SOCIAL_AUTH_GITHUB_KEY = env('OAUTH_GITHUB_KEY', None)
 SOCIAL_AUTH_GITHUB_SECRET = env('OAUTH_GITHUB_SECRET', None)
@@ -164,6 +175,22 @@ if AZUREAD_ADMIN_GROUP_ID:
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_RESOURCE = 'https://graph.microsoft.com/'
     SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SCOPE = ['Directory.Read.All']
 
+SOCIAL_AUTH_OKTA_OAUTH2_KEY = env('OAUTH_OKTA_OAUTH2_KEY', None)
+SOCIAL_AUTH_OKTA_OAUTH2_SECRET = env('OAUTH_OKTA_OAUTH2_SECRET', None)
+SOCIAL_AUTH_OKTA_OAUTH2_API_URL = env('OAUTH_OKTA_OAUTH2_API_URL', None)
+OKTA_OAUTH2_ADMIN_GROUP_NAME = env('OKTA_OAUTH2_ADMIN_GROUP_NAME', None)
+
+if SOCIAL_AUTH_OKTA_OAUTH2_API_URL:
+    SOCIAL_AUTH_OKTA_OAUTH2_SCOPE = ["groups"]
+
+SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY = env('OAUTH_OKTA_OPENIDCONNECT_KEY', None)
+SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET = env('OAUTH_OKTA_OPENIDCONNECT_SECRET', None)
+SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL = env('OAUTH_OKTA_OPENIDCONNECT_API_URL', None)
+OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME = env('OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME', None)
+
+if SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL:
+    SOCIAL_AUTH_OKTA_OPENIDCONNECT_SCOPE = ["groups"]
+
 SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
@@ -176,6 +203,8 @@ SOCIAL_AUTH_PIPELINE = [
     'social_core.pipeline.user.user_details',
     'server.social_auth.fetch_github_permissions',
     'server.social_auth.fetch_azuread_permissions',
+    'server.social_auth.fetch_okta_oauth2_permissions',
+    'server.social_auth.fetch_okta_openidconnect_permissions',
 ]
 
 ROLE_PROJECT_ADMIN = env('ROLE_PROJECT_ADMIN', 'project_admin')
@@ -305,6 +334,7 @@ EMAIL_HOST = env('EMAIL_HOST', None)
 EMAIL_HOST_USER = env('EMAIL_HOST_USER', None)
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', None)
 EMAIL_PORT = env.int('EMAIL_PORT', 587)
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', 'webmaster@localhost')
 
 if not EMAIL_HOST:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

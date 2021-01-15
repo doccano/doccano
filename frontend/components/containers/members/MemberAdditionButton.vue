@@ -1,7 +1,7 @@
 <template>
   <base-modal
     :is-create="true"
-    text="Add"
+    :text="$t('generic.add')"
   >
     <template v-slot="slotProps">
       <member-addition-form

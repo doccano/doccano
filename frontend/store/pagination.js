@@ -1,6 +1,7 @@
 export const state = () => ({
   limit: 10,
   page: 1,
+  options: {},
   projectId: null
 })
 
@@ -34,6 +35,13 @@ export const mutations = {
   },
   setProjectId(state, projectId) {
     state.projectId = projectId
+  },
+  setOptions(state, limit, offset, q) {
+    state.options = {
+      limit,
+      offset,
+      q
+    }
   }
 }
 
@@ -55,5 +63,8 @@ export const actions = {
   initPage({ commit }, payload) {
     commit('setProjectId', payload.projectId)
     commit('loadPage')
+  },
+  setOptions({ commit }, payload) {
+    commit('setOptions', payload.limit, payload.offset, payload.q)
   }
 }

@@ -75,6 +75,38 @@ Resources:
             - !Ref SecretKey
             - |+
 
+            - sudo tee -a /env.list <<< EMAIL_USE_TLS=
+            - !Ref EMailUseTSL
+            - |+
+
+            - sudo tee -a /env.list <<< EMAIL_HOST=
+            - !Ref EMailHost
+            - |+
+
+            - sudo tee -a /env.list <<< EMAIL_PORT=
+            - !Ref EMailHostPort
+            - |+
+
+            - sudo tee -a /env.list <<< EMAIL_HOST_USER=
+            - !Ref EMailHostUser
+            - |+
+
+            - sudo tee -a /env.list <<< EMAIL_HOST_PASSWORD=
+            - !Ref EMailHostPassword
+            - |+
+
+            - sudo tee -a /env.list <<< WORKERS=
+            - !Ref WorkersCount
+            - |+
+
+            - sudo tee -a /env.list <<< DEFAULT_FROM_EMAIL=
+            - !Ref FromEmail
+            - |+
+
+            - sudo tee -a /env.list <<< DOCKER_IMAGE=
+            - !Ref DockerImageName
+            - |+
+
             - |
               set -a
             - |
@@ -82,12 +114,12 @@ Resources:
             - |
               set +a
             - |
-              sudo docker pull doccano/doccano:latest
+              sudo docker pull ${DOCKER_IMAGE}
             - >
               sudo docker run -d --name doccano --env-file /env.list -p 80:8000
-              doccano/doccano:latest
+              ${DOCKER_IMAGE}
             - >
-              sudo docker exec doccano tools/create-admin.sh ${ADMIN} ${EMAIL}
+              sleep 3 && sudo docker exec doccano tools/create-admin.sh ${ADMIN} ${EMAIL}
               ${PASSWORD}
     Metadata:
       'AWS::CloudFormation::Designer':
@@ -195,6 +227,7 @@ Parameters:
     ConstraintDescription: must be the name of an existing EC2 KeyPair.
   AdminUserName:
     Description: The admin account user name
+    Default: 'admin'
     Type: String
     MinLength: 1
     MaxLength: 16
@@ -224,6 +257,53 @@ Parameters:
     Description: Secret key for Django
     Type: String
     AllowedPattern: '^[a-zA-Z0-9]*$'
+  EMailUseTSL:
+    Default: 'False'
+    AllowedValues:
+      - 'False'
+      - 'True'
+    Description: SMTP will use TSL
+    Type: String
+    AllowedPattern: '^[a-zA-Z0-9]*$'
+  EMailHost:
+    Description: SMTP Host
+    Type: String
+    AllowedPattern: '^[\w-]+(\.[\w-]+)*(\.[a-z]{2,})$'
+  EMailHostUser:
+    Description: SMTP Host User
+    Type: String
+    MinLength: 1
+    MaxLength: 25
+    AllowedPattern: '^[a-zA-Z0-9][a-zA-Z0-9]{1,25}$'
+  EMailHostPassword:
+    Description: SMTP Host User password
+    Type: String
+    NoEcho: true
+    MinLength: 0
+    MaxLength: 60
+    AllowedPattern: '^\p{Graph}+$'
+  EMailHostPort:
+    Description: SMTP Port
+    Type: String
+    MinLength: 1
+    MaxLength: 5
+    AllowedPattern: '^\d+$'
+  WorkersCount:
+    Description: Workers Count
+    Type: String
+    MinLength: 1
+    MaxLength: 3
+    AllowedPattern: '^\d+$'
+  FromEmail:
+    Default: webmaster@localhost
+    Description: The email used to send from singup messages
+    Type: String
+    AllowedPattern: '^[\x20-\x45]?[\w-\+]+(\.[\w]+)*@[\w-]+(\.[\w]+)*(\.[a-z]{2,})?$'
+  DockerImageName:
+    Default: doccano/doccano:latest
+    Description: The Docker image name
+    Type: String
+    AllowedPattern: '^[\w_-]+/[\w_-]+:[\w_-]+$'
 Outputs:
   PublicDNS:
     Value: !GetAtt 

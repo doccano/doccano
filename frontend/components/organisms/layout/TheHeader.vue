@@ -17,14 +17,51 @@
     >
       doccano
     </v-toolbar-title>
+    <v-btn
+      v-if="isAuthenticated && isIndividualProject"
+      text
+      style="text-transform:none"
+    >
+      <v-icon small class="mr-1">
+        mdi-hexagon-multiple
+      </v-icon>
+      <span> {{ currentProject.name }}</span>
+    </v-btn>
     <div class="flex-grow-1" />
     <the-color-mode-switcher />
+    <v-menu
+      open-on-hover
+      offset-y
+    >
+      <template v-slot:activator="{ on }">
+        <v-btn
+          text
+          v-on="on"
+        >
+          {{ $i18n.locale }}
+          <v-icon>mdi-menu-down</v-icon>
+        </v-btn>
+      </template>
+      <v-list
+        v-for="locale in $i18n.locales"
+        :key="locale.code"
+      >
+        <v-list-item>
+          <nuxt-link
+            style="text-decoration: none; color: inherit;"
+            :to="switchLocalePath(locale.code)"
+          >
+            {{ locale.name }}
+          </nuxt-link>
+        </v-list-item>
+      </v-list>
+    </v-menu>
     <v-btn
       v-if="isAuthenticated"
-      @click="$router.push('/projects')"
       text
+      @click="$router.push('/projects')"
     >
-      Projects
+      {{ $t('header.projects') }}
     </v-btn>
     <v-menu
       v-if="!isAuthenticated"
@@ -33,8 +70,8 @@
     >
       <template v-slot:activator="{ on }">
         <v-btn
-          v-on="on"
           text
+          v-on="on"
         >
           Demo
           <v-icon>mdi-menu-down</v-icon>
@@ -52,8 +89,8 @@
     </v-menu>
     <v-btn
       v-if="!isAuthenticated"
-      @click="$router.push('/auth')"
       outlined
+      @click="$router.push('/auth')"
     >
       Sign in
     </v-btn>
@@ -62,12 +99,12 @@
       offset-y
     >
       <template v-slot:activator="{ on }">
-        <v-btn v-on="on" on icon>
+        <v-btn on icon v-on="on">
           <v-icon>mdi-dots-vertical</v-icon>
         </v-btn>
       </template>
       <v-list>
-        <v-subheader>{{ getUsername }}</v-subheader>
+        <v-subheader>{{ getUsername() }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -104,7 +141,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'getUsername'])
+    ...mapGetters('auth', ['isAuthenticated', 'getUsername']),
+    ...mapGetters('projects', ['currentProject']),
+
+    isIndividualProject() {
+      return this.$route.name && this.$route.name.startsWith('projects-id')
+    }
   },
 
   methods: {

@@ -5,16 +5,21 @@
     :items="items"
     :search="search"
     :loading="loading"
-    @input="updateSelected"
-    loading-text="Loading... Please wait"
+    :loading-text="$t('generic.loading')"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-text': $t('vuetify.itemsPerPageText')
+    }"
     item-key="id"
     show-select
+    @input="updateSelected"
   >
     <template v-slot:top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
-        label="Search"
+        :label="$t('generic.search')"
         single-line
         hide-details
         filled
@@ -26,10 +31,10 @@
         <template v-slot:input>
           <v-text-field
             :value="item.text"
-            :rules="labelNameRules"
-            @change="handleUpdateLabel({ id: item.id, text: $event })"
-            label="Edit"
+            :rules="labelNameRules($t('rules.labelNameRules'))"
+            :label="$t('generic.edit')"
             single-line
+            @change="handleUpdateLabel({ id: item.id, text: $event })"
           />
         </template>
       </v-edit-dialog>
@@ -41,8 +46,8 @@
           <v-select
             :value="item.suffix_key"
             :items="shortkeys"
+            :label="$t('annotation.key')"
             @change="handleUpdateLabel({ id: item.id, suffix_key: $event })"
-            label="Key"
           />
         </template>
       </v-edit-dialog>
@@ -58,14 +63,14 @@
         </v-chip>
         <template v-slot:input>
           <v-color-picker
-            :value="item.backgroundColor"
-            :rules="colorRules"
-            @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
+            :value="item.background_color"
+            :rules="colorRules($t('rules.colorRules'))"
             show-swatches
             hide-mode-switch
             width="800"
             mode="hexa"
             class="ma-2"
+            @update:color="handleUpdateLabel({ id:item.id, background_color: $event.hex })"
           />
         </template>
       </v-edit-dialog>
@@ -84,16 +89,16 @@ export default {
       search: '',
       headers: [
         {
-          text: 'Name',
+          text: this.$t('generic.name'),
           align: 'left',
           value: 'text'
         },
         {
-          text: 'Shortkey',
+          text: this.$t('labels.shortkey'),
           value: 'suffix_key'
         },
         {
-          text: 'Color',
+          text: this.$t('labels.color'),
           sortable: false,
           value: 'background_color'
         }

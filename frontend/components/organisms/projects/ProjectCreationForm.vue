@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
+    :title="$t('overview.createProjectTitle')"
+    :agree-text="$t('overview.create')"
+    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
-    title="Add Project"
-    agree-text="Create"
-    cancel-text="Cancel"
   >
     <template #content>
       <v-form
@@ -14,8 +14,8 @@
       >
         <v-text-field
           v-model="name"
-          :rules="projectNameRules"
-          label="Project name"
+          :rules="projectNameRules($t('rules.projectNameRules'))"
+          :label="$t('overview.projectName')"
           prepend-icon="mdi-account-multiple"
           data-test="project-name"
           required
@@ -23,8 +23,8 @@
         />
         <v-text-field
           v-model="description"
-          :rules="descriptionRules"
-          label="Description"
+          :rules="descriptionRules($t('rules.descriptionRules'))"
+          :label="$t('generic.description')"
           prepend-icon="mdi-clipboard-text"
           data-test="project-description"
           required
@@ -32,19 +32,19 @@
         <v-select
           v-model="projectType"
           :items="projectTypes"
-          :rules="projectTypeRules"
-          label="projectType"
+          :rules="projectTypeRules($t('rules.projectTypeRules'))"
+          :label="$t('overview.projectType')"
           prepend-icon="mdi-keyboard"
           data-test="project-type"
           required
         />
         <v-checkbox
           v-model="enableRandomizeDocOrder"
-          label="Randomize document order"
+          :label="$t('overview.randomizeDocOrder')"
         />
         <v-checkbox
           v-model="enableShareAnnotation"
-          label="Share annotations across all users"
+          :label="$t('overview.shareAnnotations')"
         />
       </v-form>
     </template>
@@ -122,7 +122,7 @@ export default {
           name: this.name,
           description: this.description,
           project_type: this.getServerType(),
-          guideline: 'Please write annotation guideline.',
+          guideline: this.$t('guideline.writeGuidelinePrompt'),
           resourcetype: this.getResourceType(),
           randomize_document_order: this.enableRandomizeDocOrder,
           collaborative_annotation: this.enableShareAnnotation

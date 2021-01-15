@@ -1,11 +1,11 @@
 <template>
   <base-card
     :disabled="!valid"
+    :title="$t('labels.importTitle')"
+    :agree-text="$t('generic.upload')"
+    :cancel-text="$t('generic.cancel')"
     @agree="create"
     @cancel="cancel"
-    title="Upload Label"
-    agree-text="Upload"
-    cancel-text="Cancel"
   >
     <template #content>
       <v-form
@@ -18,19 +18,23 @@
           type="error"
           dismissible
         >
-          The file could not be uploaded. Maybe invalid format.
-          Please check available formats carefully.
+          {{ $t('errors.fileCannotUpload') }}
         </v-alert>
-        <h2>Example format</h2>
-        <code class="mb-10 pa-5 highlight">
-          <span>{{ exampleFormat }}</span>
-        </code>
-        <h2>Select a file</h2>
+        <h2>{{ $t('labels.importMessage1') }}</h2>
+        <v-sheet
+          v-if="exampleFormat"
+          :dark="!$vuetify.theme.dark"
+          :light="$vuetify.theme.dark"
+          class="mb-5 pa-5"
+        >
+          <pre>{{ exampleFormat }}</pre>
+        </v-sheet>
+        <h2>{{ $t('labels.importMessage2') }}</h2>
         <v-file-input
           v-model="file"
-          :rules="uploadFileRules"
+          :rules="uploadFileRules($t('rules.uploadFileRules'))"
           accept=".json"
-          label="File input"
+          :label="$t('labels.filePlaceholder')"
         />
       </v-form>
     </template>
@@ -77,7 +81,6 @@ export default {
           text_color: '#ffffff'
         }
       ]
-      console.log(JSON.stringify(data, null, 4))
       return JSON.stringify(data, null, 4)
     }
   },
@@ -110,13 +113,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-  .highlight {
-    font-size: 100%;
-    width: 100%;
-  }
-  .highlight:before {
-    content: ''
-  }
-</style>

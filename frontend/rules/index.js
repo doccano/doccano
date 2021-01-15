@@ -1,50 +1,70 @@
 // Rules for project label.
-export const colorRules = [
-  v => !!v || 'Color is required'
-]
+export const colorRules = (msg) => {
+  return [
+    v => !!v || msg.rule1
+  ]
+}
 
-export const labelNameRules = [
-  v => !!v || 'Label name is required',
-  v => (v && v.length <= 30) || 'Label name must be less than 30 characters'
-]
+export const labelNameRules = (msg) => {
+  return [
+    v => !!v || msg.rule1,
+    v => (v && v.length <= 30) || msg.rule2
+  ]
+}
 
 // Rules for project member.
-export const userNameRules = [
-  v => !!v || 'User name is required',
-  v => (v && v.length <= 30) || 'User name must be less than 30 characters'
-]
+export const userNameRules = (msg) => {
+  return [
+    v => !!v || msg.rule1,
+    v => (v && v.length <= 30) || msg.rule2
+  ]
+}
 
-export const roleRules = [
-  v => !!v || 'Role is required'
-]
+export const roleRules = (msg) => {
+  return [
+    v => !!v || msg.rule1
+  ]
+}
 
 // Rules for a project.
-export const projectNameRules = [
-  v => !!v || 'Project name is required',
-  v => (v && v.length <= 30) || 'Project name must be less than 30 characters'
-]
+export const projectNameRules = (msg) => {
+  return [
+    v => !!v || msg.rule1,
+    v => (v && v.length <= 30) || msg.rule2
+  ]
+}
 
-export const descriptionRules = [
-  v => !!v || 'Description is required',
-  v => (v && v.length <= 100) || 'Description must be less than 100 characters'
-]
+export const descriptionRules = (msg) => {
+  return [
+    v => !!v || msg.rule1,
+    v => (v && v.length <= 100) || msg.rule2
+  ]
+}
 
-export const projectTypeRules = [
-  v => !!v || 'Project type is required'
-]
+export const projectTypeRules = (msg) => {
+  return [
+    v => !!v || msg.rule1
+  ]
+}
 
 // Rules for Document.
-export const fileFormatRules = [
-  v => !!v || 'File format is required'
-]
+export const fileFormatRules = (msg) => {
+  return [
+    v => !!v || msg.rule1
+  ]
+}
 
-export const uploadFileRules = [
-  v => !!v || 'File is required',
-  v => !v || v.size < 1000000 || 'File size should be less than 1 MB!'
-]
+export const uploadFileRules = (msg) => {
+  return [
+    v => !!v || msg.rule1,
+    v => !v || v.size < 1000000 || msg.rule2
+  ]
+}
 
 // Rules for user.
-export const passwordRules = [
-  v => !!v || 'Password is required',
-  v => (v && v.length <= 30) || 'Password must be less than 30 characters'
-]
+export const passwordRules = (msg) => {
+  return [
+    v => !!v || msg.rule1,
+    v => (v && v.length <= 30) || msg.rule2
+  ]
+}
