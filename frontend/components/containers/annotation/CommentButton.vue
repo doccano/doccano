@@ -63,10 +63,10 @@
             </template>
             <template v-slot:item.text="props">
               <v-edit-dialog
-                :return-value.sync="props.item.text"
                 large
                 persistent
-                @save="editItem({ id: props.item.id })"
+                @save="editItem"
+                @open="openEdit(props.item)"
               >
                 <div>{{ props.item.text }}</div>
                 <template v-slot:input>
@@ -74,12 +74,11 @@
                     Update Comment
                   </div>
                   <v-text-field
-                    :value="props.item.text"
+                    v-model="editedComment.text"
                     label="Edit"
                     single-line
                     counter
                     autofocus
-                    @input="setNewComment"
                   />
                 </template>
               </v-edit-dialog>
@@ -104,7 +103,10 @@ export default {
     return {
       dialog: false,
       comment: '',
-      newComment: ''
+      editedComment: {
+        text: '',
+        id: null
+      }
     }
   },
 
@@ -143,15 +145,19 @@ export default {
       }
       this.deleteComment(payload)
     },
-    editItem(payload) {
-      this.updateComment({
-        projectId: this.$route.params.id,
-        commentId: payload.id,
-        text: this.newComment
-      })
+    editItem() {
+      if (this.editedComment.text === '') {
+        this.deleteItem(this.editedComment.id)
+      } else {
+        this.updateComment({
+          projectId: this.$route.params.id,
+          commentId: this.editedComment.id,
+          text: this.editedComment.text
+        })
+      }
     },
-    setNewComment(value) {
-      this.newComment = value
+    openEdit(item) {
+      Object.assign(this.editedComment, item)
     }
   }
 }
