@@ -119,9 +119,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
                   'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        read_only_fields = ('updated_at', 'users', 'current_users_role')
 
 
 class TextClassificationProjectSerializer(ProjectSerializer):
@@ -152,9 +152,9 @@ class Speech2textProjectSerializer(ProjectSerializer):
 
     class Meta:
         model = Speech2textProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
                   'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        read_only_fields = ('updated_at', 'users', 'current_users_role')
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
