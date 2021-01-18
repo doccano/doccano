@@ -6,7 +6,6 @@ from django.db.models.signals import post_save, pre_delete
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.exceptions import ValidationError
 from polymorphic.models import PolymorphicModel
 
@@ -39,10 +38,6 @@ class Project(PolymorphicModel):
     def get_absolute_url(self):
         return reverse('upload', args=[self.id])
 
-    @property
-    def image(self):
-        raise NotImplementedError()
-
     def get_bundle_name(self):
         raise NotImplementedError()
 
@@ -67,10 +62,6 @@ class Project(PolymorphicModel):
 
 class TextClassificationProject(Project):
 
-    @property
-    def image(self):
-        return staticfiles_storage.url('assets/images/cats/text_classification.jpg')
-
     def get_bundle_name(self):
         return 'document_classification'
 
@@ -93,10 +84,6 @@ class TextClassificationProject(Project):
 
 
 class SequenceLabelingProject(Project):
-
-    @property
-    def image(self):
-        return staticfiles_storage.url('assets/images/cats/sequence_labeling.jpg')
 
     def get_bundle_name(self):
         return 'sequence_labeling'
@@ -121,10 +108,6 @@ class SequenceLabelingProject(Project):
 
 class Seq2seqProject(Project):
 
-    @property
-    def image(self):
-        return staticfiles_storage.url('assets/images/cats/seq2seq.jpg')
-
     def get_bundle_name(self):
         return 'seq2seq'
 
@@ -147,10 +130,6 @@ class Seq2seqProject(Project):
 
 
 class Speech2textProject(Project):
-
-    @property
-    def image(self):
-        return staticfiles_storage.url('images/cats/speech2text.jpg')
 
     def get_bundle_name(self):
         return 'speech2text'

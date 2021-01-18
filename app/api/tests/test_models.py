@@ -17,10 +17,6 @@ class TestTextClassificationProject(TestCase):
     def setUpTestData(cls):
         cls.project = mommy.make('TextClassificationProject')
 
-    def test_image(self):
-        image_url = self.project.image
-        self.assertTrue(image_url.endswith('.jpg'))
-
     def test_get_bundle_name(self):
         template = self.project.get_bundle_name()
         self.assertEqual(template, 'document_classification')
@@ -40,10 +36,6 @@ class TestSequenceLabelingProject(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.project = mommy.make('SequenceLabelingProject')
-
-    def test_image(self):
-        image_url = self.project.image
-        self.assertTrue(image_url.endswith('.jpg'))
 
     def test_get_bundle_name(self):
         template = self.project.get_bundle_name()
@@ -65,10 +57,6 @@ class TestSeq2seqProject(TestCase):
     def setUpTestData(cls):
         cls.project = mommy.make('Seq2seqProject')
 
-    def test_image(self):
-        image_url = self.project.image
-        self.assertTrue(image_url.endswith('.jpg'))
-
     def test_get_bundle_name(self):
         template = self.project.get_bundle_name()
         self.assertEqual(template, 'seq2seq')
@@ -88,10 +76,6 @@ class TestSpeech2textProject(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.project = mommy.make('Speech2textProject')
-
-    def test_image(self):
-        image_url = self.project.image
-        self.assertTrue(image_url.endswith('.jpg'))
 
     def test_get_bundle_name(self):
         template = self.project.get_bundle_name()
