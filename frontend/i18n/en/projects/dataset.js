@@ -9,7 +9,7 @@ export default {
   annotate: 'Annotate',
   importDataTitle: 'Upload Data',
   importDataMessage1: 'Select a file format',
-  importDataMessage2: 'Select a file',
+  importDataMessage2: 'Select file(s)',
   importDataPlaceholder: 'File input',
   exportDataTitle: 'Export Data',
   exportDataMessage: 'Select a file format',
