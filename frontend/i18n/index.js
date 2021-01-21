@@ -9,7 +9,7 @@ export default {
     {
       name: '中文',
       code: 'zh',
-      iso: 'zh-CA',
+      iso: 'zh-CN',
       file: 'zh'
     },
     {
