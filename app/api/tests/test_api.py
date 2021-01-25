@@ -1617,6 +1617,11 @@ class TestDownloader(APITestCase):
                                   format='plain',
                                   expected_status=status.HTTP_400_BAD_REQUEST)
 
+    def test_can_download_classification_fasttext(self):
+        self.download_test_helper(url=self.classification_url,
+                                    format='txt',
+                                    expected_status=status.HTTP_200_OK)
+
 
 class TestStatisticsAPI(APITestCase, TestUtilsMixin):
 
