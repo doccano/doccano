@@ -98,24 +98,27 @@ export default {
 
     chunks() {
       let chunks = []
-      const entities = this.sortedEntities
       let startOffset = 0
-      for (const entity of entities) {
+      // to count the number of characters correctly.
+      const characters = [...this.text]
+      for (const entity of this.sortedEntities) {
         // add non-entities to chunks.
-        chunks = chunks.concat(this.makeChunks(this.text.slice(startOffset, entity.start_offset)))
+        let piece = characters.slice(startOffset, entity.start_offset).join('')
+        chunks = chunks.concat(this.makeChunks(piece))
         startOffset = entity.end_offset
 
         // add entities to chunks.
         const label = this.labelObject[entity.label]
+        piece = characters.slice(entity.start_offset, entity.end_offset).join('')
         chunks.push({
           id: entity.id,
           label: label.text,
           color: label.background_color,
-          text: this.text.slice(entity.start_offset, entity.end_offset)
+          text: piece
         })
       }
       // add the rest of text.
-      chunks = chunks.concat(this.makeChunks(this.text.slice(startOffset, this.text.length)))
+      chunks = chunks.concat(this.makeChunks(characters.slice(startOffset, characters.length).join('')))
       return chunks
     },
 
