@@ -40,7 +40,7 @@ jobs:
       working-directory: ./app
     - name: Build a binary wheel and a source tarball
       run: |
-        python setup.py sdist bdist_wheel
+        python setup.py sdist
     - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
