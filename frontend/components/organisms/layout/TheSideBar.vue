@@ -66,7 +66,8 @@ export default {
         { icon: 'label', text: this.$t('labels.labels'), link: 'labels', adminOnly: true },
         { icon: 'person', text: this.$t('members.members'), link: 'members', adminOnly: true },
         { icon: 'mdi-book-open-outline', text: this.$t('guideline.guideline'), link: 'guideline', adminOnly: true },
-        { icon: 'mdi-chart-bar', text: this.$t('statistics.statistics'), link: 'statistics', adminOnly: true }
+        { icon: 'mdi-chart-bar', text: this.$t('statistics.statistics'), link: 'statistics', adminOnly: true },
+        { icon: 'mdi-cog', text: this.$t('settings.title'), link: 'settings', adminOnly: true }
       ]
       return items.filter(item => this.isVisible(item))
     }
