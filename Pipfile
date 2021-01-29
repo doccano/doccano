@@ -43,6 +43,7 @@ pyexcel-xlsx = "*"
 lockfile = "*"
 gunicorn = "*"
 fasteners = "*"
+auto-labeling-pipeline = "*"
 
 [requires]
 python_version = "3.8"
