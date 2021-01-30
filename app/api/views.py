@@ -2,6 +2,7 @@ import collections
 import json
 import random
 
+from auto_labeling_pipeline.menu import Options
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -481,3 +482,15 @@ class LabelUploadAPI(APIView):
         except IntegrityError:
             content = {'error': 'IntegrityError: you cannot create a label with same name or shortkey.'}
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AutoLabelingTemplateAPI(APIView):
+    task_mapping = {'DocumentClassification': 'TextClassification'}
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        task = self.task_mapping.get(project.project_type, project.project_type)
+        options = Options.filter_by_task(task_name=task)
+        option_names = [o.name for o in options]
+        return Response(option_names, status=status.HTTP_200_OK)
