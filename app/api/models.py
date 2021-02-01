@@ -343,3 +343,17 @@ def delete_linked_project(sender, instance, using, **kwargs):
         project = Project.objects.get(pk=projectInstance.pk)
         user.projects.remove(project)
         user.save()
+
+
+class AutoLabelingConfig(models.Model):
+    model_name = models.CharField(max_length=100)
+    model_attrs = models.JSONField(default=dict)
+    template = models.TextField(default='')
+    label_mapping = models.JSONField(default=dict)
+    project = models.ForeignKey(Project, related_name='auto_labeling_config', on_delete=models.CASCADE)
+    default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.model_name

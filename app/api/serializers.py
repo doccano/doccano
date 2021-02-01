@@ -6,7 +6,7 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 from rest_framework.exceptions import ValidationError
 
 
-from .models import Label, Project, Document, RoleMapping, Role, Comment
+from .models import Label, Project, Document, RoleMapping, Role, Comment, AutoLabelingConfig
 from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, Speech2textProject
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, Speech2textAnnotation
 
@@ -241,3 +241,11 @@ class RoleMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoleMapping
         fields = ('id', 'user', 'role', 'username', 'rolename')
+
+
+class AutoLabelingConfigSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AutoLabelingConfig
+        fields = ('id', 'model_name', 'model_attrs', 'template', 'label_mapping', 'default')
+        read_only_fields = ('created_at', 'updated_at')

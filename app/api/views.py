@@ -21,10 +21,10 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework_csv.renderers import CSVRenderer
 
 from .filters import DocumentFilter
-from .models import Project, Label, Document, RoleMapping, Role, Comment
+from .models import Project, Label, Document, RoleMapping, Role, Comment, AutoLabelingConfig
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover, IsOwnComment
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer, ApproverSerializer, CommentSerializer
-from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
+from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer, AutoLabelingConfigSerializer
 from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, FastTextParser, CoNLLParser, AudioParser, iterable_to_io
 from .utils import JSONLRenderer, PlainTextRenderer
 from .utils import JSONPainter, CSVPainter, FastTextPainter
@@ -501,3 +501,24 @@ class AutoLabelingTemplateDetailAPI(APIView):
         option_name = self.kwargs['option_name']
         option = Options.find(option_name=option_name)
         return Response(option.to_dict(), status=status.HTTP_200_OK)
+
+
+class AutoLabelingConfigList(generics.ListCreateAPIView):
+    serializer_class = AutoLabelingConfigSerializer
+    pagination_class = None
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return project.auto_labeling_config
+
+    def perform_create(self, serializer):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        serializer.save(project=project)
+
+
+class AutoLabelingConfigDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = AutoLabelingConfig.objects.all()
+    serializer_class = AutoLabelingConfigSerializer
+    lookup_url_kwarg = 'config_id'
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
