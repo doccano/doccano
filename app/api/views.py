@@ -484,13 +484,20 @@ class LabelUploadAPI(APIView):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
 
-class AutoLabelingTemplateAPI(APIView):
-    task_mapping = {'DocumentClassification': 'TextClassification'}
+class AutoLabelingTemplateListAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        task = self.task_mapping.get(project.project_type, project.project_type)
-        options = Options.filter_by_task(task_name=task)
+        options = Options.filter_by_task(task_name=project.project_type)
         option_names = [o.name for o in options]
         return Response(option_names, status=status.HTTP_200_OK)
+
+
+class AutoLabelingTemplateDetailAPI(APIView):
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    def get(self, request, *args, **kwargs):
+        option_name = self.kwargs['option_name']
+        option = Options.find(option_name=option_name)
+        return Response(option.to_dict(), status=status.HTTP_200_OK)

@@ -11,7 +11,7 @@ from .views import CommentList, CommentDetail
 from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
 from .views import StatisticsAPI
 from .views import RoleMappingList, RoleMappingDetail, Roles
-from .views import AutoLabelingTemplateAPI
+from .views import AutoLabelingTemplateListAPI, AutoLabelingTemplateDetailAPI
 
 urlpatterns = [
     path('health', Health.as_view(), name='health'),
@@ -55,8 +55,13 @@ urlpatterns = [
          RoleMappingDetail.as_view(), name='rolemapping_detail'),
     path(
         route='projects/<int:project_id>/auto-labeling-templates',
-        view=AutoLabelingTemplateAPI.as_view(),
+        view=AutoLabelingTemplateListAPI.as_view(),
         name='auto_labeling_templates'
+    ),
+    path(
+        route='projects/<int:project_id>/auto-labeling-templates/<str:option_name>',
+        view=AutoLabelingTemplateDetailAPI.as_view(),
+        name='auto_labeling_template'
     )
 ]
 
