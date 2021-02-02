@@ -5,12 +5,15 @@ class CommentService {
     this.request = ApiService
   }
 
-  getCommentList({ projectId, docId }) {
+  getCommentList(projectId, docId) {
     return this.request.get(`/projects/${projectId}/docs/${docId}/comments`)
   }
 
+  getProjectCommentList(projectId) {
+    return this.request.get(`/projects/${projectId}/comments`)
+  }
+
   addComment(projectId, docId, payload) {
-    console.log(payload)
     return this.request.post(`/projects/${projectId}/docs/${docId}/comments`, payload)
   }
 

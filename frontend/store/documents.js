@@ -1,4 +1,3 @@
-import CommentService from '@/services/comment.service'
 import DocumentService from '@/services/document.service'
 import AnnotationService from '@/services/annotation.service'
 
@@ -74,16 +73,6 @@ export const mutations = {
     const item = state.items[state.current].annotations.find(item => item.id === payload.id)
     Object.assign(item, payload)
   },
-  addComment(state, payload) {
-    state.items[state.current].comments.push(payload)
-  },
-  updateComment(state, payload) {
-    const item = state.items[state.current].comments.find(item => item.id === payload.id)
-    Object.assign(item, payload)
-  },
-  deleteComment(state, commentId) {
-    state.items[state.current].comments = state.items[state.current].comments.filter(item => item.id !== commentId)
-  },
   updateSearchOptions(state, payload) {
     state.searchOptions = Object.assign(state.searchOptions, payload)
   },
@@ -95,6 +84,9 @@ export const mutations = {
       isChecked: '',
       filterName: ''
     }
+  },
+  setUserId(state, payload) {
+    state.userId = payload.id
   }
 }
 
@@ -229,36 +221,6 @@ export const actions = {
     DocumentService.approveDocument(payload.projectId, documentId, data)
       .then((response) => {
         commit('updateDocument', response.data)
-      })
-      .catch((error) => {
-        alert(error)
-      })
-  },
-  addComment({ commit, state }, payload) {
-    const documentId = state.items[state.current].id
-    CommentService.addComment(payload.projectId, documentId, payload)
-      .then((response) => {
-        commit('addComment', response.data)
-      })
-      .catch((error) => {
-        alert(error)
-      })
-  },
-  updateComment({ commit, state }, payload) {
-    const documentId = state.items[state.current].id
-    CommentService.updateComment(payload.projectId, documentId, payload.commentId, payload)
-      .then((response) => {
-        commit('updateComment', response.data)
-      })
-      .catch((error) => {
-        alert(error)
-      })
-  },
-  deleteComment({ commit, state }, payload) {
-    const documentId = state.items[state.current].id
-    CommentService.deleteComment(payload.projectId, documentId, payload.commentId)
-      .then((response) => {
-        commit('deleteComment', payload.commentId)
       })
       .catch((error) => {
         alert(error)
