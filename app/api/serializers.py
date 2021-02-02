@@ -1,3 +1,4 @@
+from auto_labeling_pipeline.models import RequestModelFactory
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -249,3 +250,23 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
         model = AutoLabelingConfig
         fields = ('id', 'model_name', 'model_attrs', 'template', 'label_mapping', 'default')
         read_only_fields = ('created_at', 'updated_at')
+
+    def validate_model_name(self, value):
+        try:
+            RequestModelFactory.find(value)
+        except NameError:
+            raise serializers.ValidationError(f'The specified model name {value} does not exist.')
+        return value
+
+    def valid_label_mapping(self, value):
+        if isinstance(value, dict):
+            return value
+        else:
+            raise serializers.ValidationError(f'The {value} is not a dictionary. Please specify it as a dictionary.')
+
+    def validate(self, data):
+        try:
+            RequestModelFactory.create(data['model_name'], data['model_attrs'])
+        except Exception:
+            raise serializers.ValidationError('The attributes does not match the model.')
+        return data

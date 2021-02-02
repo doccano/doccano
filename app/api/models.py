@@ -1,5 +1,6 @@
 import string
 
+from auto_labeling_pipeline.models import RequestModelFactory
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_delete
@@ -357,3 +358,12 @@ class AutoLabelingConfig(models.Model):
 
     def __str__(self):
         return self.model_name
+
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude=exclude)
+        try:
+            RequestModelFactory.find(self.model_name)
+        except NameError:
+            raise ValidationError(f'The specified model name {self.model_name} does not exist.')
+        except Exception:
+            raise ValidationError('The attributes does not match the model.')
