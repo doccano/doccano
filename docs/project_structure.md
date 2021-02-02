@@ -16,11 +16,11 @@ Consider them:
 
 **[app/](https://github.com/doccano/doccano/tree/master/app)**
 
-The `app/api` directory contains backend code. See [below](#Backend).
+The `app/` directory contains backend code. See [below](#Backend).
 
 **[frontend/](https://github.com/doccano/doccano/tree/master/frontend)**
 
-The `app/api` directory contains frontend code. See [below](#Frontend).
+The `frontend/` directory contains frontend code. See [below](#Frontend).
 
 **[docker-compose.dev.yml](https://github.com/doccano/doccano/blob/master/docker-compose.dev.yml)**
 

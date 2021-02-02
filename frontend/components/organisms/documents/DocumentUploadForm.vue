@@ -18,7 +18,7 @@
           type="error"
           dismissible
         >
-          {{ $t('errors.fileCannotUpload') }}
+          {{ $t('errors.fileCannotUpload') + errorMsg }}
         </v-alert>
         <h2>{{ $t('dataset.importDataMessage1') }}</h2>
         <v-radio-group
@@ -45,6 +45,7 @@
         <h2>{{ $t('dataset.importDataMessage2') }}</h2>
         <v-file-input
           v-model="file"
+          multiple
           :accept="acceptType"
           :rules="uploadFileRules($t('rules.uploadFileRules'))"
           :label="$t('labels.filePlaceholder')"
@@ -81,7 +82,9 @@ export default {
       selectedFormat: null,
       fileFormatRules,
       uploadFileRules,
-      showError: false
+      showError: false,
+      errors: [],
+      errorMsg: ''
     }
   },
 
@@ -107,18 +110,32 @@ export default {
     },
     create() {
       if (this.validate()) {
-        this.uploadDocument({
-          projectId: this.$route.params.id,
-          format: this.selectedFormat.type,
-          file: this.file
-        })
-          .then((response) => {
-            this.reset()
-            this.cancel()
+        this.errors = []
+        const promises = []
+        const id = this.$route.params.id
+        const type = this.selectedFormat.type
+        this.file.forEach((item) => {
+          promises.push({
+            projectId: id,
+            format: type,
+            file: item
           })
-          .catch(() => {
+        })
+        let p = Promise.resolve()
+        promises.forEach((item) => {
+          p = p.then(() => this.uploadDocument(item)).catch(() => {
+            this.errors.push(item.file.name)
             this.showError = true
           })
+        })
+        p.finally(() => {
+          if (!this.errors.length) {
+            this.reset()
+            this.cancel()
+          } else {
+            this.errorMsg = this.errors.join(', ')
+          }
+        })
       }
     }
   }
