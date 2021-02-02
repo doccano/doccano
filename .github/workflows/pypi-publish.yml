@@ -32,15 +32,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install setuptools wheel
-        pip install -r requirements.txt
+        pip install pipenv
+        pipenv sync --dev
     - name: collectstatic
       run: |
-        python manage.py collectstatic --noinput
+        pipenv run collectstatic
       working-directory: ./app
     - name: Build a binary wheel and a source tarball
       run: |
-        python setup.py sdist bdist_wheel
+        python setup.py sdist
     - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:

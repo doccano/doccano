@@ -24,12 +24,13 @@ from .models import Project, Label, Document, RoleMapping, Role, Comment
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover, IsOwnComment
 from .serializers import ProjectSerializer, LabelSerializer, DocumentSerializer, UserSerializer, ApproverSerializer, CommentSerializer
 from .serializers import ProjectPolymorphicSerializer, RoleMappingSerializer, RoleSerializer
-from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, CoNLLParser, AudioParser, FastTextParser, iterable_to_io
-from .utils import JSONLRenderer
-from .utils import JSONPainter, CSVPainter
+from .utils import CSVParser, ExcelParser, JSONParser, PlainTextParser, FastTextParser, CoNLLParser, AudioParser, iterable_to_io
+from .utils import JSONLRenderer, PlainTextRenderer
+from .utils import JSONPainter, CSVPainter, FastTextPainter
 
 IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
+
 
 
 class Health(APIView):
@@ -271,18 +272,34 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
         return self.queryset
 
 
-class CommentList(generics.ListCreateAPIView):
-    serializer_class = CommentSerializer
+class CommentListDoc(generics.ListCreateAPIView):
+    pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    serializer_class = CommentSerializer
+    model = Comment
 
     def get_queryset(self):
-        return Comment.objects.filter(
-            document_id=self.kwargs['doc_id'],
-            user_id=self.request.user.id,
-        ).all()
+        queryset = self.model.objects.filter(
+            document__project_id=self.kwargs['project_id'],
+            document=self.kwargs['doc_id']
+        )
+        return queryset
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, document_id=self.kwargs['doc_id'])
+        serializer.save(document_id=self.kwargs['doc_id'], user=self.request.user)
+
+
+class CommentListProject(generics.ListAPIView):
+    pagination_class = None
+    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    serializer_class = CommentSerializer
+    model = Comment
+
+    def get_queryset(self):
+        queryset = self.model.objects.filter(
+            document__project_id=self.kwargs['project_id']
+        )
+        return queryset
 
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -290,7 +307,6 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     lookup_url_kwarg = 'comment_id'
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin & IsOwnComment]
-
 
 class TextUploadAPI(APIView):
     parser_classes = (MultiPartParser,)
@@ -391,7 +407,7 @@ class CloudUploadAPI(APIView):
 class TextDownloadAPI(APIView):
     permission_classes = TextUploadAPI.permission_classes
 
-    renderer_classes = (CSVRenderer, JSONLRenderer)
+    renderer_classes = (CSVRenderer, JSONLRenderer, PlainTextRenderer)
 
     def get(self, request, *args, **kwargs):
         format = request.query_params.get('q')
@@ -407,9 +423,9 @@ class TextDownloadAPI(APIView):
         # jsonl-textlabel format prints text labels while jsonl format prints annotations with label ids
         # jsonl-textlabel format - "labels": [[0, 15, "PERSON"], ..]
         # jsonl format - "annotations": [{"label": 5, "start_offset": 0, "end_offset": 2, "user": 1},..]
-        if format == 'jsonl':
+        if format in ('jsonl', 'txt'):
             labels = project.labels.all()
-            data = JSONPainter.paint_labels(documents, labels)
+            data = painter.paint_labels(documents, labels)
         else:
             data = painter.paint(documents)
         return Response(data)
@@ -419,6 +435,8 @@ class TextDownloadAPI(APIView):
             return CSVPainter()
         elif format == 'jsonl' or format == 'json':
             return JSONPainter()
+        elif format == 'txt':
+            return FastTextPainter()
         else:
             raise ValidationError('format {} is invalid.'.format(format))
 
