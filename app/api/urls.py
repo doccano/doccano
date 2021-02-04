@@ -12,7 +12,7 @@ from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
 from .views import StatisticsAPI
 from .views import RoleMappingList, RoleMappingDetail, Roles
 from .views import AutoLabelingTemplateListAPI, AutoLabelingTemplateDetailAPI
-from .views import AutoLabelingConfigList, AutoLabelingConfigDetail, AutoLabelingConfigTest
+from .views import AutoLabelingConfigList, AutoLabelingConfigDetail, AutoLabelingConfigTest, AutoLabelingAnnotation
 
 urlpatterns = [
     path('health', Health.as_view(), name='health'),
@@ -78,7 +78,12 @@ urlpatterns = [
         route='projects/<int:project_id>/auto-labeling-config-testing',
         view=AutoLabelingConfigTest.as_view(),
         name='auto_labeling_config_test'
-    )
+    ),
+    path(
+        route='projects/<int:project_id>/docs/<int:doc_id>/auto-labeling',
+        view=AutoLabelingAnnotation.as_view(),
+        name='auto_labeling_annotation'
+    ),
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])

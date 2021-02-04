@@ -571,3 +571,65 @@ class AutoLabelingConfigTest(APIView):
             post_processing=post_processor
         )
         return labels
+
+
+class AutoLabelingAnnotation(generics.CreateAPIView):
+    pagination_class = None
+    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    swagger_schema = None
+
+    def get_serializer_class(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        self.serializer_class = project.get_annotation_serializer()
+        return self.serializer_class
+
+    def get_queryset(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        model = project.get_annotation_class()
+
+        queryset = model.objects.filter(document=self.kwargs['doc_id'])
+        if not project.collaborative_annotation:
+            queryset = queryset.filter(user=self.request.user)
+
+        return queryset
+
+    def create(self, request, *args, **kwargs):
+        labels = self.extract()
+        labels = self.transform(labels)
+        serializer = self.get_serializer(data=labels, many=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def extract(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        config = project.auto_labeling_config.get(default=True)
+        model = RequestModelFactory.create(
+            model_name=config.model_name,
+            attributes=config.model_attrs
+        )
+        template = MappingTemplate(
+            task=TaskFactory.create(project.project_type),
+            template=config.template
+        )
+        post_processor = PostProcessor(config.label_mapping)
+        labels = pipeline(
+            text=doc.text,
+            request_model=model,
+            mapping_template=template,
+            post_processing=post_processor
+        )
+        return labels.dict()
+
+    def transform(self, labels):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        for label in labels:
+            label['document'] = self.kwargs['doc_id']
+            if 'label' in label:
+                label['label'] = project.labels.get(text=label.pop('label')).id
+        return labels
