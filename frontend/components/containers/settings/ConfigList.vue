@@ -1,14 +1,13 @@
 <template>
   <v-data-table
-    :value="selected"
+    v-model="selected"
     :headers="headers"
-    :items="items"
+    :items="items.toArray()"
     :loading="loading"
     :no-data-text="$t('vuetify.noDataAvailable')"
     item-key="id"
     :loading-text="$t('generic.loading')"
     show-select
-    @input="updateSelected"
   >
     <template v-slot:top>
       <v-dialog
@@ -19,7 +18,7 @@
           <v-btn
             color="primary"
             dark
-            class="mb-2"
+            class="ma-4 text-capitalize"
             v-bind="attrs"
             v-on="on"
           >
@@ -31,73 +30,41 @@
         </v-card>
       </v-dialog>
     </template>
-    <template v-slot:item.model_attrs="{ item }">
-      <pre>{{ JSON.stringify(item.model_attrs, null, 4) }}</pre>
+    <template v-slot:item.modelAttrs="{ item }">
+      <pre>{{ JSON.stringify(item.modelAttrs, null, 4) }}</pre>
     </template>
-    <template v-slot:item.label_mapping="{ item }">
-      <pre>{{ JSON.stringify(item.label_mapping, null, 4) }}</pre>
+    <template v-slot:item.labelMapping="{ item }">
+      <pre>{{ JSON.stringify(item.labelMapping, null, 4) }}</pre>
     </template>
   </v-data-table>
 </template>
 
-<script>
-import { mapActions, mapMutations } from 'vuex'
-import ConfigService from '@/services/config.service'
+<script lang="ts">
+import Vue from 'vue'
+import { headers, ConfigItemList } from '@/models/config/config-item-list'
+import { FromApiConfigItemListRepository } from '@/repositories/config/api'
 
-export default {
-  fetch() {
-    this.loading = true
-    ConfigService.getConfigList({
-      projectId: this.$route.params.id
-    }).then((response) => {
-      this.items = response.data
-    }).catch((error) => {
-      alert(error)
-    })
-    this.loading = false
-  },
+export default Vue.extend({
 
   data() {
     return {
       loading: false,
       options: {},
-      items: [],
+      items: ConfigItemList.valueOf([]),
       selected: [],
       dialog: false,
-      headers: [
-        {
-          text: 'Model name',
-          align: 'left',
-          value: 'model_name',
-          sortable: false
-        },
-        {
-          text: 'Attributes',
-          align: 'left',
-          value: 'model_attrs',
-          sortable: false
-        },
-        {
-          text: 'Mapping',
-          align: 'left',
-          value: 'label_mapping',
-          sortable: false
-        }
-      ]
+      headers
     }
   },
 
-  methods: {
-    ...mapActions('documents', ['getDocumentList', 'updateDocument']),
-    ...mapMutations('documents', ['updateSelected']),
+  async created() {
+    this.loading = true
+    const configRepository = new FromApiConfigItemListRepository()
+    this.items = await configRepository.list(this.$route.params.id)
+    this.loading = false
+  },
 
-    handleUpdateDocument(payload) {
-      const data = {
-        projectId: this.$route.params.id,
-        ...payload
-      }
-      this.updateDocument(data)
-    }
+  methods: {
   }
-}
+})
 </script>
