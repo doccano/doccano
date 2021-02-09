@@ -32,7 +32,7 @@
         <h2>{{ $t('labels.importMessage2') }}</h2>
         <v-file-input
           v-model="file"
-          :rules="uploadFileRules($t('rules.uploadFileRules'))"
+          :rules="uploadSingleFileRules($t('rules.uploadFileRules'))"
           accept=".json"
           :label="$t('labels.filePlaceholder')"
         />
@@ -43,7 +43,7 @@
 
 <script>
 import BaseCard from '@/components/molecules/BaseCard'
-import { uploadFileRules } from '@/rules/index'
+import { uploadSingleFileRules } from '@/rules/index'
 
 export default {
   components: {
@@ -60,7 +60,7 @@ export default {
     return {
       valid: false,
       file: null,
-      uploadFileRules,
+      uploadSingleFileRules,
       showError: false
     }
   },

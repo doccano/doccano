@@ -17,7 +17,7 @@ FROM python:${PYTHON_VERSION}-slim-buster AS backend-builder
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     netcat=1.10-41.1 \
-    libpq-dev=11.9-0+deb10u1 \
+    libpq-dev=11.10-0+deb10u1 \
     unixodbc-dev=2.3.6-0.1 \
     g++=4:8.3.0-1 \
     libssl-dev=1.1.1d-0+deb10u4 \

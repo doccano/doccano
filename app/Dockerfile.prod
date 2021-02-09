@@ -15,7 +15,7 @@ COPY ./Pipfile* /app/
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     netcat=1.10-41.1 \
-    libpq-dev=11.9-0+deb10u1 \
+    libpq-dev=11.10-0+deb10u1 \
     unixodbc-dev=2.3.6-0.1 \
     g++=4:8.3.0-1 \
  && pip install --no-cache-dir pipenv==2020.11.15 \
