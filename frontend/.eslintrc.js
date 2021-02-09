@@ -7,7 +7,8 @@ module.exports = {
   extends: [
     '@nuxtjs',
     'plugin:nuxt/recommended',
-    '@nuxtjs/eslint-config-typescript'
+    '@nuxtjs/eslint-config-typescript',
+    'prettier/@typescript-eslint'
   ],
   rules: {
     'no-console': 'off',

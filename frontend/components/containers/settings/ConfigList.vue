@@ -3,38 +3,23 @@
     v-model="selected"
     :headers="headers"
     :items="items.toArray()"
-    :loading="loading"
+    :loading="isLoading"
     :no-data-text="$t('vuetify.noDataAvailable')"
     item-key="id"
     :loading-text="$t('generic.loading')"
     show-select
   >
     <template v-slot:top>
-      <v-dialog
-        v-model="dialog"
-        max-width="500px"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            color="primary"
-            dark
-            class="ma-4 text-capitalize"
-            v-bind="attrs"
-            v-on="on"
-          >
-            Create
-          </v-btn>
-        </template>
-        <v-card>
-          hoge
-        </v-card>
-      </v-dialog>
-    </template>
-    <template v-slot:item.modelAttrs="{ item }">
-      <pre>{{ JSON.stringify(item.modelAttrs, null, 4) }}</pre>
-    </template>
-    <template v-slot:item.labelMapping="{ item }">
-      <pre>{{ JSON.stringify(item.labelMapping, null, 4) }}</pre>
+      <confirm-dialog
+        :disabled="!isDeletable()"
+        :items="selected"
+        :title="$t('overview.deleteProjectTitle')"
+        :message="$t('overview.deleteProjectMessage')"
+        :button-true-text="$t('generic.yes')"
+        :button-false-text="$t('generic.cancel')"
+        item-key="modelName"
+        @ok="remove"
+      />
     </template>
   </v-data-table>
 </template>
@@ -42,29 +27,51 @@
 <script lang="ts">
 import Vue from 'vue'
 import { headers, ConfigItemList } from '@/models/config/config-item-list'
+import { ConfigApplicationService } from '@/services/application/config.service'
 import { FromApiConfigItemListRepository } from '@/repositories/config/api'
+import ConfirmDialog from '@/components/organisms/utils/ConfirmDialog'
 
 export default Vue.extend({
+  components: {
+    ConfirmDialog
+  },
 
   data() {
     return {
-      loading: false,
-      options: {},
+      isLoading: false,
       items: ConfigItemList.valueOf([]),
       selected: [],
-      dialog: false,
       headers
     }
   },
 
-  async created() {
-    this.loading = true
-    const configRepository = new FromApiConfigItemListRepository()
-    this.items = await configRepository.list(this.$route.params.id)
-    this.loading = false
+  computed: {
+    configService(): ConfigApplicationService {
+      const configRepository = new FromApiConfigItemListRepository()
+      const configService = new ConfigApplicationService(configRepository)
+      return configService
+    }
+  },
+
+  async created(): Promise<void> {
+    this.isLoading = true
+    this.items = await this.configService.list(this.$route.params.id)
+    this.isLoading = false
   },
 
   methods: {
+    async remove(): Promise<void> {
+      this.isLoading = true
+      const projectId = this.$route.params.id
+      for (const item of this.selected) {
+        await this.configService.delete(projectId, item.id)
+      }
+      this.items = await this.configService.list(projectId)
+      this.isLoading = false
+    },
+    isDeletable(): boolean {
+      return this.selected.length > 0
+    }
   }
 })
 </script>
