@@ -10,16 +10,43 @@
     show-select
   >
     <template v-slot:top>
-      <confirm-dialog
-        :disabled="!isDeletable()"
-        :items="selected"
-        :title="$t('overview.deleteProjectTitle')"
-        :message="$t('overview.deleteProjectMessage')"
-        :button-true-text="$t('generic.yes')"
-        :button-false-text="$t('generic.cancel')"
-        item-key="modelName"
-        @ok="remove"
-      />
+      <div class="ma-4">
+        <base-modal>
+          <template v-slot:opener="modal">
+            <v-btn
+              class="primary text-capitalize"
+              @click="modal.open"
+            >
+              {{ $t('generic.create') }}
+            </v-btn>
+          </template>
+          <template v-slot:content="modal">
+            <config-creation-form />
+          </template>
+        </base-modal>
+        <base-modal>
+          <template v-slot:opener="modal">
+            <v-btn
+              :disabled="!isDeletable()"
+              class="text-capitalize ms-2"
+              outlined
+              @click="modal.open"
+            >
+              {{ $t('generic.delete') }}
+            </v-btn>
+          </template>
+          <template v-slot:content="modal">
+            <confirm-form
+              :items="selected"
+              title="Delete Config"
+              message="Are you sure you want to delete these configs?"
+              item-key="modelName"
+              @ok="remove();modal.close"
+              @cancel="modal.close"
+            />
+          </template>
+        </base-modal>
+      </div>
     </template>
   </v-data-table>
 </template>
@@ -28,19 +55,23 @@
 import Vue from 'vue'
 import { headers, ConfigItemList } from '@/models/config/config-item-list'
 import { ConfigApplicationService } from '@/services/application/config.service'
-import { FromApiConfigItemListRepository } from '@/repositories/config/api'
-import ConfirmDialog from '@/components/organisms/utils/ConfirmDialog'
+import { FromApiConfigItemListRepository, ConfigItemResponse } from '@/repositories/config/api'
+import ConfirmForm from '@/components/organisms/utils/ConfirmForm.vue'
+import BaseModal from '@/components/atoms/BaseModal.vue'
+import ConfigCreationForm from '@/components/containers/settings/ConfigCreationForm.vue'
 
 export default Vue.extend({
   components: {
-    ConfirmDialog
+    ConfirmForm,
+    ConfigCreationForm,
+    BaseModal
   },
 
   data() {
     return {
-      isLoading: false,
-      items: ConfigItemList.valueOf([]),
-      selected: [],
+      isLoading: false as Boolean,
+      items: ConfigItemList.valueOf([]) as ConfigItemList,
+      selected: [] as ConfigItemResponse[],
       headers
     }
   },
