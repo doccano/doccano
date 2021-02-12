@@ -2,7 +2,7 @@ import ApiService from '@/services/api.service'
 import { ConfigItemListRepository } from '@/repositories/config/interface'
 import { ConfigItemList, ConfigItem } from '@/models/config/config-item-list'
 
-interface ConfigItemResponse {
+export interface ConfigItemResponse {
   id: number,
   model_name: string,
   model_attrs: object,
