@@ -169,6 +169,12 @@ export default Vue.extend({
       const projectId = this.$route.params.id
       const response: ConfigTemplateItem = await this.templateService.find(projectId, val)
       this.templateConfig = response.toObject()
+    },
+    templateConfig: {
+      handler() {
+        this.passTesting = false
+      },
+      deep: true
     }
   },
 
