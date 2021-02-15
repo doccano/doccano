@@ -21,7 +21,9 @@
             </v-btn>
           </template>
           <template v-slot:content="modal">
-            <config-creation-form />
+            <config-creation-form
+              @onCreate="onCreate();modal.close()"
+            />
           </template>
         </base-modal>
         <base-modal>
@@ -41,7 +43,7 @@
               title="Delete Config"
               message="Are you sure you want to delete these configs?"
               item-key="modelName"
-              @ok="remove();modal.close"
+              @ok="remove();modal.close()"
               @cancel="modal.close"
             />
           </template>
@@ -98,10 +100,16 @@ export default Vue.extend({
         await this.configService.delete(projectId, item.id)
       }
       this.items = await this.configService.list(projectId)
+      this.selected = []
       this.isLoading = false
     },
     isDeletable(): boolean {
       return this.selected.length > 0
+    },
+    async onCreate() {
+      this.isLoading = true
+      this.items = await this.configService.list(this.$route.params.id)
+      this.isLoading = false
     }
   }
 })

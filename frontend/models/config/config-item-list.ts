@@ -26,13 +26,37 @@ export class ConfigItem {
     return new ConfigItem(id, model_name, model_attrs, template, label_mapping)
   }
 
-  toObject(): Object {
+  static parseFromUI(
+    { modelName, modelAttrs, template, labelMapping }:
+    {
+      modelName: string,
+      modelAttrs: {'name': string, 'value': string}[],
+      template: string,
+      labelMapping: {'from': string, 'to': string}[]
+    }
+  ): ConfigItem {
+    const mapping = labelMapping.reduce((a, x) => ({...a, [x.from]: x.to}), {})
+    const attributes = modelAttrs.reduce((a, x) => ({...a, [x.name]: x.value}), {})
+    return new ConfigItem(99999, modelName, attributes, template, mapping)
+  }
+
+  toObject(): object {
     return {
       id: this.id,
       modelName: this.modelName,
       modelAttrs: this.modelAttrs,
       template: this.template,
       labelMapping: this.labelMapping
+    }
+  }
+
+  toAPI(): object {
+    return {
+      id: this.id,
+      model_name: this.modelName,
+      model_attrs: this.modelAttrs,
+      template: this.template,
+      label_mapping: this.labelMapping
     }
   }
 }

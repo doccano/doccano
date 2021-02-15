@@ -26,7 +26,7 @@
     </v-stepper-header>
     
     <v-card>
-      <v-card-text>
+      <v-card-text class="pa-0">
         <v-stepper-content step="1">
           <h4 class="text-h6">Select a config template</h4>
           <p class="font-weight-regular body-1">
@@ -62,6 +62,7 @@
               :key="item.name"
             />
           </template>
+
           <h4 class="text-h6">Set mapping template</h4>
           <p class="font-weight-regular body-1">
             You can set mapping template to convert API response to doccano format.
@@ -71,10 +72,12 @@
             outlined
             label="Mapping Template"
           />
+
           <h4 class="text-h6">Configure label mappings</h4>
           <p class="font-weight-regular body-1">
             Once you fetch the API response, you can convert the label into the defined one.
           </p>
+          <label-mapping v-model="templateConfig.label_mapping" />
         </v-stepper-content>
 
         <v-stepper-content step="3">
@@ -90,7 +93,7 @@
           />
         </v-stepper-content>
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions class="me-4">
         <v-spacer />
           <v-btn
             v-show="step.hasPrev()"
@@ -110,10 +113,18 @@
             Next
           </v-btn>
           <v-btn
-            v-show="!step.hasNext()"
-            :disabled="!passTesting"
+            v-show="step.isLast() && !passTesting"
             color="primary"
             class="text-capitalize"
+            @click="testConfig"
+          >
+            Test
+          </v-btn>
+          <v-btn
+            v-show="step.isLast() && passTesting"
+            color="success"
+            class="text-capitalize"
+            @click="saveConfig"
           >
             Save
           </v-btn>
@@ -125,11 +136,19 @@
 <script lang="ts">
 import Vue from 'vue'
 import { FromApiTemplateRepository } from '@/repositories/template/api'
+import { FromApiConfigItemListRepository } from '@/repositories/config/api'
 import { TemplateApplicationService } from '@/services/application/template.service'
+import { ConfigApplicationService } from '@/services/application/config.service'
 import { ConfigTemplateItem } from '@/models/config/config-template'
-import { StepCounter } from '@/models/config/stepper';
+import { ConfigItem } from '@/models/config/config-item-list'
+import { StepCounter } from '@/models/stepper'
+import LabelMapping from '@/components/containers/settings/LabelMapping.vue'
 
 export default Vue.extend({
+  components: {
+    LabelMapping
+  },
+
   data() {
     return {
       passTesting: false,
@@ -161,12 +180,43 @@ export default Vue.extend({
       const repository = new FromApiTemplateRepository()
       const service = new TemplateApplicationService(repository)
       return service
+    },
+    configService(): ConfigApplicationService{
+      const repository = new FromApiConfigItemListRepository()
+      const service = new ConfigApplicationService(repository)
+      return service
     }
   },
 
   methods: {
-    validate(): boolean {
-      return false
+    createConfig() {
+      const payload = {
+        // @ts-ignore
+        modelName: this.templateConfig.model_name,
+        // @ts-ignore
+        modelAttrs: this.templateConfig.model_attrs,
+        // @ts-ignore
+        template: this.templateConfig.template,
+        // @ts-ignore
+        labelMapping: this.templateConfig.label_mapping
+      }
+      return ConfigItem.parseFromUI(payload)
+    },
+    testConfig() {
+      const projectId = this.$route.params.id
+      const item = this.createConfig()
+      this.configService.testConfig(projectId, item, this.sampleText)
+        .then(value => {
+          this.passTesting = value.valid
+        })
+    },
+    saveConfig() {
+      const projectId = this.$route.params.id
+      const item = this.createConfig()
+      this.configService.save(projectId, item)
+        .then(item => {
+          this.$emit('onCreate')
+        })
     }
   }
 })

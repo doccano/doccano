@@ -1,5 +1,5 @@
 import ApiService from '@/services/api.service'
-import { ConfigItemListRepository } from '@/repositories/config/interface'
+import { ConfigItemListRepository, ConfigTestResponse } from '@/repositories/config/interface'
 import { ConfigItemList, ConfigItem } from '@/models/config/config-item-list'
 
 export interface ConfigItemResponse {
@@ -52,5 +52,12 @@ export class FromApiConfigItemListRepository implements ConfigItemListRepository
   async delete(projectId: string, itemId: number): Promise<void> {
     const url = `/projects/${projectId}/auto-labeling-configs/${itemId}`
     await this.request.delete(url)
+  }
+
+  async testConfig(projectId: string, item: ConfigItem, text: string): Promise<ConfigTestResponse> {
+    const url = `/projects/${projectId}/auto-labeling-config-testing`
+    const response = await this.request.post(url, {config: {...item.toAPI()}, input: text})
+    const responseItem: ConfigTestResponse = response.data
+    return responseItem
   }
 }
