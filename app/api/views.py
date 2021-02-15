@@ -555,12 +555,13 @@ class AutoLabelingConfigTest(APIView):
     def pass_pipeline_call(self, serializer):
         test_input = self.request.data['input']
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        task = TaskFactory.create(project.project_type)
         model = RequestModelFactory.create(
             model_name=serializer.data.get('model_name'),
             attributes=serializer.data.get('model_attrs')
         )
         template = MappingTemplate(
-            task=TaskFactory.create(project.project_type),
+            label_collection=task.label_collection,
             template=serializer.data.get('template')
         )
         post_processor = PostProcessor(serializer.data.get('label_mapping'))
@@ -609,12 +610,13 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         config = project.auto_labeling_config.get(default=True)
+        task = TaskFactory.create(project.project_type)
         model = RequestModelFactory.create(
             model_name=config.model_name,
             attributes=config.model_attrs
         )
         template = MappingTemplate(
-            task=TaskFactory.create(project.project_type),
+            label_collection=task.label_collection,
             template=config.template
         )
         post_processor = PostProcessor(config.label_mapping)
