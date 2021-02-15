@@ -26,31 +26,38 @@
 
           <v-card-text>
             <v-container>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="12"
-                  class="pa-0"
-                >
-                  <v-text-field
-                    v-model="editedItem.from"
-                    label="From"
-                    outlined
-                  />
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="12"
-                  class="pa-0"
-                >
-                  <v-select
-                    v-model="editedItem.to"
-                    :items="items"
-                    label="To"
-                    outlined
-                  />
-                </v-col>
-              </v-row>
+              <v-form
+                ref="form"
+                v-model="valid"
+              >
+                <v-row>
+                  <v-col
+                    cols="12"
+                    sm="12"
+                    class="pa-0"
+                  >
+                    <v-text-field
+                      v-model="editedItem.from"
+                      label="From"
+                      :rules="labelNameRules($t('rules.labelNameRules'))"
+                      outlined
+                    />
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="12"
+                    class="pa-0"
+                  >
+                    <v-select
+                      v-model="editedItem.to"
+                      :items="items"
+                      :rules="labelNameRules($t('rules.labelNameRules'))"
+                      label="To"
+                      outlined
+                    />
+                  </v-col>
+                </v-row>
+              </v-form>
             </v-container>
           </v-card-text>
 
@@ -65,6 +72,7 @@
               Cancel
             </v-btn>
             <v-btn
+              :disabled="!valid"
               color="blue darken-1"
               class="text-capitalize"
               text
@@ -99,12 +107,14 @@ import Vue from 'vue'
 import { headers } from '@/models/config/config-template'
 import { FromApiLabelItemListRepository } from '@/repositories/label/api'
 import { LabelApplicationService } from '@/services/application/label.service'
+import { labelNameRules } from '@/rules/index'
 
 export default Vue.extend({
   data() {
     return {
       headers,
       dialog: false,
+      valid: false,
       editedIndex: -1,
       editedItem: {
         'from': '',
@@ -114,7 +124,8 @@ export default Vue.extend({
         'from': '',
         'to': ''
       },
-      items: [] as string[]
+      items: [] as string[],
+      labelNameRules
     }
   },
 
