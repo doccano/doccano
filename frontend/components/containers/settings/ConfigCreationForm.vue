@@ -26,6 +26,9 @@
     </v-stepper-header>
     
     <v-card>
+      <v-overlay :value="isLoading">
+        <v-progress-circular indeterminate size="64" />
+      </v-overlay>
       <v-card-text class="pa-0">
         <v-stepper-content step="1">
           <h4 class="text-h6">Select a config template</h4>
@@ -114,7 +117,7 @@
           </v-btn>
           <v-btn
             v-show="step.isLast() && !passTesting"
-            :disabled="sampleText === ''"
+            :disabled="sampleText === '' || isLoading"
             color="primary"
             class="text-capitalize"
             @click="testConfig"
@@ -152,6 +155,7 @@ export default Vue.extend({
 
   data() {
     return {
+      isLoading: false,
       passTesting: false,
       sampleText: '',
       step: new StepCounter(1, 3),
@@ -212,17 +216,25 @@ export default Vue.extend({
     testConfig() {
       const projectId = this.$route.params.id
       const item = this.createConfig()
+      this.isLoading = true
       this.configService.testConfig(projectId, item, this.sampleText)
         .then(value => {
           this.passTesting = value.valid
+        })
+        .finally(() => {
+          this.isLoading = false
         })
     },
     saveConfig() {
       const projectId = this.$route.params.id
       const item = this.createConfig()
+      this.isLoading = true
       this.configService.save(projectId, item)
         .then(item => {
           this.$emit('onCreate')
+        })
+        .finally(() => {
+          this.isLoading = false
         })
     }
   }
