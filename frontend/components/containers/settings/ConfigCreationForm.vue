@@ -114,6 +114,7 @@
           </v-btn>
           <v-btn
             v-show="step.isLast() && !passTesting"
+            :disabled="sampleText === ''"
             color="primary"
             class="text-capitalize"
             @click="testConfig"
