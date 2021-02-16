@@ -25,6 +25,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework_csv.renderers import CSVRenderer
 
+from .exceptions import AutoLabelingException
 from .filters import DocumentFilter
 from .models import Project, Label, Document, RoleMapping, Role, Comment, AutoLabelingConfig
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover, IsOwnComment
@@ -595,6 +596,9 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
         return queryset
 
     def create(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if queryset.exists():
+            raise AutoLabelingException()
         labels = self.extract()
         labels = self.transform(labels)
         serializer = self.get_serializer(data=labels, many=True)
@@ -609,7 +613,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
     def extract(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
-        config = project.auto_labeling_config.get(default=True)
+        config = project.auto_labeling_config.first()
         task = TaskFactory.create(project.project_type)
         model = RequestModelFactory.create(
             model_name=config.model_name,

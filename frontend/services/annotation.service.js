@@ -24,6 +24,10 @@ class AnnotationService {
   updateAnnotation(projectId, docId, annotationId, payload) {
     return this.request.patch(`/projects/${projectId}/docs/${docId}/annotations/${annotationId}`, payload)
   }
+
+  autoLabel(projectId, docId) {
+    return this.request.post(`/projects/${projectId}/docs/${docId}/auto-labeling`)
+  }
 }
 
 export default new AnnotationService()

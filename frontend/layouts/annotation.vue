@@ -41,6 +41,7 @@
             <guideline-button />
             <comment-button />
             <clear-annotations-button />
+            <settings v-model="options" />
           </v-col>
           <v-spacer />
           <v-col>
@@ -84,6 +85,7 @@ import CommentButton from '@/components/containers/annotation/CommentButton'
 import Pagination from '~/components/containers/annotation/Pagination'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
+import Settings from '~/components/containers/annotation/Settings.vue'
 
 export default {
   middleware: ['check-auth', 'auth', 'set-project'],
@@ -98,7 +100,8 @@ export default {
     ApproveButton,
     MetadataBox,
     ClearAnnotationsButton,
-    CommentButton
+    CommentButton,
+    Settings
   },
 
   fetch() {
@@ -115,7 +118,10 @@ export default {
   data() {
     return {
       drawerLeft: null,
-      limit: 10
+      limit: 10,
+      options: {
+        onAutoLabeling: false
+      }
     }
   },
 
@@ -187,16 +193,24 @@ export default {
     current: {
       handler() {
         this.setCurrent(this.current)
+        if (this.options.onAutoLabeling) {
+          this.autoLabeling({ projectId: this.$route.params.id })
+        }
       },
       immediate: true
     },
     searchOptions() {
       this.saveSearchOptions(JSON.parse(this.searchOptions))
+    },
+    "options.onAutoLabeling": function(val) {
+      if (val) {
+        this.autoLabeling({ projectId: this.$route.params.id })
+      }
     }
   },
 
   methods: {
-    ...mapActions('documents', ['getDocumentList']),
+    ...mapActions('documents', ['getDocumentList', 'autoLabeling']),
     ...mapMutations('documents', ['setCurrent']),
     ...mapMutations('projects', ['saveSearchOptions'])
   }
