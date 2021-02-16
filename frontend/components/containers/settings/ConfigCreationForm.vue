@@ -64,6 +64,12 @@
               outlined
               :key="item.name"
             />
+            <object-field
+              v-if="item.type === 'objectField'"
+              v-model="item.value"
+              :title="item.name"
+              :key="item.name"
+            />
           </template>
 
           <h4 class="text-h6">Set mapping template</h4>
@@ -147,10 +153,12 @@ import { ConfigTemplateItem } from '@/models/config/config-template'
 import { ConfigItem } from '@/models/config/config-item-list'
 import { StepCounter } from '@/models/stepper'
 import LabelMapping from '@/components/containers/settings/LabelMapping.vue'
+import ObjectField from '@/components/containers/settings/ObjectField.vue'
 
 export default Vue.extend({
   components: {
-    LabelMapping
+    LabelMapping,
+    ObjectField
   },
 
   data() {

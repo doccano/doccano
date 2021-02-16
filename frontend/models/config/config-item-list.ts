@@ -36,7 +36,12 @@ export class ConfigItem {
     }
   ): ConfigItem {
     const mapping = labelMapping.reduce((a, x) => ({...a, [x.from]: x.to}), {})
-    const attributes = modelAttrs.reduce((a, x) => ({...a, [x.name]: x.value}), {})
+    const attributes: {[key: string]: any} = modelAttrs.reduce((a, x) => ({...a, [x.name]: x.value}), {})
+    for (const [key, value] of Object.entries(attributes)) {
+      if (Array.isArray(value)) {
+        attributes[key] = value.reduce((a, x) => ({...a, [x.key]: x.value}), {})
+      }
+    }
     return new ConfigItem(99999, modelName, attributes, template, mapping)
   }
 

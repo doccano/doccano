@@ -43,6 +43,14 @@ export class ConfigTemplateItem {
             )
           }
         )
+      } else if ('type' in value && value.type === 'object') {
+        response.push(
+          {
+            name: key,
+            type: 'objectField',
+            value: []
+          }
+        )
       }
     }
     return response
