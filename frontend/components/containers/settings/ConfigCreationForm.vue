@@ -86,7 +86,7 @@
           <p class="font-weight-regular body-1">
             Once you fetch the API response, you can convert the label into the defined one.
           </p>
-          <label-mapping v-model="templateConfig.label_mapping" />
+          <label-mapping v-model="labelMapping" />
         </v-stepper-content>
 
         <v-stepper-content step="3">
@@ -100,6 +100,18 @@
             outlined
             label="Sample Text"
           />
+          <v-alert
+            v-for="(error, index) in errors"
+            prominent
+            type="error"
+            :key="index"
+          >
+            <v-row align="center">
+              <v-col class="grow">
+                {{ error }}
+              </v-col>
+            </v-row>
+          </v-alert>
         </v-stepper-content>
       </v-card-text>
       <v-card-actions class="me-4">
@@ -163,13 +175,15 @@ export default Vue.extend({
 
   data() {
     return {
+      errors: [] as string[],
       isLoading: false,
       passTesting: false,
       sampleText: '',
       step: new StepCounter(1, 3),
       templateName: null,
       templateConfig: {},
-      templateNames: [] as string[]
+      templateNames: [] as string[],
+      labelMapping: []
     }
   },
 
@@ -184,6 +198,12 @@ export default Vue.extend({
       this.templateConfig = response.toObject()
     },
     templateConfig: {
+      handler() {
+        this.passTesting = false
+      },
+      deep: true
+    },
+    labelMapping: {
       handler() {
         this.passTesting = false
       },
@@ -217,7 +237,7 @@ export default Vue.extend({
         // @ts-ignore
         template: this.templateConfig.template,
         // @ts-ignore
-        labelMapping: this.templateConfig.label_mapping
+        labelMapping: this.labelMapping
       }
       return ConfigItem.parseFromUI(payload)
     },
@@ -228,6 +248,19 @@ export default Vue.extend({
       this.configService.testConfig(projectId, item, this.sampleText)
         .then(value => {
           this.passTesting = value.valid
+        })
+        .catch((error) => {
+          const data = error.response.data
+          this.errors = []
+          if ('non_field_errors' in data) {
+            this.errors = data['non_field_errors']
+          } else if ('template' in data) {
+            this.errors.push('The template need to be filled.')
+          } else if ('detail' in data) {
+            this.errors.push(data['detail'])
+          } else {
+            this.errors = data
+          }
         })
         .finally(() => {
           this.isLoading = false

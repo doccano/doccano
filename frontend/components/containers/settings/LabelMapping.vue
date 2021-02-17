@@ -16,7 +16,7 @@
             v-bind="attrs"
             v-on="on"
           >
-            Add a mapping
+            Add
           </v-btn>
         </template>
         <v-card>

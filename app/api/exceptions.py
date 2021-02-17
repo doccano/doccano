@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.exceptions import APIException, PermissionDenied
+from rest_framework.exceptions import APIException, PermissionDenied, NotFound, ValidationError
 
 
 class FileParseException(APIException):
@@ -20,3 +20,11 @@ class AutoLabelingException(APIException):
 class AutoLabeliingPermissionDenied(PermissionDenied):
     default_detail = 'You do not have permission to perform auto labeling.' \
                      'Please ask the project administrators to add you.'
+
+
+class URLConnectionError(NotFound):
+    default_detail = 'Failed to establish a connection. Please check the URL or network.'
+
+
+class AWSTokenError(ValidationError):
+    default_detail = 'The security token included in the request is invalid.'

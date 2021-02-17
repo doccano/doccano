@@ -2,6 +2,8 @@ import collections
 import json
 import random
 
+import botocore.exceptions
+import requests
 from auto_labeling_pipeline.menu import Options
 from auto_labeling_pipeline.models import RequestModelFactory
 from auto_labeling_pipeline.mappings import MappingTemplate
@@ -25,7 +27,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework_csv.renderers import CSVRenderer
 
-from .exceptions import AutoLabelingException, AutoLabeliingPermissionDenied
+from .exceptions import AutoLabelingException, AutoLabeliingPermissionDenied, URLConnectionError, AWSTokenError
 from .filters import DocumentFilter
 from .models import Project, Label, Document, RoleMapping, Role, Comment, AutoLabelingConfig
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover, IsOwnComment
@@ -541,11 +543,12 @@ class AutoLabelingConfigTest(APIView):
                 data={'valid': True, 'labels': output},
                 status=status.HTTP_200_OK
             )
+        except requests.exceptions.ConnectionError:
+            raise URLConnectionError()
+        except botocore.exceptions.ClientError:
+            raise AWSTokenError()
         except Exception as e:
-            return Response(
-                data={'valid': False},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            raise e
 
     def pass_config_validation(self):
         config = self.request.data['config']

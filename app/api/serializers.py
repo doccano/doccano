@@ -268,5 +268,11 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
         try:
             RequestModelFactory.create(data['model_name'], data['model_attrs'])
         except Exception:
-            raise serializers.ValidationError('The attributes does not match the model.')
+            model = RequestModelFactory.find(data['model_name'])
+            schema = model.schema()
+            required_fields = ', '.join(schema['required']) if 'required' in schema else ''
+            raise serializers.ValidationError(
+                'The attributes does not match the model.'
+                'You need to correctly specify the required fields: {}'.format(required_fields)
+            )
         return data
