@@ -25,7 +25,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework_csv.renderers import CSVRenderer
 
-from .exceptions import AutoLabelingException
+from .exceptions import AutoLabelingException, AutoLabeliingPermissionDenied
 from .filters import DocumentFilter
 from .models import Project, Label, Document, RoleMapping, Role, Comment, AutoLabelingConfig
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover, IsOwnComment
@@ -538,10 +538,10 @@ class AutoLabelingConfigTest(APIView):
             output = self.pass_config_validation()
             output = self.pass_pipeline_call(output)
             return Response(
-                data={'valid': True, 'labels': output.dict()},
+                data={'valid': True, 'labels': output},
                 status=status.HTTP_200_OK
             )
-        except Exception:
+        except Exception as e:
             return Response(
                 data={'valid': False},
                 status=status.HTTP_400_BAD_REQUEST
@@ -556,23 +556,14 @@ class AutoLabelingConfigTest(APIView):
     def pass_pipeline_call(self, serializer):
         test_input = self.request.data['input']
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        task = TaskFactory.create(project.project_type)
-        model = RequestModelFactory.create(
-            model_name=serializer.data.get('model_name'),
-            attributes=serializer.data.get('model_attrs')
-        )
-        template = MappingTemplate(
-            label_collection=task.label_collection,
-            template=serializer.data.get('template')
-        )
-        post_processor = PostProcessor(serializer.data.get('label_mapping'))
-        labels = pipeline(
+        return execute_pipeline(
             text=test_input,
-            request_model=model,
-            mapping_template=template,
-            post_processing=post_processor
+            project_type=project.project_type,
+            model_name=serializer.data.get('model_name'),
+            model_attrs=serializer.data.get('model_attrs'),
+            template=serializer.data.get('template'),
+            label_mapping=serializer.data.get('label_mapping')
         )
-        return labels
 
 
 class AutoLabelingAnnotation(generics.CreateAPIView):
@@ -588,11 +579,9 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         model = project.get_annotation_class()
-
         queryset = model.objects.filter(document=self.kwargs['doc_id'])
         if not project.collaborative_annotation:
             queryset = queryset.filter(user=self.request.user)
-
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -614,23 +603,16 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
         config = project.auto_labeling_config.first()
-        task = TaskFactory.create(project.project_type)
-        model = RequestModelFactory.create(
-            model_name=config.model_name,
-            attributes=config.model_attrs
-        )
-        template = MappingTemplate(
-            label_collection=task.label_collection,
-            template=config.template
-        )
-        post_processor = PostProcessor(config.label_mapping)
-        labels = pipeline(
+        if not config:
+            raise AutoLabeliingPermissionDenied()
+        return execute_pipeline(
             text=doc.text,
-            request_model=model,
-            mapping_template=template,
-            post_processing=post_processor
+            project_type=project.project_type,
+            model_name=config.model_name,
+            model_attrs=config.model_attrs,
+            template=config.template,
+            label_mapping=config.label_mapping
         )
-        return labels.dict()
 
     def transform(self, labels):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -639,3 +621,28 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
             if 'label' in label:
                 label['label'] = project.labels.get(text=label.pop('label')).id
         return labels
+
+
+def execute_pipeline(text: str,
+                     project_type: str,
+                     model_name: str,
+                     model_attrs: dict,
+                     template: str,
+                     label_mapping: dict):
+    task = TaskFactory.create(project_type)
+    model = RequestModelFactory.create(
+        model_name=model_name,
+        attributes=model_attrs
+    )
+    template = MappingTemplate(
+        label_collection=task.label_collection,
+        template=template
+    )
+    post_processor = PostProcessor(label_mapping)
+    labels = pipeline(
+        text=text,
+        request_model=model,
+        mapping_template=template,
+        post_processing=post_processor
+    )
+    return labels.dict()

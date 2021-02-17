@@ -267,20 +267,24 @@ export const actions = {
         alert(error)
       })
   },
-  autoLabeling({ commit, state }, payload) {
+  async autoLabeling({ commit, state }, payload) {
     const document = state.items[state.current]
     if (document) {
-      commit('setLoading', true)
-      AnnotationService.autoLabel(payload.projectId, document.id)
-        .then((response) => {
-          commit('setAnnotations', response.data)
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => {
-          commit('setLoading', false)
-        })
+      const response = await AnnotationService.autoLabel(payload.projectId, document.id)
+      commit('setAnnotations', response.data)
+      // commit('setLoading', true)
+      // return AnnotationService.autoLabel(payload.projectId, document.id)
+      //   .then((response) => {
+      //     commit('setAnnotations', response.data)
+      //   })
+      //   .catch((error) => {
+      //     const message = error.response.data['detail']
+      //     Promise.reject(error)
+      //     // throw new Error(message)
+      //   })
+      //   .finally(() => {
+      //     commit('setLoading', false)
+      //   })
     }
   },
 }

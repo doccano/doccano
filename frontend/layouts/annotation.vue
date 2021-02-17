@@ -41,7 +41,10 @@
             <guideline-button />
             <comment-button />
             <clear-annotations-button />
-            <settings v-model="options" />
+            <settings
+              v-model="options"
+              :errors="errors"
+            />
           </v-col>
           <v-spacer />
           <v-col>
@@ -121,6 +124,9 @@ export default {
       limit: 10,
       options: {
         onAutoLabeling: false
+      },
+      errors: {
+        'autoLabelingConfig': ''
       }
     }
   },
@@ -191,10 +197,12 @@ export default {
       this.$fetch()
     },
     current: {
-      handler() {
+      async handler() {
         this.setCurrent(this.current)
         if (this.options.onAutoLabeling) {
-          this.autoLabeling({ projectId: this.$route.params.id })
+          this.setLoading(true)
+          await this.autoLabeling({ projectId: this.$route.params.id })
+          this.setLoading(false)
         }
       },
       immediate: true
@@ -202,16 +210,25 @@ export default {
     searchOptions() {
       this.saveSearchOptions(JSON.parse(this.searchOptions))
     },
-    "options.onAutoLabeling": function(val) {
+    "options.onAutoLabeling": async function(val) {
       if (val) {
-        this.autoLabeling({ projectId: this.$route.params.id })
+        try {
+          this.setLoading(true)
+          await this.autoLabeling({ projectId: this.$route.params.id })
+          this.errors.autoLabelingConfig = ''
+        } catch (e) {
+          this.errors.autoLabelingConfig = e.response.data.detail
+          this.options.onAutoLabeling = false
+        } finally {
+          this.setLoading(false)
+        }
       }
     }
   },
 
   methods: {
     ...mapActions('documents', ['getDocumentList', 'autoLabeling']),
-    ...mapMutations('documents', ['setCurrent']),
+    ...mapMutations('documents', ['setCurrent', 'setLoading']),
     ...mapMutations('projects', ['saveSearchOptions'])
   }
 }
