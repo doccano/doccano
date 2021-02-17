@@ -27,7 +27,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework_csv.renderers import CSVRenderer
 
-from .exceptions import AutoLabelingException, AutoLabeliingPermissionDenied, URLConnectionError, AWSTokenError
+from .exceptions import AutoLabelingException, AutoLabeliingPermissionDenied, URLConnectionError, AWSTokenError, SampleDataException
 from .filters import DocumentFilter
 from .models import Project, Label, Document, RoleMapping, Role, Comment, AutoLabelingConfig
 from .permissions import IsProjectAdmin, IsAnnotatorAndReadOnly, IsAnnotator, IsAnnotationApproverAndReadOnly, IsOwnAnnotation, IsAnnotationApprover, IsOwnComment
@@ -539,6 +539,8 @@ class AutoLabelingConfigTest(APIView):
         try:
             output = self.pass_config_validation()
             output = self.pass_pipeline_call(output)
+            if not output:
+                raise SampleDataException()
             return Response(
                 data={'valid': True, 'labels': output},
                 status=status.HTTP_200_OK
@@ -547,6 +549,8 @@ class AutoLabelingConfigTest(APIView):
             raise URLConnectionError()
         except botocore.exceptions.ClientError:
             raise AWSTokenError()
+        except ValidationError as e:
+            raise e
         except Exception as e:
             raise e
 

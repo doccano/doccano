@@ -2,7 +2,7 @@ import { ConfigItem, ConfigItemList } from '@/models/config/config-item-list'
 
 export interface ConfigTestResponse {
   valid: boolean,
-  labels?: object[]
+  labels: object[]
 }
 
 export interface ConfigItemListRepository {

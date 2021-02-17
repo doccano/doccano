@@ -100,6 +100,20 @@
             outlined
             label="Sample Text"
           />
+          <h4
+            v-if="response.length > 0"
+            class="text-h6"
+          >
+            Response
+          </h4>
+          <v-sheet
+            v-if="response.length > 0"
+            :dark="!$vuetify.theme.dark"
+            :light="$vuetify.theme.dark"
+            class="mb-5 pa-5"
+          >
+            <pre>{{ JSON.stringify(response, null, 4) }}</pre>
+          </v-sheet>
           <v-alert
             v-for="(error, index) in errors"
             prominent
@@ -183,7 +197,8 @@ export default Vue.extend({
       templateName: null,
       templateConfig: {},
       templateNames: [] as string[],
-      labelMapping: []
+      labelMapping: [],
+      response: [] as object[]
     }
   },
 
@@ -245,13 +260,15 @@ export default Vue.extend({
       const projectId = this.$route.params.id
       const item = this.createConfig()
       this.isLoading = true
+      this.errors = []
+      this.response = []
       this.configService.testConfig(projectId, item, this.sampleText)
         .then(value => {
           this.passTesting = value.valid
+          this.response = value.labels
         })
         .catch((error) => {
           const data = error.response.data
-          this.errors = []
           if ('non_field_errors' in data) {
             this.errors = data['non_field_errors']
           } else if ('template' in data) {
