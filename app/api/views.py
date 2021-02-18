@@ -573,6 +573,63 @@ class AutoLabelingConfigTest(APIView):
         )
 
 
+class AutoLabelingConfigParameterTest(APIView):
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    def post(self, *args, **kwargs):
+        model_name = self.request.data['model_name']
+        model_attrs = self.request.data['model_attrs']
+        sample_text = self.request.data['text']
+        try:
+            model = RequestModelFactory.create(model_name, model_attrs)
+        except Exception:
+            model = RequestModelFactory.find(model_name)
+            schema = model.schema()
+            required_fields = ', '.join(schema['required']) if 'required' in schema else ''
+            raise ValidationError(
+                'The attributes does not match the model.'
+                'You need to correctly specify the required fields: {}'.format(required_fields)
+            )
+        try:
+            request = model.build()
+            response = request.send(text=sample_text)
+            return Response(response, status=status.HTTP_200_OK)
+        except requests.exceptions.ConnectionError:
+            raise URLConnectionError
+        except Exception as e:
+            raise e
+
+
+class AutoLabelingTemplateTest(APIView):
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    def post(self, *args, **kwargs):
+        response = self.request.data['response']
+        template = self.request.data['template']
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        task = TaskFactory.create(project.project_type)
+        template = MappingTemplate(
+            label_collection=task.label_collection,
+            template=template
+        )
+        labels = template.render(response)
+        return Response(labels.dict(), status=status.HTTP_200_OK)
+
+
+class AutoLabelingMappingTest(APIView):
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    def post(self, *args, **kwargs):
+        response = self.request.data['response']
+        label_mapping = self.request.data['label_mapping']
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        task = TaskFactory.create(project.project_type)
+        labels = task.label_collection(response)
+        post_processor = PostProcessor(label_mapping)
+        labels = post_processor.transform(labels)
+        return Response(labels.dict(), status=status.HTTP_200_OK)
+
+
 class AutoLabelingAnnotation(generics.CreateAPIView):
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
