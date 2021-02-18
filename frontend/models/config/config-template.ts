@@ -64,23 +64,3 @@ export class ConfigTemplateItem {
     }
   }
 }
-
-export const headers = [
-  {
-    text: 'From',
-    align: 'left',
-    value: 'from',
-    sortable: false
-  },
-  {
-    text: 'To',
-    align: 'left',
-    value: 'to',
-    sortable: false
-  },
-  {
-    text: 'Actions',
-    value: 'actions',
-    sortable: false
-  }
-]

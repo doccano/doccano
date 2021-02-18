@@ -75,3 +75,9 @@ export const passwordRules = (msg) => {
     v => (v && v.length <= 30) || msg.passwordLessThan30Chars
   ]
 }
+
+export const templateNameRules = () => {
+  return [
+    v => !!v || 'Name is required'
+  ]
+}

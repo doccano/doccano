@@ -104,7 +104,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { headers } from '@/models/config/config-template'
 import { FromApiLabelItemListRepository } from '@/repositories/label/api'
 import { LabelApplicationService } from '@/services/application/label.service'
 import { labelNameRules } from '@/rules/index'
@@ -112,8 +111,26 @@ import { labelNameRules } from '@/rules/index'
 export default Vue.extend({
   data() {
     return {
-      headers,
       dialog: false,
+      headers: [
+        {
+          text: 'From',
+          align: 'left',
+          value: 'from',
+          sortable: false
+        },
+        {
+          text: 'To',
+          align: 'left',
+          value: 'to',
+          sortable: false
+        },
+        {
+          text: 'Actions',
+          value: 'actions',
+          sortable: false
+        }
+      ],
       valid: false,
       editedIndex: -1,
       editedItem: {

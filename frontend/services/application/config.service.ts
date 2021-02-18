@@ -1,4 +1,4 @@
-import { ConfigItemList, ConfigItem } from '@/models/config/config-item-list'
+import { ConfigItemList, ConfigItem, Parameters } from '@/models/config/config-item-list'
 import { ConfigItemListRepository, ConfigTestResponse } from '@/repositories/config/interface'
 
 export class ConfigApplicationService {
@@ -20,5 +20,54 @@ export class ConfigApplicationService {
 
   public testConfig(projectId: string, item: ConfigItem, text: string): Promise<ConfigTestResponse> {
     return this.configRepository.testConfig(projectId, item, text)
+    .then((value) => {
+      return value
+    })
+    .catch((error) => {
+      const data = error.response.data
+      if ('non_field_errors' in data) {
+        throw new Error(data['non_field_errors'])
+      } else if ('template' in data) {
+        throw new Error('The template need to be filled.')
+      } else if ('detail' in data) {
+        throw new Error(data['detail'])
+      } else {
+        throw new Error(data)
+      }
+    })
   }
+
+  public testParameters(modelName: string, parameters: Parameters, text: string) {
+    return this.configRepository.testParameters(modelName, parameters, text)
+    .then((value) => {
+      return value
+    })
+    .catch((error) => {
+      const data = error.response.data
+      throw new Error(data)
+    })
+  }
+
+  public testTemplate(projectId: string, response: any, template: string) {
+    return this.configRepository.testTemplate(projectId, response, template)
+    .then((value) => {
+      return value
+    })
+    .catch((error) => {
+      const data = error.response.data
+      throw new Error(data)
+    })
+  }
+
+  public testMapping(projectId: string, item: ConfigItem, response: any) {
+    return this.configRepository.testMapping(projectId, item, response)
+    .then((value) => {
+      return value
+    })
+    .catch((error) => {
+      const data = error.response.data
+      throw new Error(data)
+    })
+  }
+
 }

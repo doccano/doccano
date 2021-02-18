@@ -66,11 +66,22 @@ export class ConfigItem {
   }
 }
 
-export const headers = [
-  {
-    text: 'Model name',
-    align: 'left',
-    value: 'modelName',
-    sortable: false
+export class Parameters {
+  constructor(
+    private readonly parameters: { [key: string]: any }
+  ) {}
+
+  static parse(parameters: {'name': string, 'value': string}[]): Parameters {
+    const _parameters: {[key: string]: any} = parameters.reduce((a, x) => ({...a, [x.name]: x.value}), {})
+    for (const [key, value] of Object.entries(_parameters)) {
+      if (Array.isArray(value)) {
+        _parameters[key] = value.reduce((a, x) => ({...a, [x.key]: x.value}), {})
+      }
+    }
+    return new Parameters(_parameters)
   }
-]
+
+  toObject(): object {
+    return this.parameters
+  }
+}
