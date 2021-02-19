@@ -1,4 +1,4 @@
-import { ConfigItemList, ConfigItem, Parameters } from '@/models/config/config-item-list'
+import { ConfigItemList, ConfigItem } from '@/models/config/config-item-list'
 import { ConfigItemListRepository, ConfigTestResponse } from '@/repositories/config/interface'
 
 export class ConfigApplicationService {
@@ -37,8 +37,8 @@ export class ConfigApplicationService {
     })
   }
 
-  public testParameters(modelName: string, parameters: Parameters, text: string) {
-    return this.configRepository.testParameters(modelName, parameters, text)
+  public testParameters(item: ConfigItem, text: string) {
+    return this.configRepository.testParameters(item, text)
     .then((value) => {
       return value
     })
@@ -48,8 +48,8 @@ export class ConfigApplicationService {
     })
   }
 
-  public testTemplate(projectId: string, response: any, template: string) {
-    return this.configRepository.testTemplate(projectId, response, template)
+  public testTemplate(projectId: string, response: any, item: ConfigItem) {
+    return this.configRepository.testTemplate(projectId, response, item)
     .then((value) => {
       return value
     })

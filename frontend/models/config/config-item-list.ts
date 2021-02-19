@@ -10,6 +10,25 @@ export class ConfigItemList {
   }
 }
 
+interface LabelMappingForUI {
+  from: string,
+  to: string
+}
+
+export interface ParametersForUI {
+  name: string,
+  value: string | object[],
+  type?: string,
+  items?: string[]
+}
+
+export interface Fields {
+  modelName: string,
+  modelAttrs: ParametersForUI[],
+  template: string,
+  labelMapping: LabelMappingForUI[]
+}
+
 export class ConfigItem {
   constructor(
     public id: number,
@@ -27,14 +46,7 @@ export class ConfigItem {
   }
 
   static parseFromUI(
-    { modelName, modelAttrs, template, labelMapping }:
-    {
-      modelName: string,
-      modelAttrs: {'name': string, 'value': string}[],
-      template: string,
-      labelMapping: {'from': string, 'to': string}[]
-    }
-  ): ConfigItem {
+    { modelName, modelAttrs, template, labelMapping }: Fields): ConfigItem {
     const mapping = labelMapping.reduce((a, x) => ({...a, [x.from]: x.to}), {})
     const attributes: {[key: string]: any} = modelAttrs.reduce((a, x) => ({...a, [x.name]: x.value}), {})
     for (const [key, value] of Object.entries(attributes)) {
@@ -63,25 +75,5 @@ export class ConfigItem {
       template: this.template,
       label_mapping: this.labelMapping
     }
-  }
-}
-
-export class Parameters {
-  constructor(
-    private readonly parameters: { [key: string]: any }
-  ) {}
-
-  static parse(parameters: {'name': string, 'value': string}[]): Parameters {
-    const _parameters: {[key: string]: any} = parameters.reduce((a, x) => ({...a, [x.name]: x.value}), {})
-    for (const [key, value] of Object.entries(_parameters)) {
-      if (Array.isArray(value)) {
-        _parameters[key] = value.reduce((a, x) => ({...a, [x.key]: x.value}), {})
-      }
-    }
-    return new Parameters(_parameters)
-  }
-
-  toObject(): object {
-    return this.parameters
   }
 }

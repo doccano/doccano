@@ -1,3 +1,5 @@
+import { Fields, ParametersForUI } from '@/models/config/config-item-list'
+
 export interface Schema {
   title: string,
   type: string,
@@ -27,8 +29,8 @@ export class ConfigTemplateItem {
     return this.schema.title
   }
 
-  get fields() {
-    const response = []
+  get fields(): ParametersForUI[] {
+    const response: ParametersForUI[] = []
     for (const [key, value] of Object.entries(this.schema.properties)) {
       if ('type' in value && value.type === 'string') {
         response.push({name: key, type: 'textField', value: ''})
@@ -56,11 +58,12 @@ export class ConfigTemplateItem {
     return response
   }
 
-  toObject(): Object {
+  toObject(): Fields {
     return {
-      model_name: this.modelName,
+      modelName: this.modelName,
       template: this.template,
-      model_attrs: this.fields
+      modelAttrs: this.fields,
+      labelMapping: []
     }
   }
 }

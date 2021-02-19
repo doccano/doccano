@@ -596,6 +596,8 @@ class AutoLabelingConfigParameterTest(APIView):
             return Response(response, status=status.HTTP_200_OK)
         except requests.exceptions.ConnectionError:
             raise URLConnectionError
+        except botocore.exceptions.ClientError:
+            raise AWSTokenError()
         except Exception as e:
             raise e
 
@@ -613,6 +615,8 @@ class AutoLabelingTemplateTest(APIView):
             template=template
         )
         labels = template.render(response)
+        if not labels.dict():
+            raise SampleDataException()
         return Response(labels.dict(), status=status.HTTP_200_OK)
 
 

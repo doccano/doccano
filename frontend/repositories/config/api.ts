@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
 import { ConfigItemListRepository, ConfigTestResponse } from '@/repositories/config/interface'
-import { ConfigItemList, ConfigItem, Parameters } from '@/models/config/config-item-list'
+import { ConfigItemList, ConfigItem } from '@/models/config/config-item-list'
 
 export interface ConfigItemResponse {
   id: number,
@@ -61,24 +61,17 @@ export class FromApiConfigItemListRepository implements ConfigItemListRepository
     return responseItem
   }
 
-  async testParameters(modelName: string, parameters: Parameters, text: string) {
+  async testParameters(item: ConfigItem, text: string) {
     const url = 'auto-labeling-parameter-testing'
-    const response = await this.request.post(
-      url,
-      {
-        text,
-        model_name: modelName,
-        model_attrs: parameters.toObject()
-      }
-    )
+    const response = await this.request.post(url, {...item.toAPI(), text})
     const responseItem: ConfigTestResponse = response.data
     return responseItem
   }
 
-  async testTemplate(projectId: string, response: any, template: string): Promise<ConfigTestResponse> {
+  async testTemplate(projectId: string, response: any, item: ConfigItem): Promise<ConfigTestResponse> {
     console.log(projectId)
     const url = `/projects/${projectId}/auto-labeling-template-testing`
-    const _response = await this.request.post(url, { response, template })
+    const _response = await this.request.post(url, { response, ...item.toAPI() })
     const responseItem: ConfigTestResponse = _response.data
     return responseItem
   }

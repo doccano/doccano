@@ -30,6 +30,14 @@ export class StepCounter {
     this.step = Math.max(this.step - 1, this.minStep)
   }
 
+  first(): void {
+    this.step = this.minStep
+  }
+
+  last(): void {
+    this.step = this.maxStep
+  }
+
   hasNext(): boolean {
     return this.step !== this.maxStep
   }

@@ -4,8 +4,18 @@
       <v-card-text class="pa-0">
         <h4 class="text-h6">Configure label mappings</h4>
         <p class="font-weight-regular body-1">
-          Once you fetch the API response, you can convert the label into the defined one.
+          Once you fetch the API response, you need to convert the label in the response into the one which you defined at the label page.
         </p>
+        <h4 class="text-h6">
+          Response
+        </h4>
+        <v-sheet
+          :dark="!$vuetify.theme.dark"
+          :light="$vuetify.theme.dark"
+          class="mb-5 pa-5"
+        >
+          <pre>{{ JSON.stringify(response, null, 4) }}</pre>
+        </v-sheet>
         <label-mapping v-model="mapping" />
         <v-alert
           v-for="(error, index) in errorMessages"
@@ -19,6 +29,16 @@
             </v-col>
           </v-row>
         </v-alert>
+        <h4 class="text-h6">
+          Result
+        </h4>
+        <v-sheet
+          :dark="!$vuetify.theme.dark"
+          :light="$vuetify.theme.dark"
+          class="mb-5 pa-5"
+        >
+          <pre>{{ JSON.stringify(result, null, 4) }}</pre>
+        </v-sheet>
       </v-card-text>
       <v-card-actions class="pa-0">
         <v-spacer />
@@ -39,7 +59,7 @@
         </v-btn>
         <v-btn
           v-show="isPassed"
-          color="primary"
+          color="success"
           class="text-capitalize"
           @click="$emit('next')"
         >
@@ -74,15 +94,19 @@ export default Vue.extend({
       type: Boolean,
       default: false,
       required: true
-    }
+    },
+    response: [String, Object, Array],
+    result: Array
   },
 
   computed: {
     mapping: {
       get() {
+        // @ts-ignore
         return this.value
       },
       set(newVal) {
+        // @ts-ignore
         this.$emit('input', newVal)
       }
     }
