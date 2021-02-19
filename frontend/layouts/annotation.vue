@@ -22,6 +22,21 @@
       <v-overlay :value="loading">
         <v-progress-circular indeterminate size="64" />
       </v-overlay>
+      <v-snackbar
+        v-model="snackbar"
+      >
+        {{ text }}
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="pink"
+            text
+            v-bind="attrs"
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
       <v-container fluid>
         <v-row
           no-gutters
@@ -127,7 +142,9 @@ export default {
       },
       errors: {
         'autoLabelingConfig': ''
-      }
+      },
+      snackbar: false,
+      text: ''
     }
   },
 
@@ -200,9 +217,15 @@ export default {
       async handler() {
         this.setCurrent(this.current)
         if (this.options.onAutoLabeling) {
-          this.setLoading(true)
-          await this.autoLabeling({ projectId: this.$route.params.id })
-          this.setLoading(false)
+          try {
+            this.setLoading(true)
+            await this.autoLabeling({ projectId: this.$route.params.id })
+          } catch (e) {
+            this.snackbar = true
+            this.text = e.response.data.detail
+          } finally {
+            this.setLoading(false)
+          }
         }
       },
       immediate: true
