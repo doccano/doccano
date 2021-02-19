@@ -170,6 +170,8 @@ export default Vue.extend({
       this.editedItem = Object.assign({}, item)
       const items = Object.assign([], this.value)
       items.splice(this.editedIndex, 1)
+      this.editedItem = Object.assign({}, this.defaultItem)
+      this.editedIndex = -1
       this.$emit('input', items)
     },
 
