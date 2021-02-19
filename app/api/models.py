@@ -1,5 +1,6 @@
 import string
 
+from auto_labeling_pipeline.models import RequestModelFactory
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save, pre_delete
@@ -343,3 +344,26 @@ def delete_linked_project(sender, instance, using, **kwargs):
         project = Project.objects.get(pk=projectInstance.pk)
         user.projects.remove(project)
         user.save()
+
+
+class AutoLabelingConfig(models.Model):
+    model_name = models.CharField(max_length=100)
+    model_attrs = models.JSONField(default=dict)
+    template = models.TextField(default='')
+    label_mapping = models.JSONField(default=dict)
+    project = models.ForeignKey(Project, related_name='auto_labeling_config', on_delete=models.CASCADE)
+    default = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.model_name
+
+    def clean_fields(self, exclude=None):
+        super().clean_fields(exclude=exclude)
+        try:
+            RequestModelFactory.find(self.model_name)
+        except NameError:
+            raise ValidationError(f'The specified model name {self.model_name} does not exist.')
+        except Exception:
+            raise ValidationError('The attributes does not match the model.')

@@ -64,6 +64,9 @@ export const mutations = {
   addAnnotation(state, payload) {
     state.items[state.current].annotations.push(payload)
   },
+  setAnnotations(state, payload) {
+    state.items[state.current].annotations = payload
+  },
   deleteAnnotation(state, annotationId) {
     state.items[state.current].annotations = state.items[state.current].annotations.filter(item => item.id !== annotationId)
   },
@@ -263,5 +266,25 @@ export const actions = {
       .catch((error) => {
         alert(error)
       })
-  }
+  },
+  async autoLabeling({ commit, state }, payload) {
+    const document = state.items[state.current]
+    if (document) {
+      const response = await AnnotationService.autoLabel(payload.projectId, document.id)
+      commit('setAnnotations', response.data)
+      // commit('setLoading', true)
+      // return AnnotationService.autoLabel(payload.projectId, document.id)
+      //   .then((response) => {
+      //     commit('setAnnotations', response.data)
+      //   })
+      //   .catch((error) => {
+      //     const message = error.response.data['detail']
+      //     Promise.reject(error)
+      //     // throw new Error(message)
+      //   })
+      //   .finally(() => {
+      //     commit('setLoading', false)
+      //   })
+    }
+  },
 }

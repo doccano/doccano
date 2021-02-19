@@ -11,6 +11,9 @@ from .views import CommentList, CommentDetail
 from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
 from .views import StatisticsAPI
 from .views import RoleMappingList, RoleMappingDetail, Roles
+from .views import AutoLabelingTemplateListAPI, AutoLabelingTemplateDetailAPI
+from .views import AutoLabelingConfigList, AutoLabelingConfigDetail, AutoLabelingConfigTest, AutoLabelingAnnotation
+from .views import AutoLabelingConfigParameterTest, AutoLabelingTemplateTest, AutoLabelingMappingTest
 
 urlpatterns = [
     path('health', Health.as_view(), name='health'),
@@ -52,6 +55,51 @@ urlpatterns = [
          RoleMappingList.as_view(), name='rolemapping_list'),
     path('projects/<int:project_id>/roles/<int:rolemapping_id>',
          RoleMappingDetail.as_view(), name='rolemapping_detail'),
+    path(
+        route='projects/<int:project_id>/auto-labeling-templates',
+        view=AutoLabelingTemplateListAPI.as_view(),
+        name='auto_labeling_templates'
+    ),
+    path(
+        route='projects/<int:project_id>/auto-labeling-templates/<str:option_name>',
+        view=AutoLabelingTemplateDetailAPI.as_view(),
+        name='auto_labeling_template'
+    ),
+    path(
+        route='projects/<int:project_id>/auto-labeling-configs',
+        view=AutoLabelingConfigList.as_view(),
+        name='auto_labeling_configs'
+    ),
+    path(
+        route='projects/<int:project_id>/auto-labeling-configs/<int:config_id>',
+        view=AutoLabelingConfigDetail.as_view(),
+        name='auto_labeling_config'
+    ),
+    path(
+        route='projects/<int:project_id>/auto-labeling-config-testing',
+        view=AutoLabelingConfigTest.as_view(),
+        name='auto_labeling_config_test'
+    ),
+    path(
+        route='projects/<int:project_id>/docs/<int:doc_id>/auto-labeling',
+        view=AutoLabelingAnnotation.as_view(),
+        name='auto_labeling_annotation'
+    ),
+    path(
+        route='auto-labeling-parameter-testing',
+        view=AutoLabelingConfigParameterTest.as_view(),
+        name='auto_labeling_parameter_testing'
+    ),
+    path(
+        route='projects/<int:project_id>/auto-labeling-template-testing',
+        view=AutoLabelingTemplateTest.as_view(),
+        name='auto_labeling_template_test'
+    ),
+    path(
+        route='projects/<int:project_id>/auto-labeling-mapping-testing',
+        view=AutoLabelingMappingTest.as_view(),
+        name='auto_labeling_mapping_test'
+    )
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])

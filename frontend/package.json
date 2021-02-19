@@ -5,8 +5,8 @@
   "author": "Hironsan",
   "private": true,
   "scripts": {
-    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-    "lintfix": "eslint --fix --ext .js,.vue --ignore-path .gitignore .",
+    "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore .",
+    "lintfix": "eslint --fix --ext .ts,.js,.vue --ignore-path .gitignore .",
     "precommit": "yarn lint",
     "test": "jest",
     "dev": "nuxt",
@@ -33,7 +33,10 @@
     "yarn": "^1.22.4"
   },
   "devDependencies": {
+    "@nuxt/types": "^2.14.12",
+    "@nuxt/typescript-build": "^2.0.4",
     "@nuxtjs/eslint-config": "^3.0.0",
+    "@nuxtjs/eslint-config-typescript": "^5.0.0",
     "@nuxtjs/eslint-module": "^2.0.0",
     "@nuxtjs/google-analytics": "^2.3.0",
     "@vue/test-utils": "^1.0.3",
@@ -41,7 +44,8 @@
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.1.0",
-    "eslint": "^7.4.0",
+    "eslint": "^7.19.0",
+    "eslint-config-prettier": "^7.2.0",
     "eslint-config-standard": ">=14.1.1",
     "eslint-plugin-import": ">=2.22.0",
     "eslint-plugin-jest": ">=23.18.0",
@@ -52,6 +56,7 @@
     "eslint-plugin-vue": "^6.2.2",
     "jest": "^26.1.0",
     "nodemon": "^2.0.4",
+    "prettier": "^2.2.1",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "vue-jest": "^3.0.6"
