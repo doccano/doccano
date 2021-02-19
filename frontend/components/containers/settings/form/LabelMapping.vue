@@ -109,6 +109,14 @@ import { LabelApplicationService } from '@/services/application/label.service'
 import { labelNameRules } from '@/rules/index'
 
 export default Vue.extend({
+
+  props: {
+    value: {
+      type: Array,
+      default: () => [],
+      required: true
+    }
+  },
   data() {
     return {
       dialog: false,
@@ -146,25 +154,17 @@ export default Vue.extend({
     }
   },
 
-  props: {
-    value: {
-      type: Array,
-      default: () => [],
-      required: true
-    }
-  },
-
-  async created() {
-    const labels = await this.labelService.list(this.$route.params.id)
-    this.items = labels.nameList
-  },
-
   computed: {
     labelService(): LabelApplicationService {
       const repository = new FromApiLabelItemListRepository()
       const service = new LabelApplicationService(repository)
       return service
     }
+  },
+
+  async created() {
+    const labels = await this.labelService.list(this.$route.params.id)
+    this.items = labels.nameList
   },
 
   methods: {

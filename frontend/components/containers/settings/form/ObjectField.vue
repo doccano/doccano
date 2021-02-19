@@ -109,6 +109,19 @@
 import Vue from 'vue'
 
 export default Vue.extend({
+
+  props: {
+    value: {
+      type: Array,
+      default: () => [],
+      required: true
+    },
+    title: {
+      type: String,
+      default: '',
+      required: true
+    }
+  },
   data() {
     return {
       headers: [
@@ -142,19 +155,6 @@ export default Vue.extend({
         'value': ''
       },
       items: [] as string[],
-    }
-  },
-
-  props: {
-    value: {
-      type: Array,
-      default: () => [],
-      required: true
-    },
-    title: {
-      type: String,
-      default: '',
-      required: true
     }
   },
 

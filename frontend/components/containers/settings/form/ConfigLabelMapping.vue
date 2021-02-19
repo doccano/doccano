@@ -19,9 +19,9 @@
         <label-mapping v-model="mapping" />
         <v-alert
           v-for="(error, index) in errorMessages"
+          :key="index"
           prominent
           type="error"
-          :key="index"
         >
           <v-row align="center">
             <v-col class="grow">
@@ -95,8 +95,16 @@ export default Vue.extend({
       default: false,
       required: true
     },
-    response: [String, Object, Array],
-    result: Array
+    response: {
+      type: [String, Object, Array],
+      default: () => [],
+      required: true
+    },
+    result: {
+      type: Array,
+      default: () => [],
+      required: true
+    }
   },
 
   computed: {

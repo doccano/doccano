@@ -48,8 +48,12 @@ export default Vue.extend({
     }
   },
 
-  async created() {
-    this.templateNames = await this.templateService.list(this.$route.params.id)
+  computed: {
+    templateService(): TemplateApplicationService {
+      const repository = new FromApiTemplateRepository()
+      const service = new TemplateApplicationService(repository)
+      return service
+    }
   },
 
   watch: {
@@ -60,12 +64,8 @@ export default Vue.extend({
     },
   },
 
-  computed: {
-    templateService(): TemplateApplicationService {
-      const repository = new FromApiTemplateRepository()
-      const service = new TemplateApplicationService(repository)
-      return service
-    }
+  async created() {
+    this.templateNames = await this.templateService.list(this.$route.params.id)
   }
 })
 </script>

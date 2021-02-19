@@ -26,11 +26,11 @@ export class ConfigApplicationService {
     .catch((error) => {
       const data = error.response.data
       if ('non_field_errors' in data) {
-        throw new Error(data['non_field_errors'])
+        throw new Error(data.non_field_errors)
       } else if ('template' in data) {
         throw new Error('The template need to be filled.')
       } else if ('detail' in data) {
-        throw new Error(data['detail'])
+        throw new Error(data.detail)
       } else {
         throw new Error(data)
       }

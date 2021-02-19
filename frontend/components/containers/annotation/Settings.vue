@@ -64,12 +64,6 @@ export default {
     BaseCard
   },
 
-  data() {
-    return {
-      dialog: false
-    }
-  },
-
   props: {
     value: {
       type: Object,
@@ -80,6 +74,12 @@ export default {
       type: Object,
       default: () => {},
       required: true
+    }
+  },
+
+  data() {
+    return {
+      dialog: false
     }
   },
 

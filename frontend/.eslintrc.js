@@ -8,7 +8,8 @@ module.exports = {
     '@nuxtjs',
     'plugin:nuxt/recommended',
     '@nuxtjs/eslint-config-typescript',
-    'prettier/@typescript-eslint'
+    'prettier',
+    'prettier/vue'
   ],
   rules: {
     'no-console': 'off',

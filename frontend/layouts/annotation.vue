@@ -233,7 +233,7 @@ export default {
     searchOptions() {
       this.saveSearchOptions(JSON.parse(this.searchOptions))
     },
-    "options.onAutoLabeling": async function(val) {
+    async "options.onAutoLabeling"(val) {
       if (val) {
         try {
           this.setLoading(true)

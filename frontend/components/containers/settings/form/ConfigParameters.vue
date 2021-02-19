@@ -10,24 +10,24 @@
           <template v-for="item in value">
             <v-text-field
               v-if="item.type === 'textField'"
+              :key="item.name"
               v-model="item.value"
               :label="item.name"
               outlined
-              :key="item.name"
             />
             <v-select
               v-if="item.type === 'selectField'"
+              :key="item.name"
               v-model="item.value"
               :items="item.items"
               :label="item.name"
               outlined
-              :key="item.name"
             />
             <object-field
               v-if="item.type === 'objectField'"
+              :key="item.name"
               v-model="item.value"
               :title="item.name"
-              :key="item.name"
             />
           </template>
           <h4 class="text-h6">Test the parameters</h4>
@@ -42,9 +42,9 @@
           />
           <v-alert
             v-for="(error, index) in errorMessages"
+            :key="index"
             prominent
             type="error"
-            :key="index"
           >
             <v-row align="center">
               <v-col class="grow">
@@ -119,7 +119,11 @@ export default Vue.extend({
       default: false,
       required: true
     },
-    response: [String, Array, Object]
+    response: {
+      type: [String, Array, Object],
+      default: () => [],
+      required: true
+    }
   },
 
   data() {

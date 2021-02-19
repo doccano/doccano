@@ -3,7 +3,7 @@
     v-model="dialog"
     width="800px"
   >
-    <template v-slot:activator="{ on }">
+    <template v-slot:activator="{ }">
       <slot name="opener" :open="open" />
     </template>
     <slot name="content" :close="close" />

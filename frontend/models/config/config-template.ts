@@ -40,7 +40,7 @@ export class ConfigTemplateItem {
             name: key,
             type: 'selectField',
             value: '',
-            items: value['anyOf'].map(
+            items: value.anyOf.map(
               (item: {'const': string, 'type': string}) => item.const
             )
           }
