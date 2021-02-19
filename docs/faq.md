@@ -27,7 +27,7 @@ Please check the following list.
 
 For ordinary user:
 
-1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin`).
+1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin/`).
 2. Open `Users` table.
 3. Open user you want to change password.
 4. In `Password` property, you'll see: `Raw passwords are not stored, so there is no way to see this user's password, but you can change the password using *this form*.` Click `this form` link.
