@@ -34,7 +34,8 @@ required = [
     'python-jose>=3.2.0',
     'seqeval>=1.2.2',
     'social-auth-app-django>=4.0.0',
-    'whitenoise>=5.2.0'
+    'whitenoise>=5.2.0',
+    'auto-labeling-pipeline>=0.1.12'
 ]
 
 setup(
