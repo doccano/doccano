@@ -61,10 +61,23 @@ export const uploadFileRules = (msg) => {
   ]
 }
 
+export const uploadSingleFileRules = (msg) => {
+  return [
+    v => !!v || msg.fileRequired,
+    v => !v || v.size < 1000000 || msg.fileLessThan1MB
+  ]
+}
+
 // Rules for user.
 export const passwordRules = (msg) => {
   return [
     v => !!v || msg.passwordRequired,
     v => (v && v.length <= 30) || msg.passwordLessThan30Chars
+  ]
+}
+
+export const templateNameRules = () => {
+  return [
+    v => !!v || 'Name is required'
   ]
 }

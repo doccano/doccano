@@ -22,6 +22,21 @@
       <v-overlay :value="loading">
         <v-progress-circular indeterminate size="64" />
       </v-overlay>
+      <v-snackbar
+        v-model="snackbar"
+      >
+        {{ text }}
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="pink"
+            text
+            v-bind="attrs"
+            @click="snackbar = false"
+          >
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
       <v-container fluid>
         <v-row
           no-gutters
@@ -40,6 +55,10 @@
             />
             <guideline-button />
             <clear-annotations-button />
+            <settings
+              v-model="options"
+              :errors="errors"
+            />
           </v-col>
           <v-spacer />
           <v-col>
@@ -89,6 +108,7 @@ import CommentSection from '../components/containers/comments/CommentSection.vue
 import Pagination from '~/components/containers/annotation/Pagination'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
+import Settings from '~/components/containers/annotation/Settings.vue'
 
 export default {
   middleware: ['check-auth', 'auth', 'set-project'],
@@ -103,7 +123,8 @@ export default {
     ApproveButton,
     MetadataBox,
     ClearAnnotationsButton,
-    CommentSection
+    CommentSection,
+    Settings
   },
 
   fetch() {
@@ -120,7 +141,15 @@ export default {
   data() {
     return {
       drawerLeft: null,
-      limit: 10
+      limit: 10,
+      options: {
+        onAutoLabeling: false
+      },
+      errors: {
+        'autoLabelingConfig': ''
+      },
+      snackbar: false,
+      text: ''
     }
   },
 
@@ -190,19 +219,44 @@ export default {
       this.$fetch()
     },
     current: {
-      handler() {
+      async handler() {
         this.setCurrent(this.current)
+        if (this.options.onAutoLabeling) {
+          try {
+            this.setLoading(true)
+            await this.autoLabeling({ projectId: this.$route.params.id })
+          } catch (e) {
+            this.snackbar = true
+            this.text = e.response.data.detail
+          } finally {
+            this.setLoading(false)
+          }
+        }
       },
       immediate: true
     },
     searchOptions() {
       this.saveSearchOptions(JSON.parse(this.searchOptions))
+    },
+    async "options.onAutoLabeling"(val) {
+      if (val) {
+        try {
+          this.setLoading(true)
+          await this.autoLabeling({ projectId: this.$route.params.id })
+          this.errors.autoLabelingConfig = ''
+        } catch (e) {
+          this.errors.autoLabelingConfig = e.response.data.detail
+          this.options.onAutoLabeling = false
+        } finally {
+          this.setLoading(false)
+        }
+      }
     }
   },
 
   methods: {
-    ...mapActions('documents', ['getDocumentList']),
-    ...mapMutations('documents', ['setCurrent']),
+    ...mapActions('documents', ['getDocumentList', 'autoLabeling']),
+    ...mapMutations('documents', ['setCurrent', 'setLoading']),
     ...mapMutations('projects', ['saveSearchOptions'])
   }
 }

@@ -64,6 +64,7 @@ export default {
   ],
 
   buildModules: [
+    '@nuxt/typescript-build',
     ['@nuxtjs/google-analytics', {
       id: process.env.GOOGLE_TRACKING_ID
     }]
