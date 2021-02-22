@@ -37,7 +37,10 @@
           </v-btn>
         </template>
       </v-snackbar>
-      <v-container fluid>
+      <v-container
+        v-if="currentDoc && !loading"
+        fluid
+      >
         <v-row
           no-gutters
           class="d-none d-sm-flex"
@@ -74,19 +77,29 @@
           </v-col>
           <v-col cols="12" md="3">
             <metadata-box
-              v-if="currentDoc && !loading"
               :metadata="JSON.parse(currentDoc.meta)"
             />
           </v-col>
         </v-row>
-      </v-container>
-      <v-container fluid>
         <v-row>
           <v-col cols="12" md="9">
             <comment-section />
           </v-col>
         </v-row>
       </v-container>
+      <v-container
+        v-else
+        fill-height
+      >
+      <v-layout align-center>
+        <v-flex text-center>
+          <h1 class="display-2 primary--text">
+            Whoops, data is empty.
+          </h1>
+          <p>Please upload your dataset.</p>
+        </v-flex>
+      </v-layout>
+    </v-container>
     </v-main>
     <bottom-navigator
       v-model="page"
