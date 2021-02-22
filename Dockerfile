@@ -52,8 +52,13 @@ WORKDIR /doccano/app
 COPY --from=frontend-builder /frontend/dist /doccano/app/client/dist
 RUN python manage.py collectstatic --noinput
 
+
 VOLUME /data
 ENV DATABASE_URL="sqlite:////data/doccano.db"
+
+RUN apt-get update || true && \
+    apt-get install --no-install-recommends -y libmariadbclient18=10.1.45-0+deb9u1 && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
