@@ -107,6 +107,5 @@ export default {
     ...mapActions('comments', ['getProjectCommentList']),
     ...mapMutations('comments', ['updateSelectedComments'])
   }
-
 }
 </script>

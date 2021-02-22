@@ -58,6 +58,7 @@
             />
             <guideline-button />
             <clear-annotations-button />
+            <comment-button />
             <settings
               v-model="options"
               :errors="errors"
@@ -79,11 +80,6 @@
             <metadata-box
               :metadata="JSON.parse(currentDoc.meta)"
             />
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="9">
-            <comment-section />
           </v-col>
         </v-row>
       </v-container>
@@ -117,7 +113,7 @@ import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
-import CommentSection from '../components/containers/comments/CommentSection.vue'
+import CommentButton from '../components/containers/comments/CommentButton.vue'
 import Pagination from '~/components/containers/annotation/Pagination'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
@@ -136,7 +132,7 @@ export default {
     ApproveButton,
     MetadataBox,
     ClearAnnotationsButton,
-    CommentSection,
+    CommentButton,
     Settings
   },
 

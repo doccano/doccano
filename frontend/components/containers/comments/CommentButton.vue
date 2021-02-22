@@ -1,61 +1,81 @@
 <template>
-  <div>
-    <div class="font-weight-bold ml-8 mb-2">
-      {{ this.$t('comments.comments') }}
-    </div>
-
-    <v-timeline
-      align-top
-      dense
-    >
-      <v-timeline-item
-        fill-dot
-        class="mb-12"
-        color="green"
-        large
-      >
-        <v-textarea
-          v-model="message"
-          outlined
-          name="CommentInput"
-          :label="this.$t('comments.message')"
-          value=""
-        />
+  <div style="display:inline;">
+    <v-tooltip bottom>
+      <template v-slot:activator="{ on }">
         <v-btn
-          class="white--text"
-          color="green"
-          depressed
-          :disabled="message.length === 0"
-          @click="add"
+          class="text-capitalize ps-1 pe-1"
+          min-width="36"
+          icon
+          v-on="on"
+          @click="dialog=true"
         >
-          {{ this.$t('comments.send') }}
+          <v-icon>
+            mdi-chat
+          </v-icon>
         </v-btn>
-      </v-timeline-item>
-      <comment
-        v-for="comment in comments"
-        :key="comment.id"
-        :comment="comment"
-        :user-id="userId"
-        @delete-comment="remove"
-        @update-comment="update"
-      />
-    </v-timeline>
+      </template>
+      <span>{{ $t('annotation.commentTooltip') }}</span>
+    </v-tooltip>
+    <v-dialog
+      v-model="dialog"
+      width="800"
+    >
+      <base-card
+        :title="$t('comments.comments')"
+        :cancel-text="$t('generic.close')"
+        @cancel="dialog=false"
+      >
+        <template #content>
+          <v-form>
+            <v-textarea
+              v-model="message"
+              auto-grow
+              hide-details
+              outlined
+              rows="1"
+              name="CommentInput"
+              :label="$t('comments.message')"
+            />
+            <v-btn
+              class="white--text text-capitalize mt-3"
+              color="primary"
+              depressed
+              :disabled="message.length === 0"
+              @click="add"
+            >
+              {{ $t('comments.send') }}
+            </v-btn>
+          </v-form>
+          <comment
+            v-for="comment in comments"
+            :key="comment.id"
+            :comment="comment"
+            :user-id="userId"
+            @delete-comment="remove"
+            @update-comment="update"
+          />
+        </template>
+      </base-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-
 import { mapActions, mapState, mapMutations } from 'vuex'
+import BaseCard from '@/components/molecules/BaseCard'
 import Comment from './Comment'
 
 export default {
-  name: 'CommentSection',
-  components: { Comment },
+  components: {
+    BaseCard,
+    Comment
+  },
   fetch() {
     this.getMyUserId()
   },
   data() {
     return {
+      dialog: false,
       message: ''
     }
   },
@@ -110,5 +130,4 @@ export default {
     ...mapMutations('comments', ['updateSelectedComments'])
   }
 }
-
 </script>

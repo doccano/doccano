@@ -1,70 +1,96 @@
 <template>
-  <div>
-    <v-timeline-item
-      small
-    >
-      <div class="font-weight-normal">
-        <strong>{{ comment.username }}</strong> @{{ comment.created_at | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('YYYY-MM-DD HH:mm') }}
-        <v-tooltip top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              v-if="comment.user == userId"
-              icon
-              color="green"
-              v-bind="attrs"
-              v-on="on"
-              @click="showEdit=true"
-            >
-              <v-icon>mdi-comment-edit-outline</v-icon>
-            </v-btn>
-          </template>
-          <span>Edit Comment</span>
-        </v-tooltip>
-        <v-tooltip top>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              v-if="comment.user == userId"
-              icon
-              color="red"
-              v-bind="attrs"
-              v-on="on"
-              @click="$emit('delete-comment', comment)"
-            >
-              <v-icon>mdi-delete-outline</v-icon>
-            </v-btn>
-          </template>
-          <span>Delete Comment</span>
-        </v-tooltip>
-      </div>
-      <div v-if="!showEdit">
+  <v-card class="elevation-0">
+    <v-card-title>
+      <v-list-item class="grow ps-0">
+        <v-list-item-avatar>
+          <v-icon large>
+            mdi-account-circle
+          </v-icon>
+        </v-list-item-avatar>
+
+        <v-list-item-content>
+          <v-list-item-title>{{ comment.username }}</v-list-item-title>
+          <v-list-item-subtitle>
+            {{ comment.created_at | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('YYYY-MM-DD HH:mm') }}
+          </v-list-item-subtitle>
+        </v-list-item-content>
+
+        <v-row
+          align="center"
+          justify="end"
+        >
+          <v-menu
+            v-if="comment.user == userId"
+            bottom
+            left
+          >
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+              >
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item>
+                <v-list-item-title
+                  @click="showEdit=true"
+                >
+                  Edit
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-title
+                  @click="$emit('delete-comment', comment)"
+                >
+                  Delete
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-row>
+      </v-list-item>
+    </v-card-title>
+
+    <v-card-text class="body-1">
+      <span v-if="!showEdit">
         {{ comment.text }}
-      </div>
-      <div v-else>
-        <v-textarea
-          v-model="editText"
-          solo
-        />
-        <div>
+      </span>
+      <v-form v-else>
+        <v-row>
+          <v-textarea
+            v-model="editText"
+            auto-grow
+            rows="1"
+            solo
+          />
+        </v-row>
+        <v-row justify="end">
           <v-btn
-            color="red"
+            text
+            class="text-capitalize"
             @click="showEdit=false"
           >
-            Close
+            Cancel
           </v-btn>
           <v-btn
-            color="green"
+            color="primary"
+            class="text-capitalize"
             @click="updateComment(editText)"
           >
             Update
           </v-btn>
-        </div>
-      </div>
-    </v-timeline-item>
-  </div>
+        </v-row>
+      </v-form>
+    </v-card-text>
+    <v-divider />
+  </v-card>
 </template>
 
 <script>
-
 import Vue from 'vue'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
