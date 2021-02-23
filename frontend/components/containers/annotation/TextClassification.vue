@@ -6,7 +6,7 @@
   >
     <v-card-title>
       <multi-class-classification
-        :labels="itemsl"
+        :labels="itemsSecondLevel"
         :annotations="currentDoc.annotations"
         :add-label="addLabel"
         :delete-label="removeLabel"
@@ -33,7 +33,7 @@ export default {
 
         return state.items.filter(it => !it.text.includes('/'))
       },
-      itemsl(state) {
+      itemsSecondLevel(state) {
         let id
         if (this.currentDoc.annotations[0]) {
           id = this.currentDoc.annotations[0].label
