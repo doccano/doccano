@@ -26,7 +26,7 @@
         @cancel="dialog=false"
       >
         <template #content>
-          <v-form>
+          <v-form v-model="valid">
             <v-textarea
               v-model="message"
               auto-grow
@@ -35,24 +35,25 @@
               rows="1"
               name="CommentInput"
               :label="$t('comments.message')"
+              :rules="commentRules"
             />
             <v-btn
               class="white--text text-capitalize mt-3"
               color="primary"
               depressed
-              :disabled="message.length === 0"
+              :disabled="!valid"
               @click="add"
             >
               {{ $t('comments.send') }}
             </v-btn>
           </v-form>
           <comment
-            v-for="comment in comments"
+            v-for="comment in comments.toArray()"
             :key="comment.id"
             :comment="comment"
             :user-id="userId"
             @delete-comment="remove"
-            @update-comment="update"
+            @update-comment="maybeUpdate"
           />
         </template>
       </base-card>
@@ -60,74 +61,77 @@
   </div>
 </template>
 
-<script>
-import { mapActions, mapState, mapMutations } from 'vuex'
-import BaseCard from '@/components/molecules/BaseCard'
-import Comment from './Comment'
+<script lang="ts">
+import Vue from 'vue'
+import { mapActions, mapState, mapGetters } from 'vuex'
+import BaseCard from '@/components/molecules/BaseCard.vue'
+import { CommentApplicationService } from '@/services/application/comment.service'
+import { FromApiCommentItemListRepository } from '@/repositories/comment/api'
+import { CommentItem, CommentItemList } from '@/models/comment'
+import Comment from './Comment.vue'
 
-export default {
+export default Vue.extend({
   components: {
     BaseCard,
     Comment
   },
+
   fetch() {
     this.getMyUserId()
   },
+
   data() {
     return {
       dialog: false,
-      message: ''
+      comments: CommentItemList.valueOf([]),
+      commentRules: [
+        (v: string) => !!v.trim() || 'Comment is required'
+      ],
+      message: '',
+      valid: false
     }
   },
+
   computed: {
-    ...mapState('documents', ['items', 'total', 'current', 'selected']),
-    ...mapState('comments', ['comments', 'userId'])
+    ...mapGetters('documents', ['currentDoc']),
+    ...mapState('comments', ['userId']),
+    service() {
+      const repository = new FromApiCommentItemListRepository()
+      const service = new CommentApplicationService(repository)
+      return service
+    }
   },
+
   watch: {
-    total() {
-      this.getCommentList({
-        projectId: this.$route.params.id,
-        docId: this.items[this.current].id
-      })
-    },
-    current: {
-      handler() {
-        if (this.total !== 0) {
-          this.getCommentList({
-            projectId: this.$route.params.id,
-            docId: this.items[this.current].id
-          })
+    currentDoc: {
+      handler(val) {
+        if (val !== undefined) {
+          this.list()
         }
       },
-      immediate: true
+      immediate: true,
+      deep: true
     }
   },
+
   methods: {
-    add() {
-      this.addComment({
-        text: this.message,
-        projectId: this.$route.params.id,
-        docId: this.items[this.current].id
-      })
+    async list() {
+      this.comments = await this.service.list(this.$route.params.id, this.currentDoc.id)
+    },
+    async add() {
+      const item = await this.service.create(this.$route.params.id, this.currentDoc.id, this.message)
+      this.comments.add(item)
       this.message = ''
     },
-    remove(comment) {
-      this.updateSelectedComments([comment])
-      this.deleteComment({
-        projectId: this.$route.params.id,
-        docId: this.items[this.current].id
-      })
+    async remove(item: CommentItem) {
+      await this.service.delete(this.$route.params.id, this.currentDoc.id, item)
+      this.comments.delete(item)
     },
-    update(commentId, text) {
-      this.updateComment({
-        projectId: this.$route.params.id,
-        docId: this.items[this.current].id,
-        commentId,
-        text
-      })
+    async maybeUpdate(item: CommentItem) {
+      const comment = await this.service.update(this.$route.params.id, this.currentDoc.id, item)
+      this.comments.update(comment)
     },
-    ...mapActions('comments', ['addComment', 'getCommentList', 'deleteComment', 'updateComment', 'getMyUserId']),
-    ...mapMutations('comments', ['updateSelectedComments'])
+    ...mapActions('comments', ['getMyUserId'])
   }
-}
+})
 </script>

@@ -59,24 +59,29 @@
       <span v-if="!showEdit">
         {{ comment.text }}
       </span>
-      <v-form v-else>
+      <v-form
+        v-else
+        v-model="valid"
+      >
         <v-row>
           <v-textarea
             v-model="editText"
             auto-grow
             rows="1"
             solo
+            :rules="commentRules"
           />
         </v-row>
         <v-row justify="end">
           <v-btn
             text
             class="text-capitalize"
-            @click="showEdit=false"
+            @click="cancel"
           >
             Cancel
           </v-btn>
           <v-btn
+            :disabled="!valid"
             color="primary"
             class="text-capitalize"
             @click="updateComment(editText)"
@@ -94,6 +99,7 @@
 import Vue from 'vue'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
+import { CommentItem } from '@/models/comment'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
@@ -112,13 +118,22 @@ export default {
   data() {
     return {
       showEdit: false,
-      editText: this.comment.text
+      editText: this.comment.text,
+      commentRules: [
+        v => !!v.trim() || 'Comment is required'
+      ],
+      valid: false
     }
   },
   methods: {
     updateComment(newText) {
       this.showEdit = false
-      this.$emit('update-comment', this.comment.id, newText)
+      const comment = CommentItem.valueOf({...this.comment, text:newText })
+      this.$emit('update-comment', comment)
+    },
+    cancel() {
+      this.showEdit = false
+      this.editText = this.comment.text
     }
   }
 }

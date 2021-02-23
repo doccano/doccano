@@ -1,12 +1,12 @@
 <template>
   <v-data-table
-    :value="selectedComments"
+    v-model="selected"
     :headers="headers"
-    :items="comments"
+    :items="comments.toArray()"
     :search="search"
     :options.sync="options"
-    :server-items-length="totalComments"
-    :loading="loading"
+    :server-items-length="comments.count()"
+    :loading="isLoading"
     :loading-text="$t('generic.loading')"
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
@@ -17,12 +17,36 @@
     }"
     item-key="id"
     show-select
-    @input="updateSelectedComments"
   >
     <template v-slot:item.created_at="{ item }">
       <span>{{ item.created_at | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('YYYY-MM-DD HH:mm') }}</span>
     </template>
+    <template v-slot:item.document_text="{ item }">
+      {{ item.document_text | truncate(200) }}
+    </template>
     <template v-slot:top>
+      <base-modal>
+        <template v-slot:opener="modal">
+          <v-btn
+            :disabled="selected.length === 0"
+            class="text-capitalize ma-6"
+            outlined
+            @click="modal.open"
+          >
+            {{ $t('generic.delete') }}
+          </v-btn>
+        </template>
+        <template v-slot:content="modal">
+          <confirm-form
+            :items="selected"
+            :title="$t('comments.removeComment')"
+            :message="$t('comments.removePrompt')"
+            item-key="text"
+            @ok="remove();modal.close()"
+            @cancel="modal.close"
+          />
+        </template>
+      </base-modal>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
@@ -37,21 +61,34 @@
 
 <script>
 import Vue from 'vue'
-import { mapActions, mapGetters, mapState, mapMutations } from 'vuex'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
+import { CommentApplicationService } from '@/services/application/comment.service'
+import { FromApiCommentItemListRepository } from '@/repositories/comment/api'
+import ConfirmForm from '@/components/organisms/utils/ConfirmForm.vue'
+import BaseModal from '@/components/atoms/BaseModal.vue'
+import { CommentItemList } from '~/models/comment'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
 export default {
-  async fetch() {
-    await this.getProjectCommentList({
-      projectId: this.$route.params.id
-    })
+  components: {
+    ConfirmForm,
+    BaseModal
   },
+
+  async fetch() {
+    this.isLoading = true
+    this.comments = await this.service.listProjectComment(this.$route.params.id)
+    this.isLoading = false
+  },
+
   data() {
     return {
       search: this.$route.query.q,
+      comments: CommentItemList.valueOf([]),
+      selected: [],
+      isLoading: false,
       options: {},
       headers: [
         {
@@ -74,38 +111,12 @@ export default {
       ]
     }
   },
+
   computed: {
-    ...mapState('comments', ['comments', 'loading', 'selectedComments', 'totalComments']),
-    ...mapGetters('projects', ['getLink'])
-  },
-  watch: {
-    '$route.query': '$fetch',
-    options: {
-      handler(newvalue, oldvalue) {
-        this.$router.push({
-          query: {
-            limit: this.options.itemsPerPage,
-            offset: (this.options.page - 1) * this.options.itemsPerPage,
-            q: this.search
-          }
-        })
-      },
-      deep: true
-    },
-    search() {
-      this.$router.push({
-        query: {
-          limit: this.options.itemsPerPage,
-          offset: 0,
-          q: this.search
-        }
-      })
-      this.options.page = 1
+    service() {
+      const repository = new FromApiCommentItemListRepository()
+      return new CommentApplicationService(repository)
     }
-  },
-  methods: {
-    ...mapActions('comments', ['getProjectCommentList']),
-    ...mapMutations('comments', ['updateSelectedComments'])
   }
 }
 </script>

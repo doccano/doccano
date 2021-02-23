@@ -41,7 +41,6 @@ IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndRe
 IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
 
 
-
 class Health(APIView):
     permission_classes = (IsAuthenticatedOrReadOnly,)
 
@@ -316,6 +315,7 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     lookup_url_kwarg = 'comment_id'
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin & IsOwnComment]
+
 
 class TextUploadAPI(APIView):
     parser_classes = (MultiPartParser,)
