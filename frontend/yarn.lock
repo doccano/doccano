@@ -2328,6 +2328,16 @@
     lodash "^4.17.15"
     pretty "^2.0.0"
 
+"@vuejs-community/vue-filter-date-format@^1.6.3":
+  version "1.6.3"
+  resolved "https://registry.yarnpkg.com/@vuejs-community/vue-filter-date-format/-/vue-filter-date-format-1.6.3.tgz#10a9b11425f4288f3ebc14c79c7de29322dafec7"
+  integrity sha512-fUjAAI/1qzJPR6AYoK00TBA6/aRYKTXjLY/rSYsWV4G5nwywKfrpOYOJi5exWyzozohyV6nrzliDlWcl32+IPg==
+
+"@vuejs-community/vue-filter-date-parse@^1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@vuejs-community/vue-filter-date-parse/-/vue-filter-date-parse-1.1.6.tgz#8679a990af0f74b24c58d210ff2341e5b884a059"
+  integrity sha512-OzeiL5wrq+5+sw9hJfcfaIxcG953lpe37Lf0JnRKzVvfBRTHX2t8SIVxtDmgLhSGoGx9B4bGbpv4NaIqeEofXA==
+
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.9.0.tgz#bd850604b4042459a5a41cd7d338cbed695ed964"

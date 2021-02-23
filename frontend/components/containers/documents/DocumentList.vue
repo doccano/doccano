@@ -42,6 +42,9 @@
         </template>
       </v-edit-dialog>
     </template>
+    <template v-slot:item.comment_count="{ item }">
+      <span> {{ item.comment_count }} </span>
+    </template>
     <template v-slot:item.action="{ item }">
       <v-btn
         small
@@ -81,6 +84,12 @@ export default {
           align: 'left',
           value: 'meta',
           sortable: false
+        },
+        {
+          text: this.$t('comments.comments'),
+          align: 'left',
+          value: 'comment_count',
+          sortable: true
         },
         {
           text: this.$t('dataset.action'),

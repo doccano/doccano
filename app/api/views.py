@@ -170,7 +170,7 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 class DocumentList(generics.ListCreateAPIView):
     serializer_class = DocumentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('text', )
+    search_fields = ('text',)
     ordering_fields = ('created_at', 'updated_at', 'doc_annotations__updated_at',
                        'seq_annotations__updated_at', 'seq2seq_annotations__updated_at')
     filter_class = DocumentFilter
@@ -280,18 +280,41 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
         return self.queryset
 
 
-class CommentList(generics.ListCreateAPIView):
-    serializer_class = CommentSerializer
+class CommentListDoc(generics.ListCreateAPIView):
+    pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    serializer_class = CommentSerializer
+    model = Comment
 
     def get_queryset(self):
-        return Comment.objects.filter(
-            document_id=self.kwargs['doc_id'],
-            user_id=self.request.user.id,
-        ).all()
+        queryset = self.model.objects.filter(
+            document__project_id=self.kwargs['project_id'],
+            document=self.kwargs['doc_id']
+        )
+        return queryset
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user, document_id=self.kwargs['doc_id'])
+        serializer.save(document_id=self.kwargs['doc_id'], user=self.request.user)
+
+
+class CommentListProject(generics.ListAPIView):
+    pagination_class = None
+    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    serializer_class = CommentSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    search_fields = ('text',)
+    model = Comment
+
+    def get_queryset(self):
+        queryset = self.model.objects.filter(
+            document__project_id=self.kwargs['project_id']
+        )
+        return queryset
+
+    def delete(self, request, *args, **kwargs):
+        delete_ids = request.data['ids']
+        self.model.objects.filter(user=request.user, pk__in=delete_ids).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):

@@ -205,6 +205,10 @@ class Document(models.Model):
     def __str__(self):
         return self.text[:50]
 
+    @property
+    def comment_count(self):
+        return Comment.objects.filter(document=self.id).count()
+
 
 class Comment(models.Model):
     text = models.TextField()
@@ -212,6 +216,17 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def username(self):
+        return self.user.username
+
+    @property
+    def document_text(self):
+        return self.document.text
+
+    class Meta:
+        ordering = ('-created_at', )
 
 
 class Annotation(models.Model):

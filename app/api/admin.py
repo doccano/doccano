@@ -4,6 +4,7 @@ from .models import Label, Document, Project
 from .models import Role, RoleMapping
 from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
 from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
+from .models import Comment
 
 
 class LabelAdmin(admin.ModelAdmin):
@@ -53,6 +54,11 @@ class RoleMappingAdmin(admin.ModelAdmin):
     ordering = ('user',)
     search_fields = ('user__username',)
 
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ('user', 'document', 'text', 'created_at', )
+    ordering = ('user', 'created_at', )
+    search_fields = ('user',)
+
 
 admin.site.register(DocumentAnnotation, DocumentAnnotationAdmin)
 admin.site.register(SequenceAnnotation, SequenceAnnotationAdmin)
@@ -65,3 +71,4 @@ admin.site.register(SequenceLabelingProject, ProjectAdmin)
 admin.site.register(Seq2seqProject, ProjectAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(RoleMapping, RoleMappingAdmin)
+admin.site.register(Comment, CommentAdmin)

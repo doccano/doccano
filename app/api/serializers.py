@@ -61,16 +61,15 @@ class LabelSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Comment
-        fields = ('id', 'text', 'user')
+        fields = ('id', 'user', 'username', 'document', 'document_text', 'text', 'created_at', )
         read_only_fields = ('user', 'document')
-
 
 class DocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
-    comments = CommentSerializer(many=True, read_only=True)
 
     def get_annotations(self, instance):
         request = self.context.get('request')
@@ -90,7 +89,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver', 'comments')
+        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver', 'comment_count')
 
 
 class ApproverSerializer(DocumentSerializer):

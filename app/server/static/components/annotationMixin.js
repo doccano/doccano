@@ -88,53 +88,18 @@ export default {
       offset: getOffsetFromUrl(window.location.href),
       picked: 'all',
       ordering: '',
-      comments: [],
-      comment: '',
       count: 0,
       prevLimit: 0,
       paginationPages: 0,
       paginationPage: 0,
       singleClassClassification: false,
       isAnnotationApprover: false,
-      isCommentActive: false,
       isMetadataActive: false,
       isAnnotationGuidelineActive: false,
     };
   },
 
   methods: {
-    async syncComment(text) {
-      const docId = this.docs[this.pageNumber].id;
-      const commentId = this.comments[this.pageNumber].id;
-      const hasText = text.trim().length > 0;
-
-      if (commentId && !hasText) {
-        await HTTP.delete(`docs/${docId}/comments/${commentId}`);
-        const comments = this.comments.slice();
-        comments[this.pageNumber] = { text: '', id: null };
-        this.comments = comments;
-      } else if (commentId && hasText) {
-        await HTTP.patch(`docs/${docId}/comments/${commentId}`, { text });
-        const comments = this.comments.slice();
-        comments[this.pageNumber].text = text;
-        this.comments = comments;
-      } else {
-        const response = await HTTP.post(`docs/${docId}/comments`, { text });
-        const comments = this.comments.slice();
-        comments[this.pageNumber] = response.data;
-        this.comments = comments;
-      }
-    },
-
-    async toggleCommentModal() {
-      if (this.isCommentActive) {
-        this.isCommentActive = false;
-        return;
-      }
-
-      this.comment = this.comments[this.pageNumber].text;
-      this.isCommentActive = true;
-    },
 
     resetScrollbar() {
       const textbox = this.$refs.textbox;
@@ -278,20 +243,9 @@ export default {
       });
     },
 
-    async fetchComments() {
-      const responses = await Promise.all(this.docs.map(doc => HTTP.get(`docs/${doc.id}/comments`)));
-      this.comments = responses.map(response => response.data.results[0] || { text: '', id: null });
-    },
   },
 
   watch: {
-    pageNumber() {
-      this.comment = this.comments[this.pageNumber].text;
-    },
-
-    docs() {
-      this.fetchComments();
-    },
 
     picked() {
       this.submit();
