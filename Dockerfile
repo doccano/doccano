@@ -6,9 +6,6 @@ COPY frontend/ /frontend/
 WORKDIR /frontend
 ENV PUBLIC_PATH="/static/_nuxt/"
 
-
-
-
 # hadolint ignore=DL3018
 RUN apk add -U --no-cache git python3 make g++ \
  && yarn install \
@@ -29,7 +26,6 @@ RUN apt-get update \
 WORKDIR /tmp
 COPY Pipfile* /tmp/
 
-
 # hadolint ignore=DL3013
 RUN pip install --no-cache-dir -U pip pipenv==2020.11.15 \
  && pipenv lock -r > /requirements.txt \
@@ -37,7 +33,6 @@ RUN pip install --no-cache-dir -U pip pipenv==2020.11.15 \
  && echo "django-heroku==0.3.1" >> /requirements.txt \
  && pip install --no-cache-dir -r /requirements.txt \
  && pip wheel --no-cache-dir -r /requirements.txt -w /deps
-
 
 FROM python:${PYTHON_VERSION}-slim-buster AS runtime
 
@@ -56,7 +51,6 @@ COPY --chown=doccano:doccano . /doccano
 WORKDIR /doccano/app
 COPY --from=frontend-builder /frontend/dist /doccano/app/client/dist
 RUN python manage.py collectstatic --noinput
-
 
 VOLUME /data
 ENV DATABASE_URL="sqlite:////data/doccano.db"
