@@ -7,8 +7,8 @@ export class FromApiCommentItemListRepository implements CommentItemListReposito
     private readonly request = ApiService
   ) {}
 
-  async listAll(projectId: string): Promise<CommentItemList> {
-    const url = `/projects/${projectId}/comments`
+  async listAll(projectId: string, q: string): Promise<CommentItemList> {
+    const url = `/projects/${projectId}/comments?q=${q}`
     const response = await this.request.get(url)
     const items: CommentItemResponse[] = response.data
     return CommentItemList.valueOf(items.map(item => CommentItem.valueOf(item)))

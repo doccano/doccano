@@ -170,7 +170,7 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 class DocumentList(generics.ListCreateAPIView):
     serializer_class = DocumentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('text', )
+    search_fields = ('text',)
     ordering_fields = ('created_at', 'updated_at', 'doc_annotations__updated_at',
                        'seq_annotations__updated_at', 'seq2seq_annotations__updated_at')
     filter_class = DocumentFilter
@@ -301,6 +301,8 @@ class CommentListProject(generics.ListAPIView):
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
     serializer_class = CommentSerializer
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    search_fields = ('text',)
     model = Comment
 
     def get_queryset(self):

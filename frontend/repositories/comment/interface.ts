@@ -11,7 +11,7 @@ export interface CommentItemResponse {
 }
 
 export interface CommentItemListRepository {
-  listAll(projectId: string): Promise<CommentItemList>
+  listAll(projectId: string, q: string): Promise<CommentItemList>
 
   list(projectId: string, docId: string): Promise<CommentItemList>
 

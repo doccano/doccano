@@ -77,10 +77,8 @@ export default {
     BaseModal
   },
 
-  async fetch() {
-    this.isLoading = true
-    this.comments = await this.service.listProjectComment(this.$route.params.id)
-    this.isLoading = false
+  fetch() {
+    this.list()
   },
 
   data() {
@@ -116,6 +114,20 @@ export default {
     service() {
       const repository = new FromApiCommentItemListRepository()
       return new CommentApplicationService(repository)
+    }
+  },
+
+  watch: {
+    search() {
+      this.list()
+    }
+  },
+
+  methods: {
+    async list() {
+      this.isLoading = true
+      this.comments = await this.service.listProjectComment(this.$route.params.id, this.search)
+      this.isLoading = false
     }
   }
 }

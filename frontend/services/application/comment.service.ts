@@ -6,8 +6,8 @@ export class CommentApplicationService {
     private readonly repository: CommentItemListRepository
   ) {}
 
-  public listProjectComment(projectId: string): Promise<CommentItemList> {
-    return this.repository.listAll(projectId)
+  public listProjectComment(projectId: string, q: string = ''): Promise<CommentItemList> {
+    return this.repository.listAll(projectId, q)
   }
 
   public list(projectId: string, docId: string): Promise<CommentItemList> {
