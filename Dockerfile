@@ -6,6 +6,9 @@ COPY frontend/ /frontend/
 WORKDIR /frontend
 ENV PUBLIC_PATH="/static/_nuxt/"
 
+
+
+
 # hadolint ignore=DL3018
 RUN apk add -U --no-cache git python3 make g++ \
  && yarn install \
@@ -26,6 +29,7 @@ RUN apt-get update \
 WORKDIR /tmp
 COPY Pipfile* /tmp/
 
+
 # hadolint ignore=DL3013
 RUN pip install --no-cache-dir -U pip pipenv==2020.11.15 \
  && pipenv lock -r > /requirements.txt \
@@ -33,6 +37,7 @@ RUN pip install --no-cache-dir -U pip pipenv==2020.11.15 \
  && echo "django-heroku==0.3.1" >> /requirements.txt \
  && pip install --no-cache-dir -r /requirements.txt \
  && pip wheel --no-cache-dir -r /requirements.txt -w /deps
+
 
 FROM python:${PYTHON_VERSION}-slim-buster AS runtime
 
@@ -55,10 +60,11 @@ RUN python manage.py collectstatic --noinput
 
 VOLUME /data
 ENV DATABASE_URL="sqlite:////data/doccano.db"
-
-RUN apt-get update || true && \
-    apt-get install --no-install-recommends -y libmariadbclient18=10.1.45-0+deb9u1 && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt update \
+    && apt-get -y install python3-dev \
+    && apt-get -y install default-libmysqlclient-dev \
+    && apt-get -y install build-essential \
+    && pip install mysqlclient
 
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
