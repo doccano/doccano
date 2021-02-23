@@ -128,6 +128,14 @@ export default {
       this.isLoading = true
       this.comments = await this.service.listProjectComment(this.$route.params.id, this.search)
       this.isLoading = false
+    },
+
+    async remove() {
+      this.isLoading = true
+      const items = CommentItemList.valueOf(this.selected)
+      await this.service.deleteBulk(this.$route.params.id, items)
+      this.comments.deleteBulk(items)
+      this.isLoading = false
     }
   }
 }

@@ -21,5 +21,5 @@ export interface CommentItemListRepository {
 
   delete(projectId: string, docId: string, item: CommentItem): Promise<void>
 
-  deleteBulk(projectId: string, docId: string, items: CommentItemList): Promise<void>
+  deleteBulk(projectId: string, items: CommentItemList): Promise<void>
 }

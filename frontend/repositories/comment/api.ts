@@ -40,8 +40,8 @@ export class FromApiCommentItemListRepository implements CommentItemListReposito
     const response = await this.request.delete(url)
   }
 
-  async deleteBulk(projectId: string, docId: string, items: CommentItemList): Promise<void> {
-    const url = `/projects/${projectId}/docs/${docId}/comments`
-    await this.request.delete(url)
+  async deleteBulk(projectId: string, items: CommentItemList): Promise<void> {
+    const url = `/projects/${projectId}/comments`
+    await this.request.delete(url, { ids: items.ids() })
   }
 }

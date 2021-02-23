@@ -18,8 +18,17 @@ export class CommentItemList {
     this.commentItems = this.commentItems.filter(comment => comment.id !== item.id)
   }
 
+  deleteBulk(items: CommentItemList) {
+    const ids = items.ids()
+    this.commentItems = this.commentItems.filter(comment => !ids.includes(comment.id))
+  }
+
   count(): Number {
     return this.commentItems.length
+  }
+
+  ids(): Number[]{
+    return this.commentItems.map(item => item.id)
   }
 
   toArray(): Object[] {

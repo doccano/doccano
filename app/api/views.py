@@ -311,6 +311,11 @@ class CommentListProject(generics.ListAPIView):
         )
         return queryset
 
+    def delete(self, request, *args, **kwargs):
+        delete_ids = request.data['ids']
+        self.model.objects.filter(user=request.user, pk__in=delete_ids).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()

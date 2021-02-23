@@ -26,7 +26,7 @@ export class CommentApplicationService {
     return this.repository.delete(projectId, docId, item)
   }
 
-  public deleteBulk(projectId: string, docId: string, items: CommentItemList): Promise<void> {
-    return this.repository.deleteBulk(projectId, docId, items)
+  public deleteBulk(projectId: string, items: CommentItemList): Promise<void> {
+    return this.repository.deleteBulk(projectId, items)
   }
 }
