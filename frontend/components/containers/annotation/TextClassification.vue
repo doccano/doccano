@@ -29,8 +29,7 @@ export default {
     // ...mapState('labels', ['items']),
     ...mapState('labels', {
       items(state) {
-        console.log('level1', state)
-
+        //console.log('level1', state)
         return state.items.filter(it => !it.text.includes('/'))
       },
       itemsSecondLevel(state) {
@@ -45,7 +44,7 @@ export default {
             target = it.text
           }
         })
-        console.log('Level2', target, id)
+        //console.log('Level2', target, id)
         if (target) {
           return state.items.filter(it => it.text.includes(target))
         } else {
