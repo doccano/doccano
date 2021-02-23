@@ -67,14 +67,14 @@ export default {
         return this.labels.find(item => labelIds.includes(item.id))
       },
       set(newValue) {
-        console.log('set: start')
+        //console.log('set: start')
         this.isAdding = true
         if (this.annotations.length === 1) {
           this.remove(this.annotations[0].label)
         }
 
         this.add(newValue).then((r) => {
-          console.log('set: add ok', r)
+          //console.log('set: add ok', r)
           this.isAdding = false
         })
       }
