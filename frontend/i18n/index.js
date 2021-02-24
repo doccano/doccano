@@ -9,7 +9,7 @@ export default {
     {
       name: '中文',
       code: 'zh',
-      iso: 'zh-CA',
+      iso: 'zh-CN',
       file: 'zh'
     },
     {
@@ -17,6 +17,12 @@ export default {
       code: 'fr',
       iso: 'fr-CA',
       file: 'fr'
+    },
+    {
+      name: 'Deutsch',
+      code: 'de',
+      iso: 'de-DE',
+      file: 'de'
     }
   ],
   lazy: true,
