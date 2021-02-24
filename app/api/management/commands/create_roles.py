@@ -1,7 +1,8 @@
-from api.models import Role
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import DatabaseError
-from django.conf import settings
+
+from api.models import Role
 
 
 class Command(BaseCommand):

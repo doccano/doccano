@@ -49,7 +49,8 @@ auto-labeling-pipeline = "*"
 python_version = "3.8"
 
 [scripts]
-isort = "isort . -c"
+isort = "isort api -c --skip migrations"
+flake8 = "flake8 api --ignore=F401,E741"
 wait_for_db = "python manage.py wait_for_db"
 test = "python manage.py test api.tests"
 migrate = "python manage.py migrate"

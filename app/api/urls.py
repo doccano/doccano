@@ -1,107 +1,180 @@
-from django.urls import path
+from django.urls import include, path
 from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework.urlpatterns import format_suffix_patterns
 
-from .views import Me, Features, Users, Health
-from .views import ProjectList, ProjectDetail
-from .views import LabelList, LabelDetail, ApproveLabelsAPI, LabelUploadAPI
-from .views import DocumentList, DocumentDetail
-from .views import AnnotationList, AnnotationDetail
-from .views import CommentListDoc, CommentListProject, CommentDetail
-from .views import TextUploadAPI, TextDownloadAPI, CloudUploadAPI
-from .views import StatisticsAPI
-from .views import RoleMappingList, RoleMappingDetail, Roles
-from .views import AutoLabelingTemplateListAPI, AutoLabelingTemplateDetailAPI
-from .views import AutoLabelingConfigList, AutoLabelingConfigDetail, AutoLabelingConfigTest, AutoLabelingAnnotation
-from .views import AutoLabelingConfigParameterTest, AutoLabelingTemplateTest, AutoLabelingMappingTest
+from . import views
 
-urlpatterns = [
-    path('health', Health.as_view(), name='health'),
-    path('auth-token', obtain_auth_token),
-    path('me', Me.as_view(), name='me'),
-    path('features', Features.as_view(), name='features'),
-    path('cloud-upload', CloudUploadAPI.as_view(), name='cloud_uploader'),
-    path('projects', ProjectList.as_view(), name='project_list'),
-    path('users', Users.as_view(), name='user_list'),
-    path('roles', Roles.as_view(), name='roles'),
-    path('projects/<int:project_id>', ProjectDetail.as_view(), name='project_detail'),
-    path('projects/<int:project_id>/statistics',
-         StatisticsAPI.as_view(), name='statistics'),
-    path('projects/<int:project_id>/labels',
-         LabelList.as_view(), name='label_list'),
-    path('projects/<int:project_id>/label-upload',
-         LabelUploadAPI.as_view(), name='label_upload'),
-    path('projects/<int:project_id>/labels/<int:label_id>',
-         LabelDetail.as_view(), name='label_detail'),
-    path('projects/<int:project_id>/docs',
-         DocumentList.as_view(), name='doc_list'),
-    path('projects/<int:project_id>/docs/<int:doc_id>',
-         DocumentDetail.as_view(), name='doc_detail'),
-    path('projects/<int:project_id>/docs/<int:doc_id>/approve-labels',
-         ApproveLabelsAPI.as_view(), name='approve_labels'),
-    path('projects/<int:project_id>/docs/<int:doc_id>/annotations',
-         AnnotationList.as_view(), name='annotation_list'),
-    path('projects/<int:project_id>/docs/<int:doc_id>/annotations/<int:annotation_id>',
-         AnnotationDetail.as_view(), name='annotation_detail'),
-    path('projects/<int:project_id>/docs/<int:doc_id>/comments',
-         CommentListDoc.as_view(), name='comment_list_doc'),
-    path('projects/<int:project_id>/comments',
-         CommentListProject.as_view(), name='comment_list_project'),
-    path('projects/<int:project_id>/docs/<int:doc_id>/comments/<int:comment_id>',
-         CommentDetail.as_view(), name='comment_detail'),
-    path('projects/<int:project_id>/docs/upload',
-         TextUploadAPI.as_view(), name='doc_uploader'),
-    path('projects/<int:project_id>/docs/download',
-         TextDownloadAPI.as_view(), name='doc_downloader'),
-    path('projects/<int:project_id>/roles',
-         RoleMappingList.as_view(), name='rolemapping_list'),
-    path('projects/<int:project_id>/roles/<int:rolemapping_id>',
-         RoleMappingDetail.as_view(), name='rolemapping_detail'),
+urlpatterns_project = [
     path(
-        route='projects/<int:project_id>/auto-labeling-templates',
-        view=AutoLabelingTemplateListAPI.as_view(),
+        route='statistics',
+        view=views.StatisticsAPI.as_view(),
+        name='statistics'),
+    path(
+        route='labels',
+        view=views.LabelList.as_view(),
+        name='label_list'
+    ),
+    path(
+        route='label-upload',
+        view=views.LabelUploadAPI.as_view(),
+        name='label_upload'
+    ),
+    path(
+        route='labels/<int:label_id>',
+        view=views.LabelDetail.as_view(),
+        name='label_detail'
+    ),
+    path(
+        route='docs',
+        view=views.DocumentList.as_view(),
+        name='doc_list'
+    ),
+    path(
+        route='docs/<int:doc_id>',
+        view=views.DocumentDetail.as_view(),
+        name='doc_detail'
+    ),
+    path(
+        route='docs/<int:doc_id>/approve-labels',
+        view=views.ApproveLabelsAPI.as_view(),
+        name='approve_labels'
+    ),
+    path(
+        route='docs/<int:doc_id>/annotations',
+        view=views.AnnotationList.as_view(),
+        name='annotation_list'
+    ),
+    path(
+        route='docs/<int:doc_id>/annotations/<int:annotation_id>',
+        view=views.AnnotationDetail.as_view(),
+        name='annotation_detail'
+    ),
+    path(
+        route='docs/<int:doc_id>/comments',
+        view=views.CommentListDoc.as_view(),
+        name='comment_list_doc'
+    ),
+    path(
+        route='comments',
+        view=views.CommentListProject.as_view(),
+        name='comment_list_project'
+    ),
+    path(
+        route='docs/<int:doc_id>/comments/<int:comment_id>',
+        view=views.CommentDetail.as_view(),
+        name='comment_detail'
+    ),
+    path(
+        route='docs/upload',
+        view=views.TextUploadAPI.as_view(),
+        name='doc_uploader'
+    ),
+    path(
+        route='docs/download',
+        view=views.TextDownloadAPI.as_view(),
+        name='doc_downloader'
+    ),
+    path(
+        route='roles',
+        view=views.RoleMappingList.as_view(),
+        name='rolemapping_list'
+    ),
+    path(
+        route='roles/<int:rolemapping_id>',
+        view=views.RoleMappingDetail.as_view(),
+        name='rolemapping_detail'
+    ),
+    path(
+        route='auto-labeling-templates',
+        view=views.AutoLabelingTemplateListAPI.as_view(),
         name='auto_labeling_templates'
     ),
     path(
-        route='projects/<int:project_id>/auto-labeling-templates/<str:option_name>',
-        view=AutoLabelingTemplateDetailAPI.as_view(),
+        route='auto-labeling-templates/<str:option_name>',
+        view=views.AutoLabelingTemplateDetailAPI.as_view(),
         name='auto_labeling_template'
     ),
     path(
-        route='projects/<int:project_id>/auto-labeling-configs',
-        view=AutoLabelingConfigList.as_view(),
+        route='auto-labeling-configs',
+        view=views.AutoLabelingConfigList.as_view(),
         name='auto_labeling_configs'
     ),
     path(
-        route='projects/<int:project_id>/auto-labeling-configs/<int:config_id>',
-        view=AutoLabelingConfigDetail.as_view(),
+        route='auto-labeling-configs/<int:config_id>',
+        view=views.AutoLabelingConfigDetail.as_view(),
         name='auto_labeling_config'
     ),
     path(
-        route='projects/<int:project_id>/auto-labeling-config-testing',
-        view=AutoLabelingConfigTest.as_view(),
+        route='auto-labeling-config-testing',
+        view=views.AutoLabelingConfigTest.as_view(),
         name='auto_labeling_config_test'
     ),
     path(
-        route='projects/<int:project_id>/docs/<int:doc_id>/auto-labeling',
-        view=AutoLabelingAnnotation.as_view(),
+        route='docs/<int:doc_id>/auto-labeling',
+        view=views.AutoLabelingAnnotation.as_view(),
         name='auto_labeling_annotation'
     ),
+
     path(
-        route='auto-labeling-parameter-testing',
-        view=AutoLabelingConfigParameterTest.as_view(),
-        name='auto_labeling_parameter_testing'
-    ),
-    path(
-        route='projects/<int:project_id>/auto-labeling-template-testing',
-        view=AutoLabelingTemplateTest.as_view(),
+        route='auto-labeling-template-testing',
+        view=views.AutoLabelingTemplateTest.as_view(),
         name='auto_labeling_template_test'
     ),
     path(
-        route='projects/<int:project_id>/auto-labeling-mapping-testing',
-        view=AutoLabelingMappingTest.as_view(),
+        route='auto-labeling-mapping-testing',
+        view=views.AutoLabelingMappingTest.as_view(),
         name='auto_labeling_mapping_test'
     )
 ]
 
-# urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'xml'])
+urlpatterns = [
+    path(
+        route='health',
+        view=views.Health.as_view(),
+        name='health'
+    ),
+    path(
+        route='auth-token',
+        view=obtain_auth_token
+    ),
+    path(
+        route='me',
+        view=views.Me.as_view(),
+        name='me'
+    ),
+    path(
+        route='features',
+        view=views.Features.as_view(),
+        name='features'
+    ),
+    path(
+        route='cloud-upload',
+        view=views.CloudUploadAPI.as_view(),
+        name='cloud_uploader'
+    ),
+    path(
+        route='projects',
+        view=views.ProjectList.as_view(),
+        name='project_list'
+    ),
+    path(
+        route='users',
+        view=views.Users.as_view(),
+        name='user_list'
+    ),
+    path(
+        route='roles',
+        view=views.Roles.as_view(),
+        name='roles'
+    ),
+    path(
+        route='auto-labeling-parameter-testing',
+        view=views.AutoLabelingConfigParameterTest.as_view(),
+        name='auto_labeling_parameter_testing'
+    ),
+    path(
+        route='projects/<int:project_id>',
+        view=views.ProjectDetail.as_view(),
+        name='project_detail'
+    ),
+    path('projects/<int:project_id>/', include(urlpatterns_project))
+]

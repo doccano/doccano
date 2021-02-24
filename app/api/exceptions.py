@@ -1,5 +1,6 @@
 from rest_framework import status
-from rest_framework.exceptions import APIException, PermissionDenied, ValidationError
+from rest_framework.exceptions import (APIException, PermissionDenied,
+                                       ValidationError)
 
 
 class FileParseException(APIException):

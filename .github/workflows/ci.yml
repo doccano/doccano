@@ -23,6 +23,14 @@ jobs:
         pipenv run wait_for_db
         pipenv run migrate
       working-directory: ./app
+    - name: Lint with flake8
+      run: |
+        pipenv run flake8
+      working-directory: ./app
+    - name: Lint with isort
+      run: |
+        pipenv run isort
+      working-directory: ./app
     - name: Run tests
       run: |
         pipenv run test

@@ -2,15 +2,18 @@ import os
 
 from django.conf import settings
 from django.test import override_settings
+from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from model_mommy import mommy
 
-from ..models import User, SequenceAnnotation, Document, Role, RoleMapping, Comment
-from ..models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
-from ..utils import PlainTextParser, CoNLLParser, JSONParser, CSVParser, FastTextParser
 from ..exceptions import FileParseException
+from ..models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
+                      SPEECH2TEXT, Comment, Document, Role, RoleMapping,
+                      SequenceAnnotation, User)
+from ..utils import (CoNLLParser, CSVParser, FastTextParser, JSONParser,
+                     PlainTextParser)
+
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 
 

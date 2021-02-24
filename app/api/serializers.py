@@ -3,13 +3,14 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_polymorphic.serializers import PolymorphicSerializer
 from rest_framework.exceptions import ValidationError
+from rest_polymorphic.serializers import PolymorphicSerializer
 
-
-from .models import Label, Project, Document, RoleMapping, Role, Comment, AutoLabelingConfig
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, Speech2textProject
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, Speech2textAnnotation
+from .models import (AutoLabelingConfig, Comment, Document, DocumentAnnotation,
+                     Label, Project, Role, RoleMapping, Seq2seqAnnotation,
+                     Seq2seqProject, SequenceAnnotation,
+                     SequenceLabelingProject, Speech2textAnnotation,
+                     Speech2textProject, TextClassificationProject)
 
 
 class UserSerializer(serializers.ModelSerializer):
