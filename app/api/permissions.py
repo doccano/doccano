@@ -103,3 +103,7 @@ def is_in_role(role_name, user_id, project_id):
         project_id=project_id,
         role_id=Subquery(Role.objects.filter(name=role_name).values('id')),
     ).exists()
+
+
+IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
+IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
