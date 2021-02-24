@@ -1,6 +1,6 @@
 from collections import Counter
 
-from django.db.models import Manager, Count
+from django.db.models import Count, Manager
 
 
 class AnnotationManager(Manager):

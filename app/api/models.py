@@ -1,13 +1,13 @@
 import string
 
 from auto_labeling_pipeline.models import RequestModelFactory
-from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save, pre_delete
-from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.db import models
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
 from .managers import AnnotationManager, Seq2seqAnnotationManager

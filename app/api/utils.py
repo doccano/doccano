@@ -8,12 +8,12 @@ import re
 from collections import defaultdict
 
 import conllu
-from chardet import UniversalDetector
-from django.db import transaction
-from django.conf import settings
-from colour import Color
 import pyexcel
-from rest_framework.renderers import JSONRenderer, BaseRenderer
+from chardet import UniversalDetector
+from colour import Color
+from django.conf import settings
+from django.db import transaction
+from rest_framework.renderers import BaseRenderer, JSONRenderer
 from seqeval.metrics.sequence_labeling import get_entities
 
 from .exceptions import FileParseException

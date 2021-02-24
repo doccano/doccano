@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
-from libcloud import get_driver, DriverType
-from libcloud.storage.types import ContainerDoesNotExistError, ObjectDoesNotExistError
+from libcloud import DriverType, get_driver
+from libcloud.storage.types import (ContainerDoesNotExistError,
+                                    ObjectDoesNotExistError)
 from rest_framework import status
 from rest_framework.exceptions import ParseError, ValidationError
 from rest_framework.parsers import MultiPartParser
@@ -12,8 +13,10 @@ from rest_framework_csv.renderers import CSVRenderer
 
 from ..models import Project
 from ..permissions import IsProjectAdmin
-from ..utils import PlainTextParser, CSVParser, JSONParser, CoNLLParser, ExcelParser, AudioParser, FastTextParser, \
-    iterable_to_io, JSONLRenderer, PlainTextRenderer, CSVPainter, JSONPainter, FastTextPainter
+from ..utils import (AudioParser, CoNLLParser, CSVPainter, CSVParser,
+                     ExcelParser, FastTextPainter, FastTextParser,
+                     JSONLRenderer, JSONPainter, JSONParser, PlainTextParser,
+                     PlainTextRenderer, iterable_to_io)
 
 
 class Features(APIView):

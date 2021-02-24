@@ -2,9 +2,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from ..models import Role, Project, RoleMapping
+from ..models import Project, Role, RoleMapping
 from ..permissions import IsProjectAdmin
-from ..serializers import RoleSerializer, RoleMappingSerializer
+from ..serializers import RoleMappingSerializer, RoleSerializer
 
 
 class Roles(generics.ListCreateAPIView):

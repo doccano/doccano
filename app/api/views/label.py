@@ -1,6 +1,6 @@
 import json
 
-from django.db import transaction, IntegrityError
+from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.exceptions import ParseError
@@ -9,9 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import Project, Label
-from ..serializers import LabelSerializer
+from ..models import Label, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
+from ..serializers import LabelSerializer
 
 
 class LabelList(generics.ListCreateAPIView):

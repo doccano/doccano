@@ -1,10 +1,9 @@
 from django.contrib import admin
 
-from .models import Label, Document, Project
-from .models import Role, RoleMapping
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject
-from .models import Comment
+from .models import (Comment, Document, DocumentAnnotation, Label, Project,
+                     Role, RoleMapping, Seq2seqAnnotation, Seq2seqProject,
+                     SequenceAnnotation, SequenceLabelingProject,
+                     TextClassificationProject)
 
 
 class LabelAdmin(admin.ModelAdmin):

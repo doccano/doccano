@@ -7,18 +7,18 @@ from auto_labeling_pipeline.pipeline import pipeline
 from auto_labeling_pipeline.postprocessing import PostProcessor
 from auto_labeling_pipeline.task import TaskFactory
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics
+from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..exceptions import SampleDataException, URLConnectionError, AWSTokenError, AutoLabelingException, \
-    AutoLabeliingPermissionDenied
-from ..models import Project, AutoLabelingConfig, Document
-from ..permissions import IsProjectAdmin
+from ..exceptions import (AutoLabeliingPermissionDenied, AutoLabelingException,
+                          AWSTokenError, SampleDataException,
+                          URLConnectionError)
+from ..models import AutoLabelingConfig, Document, Project
+from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
 from ..serializers import AutoLabelingConfigSerializer
-from ..permissions import IsInProjectOrAdmin
 
 
 class AutoLabelingTemplateListAPI(APIView):

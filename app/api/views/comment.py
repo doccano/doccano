@@ -1,12 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, filters, status
+from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Comment
-from ..permissions import IsOwnComment
+from ..permissions import IsInProjectOrAdmin, IsOwnComment
 from ..serializers import CommentSerializer
-from ..permissions import IsInProjectOrAdmin
 
 
 class CommentListDoc(generics.ListCreateAPIView):

@@ -3,14 +3,14 @@ import random
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import generics, filters, status
+from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..filters import DocumentFilter
-from ..models import Project, Document
-from ..serializers import DocumentSerializer
+from ..models import Document, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin
+from ..serializers import DocumentSerializer
 
 
 class DocumentList(generics.ListCreateAPIView):

@@ -1,13 +1,13 @@
 import io
 
 from django.test import TestCase
-
 from seqeval.metrics.sequence_labeling import get_entities
 
 from ..exceptions import FileParseException
-from ..models import Label, Document
-from ..utils import BaseStorage, ClassificationStorage, SequenceLabelingStorage, Seq2seqStorage, CoNLLParser
-from ..utils import AudioParser, iterable_to_io
+from ..models import Document, Label
+from ..utils import (AudioParser, BaseStorage, ClassificationStorage,
+                     CoNLLParser, Seq2seqStorage, SequenceLabelingStorage,
+                     iterable_to_io)
 
 
 class TestBaseStorage(TestCase):

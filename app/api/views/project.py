@@ -2,8 +2,8 @@ from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from ..models import Project
-from ..serializers import ProjectPolymorphicSerializer, ProjectSerializer
 from ..permissions import IsInProjectReadOnlyOrAdmin
+from ..serializers import ProjectPolymorphicSerializer, ProjectSerializer
 
 
 class ProjectList(generics.ListCreateAPIView):
