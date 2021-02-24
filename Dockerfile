@@ -54,6 +54,11 @@ RUN python manage.py collectstatic --noinput
 
 VOLUME /data
 ENV DATABASE_URL="sqlite:////data/doccano.db"
+RUN apt update \
+    && apt-get -y install python3-dev \
+    && apt-get -y install default-libmysqlclient-dev \
+    && apt-get -y install build-essential \
+    && pip install mysqlclient
 
 ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"

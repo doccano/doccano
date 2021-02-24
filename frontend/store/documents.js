@@ -183,7 +183,7 @@ export const actions = {
   },
   addAnnotation({ commit, state }, payload) {
     const documentId = state.items[state.current].id
-    AnnotationService.addAnnotation(payload.projectId, documentId, payload)
+    return AnnotationService.addAnnotation(payload.projectId, documentId, payload)
       .then((response) => {
         commit('addAnnotation', response.data)
       })

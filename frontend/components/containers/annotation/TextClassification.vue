@@ -6,7 +6,7 @@
   >
     <v-card-title>
       <multi-class-classification
-        :labels="items"
+        :labels="itemsSecondLevel"
         :annotations="currentDoc.annotations"
         :add-label="addLabel"
         :delete-label="removeLabel"
@@ -21,14 +21,37 @@ import Vue from 'vue'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import MultiClassClassification from '@/components/organisms/annotation/MultiClassClassification'
 Vue.use(require('vue-shortkey'))
-
 export default {
   components: {
     MultiClassClassification
   },
-
   computed: {
-    ...mapState('labels', ['items']),
+    // ...mapState('labels', ['items']),
+    ...mapState('labels', {
+      items(state) {
+        //console.log('level1', state)
+        return state.items.filter(it => !it.text.includes('/'))
+      },
+      itemsSecondLevel(state) {
+        let id
+        if (this.currentDoc.annotations[0]) {
+          id = this.currentDoc.annotations[0].label
+        }
+
+        let target
+        state.items.map((it) => {
+          if (it.id === id) {
+            target = it.text
+          }
+        })
+        //console.log('Level2', target, id)
+        if (target) {
+          return state.items.filter(it => it.text.includes(target))
+        } else {
+          return state.items.filter(it => !it.text.includes('/'))
+        }
+      }
+    }),
     ...mapState('documents', ['loading']),
     ...mapGetters('documents', ['currentDoc']),
     multiKeys() {
@@ -42,13 +65,11 @@ export default {
       return this.currentDoc && this.items && !this.loading
     }
   },
-
   created() {
     this.getLabelList({
       projectId: this.$route.params.id
     })
   },
-
   methods: {
     ...mapActions('labels', ['getLabelList']),
     ...mapActions('documents', ['getDocumentList', 'deleteAnnotation', 'updateAnnotation', 'addAnnotation']),
@@ -72,7 +93,7 @@ export default {
         label: labelId,
         projectId: this.$route.params.id
       }
-      this.addAnnotation(payload)
+      return this.addAnnotation(payload)
     },
     addOrRemoveLabel(event) {
       const label = this.items.find(item => item.id === parseInt(event.srcKey, 10))

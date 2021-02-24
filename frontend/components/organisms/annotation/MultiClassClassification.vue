@@ -6,7 +6,7 @@
     :label="$t('labels.labels')"
     hide-selected
     chips
-    multiple
+    :disabled="isAdding"
     :search-input.sync="search"
     @change="search=''"
   >
@@ -55,7 +55,8 @@ export default {
 
   data() {
     return {
-      search: ''
+      search: '',
+      isAdding: false
     }
   },
 
@@ -63,22 +64,19 @@ export default {
     annotatedLabels: {
       get() {
         const labelIds = this.annotations.map(item => item.label)
-        return this.labels.filter(item => labelIds.includes(item.id))
+        return this.labels.find(item => labelIds.includes(item.id))
       },
       set(newValue) {
-        if (newValue.length > this.annotations.length) {
-          const label = newValue[newValue.length - 1]
-          if (typeof label === 'object') {
-            this.add(label)
-          } else {
-            newValue.pop()
-          }
-        } else {
-          const label = this.annotatedLabels.find(x => !newValue.some(y => y.id === x.id))
-          if (typeof label === 'object') {
-            this.remove(label.id)
-          }
+        //console.log('set: start')
+        this.isAdding = true
+        if (this.annotations.length === 1) {
+          this.remove(this.annotations[0].label)
         }
+
+        this.add(newValue).then((r) => {
+          //console.log('set: add ok', r)
+          this.isAdding = false
+        })
       }
     }
   },
@@ -88,7 +86,7 @@ export default {
       return idealColor(backgroundColor)
     },
     add(label) {
-      this.addLabel(label.id)
+      return this.addLabel(label.id)
     },
     remove(labelId) {
       const annotation = this.annotations.find(item => item.label === labelId)
