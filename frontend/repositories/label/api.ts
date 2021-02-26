@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
 import { LabelItemListRepository } from '@/repositories/label/interface'
-import { LabelItemList, LabelItem } from '@/models/label'
+import { LabelItem } from '@/models/label'
 
 export interface LabelItemResponse {
   id: number,
@@ -16,13 +16,11 @@ export class FromApiLabelItemListRepository implements LabelItemListRepository {
     private readonly request = ApiService
   ) {}
 
-  async list(projectId: string): Promise<LabelItemList> {
+  async list(projectId: string): Promise<LabelItem[]> {
     const url = `/projects/${projectId}/labels`
     const response = await this.request.get(url)
     const responseItems: LabelItemResponse[] = response.data
-    return LabelItemList.valueOf(
-      responseItems.map(item => LabelItem.valueOf(item))
-    )
+    return responseItems.map(item => LabelItem.valueOf(item))
   }
 
   async create(projectId: string, item: LabelItem): Promise<LabelItem> {
@@ -34,7 +32,7 @@ export class FromApiLabelItemListRepository implements LabelItemListRepository {
 
   async update(projectId: string, item: LabelItem): Promise<LabelItem> {
     const url = `/projects/${projectId}/labels/${item.id}`
-    const response = await this.request.put(url, item.toObject())
+    const response = await this.request.patch(url, item.toObject())
     const responseItem: LabelItemResponse = response.data
     return LabelItem.valueOf(responseItem)
   }
@@ -42,5 +40,20 @@ export class FromApiLabelItemListRepository implements LabelItemListRepository {
   async delete(projectId: string, itemId: number): Promise<void> {
     const url = `/projects/${projectId}/labels/${itemId}`
     await this.request.delete(url)
+  }
+
+  async bulkDelete(projectId: string, labelIds: number[]): Promise<void> {
+    const url = `/projects/${projectId}/labels`
+    await this.request.delete(url, { ids: labelIds })
+  }
+
+  async uploadFile(projectId: string, payload: FormData): Promise<void> {
+    const url = `/projects/${projectId}/label-upload`
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }
+    await this.request.post(`/projects/${projectId}/label-upload`, payload, config)
   }
 }
