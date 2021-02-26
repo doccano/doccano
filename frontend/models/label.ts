@@ -5,8 +5,41 @@ export class LabelItemList {
     return new LabelItemList(items)
   }
 
+  add(item: LabelItem) {
+    this.labelItems.push(item)
+  }
+
+  update(item: LabelItem) {
+    const index = this.labelItems.findIndex(label => label.id === item.id)
+    this.labelItems.splice(index, 1, item)
+  }
+
+  delete(item: LabelItem) {
+    this.labelItems = this.labelItems.filter(label => label.id !== item.id)
+  }
+
+  bulkDelete(items: LabelItemList) {
+    const ids = items.ids()
+    this.labelItems = this.labelItems.filter(label => !ids.includes(label.id))
+  }
+
+  count(): Number {
+    return this.labelItems.length
+  }
+
+  ids(): Number[]{
+    return this.labelItems.map(item => item.id)
+  }
+
   get nameList(): string[] {
     return this.labelItems.map(item => item.name)
+  }
+
+  get usedKeys(): string[] {
+    const items = this.labelItems
+                  .filter(item => item.suffixKey !== null)
+                  .map(item => item.suffixKey) as string[]
+    return items
   }
 
   toArray(): Object[] {
@@ -18,10 +51,10 @@ export class LabelItem {
   constructor(
     public id: number,
     public text: string,
-    public prefixKey: string,
-    public suffixKey: string,
+    public prefixKey: string | null,
+    public suffixKey: string | null,
     public backgroundColor: string,
-    public textColor: string
+    public textColor: string = '#ffffff'
   ) {}
 
   static valueOf(
@@ -39,10 +72,10 @@ export class LabelItem {
     return {
       id: this.id,
       text: this.text,
-      prefixKey: this.prefixKey,
-      suffixKey: this.suffixKey,
-      backgroundColor: this.backgroundColor,
-      textColor: this.textColor
+      prefix_key: this.prefixKey,
+      suffix_key: this.suffixKey,
+      background_color: this.backgroundColor,
+      text_color: this.textColor
     }
   }
 }
