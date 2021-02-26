@@ -4,17 +4,13 @@
     :title="$t('labels.importTitle')"
     :agree-text="$t('generic.upload')"
     :cancel-text="$t('generic.cancel')"
-    @agree="create"
-    @cancel="cancel"
+    @agree="$emit('upload', file)"
+    @cancel="$emit('cancel')"
   >
     <template #content>
-      <v-form
-        ref="form"
-        v-model="valid"
-      >
+      <v-form v-model="valid">
         <v-alert
-          v-show="showError"
-          v-model="showError"
+          v-show="errorMessage"
           type="error"
           dismissible
         >
@@ -41,27 +37,28 @@
   </base-card>
 </template>
 
-<script>
-import BaseCard from '@/components/molecules/BaseCard'
+<script lang="ts">
+import Vue from 'vue'
+import BaseCard from '@/components/molecules/BaseCard.vue'
 import { uploadSingleFileRules } from '@/rules/index'
 
-export default {
+export default Vue.extend({
   components: {
     BaseCard
   },
+
   props: {
-    uploadLabel: {
-      type: Function,
-      default: () => {},
-      required: true
+    errorMessage: {
+      type: String,
+      default: ''
     }
   },
+
   data() {
     return {
-      valid: false,
       file: null,
+      valid: false,
       uploadSingleFileRules,
-      showError: false
     }
   },
 
@@ -83,33 +80,6 @@ export default {
       ]
       return JSON.stringify(data, null, 4)
     }
-  },
-
-  methods: {
-    cancel() {
-      this.$emit('close')
-    },
-    validate() {
-      return this.$refs.form.validate()
-    },
-    reset() {
-      this.$refs.form.reset()
-    },
-    create() {
-      if (this.validate()) {
-        this.uploadLabel({
-          projectId: this.$route.params.id,
-          file: this.file
-        })
-          .then((response) => {
-            this.reset()
-            this.cancel()
-          })
-          .catch(() => {
-            this.showError = true
-          })
-      }
-    }
-  }
-}
+  } 
+})
 </script>
