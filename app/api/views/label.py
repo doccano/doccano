@@ -27,6 +27,11 @@ class LabelList(generics.ListCreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
 
+    def delete(self, request, *args, **kwargs):
+        delete_ids = request.data['ids']
+        Label.objects.filter(pk__in=delete_ids).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Label.objects.all()
