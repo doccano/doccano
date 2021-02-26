@@ -64,7 +64,7 @@
     <template v-slot:[`item.background_color`]="props">
       <v-chip
         :color="props.item.background_color"
-        :text-color="textColor(props.item.background_color)"
+        :text-color="$contrastColor(props.item.background_color)"
       >
         {{ props.item.background_color }}
       </v-chip>
@@ -87,7 +87,6 @@ import ActionMenu from './ActionMenu.vue'
 import FormCreate from './FormCreate.vue'
 import FormDelete from './FormDelete.vue'
 import FormUpload from './FormUpload.vue'
-import { idealColor } from '~/plugins/utils'
 
 export default Vue.extend({
   components: {
@@ -200,10 +199,6 @@ export default Vue.extend({
         this.create(this.editedItem)
       }
       this.close()
-    },
-
-    textColor(backgroundColor: string) {
-      return idealColor(backgroundColor)
     }
   }  
 })
