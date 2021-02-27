@@ -4,7 +4,11 @@ export default {
   },
   labelNameRules: {
     labelRequired: 'Label name is required',
-    labelLessThan30Chars: 'Label name must be less than 30 characters'
+    labelLessThan30Chars: 'Label name must be less than 30 characters',
+    duplicated: 'The label name is already used.'
+  },
+  keyNameRules: {
+    duplicated: 'The key is already used.'
   },
   userNameRules: {
     userNameRequired: 'User name is required',
