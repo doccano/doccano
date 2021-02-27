@@ -2,7 +2,7 @@
   <base-card
     :disabled="!valid"
     :title="$t('labels.createLabel')"
-    :agree-text="$t('generic.create')"
+    :agree-text="$t('generic.save')"
     :cancel-text="$t('generic.cancel')"
     @agree="$emit('save')"
     @cancel="$emit('cancel')"
