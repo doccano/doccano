@@ -4,7 +4,7 @@
     :title="$t('labels.importTitle')"
     :agree-text="$t('generic.upload')"
     :cancel-text="$t('generic.cancel')"
-    @agree="create"
+    @agree="$emit('upload', file)"
     @cancel="cancel"
   >
     <template #content>
@@ -12,14 +12,6 @@
         ref="form"
         v-model="valid"
       >
-        <v-alert
-          v-show="showError"
-          v-model="showError"
-          type="error"
-          dismissible
-        >
-          {{ $t('errors.fileCannotUpload') }}
-        </v-alert>
         <h2>{{ $t('labels.importMessage1') }}</h2>
         <v-sheet
           v-if="exampleFormat"
@@ -32,36 +24,40 @@
         <h2>{{ $t('labels.importMessage2') }}</h2>
         <v-file-input
           v-model="file"
-          :rules="uploadSingleFileRules($t('rules.uploadFileRules'))"
           accept=".json"
+          :error-messages="errorMessage"
           :label="$t('labels.filePlaceholder')"
+          :rules="uploadSingleFileRules($t('rules.uploadFileRules'))"
+          @change="$emit('clear')"
+          @click:clear="$emit('clear')"
         />
       </v-form>
     </template>
   </base-card>
 </template>
 
-<script>
-import BaseCard from '@/components/molecules/BaseCard'
+<script lang="ts">
+import Vue from 'vue'
+import BaseCard from '@/components/molecules/BaseCard.vue'
 import { uploadSingleFileRules } from '@/rules/index'
 
-export default {
+export default Vue.extend({
   components: {
     BaseCard
   },
+
   props: {
-    uploadLabel: {
-      type: Function,
-      default: () => {},
-      required: true
+    errorMessage: {
+      type: String,
+      default: ''
     }
   },
+
   data() {
     return {
-      valid: false,
       file: null,
+      valid: false,
       uploadSingleFileRules,
-      showError: false
     }
   },
 
@@ -87,29 +83,9 @@ export default {
 
   methods: {
     cancel() {
-      this.$emit('close')
-    },
-    validate() {
-      return this.$refs.form.validate()
-    },
-    reset() {
-      this.$refs.form.reset()
-    },
-    create() {
-      if (this.validate()) {
-        this.uploadLabel({
-          projectId: this.$route.params.id,
-          file: this.file
-        })
-          .then((response) => {
-            this.reset()
-            this.cancel()
-          })
-          .catch(() => {
-            this.showError = true
-          })
-      }
+      (this.$refs.form as HTMLFormElement).reset()
+      this.$emit('cancel')
     }
   }
-}
+})
 </script>

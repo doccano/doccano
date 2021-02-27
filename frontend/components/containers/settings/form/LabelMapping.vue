@@ -164,7 +164,7 @@ export default Vue.extend({
 
   async created() {
     const labels = await this.labelService.list(this.$route.params.id)
-    this.items = labels.nameList
+    this.items = labels.map(item => item.text)
   },
 
   methods: {
