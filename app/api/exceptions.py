@@ -34,3 +34,8 @@ class AWSTokenError(ValidationError):
 class SampleDataException(ValidationError):
     default_detail = 'The response is empty. Maybe the sample data is not appropriate.' \
                      'Please specify another sample data which returns at least one label.'
+
+
+class LabelValidationError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'You cannot create a label with same name or shortcut key.'

@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from ..exceptions import LabelValidationError
 from ..models import Label, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
 from ..serializers import LabelSerializer
@@ -48,14 +49,14 @@ class LabelUploadAPI(APIView):
     def post(self, request, *args, **kwargs):
         if 'file' not in request.data:
             raise ParseError('Empty content')
-        labels = json.load(request.data['file'])
         project = get_object_or_404(Project, pk=kwargs['project_id'])
         try:
-            for label in labels:
-                serializer = LabelSerializer(data=label)
-                serializer.is_valid(raise_exception=True)
-                serializer.save(project=project)
+            labels = json.load(request.data['file'])
+            serializer = LabelSerializer(data=labels, many=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(project=project)
             return Response(status=status.HTTP_201_CREATED)
+        except json.decoder.JSONDecodeError:
+            raise ParseError('The file format is invalid.')
         except IntegrityError:
-            content = {'error': 'IntegrityError: you cannot create a label with same name or shortkey.'}
-            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+            raise LabelValidationError
