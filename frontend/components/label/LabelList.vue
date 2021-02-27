@@ -1,6 +1,6 @@
 <template>
   <v-data-table
-    v-model="selected"
+    :value="value"
     :headers="headers"
     :items="items"
     :search="search"
@@ -15,6 +15,7 @@
     }"
     item-key="id"
     show-select
+    @input="$emit('input', $event)"
   >
     <template v-slot:top>
       <v-text-field
@@ -50,7 +51,6 @@ import Vue, { PropType } from 'vue'
 import { LabelDTO } from '@/services/application/label.service'
 
 export default Vue.extend({
-
   props: {
     isLoading: {
       type: Boolean,
@@ -83,19 +83,6 @@ export default Vue.extend({
         { text: this.$t('labels.color'),    value: 'background_color' },
         { text: 'Actions', value: 'actions', sortable: false },
       ]
-    },
-    
-    selected: {
-      get(): LabelDTO[] {
-        // Property 'value' does not exist on type '() => any'
-        // @ts-ignore
-        return this.value
-      },
-      set(val) {
-        // Property '$emit' does not exist on type '() => any'
-        // @ts-ignore
-        this.$emit('input', val)
-      }
     }
   }
 })
