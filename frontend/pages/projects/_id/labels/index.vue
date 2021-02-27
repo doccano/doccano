@@ -68,6 +68,12 @@ export default Vue.extend({
     LabelList
   },
 
+  async fetch() {
+    this.isLoading = true
+    this.items = await this.$services.label.list(this.projectId)
+    this.isLoading = false
+  },
+
   data() {
     return {
       dialogCreate: false,
@@ -103,39 +109,32 @@ export default Vue.extend({
       return this.$route.params.id
     },
     usedNames(): string[] {
-      return this.items.map(item => item.text)
+      const item = this.items[this.editedIndex] // to remove myself
+      return this.items.filter(_ => _ !== item).map(item => item.text)
     },
     usedKeys(): string[] {
-      return this.items.map(item => item.suffix_key).filter(item => item !==null) as string[]
+      const item = this.items[this.editedIndex] // to remove myself
+      return this.items.filter(_ => _ !== item).map(item => item.suffix_key)
+                       .filter(item => item !==null) as string[]
     }
   },
 
-  created() {
-    this.list()
-  },
-
   methods: {
-    async list() {
-      this.isLoading = true
-      this.items = await this.$services.label.list(this.projectId)
-      this.isLoading = false
+    async create() {
+      await this.$services.label.create(this.projectId, this.editedItem)
     },
 
-    async create(item: LabelDTO) {
-      await this.$services.label.create(this.projectId, item)
-    },
-
-    async update(item: LabelDTO) {
-      await this.$services.label.update(this.projectId, item)
+    async update() {
+      await this.$services.label.update(this.projectId, this.editedItem)
     },
 
     save() {
       if (this.editedIndex > -1) {
-        this.update(this.editedItem)
+        this.update()
       } else {
-        this.create(this.editedItem)
+        this.create()
       }
-      this.list()
+      this.$fetch()
       this.close()
     },
 
@@ -149,7 +148,7 @@ export default Vue.extend({
 
     async remove() {
       await this.$services.label.bulkDelete(this.projectId, this.selected)
-      this.list()
+      this.$fetch()
       this.dialogDelete = false
       this.selected = []
     },
@@ -161,7 +160,7 @@ export default Vue.extend({
     async upload(file: File) {
       try {
         await this.$services.label.upload(this.projectId, file)
-        this.list()
+        this.$fetch()
         this.closeUpload()
       } catch(e) {
         this.errorMessage = e.message
