@@ -17,6 +17,8 @@
       <v-dialog v-model="dialogCreate">
         <form-create
           v-model="editedItem"
+          :used-keys="usedKeys"
+          :used-names="usedNames"
           @cancel="close"
           @save="save"
         />
@@ -96,6 +98,12 @@ export default Vue.extend({
     },
     projectId(): string {
       return this.$route.params.id
+    },
+    usedNames(): string[] {
+      return this.items.map(item => item.text)
+    },
+    usedKeys(): string[] {
+      return this.items.map(item => item.suffix_key).filter(item => item !==null) as string[]
     }
   },
 
