@@ -5,17 +5,13 @@
     :agree-text="$t('generic.upload')"
     :cancel-text="$t('generic.cancel')"
     @agree="$emit('upload', file)"
-    @cancel="$emit('cancel')"
+    @cancel="cancel"
   >
     <template #content>
-      <v-form v-model="valid">
-        <v-alert
-          v-show="errorMessage"
-          type="error"
-          dismissible
-        >
-          {{ $t('errors.fileCannotUpload') }}
-        </v-alert>
+      <v-form
+        ref="form"
+        v-model="valid"
+      >
         <h2>{{ $t('labels.importMessage1') }}</h2>
         <v-sheet
           v-if="exampleFormat"
@@ -28,9 +24,12 @@
         <h2>{{ $t('labels.importMessage2') }}</h2>
         <v-file-input
           v-model="file"
-          :rules="uploadSingleFileRules($t('rules.uploadFileRules'))"
           accept=".json"
+          :error-messages="errorMessage"
           :label="$t('labels.filePlaceholder')"
+          :rules="uploadSingleFileRules($t('rules.uploadFileRules'))"
+          @change="$emit('clear')"
+          @click:clear="$emit('clear')"
         />
       </v-form>
     </template>
@@ -80,6 +79,13 @@ export default Vue.extend({
       ]
       return JSON.stringify(data, null, 4)
     }
-  } 
+  },
+
+  methods: {
+    cancel() {
+      (this.$refs.form as HTMLFormElement).reset()
+      this.$emit('cancel')
+    }
+  }
 })
 </script>

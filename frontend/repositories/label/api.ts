@@ -37,11 +37,6 @@ export class FromApiLabelItemListRepository implements LabelItemListRepository {
     return LabelItem.valueOf(responseItem)
   }
 
-  async delete(projectId: string, itemId: number): Promise<void> {
-    const url = `/projects/${projectId}/labels/${itemId}`
-    await this.request.delete(url)
-  }
-
   async bulkDelete(projectId: string, labelIds: number[]): Promise<void> {
     const url = `/projects/${projectId}/labels`
     await this.request.delete(url, { ids: labelIds })
@@ -54,6 +49,15 @@ export class FromApiLabelItemListRepository implements LabelItemListRepository {
         'Content-Type': 'multipart/form-data'
       }
     }
-    await this.request.post(`/projects/${projectId}/label-upload`, payload, config)
+    try {
+      await this.request.post(`/projects/${projectId}/label-upload`, payload, config)
+    } catch(e) {
+      const data = e.response.data
+      if ('detail' in data) {
+        throw new Error(data.detail)
+      } else {
+        throw new Error('Text field is required')
+      }
+    }
   }
 }

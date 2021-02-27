@@ -5,8 +5,6 @@ export interface LabelItemListRepository {
 
   create(projectId: string, item: LabelItem): Promise<LabelItem>
 
-  delete(projectId: string, itemId: number): Promise<void>
-
   update(projectId: string, item: LabelItem): Promise<LabelItem>
 
   bulkDelete(projectId: string, labelIds: number[]): Promise<void>

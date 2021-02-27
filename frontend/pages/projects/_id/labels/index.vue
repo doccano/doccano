@@ -25,7 +25,9 @@
       </v-dialog>
       <v-dialog v-model="dialogUpload">
         <form-upload
-          @cancel="dialogUpload=false"
+          :error-message="errorMessage"
+          @cancel="closeUpload"
+          @clear="clearErrorMessage"
           @upload="upload"
         />
       </v-dialog>
@@ -88,7 +90,8 @@ export default Vue.extend({
       } as LabelDTO,
       items: [] as LabelDTO[],
       selected: [] as LabelDTO[],
-      isLoading: false
+      isLoading: false,
+      errorMessage: ''
     }
   },
 
@@ -142,9 +145,22 @@ export default Vue.extend({
     },
 
     async upload(file: File) {
-      await this.$services.label.upload(this.projectId, file)
-      this.list()
+      try {
+        await this.$services.label.upload(this.projectId, file)
+        this.list()
+        this.closeUpload()
+      } catch(e) {
+        this.errorMessage = e.message
+      }
+    },
+
+    closeUpload() {
+      this.clearErrorMessage()
       this.dialogUpload = false
+    },
+
+    clearErrorMessage() {
+      this.errorMessage = ''
     },
 
     editItem(item: LabelDTO) {
