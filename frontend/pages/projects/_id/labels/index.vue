@@ -123,14 +123,28 @@ export default Vue.extend({
 
     async create(item: LabelDTO) {
       await this.$services.label.create(this.projectId, item)
-      this.list()
-      this.dialogCreate = false
     },
 
     async update(item: LabelDTO) {
       await this.$services.label.update(this.projectId, item)
+    },
+
+    save() {
+      if (this.editedIndex > -1) {
+        this.update(this.editedItem)
+      } else {
+        this.create(this.editedItem)
+      }
       this.list()
+      this.close()
+    },
+
+    close() {
       this.dialogCreate = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
     },
 
     async remove() {
@@ -167,23 +181,6 @@ export default Vue.extend({
       this.editedIndex = this.items.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogCreate = true
-    },
-
-    close() {
-      this.dialogCreate = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        this.update(this.editedItem)
-      } else {
-        this.create(this.editedItem)
-      }
-      this.close()
     }
   },
 
