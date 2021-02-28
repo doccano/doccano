@@ -1,7 +1,7 @@
 <template>
   <confirm-form
     :items="selected"
-    title="$t('members.removeMember')"
+    :title="$t('members.removeMember')"
     :message="$t('members.removePrompt')"
     item-key="username"
     @ok="$emit('remove')"
