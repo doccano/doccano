@@ -2,6 +2,13 @@
   <v-card>
     <v-card-title>
       <v-btn
+        class="text-capitalize"
+        color="primary"
+        @click.stop="dialogCreate=true"
+      >
+        {{ $t('generic.add') }}
+      </v-btn>
+      <v-btn
         class="text-capitalize ms-2"
         :disabled="!canDelete"
         outlined
@@ -9,6 +16,13 @@
       >
         {{ $t('generic.delete') }}
       </v-btn>
+      <v-dialog v-model="dialogCreate">
+        <form-create
+          v-model="editedItem"
+          @cancel="close"
+          @save="save"
+        />
+      </v-dialog>
       <v-dialog v-model="dialogDelete">
         <form-delete
           :selected="selected"
@@ -21,6 +35,7 @@
       v-model="selected"
       :items="items"
       :is-loading="isLoading"
+      @edit="editItem"
     />
   </v-card>
 </template>
@@ -29,6 +44,7 @@
 import Vue from 'vue'
 import MemberList from '@/components/member/MemberList.vue'
 import FormDelete from '@/components/member/FormDelete.vue'
+import FormCreate from '~/components/member/FormCreate.vue'
 import { MemberDTO } from '~/services/application/member.service'
 
 export default Vue.extend({
@@ -36,6 +52,7 @@ export default Vue.extend({
 
   components: {
     MemberList,
+    FormCreate,
     FormDelete
   },
 
@@ -49,6 +66,19 @@ export default Vue.extend({
     return {
       dialogCreate: false,
       dialogDelete: false,
+      editedIndex: -1,
+      editedItem: {
+        user: -1,
+        role: -1,
+        username: '',
+        rolename: ''
+      } as MemberDTO,
+      defaultItem: {
+        user: -1,
+        role: -1,
+        username: '',
+        rolename: ''
+      } as MemberDTO,
       items: [] as MemberDTO[],
       selected: [] as MemberDTO[],
       isLoading: false,
@@ -66,11 +96,43 @@ export default Vue.extend({
   },
 
   methods: {
+    async create() {
+      await this.$services.member.create(this.projectId, this.editedItem)
+    },
+
+    async update() {
+      await this.$services.member.update(this.projectId, this.editedItem)
+    },
+
+    save() {
+      if (this.editedIndex > -1) {
+        this.update()
+      } else {
+        this.create()
+      }
+      this.$fetch()
+      this.close()
+    },
+
+    close() {
+      this.dialogCreate = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
+    },
+
     async remove() {
       await this.$services.member.bulkDelete(this.projectId, this.selected)
       this.$fetch()
       this.dialogDelete = false
       this.selected = []
+    },
+
+    editItem(item: MemberDTO) {
+      this.editedIndex = this.items.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialogCreate = true
     }
   },
 
