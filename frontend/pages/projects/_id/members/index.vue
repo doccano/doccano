@@ -1,29 +1,87 @@
 <template>
   <v-card>
     <v-card-title>
-      <member-addition-button />
-      <member-deletion-button />
+      <v-btn
+        class="text-capitalize ms-2"
+        :disabled="!canDelete"
+        outlined
+        @click.stop="dialogDelete=true"
+      >
+        {{ $t('generic.delete') }}
+      </v-btn>
+      <v-dialog v-model="dialogDelete">
+        <form-delete
+          :selected="selected"
+          @cancel="dialogDelete=false"
+          @remove="remove"
+        />
+      </v-dialog>
     </v-card-title>
-    <member-list />
+    <member-list
+      v-model="selected"
+      :items="items"
+      :is-loading="isLoading"
+    />
   </v-card>
 </template>
 
-<script>
-import MemberList from '@/components/containers/members/MemberList'
-import MemberAdditionButton from '@/components/containers/members/MemberAdditionButton'
-import MemberDeletionButton from '@/components/containers/members/MemberDeletionButton'
+<script lang="ts">
+import Vue from 'vue'
+import MemberList from '@/components/member/MemberList.vue'
+import FormDelete from '@/components/member/FormDelete.vue'
+import { MemberDTO } from '~/services/application/member.service'
 
-export default {
+export default Vue.extend({
   layout: 'project',
 
   components: {
     MemberList,
-    MemberAdditionButton,
-    MemberDeletionButton
+    FormDelete
+  },
+
+  async fetch() {
+    this.isLoading = true
+    this.items = await this.$services.member.list(this.projectId)
+    this.isLoading = false
+  },
+
+  data() {
+    return {
+      dialogCreate: false,
+      dialogDelete: false,
+      items: [] as MemberDTO[],
+      selected: [] as MemberDTO[],
+      isLoading: false,
+      errorMessage: ''
+    }
+  },
+
+  computed: {
+    canDelete(): boolean {
+      return this.selected.length > 0
+    },
+    projectId(): string {
+      return this.$route.params.id
+    }
+  },
+
+  methods: {
+    async remove() {
+      await this.$services.member.bulkDelete(this.projectId, this.selected)
+      this.$fetch()
+      this.dialogDelete = false
+      this.selected = []
+    }
   },
 
   validate({ params }) {
     return /^\d+$/.test(params.id)
   }
-}
+})
 </script>
+
+<style scoped>
+::v-deep .v-dialog {
+  width: 800px;
+}
+</style>
