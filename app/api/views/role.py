@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from ..models import Project, Role, RoleMapping
 from ..permissions import IsProjectAdmin
@@ -26,6 +27,11 @@ class RoleMappingList(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         serializer.save(project=project)
+
+    def delete(self, request, *args, **kwargs):
+        delete_ids = request.data['ids']
+        RoleMapping.objects.filter(pk__in=delete_ids).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
