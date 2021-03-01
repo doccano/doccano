@@ -17,7 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_superuser')
+        fields = ('id', 'username', 'is_superuser')
 
 
 class LabelSerializer(serializers.ModelSerializer):
@@ -67,6 +67,7 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ('id', 'user', 'username', 'document', 'document_text', 'text', 'created_at', )
         read_only_fields = ('user', 'document')
+
 
 class DocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()

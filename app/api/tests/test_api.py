@@ -1855,10 +1855,9 @@ class TestRoleMappingDetailAPI(APITestCase):
         User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
         project = mommy.make('Project', users=[project_admin, project_member])
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
-        annotator_role = Role.objects.get(name=settings.ROLE_ANNOTATOR)
         cls.rolemapping = mommy.make('RoleMapping', role=admin_role, project=project, user=project_admin)
         cls.url = reverse(viewname='rolemapping_detail', args=[project.id, cls.rolemapping.id])
-        cls.data = {'role': annotator_role.id }
+        cls.data = {'role': admin_role.id}
 
     def test_returns_rolemapping_to_project_member(self):
         self.client.login(username=self.project_admin_name,

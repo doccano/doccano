@@ -52,7 +52,8 @@ export default {
     '~/plugins/vue-youtube.js',
     '~/plugins/vue-shortkey.js',
     '~/plugins/services.ts',
-    '~/plugins/color.ts'
+    '~/plugins/color.ts',
+    '~/plugins/role.ts'
   ],
   /*
   ** Nuxt.js modules

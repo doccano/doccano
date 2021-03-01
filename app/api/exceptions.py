@@ -39,3 +39,13 @@ class SampleDataException(ValidationError):
 class LabelValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'You cannot create a label with same name or shortcut key.'
+
+
+class RoleConstraintException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'The project needs at least one administrator.'
+
+
+class RoleAlreadyAssignedException(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'This user is already assigned to a role in this project.'

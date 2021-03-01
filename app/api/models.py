@@ -10,7 +10,8 @@ from django.dispatch import receiver
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
-from .managers import AnnotationManager, Seq2seqAnnotationManager
+from .managers import (AnnotationManager, RoleMappingManager,
+                       Seq2seqAnnotationManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -299,6 +300,7 @@ class RoleMapping(models.Model):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    objects = RoleMappingManager()
 
     def clean(self):
         other_rolemappings = self.project.role_mappings.exclude(id=self.id)
@@ -307,7 +309,7 @@ class RoleMapping(models.Model):
             raise ValidationError('This user is already assigned to a role in this project.')
 
     class Meta:
-        unique_together = ("user", "project", "role")
+        unique_together = ("user", "project")
 
 
 @receiver(post_save, sender=RoleMapping)
