@@ -36,7 +36,7 @@ class Seq2seqAnnotationManager(Manager):
 
 class RoleMappingManager(Manager):
 
-    def can_update(self, project, new_role_id):
+    def can_update(self, project: int, mapping_id: int, rolename: str):
         queryset = self.filter(
             project=project, role__name=settings.ROLE_PROJECT_ADMIN
         )
@@ -44,4 +44,6 @@ class RoleMappingManager(Manager):
             return True
         else:
             mapping = queryset.first()
-            return mapping.role == new_role_id
+            if mapping.id == mapping_id and rolename != settings.ROLE_PROJECT_ADMIN:
+                return False
+            return True

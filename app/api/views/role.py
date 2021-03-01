@@ -47,8 +47,9 @@ class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_update(self, serializer):
         project_id = self.kwargs['project_id']
-        role_id = serializer.validated_data['role']
-        if RoleMapping.objects.can_update(project_id, role_id):
+        id = self.kwargs['rolemapping_id']
+        role = serializer.validated_data['role']
+        if RoleMapping.objects.can_update(project_id, id, role.name):
             super().perform_update(serializer)
         else:
             raise RoleConstraintException
