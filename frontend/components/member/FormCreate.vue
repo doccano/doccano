@@ -31,7 +31,14 @@
           :rules="[rules.roleRequired]"
           return-object
           prepend-icon="mdi-credit-card-outline"
-        />
+        >
+          <template v-slot:item="props">
+            {{ $translateRole(props.item.rolename, $t('members.roles')) }}
+          </template>
+          <template v-slot:selection="props">
+            {{ $translateRole(props.item.rolename, $t('members.roles')) }}
+          </template>
+        </v-select>
         <v-alert
           v-show="errorMessage"
           prominent

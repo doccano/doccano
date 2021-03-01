@@ -27,6 +27,9 @@
         filled
       />
     </template>
+    <template v-slot:[`item.rolename`]="{ item }">
+      {{ $translateRole(item.rolename, $t('members.roles')) }}
+    </template>
     <template v-slot:[`item.actions`]="{ item }">
       <v-icon
         small
