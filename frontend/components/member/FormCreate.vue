@@ -15,7 +15,6 @@
           :loading="isLoading"
           :search-input.sync="username"
           hide-no-data
-          hide-selected
           item-text="username"
           :label="$t('members.userSearchAPIs')"
           :placeholder="$t('members.userSearchPrompt')"
@@ -86,8 +85,8 @@ export default Vue.extend({
       roles: [] as RoleDTO[],
       username: '',
       rules: {
-        userRequired: (v: UserDTO) => !!v.username || 'Required',
-        roleRequired: (v: RoleDTO) => !!v.rolename || 'Required'
+        userRequired: (v: UserDTO) => !!v && !!v.username || 'Required',
+        roleRequired: (v: RoleDTO) => !!v && !!v.rolename || 'Required'
       }
     }
   },
@@ -101,6 +100,7 @@ export default Vue.extend({
         }
       },
       set(val: MemberDTO) {
+        if (val === undefined) return
         const user = { user: val.id, username: val.username }
         this.$emit('input', { ...this.value, ...user })
       }
@@ -120,7 +120,15 @@ export default Vue.extend({
   },
 
   watch: {
-    username: '$fetch'
+    username() {
+      // Items have already been loaded
+      if (this.users.length > 0) return
+
+      // Items have already been requested
+      if (this.isLoading) return
+
+      this.$fetch()
+    }
   },
 
   async created() {

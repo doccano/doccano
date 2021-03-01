@@ -59,8 +59,13 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.items = await this.$services.member.list(this.projectId)
-    this.isLoading = false
+    try {
+      this.items = await this.$services.member.list(this.projectId)
+    } catch(e) {
+      this.$router.push(`/projects/${this.projectId}`)
+    } finally {
+      this.isLoading = false
+    }
   },
 
   data() {
@@ -98,14 +103,20 @@ export default Vue.extend({
 
   methods: {
     async create() {
-      await this.$services.member.create(this.projectId, this.editedItem)
-      this.close()
+      try {
+        await this.$services.member.create(this.projectId, this.editedItem)
+        this.close()
+        this.$fetch()
+      } catch(e) {
+        this.errorMessage = e.message
+      }
     },
 
     async update() {
       try {
         await this.$services.member.update(this.projectId, this.editedItem)
         this.close()
+        this.$fetch()
       } catch(e) {
         this.errorMessage = e.message
       }
@@ -117,7 +128,6 @@ export default Vue.extend({
       } else {
         this.create()
       }
-      this.$fetch()
     },
 
     close() {

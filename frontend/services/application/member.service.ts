@@ -23,13 +23,21 @@ export class MemberApplicationService {
   ) {}
 
   public async list(id: string): Promise<MemberDTO[]> {
-    const items = await this.repository.list(id)
-    return items.map(item => new MemberDTO(item))
+    try {
+      const items = await this.repository.list(id)
+      return items.map(item => new MemberDTO(item))
+    } catch(e) {
+      throw new Error(e.response.data.detail)
+    }
   }
 
-  public create(projectId: string, item: MemberDTO): void {
-    const member = new MemberItem(0, item.user, item.role, item.username, item.rolename)
-    this.repository.create(projectId, member)
+  public async create(projectId: string, item: MemberDTO): Promise<void> {
+    try {
+      const member = new MemberItem(0, item.user, item.role, item.username, item.rolename)
+      await this.repository.create(projectId, member)
+    } catch(e) {
+      throw new Error(e.response.data.detail)
+    }
   }
 
   public async update(projectId: string, item: MemberDTO): Promise<void> {
