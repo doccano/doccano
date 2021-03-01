@@ -1,9 +1,10 @@
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..exceptions import RoleConstraintException
+from ..exceptions import RoleConstraintException, RoleAlreadyAssignedException
 from ..models import Project, Role, RoleMapping
 from ..permissions import IsProjectAdmin
 from ..serializers import RoleMappingSerializer, RoleSerializer
@@ -29,7 +30,10 @@ class RoleMappingList(generics.ListCreateAPIView):
         return self.project.role_mappings
 
     def perform_create(self, serializer):
-        serializer.save(project=self.project)
+        try:
+            serializer.save(project=self.project)
+        except IntegrityError:
+            raise RoleAlreadyAssignedException
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
@@ -49,7 +53,10 @@ class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
         project_id = self.kwargs['project_id']
         id = self.kwargs['rolemapping_id']
         role = serializer.validated_data['role']
-        if RoleMapping.objects.can_update(project_id, id, role.name):
-            super().perform_update(serializer)
-        else:
+        if not RoleMapping.objects.can_update(project_id, id, role.name):
             raise RoleConstraintException
+        try:
+            super().perform_update(serializer)
+        except IntegrityError:
+            raise RoleAlreadyAssignedException
+

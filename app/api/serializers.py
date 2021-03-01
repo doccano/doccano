@@ -68,6 +68,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ('id', 'user', 'username', 'document', 'document_text', 'text', 'created_at', )
         read_only_fields = ('user', 'document')
 
+
 class DocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()

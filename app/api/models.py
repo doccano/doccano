@@ -308,7 +308,7 @@ class RoleMapping(models.Model):
             raise ValidationError('This user is already assigned to a role in this project.')
 
     class Meta:
-        unique_together = ("user", "project", "role")
+        unique_together = ("user", "project")
 
 
 @receiver(post_save, sender=RoleMapping)
