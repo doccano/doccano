@@ -10,7 +10,8 @@ from django.dispatch import receiver
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
-from .managers import AnnotationManager, Seq2seqAnnotationManager, RoleMappingManager
+from .managers import (AnnotationManager, RoleMappingManager,
+                       Seq2seqAnnotationManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'

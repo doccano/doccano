@@ -4,7 +4,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..exceptions import RoleConstraintException, RoleAlreadyAssignedException
+from ..exceptions import RoleAlreadyAssignedException, RoleConstraintException
 from ..models import Project, Role, RoleMapping
 from ..permissions import IsProjectAdmin
 from ..serializers import RoleMappingSerializer, RoleSerializer
