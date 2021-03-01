@@ -20,17 +20,21 @@ class RoleMappingList(generics.ListCreateAPIView):
     pagination_class = None
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
+    @property
+    def project(self):
+        return get_object_or_404(Project, pk=self.kwargs['project_id'])
+
     def get_queryset(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return project.role_mappings
+        return self.project.role_mappings
 
     def perform_create(self, serializer):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        serializer.save(project=project)
+        serializer.save(project=self.project)
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
-        RoleMapping.objects.filter(pk__in=delete_ids).delete()
+        RoleMapping.objects.filter(project=self.project, pk__in=delete_ids)\
+            .exclude(user=self.request.user)\
+            .delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
