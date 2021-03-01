@@ -32,9 +32,13 @@ export class MemberApplicationService {
     this.repository.create(projectId, member)
   }
 
-  public update(projectId: string, item: MemberDTO): void {
-    const member = new MemberItem(item.id, item.user, item.role, item.username, item.rolename)
-    this.repository.update(projectId, member)
+  public async update(projectId: string, item: MemberDTO): Promise<void> {
+    try {
+      const member = new MemberItem(item.id, item.user, item.role, item.username, item.rolename)
+      await this.repository.update(projectId, member)
+    } catch(e) {
+      throw new Error(e.response.data.detail)
+    }
   }
 
   public bulkDelete(projectId: string, items: MemberDTO[]): Promise<void> {

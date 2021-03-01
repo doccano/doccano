@@ -19,6 +19,7 @@
       <v-dialog v-model="dialogCreate">
         <form-create
           v-model="editedItem"
+          :error-message="errorMessage"
           @cancel="close"
           @save="save"
         />
@@ -98,10 +99,16 @@ export default Vue.extend({
   methods: {
     async create() {
       await this.$services.member.create(this.projectId, this.editedItem)
+      this.close()
     },
 
     async update() {
-      await this.$services.member.update(this.projectId, this.editedItem)
+      try {
+        await this.$services.member.update(this.projectId, this.editedItem)
+        this.close()
+      } catch(e) {
+        this.errorMessage = e.message
+      }
     },
 
     save() {
@@ -111,11 +118,11 @@ export default Vue.extend({
         this.create()
       }
       this.$fetch()
-      this.close()
     },
 
     close() {
       this.dialogCreate = false
+      this.errorMessage = ''
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1

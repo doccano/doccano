@@ -1,5 +1,6 @@
 from collections import Counter
 
+from django.conf import settings
 from django.db.models import Count, Manager
 
 
@@ -31,3 +32,16 @@ class Seq2seqAnnotationManager(Manager):
             user_count[d['user__username']] += d['user__count']
 
         return label_count, user_count
+
+
+class RoleMappingManager(Manager):
+
+    def can_update(self, project, new_role_id):
+        queryset = self.filter(
+            project=project, role__name=settings.ROLE_PROJECT_ADMIN
+        )
+        if queryset.count() > 1:
+            return True
+        else:
+            mapping = queryset.first()
+            return mapping.role == new_role_id

@@ -3,6 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from ..exceptions import RoleConstraintException
 from ..models import Project, Role, RoleMapping
 from ..permissions import IsProjectAdmin
 from ..serializers import RoleMappingSerializer, RoleSerializer
@@ -43,3 +44,11 @@ class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = RoleMappingSerializer
     lookup_url_kwarg = 'rolemapping_id'
     permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    def perform_update(self, serializer):
+        project_id = self.kwargs['project_id']
+        role_id = serializer.validated_data['role']
+        if RoleMapping.objects.can_update(project_id, role_id):
+            super().perform_update(serializer)
+        else:
+            raise RoleConstraintException

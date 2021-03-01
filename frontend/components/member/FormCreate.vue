@@ -33,6 +33,17 @@
           return-object
           prepend-icon="mdi-credit-card-outline"
         />
+        <v-alert
+          v-show="errorMessage"
+          prominent
+          type="error"
+        >
+          <v-row align="center">
+            <v-col class="grow">
+              {{ errorMessage }}
+            </v-col>
+          </v-row>
+        </v-alert>
       </v-form>
     </template>
   </base-card>
@@ -55,6 +66,10 @@ export default Vue.extend({
       type: Object as PropType<MemberDTO>,
       required: true
     },
+    errorMessage: {
+      type: String,
+      default: ''
+    }
   },
 
   async fetch() {
