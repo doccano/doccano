@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 
@@ -56,14 +56,6 @@ export default {
 
   computed: {
     ...mapGetters('projects', ['getLink', 'getCurrentUserRole'])
-  },
-
-  created() {
-    this.setCurrentProject(this.$route.params.id)
-  },
-
-  methods: {
-    ...mapActions('projects', ['setCurrentProject'])
   }
 }
 </script>
