@@ -138,12 +138,6 @@ class TestProjectListAPI(APITestCase):
         self.assertTrue(response.json().get('collaborative_annotation'))
         self.assertTrue(response.json().get('randomize_document_order'))
 
-    def test_disallows_project_member_to_create_project(self):
-        self.client.login(username=self.main_project_member_name,
-                          password=self.main_project_member_pass)
-        response = self.client.post(self.url, format='json', data=self.data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
     @classmethod
     def doCleanups(cls):
         remove_all_role_mappings()
