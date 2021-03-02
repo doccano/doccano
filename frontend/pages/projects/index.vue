@@ -1,25 +1,41 @@
 <template>
   <v-card>
     <v-card-title>
-      <project-creation-button />
-      <project-deletion-button />
     </v-card-title>
-    <project-list />
+    <project-list
+      v-model="selected"
+      :items="items"
+      :is-loading="isLoading"
+      />
   </v-card>
 </template>
 
-<script>
-import ProjectList from '@/components/containers/projects/ProjectList'
-import ProjectDeletionButton from '@/components/containers/projects/ProjectDeletionButton'
-import ProjectCreationButton from '@/components/containers/projects/ProjectCreationButton'
+<script lang="ts">
+import Vue from 'vue'
+import ProjectList from '@/components/project/ProjectList.vue'
+import { ProjectDTO } from '@/services/application/project.service'
 
-export default {
+export default Vue.extend({
   layout: 'projects',
+
   middleware: ['check-auth', 'auth'],
+
   components: {
     ProjectList,
-    ProjectCreationButton,
-    ProjectDeletionButton
-  }
-}
+  },
+
+  async fetch() {
+    this.isLoading = true
+    this.items = await this.$services.project.list()
+    this.isLoading = false
+  },
+
+  data() {
+    return {
+      items: [] as ProjectDTO[],
+      selected: [] as ProjectDTO[],
+      isLoading: false
+    }
+  }  
+})
 </script>
