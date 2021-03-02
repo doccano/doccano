@@ -97,6 +97,7 @@ export default Vue.extend({
 
   methods: {
     translateTypeName(type: string, types: string[]): string {
+      // @ts-ignore
       const index = this.projectTypes.indexOf(type)
       return types[index]
     }

@@ -21,11 +21,16 @@ class ProjectList(generics.ListCreateAPIView):
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
-        Project.objects.filter(
+        projects = Project.objects.filter(
             role_mappings__user=self.request.user,
             role_mappings__role__name=settings.ROLE_PROJECT_ADMIN,
             pk__in=delete_ids
-        ).delete()
+        )
+        # Todo: I want to use bulk delete.
+        # But it causes the constraint error.
+        # See https://github.com/django-polymorphic/django-polymorphic/issues/229
+        for project in projects:
+            project.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
