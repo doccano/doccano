@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..models import Project, RoleMapping, Role
+from ..models import Project, Role, RoleMapping
 from ..permissions import IsInProjectReadOnlyOrAdmin
 from ..serializers import ProjectPolymorphicSerializer, ProjectSerializer
 
