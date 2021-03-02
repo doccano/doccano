@@ -67,7 +67,7 @@ export default Vue.extend({
       return [
         { text: this.$t('generic.name'), value: 'name' },
         { text: this.$t('generic.description'), value: 'description' },
-        { text: this.$t('generic.type'), value: 'project_type' }
+        { text: this.$t('generic.type'), value: 'projectType' }
       ]
     }
   } 

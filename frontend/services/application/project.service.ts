@@ -1,4 +1,4 @@
-import { ProjectItem, CurrentUsersRole } from '@/models/project'
+import { ProjectReadItem, ProjectWriteItem, CurrentUsersRole, ProjectType } from '@/models/project'
 import { ProjectItemListRepository } from '@/repositories/project/interface'
 
 export class ProjectDTO {
@@ -6,30 +6,26 @@ export class ProjectDTO {
   name:                        string
   description:                 string
   guideline:                   string
-  users:                       number[]
   current_users_role:          CurrentUsersRole
-  project_type:                string
-  updated_at:                  string
-  randomize_document_order:    boolean
-  collaborative_annotation:    boolean
-  single_class_classification: boolean
-  resourcetype:                string
+  projectType:                 ProjectType
+  updatedAt:                   string
+  enableRandomizeDocOrder:     boolean
+  enableShareAnnotation:       boolean
 
-  constructor(item: ProjectItem) {
+  constructor(item: ProjectReadItem) {
     this.id = item.id
     this.name = item.name
     this.description = item.description
     this.guideline = item.guideline
-    this.users = item.users
     this.current_users_role = item.current_users_role
-    this.project_type = item.project_type
-    this.updated_at = item.updated_at
-    this.randomize_document_order = item.randomize_document_order
-    this.collaborative_annotation = item.collaborative_annotation
-    this.single_class_classification = item.single_class_classification
-    this.resourcetype = item.resourcetype
+    this.projectType = item.project_type
+    this.updatedAt = item.updated_at
+    this.enableRandomizeDocOrder = item.randomize_document_order
+    this.enableShareAnnotation = item.collaborative_annotation
   }
 }
+
+export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomizeDocOrder' | 'enableShareAnnotation'>
 
 export class ProjectApplicationService {
   constructor(
@@ -45,18 +41,18 @@ export class ProjectApplicationService {
     }
   }
 
-  public async create(item: ProjectDTO): Promise<void> {
+  public async create(item: ProjectWriteDTO): Promise<ProjectReadItem> {
     try {
-      const project = this.toItem(item)
-      await this.repository.create(project)
+      const project = this.toWriteModel(item)
+      return await this.repository.create(project)
     } catch(e) {
       throw new Error(e.response.data.detail)
     }
   }
 
-  public async update(item: ProjectDTO): Promise<void> {
+  public async update(item: ProjectWriteDTO): Promise<void> {
     try {
-      const project = this.toItem(item)
+      const project = this.toWriteModel(item)
       await this.repository.update(project)
     } catch(e) {
       throw new Error(e.response.data.detail)
@@ -68,20 +64,15 @@ export class ProjectApplicationService {
     return this.repository.bulkDelete(ids)
   }
 
-  private toItem(item: ProjectDTO): ProjectItem {
-    return new ProjectItem(
+  private toWriteModel(item: ProjectWriteDTO): ProjectWriteItem {
+    return new ProjectWriteItem(
       item.id,
       item.name,
       item.description,
       item.guideline,
-      item.users,
-      item.current_users_role,
-      item.project_type,
-      item.updated_at,
-      item.randomize_document_order,
-      item.collaborative_annotation,
-      item.single_class_classification,
-      item.resourcetype
+      item.projectType,
+      item.enableRandomizeDocOrder,
+      item.enableShareAnnotation
     )
   }
 }

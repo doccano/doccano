@@ -1,5 +1,5 @@
 import ApiService from '@/services/api.service'
-import { ProjectItem } from '@/models/project'
+import { ProjectReadItem, ProjectWriteItem } from '@/models/project'
 import { ProjectItemListRepository } from './interface'
 
 
@@ -8,25 +8,23 @@ export class FromApiProjectItemListRepository implements ProjectItemListReposito
     private readonly request = ApiService
   ) {}
 
-  async list(): Promise<ProjectItem[]> {
+  async list(): Promise<ProjectReadItem[]> {
     const url = `/projects`
     const response = await this.request.get(url)
-    const responseItems: ProjectItem[] = response.data
-    return responseItems.map(item => ProjectItem.valueOf(item))
+    const responseItems: ProjectReadItem[] = response.data
+    return responseItems.map(item => ProjectReadItem.valueOf(item))
   }
 
-  async create(item: ProjectItem): Promise<ProjectItem> {
+  async create(item: ProjectWriteItem): Promise<ProjectReadItem> {
     const url = `/projects`
     const response = await this.request.post(url, item.toObject())
-    const responseItem: ProjectItem = response.data
-    return ProjectItem.valueOf(responseItem)
+    const responseItem: ProjectReadItem = response.data
+    return ProjectReadItem.valueOf(responseItem)
   }
 
-  async update(item: ProjectItem): Promise<ProjectItem> {
+  async update(item: ProjectWriteItem): Promise<void> {
     const url = `/projects/${item.id}`
     const response = await this.request.patch(url, item.toObject())
-    const responseItem: ProjectItem = response.data
-    return ProjectItem.valueOf(responseItem)
   }
 
   async bulkDelete(projectIds: number[]): Promise<void> {

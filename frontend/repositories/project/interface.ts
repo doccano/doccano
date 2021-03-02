@@ -1,12 +1,12 @@
-import { ProjectItem } from '@/models/project'
+import { ProjectReadItem, ProjectWriteItem } from '@/models/project'
 
 
 export interface ProjectItemListRepository {
-  list(): Promise<ProjectItem[]>
+  list(): Promise<ProjectReadItem[]>
 
-  create(item: ProjectItem): Promise<ProjectItem>
+  create(item: ProjectWriteItem): Promise<ProjectReadItem>
 
-  update(item: ProjectItem): Promise<ProjectItem>
+  update(item: ProjectWriteItem): Promise<void>
 
   bulkDelete(projectIds: number[]): Promise<void>
 }
