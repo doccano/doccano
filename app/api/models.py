@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save, pre_delete, m2m_changed
 from django.dispatch import receiver
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
@@ -312,19 +312,19 @@ class RoleMapping(models.Model):
         unique_together = ("user", "project")
 
 
-# @receiver(post_save, sender=RoleMapping)
-# def add_linked_project(sender, instance, created, **kwargs):
-#     if not created:
-#         return
-#     userInstance = instance.user
-#     projectInstance = instance.project
-#     if userInstance and projectInstance:
-#         user = User.objects.get(pk=userInstance.pk)
-#         project = Project.objects.get(pk=projectInstance.pk)
-#         user.projects.add(project)
-#         user.save()
-#
-#
+@receiver(post_save, sender=RoleMapping)
+def add_linked_project(sender, instance, created, **kwargs):
+    if not created:
+        return
+    userInstance = instance.user
+    projectInstance = instance.project
+    if userInstance and projectInstance:
+        user = User.objects.get(pk=userInstance.pk)
+        project = Project.objects.get(pk=projectInstance.pk)
+        user.projects.add(project)
+        user.save()
+
+
 # @receiver(post_save)
 # def add_superusers_to_project(sender, instance, created, **kwargs):
 #     if not created:
@@ -350,6 +350,21 @@ class RoleMapping(models.Model):
 #                 [RoleMapping(role_id=admin_role.id, user_id=instance.id, project_id=project.id)
 #                  for project in projects]
 #             )
+
+@receiver(m2m_changed, sender=Project.users.through)
+def remove_mapping_on_remove_user_from_project(sender, instance, action, reverse, **kwargs):
+    # if reverse is True, pk_set is project_ids and instance is user.
+    # else, pk_set is user_ids and instance is project.
+    user_ids = kwargs['pk_set']
+    if action.startswith('post_remove') and not reverse:
+        RoleMapping.objects.filter(user__in=user_ids, project=instance).delete()
+    elif action.startswith('post_add') and not reverse:
+        admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
+        RoleMapping.objects.bulk_create(
+            [RoleMapping(role=admin_role, project=instance, user_id=user)
+             for user in user_ids
+             if not RoleMapping.objects.filter(project=instance, user_id=user).exists()]
+        )
 
 
 @receiver(pre_delete, sender=RoleMapping)
