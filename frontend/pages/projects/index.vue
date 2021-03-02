@@ -18,7 +18,7 @@
       </v-btn>
       <v-dialog v-model="dialogCreate">
         <form-create
-          v-model="editedItem"
+          v-bind.sync="editedItem"
           @cancel="close"
           @save="create"
         />

@@ -10,27 +10,30 @@
     <template #content>
       <v-form v-model="valid">
         <v-text-field
-          v-model="item.name"
+          :value="name"
           :rules="projectNameRules($t('rules.projectNameRules'))"
           :label="$t('overview.projectName')"
           prepend-icon="mdi-account-multiple"
           required
           autofocus
+          @input="updateValue('name', $event)"
         />
         <v-text-field
-          v-model="item.description"
+          :value="description"
           :rules="descriptionRules($t('rules.descriptionRules'))"
           :label="$t('generic.description')"
           prepend-icon="mdi-clipboard-text"
           required
+          @input="updateValue('description', $event)"
         />
         <v-select
-          v-model="item.projectType"
+          :value="projectType"
           :items="projectTypes"
           :rules="projectTypeRules($t('rules.projectTypeRules'))"
           :label="$t('overview.projectType')"
           prepend-icon="mdi-keyboard"
           required
+          @input="updateValue('projectType', $event)"
         >
           <template v-slot:item="props">
             {{ translateTypeName(props.item, $t('overview.projectTypes')) }}
@@ -40,12 +43,14 @@
           </template>
           </v-select>
         <v-checkbox
-          v-model="item.enableRandomizeDocOrder"
+          :value="enableRandomizeDocOrder"
           :label="$t('overview.randomizeDocOrder')"
+          @change="updateValue('enableRandomizeDocOrder', $event === true)"
         />
         <v-checkbox
-          v-model="item.enableShareAnnotation"
+          :value="enableShareAnnotation"
           :label="$t('overview.shareAnnotations')"
+          @change="updateValue('enableShareAnnotation', $event === true)"
         />
       </v-form>
     </template>
@@ -63,9 +68,29 @@ export default Vue.extend({
   },
 
   props: {
-    value: {
-      type: Object,
-      default: () => {},
+    name: {
+      type: String,
+      default: '',
+      required: true
+    },
+    description: {
+      type: String,
+      default: '',
+      required: true
+    },
+    projectType: {
+      type: String,
+      default: '',
+      required: true
+    },
+    enableRandomizeDocOrder: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    enableShareAnnotation: {
+      type: Boolean,
+      default: false,
       required: true
     }
   },
@@ -82,22 +107,14 @@ export default Vue.extend({
   computed: {
     projectTypes() {
       return ['DocumentClassification', 'SequenceLabeling', 'Seq2seq']
-    },
-    item: {
-      get() {
-        // @ts-ignore
-        return this.value
-      },
-      set(val) {
-        // @ts-ignore
-        this.$emit('input', val)
-      }
     }
   },
 
   methods: {
+    updateValue(key: string, value: string) {
+      this.$emit(`update:${key}`, value);
+    },
     translateTypeName(type: string, types: string[]): string {
-      // @ts-ignore
       const index = this.projectTypes.indexOf(type)
       return types[index]
     }
