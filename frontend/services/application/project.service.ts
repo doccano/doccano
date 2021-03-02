@@ -41,10 +41,17 @@ export class ProjectApplicationService {
     }
   }
 
-  public async create(item: ProjectWriteDTO): Promise<ProjectReadItem> {
+  public async findById(id: string): Promise<ProjectDTO> {
+    const item = await this.repository.findById(id)
+    const response = new ProjectDTO(item)
+    return new ProjectDTO(item)
+  }
+
+  public async create(item: ProjectWriteDTO): Promise<ProjectDTO> {
     try {
       const project = this.toWriteModel(item)
-      return await this.repository.create(project)
+      const response = await this.repository.create(project)
+      return new ProjectDTO(response)
     } catch(e) {
       throw new Error(e.response.data.detail)
     }

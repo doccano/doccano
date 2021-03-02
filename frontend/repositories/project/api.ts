@@ -15,6 +15,13 @@ export class FromApiProjectItemListRepository implements ProjectItemListReposito
     return responseItems.map(item => ProjectReadItem.valueOf(item))
   }
 
+  async findById(id: string): Promise<ProjectReadItem> {
+    const url = `/projects/${id}`
+    const response = await this.request.get(url)
+    const responseItem: ProjectReadItem = response.data
+    return ProjectReadItem.valueOf(responseItem)
+  }
+
   async create(item: ProjectWriteItem): Promise<ProjectReadItem> {
     const url = `/projects`
     const response = await this.request.post(url, item.toObject())
