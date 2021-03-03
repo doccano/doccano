@@ -330,7 +330,7 @@ export const actions = {
         commit('setCurrent', response.data)
       })
       .catch((error) => {
-        alert(error)
+        throw new Error(error)
       })
   },
   updateCurrentProject({ commit }, data) {

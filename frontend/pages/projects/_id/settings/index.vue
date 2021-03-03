@@ -15,7 +15,7 @@
 
     <v-tabs-items v-model="tab">
       <v-tab-item value="tab-project">
-        <project-config />
+        <form-update />
       </v-tab-item>
       <v-tab-item value="tab-auto-labeling">
         <config-list />
@@ -24,16 +24,17 @@
   </v-card>
 </template>
 
-<script>
-import ProjectConfig from '@/components/containers/projects/ProjectConfig'
-import ConfigList from '@/components/containers/settings/ConfigList'
+<script lang="ts">
+import Vue from 'vue'
+import FormUpdate from '@/components/project/FormUpdate.vue'
+import ConfigList from '@/components/containers/settings/ConfigList.vue'
 
-export default {
+export default Vue.extend({
   layout: 'project',
 
   components: {
-    ProjectConfig,
-    ConfigList
+    ConfigList,
+    FormUpdate
   },
 
   data() {
@@ -45,5 +46,5 @@ export default {
   validate({ params }) {
     return /^\d+$/.test(params.id)
   }
-}
+})
 </script>

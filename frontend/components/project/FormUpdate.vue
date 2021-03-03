@@ -106,7 +106,7 @@
           >
             <h3>Shuffle</h3>
             <v-checkbox
-              v-model="project.randomize_document_order"
+              v-model="project.enableRandomizeDocOrder"
               :label="$t('overview.randomizeDocOrder')"
             />
           </v-col>
@@ -118,7 +118,7 @@
           >
             <h3>Collaboration</h3>
             <v-checkbox
-              v-model="project.collaborative_annotation"
+              v-model="project.enableShareAnnotation"
               :label="$t('overview.shareAnnotations')"
             />
           </v-col>
@@ -129,10 +129,13 @@
 </template>
 
 <script>
-import ProjectService from '@/services/project.service'
 import { projectNameRules, descriptionRules } from '@/rules/index'
 
 export default {
+  async fetch() {
+    this.project = await this.$services.project.findById(this.projectId)
+  },
+
   data() {
     return {
       project: {},
@@ -150,27 +153,19 @@ export default {
   computed: {
     isReady() {
       return !!this.project
+    },
+    projectId() {
+      return this.$route.params.id
     }
   },
 
   watch: {
-    'project.randomize_document_order'() {
+    'project.enableRandomizeDocOrder'() {
       this.doneEdit()
     },
-    'project.collaborative_annotation'() {
+    'project.enableShareAnnotation'() {
       this.doneEdit()
     }
-  },
-
-  created() {
-    const projectId = this.$route.params.id
-    ProjectService.fetchProjectById(projectId)
-      .then((response) => {
-        this.project = response.data
-      })
-      .catch((error) => {
-        alert(error)
-      })
   },
 
   methods: {
@@ -189,23 +184,18 @@ export default {
       Object.assign(this.project, this.beforeEditCache)
     },
 
-    doneEdit() {
+    async doneEdit() {
       if (!this.validate()) {
         this.cancelEdit()
         return
       }
-      const projectId = this.$route.params.id
-      ProjectService.updateProject(projectId, this.project)
-        .then((response) => {
-          this.project = response.data
-          this.beforeEditCache = {}
-        })
-        .catch((error) => {
-          alert(error)
-        })
-        .finally(() => {
-          this.initEdit()
-        })
+      try {
+        await this.$services.project.update(this.project)
+        this.beforeEditCache = {}
+        this.$fetch()
+      } finally {
+        this.initEdit()
+      }
     },
 
     validate() {

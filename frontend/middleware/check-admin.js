@@ -1,5 +1,9 @@
 export default async function({ app, store, route, redirect }) {
-  await store.dispatch('projects/setCurrentProject', route.params.id)
+  try {
+    await store.dispatch('projects/setCurrentProject', route.params.id)
+  } catch(e) {
+    redirect('/projects')
+  }
   const role = store.getters['projects/getCurrentUserRole']
   const projectRoot = app.localePath('/projects/' + route.params.id)
   const path = route.fullPath.replace(/\/$/g, '')
