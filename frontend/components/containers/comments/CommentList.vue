@@ -18,10 +18,10 @@
     item-key="id"
     show-select
   >
-    <template v-slot:item.created_at="{ item }">
+    <template v-slot:[`item.created_at`]="{ item }">
       <span>{{ item.created_at | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('YYYY-MM-DD HH:mm') }}</span>
     </template>
-    <template v-slot:item.document_text="{ item }">
+    <template v-slot:[`item.document_text`]="{ item }">
       {{ item.document_text | truncate(200) }}
     </template>
     <template v-slot:top>
