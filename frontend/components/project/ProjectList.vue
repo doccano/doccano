@@ -32,11 +32,18 @@
         <span>{{ item.name }}</span>
       </nuxt-link>
     </template>
+    <template v-slot:[`item.updatedAt`]="{ item }">
+      <span>{{ item.updatedAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm') }}</span>
+    </template>
   </v-data-table>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
+import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
+Vue.use(VueFilterDateFormat)
+Vue.use(VueFilterDateParse)
 
 export default Vue.extend({
   props: {
@@ -67,7 +74,8 @@ export default Vue.extend({
       return [
         { text: this.$t('generic.name'), value: 'name' },
         { text: this.$t('generic.description'), value: 'description' },
-        { text: this.$t('generic.type'), value: 'projectType' }
+        { text: this.$t('generic.type'), value: 'projectType' },
+        { text: 'Updated', value: 'updatedAt' },
       ]
     }
   } 
