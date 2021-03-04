@@ -1,8 +1,9 @@
-import { CommentItem, CommentItemList } from '@/models/comment'
+import { CommentItem } from '@/models/comment'
 import { CommentItemListRepository } from '@/repositories/comment/interface'
 
 export class CommentReadDTO {
   id: number
+  user: number
   username: string
   documentText: string
   text: string
@@ -10,6 +11,7 @@ export class CommentReadDTO {
 
   constructor(item: CommentItem) {
     this.id = item.id
+    this.user = item.user
     this.username = item.username
     this.documentText = item.documentText
     this.text = item.text
@@ -27,8 +29,9 @@ export class CommentApplicationService {
     return items.map(item => new CommentReadDTO(item))
   }
 
-  public list(projectId: string, docId: string): Promise<CommentItemList> {
-    return this.repository.list(projectId, docId)
+  public async list(projectId: string, docId: string): Promise<CommentReadDTO[]> {
+    const items = await this.repository.list(projectId, docId)
+    return items.map(item => new CommentReadDTO(item))
   }
 
   public create(projectId: string, docId: string, text: string): Promise<CommentItem> {
