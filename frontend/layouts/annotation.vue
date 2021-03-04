@@ -58,7 +58,7 @@
             />
             <guideline-button />
             <clear-annotations-button />
-            <comment-button />
+            <form-create-comment />
             <settings
               v-model="options"
               :errors="errors"
@@ -113,7 +113,7 @@ import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
-import CommentButton from '../components/containers/comments/CommentButton.vue'
+import FormCreateComment from '../components/comment/FormCreate.vue'
 import Pagination from '~/components/containers/annotation/Pagination'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
@@ -132,7 +132,7 @@ export default {
     ApproveButton,
     MetadataBox,
     ClearAnnotationsButton,
-    CommentButton,
+    FormCreateComment,
     Settings
   },
 
