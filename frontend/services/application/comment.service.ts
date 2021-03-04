@@ -1,13 +1,30 @@
 import { CommentItem, CommentItemList } from '@/models/comment'
 import { CommentItemListRepository } from '@/repositories/comment/interface'
 
+export class CommentReadDTO {
+  id: number
+  username: string
+  documentText: string
+  text: string
+  createdAt: string
+
+  constructor(item: CommentItem) {
+    this.id = item.id
+    this.username = item.username
+    this.documentText = item.documentText
+    this.text = item.text
+    this.createdAt = item.createdAt
+  }
+}
+
 export class CommentApplicationService {
   constructor(
     private readonly repository: CommentItemListRepository
   ) {}
 
-  public listProjectComment(projectId: string, q: string = ''): Promise<CommentItemList> {
-    return this.repository.listAll(projectId, q)
+  public async listProjectComment(projectId: string, q: string = ''): Promise<CommentReadDTO[]> {
+    const items = await this.repository.listAll(projectId, q)
+    return items.map(item => new CommentReadDTO(item))
   }
 
   public list(projectId: string, docId: string): Promise<CommentItemList> {
@@ -26,7 +43,8 @@ export class CommentApplicationService {
     return this.repository.delete(projectId, docId, item)
   }
 
-  public deleteBulk(projectId: string, items: CommentItemList): Promise<void> {
-    return this.repository.deleteBulk(projectId, items)
+  public deleteBulk(projectId: string, items: CommentReadDTO[]): Promise<void> {
+    const ids = items.map(item => item.id)
+    return this.repository.deleteBulk(projectId, ids)
   }
 }
