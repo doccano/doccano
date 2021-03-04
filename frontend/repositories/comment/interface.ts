@@ -19,7 +19,7 @@ export interface CommentItemListRepository {
 
   update(projectId: string, docId: string, item: CommentItem): Promise<CommentItem>
 
-  delete(projectId: string, docId: string, item: CommentItem): Promise<void>
+  delete(projectId: string, docId: string, commentId: number): Promise<void>
 
   deleteBulk(projectId: string, items: number[]): Promise<void>
 }

@@ -35,8 +35,8 @@ export class FromApiCommentItemListRepository implements CommentItemListReposito
     return CommentItem.valueOf(responseItem)
   }
 
-  async delete(projectId: string, docId: string, item: CommentItem): Promise<void> {
-    const url = `/projects/${projectId}/docs/${docId}/comments/${item.id}`
+  async delete(projectId: string, docId: string, commentId: number): Promise<void> {
+    const url = `/projects/${projectId}/docs/${docId}/comments/${commentId}`
     const response = await this.request.delete(url)
   }
 
