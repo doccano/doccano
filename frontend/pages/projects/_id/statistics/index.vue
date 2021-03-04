@@ -1,12 +1,12 @@
 <template>
-  <v-row v-if="stats">
+  <v-row v-if="!isEmpty">
     <v-col
       cols="12"
       lg="4"
     >
       <v-card>
         <doughnut-chart
-          :chart-data="progressLocale()"
+          :chart-data="stats.progress"
         />
       </v-card>
     </v-col>
@@ -16,7 +16,7 @@
     >
       <v-card>
         <bar-chart
-          :chart-data="labelStatsLocale()"
+          :chart-data="stats.label"
         />
       </v-card>
     </v-col>
@@ -26,7 +26,7 @@
     >
       <v-card>
         <bar-chart
-          :chart-data="userStatsLocale()"
+          :chart-data="stats.user"
         />
       </v-card>
     </v-col>
@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from 'vuex'
+import _ from 'lodash'
 import DoughnutChart from '@/components/molecules/DoughnutChart'
 import BarChart from '@/components/molecules/BarChart'
 
@@ -46,28 +46,25 @@ export default {
     BarChart
   },
 
+  data() {
+    return {
+      stats: {}
+    }
+  },
+
   computed: {
-    ...mapGetters('statistics', ['userStats', 'labelStats', 'progress']),
-    ...mapState('statistics', ['stats'])
+    isEmpty() {
+      return _.isEmpty(this.stats)
+    }
   },
 
   async created() {
-    await this.fetchStatistics({
-      projectId: this.$route.params.id
-    })
-  },
-
-  methods: {
-    ...mapActions('statistics', ['fetchStatistics']),
-    progressLocale() {
-      return this.progress(this.$t('statistics.progress'))
-    },
-    labelStatsLocale() {
-      return this.labelStats(this.$t('statistics.labelStats'))
-    },
-    userStatsLocale() {
-      return this.userStats(this.$t('statistics.userStats'))
-    }
+    this.stats = await this.$services.statistics.fetchStatistics(
+      this.$route.params.id,
+      this.$t('statistics.labelStats'),
+      this.$t('statistics.userStats'),
+      this.$t('statistics.progress')
+    )
   },
 
   validate({ params }) {
