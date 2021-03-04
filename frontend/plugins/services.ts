@@ -5,12 +5,14 @@ import { FromApiUserItemListRepository } from '@/repositories/user/api'
 import { FromApiRoleItemListRepository } from '@/repositories/role/api'
 import { FromApiProjectItemListRepository } from '@/repositories/project/api'
 import { FromApiCommentItemListRepository } from '@/repositories/comment/api'
+import { FromApiStatisticsRepository } from '@/repositories/statistics/api'
 import { LabelApplicationService } from '@/services/application/label.service'
 import { MemberApplicationService } from '@/services/application/member.service'
 import { UserApplicationService } from '@/services/application/user.service'
 import { RoleApplicationService } from '@/services/application/role.service'
 import { ProjectApplicationService } from '@/services/application/project.service'
 import { CommentApplicationService } from '@/services/application/comment.service'
+import { StatisticsApplicationService } from '@/services/application/statistics.service'
 
 export interface Services {
   label: LabelApplicationService,
@@ -18,7 +20,8 @@ export interface Services {
   user: UserApplicationService,
   role: RoleApplicationService,
   project: ProjectApplicationService,
-  comment: CommentApplicationService
+  comment: CommentApplicationService,
+  statistics: StatisticsApplicationService
 }
 
 declare module 'vue/types/vue' {
@@ -40,13 +43,16 @@ const plugin: Plugin = (context, inject) => {
   const project = new ProjectApplicationService(projectRepository)
   const commentRepository = new FromApiCommentItemListRepository()
   const comment = new CommentApplicationService(commentRepository)
+  const statisticsRepository = new FromApiStatisticsRepository()
+  const statistics = new StatisticsApplicationService(statisticsRepository)
   const services: Services = {
     label,
     member,
     user,
     role,
     project,
-    comment
+    comment,
+    statistics
   }
   inject('services', services)
 }
