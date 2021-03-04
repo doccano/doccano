@@ -1,5 +1,5 @@
 import ApiService from '@/services/api.service'
-import { CommentItemList, CommentItem } from '@/models/comment'
+import { CommentItem } from '@/models/comment'
 import { CommentItemListRepository, CommentItemResponse } from './interface'
 
 export class FromApiCommentItemListRepository implements CommentItemListRepository {
@@ -14,11 +14,11 @@ export class FromApiCommentItemListRepository implements CommentItemListReposito
     return items.map(item => CommentItem.valueOf(item))
   }
 
-  async list(projectId: string, docId: string): Promise<CommentItemList> {
+  async list(projectId: string, docId: string): Promise<CommentItem[]> {
     const url = `/projects/${projectId}/docs/${docId}/comments`
     const response = await this.request.get(url)
     const items: CommentItemResponse[] = response.data
-    return CommentItemList.valueOf(items.map(item => CommentItem.valueOf(item)))
+    return items.map(item => CommentItem.valueOf(item))
   }
 
   async create(projectId: string, docId: string, text: string): Promise<CommentItem> {

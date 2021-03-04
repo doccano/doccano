@@ -1,4 +1,4 @@
-import { CommentItem, CommentItemList } from '@/models/comment'
+import { CommentItem } from '@/models/comment'
 
 export interface CommentItemResponse {
   id: number,
@@ -13,7 +13,7 @@ export interface CommentItemResponse {
 export interface CommentItemListRepository {
   listAll(projectId: string, q: string): Promise<CommentItem[]>
 
-  list(projectId: string, docId: string): Promise<CommentItemList>
+  list(projectId: string, docId: string): Promise<CommentItem[]>
 
   create(projectId: string, docId: string, text: string): Promise<CommentItem>
 
