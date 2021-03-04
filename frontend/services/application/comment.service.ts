@@ -38,12 +38,15 @@ export class CommentApplicationService {
     return this.repository.create(projectId, docId, text)
   }
 
-  public update(projectId: string, docId: string, item: CommentItem): Promise<CommentItem> {
-    return this.repository.update(projectId, docId, item)
+  public update(projectId: string, docId: string, item: CommentReadDTO): Promise<CommentItem> {
+    const comment = new CommentItem(
+      item.id, item.user, item.username, parseInt(docId), item.documentText, item.text, item.createdAt
+    )
+    return this.repository.update(projectId, docId, comment)
   }
 
-  public delete(projectId: string, docId: string, item: CommentItem): Promise<void> {
-    return this.repository.delete(projectId, docId, item)
+  public delete(projectId: string, docId: string, item: CommentReadDTO): Promise<void> {
+    return this.repository.delete(projectId, docId, item.id)
   }
 
   public deleteBulk(projectId: string, items: CommentReadDTO[]): Promise<void> {
