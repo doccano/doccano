@@ -40,7 +40,7 @@ class ApiService {
     return this.request('PATCH', url, data, config)
   }
 
-  delete(url, data, config = {}) {
+  delete(url, data = {}, config = {}) {
     return this.request('DELETE', url, data, config)
   }
 }

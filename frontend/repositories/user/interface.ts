@@ -7,5 +7,7 @@ export interface UserItemResponse {
 }
 
 export interface UserItemListRepository {
+  getMe(): Promise<UserItem>
+
   list(query: string): Promise<UserItem[]>
 }

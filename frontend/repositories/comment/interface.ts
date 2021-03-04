@@ -1,4 +1,4 @@
-import { CommentItem, CommentItemList } from '@/models/comment'
+import { CommentItem } from '@/models/comment'
 
 export interface CommentItemResponse {
   id: number,
@@ -11,15 +11,15 @@ export interface CommentItemResponse {
 }
 
 export interface CommentItemListRepository {
-  listAll(projectId: string, q: string): Promise<CommentItemList>
+  listAll(projectId: string, q: string): Promise<CommentItem[]>
 
-  list(projectId: string, docId: string): Promise<CommentItemList>
+  list(projectId: string, docId: string): Promise<CommentItem[]>
 
   create(projectId: string, docId: string, text: string): Promise<CommentItem>
 
   update(projectId: string, docId: string, item: CommentItem): Promise<CommentItem>
 
-  delete(projectId: string, docId: string, item: CommentItem): Promise<void>
+  delete(projectId: string, docId: string, commentId: number): Promise<void>
 
-  deleteBulk(projectId: string, items: CommentItemList): Promise<void>
+  deleteBulk(projectId: string, items: number[]): Promise<void>
 }

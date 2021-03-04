@@ -11,7 +11,7 @@
         <v-list-item-content>
           <v-list-item-title>{{ comment.username }}</v-list-item-title>
           <v-list-item-subtitle>
-            {{ comment.created_at | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('YYYY-MM-DD HH:mm') }}
+            {{ comment.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm') }}
           </v-list-item-subtitle>
         </v-list-item-content>
 
@@ -99,7 +99,6 @@
 import Vue from 'vue'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
-import { CommentItem } from '@/models/comment'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
@@ -128,7 +127,7 @@ export default {
   methods: {
     updateComment(newText) {
       this.showEdit = false
-      const comment = CommentItem.valueOf({...this.comment, text:newText })
+      const comment = {...this.comment, text:newText }
       this.$emit('update-comment', comment)
     },
     cancel() {

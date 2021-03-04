@@ -58,11 +58,35 @@
             />
             <guideline-button />
             <clear-annotations-button />
-            <comment-button />
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  class="text-capitalize ps-1 pe-1"
+                  min-width="36"
+                  icon
+                  v-on="on"
+                  @click="dialogComment=true"
+                >
+                  <v-icon>
+                    mdi-chat
+                  </v-icon>
+                </v-btn>
+              </template>
+              <span>{{ $t('annotation.commentTooltip') }}</span>
+            </v-tooltip>
+            
             <settings
               v-model="options"
               :errors="errors"
             />
+            <v-dialog
+              v-model="dialogComment"
+              width="800"
+            >
+              <form-create-comment
+                @cancel="dialogComment=false"
+              />
+            </v-dialog>
           </v-col>
           <v-spacer />
           <v-col>
@@ -113,7 +137,7 @@ import GuidelineButton from '@/components/containers/annotation/GuidelineButton'
 import MetadataBox from '@/components/organisms/annotation/MetadataBox'
 import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
-import CommentButton from '../components/containers/comments/CommentButton.vue'
+import FormCreateComment from '../components/comment/FormCRUD.vue'
 import Pagination from '~/components/containers/annotation/Pagination'
 import TheHeader from '~/components/organisms/layout/TheHeader'
 import TheSideBar from '~/components/organisms/layout/TheSideBar'
@@ -132,7 +156,7 @@ export default {
     ApproveButton,
     MetadataBox,
     ClearAnnotationsButton,
-    CommentButton,
+    FormCreateComment,
     Settings
   },
 
@@ -149,6 +173,7 @@ export default {
 
   data() {
     return {
+      dialogComment: false,
       drawerLeft: null,
       limit: 10,
       options: {
