@@ -24,6 +24,7 @@
     "chart.js": "^2.9.3",
     "codemirror": "^5.55.0",
     "js-cookie": "^2.2.1",
+    "lodash": "^4.17.21",
     "nuxt": "^2.11.0",
     "nuxt-i18n": "^6.13.12",
     "papaparse": "^5.2.0",
