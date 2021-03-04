@@ -7,11 +7,11 @@ export class FromApiCommentItemListRepository implements CommentItemListReposito
     private readonly request = ApiService
   ) {}
 
-  async listAll(projectId: string, q: string): Promise<CommentItemList> {
+  async listAll(projectId: string, q: string): Promise<CommentItem[]> {
     const url = `/projects/${projectId}/comments?q=${q}`
     const response = await this.request.get(url)
     const items: CommentItemResponse[] = response.data
-    return CommentItemList.valueOf(items.map(item => CommentItem.valueOf(item)))
+    return items.map(item => CommentItem.valueOf(item))
   }
 
   async list(projectId: string, docId: string): Promise<CommentItemList> {
@@ -40,8 +40,8 @@ export class FromApiCommentItemListRepository implements CommentItemListReposito
     const response = await this.request.delete(url)
   }
 
-  async deleteBulk(projectId: string, items: CommentItemList): Promise<void> {
+  async deleteBulk(projectId: string, items: number[]): Promise<void> {
     const url = `/projects/${projectId}/comments`
-    await this.request.delete(url, { ids: items.ids() })
+    await this.request.delete(url, { ids: items })
   }
 }
