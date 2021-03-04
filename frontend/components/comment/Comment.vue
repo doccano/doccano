@@ -99,8 +99,6 @@
 import Vue from 'vue'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
-import { CommentItem } from '@/models/comment'
-import { UserItem } from '../../models/user';
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
@@ -129,7 +127,7 @@ export default {
   methods: {
     updateComment(newText) {
       this.showEdit = false
-      const comment = CommentItem.valueOf({...this.comment, text:newText })
+      const comment = {...this.comment, text:newText }
       this.$emit('update-comment', comment)
     },
     cancel() {
