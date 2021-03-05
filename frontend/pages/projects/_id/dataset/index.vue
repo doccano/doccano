@@ -1,6 +1,10 @@
 <template>
   <v-card>
     <v-card-title>
+      <action-menu
+        @upload="dialogUpload=true"
+        @download="dialogDownload=true"
+      />
       <v-btn
         class="text-capitalize ms-2"
         :disabled="!canDelete"
@@ -49,11 +53,13 @@ import DocumentList from '@/components/document/DocumentList.vue'
 import FormDelete from '@/components/document/FormDelete.vue'
 import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
 import { DocumentListDTO, DocumentDTO } from '@/services/application/document.service'
+import ActionMenu from '~/components/document/ActionMenu.vue'
 
 export default Vue.extend({
   layout: 'project',
 
   components: {
+    ActionMenu,
     DocumentList,
     FormDelete,
     FormDeleteBulk
@@ -70,6 +76,8 @@ export default Vue.extend({
       dialogCreate: false,
       dialogDelete: false,
       dialogDeleteAll: false,
+      dialogUpload: false,
+      dialogDownload: false,
       pageLink: '',
       item: {} as DocumentListDTO,
       selected: [] as DocumentDTO[],
