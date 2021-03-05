@@ -9,11 +9,26 @@
       >
         {{ $t('generic.delete') }}
       </v-btn>
+      <v-spacer />
+      <v-btn
+        :disabled="!item.count"
+        class="text-capitalize"
+        color="error"
+        @click="dialogDeleteAll=true"
+      >
+        {{ $t('generic.deleteAll') }}
+      </v-btn>
       <v-dialog v-model="dialogDelete">
         <form-delete
           :selected="selected"
           @cancel="dialogDelete=false"
           @remove="remove"
+        />
+      </v-dialog>
+      <v-dialog v-model="dialogDeleteAll">
+        <form-delete-bulk
+          @cancel="dialogDeleteAll=false"
+          @remove="removeAll"
         />
       </v-dialog>
     </v-card-title>
@@ -32,6 +47,7 @@
 import Vue from 'vue'
 import DocumentList from '@/components/document/DocumentList.vue'
 import FormDelete from '@/components/document/FormDelete.vue'
+import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
 import { DocumentListDTO, DocumentDTO } from '@/services/application/document.service'
 
 export default Vue.extend({
@@ -39,7 +55,8 @@ export default Vue.extend({
 
   components: {
     DocumentList,
-    FormDelete
+    FormDelete,
+    FormDeleteBulk
   },
 
   async fetch() {
@@ -52,6 +69,7 @@ export default Vue.extend({
     return {
       dialogCreate: false,
       dialogDelete: false,
+      dialogDeleteAll: false,
       pageLink: '',
       item: {} as DocumentListDTO,
       selected: [] as DocumentDTO[],
@@ -77,6 +95,12 @@ export default Vue.extend({
       await this.$services.document.bulkDelete(this.projectId, this.selected)
       this.$fetch()
       this.dialogDelete = false
+      this.selected = []
+    },
+    async removeAll() {
+      await this.$services.document.bulkDelete(this.projectId, [])
+      this.$fetch()
+      this.dialogDeleteAll = false
       this.selected = []
     },
   },

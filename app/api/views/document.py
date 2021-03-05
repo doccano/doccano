@@ -46,7 +46,7 @@ class DocumentList(generics.ListCreateAPIView):
         if delete_ids:
             queryset.filter(pk__in=delete_ids).delete()
         else:
-            queryset.delete()
+            queryset.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
