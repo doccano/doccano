@@ -71,6 +71,11 @@ export class ProjectApplicationService {
     return this.repository.bulkDelete(ids)
   }
 
+  public async getPageLink(id: string) {
+    const item = await this.repository.findById(id)
+    return item.annotationPageLink
+  }
+
   private toWriteModel(item: ProjectWriteDTO): ProjectWriteItem {
     return new ProjectWriteItem(
       item.id,

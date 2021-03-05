@@ -69,6 +69,16 @@ export class ProjectReadItem {
     )
   }
 
+  get annotationPageLink(): string {
+    const mapping = {
+      DocumentClassification: 'text-classification',
+      SequenceLabeling      : 'sequence-labeling',
+      Seq2seq               : 'sequence-to-sequence'
+    }
+    const url = `/projects/${this.id}/${mapping[this.project_type]}`
+    return url
+  }
+
   toObject(): Object {
     return {
       id: this.id,
