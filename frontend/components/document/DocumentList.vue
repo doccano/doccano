@@ -1,0 +1,165 @@
+<template>
+  <v-data-table
+    :value="value"
+    :headers="headers"
+    :items="items"
+    :options.sync="options"
+    :server-items-length="total"
+    :search="search"
+    :loading="isLoading"
+    :loading-text="$t('generic.loading')"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-options': [5, 50, 100],
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
+    }"
+    item-key="id"
+    show-select
+    @input="$emit('input', $event)"
+  >
+    <template v-slot:top>
+      <v-text-field
+        v-model="search"
+        prepend-inner-icon="search"
+        :label="$t('generic.search')"
+        single-line
+        hide-details
+        filled
+      />
+    </template>
+    <template v-slot:[`item.text`]="{ item }">
+      <span class="d-flex d-sm-none">{{ item.text | truncate(50) }}</span>
+      <span class="d-none d-sm-flex">{{ item.text | truncate(200) }}</span>
+    </template>
+    <template v-slot:[`item.commentCount`]="{ item }">
+      <span> {{ item.commentCount }} </span>
+    </template>
+    <template v-slot:[`item.action`]="{ item }">
+      <v-btn
+        small
+        color="primary text-capitalize"
+        @click="toLabeling(item)"
+      >
+        {{ $t('dataset.annotate') }}
+      </v-btn>
+    </template>
+  </v-data-table>
+</template>
+
+<script lang="ts">
+import Vue, { PropType } from 'vue'
+import _ from 'lodash'
+import { DataOptions } from 'vuetify/types'
+import { DocumentDTO } from '~/services/application/document.service'
+
+export default Vue.extend({
+  props: {
+    isLoading: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    items: {
+      type: Array as PropType<DocumentDTO[]>,
+      default: () => [],
+      required: true
+    },
+    value: {
+      type: Array as PropType<DocumentDTO[]>,
+      default: () => [],
+      required: true
+    },
+    total: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    pageLink: {
+      type: String,
+      default: '',
+      required: true
+    }
+  },
+
+  data() {
+    return {
+      search: this.$route.query.q,
+      options: {} as DataOptions,
+    }
+  },
+
+  computed: {
+    headers() {
+      return [
+        {
+          text: this.$t('dataset.text'),
+          value: 'text',
+          sortable: false
+        },
+        {
+          text: this.$t('dataset.metadata'),
+          value: 'meta',
+          sortable: false
+        },
+        {
+          text: this.$t('comments.comments'),
+          value: 'commentCount',
+          sortable: false
+        },
+        {
+          text: this.$t('dataset.action'),
+          value: 'action',
+          sortable: false
+        }
+      ]
+    }
+  },
+
+  watch: {
+    '$route.query': _.debounce(function() {
+        // @ts-ignore
+        this.$emit('change-query')
+      }, 1000
+    ),
+    options: {
+      handler() {
+        this.$router.push({
+          query: {
+            limit: this.options.itemsPerPage.toString(),
+            offset: ((this.options.page - 1) * this.options.itemsPerPage).toString(),
+            q: this.search
+          }
+        })
+      },
+      deep: true
+    },
+    search() {
+      this.$router.push({
+        query: {
+          limit: this.options.itemsPerPage.toString(),
+          offset: '0',
+          q: this.search
+        }
+      })
+      this.options.page = 1
+    }
+  },
+
+  methods: {
+    toLabeling(item: DocumentDTO) {
+      const index = this.items.indexOf(item)
+      const offset = (this.options.page - 1) * this.options.itemsPerPage
+      const page = (offset + index + 1).toString()
+      this.$router.push({
+        path: this.localePath(this.pageLink),
+        query: {
+          page,
+          q: this.search
+        }
+      })
+    }
+  }
+})
+</script>
