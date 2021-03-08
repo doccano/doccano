@@ -11,7 +11,7 @@
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
       'showFirstLastPage': true,
-      'items-per-page-options': [5, 50, 100],
+      'items-per-page-options': [10, 50, 100],
       'items-per-page-text': $t('vuetify.itemsPerPageText'),
       'page-text': $t('dataset.pageText')
     }"
