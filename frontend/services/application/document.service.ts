@@ -70,6 +70,18 @@ export class DocumentApplicationService {
     return this.repository.bulkDelete(projectId, ids)
   }
 
+  public async download(
+    projectId: string, filename: string, format: any, onlyApproved: boolean
+  ): Promise<void> {
+    const response = await this.repository.exportFile(projectId, format.type, onlyApproved)
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', `${filename}.${format.extension}`)
+    document.body.appendChild(link)
+    link.click()
+  }
+
   private toModel(item: DocumentDTO): DocumentItem {
     return new DocumentItem(
       item.id,
