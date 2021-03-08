@@ -62,7 +62,7 @@ import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
 import FormDownload from '@/components/document/FormDownload.vue'
 import { DocumentListDTO, DocumentDTO } from '@/services/application/document.service'
 import ActionMenu from '~/components/document/ActionMenu.vue'
-import { ProjectDTO, FormatDownloadDTO } from '~/services/application/project.service'
+import { ProjectDTO, FormatDTO } from '~/services/application/project.service'
 
 export default Vue.extend({
   layout: 'project',
@@ -88,7 +88,7 @@ export default Vue.extend({
       dialogDeleteAll: false,
       dialogUpload: false,
       dialogDownload: false,
-      formats: [] as FormatDownloadDTO[],
+      formats: [] as FormatDTO[],
       project: {} as ProjectDTO,
       item: {} as DocumentListDTO,
       selected: [] as DocumentDTO[],
@@ -122,7 +122,7 @@ export default Vue.extend({
       this.dialogDeleteAll = false
       this.selected = []
     },
-    async download(format: FormatDownloadDTO, filename: string, onlyApproved: boolean) {
+    async download(format: FormatDTO, filename: string, onlyApproved: boolean) {
       await this.$services.document.download(
         this.projectId,
         filename,

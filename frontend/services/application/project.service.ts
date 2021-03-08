@@ -2,7 +2,7 @@ import { ProjectReadItem, ProjectWriteItem, CurrentUsersRole, ProjectType } from
 import { ProjectItemListRepository } from '@/repositories/project/interface'
 import { FormatItem } from '@/models/format'
 
-export class FormatDownloadDTO {
+export class FormatDTO {
   example: string
   type: string
   text: string
@@ -26,7 +26,8 @@ export class ProjectDTO {
   enableRandomizeDocOrder:     boolean
   enableShareAnnotation:       boolean
   pageLink:                    string
-  downloadFormats:             FormatDownloadDTO[]
+  downloadFormats:             FormatDTO[]
+  uploadFormats:               FormatDTO[]
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -39,7 +40,8 @@ export class ProjectDTO {
     this.enableRandomizeDocOrder = item.randomize_document_order
     this.enableShareAnnotation = item.collaborative_annotation
     this.pageLink = item.annotationPageLink
-    this.downloadFormats = item.downloadFormats.map(f => new FormatDownloadDTO(f))
+    this.downloadFormats = item.downloadFormats.map(f => new FormatDTO(f))
+    this.uploadFormats = item.uploadFormats.map(f => new FormatDTO(f))
   }
 }
 
