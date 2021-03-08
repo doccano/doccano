@@ -1,6 +1,20 @@
 import { ProjectReadItem, ProjectWriteItem, CurrentUsersRole, ProjectType } from '@/models/project'
 import { ProjectItemListRepository } from '@/repositories/project/interface'
+import { FormatItem } from '@/models/format'
 
+export class FormatDownloadDTO {
+  example: string
+  type: string
+  text: string
+  extension: string
+
+  constructor(item: FormatItem) {
+    this.example = item.example
+    this.type = item.type
+    this.text = item.text
+    this.extension = item.extension
+  }
+}
 export class ProjectDTO {
   id:                          number
   name:                        string
@@ -11,6 +25,8 @@ export class ProjectDTO {
   updatedAt:                   string
   enableRandomizeDocOrder:     boolean
   enableShareAnnotation:       boolean
+  pageLink:                    string
+  downloadFormats:             FormatDownloadDTO[]
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -22,6 +38,8 @@ export class ProjectDTO {
     this.updatedAt = item.updated_at
     this.enableRandomizeDocOrder = item.randomize_document_order
     this.enableShareAnnotation = item.collaborative_annotation
+    this.pageLink = item.annotationPageLink
+    this.downloadFormats = item.downloadFormats.map(f => new FormatDownloadDTO(f))
   }
 }
 
@@ -69,11 +87,6 @@ export class ProjectApplicationService {
   public bulkDelete(items: ProjectDTO[]): Promise<void> {
     const ids = items.map(item => item.id)
     return this.repository.bulkDelete(ids)
-  }
-
-  public async getPageLink(id: string) {
-    const item = await this.repository.findById(id)
-    return item.annotationPageLink
   }
 
   private toWriteModel(item: ProjectWriteDTO): ProjectWriteItem {

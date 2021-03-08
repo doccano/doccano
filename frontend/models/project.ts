@@ -1,3 +1,4 @@
+import { FormatFactory, FormatItem } from './format';
 export interface CurrentUsersRole {
   is_project_admin:       boolean;
   is_annotator:           boolean;
@@ -77,6 +78,10 @@ export class ProjectReadItem {
     }
     const url = `/projects/${this.id}/${mapping[this.project_type]}`
     return url
+  }
+
+  get downloadFormats(): FormatItem[] {
+    return new FormatFactory(this.project_type).createDownloadFormat()
   }
 
   toObject(): Object {
