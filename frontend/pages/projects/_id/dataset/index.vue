@@ -35,12 +35,19 @@
           @remove="removeAll"
         />
       </v-dialog>
+      <v-dialog v-model="dialogDownload">
+        <form-download
+          :formats="project.downloadFormats"
+          @cancel="dialogDownload=false"
+          @download="download"
+        />
+      </v-dialog>
     </v-card-title>
     <document-list
       v-model="selected"
       :items="item.items"
       :is-loading="isLoading"
-      :page-link="pageLink"
+      :page-link="project.pageLink"
       :total="item.count"
       @change-query="$fetch"
     />
@@ -52,8 +59,10 @@ import Vue from 'vue'
 import DocumentList from '@/components/document/DocumentList.vue'
 import FormDelete from '@/components/document/FormDelete.vue'
 import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
+import FormDownload from '@/components/document/FormDownload.vue'
 import { DocumentListDTO, DocumentDTO } from '@/services/application/document.service'
 import ActionMenu from '~/components/document/ActionMenu.vue'
+import { ProjectDTO, FormatDownloadDTO } from '~/services/application/project.service'
 
 export default Vue.extend({
   layout: 'project',
@@ -62,7 +71,8 @@ export default Vue.extend({
     ActionMenu,
     DocumentList,
     FormDelete,
-    FormDeleteBulk
+    FormDeleteBulk,
+    FormDownload
   },
 
   async fetch() {
@@ -78,7 +88,8 @@ export default Vue.extend({
       dialogDeleteAll: false,
       dialogUpload: false,
       dialogDownload: false,
-      pageLink: '',
+      formats: [] as FormatDownloadDTO[],
+      project: {} as ProjectDTO,
       item: {} as DocumentListDTO,
       selected: [] as DocumentDTO[],
       isLoading: false
@@ -95,7 +106,7 @@ export default Vue.extend({
   },
 
   async created() {
-    this.pageLink = await this.$services.project.getPageLink(this.projectId)
+    this.project = await this.$services.project.findById(this.projectId)
   },
 
   methods: {
@@ -111,6 +122,14 @@ export default Vue.extend({
       this.dialogDeleteAll = false
       this.selected = []
     },
+    async download(format: FormatDownloadDTO, filename: string, onlyApproved: boolean) {
+      await this.$services.document.download(
+        this.projectId,
+        filename,
+        format,
+        onlyApproved
+      )
+    }
   },
 
   validate({ params, query }) {
