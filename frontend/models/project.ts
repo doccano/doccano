@@ -84,6 +84,10 @@ export class ProjectReadItem {
     return new FormatFactory(this.project_type).createDownloadFormat()
   }
 
+  get uploadFormats(): FormatItem[] {
+    return new FormatFactory(this.project_type).createUploadFormat()
+  }
+
   toObject(): Object {
     return {
       id: this.id,
