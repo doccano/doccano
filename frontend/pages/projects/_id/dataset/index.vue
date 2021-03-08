@@ -40,6 +40,7 @@
           :formats="project.uploadFormats"
           :upload-document="upload"
           @cancel="dialogUpload=false"
+          @success="$fetch();dialogUpload=false"
         />
       </v-dialog>
       <v-dialog v-model="dialogDownload">

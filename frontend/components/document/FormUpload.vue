@@ -100,39 +100,34 @@ export default {
     cancel() {
       this.$emit('cancel')
     },
-    validate() {
-      return this.$refs.form.validate()
-    },
     reset() {
       this.$refs.form.reset()
     },
     create() {
-      if (this.validate()) {
-        this.errors = []
-        const promises = []
-        const type = this.selectedFormat.type
-        this.file.forEach((item) => {
-          promises.push({
-            format: type,
-            file: item
-          })
+      this.errors = []
+      const promises = []
+      const type = this.selectedFormat.type
+      this.file.forEach((item) => {
+        promises.push({
+          format: type,
+          file: item
         })
-        let p = Promise.resolve()
-        promises.forEach((item) => {
-          p = p.then(() => this.uploadDocument(item.file, item.format)).catch(() => {
-            this.errors.push(item.file.name)
-            this.showError = true
-          })
+      })
+      let p = Promise.resolve()
+      promises.forEach((item) => {
+        p = p.then(() => this.uploadDocument(item.file, item.format)).catch(() => {
+          this.errors.push(item.file.name)
+          this.showError = true
         })
-        p.finally(() => {
-          if (!this.errors.length) {
-            this.reset()
-            this.cancel()
-          } else {
-            this.errorMsg = this.errors.join(', ')
-          }
-        })
-      }
+      })
+      p.finally(() => {
+        if (!this.errors.length) {
+          this.reset()
+          this.$emit('success')
+        } else {
+          this.errorMsg = this.errors.join(', ')
+        }
+      })
     }
   }
 }
