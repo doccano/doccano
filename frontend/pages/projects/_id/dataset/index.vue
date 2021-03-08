@@ -35,6 +35,13 @@
           @remove="removeAll"
         />
       </v-dialog>
+      <v-dialog v-model="dialogUpload">
+        <form-upload
+          :formats="project.uploadFormats"
+          :upload-document="upload"
+          @cancel="dialogUpload=false"
+        />
+      </v-dialog>
       <v-dialog v-model="dialogDownload">
         <form-download
           :formats="project.downloadFormats"
@@ -60,6 +67,7 @@ import DocumentList from '@/components/document/DocumentList.vue'
 import FormDelete from '@/components/document/FormDelete.vue'
 import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
 import FormDownload from '@/components/document/FormDownload.vue'
+import FormUpload from '@/components/document/FormUpload.vue'
 import { DocumentListDTO, DocumentDTO } from '@/services/application/document.service'
 import ActionMenu from '~/components/document/ActionMenu.vue'
 import { ProjectDTO, FormatDTO } from '~/services/application/project.service'
@@ -72,7 +80,8 @@ export default Vue.extend({
     DocumentList,
     FormDelete,
     FormDeleteBulk,
-    FormDownload
+    FormDownload,
+    FormUpload
   },
 
   async fetch() {
@@ -128,6 +137,11 @@ export default Vue.extend({
         filename,
         format,
         onlyApproved
+      )
+    },
+    async upload(file: File, format: string) {
+      await this.$services.document.upload(
+        this.projectId, file, format
       )
     }
   },
