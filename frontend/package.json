@@ -61,6 +61,7 @@
     "jest": "^26.1.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.2.1",
+    "raw-loader": "^4.0.2",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "vue-jest": "^3.0.6"
