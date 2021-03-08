@@ -1,0 +1,3 @@
+{"id": 1, "text": "Hello!", "annotations": [{"id": 1, "label": "こんにちは！", "user": 1}]}
+{"id": 2, "text": "Good morning.", "annotations": [{"id": 2, "label": "おはようございます。", "user": 1}]}
+{"id": 3, "text": "See you.", "annotations": [{"id": 3, "label": "さようなら。", "user": 1}]}

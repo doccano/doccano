@@ -42,7 +42,11 @@ class DocumentList(generics.ListCreateAPIView):
     def delete(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         queryset = project.documents
-        queryset.all().delete()
+        delete_ids = request.data['ids']
+        if delete_ids:
+            queryset.filter(pk__in=delete_ids).delete()
+        else:
+            queryset.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

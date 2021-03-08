@@ -42,6 +42,7 @@
     "@nuxtjs/eslint-config-typescript": "^5.0.0",
     "@nuxtjs/eslint-module": "^2.0.0",
     "@nuxtjs/google-analytics": "^2.3.0",
+    "@types/lodash": "^4.14.168",
     "@vue/test-utils": "^1.0.3",
     "axios-mock-adapter": "^1.18.1",
     "babel-core": "7.0.0-bridge.0",
@@ -60,6 +61,7 @@
     "jest": "^26.1.0",
     "nodemon": "^2.0.4",
     "prettier": "^2.2.1",
+    "raw-loader": "^4.0.2",
     "stylus": "^0.54.7",
     "stylus-loader": "^3.0.2",
     "vue-jest": "^3.0.6"

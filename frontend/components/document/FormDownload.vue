@@ -31,12 +31,14 @@
           :light="$vuetify.theme.dark"
           class="mb-5 pa-5"
         >
-          <span v-for="(example, index) in selectedFormat.examples" :key="index">
-            {{ example }}<br>
-          </span>
+          <pre>{{ selectedFormat.example }}</pre>
         </v-sheet>
         <h2>{{ $t('dataset.exportDataMessage2') }}</h2>
-        <v-text-field v-model="selectedFileName" placeholder="Name the file" />
+        <v-text-field
+          v-model="filename"
+          placeholder="Name the file"
+          :rules="[v => !!v || 'File name is required']"
+        />
         <v-checkbox
           v-model="onlyApproved"
           label="Export only approved documents"
@@ -48,71 +50,44 @@
   </base-card>
 </template>
 
-<script>
-import BaseCard from '@/components/molecules/BaseCard'
-import { fileFormatRules, uploadFileRules } from '@/rules/index'
+<script lang="ts">
+import Vue from 'vue'
+import BaseCard from '@/components/molecules/BaseCard.vue'
+import { fileFormatRules } from '@/rules/index'
 
-export default {
+export default Vue.extend({
   components: {
     BaseCard
   },
+
   props: {
-    exportDocument: {
-      type: Function,
-      default: () => {},
-      required: true
-    },
     formats: {
       type: Array,
       default: () => [],
       required: true
     }
   },
+
   data() {
     return {
-      valid: false,
       file: null,
-      selectedFormat: null,
-      selectedFileName: 'project_' + this.$route.params.id + '_dataset',
-      onlyApproved: false,
+      filename: null,
       fileFormatRules,
-      uploadFileRules
-    }
-  },
-
-  computed: {
-    acceptType() {
-      if (this.selectedFormat) {
-        return this.selectedFormat.accept
-      } else {
-        return '.txt,.csv,.json,.jsonl'
-      }
+      onlyApproved: false,
+      selectedFormat: null,
+      valid: false,
     }
   },
 
   methods: {
     cancel() {
-      this.$emit('close')
-    },
-    validate() {
-      return this.$refs.form.validate()
-    },
-    reset() {
-      this.$refs.format.reset()
+      (this.$refs.format as HTMLFormElement).reset()
+      this.$emit('cancel')
     },
     download() {
-      if (this.validate()) {
-        this.exportDocument({
-          projectId: this.$route.params.id,
-          fileName: this.selectedFileName,
-          format: this.selectedFormat.type,
-          onlyApproved: this.onlyApproved,
-          suffix: this.selectedFormat.suffix
-        })
-        this.reset()
-        this.cancel()
-      }
+      this.$emit('download', this.selectedFormat, this.filename, this.onlyApproved)
+      this.cancel()
     }
-  }
-}
+  }  
+})
 </script>

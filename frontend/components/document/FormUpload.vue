@@ -38,9 +38,7 @@
           :light="$vuetify.theme.dark"
           class="mb-5 pa-5"
         >
-          <span v-for="(example, index) in selectedFormat.examples" :key="index">
-            {{ example }}<br>
-          </span>
+        <pre>{{ selectedFormat.example }}</pre>
         </v-sheet>
         <h2>{{ $t('dataset.importDataMessage2') }}</h2>
         <v-file-input
@@ -91,52 +89,45 @@ export default {
   computed: {
     acceptType() {
       if (this.selectedFormat) {
-        return this.selectedFormat.accept
+        return `.${this.selectedFormat.extension}`
       } else {
-        return '.txt,.csv,.json,.jsonl'
+        return '.txt'
       }
     }
   },
 
   methods: {
     cancel() {
-      this.$emit('close')
-    },
-    validate() {
-      return this.$refs.form.validate()
+      this.$emit('cancel')
     },
     reset() {
       this.$refs.form.reset()
     },
     create() {
-      if (this.validate()) {
-        this.errors = []
-        const promises = []
-        const id = this.$route.params.id
-        const type = this.selectedFormat.type
-        this.file.forEach((item) => {
-          promises.push({
-            projectId: id,
-            format: type,
-            file: item
-          })
+      this.errors = []
+      const promises = []
+      const type = this.selectedFormat.type
+      this.file.forEach((item) => {
+        promises.push({
+          format: type,
+          file: item
         })
-        let p = Promise.resolve()
-        promises.forEach((item) => {
-          p = p.then(() => this.uploadDocument(item)).catch(() => {
-            this.errors.push(item.file.name)
-            this.showError = true
-          })
+      })
+      let p = Promise.resolve()
+      promises.forEach((item) => {
+        p = p.then(() => this.uploadDocument(item.file, item.format)).catch(() => {
+          this.errors.push(item.file.name)
+          this.showError = true
         })
-        p.finally(() => {
-          if (!this.errors.length) {
-            this.reset()
-            this.cancel()
-          } else {
-            this.errorMsg = this.errors.join(', ')
-          }
-        })
-      }
+      })
+      p.finally(() => {
+        if (!this.errors.length) {
+          this.reset()
+          this.$emit('success')
+        } else {
+          this.errorMsg = this.errors.join(', ')
+        }
+      })
     }
   }
 }
