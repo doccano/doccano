@@ -82,6 +82,15 @@ export class DocumentApplicationService {
     link.click()
   }
 
+  public async upload(projectId: string, file: File, format: string): Promise<void> {
+    console.log(file)
+    console.log(format)
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('format', format)
+    const response = await this.repository.uploadFile(projectId, formData)
+  }
+
   private toModel(item: DocumentDTO): DocumentItem {
     return new DocumentItem(
       item.id,
