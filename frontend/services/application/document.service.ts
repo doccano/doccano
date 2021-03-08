@@ -83,8 +83,6 @@ export class DocumentApplicationService {
   }
 
   public async upload(projectId: string, file: File, format: string): Promise<void> {
-    console.log(file)
-    console.log(format)
     const formData = new FormData()
     formData.append('file', file)
     formData.append('format', format)
