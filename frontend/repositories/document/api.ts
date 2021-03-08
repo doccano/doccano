@@ -10,7 +10,6 @@ export class FromApiDocumentItemListRepository implements DocumentItemRepository
 
   async list(projectId: string, { limit = '10', offset = '0', q = '', isChecked = '', filterName = '' }: SearchOption): Promise<DocumentItemList> {
     const url = `/projects/${projectId}/docs?limit=${limit}&offset=${offset}&q=${q}&${filterName}=${isChecked}`
-    console.log(url)
     const response = await this.request.get(url)
     return DocumentItemList.valueOf(response.data)
   }
