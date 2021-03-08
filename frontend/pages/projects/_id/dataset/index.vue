@@ -55,15 +55,16 @@
       v-model="selected"
       :items="item.items"
       :is-loading="isLoading"
-      :page-link="project.pageLink"
       :total="item.count"
-      @change-query="$fetch"
+      @update:query="updateQuery"
+      @click:labeling="movePage"
     />
   </v-card>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import _ from 'lodash'
 import DocumentList from '@/components/document/DocumentList.vue'
 import FormDelete from '@/components/document/FormDelete.vue'
 import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
@@ -115,6 +116,14 @@ export default Vue.extend({
     }
   },
 
+  watch: {
+    '$route.query': _.debounce(function() {
+        // @ts-ignore
+        this.$fetch()
+      }, 1000
+    ),
+  },
+
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
   },
@@ -144,6 +153,15 @@ export default Vue.extend({
       await this.$services.document.upload(
         this.projectId, file, format
       )
+    },
+    updateQuery(query: object) {
+      this.$router.push(query)
+    },
+    movePage(query: object) {
+      this.updateQuery({
+        path: this.localePath(this.project.pageLink),
+        query
+      })
     }
   },
 

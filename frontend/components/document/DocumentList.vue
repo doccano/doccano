@@ -50,7 +50,6 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import _ from 'lodash'
 import { DataOptions } from 'vuetify/types'
 import { DocumentDTO } from '~/services/application/document.service'
 
@@ -74,11 +73,6 @@ export default Vue.extend({
     total: {
       type: Number,
       default: 0,
-      required: true
-    },
-    pageLink: {
-      type: String,
-      default: '',
       required: true
     }
   },
@@ -118,14 +112,9 @@ export default Vue.extend({
   },
 
   watch: {
-    '$route.query': _.debounce(function() {
-        // @ts-ignore
-        this.$emit('change-query')
-      }, 1000
-    ),
     options: {
       handler() {
-        this.$router.push({
+        this.$emit('update:query', {
           query: {
             limit: this.options.itemsPerPage.toString(),
             offset: ((this.options.page - 1) * this.options.itemsPerPage).toString(),
@@ -136,7 +125,7 @@ export default Vue.extend({
       deep: true
     },
     search() {
-      this.$router.push({
+      this.$emit('update:query', {
         query: {
           limit: this.options.itemsPerPage.toString(),
           offset: '0',
@@ -152,13 +141,7 @@ export default Vue.extend({
       const index = this.items.indexOf(item)
       const offset = (this.options.page - 1) * this.options.itemsPerPage
       const page = (offset + index + 1).toString()
-      this.$router.push({
-        path: this.localePath(this.pageLink),
-        query: {
-          page,
-          q: this.search
-        }
-      })
+      this.$emit('click:labeling', { page, q: this.search })
     }
   }
 })
