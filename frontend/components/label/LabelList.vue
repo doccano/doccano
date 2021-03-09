@@ -27,10 +27,10 @@
         filled
       />
     </template>
-    <template v-slot:[`item.background_color`]="props">
+    <template v-slot:[`item.backgroundColor`]="props">
       <v-chip
-        :color="props.item.background_color"
-        :text-color="$contrastColor(props.item.background_color)"
+        :color="props.item.backgroundColor"
+        :text-color="$contrastColor(props.item.backgroundColor)"
       >
         {{ props.item.background_color }}
       </v-chip>
@@ -79,8 +79,8 @@ export default Vue.extend({
     headers() {
       return [
         { text: this.$t('generic.name'),    value: 'text' },
-        { text: this.$t('labels.shortkey'), value: 'suffix_key' },
-        { text: this.$t('labels.color'),    value: 'background_color' },
+        { text: this.$t('labels.shortkey'), value: 'suffixKey' },
+        { text: this.$t('labels.color'),    value: 'backgroundColor' },
         { text: 'Actions', value: 'actions', sortable: false },
       ]
     }

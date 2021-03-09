@@ -4,18 +4,18 @@ import { LabelItemListRepository } from '@/repositories/label/interface'
 export class LabelDTO {
   id: number
   text: string
-  prefix_key: string | null
-  suffix_key: string | null
-  background_color: string
-  text_color: string
+  prefixKey: string | null
+  suffixKey: string | null
+  backgroundColor: string
+  textColor: string
 
   constructor(item: LabelItem) {
     this.id = item.id
     this.text = item.text
-    this.prefix_key = item.prefixKey
-    this.suffix_key = item.suffixKey
-    this.background_color = item.backgroundColor
-    this.text_color = '#ffffff'
+    this.prefixKey = item.prefixKey
+    this.suffixKey = item.suffixKey
+    this.backgroundColor = item.backgroundColor
+    this.textColor = '#ffffff'
   }
 }
 
@@ -30,12 +30,12 @@ export class LabelApplicationService {
   }
 
   public create(projectId: string, item: LabelDTO): void {
-    const label = new LabelItem(0, item.text, item.prefix_key, item.suffix_key, item.background_color, item.text_color)
+    const label = new LabelItem(0, item.text, item.prefixKey, item.suffixKey, item.backgroundColor, item.textColor)
     this.repository.create(projectId, label)
   }
 
   public update(projectId: string, item: LabelDTO): void {
-    const label = new LabelItem(item.id, item.text, item.prefix_key, item.suffix_key, item.background_color, item.text_color)
+    const label = new LabelItem(item.id, item.text, item.prefixKey, item.suffixKey, item.backgroundColor, item.textColor)
     this.repository.update(projectId, label)
   }
 
