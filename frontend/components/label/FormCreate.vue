@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import BaseCard from '@/components/molecules/BaseCard.vue'
+import BaseCard from '@/components/utils/BaseCard.vue'
 
 export default Vue.extend({
   components: {

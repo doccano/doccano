@@ -23,7 +23,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import BaseCard from '@/components/molecules/BaseCard.vue'
+import BaseCard from '@/components/utils/BaseCard.vue'
 import Comment from './Comment.vue'
 import FormCreate from './FormCreate.vue'
 import { CommentReadDTO } from '~/services/application/comment.service'
