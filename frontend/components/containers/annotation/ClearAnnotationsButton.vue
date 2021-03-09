@@ -33,7 +33,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import ConfirmForm from '@/components/organisms/utils/ConfirmForm'
+import ConfirmForm from '@/components/utils/ConfirmForm'
 
 export default {
   components: {

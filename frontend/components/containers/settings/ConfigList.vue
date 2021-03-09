@@ -58,7 +58,7 @@ import Vue from 'vue'
 import { ConfigItemList } from '@/models/config/config-item-list'
 import { ConfigApplicationService } from '@/services/application/config.service'
 import { FromApiConfigItemListRepository, ConfigItemResponse } from '@/repositories/config/api'
-import ConfirmForm from '@/components/organisms/utils/ConfirmForm.vue'
+import ConfirmForm from '@/components/utils/ConfirmForm.vue'
 import BaseModal from '@/components/atoms/BaseModal.vue'
 import ConfigCreationForm from '@/components/containers/settings/ConfigCreationForm.vue'
 
