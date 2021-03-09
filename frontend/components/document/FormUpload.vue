@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import BaseCard from '@/components/molecules/BaseCard'
+import BaseCard from '@/components/utils/BaseCard'
 import { fileFormatRules, uploadFileRules } from '@/rules/index'
 
 export default {

@@ -10,27 +10,30 @@
     <template #content>
       <v-form v-model="valid">
         <v-text-field
-          v-model="item.text"
+          :value="text"
           :label="$t('labels.labelName')"
           :rules="[rules.required, rules.counter, rules.nameDuplicated]"
           prepend-icon="label"
           single-line
           counter
           autofocus
+          @input="updateValue('text', $event)"
         />
         <v-select
-          v-model="item.suffix_key"
+          :value="suffixKey"
           :items="shortkeys"
           :label="$t('labels.key')"
           :rules="[rules.keyDuplicated]"
           prepend-icon="mdi-keyboard"
+          @input="updateValue('suffixKey', $event)"
         />
         <v-color-picker
-          v-model="item.background_color"
+          :value="backgroundColor"
           :rules="[rules.required]"
           show-swatches
           hide-mode-switch
           width="800"
+          @input="updateValue('backgroundColor', $event)"
         />
       </v-form>
     </template>
@@ -39,7 +42,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import BaseCard from '@/components/molecules/BaseCard.vue'
+import BaseCard from '@/components/utils/BaseCard.vue'
 
 export default Vue.extend({
   components: {
@@ -47,9 +50,18 @@ export default Vue.extend({
   },
 
   props: {
-    value: {
-      type: Object,
-      default: () => {},
+    text: {
+      type: String,
+      default: '',
+      required: true
+    },
+    suffixKey: {
+      type: String,
+      default: null,
+    },
+    backgroundColor: {
+      type: String,
+      default: '#ffffff',
       required: true
     },
     usedNames: {
@@ -82,16 +94,12 @@ export default Vue.extend({
   computed: {
     shortkeys() {
       return '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
-    },
-    item: {
-      get() {
-        // @ts-ignore
-        return this.value
-      },
-      set(val) {
-        // @ts-ignore
-        this.$emit('input', val)
-      }
+    }
+  },
+
+  methods: {
+    updateValue(key: string, value: string) {
+      this.$emit(`update:${key}`, value);
     }
   }
 })

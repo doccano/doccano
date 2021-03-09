@@ -1,4 +1,4 @@
-import { FormatFactory, FormatItem } from './format';
+import { FormatFactory, FormatItem } from './format'
 export interface CurrentUsersRole {
   is_project_admin:       boolean;
   is_annotator:           boolean;

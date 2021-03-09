@@ -4,7 +4,7 @@
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
-            <login-form
+            <form-login
               :login="authenticateUser"
             />
           </v-col>
@@ -14,17 +14,18 @@
   </v-app>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import { mapActions } from 'vuex'
-import LoginForm from '@/components/organisms/auth/LoginForm'
+import FormLogin from '@/components/auth/FormLogin.vue'
 
-export default {
+export default Vue.extend({
   components: {
-    LoginForm
+    FormLogin
   },
 
   methods: {
     ...mapActions('auth', ['authenticateUser'])
   }
-}
+})
 </script>

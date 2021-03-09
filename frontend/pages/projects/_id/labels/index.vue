@@ -16,7 +16,7 @@
       </v-btn>
       <v-dialog v-model="dialogCreate">
         <form-create
-          v-model="editedItem"
+          v-bind.sync="editedItem"
           :used-keys="usedKeys"
           :used-names="usedNames"
           @cancel="close"
@@ -82,17 +82,17 @@ export default Vue.extend({
       editedIndex: -1,
       editedItem: {
         text: '',
-        prefix_key: null,
-        suffix_key: null,
-        background_color: '#2196F3',
-        text_color: '#ffffff'
+        prefixKey: null,
+        suffixKey: null,
+        backgroundColor: '#2196F3',
+        textColor: '#ffffff'
       } as LabelDTO,
       defaultItem: {
         text: '',
-        prefix_key: null,
-        suffix_key: null,
-        background_color: '#2196F3',
-        text_color: '#ffffff'
+        prefixKey: null,
+        suffixKey: null,
+        backgroundColor: '#2196F3',
+        textColor: '#ffffff'
       } as LabelDTO,
       items: [] as LabelDTO[],
       selected: [] as LabelDTO[],
@@ -114,7 +114,7 @@ export default Vue.extend({
     },
     usedKeys(): string[] {
       const item = this.items[this.editedIndex] // to remove myself
-      return this.items.filter(_ => _ !== item).map(item => item.suffix_key)
+      return this.items.filter(_ => _ !== item).map(item => item.suffixKey)
                        .filter(item => item !==null) as string[]
     }
   },

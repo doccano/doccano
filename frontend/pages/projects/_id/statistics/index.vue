@@ -35,8 +35,8 @@
 
 <script>
 import _ from 'lodash'
-import DoughnutChart from '@/components/molecules/DoughnutChart'
-import BarChart from '@/components/molecules/BarChart'
+import DoughnutChart from '@/components/statistics/ChartDoughnut'
+import BarChart from '@/components/statistics/ChartBar'
 
 export default {
   layout: 'project',

@@ -11,43 +11,35 @@
   >
     <template v-slot:top>
       <div class="ma-4">
-        <base-modal>
-          <template v-slot:opener="modal">
-            <v-btn
-              class="primary text-capitalize"
-              @click="modal.open"
-            >
-              {{ $t('generic.create') }}
-            </v-btn>
-          </template>
-          <template v-slot:content="modal">
-            <config-creation-form
-              @onCreate="onCreate();modal.close()"
-            />
-          </template>
-        </base-modal>
-        <base-modal>
-          <template v-slot:opener="modal">
-            <v-btn
-              :disabled="!isDeletable()"
-              class="text-capitalize ms-2"
-              outlined
-              @click="modal.open"
-            >
-              {{ $t('generic.delete') }}
-            </v-btn>
-          </template>
-          <template v-slot:content="modal">
-            <confirm-form
-              :items="selected"
-              title="Delete Config"
-              message="Are you sure you want to delete these configs?"
-              item-key="modelName"
-              @ok="remove();modal.close()"
-              @cancel="modal.close"
-            />
-          </template>
-        </base-modal>
+        <v-btn
+          class="primary text-capitalize"
+          @click="dialogCreate=true"
+        >
+          {{ $t('generic.create') }}
+        </v-btn>
+        <v-btn
+          class="text-capitalize ms-2"
+          :disabled="!isDeletable()"
+          outlined
+          @click="dialogDelete=true"
+        >
+          {{ $t('generic.delete') }}
+        </v-btn>
+        <v-dialog v-model="dialogCreate">
+          <config-creation-form
+            @onCreate="onCreate();dialogCreate=false"
+          />
+        </v-dialog>
+        <v-dialog v-model="dialogDelete">
+          <confirm-form
+            :items="selected"
+            title="Delete Config"
+            message="Are you sure you want to delete these configs?"
+            item-key="modelName"
+            @ok="remove();dialogDelete=false"
+            @cancel="dialogDelete=false"
+          />
+        </v-dialog>
       </div>
     </template>
   </v-data-table>
@@ -58,19 +50,19 @@ import Vue from 'vue'
 import { ConfigItemList } from '@/models/config/config-item-list'
 import { ConfigApplicationService } from '@/services/application/config.service'
 import { FromApiConfigItemListRepository, ConfigItemResponse } from '@/repositories/config/api'
-import ConfirmForm from '@/components/organisms/utils/ConfirmForm.vue'
-import BaseModal from '@/components/atoms/BaseModal.vue'
+import ConfirmForm from '@/components/utils/ConfirmForm.vue'
 import ConfigCreationForm from '@/components/containers/settings/ConfigCreationForm.vue'
 
 export default Vue.extend({
   components: {
     ConfirmForm,
-    ConfigCreationForm,
-    BaseModal
+    ConfigCreationForm
   },
 
   data() {
     return {
+      dialogCreate: false,
+      dialogDelete: false,
       isLoading: false as Boolean,
       items: ConfigItemList.valueOf([]) as ConfigItemList,
       selected: [] as ConfigItemResponse[],
@@ -121,3 +113,9 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style scoped>
+::v-deep .v-dialog {
+  width: 800px;
+}
+</style>

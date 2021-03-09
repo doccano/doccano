@@ -19,10 +19,11 @@
   </base-card>
 </template>
 
-<script>
-import BaseCard from '@/components/molecules/BaseCard'
+<script lang="ts">
+import Vue from 'vue'
+import BaseCard from './BaseCard.vue'
 
-export default {
+export default Vue.extend({
   components: {
     BaseCard
   },
@@ -66,5 +67,5 @@ export default {
       this.$emit('cancel')
     }
   }
-}
+})
 </script>

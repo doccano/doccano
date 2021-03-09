@@ -6,10 +6,7 @@
     @agree="tryLogin"
   >
     <template #content>
-      <v-form
-        ref="form"
-        v-model="valid"
-      >
+      <v-form v-model="valid">
         <v-alert
           v-show="showError"
           v-model="showError"
@@ -43,11 +40,12 @@
   </base-card>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import { userNameRules, passwordRules } from '@/rules/index'
-import BaseCard from '@/components/molecules/BaseCard'
+import BaseCard from '@/components/utils/BaseCard.vue'
 
-export default {
+export default Vue.extend({
   components: {
     BaseCard
   },
@@ -55,7 +53,7 @@ export default {
   props: {
     login: {
       type: Function,
-      default: () => {}
+      default: (username: string, password: string) => Promise
     }
   },
   data() {
@@ -70,23 +68,18 @@ export default {
   },
 
   methods: {
-    validate() {
-      return this.$refs.form.validate()
-    },
     tryLogin() {
-      if (this.validate()) {
-        this.login({
-          username: this.username,
-          password: this.password
+      this.login({
+        username: this.username,
+        password: this.password
+      })
+        .then(() => {
+          this.$router.push(this.localePath('/projects'))
         })
-          .then((result) => {
-            this.$router.push(this.localePath('/projects'))
-          })
-          .catch(() => {
-            this.showError = true
-          })
-      }
+        .catch(() => {
+          this.showError = true
+        })
     }
   }
-}
+})
 </script>

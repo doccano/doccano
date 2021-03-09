@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import ConfirmForm from '@/components/organisms/utils/ConfirmForm.vue'
+import ConfirmForm from '@/components/utils/ConfirmForm.vue'
 
 export default Vue.extend({
   components: {

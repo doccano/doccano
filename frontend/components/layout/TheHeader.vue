@@ -96,8 +96,8 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import TheColorModeSwitcher from '@/components/organisms/layout/TheColorModeSwitcher'
-import LocaleMenu from '@/components/organisms/layout/LocaleMenu'
+import TheColorModeSwitcher from './TheColorModeSwitcher'
+import LocaleMenu from './LocaleMenu'
 
 export default {
   components: {

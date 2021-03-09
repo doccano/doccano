@@ -52,7 +52,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import BaseCard from '@/components/molecules/BaseCard.vue'
+import BaseCard from '@/components/utils/BaseCard.vue'
 import { fileFormatRules } from '@/rules/index'
 
 export default Vue.extend({

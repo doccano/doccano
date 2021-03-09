@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import BaseCard from '@/components/molecules/BaseCard'
+import BaseCard from '@/components/utils/BaseCard'
 
 export default {
   components: {

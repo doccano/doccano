@@ -139,8 +139,8 @@ import FilterButton from '@/components/containers/annotation/FilterButton'
 import ApproveButton from '@/components/containers/annotation/ApproveButton'
 import FormCreateComment from '../components/comment/FormCRUD.vue'
 import Pagination from '~/components/containers/annotation/Pagination'
-import TheHeader from '~/components/organisms/layout/TheHeader'
-import TheSideBar from '~/components/organisms/layout/TheSideBar'
+import TheHeader from '~/components/layout/TheHeader'
+import TheSideBar from '~/components/layout/TheSideBar'
 import Settings from '~/components/containers/annotation/Settings.vue'
 
 export default {

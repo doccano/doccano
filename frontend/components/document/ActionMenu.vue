@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import ActionMenu from '@/components/molecules/ActionMenu.vue'
+import ActionMenu from '~/components/utils/ActionMenu.vue'
 
 export default Vue.extend({
   components: {
