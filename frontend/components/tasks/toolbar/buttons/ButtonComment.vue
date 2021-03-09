@@ -7,7 +7,7 @@
         @click="$emit('click:comment')"
       >
         <v-icon>
-          mdi-chat
+          mdi-message-text
         </v-icon>
       </v-btn>
     </template>
