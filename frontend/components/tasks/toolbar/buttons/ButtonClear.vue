@@ -11,6 +11,6 @@
         </v-icon>
       </v-btn>
     </template>
-    <span>Clear all label</span>
+    <span>Clear labels</span>
   </v-tooltip>
 </template>
