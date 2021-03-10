@@ -2,7 +2,7 @@
   <base-card
     :title="$t('comments.comments')"
     :cancel-text="$t('generic.close')"
-    @cancel="$emit('cancel')"
+    @cancel="$emit('click:cancel')"
   >
     <template #content>
       <form-create
@@ -24,8 +24,8 @@
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import BaseCard from '@/components/utils/BaseCard.vue'
-import Comment from './Comment.vue'
-import FormCreate from './FormCreate.vue'
+import Comment from '@/components/comment/Comment.vue'
+import FormCreate from '@/components/comment/FormCreate.vue'
 import { CommentReadDTO } from '~/services/application/comment.service'
 
 export default Vue.extend({
