@@ -8,6 +8,7 @@ import { FromApiCommentItemListRepository } from '@/repositories/comment/api'
 import { FromApiStatisticsRepository } from '@/repositories/statistics/api'
 import { FromApiDocumentItemListRepository } from '@/repositories/document/api'
 import { FromApiTextClassificationRepository } from '@/repositories/tasks/text-classification/api'
+import { LocalStorageOptionRepository} from '@/repositories/option/api'
 import { LabelApplicationService } from '@/services/application/label.service'
 import { MemberApplicationService } from '@/services/application/member.service'
 import { UserApplicationService } from '@/services/application/user.service'
@@ -17,6 +18,7 @@ import { CommentApplicationService } from '@/services/application/comment.servic
 import { StatisticsApplicationService } from '@/services/application/statistics.service'
 import { DocumentApplicationService } from '@/services/application/document.service'
 import { TextClassificationApplicationService } from '@/services/application/tasks/text.classification.service'
+import { OptionApplicationService } from '@/services/application/option.service'
 
 export interface Services {
   label: LabelApplicationService,
@@ -27,7 +29,8 @@ export interface Services {
   comment: CommentApplicationService,
   statistics: StatisticsApplicationService,
   document: DocumentApplicationService,
-  textClassification: TextClassificationApplicationService
+  textClassification: TextClassificationApplicationService,
+  option: OptionApplicationService
 }
 
 declare module 'vue/types/vue' {
@@ -46,6 +49,7 @@ const plugin: Plugin = (context, inject) => {
   const statisticsRepository = new FromApiStatisticsRepository()
   const documentRepository   = new FromApiDocumentItemListRepository()
   const textClassificationRepository = new FromApiTextClassificationRepository()
+  const optionRepository     = new LocalStorageOptionRepository()
 
   const label      = new LabelApplicationService(labelRepository)
   const member     = new MemberApplicationService(memberRepository)
@@ -56,6 +60,7 @@ const plugin: Plugin = (context, inject) => {
   const statistics = new StatisticsApplicationService(statisticsRepository)
   const document   = new DocumentApplicationService(documentRepository)
   const textClassification = new TextClassificationApplicationService(textClassificationRepository)
+  const option = new OptionApplicationService(optionRepository)
   
   const services: Services = {
     label,
@@ -66,7 +71,8 @@ const plugin: Plugin = (context, inject) => {
     comment,
     statistics,
     document,
-    textClassification
+    textClassification,
+    option
   }
   inject('services', services)
 }
