@@ -1,6 +1,6 @@
 <template>
   <v-toolbar
-    class="pa-0"
+    class="toolbar-control"
     dense
     flat
   >
@@ -17,8 +17,14 @@
         />
 
         <button-guideline
-          @click:guideline="$emit('click:guideline')"
+          @click:guideline="dialogGuideline=true"
         />
+        <v-dialog v-model="dialogGuideline">
+          <form-guideline
+            :guideline-text="guidelineText"
+            @click:close="dialogGuideline=false"
+          />
+        </v-dialog>
 
         <button-comment
           @click:comment="$emit('click:comment')"
@@ -32,9 +38,16 @@
           @click:clear="$emit('click:clear')"
         />
       </v-btn-toggle>
-    </v-row>
-    <v-row>
-
+      <v-spacer />
+      <button-pagination
+        :value="page"
+        :total="total"
+        @click:prev="updatePage(page - 1)"
+        @click:next="updatePage(page + 1)"
+        @click:first="updatePage(1)"
+        @click:last="updatePage(total)"
+        @click:jump="updatePage($event)"
+      />
     </v-row>
   </v-toolbar>
 </template>
@@ -46,7 +59,9 @@ import ButtonClear from './buttons/ButtonClear.vue'
 import ButtonComment from './buttons/ButtonComment.vue'
 import ButtonFilter from './buttons/ButtonFilter.vue'
 import ButtonGuideline from './buttons/ButtonGuideline.vue'
+import ButtonPagination from './buttons/ButtonPagination.vue'
 import ButtonReview from './buttons/ButtonReview.vue'
+import FormGuideline from './forms/FormGuideline.vue'
 
 export default Vue.extend({
   components: {
@@ -55,7 +70,9 @@ export default Vue.extend({
     ButtonComment,
     ButtonFilter,
     ButtonGuideline,
+    ButtonPagination,
     ButtonReview,
+    FormGuideline
   },
 
   props: {
@@ -63,16 +80,48 @@ export default Vue.extend({
       type: String,
       default: ''
     },
+    guidelineText: {
+      type: String,
+      default: '',
+      required: true
+    },
     isReviewd: {
       type: Boolean,
       default: false
+    },
+    total: {
+      type: Number,
+      default: 1
+    }
+  },
+
+  data() {
+    return {
+      dialogGuideline: false
+    }
+  },
+
+  computed: {
+    page(): number {
+      // @ts-ignore
+      return parseInt(this.$route.query.page, 10)
+    }
+  },
+
+  methods: {
+    updatePage(page: number) {
+      this.$router.push({ query: { page: page.toString() }})
     }
   }
 })
 </script>
 
 <style scoped>
-::v-deep .v-toolbar__content {
-  padding: 0;
+.toolbar-control >>> .v-toolbar__content {
+      padding: 0px !important;
+}
+
+::v-deep .v-dialog {
+  width: 800px;
 }
 </style>
