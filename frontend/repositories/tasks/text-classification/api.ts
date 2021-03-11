@@ -25,4 +25,9 @@ export class FromApiTextClassificationRepository implements TextClassificationRe
     const url = `/projects/${projectId}/docs/${docId}/annotations/${annotationId}`
     await this.request.delete(url)
   }
+
+  public async clear(projectId: string, docId: number): Promise<void> {
+    const url = `/projects/${projectId}/docs/${docId}/annotations`
+    await this.request.delete(url)
+  }
 }
