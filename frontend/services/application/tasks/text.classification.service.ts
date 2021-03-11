@@ -30,4 +30,8 @@ export class TextClassificationApplicationService {
   public async delete(projectId: string, docId: number, annotationId: number): Promise<void> {
     await this.repository.delete(projectId, docId, annotationId)
   }
+
+  public async clear(projectId: string, docId: number): Promise<void> {
+    await this.repository.clear(projectId, docId)
+  }
 }
