@@ -35,8 +35,6 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-
 export default {
   props: {
     link: {
@@ -58,7 +56,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['loadSearchOptions']),
     filteredItems() {
       const items = [
         { icon: 'mdi-home', text: this.$t('projectHome.home'), link: '', adminOnly: false },
@@ -79,9 +76,10 @@ export default {
       return !item.adminOnly || this.role.is_project_admin
     },
     toLabeling() {
+      const query = this.$services.option.findOption(this.$route.params.id)
       this.$router.push({
         path: this.localePath(`/projects/${this.$route.params.id}/${this.link}`),
-        query: this.loadSearchOptions
+        query
       })
     }
   }
