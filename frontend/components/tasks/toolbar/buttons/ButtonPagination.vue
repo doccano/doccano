@@ -11,7 +11,7 @@
           Move Page
         </div>
         <v-text-field
-          v-model="newPage"
+          v-model="editedPage"
           :rules="rules"
           :label="$t('generic.edit')"
           single-line
@@ -110,7 +110,7 @@ export default Vue.extend({
       if (page < 0 || page > this.total) {
         return
       }
-      this.$emit('input', page)
+      this.$emit('click:jump', page)
     },
     prevPage() {
       this.$emit('click:prev')
