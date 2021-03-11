@@ -27,8 +27,14 @@
         </v-dialog>
 
         <button-comment
-          @click:comment="$emit('click:comment')"
+          @click:comment="dialogComment=true"
         />
+        <v-dialog v-model="dialogComment">
+          <form-comment
+            :doc-id="docId"
+            @click:cancel="dialogComment=false"
+          />
+        </v-dialog>
 
         <button-auto-labeling
           @click:auto="$emit('click:auto')"
@@ -61,6 +67,7 @@ import ButtonFilter from './buttons/ButtonFilter.vue'
 import ButtonGuideline from './buttons/ButtonGuideline.vue'
 import ButtonPagination from './buttons/ButtonPagination.vue'
 import ButtonReview from './buttons/ButtonReview.vue'
+import FormComment from './forms/FormComment.vue'
 import FormGuideline from './forms/FormGuideline.vue'
 
 export default Vue.extend({
@@ -72,10 +79,15 @@ export default Vue.extend({
     ButtonGuideline,
     ButtonPagination,
     ButtonReview,
+    FormComment,
     FormGuideline
   },
 
   props: {
+    docId: {
+      type: Number,
+      required: true
+    },
     filterOption: {
       type: String,
       default: ''
@@ -97,6 +109,7 @@ export default Vue.extend({
 
   data() {
     return {
+      dialogComment: false,
       dialogGuideline: false
     }
   },

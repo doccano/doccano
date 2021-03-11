@@ -29,23 +29,23 @@ export class CommentApplicationService {
     return items.map(item => new CommentReadDTO(item))
   }
 
-  public async list(projectId: string, docId: string): Promise<CommentReadDTO[]> {
+  public async list(projectId: string, docId: number): Promise<CommentReadDTO[]> {
     const items = await this.repository.list(projectId, docId)
     return items.map(item => new CommentReadDTO(item))
   }
 
-  public create(projectId: string, docId: string, text: string): Promise<CommentItem> {
+  public create(projectId: string, docId: number, text: string): Promise<CommentItem> {
     return this.repository.create(projectId, docId, text)
   }
 
-  public update(projectId: string, docId: string, item: CommentReadDTO): Promise<CommentItem> {
+  public update(projectId: string, docId: number, item: CommentReadDTO): Promise<CommentItem> {
     const comment = new CommentItem(
-      item.id, item.user, item.username, parseInt(docId), item.documentText, item.text, item.createdAt
+      item.id, item.user, item.username, docId, item.documentText, item.text, item.createdAt
     )
     return this.repository.update(projectId, docId, comment)
   }
 
-  public delete(projectId: string, docId: string, item: CommentReadDTO): Promise<void> {
+  public delete(projectId: string, docId: number, item: CommentReadDTO): Promise<void> {
     return this.repository.delete(projectId, docId, item.id)
   }
 

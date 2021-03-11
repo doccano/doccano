@@ -22,7 +22,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapGetters } from 'vuex'
 import BaseCard from '@/components/utils/BaseCard.vue'
 import Comment from '@/components/comment/Comment.vue'
 import FormCreate from '@/components/comment/FormCreate.vue'
@@ -35,6 +34,13 @@ export default Vue.extend({
     FormCreate
   },
 
+  props: {
+    docId: {
+      type: Number,
+      required: true
+    }
+  },
+
   async fetch() {
     this.user = await this.$services.user.getMyProfile()
   },
@@ -44,10 +50,6 @@ export default Vue.extend({
       user: {},
       comments: [] as CommentReadDTO[],
     }
-  },
-
-  computed: {
-    ...mapGetters('documents', ['currentDoc'])
   },
 
   watch: {
@@ -64,18 +66,18 @@ export default Vue.extend({
 
   methods: {
     async list() {
-      this.comments = await this.$services.comment.list(this.$route.params.id, this.currentDoc.id)
+      this.comments = await this.$services.comment.list(this.$route.params.id, this.docId)
     },
     async add(message: string) {
-      await this.$services.comment.create(this.$route.params.id, this.currentDoc.id, message)
+      await this.$services.comment.create(this.$route.params.id, this.docId, message)
       this.list()
     },
     async remove(item: CommentReadDTO) {
-      await this.$services.comment.delete(this.$route.params.id, this.currentDoc.id, item)
+      await this.$services.comment.delete(this.$route.params.id, this.docId, item)
       this.list()
     },
     async maybeUpdate(item: CommentReadDTO) {
-      await this.$services.comment.update(this.$route.params.id, this.currentDoc.id, item)
+      await this.$services.comment.update(this.$route.params.id, this.docId, item)
       this.list()
     }
   }
