@@ -41,8 +41,14 @@
         />
 
         <button-clear
-          @click:clear="$emit('click:clear')"
+          @click:clear="dialogClear=true"
         />
+        <v-dialog v-model="dialogClear">
+          <form-clear-label
+            @click:ok="$emit('click:clear-label');dialogClear=false"
+            @click:cancel="dialogClear=false"
+          />
+        </v-dialog>
       </v-btn-toggle>
       <v-spacer />
       <button-pagination
@@ -67,6 +73,7 @@ import ButtonFilter from './buttons/ButtonFilter.vue'
 import ButtonGuideline from './buttons/ButtonGuideline.vue'
 import ButtonPagination from './buttons/ButtonPagination.vue'
 import ButtonReview from './buttons/ButtonReview.vue'
+import FormClearLabel from './forms/FormClearLabel.vue'
 import FormComment from './forms/FormComment.vue'
 import FormGuideline from './forms/FormGuideline.vue'
 
@@ -79,6 +86,7 @@ export default Vue.extend({
     ButtonGuideline,
     ButtonPagination,
     ButtonReview,
+    FormClearLabel,
     FormComment,
     FormGuideline
   },
@@ -109,6 +117,7 @@ export default Vue.extend({
 
   data() {
     return {
+      dialogClear: false,
       dialogComment: false,
       dialogGuideline: false
     }
