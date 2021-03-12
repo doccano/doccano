@@ -37,8 +37,16 @@
         </v-dialog>
 
         <button-auto-labeling
-          @click:auto="$emit('click:auto')"
+          @click:auto="dialogAutoLabeling=true"
         />
+        <v-dialog v-model="dialogAutoLabeling">
+          <form-auto-labeling
+            :is-enabled="enableAutoLabeling"
+            :error-message="errorMessage"
+            @click:cancel="dialogAutoLabeling=false"
+            @input="updateAutoLabeling"
+          />
+        </v-dialog>
 
         <button-clear
           @click:clear="dialogClear=true"
@@ -73,6 +81,7 @@ import ButtonFilter from './buttons/ButtonFilter.vue'
 import ButtonGuideline from './buttons/ButtonGuideline.vue'
 import ButtonPagination from './buttons/ButtonPagination.vue'
 import ButtonReview from './buttons/ButtonReview.vue'
+import FormAutoLabeling from './forms/FOrmAutoLabeling.vue'
 import FormClearLabel from './forms/FormClearLabel.vue'
 import FormComment from './forms/FormComment.vue'
 import FormGuideline from './forms/FormGuideline.vue'
@@ -86,6 +95,7 @@ export default Vue.extend({
     ButtonGuideline,
     ButtonPagination,
     ButtonReview,
+    FormAutoLabeling,
     FormClearLabel,
     FormComment,
     FormGuideline
@@ -94,6 +104,11 @@ export default Vue.extend({
   props: {
     docId: {
       type: Number,
+      required: true
+    },
+    enableAutoLabeling: {
+      type: Boolean,
+      default: false,
       required: true
     },
     filterOption: {
@@ -117,9 +132,11 @@ export default Vue.extend({
 
   data() {
     return {
+      dialogAutoLabeling: false,
       dialogClear: false,
       dialogComment: false,
-      dialogGuideline: false
+      dialogGuideline: false,
+      errorMessage: ''
     }
   },
 
@@ -133,6 +150,21 @@ export default Vue.extend({
   methods: {
     updatePage(page: number) {
       this.$router.push({ query: { page: page.toString() }})
+    },
+    
+    async updateAutoLabeling(isEnable: boolean) {
+      if (isEnable) {
+        try {
+          const projectId = this.$route.params.id
+          await this.$services.textClassification.autoLabel(projectId, this.docId)
+          this.$emit('update:enable-auto-labeling', true)
+          this.errorMessage = ''
+        } catch (e) {
+          this.errorMessage = e.response.data.detail
+        }
+      } else {
+        this.$emit('update:enable-auto-labeling', false)
+      }
     }
   }
 })

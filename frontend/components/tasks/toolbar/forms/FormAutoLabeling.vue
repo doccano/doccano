@@ -18,7 +18,7 @@
       <v-switch
         :value="isEnabled"
         :error-messages="errorMessage"
-        @change="$('input', $event)"
+        @change="$emit('input', $event)"
       />
     </template>
   </base-card>
