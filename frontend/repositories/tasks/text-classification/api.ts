@@ -30,4 +30,9 @@ export class FromApiTextClassificationRepository implements TextClassificationRe
     const url = `/projects/${projectId}/docs/${docId}/annotations`
     await this.request.delete(url)
   }
+
+  public async autoLabel(projectId: string, docId: number): Promise<void> {
+    const url = `/projects/${projectId}/docs/${docId}/auto-labeling`
+    await this.request.post(url, {})
+  }
 }

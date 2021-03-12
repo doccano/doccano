@@ -8,4 +8,6 @@ export interface TextClassificationRepository {
   delete(projectId: string, docId: number, annotationId: number): Promise<void>
 
   clear(projectId: string, docId: number): Promise<void>
+
+  autoLabel(projectId: string, docId: number): Promise<void>
 }
