@@ -93,6 +93,18 @@ export class ProjectReadItem {
     return role && !role.is_annotator
   }
 
+  get filterOption() {
+    if (this.project_type === 'DocumentClassification') {
+      return 'doc_annotations__isnull'
+    } else if (this.project_type === 'SequenceLabeling') {
+      return 'seq_annotations__isnull'
+    } else if (this.project_type === 'Seq2seq') {
+      return 'seq2seq_annotations__isnull'
+    } else {
+      return ''
+    }
+  }
+
   toObject(): Object {
     return {
       id: this.id,

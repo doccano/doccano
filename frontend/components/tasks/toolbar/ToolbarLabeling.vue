@@ -14,7 +14,7 @@
 
         <button-filter
           :value="filterOption"
-          @click:filter="$emit('click:filter', $event)"
+          @click:filter="changeFilter"
         />
 
         <button-guideline
@@ -112,10 +112,6 @@ export default Vue.extend({
       default: false,
       required: true
     },
-    filterOption: {
-      type: String,
-      default: ''
-    },
     guidelineText: {
       type: String,
       default: '',
@@ -150,12 +146,20 @@ export default Vue.extend({
     page(): number {
       // @ts-ignore
       return parseInt(this.$route.query.page, 10)
+    },
+    filterOption(): string {
+      // @ts-ignore
+      return this.$route.query.isChecked
     }
   },
 
   methods: {
     updatePage(page: number) {
       this.$router.push({ query: { page: page.toString() }})
+    },
+
+    changeFilter(isChecked: string) {
+      this.$router.push({ query: { page: '1', isChecked }})
     },
     
     async updateAutoLabeling(isEnable: boolean) {

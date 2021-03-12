@@ -29,6 +29,7 @@ export class ProjectDTO {
   downloadFormats:             FormatDTO[]
   uploadFormats:               FormatDTO[]
   permitApprove:               Boolean
+  filterOption:                String
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -44,6 +45,7 @@ export class ProjectDTO {
     this.downloadFormats = item.downloadFormats.map(f => new FormatDTO(f))
     this.uploadFormats = item.uploadFormats.map(f => new FormatDTO(f))
     this.permitApprove = item.permitApprove
+    this.filterOption = item.filterOption
   }
 }
 
