@@ -7,6 +7,7 @@
     <v-row no-gutters>
       <v-btn-toggle>
         <button-review
+          v-if="showApproveButton"
           :is-reviewd="isReviewd"
           @click:review="$emit('click:review')"
         />
@@ -123,6 +124,11 @@ export default Vue.extend({
     isReviewd: {
       type: Boolean,
       default: false
+    },
+    showApproveButton: {
+      type: Boolean,
+      default: false,
+      required: true
     },
     total: {
       type: Number,
