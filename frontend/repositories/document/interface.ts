@@ -16,4 +16,6 @@ export interface DocumentItemRepository {
   uploadFile(projectId: string, payload: FormData): Promise<void>
 
   exportFile(projectId: string, format: string, onlyApproved: boolean): Promise<any>
+
+  approve(projectId: string, docId: number, approved: boolean): Promise<void>
 }

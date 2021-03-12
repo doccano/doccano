@@ -69,4 +69,9 @@ export class FromApiDocumentItemListRepository implements DocumentItemRepository
     const url = `/projects/${projectId}/docs/download`
     return await this.request.get(url, config)
   }
+
+  async approve(projectId: string, docId: number, approved: boolean): Promise<void> {
+    const url = `/projects/${projectId}/docs/${docId}/approve-labels`
+    await this.request.post(url, { approved })
+  }
 }
