@@ -34,4 +34,8 @@ export class TextClassificationApplicationService {
   public async clear(projectId: string, docId: number): Promise<void> {
     await this.repository.clear(projectId, docId)
   }
+
+  public async autoLabel(projectId: string, docId: number): Promise<void> {
+    await this.repository.autoLabel(projectId, docId)
+  }
 }
