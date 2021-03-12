@@ -7,6 +7,7 @@ export class DocumentDTO {
   meta              : string
   annotationApprover: boolean | null
   commentCount      : number
+  isApproved        : boolean
 
   constructor(item: DocumentItem) {
     this.id = item.id
@@ -14,6 +15,7 @@ export class DocumentDTO {
     this.meta = item.meta
     this.annotationApprover = item.annotationApprover
     this.commentCount = item.commentCount
+    this.isApproved = !!item.annotationApprover
   }
 }
 
@@ -44,6 +46,18 @@ export class DocumentApplicationService {
     } catch(e) {
       throw new Error(e.response.data.detail)
     }
+  }
+
+  public async fetchOne(projectId: string, page: string, q: string, isChecked: string, filterName: string): Promise<DocumentListDTO> {
+    const offset = (parseInt(page, 10) - 1).toString()
+    const options: SearchOption = {
+      limit: '1',
+      offset,
+      q,
+      isChecked,
+      filterName
+    }
+    return await this.list(projectId, options)
   }
 
   public async create(projectId: string, item: DocumentDTO): Promise<DocumentDTO> {
@@ -87,6 +101,10 @@ export class DocumentApplicationService {
     formData.append('file', file)
     formData.append('format', format)
     const response = await this.repository.uploadFile(projectId, formData)
+  }
+
+  public async approve(projectId: string, docId: number, approved: boolean): Promise<void> {
+    await this.repository.approve(projectId, docId, approved)
   }
 
   private toModel(item: DocumentDTO): DocumentItem {
