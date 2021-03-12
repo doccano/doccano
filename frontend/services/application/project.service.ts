@@ -28,6 +28,7 @@ export class ProjectDTO {
   pageLink:                    string
   downloadFormats:             FormatDTO[]
   uploadFormats:               FormatDTO[]
+  permitApprove:               Boolean
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -42,6 +43,7 @@ export class ProjectDTO {
     this.pageLink = item.annotationPageLink
     this.downloadFormats = item.downloadFormats.map(f => new FormatDTO(f))
     this.uploadFormats = item.uploadFormats.map(f => new FormatDTO(f))
+    this.permitApprove = item.permitApprove
   }
 }
 

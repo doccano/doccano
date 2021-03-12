@@ -88,6 +88,11 @@ export class ProjectReadItem {
     return new FormatFactory(this.project_type).createUploadFormat()
   }
 
+  get permitApprove(): Boolean {
+    const role = this.current_users_role
+    return role && !role.is_annotator
+  }
+
   toObject(): Object {
     return {
       id: this.id,
