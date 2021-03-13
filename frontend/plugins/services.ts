@@ -7,7 +7,6 @@ import { FromApiProjectItemListRepository } from '@/repositories/project/api'
 import { FromApiCommentItemListRepository } from '@/repositories/comment/api'
 import { FromApiStatisticsRepository } from '@/repositories/statistics/api'
 import { FromApiDocumentItemListRepository } from '@/repositories/document/api'
-import { FromApiTextClassificationRepository } from '@/repositories/tasks/text-classification/api'
 import { LocalStorageOptionRepository} from '@/repositories/option/api'
 import { LabelApplicationService } from '@/services/application/label.service'
 import { MemberApplicationService } from '@/services/application/member.service'
@@ -17,8 +16,13 @@ import { ProjectApplicationService } from '@/services/application/project.servic
 import { CommentApplicationService } from '@/services/application/comment.service'
 import { StatisticsApplicationService } from '@/services/application/statistics.service'
 import { DocumentApplicationService } from '@/services/application/document.service'
-import { TextClassificationApplicationService } from '@/services/application/tasks/text.classification.service'
 import { OptionApplicationService } from '@/services/application/option.service'
+import { FromApiSequenceLabelingRepository } from '@/repositories/tasks/sequenceLabeling/api'
+import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabelingService'
+import { FromApiTextClassificationRepository } from '~/repositories/tasks/textClassification/api'
+import { TextClassificationApplicationService } from '~/services/application/tasks/textClassificationService'
+
+
 
 export interface Services {
   label: LabelApplicationService,
@@ -30,6 +34,7 @@ export interface Services {
   statistics: StatisticsApplicationService,
   document: DocumentApplicationService,
   textClassification: TextClassificationApplicationService,
+  sequenceLabeling: SequenceLabelingApplicationService,
   option: OptionApplicationService
 }
 
@@ -49,6 +54,7 @@ const plugin: Plugin = (context, inject) => {
   const statisticsRepository = new FromApiStatisticsRepository()
   const documentRepository   = new FromApiDocumentItemListRepository()
   const textClassificationRepository = new FromApiTextClassificationRepository()
+  const sequenceLabelingRepository   = new FromApiSequenceLabelingRepository()
   const optionRepository     = new LocalStorageOptionRepository()
 
   const label      = new LabelApplicationService(labelRepository)
@@ -60,6 +66,7 @@ const plugin: Plugin = (context, inject) => {
   const statistics = new StatisticsApplicationService(statisticsRepository)
   const document   = new DocumentApplicationService(documentRepository)
   const textClassification = new TextClassificationApplicationService(textClassificationRepository)
+  const sequenceLabeling   = new SequenceLabelingApplicationService(sequenceLabelingRepository)
   const option = new OptionApplicationService(optionRepository)
   
   const services: Services = {
@@ -72,6 +79,7 @@ const plugin: Plugin = (context, inject) => {
     statistics,
     document,
     textClassification,
+    sequenceLabeling,
     option
   }
   inject('services', services)
