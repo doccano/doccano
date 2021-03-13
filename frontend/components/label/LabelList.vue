@@ -32,7 +32,7 @@
         :color="props.item.backgroundColor"
         :text-color="$contrastColor(props.item.backgroundColor)"
       >
-        {{ props.item.background_color }}
+        {{ props.item.backgroundColor }}
       </v-chip>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
