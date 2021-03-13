@@ -19,9 +19,10 @@ import { DocumentApplicationService } from '@/services/application/document.serv
 import { OptionApplicationService } from '@/services/application/option.service'
 import { FromApiSequenceLabelingRepository } from '@/repositories/tasks/sequenceLabeling/api'
 import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabelingService'
+import { FromApiSeq2seqRepository } from '@/repositories/tasks/seq2seq/api'
+import { Seq2seqApplicationService } from '@/services/application/tasks/seq2seqService'
 import { FromApiTextClassificationRepository } from '~/repositories/tasks/textClassification/api'
 import { TextClassificationApplicationService } from '~/services/application/tasks/textClassificationService'
-
 
 
 export interface Services {
@@ -35,6 +36,7 @@ export interface Services {
   document: DocumentApplicationService,
   textClassification: TextClassificationApplicationService,
   sequenceLabeling: SequenceLabelingApplicationService,
+  seq2seq: Seq2seqApplicationService,
   option: OptionApplicationService
 }
 
@@ -55,6 +57,7 @@ const plugin: Plugin = (context, inject) => {
   const documentRepository   = new FromApiDocumentItemListRepository()
   const textClassificationRepository = new FromApiTextClassificationRepository()
   const sequenceLabelingRepository   = new FromApiSequenceLabelingRepository()
+  const seq2seqRepository = new FromApiSeq2seqRepository()
   const optionRepository     = new LocalStorageOptionRepository()
 
   const label      = new LabelApplicationService(labelRepository)
@@ -67,6 +70,7 @@ const plugin: Plugin = (context, inject) => {
   const document   = new DocumentApplicationService(documentRepository)
   const textClassification = new TextClassificationApplicationService(textClassificationRepository)
   const sequenceLabeling   = new SequenceLabelingApplicationService(sequenceLabelingRepository)
+  const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
   const option = new OptionApplicationService(optionRepository)
   
   const services: Services = {
@@ -80,6 +84,7 @@ const plugin: Plugin = (context, inject) => {
     document,
     textClassification,
     sequenceLabeling,
+    seq2seq,
     option
   }
   inject('services', services)

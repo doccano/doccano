@@ -1,15 +1,145 @@
 <template>
-  <seq2seq-container />
+  <v-container v-if="doc.id" fluid>
+    <toolbar-laptop
+      :doc-id="doc.id"
+      :enable-auto-labeling.sync="enableAutoLabeling"
+      :guideline-text="project.guideline"
+      :is-reviewd="doc.isApproved"
+      :show-approve-button="project.permitApprove"
+      :total="docs.count"
+      class="d-none d-sm-block"
+      @click:clear-label="clear"
+      @click:review="approve"
+    />
+    <toolbar-mobile
+      :total="docs.count"
+      class="d-flex d-sm-none"
+    />
+    <v-row justify="center">
+      <v-col cols="12" md="9">
+        <v-card class="mb-5">
+          <v-card-text class="title" v-text="doc.text" />
+        </v-card>
+        <seq2seq-box
+          :text="doc.text"
+          :annotations="annotations"
+          :delete-annotation="remove"
+          :update-annotation="update"
+          :create-annotation="add"
+        />
+      </v-col>
+      <v-col cols="12" md="3">
+        <list-metadata :metadata="JSON.parse(doc.meta)" />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-import Seq2seqContainer from '~/components/containers/annotation/Seq2seqContainer'
+import _ from 'lodash'
+import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
+import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+import Seq2seqBox from '~/components/tasks/Seq2Seq/Seq2seqBox'
 
 export default {
-  layout: 'annotation',
+  layout: 'workspace',
 
   components: {
-    Seq2seqContainer
+    Seq2seqBox,
+    ListMetadata,
+    ToolbarLaptop,
+    ToolbarMobile
+  },
+
+  async fetch() {
+    this.docs = await this.$services.document.fetchOne(
+      this.projectId,
+      this.$route.query.page,
+      this.$route.query.q,
+      this.$route.query.isChecked,
+      this.project.filterOption
+    )
+    const doc = this.docs.items[0]
+    if (this.enableAutoLabeling) {
+      await this.autoLabel(doc.id)
+    }
+    await this.list(doc.id)
+  },
+
+  data() {
+    return {
+      annotations: [],
+      docs: [],
+      project: {},
+      enableAutoLabeling: false
+    }
+  },
+
+  computed: {
+    projectId() {
+      return this.$route.params.id
+    },
+    doc() {
+      if (_.isEmpty(this.docs) || this.docs.items.length === 0) {
+        return {}
+      } else {
+        return this.docs.items[0]
+      }
+    }
+  },
+
+  watch: {
+    '$route.query': '$fetch',
+    enableAutoLabeling(val) {
+      if (val) {
+        this.list(this.doc.id)
+      }
+    }
+  },
+
+  async created() {
+    this.project = await this.$services.project.findById(this.projectId)
+  },
+
+  methods: {
+    async list(docId) {
+      this.annotations = await this.$services.seq2seq.list(this.projectId, docId)
+    },
+
+    async remove(id) {
+      await this.$services.seq2seq.delete(this.projectId, this.doc.id, id)
+      await this.list(this.doc.id)
+    },
+
+    async add(text) {
+      await this.$services.seq2seq.create(this.projectId, this.doc.id, text)
+      await this.list(this.doc.id)
+    },
+
+    async update(annotationId, text) {
+      await this.$services.seq2seq.changeText(this.projectId, this.doc.id, annotationId, text)
+      await this.list(this.doc.id)
+    },
+
+    async clear() {
+      await this.$services.seq2seq.clear(this.projectId, this.doc.id)
+      await this.list(this.doc.id)
+    },
+
+    async autoLabel(docId) {
+      try {
+        await this.$services.seq2seq.autoLabel(this.projectId, docId)
+      } catch (e) {
+        console.log(e.response.data.detail)
+      }
+    },
+
+    async approve() {
+      const approved = !this.doc.isApproved
+      await this.$services.document.approve(this.projectId, this.doc.id, approved)
+      await this.$fetch()
+    }
   },
 
   validate({ params, query }) {
