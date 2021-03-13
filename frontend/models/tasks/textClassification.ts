@@ -1,4 +1,6 @@
-export class TextClassificationItem {
+import { AnnotationModel } from './interface';
+
+export class TextClassificationItem implements AnnotationModel{
   constructor(
     public id: number,
     public label: number,
@@ -8,11 +10,11 @@ export class TextClassificationItem {
   static valueOf(
     { id, label, user }:
     { id: number, label: number, user: number }
-  ): TextClassificationItem {
+  ) {
     return new TextClassificationItem(id, label, user)
   }
 
-  toObject(): Object {
+  toObject() {
     return {
       id: this.id,
       label: this.label,
