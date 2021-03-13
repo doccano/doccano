@@ -182,7 +182,7 @@ export default Vue.extend({
 
 <style scoped>
 .toolbar-control >>> .v-toolbar__content {
-      padding: 0px !important;
+  padding: 0px !important;
 }
 
 ::v-deep .v-dialog {

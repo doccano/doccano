@@ -4,7 +4,10 @@
     :items="value"
   >
     <template v-slot:top>
-      <v-toolbar flat>
+      <v-toolbar
+        class="toolbar-control"
+        flat
+      >
         <v-toolbar-title class="text-capitalize">
           {{ title }}
         </v-toolbar-title>
@@ -198,7 +201,7 @@ export default Vue.extend({
 </script>
 
 <style scoped>
-/deep/ .v-toolbar__content {
+.toolbar-control >>> .v-toolbar__content {
   padding: 0px !important;
 }
 </style>
