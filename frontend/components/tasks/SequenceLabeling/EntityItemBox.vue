@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import EntityItem from './/EntityItem'
+import EntityItem from './EntityItem'
 
 export default {
   components: {
