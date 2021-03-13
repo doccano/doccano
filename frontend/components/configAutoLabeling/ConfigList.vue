@@ -51,7 +51,7 @@ import { ConfigItemList } from '@/models/config/config-item-list'
 import { ConfigApplicationService } from '@/services/application/config.service'
 import { FromApiConfigItemListRepository, ConfigItemResponse } from '@/repositories/config/api'
 import ConfirmForm from '@/components/utils/ConfirmForm.vue'
-import ConfigCreationForm from '@/components/containers/settings/ConfigCreationForm.vue'
+import ConfigCreationForm from './ConfigCreationForm.vue'
 
 export default Vue.extend({
   components: {
