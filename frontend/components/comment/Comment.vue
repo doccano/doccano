@@ -95,15 +95,14 @@
   </v-card>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from 'vue'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
-export default {
-  name: 'Comment',
+export default Vue.extend({
   props: {
     comment: {
       required: true,
@@ -114,26 +113,29 @@ export default {
       type: Number
     }
   },
+
   data() {
     return {
       showEdit: false,
       editText: this.comment.text,
       commentRules: [
-        v => !!v.trim() || 'Comment is required'
+        (v: string) => !!v.trim() || 'Comment is required'
       ],
       valid: false
     }
   },
+
   methods: {
-    updateComment(newText) {
+    updateComment(newText: string) {
       this.showEdit = false
       const comment = {...this.comment, text:newText }
       this.$emit('update-comment', comment)
     },
+    
     cancel() {
       this.showEdit = false
       this.editText = this.comment.text
     }
   }
-}
+})
 </script>

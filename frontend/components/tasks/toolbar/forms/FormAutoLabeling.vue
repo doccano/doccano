@@ -24,10 +24,11 @@
   </base-card>
 </template>
 
-<script>
-import BaseCard from '@/components/utils/BaseCard'
+<script lang="ts">
+import Vue from 'vue'
+import BaseCard from '@/components/utils/BaseCard.vue'
 
-export default {
+export default Vue.extend({
   components: {
     BaseCard
   },
@@ -44,5 +45,5 @@ export default {
       required: true
     }
   }
-}
+})
 </script>

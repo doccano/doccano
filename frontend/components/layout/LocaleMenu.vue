@@ -26,7 +26,3 @@
     </v-list>
   </v-menu>
 </template>
-
-<script>
-export default {}
-</script>
