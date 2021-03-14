@@ -40,7 +40,7 @@ import _ from 'lodash'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import Seq2seqBox from '~/components/tasks/Seq2Seq/Seq2seqBox'
+import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
   layout: 'workspace',

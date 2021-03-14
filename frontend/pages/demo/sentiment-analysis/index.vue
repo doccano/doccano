@@ -27,8 +27,7 @@
 
 <script>
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
-import TextClassification from '@/components/tasks/TextClassification/TextClassification'
-import annotation from '~/i18n/de/projects/annotation'
+import TextClassification from '@/components/tasks/textClassification/TextClassification'
 
 export default {
   layout: 'demo',

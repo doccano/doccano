@@ -42,7 +42,7 @@ import _ from 'lodash'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import EntityItemBox from '~/components/tasks/SequenceLabeling/EntityItemBox'
+import EntityItemBox from '~/components/tasks/sequenceLabeling/EntityItemBox'
 
 export default {
   layout: 'workspace',

@@ -26,7 +26,7 @@
 
 <script>
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
-import EntityItemBox from '~/components/tasks/SequenceLabeling/EntityItemBox'
+import EntityItemBox from '~/components/tasks/sequenceLabeling/EntityItemBox'
 
 export default {
   layout: 'demo',

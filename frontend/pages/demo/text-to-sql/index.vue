@@ -28,7 +28,7 @@
 
 <script>
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
-import Seq2seqBox from '~/components/tasks/Seq2Seq/Seq2seqBox'
+import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
   layout: 'demo',

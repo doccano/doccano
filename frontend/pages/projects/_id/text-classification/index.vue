@@ -42,7 +42,7 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
-import TextClassification from '@/components/tasks/TextClassification/TextClassification'
+import TextClassification from '@/components/tasks/textClassification/TextClassification'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 Vue.use(require('vue-shortkey'))
