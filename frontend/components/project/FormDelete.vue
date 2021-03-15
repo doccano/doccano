@@ -32,7 +32,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
-import { ProjectDTO } from '@/services/application/project.service'
+import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   components: {

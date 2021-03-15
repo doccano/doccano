@@ -51,7 +51,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import { DataOptions } from 'vuetify/types'
-import { DocumentDTO } from '~/services/application/document.service'
+import { DocumentDTO } from '~/services/application/document/documentData'
 
 export default Vue.extend({
   props: {

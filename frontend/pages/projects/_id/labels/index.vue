@@ -50,12 +50,12 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { LabelDTO } from '@/services/application/label.service'
 import ActionMenu from '@/components/label/ActionMenu.vue'
 import FormCreate from '@/components/label/FormCreate.vue'
 import FormDelete from '@/components/label/FormDelete.vue'
 import FormUpload from '@/components/label/FormUpload.vue'
 import LabelList from '@/components/label/LabelList.vue'
+import { LabelDTO } from '~/services/application/label/labelData'
 
 export default Vue.extend({
   layout: 'project',

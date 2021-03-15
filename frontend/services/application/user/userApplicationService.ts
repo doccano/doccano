@@ -1,15 +1,5 @@
-import { UserItem } from '@/models/user'
 import { UserItemListRepository } from '@/repositories/user/interface'
-
-export class UserDTO {
-  id: number
-  username: string
-
-  constructor(item: UserItem) {
-    this.id = item.id
-    this.username = item.username
-  }
-}
+import { UserDTO } from './userData'
 
 export class UserApplicationService {
   constructor(

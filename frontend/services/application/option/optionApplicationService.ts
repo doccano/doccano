@@ -1,17 +1,6 @@
 import { OptionItem } from '@/models/option'
 import { OptionRepository } from '@/repositories/option/interface'
-
-export class OptionDTO {
-  page: number
-  q?: string
-  isChecked?: string
-
-  constructor(item: OptionItem) {
-    this.page = item.page
-    this.q = item.q
-    this.isChecked = item.isChecked
-  }
-}
+import { OptionDTO } from './optionData'
 
 export class OptionApplicationService {
   constructor(

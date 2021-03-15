@@ -25,7 +25,7 @@ import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
 import Comment from '@/components/comment/Comment.vue'
 import FormCreate from '@/components/comment/FormCreate.vue'
-import { CommentReadDTO } from '~/services/application/comment.service'
+import { CommentReadDTO } from '~/services/application/comment/commentData'
 
 export default Vue.extend({
   components: {

@@ -1,17 +1,6 @@
-import { AnnotationApplicationService } from './annotationService'
+import { AnnotationApplicationService } from '../annotationApplicationService'
+import { TextClassificationDTO } from './textClassificationData'
 import { TextClassificationItem } from '~/models/tasks/textClassification'
-
-export class TextClassificationDTO {
-  id: number
-  label: number
-  user: number
-
-  constructor(item: TextClassificationItem) {
-    this.id = item.id
-    this.label = item.label
-    this.user = item.user
-  }
-}
 
 export class TextClassificationApplicationService extends AnnotationApplicationService<TextClassificationItem> {
 

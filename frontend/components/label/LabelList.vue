@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { LabelDTO } from '@/services/application/label.service'
+import { LabelDTO } from '~/services/application/label/labelData'
 
 export default Vue.extend({
   props: {

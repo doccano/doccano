@@ -1,22 +1,7 @@
 import { FromApiSequenceLabelingRepository } from '@/repositories/tasks/sequenceLabeling/api'
-import { AnnotationApplicationService } from './annotationService'
+import { AnnotationApplicationService } from '../annotationApplicationService'
+import { SequenceLabelingDTO } from './sequenceLabelingData'
 import { SequenceLabelingLabel } from '~/models/tasks/sequenceLabeling'
-
-export class SequenceLabelingDTO {
-  id: number
-  label: number
-  user: number
-  startOffset: number
-  endOffset: number
-
-  constructor(item: SequenceLabelingLabel) {
-    this.id = item.id
-    this.label = item.label
-    this.user = item.user
-    this.startOffset = item.startOffset
-    this.endOffset = item.endOffset
-  }
-}
 
 export class SequenceLabelingApplicationService extends AnnotationApplicationService<SequenceLabelingLabel> {
   constructor(

@@ -1,19 +1,7 @@
 import { FromApiSeq2seqRepository } from '@/repositories/tasks/seq2seq/api'
 import { Seq2seqLabel } from '@/models/tasks/seq2seq'
-import { AnnotationApplicationService } from './annotationService'
-import annotation from '~/i18n/de/projects/annotation'
-
-export class Seq2seqDTO {
-  id: number
-  text: string
-  user: number
-
-  constructor(item: Seq2seqLabel) {
-    this.id = item.id
-    this.text = item.text
-    this.user = item.user
-  }
-}
+import { AnnotationApplicationService } from '../annotationApplicationService'
+import { Seq2seqDTO } from './seq2seqData'
 
 export class Seq2seqApplicationService extends AnnotationApplicationService<Seq2seqLabel> {
   constructor(

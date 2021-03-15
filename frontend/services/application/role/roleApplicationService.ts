@@ -1,15 +1,5 @@
-import { RoleItem } from '@/models/role'
 import { RoleItemListRepository } from '@/repositories/role/interface'
-
-export class RoleDTO {
-  id: number
-  rolename: string
-
-  constructor(item: RoleItem) {
-    this.id = item.id
-    this.rolename = item.name
-  }
-}
+import { RoleDTO } from './roleData'
 
 export class RoleApplicationService {
   constructor(
