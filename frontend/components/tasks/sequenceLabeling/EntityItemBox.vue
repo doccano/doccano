@@ -45,7 +45,6 @@
 
 <script>
 import EntityItem from './EntityItem'
-
 export default {
   components: {
     EntityItem
@@ -95,7 +94,6 @@ export default {
     sortedEntities() {
       return this.entities.slice().sort((a, b) => a.startOffset - b.startOffset)
     },
-
     chunks() {
       let chunks = []
       let startOffset = 0
@@ -106,7 +104,6 @@ export default {
         let piece = characters.slice(startOffset, entity.startOffset).join('')
         chunks = chunks.concat(this.makeChunks(piece))
         startOffset = entity.endOffset
-
         // add entities to chunks.
         const label = this.labelObject[entity.label]
         piece = characters.slice(entity.startOffset, entity.endOffset).join('')
@@ -121,7 +118,6 @@ export default {
       chunks = chunks.concat(this.makeChunks(characters.slice(startOffset, characters.length).join('')))
       return chunks
     },
-
     labelObject() {
       const obj = {}
       for (const label of this.labels) {
