@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
-import { Statistics } from '@/models/statistics'
 import { StatisticsRepository } from './interface'
+import { Statistics } from '~/domain/models/statistics/statistics'
 
 export class FromApiStatisticsRepository implements StatisticsRepository {
   constructor(

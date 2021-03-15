@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
-import { DocumentItem, DocumentItemList } from '@/models/document'
 import { DocumentItemRepository, SearchOption } from './interface'
+import { DocumentItem, DocumentItemList } from '~/domain/models/document/document'
 
 
 export class FromApiDocumentItemListRepository implements DocumentItemRepository {

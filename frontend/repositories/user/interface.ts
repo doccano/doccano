@@ -1,4 +1,4 @@
-import { UserItem } from '@/models/user'
+import { UserItem } from '~/domain/models/user/user'
 
 export interface UserItemResponse {
   id: number,

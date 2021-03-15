@@ -1,6 +1,6 @@
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { TextClassificationDTO } from './textClassificationData'
-import { TextClassificationItem } from '~/models/tasks/textClassification'
+import { TextClassificationItem } from '~/domain/models/tasks/textClassification'
 
 export class TextClassificationApplicationService extends AnnotationApplicationService<TextClassificationItem> {
 

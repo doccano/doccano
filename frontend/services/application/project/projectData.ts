@@ -1,5 +1,5 @@
-import { ProjectReadItem, CurrentUsersRole, ProjectType } from '@/models/project';
-import { FormatItem } from '@/models/format';
+import { ProjectReadItem, CurrentUsersRole, ProjectType } from '~/domain/models/project/project';
+import { FormatItem } from '~/domain/models/document/format';
 
 
 export class FormatDTO {

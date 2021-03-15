@@ -1,5 +1,5 @@
 import { AnnotationRepository } from '../interface'
-import { SequenceLabelingLabel } from '~/models/tasks/sequenceLabeling'
+import { SequenceLabelingLabel } from '~/domain/models/tasks/sequenceLabeling'
 
 
 export class FromApiSequenceLabelingRepository extends AnnotationRepository<SequenceLabelingLabel> {

@@ -1,4 +1,4 @@
-import { MemberItem } from '@/models/member'
+import { MemberItem } from '~/domain/models/member/member'
 
 
 export class MemberDTO {

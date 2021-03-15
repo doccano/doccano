@@ -1,7 +1,7 @@
 import { FromApiSequenceLabelingRepository } from '@/repositories/tasks/sequenceLabeling/api'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { SequenceLabelingDTO } from './sequenceLabelingData'
-import { SequenceLabelingLabel } from '~/models/tasks/sequenceLabeling'
+import { SequenceLabelingLabel } from '~/domain/models/tasks/sequenceLabeling'
 
 export class SequenceLabelingApplicationService extends AnnotationApplicationService<SequenceLabelingLabel> {
   constructor(

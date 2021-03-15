@@ -1,6 +1,6 @@
-import { MemberItem } from '@/models/member'
 import { MemberItemListRepository } from '@/repositories/member/interface'
 import { MemberDTO } from './memberData'
+import { MemberItem } from '~/domain/models/member/member'
 
 export class MemberApplicationService {
   constructor(

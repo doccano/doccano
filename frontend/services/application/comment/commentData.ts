@@ -1,4 +1,4 @@
-import { CommentItem } from '@/models/comment'
+import { CommentItem } from '~/domain/models/comment/comment'
 
 
 export class CommentReadDTO {

@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
 import { LabelItemListRepository } from '@/repositories/label/interface'
-import { LabelItem } from '@/models/label'
+import { LabelItem } from '~/domain/models/label/label'
 
 export interface LabelItemResponse {
   id: number,

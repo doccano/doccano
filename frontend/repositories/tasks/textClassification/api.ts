@@ -1,5 +1,5 @@
 import { AnnotationRepository } from '../interface'
-import { TextClassificationItem } from '~/models/tasks/textClassification'
+import { TextClassificationItem } from '~/domain/models/tasks/textClassification'
 
 
 export class FromApiTextClassificationRepository extends AnnotationRepository<TextClassificationItem> {

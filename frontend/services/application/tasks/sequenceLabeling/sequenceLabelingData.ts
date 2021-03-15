@@ -1,4 +1,4 @@
-import { SequenceLabelingLabel } from '~/models/tasks/sequenceLabeling'
+import { SequenceLabelingLabel } from '~/domain/models/tasks/sequenceLabeling'
 
 
 export class SequenceLabelingDTO {

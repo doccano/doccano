@@ -1,4 +1,4 @@
-import { DocumentItem, DocumentItemList } from '@/models/document'
+import { DocumentItem, DocumentItemList } from '~/domain/models/document/document'
 
 
 export class DocumentDTO {

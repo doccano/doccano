@@ -1,6 +1,6 @@
-import { DocumentItem } from '@/models/document'
 import { DocumentItemRepository, SearchOption } from '@/repositories/document/interface'
 import { DocumentDTO, DocumentListDTO } from './documentData'
+import { DocumentItem } from '~/domain/models/document/document'
 
 
 export class DocumentApplicationService {

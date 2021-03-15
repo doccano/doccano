@@ -1,4 +1,4 @@
-import { TextClassificationItem } from '~/models/tasks/textClassification'
+import { TextClassificationItem } from '~/domain/models/tasks/textClassification'
 
 export interface TextClassificationRepository {
   list(projectId: string, docId: number): Promise<TextClassificationItem[]>

@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
-import { MemberItem } from '@/models/member'
 import { MemberItemListRepository, MemberItemResponse } from './interface'
+import { MemberItem } from '~/domain/models/member/member'
 
 
 export class FromApiMemberItemListRepository implements MemberItemListRepository {

@@ -1,4 +1,4 @@
-import { Seq2seqLabel } from '@/models/tasks/seq2seq'
+import { Seq2seqLabel } from '~/domain/models/tasks/seq2seq'
 
 
 export class Seq2seqDTO {

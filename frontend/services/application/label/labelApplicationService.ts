@@ -1,6 +1,6 @@
-import { LabelItem } from '@/models/label'
 import { LabelItemListRepository } from '@/repositories/label/interface'
 import { LabelDTO } from './labelData'
+import { LabelItem } from '~/domain/models/label/label'
 
 
 export class LabelApplicationService {

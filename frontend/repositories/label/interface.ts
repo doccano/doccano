@@ -1,4 +1,4 @@
-import { LabelItem, LabelItemList } from '@/models/label'
+import { LabelItem } from '~/domain/models/label/label'
 
 export interface LabelItemListRepository {
   list(projectId: string): Promise<LabelItem[]>

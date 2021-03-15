@@ -1,4 +1,4 @@
-import { ProjectReadItem, ProjectWriteItem } from '@/models/project'
+import { ProjectReadItem, ProjectWriteItem } from '~/domain/models/project/project'
 
 
 export interface ProjectItemListRepository {

@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
-import { UserItem } from '@/models/user'
 import { UserItemListRepository, UserItemResponse } from './interface'
+import { UserItem } from '~/domain/models/user/user'
 
 export class FromApiUserItemListRepository implements UserItemListRepository {
   constructor(

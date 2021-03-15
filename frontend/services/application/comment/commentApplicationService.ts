@@ -1,6 +1,6 @@
-import { CommentItem } from '@/models/comment'
 import { CommentItemListRepository } from '@/repositories/comment/interface'
 import { CommentReadDTO } from './commentData'
+import { CommentItem } from '~/domain/models/comment/comment'
 
 export class CommentApplicationService {
   constructor(

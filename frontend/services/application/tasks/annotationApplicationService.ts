@@ -1,5 +1,5 @@
-import { AnnotationModel } from '@/models/tasks/interface'
 import { AnnotationRepository } from '@/repositories/tasks/interface'
+import { AnnotationModel } from '~/domain/models/tasks/interface'
 
 
 export class AnnotationApplicationService<T extends AnnotationModel> {

@@ -1,6 +1,6 @@
-import { ProjectWriteItem } from '@/models/project'
 import { ProjectItemListRepository } from '@/repositories/project/interface'
 import { ProjectDTO, ProjectWriteDTO } from './projectData'
+import { ProjectWriteItem } from '~/domain/models/project/project'
 
 
 export class ProjectApplicationService {

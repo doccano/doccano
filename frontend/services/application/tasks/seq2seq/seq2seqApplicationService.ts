@@ -1,7 +1,7 @@
 import { FromApiSeq2seqRepository } from '@/repositories/tasks/seq2seq/api'
-import { Seq2seqLabel } from '@/models/tasks/seq2seq'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { Seq2seqDTO } from './seq2seqData'
+import { Seq2seqLabel } from '~/domain/models/tasks/seq2seq'
 
 export class Seq2seqApplicationService extends AnnotationApplicationService<Seq2seqLabel> {
   constructor(

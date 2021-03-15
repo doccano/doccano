@@ -1,4 +1,4 @@
-import { Statistics } from '@/models/statistics'
+import { Statistics } from '~/domain/models/statistics/statistics'
 
 
 export class StatisticsDTO {

@@ -1,4 +1,4 @@
-import { RoleItem } from '@/models/role'
+import { RoleItem } from '~/domain/models/role/role'
 
 export interface RoleItemResponse {
   id: number,

@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
-import { ProjectReadItem, ProjectWriteItem } from '@/models/project'
 import { ProjectItemListRepository } from './interface'
+import { ProjectReadItem, ProjectWriteItem } from '~/domain/models/project/project'
 
 
 export class FromApiProjectItemListRepository implements ProjectItemListRepository {

@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
-import { RoleItem } from '@/models/role'
 import { RoleItemListRepository, RoleItemResponse } from './interface'
+import { RoleItem } from '~/domain/models/role/role'
 
 export class FromApiRoleItemListRepository implements RoleItemListRepository {
   constructor(
