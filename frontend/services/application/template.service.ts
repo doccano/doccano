@@ -1,5 +1,5 @@
 import { TemplateRepository } from '@/repositories/template/interface'
-import { ConfigTemplateItem } from '@/models/config/config-template'
+import { ConfigTemplateItem } from '~/models/autoLabeling/template'
 
 export class TemplateApplicationService {
   constructor(

@@ -1,5 +1,5 @@
-import { ConfigItemList, ConfigItem } from '@/models/config/config-item-list'
 import { ConfigItemListRepository, ConfigTestResponse } from '@/repositories/config/interface'
+import { ConfigItemList, ConfigItem } from '~/models/autoLabeling/config'
 
 export class ConfigApplicationService {
   constructor(

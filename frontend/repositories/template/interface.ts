@@ -1,4 +1,4 @@
-import { ConfigTemplateItem } from '@/models/config/config-template'
+import { ConfigTemplateItem } from '~/models/autoLabeling/template'
 
 export interface TemplateRepository {
   list(projectId: string): Promise<string[]>

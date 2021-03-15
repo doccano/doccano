@@ -49,13 +49,13 @@
 import Vue from 'vue'
 import { FromApiConfigItemListRepository } from '@/repositories/config/api'
 import { ConfigApplicationService } from '@/services/application/config.service'
-import { ConfigItem, Fields } from '@/models/config/config-item-list'
 import { StepCounter } from '@/models/stepper'
 import ConfigHeader from './form/ConfigHeader.vue'
 import ConfigTemplateName from './form/ConfigTemplateName.vue'
 import ConfigTemplate from './form/ConfigTemplate.vue'
 import ConfigParameters from './form/ConfigParameters.vue'
 import ConfigLabelMapping from './form/ConfigLabelMapping.vue'
+import { ConfigItem, Fields } from '~/models/config/config'
 
 export default Vue.extend({
   components: {

@@ -1,4 +1,4 @@
-import { ConfigItem, ConfigItemList } from '@/models/config/config-item-list'
+import { ConfigItem, ConfigItemList } from '~/models/autoLabeling/config'
 
 export interface ConfigTestResponse {
   valid: boolean,

@@ -1,4 +1,4 @@
-import { Fields, ParametersForUI } from '@/models/config/config-item-list'
+import { Fields, ParametersForUI } from '~/models/autoLabeling/config'
 
 export interface Schema {
   title: string,

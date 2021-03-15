@@ -1,6 +1,6 @@
 import ApiService from '@/services/api.service'
 import { ConfigItemListRepository, ConfigTestResponse } from '@/repositories/config/interface'
-import { ConfigItemList, ConfigItem } from '@/models/config/config-item-list'
+import { ConfigItemList, ConfigItem } from '~/models/autoLabeling/config'
 
 export interface ConfigItemResponse {
   id: number,

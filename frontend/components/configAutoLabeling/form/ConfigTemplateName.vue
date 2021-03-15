@@ -35,8 +35,8 @@
 import Vue from 'vue'
 import { FromApiTemplateRepository } from '@/repositories/template/api'
 import { TemplateApplicationService } from '@/services/application/template.service'
-import { ConfigTemplateItem } from '@/models/config/config-template'
 import { templateNameRules } from '@/rules/index'
+import { ConfigTemplateItem } from '~/models/autoLabeling/template'
 
 export default Vue.extend({
   data() {
