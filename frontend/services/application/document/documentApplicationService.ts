@@ -1,11 +1,11 @@
-import { DocumentItemRepository, SearchOption } from '@/repositories/document/interface'
 import { DocumentDTO, DocumentListDTO } from './documentData'
+import { DocumentRepository, SearchOption } from '~/domain/models/document/documentRepository'
 import { DocumentItem } from '~/domain/models/document/document'
 
 
 export class DocumentApplicationService {
   constructor(
-    private readonly repository: DocumentItemRepository
+    private readonly repository: DocumentRepository
   ) {}
 
   public async list(projectId: string, options: SearchOption): Promise<DocumentListDTO> {

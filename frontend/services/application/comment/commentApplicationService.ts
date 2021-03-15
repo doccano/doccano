@@ -1,10 +1,10 @@
-import { CommentItemListRepository } from '@/repositories/comment/interface'
 import { CommentReadDTO } from './commentData'
+import { CommentRepository } from '~/domain/models/comment/commentRepository'
 import { CommentItem } from '~/domain/models/comment/comment'
 
 export class CommentApplicationService {
   constructor(
-    private readonly repository: CommentItemListRepository
+    private readonly repository: CommentRepository
   ) {}
 
   public async listProjectComment(projectId: string, q: string = ''): Promise<CommentReadDTO[]> {

@@ -1,5 +1,5 @@
 import ApiService from '@/services/api.service'
-import { LabelItemListRepository } from '@/repositories/label/interface'
+import { LabelRepository } from '~/domain/models/label/labelRepository'
 import { LabelItem } from '~/domain/models/label/label'
 
 export interface LabelItemResponse {
@@ -11,7 +11,7 @@ export interface LabelItemResponse {
   text_color: string
 }
 
-export class FromApiLabelItemListRepository implements LabelItemListRepository {
+export class APILabelRepository implements LabelRepository {
   constructor(
     private readonly request = ApiService
   ) {}

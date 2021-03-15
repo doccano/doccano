@@ -1,9 +1,9 @@
-import { UserItemListRepository } from '@/repositories/user/interface'
 import { UserDTO } from './userData'
+import { UserRepository } from '~/domain/models/user/userRepository'
 
 export class UserApplicationService {
   constructor(
-    private readonly repository: UserItemListRepository
+    private readonly repository: UserRepository
   ) {}
 
   public async getMyProfile(): Promise<UserDTO> {

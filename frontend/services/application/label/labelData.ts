@@ -1,4 +1,3 @@
-import { LabelItemListRepository } from '@/repositories/label/interface'
 import { LabelItem } from '~/domain/models/label/label'
 
 export class LabelDTO {

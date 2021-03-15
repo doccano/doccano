@@ -1,9 +1,9 @@
 import ApiService from '@/services/api.service'
-import { ProjectItemListRepository } from './interface'
+import { ProjectRepository } from '@/domain/models/project/projectRepository'
 import { ProjectReadItem, ProjectWriteItem } from '~/domain/models/project/project'
 
 
-export class FromApiProjectItemListRepository implements ProjectItemListRepository {
+export class APIProjectRepository implements ProjectRepository {
   constructor(
     private readonly request = ApiService
   ) {}

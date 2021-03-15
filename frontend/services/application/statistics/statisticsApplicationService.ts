@@ -1,5 +1,5 @@
-import { StatisticsRepository } from '@/repositories/statistics/interface'
 import { StatisticsDTO } from './statisticsData'
+import { StatisticsRepository } from '~/domain/models/statistics/statisticsRepository'
 
 export class StatisticsApplicationService {
   constructor(

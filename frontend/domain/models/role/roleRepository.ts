@@ -5,6 +5,6 @@ export interface RoleItemResponse {
   name: string
 }
 
-export interface RoleItemListRepository {
+export interface RoleRepository {
   list(): Promise<RoleItem[]>
 }

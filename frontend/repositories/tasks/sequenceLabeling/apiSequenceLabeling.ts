@@ -1,8 +1,8 @@
-import { AnnotationRepository } from '../interface'
+import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
 import { SequenceLabelingLabel } from '~/domain/models/tasks/sequenceLabeling'
 
 
-export class FromApiSequenceLabelingRepository extends AnnotationRepository<SequenceLabelingLabel> {
+export class APISequenceLabelingRepository extends AnnotationRepository<SequenceLabelingLabel> {
   constructor() {
     super(SequenceLabelingLabel)
   }

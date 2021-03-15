@@ -1,10 +1,10 @@
-import { MemberItemListRepository } from '@/repositories/member/interface'
 import { MemberDTO } from './memberData'
+import { MemberRepository } from '~/domain/models/member/memberRepository'
 import { MemberItem } from '~/domain/models/member/member'
 
 export class MemberApplicationService {
   constructor(
-    private readonly repository: MemberItemListRepository
+    private readonly repository: MemberRepository
   ) {}
 
   public async list(id: string): Promise<MemberDTO[]> {

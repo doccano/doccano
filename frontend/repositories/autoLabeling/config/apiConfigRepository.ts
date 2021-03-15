@@ -1,5 +1,5 @@
 import ApiService from '@/services/api.service'
-import { ConfigItemListRepository, ConfigTestResponse } from '@/repositories/config/interface'
+import { ConfigRepository, ConfigTestResponse } from '~/domain/models/autoLabeling/configRepository'
 import { ConfigItemList, ConfigItem } from '~/domain/models/autoLabeling/config'
 
 export interface ConfigItemResponse {
@@ -10,7 +10,7 @@ export interface ConfigItemResponse {
   label_mapping: object
 }
 
-export class FromApiConfigItemListRepository implements ConfigItemListRepository {
+export class APIConfigRepository implements ConfigRepository {
   constructor(
     private readonly request = ApiService
   ) {}

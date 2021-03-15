@@ -1,5 +1,5 @@
-import { OptionRepository } from '@/repositories/option/interface'
 import { OptionDTO } from './optionData'
+import { OptionRepository } from '~/domain/models/option/optionRepository'
 import { OptionItem } from '~/domain/models/option/option'
 
 export class OptionApplicationService {

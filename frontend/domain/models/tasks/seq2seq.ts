@@ -1,4 +1,4 @@
-import { AnnotationModel } from './interface';
+import { AnnotationModel } from './interface'
 
 export class Seq2seqLabel implements AnnotationModel{
   constructor(

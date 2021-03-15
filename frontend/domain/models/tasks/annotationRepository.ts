@@ -1,5 +1,5 @@
 import ApiService from '@/services/api.service'
-import { AnnotationModel } from '~/domain/models/tasks/interface'
+import { AnnotationModel } from './interface'
 
 
 export abstract class AnnotationRepository<T extends AnnotationModel> {

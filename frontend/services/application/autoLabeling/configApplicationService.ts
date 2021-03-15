@@ -1,9 +1,9 @@
-import { ConfigItemListRepository, ConfigTestResponse } from '@/repositories/config/interface'
+import { ConfigRepository, ConfigTestResponse } from '~/domain/models/autoLabeling/configRepository'
 import { ConfigItemList, ConfigItem } from '~/domain/models/autoLabeling/config'
 
 export class ConfigApplicationService {
   constructor(
-    private readonly configRepository: ConfigItemListRepository
+    private readonly configRepository: ConfigRepository
   ) {}
 
   public list(id: string): Promise<ConfigItemList> {

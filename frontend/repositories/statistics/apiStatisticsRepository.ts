@@ -1,8 +1,8 @@
 import ApiService from '@/services/api.service'
-import { StatisticsRepository } from './interface'
+import { StatisticsRepository } from '@/domain/models/statistics/statisticsRepository'
 import { Statistics } from '~/domain/models/statistics/statistics'
 
-export class FromApiStatisticsRepository implements StatisticsRepository {
+export class APIStatisticsRepository implements StatisticsRepository {
   constructor(
     private readonly request = ApiService
   ) {}

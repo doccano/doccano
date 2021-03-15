@@ -1,8 +1,8 @@
 import ApiService from '@/services/api.service'
-import { TemplateRepository } from '@/repositories/template/interface'
+import { TemplateRepository } from '~/domain/models/autoLabeling/templateRepository'
 import { ConfigTemplateItem, ConfigResponse } from '~/domain/models/autoLabeling/template'
 
-export class FromApiTemplateRepository implements TemplateRepository {
+export class APITemplateRepository implements TemplateRepository {
   constructor(
     private readonly request = ApiService
   ) {}

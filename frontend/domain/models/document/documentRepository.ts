@@ -2,7 +2,7 @@ import { DocumentItem, DocumentItemList } from '~/domain/models/document/documen
 
 export type SearchOption = {[key: string]: string | (string | null)[]}
 
-export interface DocumentItemRepository {
+export interface DocumentRepository {
   list(projectId: string, { limit, offset, q, isChecked, filterName }: SearchOption): Promise<DocumentItemList>
 
   create(projectId: string, item: DocumentItem): Promise<DocumentItem>

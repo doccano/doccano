@@ -1,9 +1,9 @@
 import ApiService from '@/services/api.service'
-import { DocumentItemRepository, SearchOption } from './interface'
+import { DocumentRepository, SearchOption } from '@/domain/models/document/documentRepository'
 import { DocumentItem, DocumentItemList } from '~/domain/models/document/document'
 
 
-export class FromApiDocumentItemListRepository implements DocumentItemRepository {
+export class APIDocumentRepository implements DocumentRepository {
   constructor(
     private readonly request = ApiService
   ) {}

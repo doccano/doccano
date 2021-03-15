@@ -6,7 +6,7 @@ export interface UserItemResponse {
   is_superuser: boolean
 }
 
-export interface UserItemListRepository {
+export interface UserRepository {
   getMe(): Promise<UserItem>
 
   list(query: string): Promise<UserItem[]>

@@ -1,11 +1,11 @@
-import { LabelItemListRepository } from '@/repositories/label/interface'
 import { LabelDTO } from './labelData'
+import { LabelRepository } from '~/domain/models/label/labelRepository'
 import { LabelItem } from '~/domain/models/label/label'
 
 
 export class LabelApplicationService {
   constructor(
-    private readonly repository: LabelItemListRepository
+    private readonly repository: LabelRepository
   ) {}
 
   public async list(id: string): Promise<LabelDTO[]> {

@@ -1,4 +1,4 @@
-import { AnnotationModel } from './interface';
+import { AnnotationModel } from './interface'
 
 export class SequenceLabelingLabel implements AnnotationModel {
   constructor(

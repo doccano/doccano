@@ -10,7 +10,7 @@ export interface CommentItemResponse {
   created_at: string
 }
 
-export interface CommentItemListRepository {
+export interface CommentRepository {
   listAll(projectId: string, q: string): Promise<CommentItem[]>
 
   list(projectId: string, docId: number): Promise<CommentItem[]>

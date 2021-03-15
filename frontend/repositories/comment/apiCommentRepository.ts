@@ -1,8 +1,8 @@
 import ApiService from '@/services/api.service'
-import { CommentItemListRepository, CommentItemResponse } from './interface'
+import { CommentRepository, CommentItemResponse } from '@/domain/models/comment/commentRepository'
 import { CommentItem } from '~/domain/models/comment/comment'
 
-export class FromApiCommentItemListRepository implements CommentItemListRepository {
+export class APICommentRepository implements CommentRepository {
   constructor(
     private readonly request = ApiService
   ) {}

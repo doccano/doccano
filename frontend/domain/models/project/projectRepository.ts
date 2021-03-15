@@ -1,7 +1,7 @@
 import { ProjectReadItem, ProjectWriteItem } from '~/domain/models/project/project'
 
 
-export interface ProjectItemListRepository {
+export interface ProjectRepository {
   list(): Promise<ProjectReadItem[]>
 
   findById(id: string): Promise<ProjectReadItem>

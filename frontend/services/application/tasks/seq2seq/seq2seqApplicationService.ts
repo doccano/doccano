@@ -1,13 +1,13 @@
-import { FromApiSeq2seqRepository } from '@/repositories/tasks/seq2seq/api'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { Seq2seqDTO } from './seq2seqData'
+import { APISeq2seqRepository } from '~/repositories/tasks/seq2seq/apiSeq2seq'
 import { Seq2seqLabel } from '~/domain/models/tasks/seq2seq'
 
 export class Seq2seqApplicationService extends AnnotationApplicationService<Seq2seqLabel> {
   constructor(
-    readonly repository: FromApiSeq2seqRepository
+    readonly repository: APISeq2seqRepository
   ) {
-    super(new FromApiSeq2seqRepository())
+    super(new APISeq2seqRepository())
   }
 
   public async list(projectId: string, docId: number): Promise<Seq2seqDTO[]> {

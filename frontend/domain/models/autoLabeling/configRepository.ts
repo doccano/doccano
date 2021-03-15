@@ -5,7 +5,7 @@ export interface ConfigTestResponse {
   labels: object[]
 }
 
-export interface ConfigItemListRepository {
+export interface ConfigRepository {
   list(projectId: string): Promise<ConfigItemList>
 
   create(projectId: string, item: ConfigItem): Promise<ConfigItem>

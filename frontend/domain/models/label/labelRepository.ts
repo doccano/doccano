@@ -1,6 +1,6 @@
 import { LabelItem } from '~/domain/models/label/label'
 
-export interface LabelItemListRepository {
+export interface LabelRepository {
   list(projectId: string): Promise<LabelItem[]>
 
   create(projectId: string, item: LabelItem): Promise<LabelItem>

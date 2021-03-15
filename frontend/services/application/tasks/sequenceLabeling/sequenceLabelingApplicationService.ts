@@ -1,13 +1,13 @@
-import { FromApiSequenceLabelingRepository } from '@/repositories/tasks/sequenceLabeling/api'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { SequenceLabelingDTO } from './sequenceLabelingData'
+import { APISequenceLabelingRepository } from '~/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
 import { SequenceLabelingLabel } from '~/domain/models/tasks/sequenceLabeling'
 
 export class SequenceLabelingApplicationService extends AnnotationApplicationService<SequenceLabelingLabel> {
   constructor(
-    readonly repository: FromApiSequenceLabelingRepository
+    readonly repository: APISequenceLabelingRepository
   ) {
-    super(new FromApiSequenceLabelingRepository())
+    super(new APISequenceLabelingRepository())
   }
 
   public async list(projectId: string, docId: number): Promise<SequenceLabelingDTO[]> {

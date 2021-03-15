@@ -1,4 +1,4 @@
-import { OptionRepository } from './interface'
+import { OptionRepository } from '../../domain/models/option/optionRepository'
 import { OptionItem } from '~/domain/models/option/option'
 
 export class LocalStorageOptionRepository implements OptionRepository {

@@ -1,9 +1,9 @@
-import { RoleItemListRepository } from '@/repositories/role/interface'
 import { RoleDTO } from './roleData'
+import { RoleRepository } from '~/domain/models/role/roleRepository'
 
 export class RoleApplicationService {
   constructor(
-    private readonly repository: RoleItemListRepository
+    private readonly repository: RoleRepository
   ) {}
 
   public async list(): Promise<RoleDTO[]> {

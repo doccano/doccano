@@ -1,4 +1,4 @@
-import { AnnotationRepository } from '@/repositories/tasks/interface'
+import { AnnotationRepository } from '~/domain/models/tasks/annotationRepository'
 import { AnnotationModel } from '~/domain/models/tasks/interface'
 
 

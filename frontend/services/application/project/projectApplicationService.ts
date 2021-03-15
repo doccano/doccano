@@ -1,11 +1,11 @@
-import { ProjectItemListRepository } from '@/repositories/project/interface'
 import { ProjectDTO, ProjectWriteDTO } from './projectData'
+import { ProjectRepository } from '~/domain/models/project/projectRepository'
 import { ProjectWriteItem } from '~/domain/models/project/project'
 
 
 export class ProjectApplicationService {
   constructor(
-    private readonly repository: ProjectItemListRepository
+    private readonly repository: ProjectRepository
   ) {}
 
   public async list(): Promise<ProjectDTO[]> {

@@ -1,9 +1,9 @@
 import ApiService from '@/services/api.service'
-import { MemberItemListRepository, MemberItemResponse } from './interface'
+import { MemberRepository, MemberItemResponse } from '@/domain/models/member/memberRepository'
 import { MemberItem } from '~/domain/models/member/member'
 
 
-export class FromApiMemberItemListRepository implements MemberItemListRepository {
+export class APIMemberRepository implements MemberRepository {
   constructor(
     private readonly request = ApiService
   ) {}

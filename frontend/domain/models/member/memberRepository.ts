@@ -8,7 +8,7 @@ export interface MemberItemResponse {
   rolename: string
 }
 
-export interface MemberItemListRepository {
+export interface MemberRepository {
   list(projectId: string): Promise<MemberItem[]>
 
   create(projectId: string, item: MemberItem): Promise<MemberItem>
