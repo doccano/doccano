@@ -21,6 +21,10 @@ import { FromApiSequenceLabelingRepository } from '@/repositories/tasks/sequence
 import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabelingService'
 import { FromApiSeq2seqRepository } from '@/repositories/tasks/seq2seq/api'
 import { Seq2seqApplicationService } from '@/services/application/tasks/seq2seqService'
+import { ConfigApplicationService } from '@/services/application/config.service'
+import { FromApiConfigItemListRepository } from '@/repositories/config/api'
+import { TemplateApplicationService } from '@/services/application/template.service'
+import { FromApiTemplateRepository } from '@/repositories/template/api'
 import { FromApiTextClassificationRepository } from '~/repositories/tasks/textClassification/api'
 import { TextClassificationApplicationService } from '~/services/application/tasks/textClassificationService'
 
@@ -37,7 +41,9 @@ export interface Services {
   textClassification: TextClassificationApplicationService,
   sequenceLabeling: SequenceLabelingApplicationService,
   seq2seq: Seq2seqApplicationService,
-  option: OptionApplicationService
+  option: OptionApplicationService,
+  config: ConfigApplicationService,
+  template: TemplateApplicationService
 }
 
 declare module 'vue/types/vue' {
@@ -59,6 +65,8 @@ const plugin: Plugin = (context, inject) => {
   const sequenceLabelingRepository   = new FromApiSequenceLabelingRepository()
   const seq2seqRepository = new FromApiSeq2seqRepository()
   const optionRepository     = new LocalStorageOptionRepository()
+  const configRepository     = new FromApiConfigItemListRepository()
+  const templateRepository   = new FromApiTemplateRepository()
 
   const label      = new LabelApplicationService(labelRepository)
   const member     = new MemberApplicationService(memberRepository)
@@ -72,6 +80,8 @@ const plugin: Plugin = (context, inject) => {
   const sequenceLabeling   = new SequenceLabelingApplicationService(sequenceLabelingRepository)
   const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
   const option = new OptionApplicationService(optionRepository)
+  const config = new ConfigApplicationService(configRepository)
+  const template = new TemplateApplicationService(templateRepository)
   
   const services: Services = {
     label,
@@ -85,7 +95,9 @@ const plugin: Plugin = (context, inject) => {
     textClassification,
     sequenceLabeling,
     seq2seq,
-    option
+    option,
+    config,
+    template
   }
   inject('services', services)
 }

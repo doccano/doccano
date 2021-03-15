@@ -47,8 +47,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { ConfigApplicationService } from '@/services/application/config.service'
-import { FromApiConfigItemListRepository, ConfigItemResponse } from '@/repositories/config/api'
+import { ConfigItemResponse } from '@/repositories/config/api'
 import ConfirmForm from '@/components/utils/ConfirmForm.vue'
 import ConfigCreationForm from './ConfigCreationForm.vue'
 import { ConfigItemList } from '~/models/config/config'
@@ -77,17 +76,9 @@ export default Vue.extend({
     }
   },
 
-  computed: {
-    configService(): ConfigApplicationService {
-      const configRepository = new FromApiConfigItemListRepository()
-      const configService = new ConfigApplicationService(configRepository)
-      return configService
-    }
-  },
-
   async created(): Promise<void> {
     this.isLoading = true
-    this.items = await this.configService.list(this.$route.params.id)
+    this.items = await this.$services.config.list(this.$route.params.id)
     this.isLoading = false
   },
 
@@ -96,9 +87,9 @@ export default Vue.extend({
       this.isLoading = true
       const projectId = this.$route.params.id
       for (const item of this.selected) {
-        await this.configService.delete(projectId, item.id)
+        await this.$services.config.delete(projectId, item.id)
       }
-      this.items = await this.configService.list(projectId)
+      this.items = await this.$services.config.list(projectId)
       this.selected = []
       this.isLoading = false
     },
@@ -107,7 +98,7 @@ export default Vue.extend({
     },
     async onCreate() {
       this.isLoading = true
-      this.items = await this.configService.list(this.$route.params.id)
+      this.items = await this.$services.config.list(this.$route.params.id)
       this.isLoading = false
     }
   }

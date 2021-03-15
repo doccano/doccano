@@ -33,10 +33,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { FromApiTemplateRepository } from '@/repositories/template/api'
-import { TemplateApplicationService } from '@/services/application/template.service'
 import { templateNameRules } from '@/rules/index'
-import { ConfigTemplateItem } from '~/models/autoLabeling/template'
 
 export default Vue.extend({
   data() {
@@ -49,23 +46,20 @@ export default Vue.extend({
   },
 
   computed: {
-    templateService(): TemplateApplicationService {
-      const repository = new FromApiTemplateRepository()
-      const service = new TemplateApplicationService(repository)
-      return service
+    projectId() {
+      return this.$route.params.id
     }
   },
 
   watch: {
     async templateName(val) {
-      const projectId = this.$route.params.id
-      const response: ConfigTemplateItem = await this.templateService.find(projectId, val)
+      const response = await this.$services.template.find(this.projectId, val)
       this.$emit('input', response.toObject())
     },
   },
 
   async created() {
-    this.templateNames = await this.templateService.list(this.$route.params.id)
+    this.templateNames = await this.$services.template.list(this.projectId)
   }
 })
 </script>

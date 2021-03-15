@@ -47,8 +47,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { FromApiConfigItemListRepository } from '@/repositories/config/api'
-import { ConfigApplicationService } from '@/services/application/config.service'
 import { StepCounter } from '@/models/stepper'
 import ConfigHeader from './form/ConfigHeader.vue'
 import ConfigTemplateName from './form/ConfigTemplateName.vue'
@@ -83,14 +81,6 @@ export default Vue.extend({
         template: [],
         mapping: []
       }
-    }
-  },
-
-  computed: {
-    configService(): ConfigApplicationService{
-      const repository = new FromApiConfigItemListRepository()
-      const service = new ConfigApplicationService(repository)
-      return service
     }
   },
 
@@ -130,26 +120,26 @@ export default Vue.extend({
     },
     testParameters(text: string) {
       const item = ConfigItem.parseFromUI(this.fields)
-      const promise = this.configService.testParameters(item, text)
+      const promise = this.$services.config.testParameters(item, text)
       this.testConfig(promise, 'parameter')
     },
     testTemplate() {
       const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
-      const promise = this.configService.testTemplate(projectId, this.response.parameter, item)
+      const promise = this.$services.config.testTemplate(projectId, this.response.parameter, item)
       this.testConfig(promise, 'template')
     },
     testMapping() {
       const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
-      const promise = this.configService.testMapping(projectId, item, this.response.template)
+      const promise = this.$services.config.testMapping(projectId, item, this.response.template)
       this.testConfig(promise, 'mapping')
     },
     saveConfig() {
       const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
       this.isLoading = true
-      this.configService.save(projectId, item)
+      this.$services.config.save(projectId, item)
         .then(() => {
           this.step.first()
           this.$emit('onCreate')
