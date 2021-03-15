@@ -1,46 +1,45 @@
 <template>
-  <v-container v-if="doc.id" fluid>
-    <toolbar-laptop
-      :doc-id="doc.id"
-      :enable-auto-labeling.sync="enableAutoLabeling"
-      :guideline-text="project.guideline"
-      :is-reviewd="doc.isApproved"
-      :show-approve-button="project.permitApprove"
-      :total="docs.count"
-      class="d-none d-sm-block"
-      @click:clear-label="clear"
-      @click:review="approve"
-    />
-    <toolbar-mobile
-      :total="docs.count"
-      class="d-flex d-sm-none"
-    />
-    <v-row justify="center">
-      <v-col cols="12" md="9">
-        <v-card
-          @shortkey="addOrRemove"
-        >
-          <v-card-title>
-            <text-classification
-              :labels="labels"
-              :annotations="annotations"
-              @add="add"
-              @remove="remove"
-            />
-          </v-card-title>
-          <v-card-text class="title highlight" v-text="doc.text" />
-        </v-card>
-      </v-col>
-      <v-col cols="12" md="3">
-        <list-metadata :metadata="JSON.parse(doc.meta)" />
-      </v-col>
-    </v-row>
-  </v-container>
+  <layout-text v-if="doc.id">
+    <template v-slot:header>
+      <toolbar-laptop
+        :doc-id="doc.id"
+        :enable-auto-labeling.sync="enableAutoLabeling"
+        :guideline-text="project.guideline"
+        :is-reviewd="doc.isApproved"
+        :show-approve-button="project.permitApprove"
+        :total="docs.count"
+        class="d-none d-sm-block"
+        @click:clear-label="clear"
+        @click:review="approve"
+      />
+      <toolbar-mobile
+        :total="docs.count"
+        class="d-flex d-sm-none"
+      />
+    </template>
+    <template v-slot:content>
+      <v-card @shortkey="addOrRemove">
+        <v-card-title>
+          <text-classification
+            :labels="labels"
+            :annotations="annotations"
+            @add="add"
+            @remove="remove"
+          />
+        </v-card-title>
+        <v-card-text class="title highlight" v-text="doc.text" />
+      </v-card>
+    </template>
+    <template v-slot:sidebar>
+      <list-metadata :metadata="JSON.parse(doc.meta)" />
+    </template>
+  </layout-text>
 </template>
 
 <script>
 import Vue from 'vue'
 import _ from 'lodash'
+import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import TextClassification from '@/components/tasks/textClassification/TextClassification'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
@@ -51,6 +50,7 @@ export default {
   layout: 'workspace',
 
   components: {
+    LayoutText,
     ListMetadata,
     TextClassification,
     ToolbarLaptop,
