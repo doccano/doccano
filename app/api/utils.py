@@ -30,7 +30,7 @@ def extract_label(tag):
         return tag
 
 
-class BaseStorage(object):
+class BaseStorage:
 
     def __init__(self, data, project):
         self.data = data
@@ -246,7 +246,7 @@ class Speech2textStorage(BaseStorage):
         return annotations
 
 
-class FileParser(object):
+class FileParser:
 
     def parse(self, file):
         raise NotImplementedError()
@@ -497,7 +497,7 @@ class JSONLRenderer(JSONRenderer):
                              allow_nan=not self.strict) + '\n'
 
 
-class FastTextPainter(object):
+class FastTextPainter:
 
     @staticmethod
     def paint_labels(documents, labels):
@@ -535,7 +535,7 @@ class PlainTextRenderer(BaseRenderer):
         return buffer.getvalue()
 
 
-class JSONPainter(object):
+class JSONPainter:
 
     def paint(self, documents):
         serializer = DocumentSerializer(documents, many=True)
