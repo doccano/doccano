@@ -24,7 +24,7 @@ export class CommentApplicationService {
     private readonly repository: CommentItemListRepository
   ) {}
 
-  public async listProjectComment(projectId: string, q: string = ''): Promise<CommentReadDTO[]> {
+  public async listProjectComment(projectId: string, q = ''): Promise<CommentReadDTO[]> {
     const items = await this.repository.listAll(projectId, q)
     return items.map(item => new CommentReadDTO(item))
   }

@@ -9,7 +9,7 @@ export class StepCounter {
   }
 
   static valueOf(
-    minStep: number = 1, maxStep: number = 10
+    minStep = 1, maxStep = 10
   ): StepCounter {
     return new StepCounter(minStep, maxStep)
   }
