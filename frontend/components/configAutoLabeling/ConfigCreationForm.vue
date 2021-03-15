@@ -53,7 +53,7 @@ import ConfigTemplateName from './form/ConfigTemplateName.vue'
 import ConfigTemplate from './form/ConfigTemplate.vue'
 import ConfigParameters from './form/ConfigParameters.vue'
 import ConfigLabelMapping from './form/ConfigLabelMapping.vue'
-import { ConfigItem, Fields } from '~/models/config/config'
+import { ConfigItem, Fields } from '~/models/autoLabeling/config'
 
 export default Vue.extend({
   components: {
