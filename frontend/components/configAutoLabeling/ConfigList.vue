@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { ConfigItemResponse } from '@/repositories/config/api'
+import { ConfigItemResponse } from '@/repositories/autoLabeling/config/apiConfigRepository'
 import ConfirmForm from '@/components/utils/ConfirmForm.vue'
 import ConfigCreationForm from './ConfigCreationForm.vue'
 import { ConfigItemList } from '~/domain/models/autoLabeling/config'
