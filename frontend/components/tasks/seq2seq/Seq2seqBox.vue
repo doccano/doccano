@@ -42,7 +42,7 @@
       <template v-slot:[`item.action`]="{ item }">
         <v-icon
           small
-          @click="deleteAnnotation(item.id)"
+          @click="remove(item.id)"
         >
           mdi-delete-outline
         </v-icon>
@@ -51,26 +51,13 @@
   </v-card>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   props: {
     annotations: {
       type: Array,
-      default: () => ([]),
-      required: true
-    },
-    deleteAnnotation: {
-      type: Function,
-      default: () => ([]),
-      required: true
-    },
-    updateAnnotation: {
-      type: Function,
-      default: () => ([]),
-      required: true
-    },
-    createAnnotation: {
-      type: Function,
       default: () => ([]),
       required: true
     }
@@ -97,11 +84,11 @@ export default {
   },
 
   methods: {
-    update(annotationId, text) {
+    update(annotationId: number, text: string) {
       if (text.length > 0) {
-        this.updateAnnotation(annotationId, text)
+        this.$emit('update:annotation', annotationId, text)
       } else {
-        this.deleteAnnotation(annotationId)
+        this.remove(annotationId)
       }
     },
     create() {
@@ -110,9 +97,12 @@ export default {
         return
       }
       if (this.newText.length > 0) {
-        this.createAnnotation(this.newText)
+        this.$emit('create:annotation', this.newText)
         this.newText = ''
       }
+    },
+    remove(annotationId: number) {
+      this.$emit('delete:annotation', annotationId)
     },
     compositionStart() {
       this.isComposing = true
@@ -122,5 +112,5 @@ export default {
       this.hasCompositionJustEnded = true
     }
   }
-}
+})
 </script>

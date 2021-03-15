@@ -13,9 +13,9 @@
           <seq2seq-box
             :text="currentDoc.text"
             :annotations="currentDoc.annotations"
-            :delete-annotation="_deleteAnnotation"
-            :update-annotation="_updateAnnotation"
-            :create-annotation="_createAnnotation"
+            @delete:annotation="_deleteAnnotation"
+            @update:annotation="_updateAnnotation"
+            @create:annotation="_createAnnotation"
           />
         </v-col>
         <v-col cols="12" md="3">
