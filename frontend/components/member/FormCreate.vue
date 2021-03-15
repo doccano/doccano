@@ -58,9 +58,9 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
-import { UserDTO } from '~/services/application/user.service'
-import { RoleDTO } from '~/services/application/role.service'
-import { MemberDTO } from '~/services/application/member.service'
+import { UserDTO } from '~/services/application/user/userData'
+import { RoleDTO } from '~/services/application/role/roleData'
+import { MemberDTO } from '~/services/application/member/memberData'
 
 export default Vue.extend({
   components: {

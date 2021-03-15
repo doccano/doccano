@@ -32,7 +32,7 @@
         :color="props.item.backgroundColor"
         :text-color="$contrastColor(props.item.backgroundColor)"
       >
-        {{ props.item.background_color }}
+        {{ props.item.backgroundColor }}
       </v-chip>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { LabelDTO } from '@/services/application/label.service'
+import { LabelDTO } from '~/services/application/label/labelData'
 
 export default Vue.extend({
   props: {

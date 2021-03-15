@@ -70,9 +70,9 @@ import FormDelete from '@/components/document/FormDelete.vue'
 import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
 import FormDownload from '@/components/document/FormDownload.vue'
 import FormUpload from '@/components/document/FormUpload.vue'
-import { DocumentListDTO, DocumentDTO } from '@/services/application/document.service'
+import { DocumentListDTO, DocumentDTO } from '~/services/application/document/documentData'
 import ActionMenu from '~/components/document/ActionMenu.vue'
-import { ProjectDTO, FormatDTO } from '~/services/application/project.service'
+import { ProjectDTO, FormatDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   layout: 'project',

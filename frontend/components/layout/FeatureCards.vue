@@ -35,10 +35,11 @@
   </v-container>
 </template>
 
-<script>
-import FeatureCard from './FeatureCard'
+<script lang="ts">
+import Vue from 'vue'
+import FeatureCard from './FeatureCard.vue'
 
-export default {
+export default Vue.extend({
   components: {
     FeatureCard
   },
@@ -64,5 +65,5 @@ export default {
       ]
     }
   }
-}
+})
 </script>

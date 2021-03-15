@@ -28,7 +28,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import CommentList from '@/components/comment/CommentList.vue'
-import { CommentReadDTO } from '@/services/application/comment.service'
+import { CommentReadDTO } from '~/services/application/comment/commentData'
 import FormDelete from '~/components/comment/FormDelete.vue'
 
 export default Vue.extend({

@@ -46,7 +46,7 @@ import Vue from 'vue'
 import MemberList from '@/components/member/MemberList.vue'
 import FormDelete from '@/components/member/FormDelete.vue'
 import FormCreate from '~/components/member/FormCreate.vue'
-import { MemberDTO } from '~/services/application/member.service'
+import { MemberDTO } from '~/services/application/member/memberData'
 
 export default Vue.extend({
   layout: 'project',

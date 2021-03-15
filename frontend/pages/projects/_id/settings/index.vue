@@ -27,7 +27,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import FormUpdate from '@/components/project/FormUpdate.vue'
-import ConfigList from '@/components/containers/settings/ConfigList.vue'
+import ConfigList from '@/components/configAutoLabeling/ConfigList.vue'
 
 export default Vue.extend({
   layout: 'project',

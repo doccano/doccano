@@ -42,7 +42,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import ProjectList from '@/components/project/ProjectList.vue'
-import { ProjectDTO, ProjectWriteDTO } from '@/services/application/project.service'
+import { ProjectDTO, ProjectWriteDTO } from '~/services/application/project/projectData'
 import FormDelete from '~/components/project/FormDelete.vue'
 import FormCreate from '~/components/project/FormCreate.vue'
 

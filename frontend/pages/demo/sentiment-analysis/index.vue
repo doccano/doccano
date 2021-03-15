@@ -5,11 +5,11 @@
         <v-col cols="12" md="9">
           <v-card>
             <v-card-title>
-              <multi-class-classification
+              <text-classification
                 :labels="items"
                 :annotations="currentDoc.annotations"
-                :add-label="addLabel"
-                :delete-label="removeLabel"
+                @add="addLabel"
+                @remove="removeLabel"
               />
             </v-card-title>
             <v-card-text class="title">
@@ -18,7 +18,7 @@
           </v-card>
         </v-col>
         <v-col cols="12" md="3">
-          <metadata-box :metadata="JSON.parse(currentDoc.meta)" />
+          <list-metadata :metadata="JSON.parse(currentDoc.meta)" />
         </v-col>
       </v-row>
     </v-container>
@@ -26,15 +26,15 @@
 </template>
 
 <script>
-import MetadataBox from '@/components/organisms/annotation/MetadataBox'
-import MultiClassClassification from '~/components/organisms/annotation/MultiClassClassification'
+import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import TextClassification from '@/components/tasks/textClassification/TextClassification'
 
 export default {
   layout: 'demo',
 
   components: {
-    MultiClassClassification,
-    MetadataBox
+    TextClassification,
+    ListMetadata
   },
 
   data() {
@@ -43,18 +43,18 @@ export default {
         {
           id: 4,
           text: 'Positive',
-          prefix_key: null,
-          suffix_key: 'p',
-          background_color: '#7c20e0',
-          text_color: '#ffffff'
+          prefixKey: null,
+          suffixKey: 'p',
+          backgroundColor: '#7c20e0',
+          textColor: '#ffffff'
         },
         {
           id: 5,
           text: 'Negative',
-          prefix_key: null,
-          suffix_key: 'n',
-          background_color: '#fbb028',
-          text_color: '#000000'
+          prefixKey: null,
+          suffixKey: 'n',
+          backgroundColor: '#fbb028',
+          textColor: '#000000'
         }
       ],
       currentDoc: {
