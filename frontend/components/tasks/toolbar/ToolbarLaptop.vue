@@ -155,11 +155,19 @@ export default Vue.extend({
 
   methods: {
     updatePage(page: number) {
-      this.$router.push({ query: { page: page.toString() }})
+      this.$router.push({ query: {
+        page: page.toString(),
+        isChecked: this.filterOption,
+        q: this.$route.query.q
+      }})
     },
 
     changeFilter(isChecked: string) {
-      this.$router.push({ query: { page: '1', isChecked }})
+      this.$router.push({ query: {
+        page: '1',
+        isChecked,
+        q: this.$route.query.q
+      }})
     },
     
     async updateAutoLabeling(isEnable: boolean) {
