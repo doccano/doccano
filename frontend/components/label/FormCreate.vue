@@ -82,7 +82,7 @@ export default Vue.extend({
       rules: {
         required: (v: string) => !!v || 'Required',
         // @ts-ignore
-        counter: (v: string) => (v && v.length <= 30) || this.$t('rules.labelNameRules').labelLessThan30Chars,
+        counter: (v: string) => (v && v.length <= 100) || this.$t('rules.labelNameRules').labelLessThan100Chars,
         // @ts-ignore
         nameDuplicated: (v: string) => (!this.usedNames.includes(v)) || this.$t('rules.labelNameRules').duplicated,
         // @ts-ignore
