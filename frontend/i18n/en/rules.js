@@ -4,7 +4,7 @@ export default {
   },
   labelNameRules: {
     labelRequired: 'Label name is required',
-    labelLessThan30Chars: 'Label name must be less than 30 characters',
+    labelLessThan100Chars: 'Label name must be less than 100 characters',
     duplicated: 'The label name is already used.'
   },
   keyNameRules: {

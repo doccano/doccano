@@ -4,7 +4,7 @@ export default {
   },
   labelNameRules: {
     labelRequired: '请输入名称',
-    labelLessThan30Chars: '名称必须少于30个字符',
+    labelLessThan100Chars: '名称必须少于100个字符',
     duplicated: '标签名已经被使用'
   },
   keyNameRules: {
