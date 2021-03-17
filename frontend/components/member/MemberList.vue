@@ -1,0 +1,81 @@
+<template>
+  <v-data-table
+    :value="value"
+    :headers="headers"
+    :items="items"
+    :search="search"
+    :loading="isLoading"
+    :loading-text="$t('generic.loading')"
+    :no-data-text="$t('vuetify.noDataAvailable')"
+    :footer-props="{
+      'showFirstLastPage': true,
+      'items-per-page-options': [5, 10, 15, $t('generic.all')],
+      'items-per-page-text': $t('vuetify.itemsPerPageText'),
+      'page-text': $t('dataset.pageText')
+    }"
+    item-key="id"
+    show-select
+    @input="$emit('input', $event)"
+  >
+    <template v-slot:top>
+      <v-text-field
+        v-model="search"
+        prepend-inner-icon="search"
+        :label="$t('generic.search')"
+        single-line
+        hide-details
+        filled
+      />
+    </template>
+    <template v-slot:[`item.rolename`]="{ item }">
+      {{ $translateRole(item.rolename, $t('members.roles')) }}
+    </template>
+    <template v-slot:[`item.actions`]="{ item }">
+      <v-icon
+        small
+        @click="$emit('edit', item)"
+      >
+        mdi-pencil
+      </v-icon>
+    </template>
+  </v-data-table>
+</template>
+
+<script lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
+  props: {
+    isLoading: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    items: {
+      type: Array,
+      default: () => [],
+      required: true
+    },
+    value: {
+      type: Array,
+      default: () => [],
+      required: true
+    }
+  },
+  data() {
+    return {
+      search: ''
+    }
+  },
+
+  computed: {
+    headers() {
+      return [
+        { text: this.$t('generic.name'), value: 'username' },
+        { text: this.$t('members.role'), value: 'rolename' },
+        { text: 'Actions', value: 'actions', sortable: false }
+      ]
+    }
+  } 
+})
+</script>

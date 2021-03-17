@@ -1,0 +1,57 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+model-mommy = "*"
+unittest-xml-reporting = "*"
+vcrpy = "*"
+vcrpy-unittest = "*"
+coverage = "*"
+flake8 = "*"
+isort = "*"
+pytest = "*"
+autopep8 = "*"
+pytest-cov = "*"
+mypy = "*"
+
+[packages]
+django = "*"
+django-heroku = "*"
+environs = "*"
+furl = "*"
+djangorestframework = "*"
+django-filter = "*"
+social-auth-app-django = "*"
+django-polymorphic = "*"
+django-cors-headers = "*"
+drf-yasg = "*"
+djangorestframework-xml = "*"
+apache-libcloud = "*"
+djangorestframework-csv = "*"
+django-rest-polymorphic = "*"
+conllu = "*"
+chardet = "*"
+colour = "*"
+pyexcel = "*"
+seqeval = "*"
+whitenoise = "*"
+dj-database-url = "*"
+python-jose = "*"
+pyexcel-xlsx = "*"
+lockfile = "*"
+gunicorn = "*"
+fasteners = "*"
+auto-labeling-pipeline = "*"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+isort = "isort api -c --skip migrations"
+flake8 = "flake8 api --ignore=F401,E741"
+wait_for_db = "python manage.py wait_for_db"
+test = "python manage.py test api.tests"
+migrate = "python manage.py migrate"
+collectstatic = "python manage.py collectstatic --noinput"

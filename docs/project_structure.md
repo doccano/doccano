@@ -16,11 +16,11 @@ Consider them:
 
 **[app/](https://github.com/doccano/doccano/tree/master/app)**
 
-The `app/api` directory contains backend code. See [below](#Backend).
+The `app/` directory contains backend code. See [below](#Backend).
 
 **[frontend/](https://github.com/doccano/doccano/tree/master/frontend)**
 
-The `app/api` directory contains frontend code. See [below](#Frontend).
+The `frontend/` directory contains frontend code. See [below](#Frontend).
 
 **[docker-compose.dev.yml](https://github.com/doccano/doccano/blob/master/docker-compose.dev.yml)**
 
@@ -41,13 +41,12 @@ The `nginx` directory contains a NGINX configuration file and Docker container. 
 The `tools` directory contains some shell scripts. They are used for CI, CD and so on.
 
 Also, there are directories and files contain doccano v0.x codes.
-In the future, they will be integrated into the currect code or removed:
+In the future, they will be integrated into the current code or removed:
 
 ```
 /
 ├── app/
 ├── └── server/
-└── docker-compose.yml
 ```
 
 ## Backend

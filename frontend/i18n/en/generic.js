@@ -10,6 +10,7 @@ export default {
   upload: 'Upload',
   add: 'Add',
   delete: 'Delete',
+  deleteAll: 'Delete All',
   search: 'Search',
   name: 'Name',
   import: 'Import',

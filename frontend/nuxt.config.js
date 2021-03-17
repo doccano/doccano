@@ -32,7 +32,7 @@ export default {
   },
 
   env: {
-    baseUrl: process.env.NODE_ENV === 'production' ? '/v1' : 'http://127.0.0.1:8000/v1'
+    baseUrl: '/v1'
   },
 
   /*
@@ -50,7 +50,10 @@ export default {
   plugins: [
     '~/plugins/filters.js',
     '~/plugins/vue-youtube.js',
-    '~/plugins/vue-shortkey.js'
+    '~/plugins/vue-shortkey.js',
+    '~/plugins/services.ts',
+    '~/plugins/color.ts',
+    '~/plugins/role.ts'
   ],
   /*
   ** Nuxt.js modules
@@ -64,6 +67,7 @@ export default {
   ],
 
   buildModules: [
+    '@nuxt/typescript-build',
     ['@nuxtjs/google-analytics', {
       id: process.env.GOOGLE_TRACKING_ID
     }]
@@ -73,6 +77,14 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
+    proxy: true
+  },
+
+  proxy: {
+    // Use a fake value for use at build-time
+    '/v1/': {
+      target: process.env.API_URL || 'http://127.0.0.1:8000'
+    }
   },
   /*
   ** vuetify module configuration
@@ -116,13 +128,20 @@ export default {
     /*
     ** You can extend webpack config here
     */
+    publicPath: process.env.PUBLIC_PATH || '/_nuxt/',
     extend(config, ctx) {
+      // config.module.rules.push({
+      //   test: /\.(txt|csv|conll|jsonl)$/i,
+      //   loader: 'file-loader',
+      //   options: {
+      //     name: '[path][name].[ext]'
+      //   }
+      // })
       config.module.rules.push({
-        test: /\.(txt|csv|conll|jsonl)$/i,
-        loader: 'file-loader',
-        options: {
-          name: '[path][name].[ext]'
-        }
+        enforce: 'pre',
+        test: /\.(txt|csv|json|jsonl)$/,
+        loader: 'raw-loader',
+        exclude: /(node_modules)/
       })
     }
   }

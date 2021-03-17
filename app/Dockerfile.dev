@@ -1,0 +1,35 @@
+ARG PYTHON_VERSION="3.8.6"
+FROM python:${PYTHON_VERSION}-slim-buster
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    wget=1.20.1-1.1 \
+    netcat=1.10-41.1 \
+    libpq-dev=11.10-0+deb10u1 \
+    unixodbc-dev=2.3.6-0.1 \
+    g++=4:8.3.0-1 \
+    libssl-dev=1.1.1d-0+deb10u4 \
+ && apt-get clean
+
+ENV ENTRYKIT_VERSION 0.4.0
+
+RUN wget https://github.com/progrium/entrykit/releases/download/v${ENTRYKIT_VERSION}/entrykit_${ENTRYKIT_VERSION}_Linux_x86_64.tgz \
+    && tar -xvzf entrykit_${ENTRYKIT_VERSION}_Linux_x86_64.tgz \
+    && rm entrykit_${ENTRYKIT_VERSION}_Linux_x86_64.tgz \
+    && mv entrykit /bin/entrykit \
+    && chmod +x /bin/entrykit \
+    && entrykit --symlink
+
+WORKDIR /src
+
+RUN pip install --upgrade pip && pip install pipenv==2020.11.15
+
+RUN echo "if [[ -z \"\${VIRTUAL_ENV}\" ]]; then" >> /root/.bashrc && \
+    echo "source \$(pipenv --venv)/bin/activate" >> /root/.bashrc && \
+    echo "fi"                                    >> /root/.bashrc
+
+COPY tools/ /opt/bin/
+
+ENTRYPOINT [ \
+    "prehook", "/opt/bin/docker-setup.sh", "--", \
+    "/opt/bin/docker-entrypoint.sh"]

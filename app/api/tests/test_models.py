@@ -1,13 +1,14 @@
-from django.test import TestCase, override_settings
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.test import TestCase, override_settings
 from model_mommy import mommy
 
-from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, Speech2textAnnotation
-from ..serializers import DocumentAnnotationSerializer
-from ..serializers import SequenceAnnotationSerializer
-from ..serializers import Seq2seqAnnotationSerializer
-from ..serializers import Speech2textAnnotationSerializer
+from ..models import (DocumentAnnotation, Label, Seq2seqAnnotation,
+                      SequenceAnnotation, Speech2textAnnotation)
+from ..serializers import (DocumentAnnotationSerializer,
+                           Seq2seqAnnotationSerializer,
+                           SequenceAnnotationSerializer,
+                           Speech2textAnnotationSerializer)
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -16,10 +17,6 @@ class TestTextClassificationProject(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.project = mommy.make('TextClassificationProject')
-
-    def test_image(self):
-        image_url = self.project.image
-        self.assertTrue(image_url.endswith('.jpg'))
 
     def test_get_bundle_name(self):
         template = self.project.get_bundle_name()
@@ -41,10 +38,6 @@ class TestSequenceLabelingProject(TestCase):
     def setUpTestData(cls):
         cls.project = mommy.make('SequenceLabelingProject')
 
-    def test_image(self):
-        image_url = self.project.image
-        self.assertTrue(image_url.endswith('.jpg'))
-
     def test_get_bundle_name(self):
         template = self.project.get_bundle_name()
         self.assertEqual(template, 'sequence_labeling')
@@ -65,10 +58,6 @@ class TestSeq2seqProject(TestCase):
     def setUpTestData(cls):
         cls.project = mommy.make('Seq2seqProject')
 
-    def test_image(self):
-        image_url = self.project.image
-        self.assertTrue(image_url.endswith('.jpg'))
-
     def test_get_bundle_name(self):
         template = self.project.get_bundle_name()
         self.assertEqual(template, 'seq2seq')
@@ -88,10 +77,6 @@ class TestSpeech2textProject(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.project = mommy.make('Speech2textProject')
-
-    def test_image(self):
-        image_url = self.project.image
-        self.assertTrue(image_url.endswith('.jpg'))
 
     def test_get_bundle_name(self):
         template = self.project.get_bundle_name()

@@ -4,14 +4,13 @@ module.exports = {
     browser: true,
     node: true
   },
-  parserOptions: {
-    parser: 'babel-eslint'
-  },
   extends: [
     '@nuxtjs',
-    'plugin:nuxt/recommended'
+    'plugin:nuxt/recommended',
+    '@nuxtjs/eslint-config-typescript',
+    'prettier',
+    'prettier/vue'
   ],
-  // add your custom rules here
   rules: {
     'no-console': 'off',
     'no-restricted-syntax': [
@@ -22,6 +21,11 @@ module.exports = {
       }
     ],
     'vue/valid-template-root': 'off',
-    'space-before-function-paren': ['error', 'never']
+    'space-before-function-paren': ['error', 'never'],
+    'no-useless-constructor': 'off',
+    '@typescript-eslint/no-useless-constructor': 'off',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    camelcase: 'off'
   }
 }

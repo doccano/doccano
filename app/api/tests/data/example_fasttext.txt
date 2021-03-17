@@ -1,0 +1,4 @@
+__label__house mansion home
+__label__president __label__american __label__us Obama Trump Kennedy
+VW __label__car BMW
+dog cat

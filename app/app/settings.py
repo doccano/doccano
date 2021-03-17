@@ -10,9 +10,10 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
+import importlib.util
+import sys
 from os import path
 
-import django_heroku
 import dj_database_url
 from environs import Env
 from furl import furl
@@ -51,15 +52,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'server.apps.ServerConfig',
     'api.apps.ApiConfig',
-    'widget_tweaks',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
     'social_django',
     'polymorphic',
-    'webpack_loader',
     'corsheaders',
     'drf_yasg'
 ]
@@ -83,7 +81,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'applicationinsights.django.ApplicationInsightsMiddleware',
+    # 'applicationinsights.django.ApplicationInsightsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 ]
 
@@ -92,7 +90,7 @@ ROOT_URLCONF = 'app.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [path.join(BASE_DIR, 'server/templates'), path.join(BASE_DIR, 'authentification/templates')],
+        'DIRS': [path.join(BASE_DIR, 'client/dist')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -118,26 +116,10 @@ STATIC_URL = '/static/'
 STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_DIRS = [
-    static_path
-    for static_path in (
-        path.join(BASE_DIR, 'server', 'static', 'assets'),
-        path.join(BASE_DIR, 'server', 'static', 'static'),
-    )
-    if path.isdir(static_path)
+    path.join(BASE_DIR, 'client/dist/static'),
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-WEBPACK_LOADER = {
-    'DEFAULT': {
-        'CACHE': not DEBUG,
-        'BUNDLE_DIR_NAME': 'bundle/',
-        'STATS_FILE': path.join(BASE_DIR, 'server', 'static', 'webpack-stats.json'),
-        'POLL_INTERVAL': 0.1,
-        'TIMEOUT': None,
-        'IGNORE': [r'.*\.hot-update.js', r'.+\.map']
-    }
-}
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
@@ -282,7 +264,14 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/projects/'
 LOGOUT_REDIRECT_URL = '/'
 
-django_heroku.settings(locals(), test_runner=False)
+# dynamic import to avoid installing psycopg2 on pip installation.
+name = 'django_heroku'
+spec = importlib.util.find_spec(name)
+if spec is not None:
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[name] = module
+    spec.loader.exec_module(module)
+    module.settings(locals(), test_runner=False)
 
 # Change 'default' database configuration with $DATABASE_URL.
 DATABASES['default'].update(dj_database_url.config(
@@ -314,7 +303,7 @@ CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE', False)
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', [])
 
 # Allow all host headers
-# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']
 
 # Size of the batch for creating documents
 # on the import phase

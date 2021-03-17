@@ -1,21 +1,23 @@
+from auto_labeling_pipeline.models import RequestModelFactory
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_polymorphic.serializers import PolymorphicSerializer
 from rest_framework.exceptions import ValidationError
+from rest_polymorphic.serializers import PolymorphicSerializer
 
-
-from .models import Label, Project, Document, RoleMapping, Role
-from .models import TextClassificationProject, SequenceLabelingProject, Seq2seqProject, Speech2textProject
-from .models import DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, Speech2textAnnotation
+from .models import (AutoLabelingConfig, Comment, Document, DocumentAnnotation,
+                     Label, Project, Role, RoleMapping, Seq2seqAnnotation,
+                     Seq2seqProject, SequenceAnnotation,
+                     SequenceLabelingProject, Speech2textAnnotation,
+                     Speech2textProject, TextClassificationProject)
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'first_name', 'last_name', 'email', 'is_superuser')
+        fields = ('id', 'username', 'is_superuser')
 
 
 class LabelSerializer(serializers.ModelSerializer):
@@ -59,6 +61,14 @@ class LabelSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'prefix_key', 'suffix_key', 'background_color', 'text_color')
 
 
+class CommentSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'user', 'username', 'document', 'document_text', 'text', 'created_at', )
+        read_only_fields = ('user', 'document')
+
+
 class DocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
@@ -81,7 +91,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver')
+        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver', 'comment_count')
 
 
 class ApproverSerializer(DocumentSerializer):
@@ -111,9 +121,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
                   'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        read_only_fields = ('updated_at', 'users', 'current_users_role')
 
 
 class TextClassificationProjectSerializer(ProjectSerializer):
@@ -144,9 +154,9 @@ class Speech2textProjectSerializer(ProjectSerializer):
 
     class Meta:
         model = Speech2textProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type', 'image',
+        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
                   'updated_at', 'randomize_document_order')
-        read_only_fields = ('image', 'updated_at', 'users', 'current_users_role')
+        read_only_fields = ('updated_at', 'users', 'current_users_role')
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
@@ -233,3 +243,37 @@ class RoleMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoleMapping
         fields = ('id', 'user', 'role', 'username', 'rolename')
+
+
+class AutoLabelingConfigSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AutoLabelingConfig
+        fields = ('id', 'model_name', 'model_attrs', 'template', 'label_mapping', 'default')
+        read_only_fields = ('created_at', 'updated_at')
+
+    def validate_model_name(self, value):
+        try:
+            RequestModelFactory.find(value)
+        except NameError:
+            raise serializers.ValidationError(f'The specified model name {value} does not exist.')
+        return value
+
+    def valid_label_mapping(self, value):
+        if isinstance(value, dict):
+            return value
+        else:
+            raise serializers.ValidationError(f'The {value} is not a dictionary. Please specify it as a dictionary.')
+
+    def validate(self, data):
+        try:
+            RequestModelFactory.create(data['model_name'], data['model_attrs'])
+        except Exception:
+            model = RequestModelFactory.find(data['model_name'])
+            schema = model.schema()
+            required_fields = ', '.join(schema['required']) if 'required' in schema else ''
+            raise serializers.ValidationError(
+                'The attributes does not match the model.'
+                'You need to correctly specify the required fields: {}'.format(required_fields)
+            )
+        return data

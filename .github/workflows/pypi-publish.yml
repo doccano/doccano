@@ -1,0 +1,48 @@
+name: Upload Python Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Preparation
+      run: |
+        mkdir app/client
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Build with Node.js
+      run: |
+        yarn install
+        yarn build
+        cp -r dist ../app/client/
+      working-directory: ./frontend
+      env:
+        PUBLIC_PATH: "/static/_nuxt/"
+    - name: Setup Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pipenv
+        pipenv sync --dev
+    - name: collectstatic
+      run: |
+        pipenv run collectstatic
+      working-directory: ./app
+    - name: Build a binary wheel and a source tarball
+      run: |
+        python setup.py sdist
+    - name: Publish a Python distribution to PyPI
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.PYPI_USERNAME }}
+        password: ${{ secrets.PYPI_PASSWORD }}

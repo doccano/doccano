@@ -38,7 +38,7 @@
     },
     "stack": "container",
     "scripts": {
-        "postdeploy": "sh tools/heroku.sh"
+        "postdeploy": "sh /doccano/tools/heroku.sh"
     },
     "addons": [
         {

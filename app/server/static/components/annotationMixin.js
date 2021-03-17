@@ -100,6 +100,7 @@ export default {
   },
 
   methods: {
+
     resetScrollbar() {
       const textbox = this.$refs.textbox;
       if (textbox) {
@@ -241,9 +242,11 @@ export default {
         Object.assign(this.docs[this.pageNumber], response.data);
       });
     },
+
   },
 
   watch: {
+
     picked() {
       this.submit();
     },
@@ -287,7 +290,13 @@ export default {
     },
 
     compiledMarkdown() {
-      return marked(this.guideline, {
+      const documentMetadata = this.documentMetadata;
+
+      const guideline = documentMetadata && documentMetadata.guideline
+        ? documentMetadata.guideline
+        : this.guideline;
+
+      return marked(guideline, {
         sanitize: true,
       });
     },
@@ -303,6 +312,18 @@ export default {
       return this.documentAnnotationsAreApproved
         ? `Annotations approved by ${document.annotation_approver}, click to reject annotations`
         : 'Click to approve annotations';
+    },
+
+    displayDocumentMetadata() {
+      let documentMetadata = this.documentMetadata;
+      if (documentMetadata == null) {
+        return null;
+      }
+
+      documentMetadata = { ...documentMetadata };
+      delete documentMetadata.guideline;
+      delete documentMetadata.documentSourceUrl;
+      return documentMetadata;
     },
 
     documentMetadata() {
