@@ -18,7 +18,10 @@
       />
     </template>
     <template v-slot:content>
-      <v-card @shortkey="addOrRemove">
+      <v-card
+        v-shortkey="shortKeys"
+        @shortkey="addOrRemove"
+      >
         <v-card-title>
           <text-classification
             :labels="labels"
@@ -37,14 +40,12 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import _ from 'lodash'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import TextClassification from '@/components/tasks/textClassification/TextClassification'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-Vue.use(require('vue-shortkey'))
 
 export default {
   layout: 'workspace',
@@ -129,7 +130,7 @@ export default {
 
     async addOrRemove(event) {
       const label = this.labels.find(item => item.id === parseInt(event.srcKey, 10))
-      const annotation = this.doc.annotations.find(item => item.label === label.id)
+      const annotation = this.annotations.find(item => item.label === label.id)
       if (annotation) {
         await this.remove(annotation.id)
       } else {
