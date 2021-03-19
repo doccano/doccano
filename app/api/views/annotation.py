@@ -1,6 +1,5 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,21 +15,24 @@ class AnnotationList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
     swagger_schema = None
 
+    @property
+    def project(self):
+        return get_object_or_404(Project, pk=self.kwargs['project_id'])
+
     def get_serializer_class(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = project.get_annotation_serializer()
+        self.serializer_class = self.project.get_annotation_serializer()
         return self.serializer_class
 
     def get_queryset(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        model = project.get_annotation_class()
+        model = self.project.get_annotation_class()
         queryset = model.objects.filter(document=self.kwargs['doc_id'])
-        if not project.collaborative_annotation:
+        if not self.project.collaborative_annotation:
             queryset = queryset.filter(user=self.request.user)
         return queryset
 
     def create(self, request, *args, **kwargs):
-        self.check_single_class_classification(self.kwargs['project_id'], self.kwargs['doc_id'], request.user)
+        if self.project.single_class_classification:
+            self.get_queryset().delete()
         request.data['document'] = self.kwargs['doc_id']
         return super().create(request, args, kwargs)
 
@@ -41,20 +43,6 @@ class AnnotationList(generics.ListCreateAPIView):
         queryset = self.get_queryset()
         queryset.all().delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    @staticmethod
-    def check_single_class_classification(project_id, doc_id, user):
-        project = get_object_or_404(Project, pk=project_id)
-        if not project.single_class_classification:
-            return
-
-        model = project.get_annotation_class()
-        annotations = model.objects.filter(document_id=doc_id)
-        if not project.collaborative_annotation:
-            annotations = annotations.filter(user=user)
-
-        if annotations.exists():
-            raise ValidationError('requested to create duplicate annotation for single-class-classification project')
 
 
 class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):

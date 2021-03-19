@@ -131,7 +131,8 @@ export class ProjectWriteItem {
     public guideline:                   string,
     public project_type:                ProjectType,
     public randomize_document_order:    boolean,
-    public collaborative_annotation:    boolean
+    public collaborative_annotation:    boolean,
+    public single_class_classification: boolean
   ) {}
 
   static valueOf(
@@ -143,6 +144,7 @@ export class ProjectWriteItem {
       project_type,
       randomize_document_order,
       collaborative_annotation,
+      single_class_classification
     }:
     {
       id:                          number,
@@ -151,7 +153,8 @@ export class ProjectWriteItem {
       guideline:                   string,
       project_type:                ProjectType,
       randomize_document_order:    boolean,
-      collaborative_annotation:    boolean
+      collaborative_annotation:    boolean,
+      single_class_classification: boolean
     }
   ): ProjectWriteItem {
     return new ProjectWriteItem(
@@ -162,6 +165,7 @@ export class ProjectWriteItem {
       project_type,
       randomize_document_order,
       collaborative_annotation,
+      single_class_classification
     )
   }
 
@@ -183,6 +187,7 @@ export class ProjectWriteItem {
       project_type: this.project_type,
       randomize_document_order: this.randomize_document_order,
       collaborative_annotation: this.collaborative_annotation,
+      single_class_classification: this.single_class_classification,
       resourcetype: this.resourceType
     }
   }

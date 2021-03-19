@@ -23,7 +23,15 @@
         @shortkey="addOrRemove"
       >
         <v-card-title>
+          <single-label
+            v-if="project.singleClassClassification"
+            :labels="labels"
+            :annotations="annotations"
+            @add="add"
+            @remove="remove"
+          />
           <text-classification
+            v-else
             :labels="labels"
             :annotations="annotations"
             @add="add"
@@ -43,6 +51,7 @@
 import _ from 'lodash'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import SingleLabel from '@/components/tasks/textClassification/SingleLabel'
 import TextClassification from '@/components/tasks/textClassification/TextClassification'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
@@ -53,6 +62,7 @@ export default {
   components: {
     LayoutText,
     ListMetadata,
+    SingleLabel,
     TextClassification,
     ToolbarLaptop,
     ToolbarMobile
