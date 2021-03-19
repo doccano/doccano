@@ -921,7 +921,7 @@ class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
         response = self.client.post(self.url, format='json', data=self.post_data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_second_annotation_for_single_class_project(self):
+    def test_allow_replace_annotation_for_single_class_project(self):
         self._patch_project(self.classification_project, 'single_class_classification', True)
 
         self.client.login(username=self.project_member_name, password=self.project_member_pass)
@@ -931,9 +931,9 @@ class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
 
         response = self.client.post(self.classification_project_url, format='json',
                                     data={'label': self.classification_project_label_2.id})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_disallows_second_annotation_for_single_class_shared_project(self):
+    def test_allow_replace_annotation_for_single_class_shared_project(self):
         self._patch_project(self.classification_project, 'single_class_classification', True)
         self._patch_project(self.classification_project, 'collaborative_annotation', True)
 
@@ -945,7 +945,7 @@ class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
         self.client.login(username=self.another_project_member_name, password=self.another_project_member_pass)
         response = self.client.post(self.classification_project_url, format='json',
                                     data={'label': self.classification_project_label_2.id})
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def _patch_project(self, project, attribute, value):
         old_value = getattr(project, attribute, None)

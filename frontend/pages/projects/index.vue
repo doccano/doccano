@@ -72,14 +72,16 @@ export default Vue.extend({
         description: '',
         projectType: 'DocumentClassification',
         enableRandomizeDocOrder: false,
-        enableShareAnnotation: false
+        enableShareAnnotation: false,
+        singleClassClassification: false
       } as ProjectWriteDTO,
       defaultItem: {
         name: '',
         description: '',
         projectType: 'DocumentClassification',
         enableRandomizeDocOrder: false,
-        enableShareAnnotation: false
+        enableShareAnnotation: false,
+        singleClassClassification: false
       } as ProjectWriteDTO,
       items: [] as ProjectDTO[],
       selected: [] as ProjectDTO[],
