@@ -20,6 +20,7 @@
     <v-btn
       v-if="isAuthenticated && isIndividualProject"
       text
+      class="d-none d-sm-flex"
       style="text-transform:none"
     >
       <v-icon small class="mr-1">
@@ -33,6 +34,7 @@
     <v-btn
       v-if="isAuthenticated"
       text
+      class="text-capitalize"
       @click="$router.push(localePath('/projects'))"
     >
       {{ $t('header.projects') }}
