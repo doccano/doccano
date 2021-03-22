@@ -1,9 +1,5 @@
 <template>
-  <v-card
-    v-if="isReady"
-    v-shortkey="multiKeys"
-    @shortkey="addOrRemoveLabel"
-  >
+  <v-card v-if="isReady" v-shortkey="multiKeys" @shortkey="addOrRemoveLabel">
     <v-card-title>
       <multi-class-classification
         :labels="itemsSecondLevel"
@@ -29,7 +25,7 @@ export default {
     // ...mapState('labels', ['items']),
     ...mapState('labels', {
       items(state) {
-        //console.log('level1', state)
+        // console.log('level1', state)
         return state.items.filter(it => !it.text.includes('/'))
       },
       itemsSecondLevel(state) {
@@ -44,9 +40,9 @@ export default {
             target = it.text
           }
         })
-        //console.log('Level2', target, id)
+        // console.log('Level2', target, id)
         if (target) {
-          return state.items.filter(it => it.text.includes(target))
+          return state.items.filter(it => it.text.slice(0, target.length) === target)
         } else {
           return state.items.filter(it => !it.text.includes('/'))
         }
@@ -72,7 +68,12 @@ export default {
   },
   methods: {
     ...mapActions('labels', ['getLabelList']),
-    ...mapActions('documents', ['getDocumentList', 'deleteAnnotation', 'updateAnnotation', 'addAnnotation']),
+    ...mapActions('documents', [
+      'getDocumentList',
+      'deleteAnnotation',
+      'updateAnnotation',
+      'addAnnotation'
+    ]),
     removeLabel(annotationId) {
       const payload = {
         annotationId,
@@ -96,8 +97,12 @@ export default {
       return this.addAnnotation(payload)
     },
     addOrRemoveLabel(event) {
-      const label = this.items.find(item => item.id === parseInt(event.srcKey, 10))
-      const annotation = this.currentDoc.annotations.find(item => item.label === label.id)
+      const label = this.items.find(
+        item => item.id === parseInt(event.srcKey, 10)
+      )
+      const annotation = this.currentDoc.annotations.find(
+        item => item.label === label.id
+      )
       if (annotation) {
         this.removeLabel(annotation.id)
       } else {
