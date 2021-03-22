@@ -11,7 +11,20 @@
         class="d-none d-sm-block"
         @click:clear-label="clear"
         @click:review="approve"
-      />
+      >
+        <v-btn-toggle
+          v-model="labelOption"
+          mandatory
+          class="ms-2"
+        >
+          <v-btn icon>
+            <v-icon>mdi-format-list-bulleted</v-icon>
+          </v-btn>
+          <v-btn icon>
+            <v-icon>mdi-text</v-icon>
+          </v-btn>
+        </v-btn-toggle>
+      </toolbar-laptop>
       <toolbar-mobile
         :total="docs.count"
         class="d-flex d-sm-none"
@@ -23,21 +36,24 @@
         @shortkey="addOrRemove"
       >
         <v-card-title>
-          <single-label
-            v-if="project.singleClassClassification"
+          <label-group
+            v-if="labelOption === 0"
             :labels="labels"
             :annotations="annotations"
+            :single-label="project.singleClassClassification"
             @add="add"
             @remove="remove"
           />
-          <text-classification
+          <label-select
             v-else
             :labels="labels"
             :annotations="annotations"
+            :single-label="project.singleClassClassification"
             @add="add"
             @remove="remove"
           />
         </v-card-title>
+        <v-divider />
         <v-card-text class="title highlight" v-text="doc.text" />
       </v-card>
     </template>
@@ -49,10 +65,10 @@
 
 <script>
 import _ from 'lodash'
+import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
+import LabelSelect from '@/components/tasks/textClassification/LabelSelect'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
-import SingleLabel from '@/components/tasks/textClassification/SingleLabel'
-import TextClassification from '@/components/tasks/textClassification/TextClassification'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 
@@ -60,10 +76,10 @@ export default {
   layout: 'workspace',
 
   components: {
+    LabelGroup,
+    LabelSelect,
     LayoutText,
     ListMetadata,
-    SingleLabel,
-    TextClassification,
     ToolbarLaptop,
     ToolbarMobile
   },
@@ -89,7 +105,8 @@ export default {
       docs: [],
       labels: [],
       project: {},
-      enableAutoLabeling: false
+      enableAutoLabeling: false,
+      labelOption: 0
     }
   },
 
