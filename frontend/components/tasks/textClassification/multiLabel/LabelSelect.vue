@@ -1,17 +1,18 @@
 <template>
-  <v-select
-    :value="annotatedLabel"
+  <v-combobox
+    v-model="annotatedLabels"
+    chips
     :items="labels"
     item-text="text"
-    :label="$t('labels.labels')"
+    hide-details
     hide-selected
-    return-object
-    chips
-    @change="addOrRemove"
+    multiple
+    class="pt-0"
+    :search-input.sync="search"
+    @change="search=''"
   >
     <template v-slot:selection="{ attrs, item, select, selected }">
       <v-chip
-        v-if="item.backgroundColor"
         v-bind="attrs"
         :input-value="selected"
         :color="item.backgroundColor"
@@ -45,7 +46,7 @@
         {{ item.text }}
       </v-chip>
     </template>
-  </v-select>
+  </v-combobox>
 </template>
 
 <script>
@@ -63,22 +64,37 @@ export default {
     }
   },
 
+  data() {
+    return {
+      search: ''
+    }
+  },
+
   computed: {
-    annotatedLabel() {
-      const labelIds = this.annotations.map(item => item.label)
-      return this.labels.find(item => labelIds.includes(item.id))
+    annotatedLabels: {
+      get() {
+        const labelIds = this.annotations.map(item => item.label)
+        return this.labels.filter(item => labelIds.includes(item.id))
+      },
+      set(newValue) {
+        if (newValue.length > this.annotations.length) {
+          const label = newValue[newValue.length - 1]
+          if (typeof label === 'object') {
+            this.add(label)
+          } else {
+            newValue.pop()
+          }
+        } else {
+          const label = this.annotatedLabels.find(x => !newValue.some(y => y.id === x.id))
+          if (typeof label === 'object') {
+            this.remove(label)
+          }
+        }
+      }
     }
   },
 
   methods: {
-    addOrRemove(val) {
-      if (val) {
-        this.add(val)
-      } else {
-        this.remove(this.annotatedLabel)
-      }
-    },
-
     add(label) {
       this.$emit('add', label.id)
     },
