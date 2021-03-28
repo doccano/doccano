@@ -20,7 +20,7 @@ RUN apt-get update \
     libpq-dev=11.10-0+deb10u1 \
     unixodbc-dev=2.3.6-0.1 \
     g++=4:8.3.0-1 \
-    libssl-dev=1.1.1d-0+deb10u4 \
+    libssl-dev=1.1.1d-0+deb10u6 \
  && apt-get clean
 
 WORKDIR /tmp
