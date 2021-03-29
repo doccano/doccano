@@ -25,9 +25,13 @@ export const getters = {
 }
 
 export const actions = {
-  authenticateUser({ commit }, authData) {
-    this.$services.auth.login(authData.username, authData.password)
-    commit('setAuthenticated', true)
+  async authenticateUser({ commit }, authData) {
+    try {
+      await this.$services.auth.login(authData.username, authData.password)
+      commit('setAuthenticated', true)
+    } catch(error) {
+      throw new Error('The credential is invalid')
+    }
   },
   async initAuth({ commit }) {
     try {
