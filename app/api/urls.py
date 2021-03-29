@@ -132,10 +132,7 @@ urlpatterns = [
         view=views.Health.as_view(),
         name='health'
     ),
-    path(
-        route='auth-token',
-        view=obtain_auth_token
-    ),
+    path('auth/', include('dj_rest_auth.urls')),
     path(
         route='me',
         view=views.Me.as_view(),
