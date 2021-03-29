@@ -80,7 +80,7 @@
         </v-btn>
       </template>
       <v-list>
-        <v-subheader>{{ getUsername() }}</v-subheader>
+        <v-subheader>{{ getUsername }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
