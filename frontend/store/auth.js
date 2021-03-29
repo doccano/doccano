@@ -42,8 +42,8 @@ export const actions = {
       commit('setAuthenticated', false)
     }
   },
-  logout({ commit }) {
-    this.$services.auth.logout()
+  async logout({ commit }) {
+    await this.$services.auth.logout()
     commit('setAuthenticated', false)
     commit('clearUsername')
   }
