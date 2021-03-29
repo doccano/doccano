@@ -68,17 +68,16 @@ export default Vue.extend({
   },
 
   methods: {
-    tryLogin() {
-      this.login({
-        username: this.username,
-        password: this.password
-      })
-        .then(() => {
-          this.$router.push(this.localePath('/projects'))
+    async tryLogin() {
+      try {
+        await this.login({
+          username: this.username,
+          password: this.password
         })
-        .catch(() => {
-          this.showError = true
-        })
+        this.$router.push(this.localePath('/projects'))
+      } catch {
+        this.showError = true
+      }
     }
   }
 })

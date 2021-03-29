@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'social_django',
     'polymorphic',
     'corsheaders',
-    'drf_yasg'
+    'drf_yasg',
+    'dj_rest_auth'
 ]
 
 CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env('CLOUD_BROWSER_LIBCLOUD_PROVIDER', None)

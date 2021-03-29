@@ -1,74 +1,50 @@
-import Cookie from 'js-cookie'
-import ApiService from '@/services/api.service'
-import AuthService from '@/services/auth.service'
-
 export const state = () => ({
-  token: null,
-  username: null
+  username: null,
+  isAuthenticated: false
 })
 
 export const mutations = {
-  setToken(state, token) {
-    state.token = token
-  },
-  clearToken(state) {
-    state.token = null
-  },
   setUsername(state, username) {
     state.username = username
   },
   clearUsername(state) {
     state.username = null
+  },
+  setAuthenticated(state, isAuthenticated) {
+    state.isAuthenticated = isAuthenticated
   }
 }
 
 export const getters = {
   isAuthenticated(state) {
-    return state.token != null
+    return state.isAuthenticated
   },
-  getUsername: () => () => {
-    return localStorage.getItem('username')
+  getUsername(state) {
+    return state.username
   }
 }
 
 export const actions = {
-  authenticateUser({ commit }, authData) {
-    return AuthService.postCredential(authData)
-      .then((result) => {
-        commit('setToken', result.data.token)
-        commit('setUsername', authData.username)
-        localStorage.setItem('token', result.data.token)
-        localStorage.setItem('username', authData.username)
-        Cookie.set('jwt', result.data.token)
-        ApiService.setHeader(result.data.token)
-      })
-  },
-  initAuth({ commit, dispatch }, req) {
-    let token
-    if (req) {
-      if (!req.headers.cookie) {
-        return
-      }
-      const jwtCookie = req.headers.cookie
-        .split(';')
-        .find(c => c.trim().startsWith('jwt='))
-      if (!jwtCookie) {
-        return
-      }
-      token = jwtCookie.split('=')[1]
-    } else {
-      token = localStorage.getItem('token')
+  async authenticateUser({ commit }, authData) {
+    try {
+      await this.$services.auth.login(authData.username, authData.password)
+      commit('setAuthenticated', true)
+    } catch(error) {
+      throw new Error('The credential is invalid')
     }
-    commit('setToken', token)
-    ApiService.setHeader(token)
   },
-  logout({ commit }) {
-    commit('clearToken')
+  async initAuth({ commit }) {
+    try {
+      const user = await this.$services.user.getMyProfile()
+      commit('setAuthenticated', true)
+      commit('setUsername', user.username)
+    } catch {
+      commit('setAuthenticated', false)
+    }
+  },
+  async logout({ commit }) {
+    await this.$services.auth.logout()
+    commit('setAuthenticated', false)
     commit('clearUsername')
-    Cookie.remove('jwt')
-    if (process.client) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('username')
-    }
   }
 }
