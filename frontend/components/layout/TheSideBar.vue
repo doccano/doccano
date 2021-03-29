@@ -78,7 +78,7 @@ export default {
     toLabeling() {
       const query = this.$services.option.findOption(this.$route.params.id)
       this.$router.push({
-        path: this.localePath(`/projects/${this.$route.params.id}/${this.link}`),
+        path: this.localePath(this.link),
         query
       })
     }
