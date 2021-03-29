@@ -1,18 +1,12 @@
 import axios from 'axios'
+axios.defaults.xsrfCookieName = 'csrftoken'
+axios.defaults.xsrfHeaderName = 'X-CSRFToken'
 
 class ApiService {
   constructor() {
     this.instance = axios.create({
       baseURL: process.env.baseUrl
     })
-  }
-
-  setHeader(token) {
-    this.instance.defaults.headers.common.Authorization = `Token ${token}`
-  }
-
-  removeHeader() {
-    this.instance.defaults.headers.common = {}
   }
 
   request(method, url, data = {}, config = {}) {
