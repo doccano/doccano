@@ -1,3 +1,5 @@
-export default async function(context) {
-  await context.store.dispatch('auth/initAuth', context.req)
+export default async function({ store }) {
+  if (!store.getters['auth/isAuthenticated']) {
+    await store.dispatch('auth/initAuth')
+  }
 }
