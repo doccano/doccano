@@ -51,8 +51,10 @@ Or, you can setup via Python and Node.js:
 
 ```bash
 $ git clone https://github.com/doccano/doccano.git
-$ cd doccano/app
+$ cd doccano
 $ pipenv sync --dev
+$ pipenv shell
+$ cd app
 $ python manage.py migrate
 $ python manage.py create_roles
 $ python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
