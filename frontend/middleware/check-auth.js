@@ -1,3 +1,3 @@
-export default function(context) {
-  context.store.dispatch('auth/initAuth', context.req)
+export default async function(context) {
+  await context.store.dispatch('auth/initAuth', context.req)
 }
