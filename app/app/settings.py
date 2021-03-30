@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'polymorphic',
     'corsheaders',
     'drf_yasg',
-    'dj_rest_auth'
+    'dj_rest_auth',
+    'django_drf_filepond'
 ]
 
 CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env('CLOUD_BROWSER_LIBCLOUD_PROVIDER', None)
@@ -336,3 +337,6 @@ if DEBUG:
         'http://0.0.0.0:3000',
         'http://localhost:3000'
     )
+
+DJANGO_DRF_FILEPOND_UPLOAD_TMP = path.join(BASE_DIR, 'filepond-temp-uploads')
+DJANGO_DRF_FILEPOND_FILE_STORE_PATH = path.join(BASE_DIR, 'filepond_uploads')
