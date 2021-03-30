@@ -133,6 +133,7 @@ urlpatterns = [
         name='health'
     ),
     path('auth/', include('dj_rest_auth.urls')),
+    path('fp/', include('django_drf_filepond.urls')),
     path(
         route='me',
         view=views.Me.as_view(),
