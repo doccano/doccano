@@ -15,7 +15,7 @@ import sys
 from os import path
 
 import dj_database_url
-from environs import Env
+from environs import Env, EnvError
 from furl import furl
 
 
@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'dj_rest_auth',
+    'django_celery_results',
     'django_drf_filepond'
 ]
 
@@ -338,5 +339,21 @@ if DEBUG:
         'http://localhost:3000'
     )
 
+# Filepond settings.
 DJANGO_DRF_FILEPOND_UPLOAD_TMP = path.join(BASE_DIR, 'filepond-temp-uploads')
 DJANGO_DRF_FILEPOND_FILE_STORE_PATH = path.join(BASE_DIR, 'filepond_uploads')
+
+
+# Celery settings
+DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191
+CELERY_RESULT_BACKEND = 'django-db'
+try:
+    CELERY_BROKER_URL = env('CELERY_BROKER_URL')
+except EnvError:
+    try:
+        CELERY_BROKER_URL = 'sqla+{}'.format(env('DATABASE_URL'))
+    except EnvError:
+        CELERY_BROKER_URL = 'sqla+sqlite:///{}'.format(DATABASES['default']['NAME'])
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
