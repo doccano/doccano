@@ -170,6 +170,16 @@ urlpatterns = [
         name='auto_labeling_parameter_testing'
     ),
     path(
+        route='tasks/status/<task_id>',
+        view=views.TaskStatus.as_view(),
+        name='task_status'
+    ),
+    path(
+        route='tasks/test',
+        view=views.TaskTest.as_view(),
+        name='task_test'
+    ),
+    path(
         route='projects/<int:project_id>',
         view=views.ProjectDetail.as_view(),
         name='project_detail'

@@ -8,4 +8,5 @@ from .label import *
 from .project import *
 from .role import *
 from .statistics import *
+from .task import *
 from .user import *
