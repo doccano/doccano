@@ -19,6 +19,9 @@ class Record:
         self.label = label
         self.metadata = metadata
 
+    def __str__(self):
+        return f'{self.data}\t{self.label}'
+
 
 class Dataset:
 
@@ -46,7 +49,8 @@ class Dataset:
 
     def from_row(self, filename: str, row: Dict) -> Record:
         data = row.pop(self.column_data)
-        label = row.pop(self.column_label)
+        label = row.pop(self.column_label, [])
+        label = [label] if isinstance(label, str) else label
         record = Record(filename=filename, data=data, label=label, metadata=row)
         return record
 
