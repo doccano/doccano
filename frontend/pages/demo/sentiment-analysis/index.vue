@@ -5,13 +5,15 @@
         <v-col cols="12" md="9">
           <v-card>
             <v-card-title>
-              <text-classification
+              <label-group
                 :labels="items"
                 :annotations="currentDoc.annotations"
+                single-label="true"
                 @add="addLabel"
                 @remove="removeLabel"
               />
             </v-card-title>
+            <v-divider />
             <v-card-text class="title">
               {{ currentDoc.text }}
             </v-card-text>
@@ -27,13 +29,13 @@
 
 <script>
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
-import TextClassification from '@/components/tasks/textClassification/TextClassification'
+import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 
 export default {
   layout: 'demo',
 
   components: {
-    TextClassification,
+    LabelGroup,
     ListMetadata
   },
 

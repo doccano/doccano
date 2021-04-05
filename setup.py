@@ -35,7 +35,8 @@ required = [
     'seqeval>=1.2.2',
     'social-auth-app-django>=4.0.0',
     'whitenoise>=5.2.0',
-    'auto-labeling-pipeline>=0.1.12'
+    'auto-labeling-pipeline>=0.1.12',
+    'dj-rest-auth>=2.1.4'
 ]
 
 setup(

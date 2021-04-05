@@ -1,5 +1,3 @@
-import ProjectService from '@/services/project.service'
-
 export const state = () => ({
   current: {},
 })
@@ -16,15 +14,7 @@ export const getters = {
     return role && !role.is_annotator
   },
   getLink(state) {
-    if (state.current.project_type === 'DocumentClassification') {
-      return 'text-classification'
-    } else if (state.current.project_type === 'SequenceLabeling') {
-      return 'sequence-labeling'
-    } else if (state.current.project_type === 'Seq2seq') {
-      return 'sequence-to-sequence'
-    } else {
-      return ''
-    }
+    return state.current.pageLink
   },
 }
 
@@ -35,13 +25,12 @@ export const mutations = {
 }
 
 export const actions = {
-  setCurrentProject({ commit }, projectId) {
-    return ProjectService.fetchProjectById(projectId)
-      .then((response) => {
-        commit('setCurrent', response.data)
-      })
-      .catch((error) => {
-        throw new Error(error)
-      })
+  async setCurrentProject({ commit }, projectId) {
+    try {
+      const response = await this.$services.project.findById(projectId)
+      commit('setCurrent', response)
+    } catch(error) {
+      throw new Error(error)
+    }
   }
 }

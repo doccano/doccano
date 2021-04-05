@@ -20,6 +20,7 @@
     <v-btn
       v-if="isAuthenticated && isIndividualProject"
       text
+      class="d-none d-sm-flex"
       style="text-transform:none"
     >
       <v-icon small class="mr-1">
@@ -33,6 +34,7 @@
     <v-btn
       v-if="isAuthenticated"
       text
+      class="text-capitalize"
       @click="$router.push(localePath('/projects'))"
     >
       {{ $t('header.projects') }}
@@ -78,7 +80,7 @@
         </v-btn>
       </template>
       <v-list>
-        <v-subheader>{{ getUsername() }}</v-subheader>
+        <v-subheader>{{ getUsername }}</v-subheader>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>

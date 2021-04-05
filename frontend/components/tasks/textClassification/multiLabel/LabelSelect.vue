@@ -1,12 +1,13 @@
 <template>
   <v-combobox
     v-model="annotatedLabels"
+    chips
     :items="labels"
     item-text="text"
-    :label="$t('labels.labels')"
+    hide-details
     hide-selected
-    chips
     multiple
+    class="pt-0"
     :search-input.sync="search"
     @change="search=''"
   >
@@ -20,6 +21,28 @@
         @click="select"
         @click:close="remove(item)"
       >
+        <v-avatar
+          left
+          color="white"
+          class="black--text font-weight-bold"
+        >
+          {{ item.suffixKey }}
+        </v-avatar>
+        {{ item.text }}
+      </v-chip>
+    </template>
+    <template v-slot:item="{ item }">
+      <v-chip
+        :color="item.backgroundColor"
+        :text-color="$contrastColor(item.backgroundColor)"
+      >
+        <v-avatar
+          left
+          color="white"
+          class="black--text font-weight-bold"
+        >
+          {{ item.suffixKey }}
+        </v-avatar>
         {{ item.text }}
       </v-chip>
     </template>

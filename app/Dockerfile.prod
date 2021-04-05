@@ -14,10 +14,10 @@ COPY ./Pipfile* /app/
 # hadolint ignore=DL3013
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    netcat=1.10-41.1 \
-    libpq-dev=11.10-0+deb10u1 \
-    unixodbc-dev=2.3.6-0.1 \
-    g++=4:8.3.0-1 \
+    netcat=1.* \
+    libpq-dev=11.* \
+    unixodbc-dev=2.* \
+    g++=4:* \
  && pip install --no-cache-dir pipenv==2020.11.15 \
  && pipenv install --system --deploy \
  && pip uninstall -y pipenv virtualenv-clone virtualenv \

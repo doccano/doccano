@@ -12,6 +12,7 @@ import { APIMemberRepository } from '~/repositories/member/apiMemberRepository'
 import { APILabelRepository } from '~/repositories/label/apiLabelRepository'
 import { APIDocumentRepository } from '~/repositories/document/apiDocumentRepository'
 import { APICommentRepository } from '~/repositories/comment/apiCommentRepository'
+import { APIAuthRepository } from '~/repositories/auth/apiAuthRepository'
 import { LabelApplicationService } from '~/services/application/label/labelApplicationService'
 import { MemberApplicationService } from '~/services/application/member/memberApplicationService'
 import { UserApplicationService } from '~/services/application/user/userApplicationService'
@@ -27,7 +28,7 @@ import { ConfigApplicationService } from '~/services/application/autoLabeling/co
 import { TemplateApplicationService } from '~/services/application/autoLabeling/templateApplicationService'
 import { APITextClassificationRepository } from '~/repositories/tasks/textClassification/apiTextClassification'
 import { TextClassificationApplicationService } from '~/services/application/tasks/textClassification/textClassificationApplicationService'
-
+import { AuthApplicationService } from '~/services/application/auth/authApplicationService'
 
 export interface Services {
   label: LabelApplicationService,
@@ -43,7 +44,8 @@ export interface Services {
   seq2seq: Seq2seqApplicationService,
   option: OptionApplicationService,
   config: ConfigApplicationService,
-  template: TemplateApplicationService
+  template: TemplateApplicationService,
+  auth: AuthApplicationService
 }
 
 declare module 'vue/types/vue' {
@@ -67,6 +69,7 @@ const plugin: Plugin = (context, inject) => {
   const optionRepository     = new LocalStorageOptionRepository()
   const configRepository     = new APIConfigRepository()
   const templateRepository   = new APITemplateRepository()
+  const authRepository = new APIAuthRepository()
 
   const label      = new LabelApplicationService(labelRepository)
   const member     = new MemberApplicationService(memberRepository)
@@ -82,6 +85,7 @@ const plugin: Plugin = (context, inject) => {
   const option = new OptionApplicationService(optionRepository)
   const config = new ConfigApplicationService(configRepository)
   const template = new TemplateApplicationService(templateRepository)
+  const auth = new AuthApplicationService(authRepository)
   
   const services: Services = {
     label,
@@ -97,7 +101,8 @@ const plugin: Plugin = (context, inject) => {
     seq2seq,
     option,
     config,
-    template
+    template,
+    auth
   }
   inject('services', services)
 }

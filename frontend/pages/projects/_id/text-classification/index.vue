@@ -11,22 +11,49 @@
         class="d-none d-sm-block"
         @click:clear-label="clear"
         @click:review="approve"
-      />
+      >
+        <v-btn-toggle
+          v-model="labelOption"
+          mandatory
+          class="ms-2"
+        >
+          <v-btn icon>
+            <v-icon>mdi-format-list-bulleted</v-icon>
+          </v-btn>
+          <v-btn icon>
+            <v-icon>mdi-text</v-icon>
+          </v-btn>
+        </v-btn-toggle>
+      </toolbar-laptop>
       <toolbar-mobile
         :total="docs.count"
         class="d-flex d-sm-none"
       />
     </template>
     <template v-slot:content>
-      <v-card @shortkey="addOrRemove">
+      <v-card
+        v-shortkey="shortKeys"
+        @shortkey="addOrRemove"
+      >
         <v-card-title>
-          <text-classification
+          <label-group
+            v-if="labelOption === 0"
             :labels="labels"
             :annotations="annotations"
+            :single-label="project.singleClassClassification"
+            @add="add"
+            @remove="remove"
+          />
+          <label-select
+            v-else
+            :labels="labels"
+            :annotations="annotations"
+            :single-label="project.singleClassClassification"
             @add="add"
             @remove="remove"
           />
         </v-card-title>
+        <v-divider />
         <v-card-text class="title highlight" v-text="doc.text" />
       </v-card>
     </template>
@@ -37,22 +64,22 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import _ from 'lodash'
+import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
+import LabelSelect from '@/components/tasks/textClassification/LabelSelect'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
-import TextClassification from '@/components/tasks/textClassification/TextClassification'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-Vue.use(require('vue-shortkey'))
 
 export default {
   layout: 'workspace',
 
   components: {
+    LabelGroup,
+    LabelSelect,
     LayoutText,
     ListMetadata,
-    TextClassification,
     ToolbarLaptop,
     ToolbarMobile
   },
@@ -78,7 +105,8 @@ export default {
       docs: [],
       labels: [],
       project: {},
-      enableAutoLabeling: false
+      enableAutoLabeling: false,
+      labelOption: 0
     }
   },
 
@@ -129,7 +157,7 @@ export default {
 
     async addOrRemove(event) {
       const label = this.labels.find(item => item.id === parseInt(event.srcKey, 10))
-      const annotation = this.doc.annotations.find(item => item.label === label.id)
+      const annotation = this.annotations.find(item => item.label === label.id)
       if (annotation) {
         await this.remove(annotation.id)
       } else {

@@ -41,7 +41,13 @@
           <template v-slot:selection="props">
             {{ translateTypeName(props.item, $t('overview.projectTypes')) }}
           </template>
-          </v-select>
+        </v-select>
+        <v-checkbox
+          v-if="projectType === 'DocumentClassification'"
+          :value="singleClassClassification"
+          label="Allow single label"
+          @change="updateValue('singleClassClassification', $event === true)"
+        />
         <v-checkbox
           :value="enableRandomizeDocOrder"
           :label="$t('overview.randomizeDocOrder')"
@@ -89,6 +95,11 @@ export default Vue.extend({
       required: true
     },
     enableShareAnnotation: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+    singleClassClassification: {
       type: Boolean,
       default: false,
       required: true
