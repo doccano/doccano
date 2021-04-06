@@ -21,6 +21,18 @@ class Record:
     def __str__(self):
         return f'{self.data}\t{self.label}'
 
+    def dict(self):
+        label_names = [
+            {
+                'text': label.name
+            } for label in self.label if label.has_name()
+        ]
+        return {
+            'data': self.data.dict(),
+            'annotation': [label.dict() for label in self.label],
+            'label': label_names
+        }
+
 
 class Dataset:
 
