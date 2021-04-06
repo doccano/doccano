@@ -1,5 +1,5 @@
 import abc
-from typing import Any
+from typing import Any, Dict
 
 from pydantic import BaseModel
 
@@ -18,6 +18,10 @@ class Label(BaseModel, abc.ABC):
     @classmethod
     def parse(cls, obj: Any):
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def replace(self, mapping: Dict[str, int]) -> 'Label':
+        raise NotImplementedError
 
     def __hash__(self):
         return hash(tuple(self.dict()))
@@ -38,6 +42,10 @@ class CategoryLabel(Label):
         if isinstance(obj, str):
             return cls(label=obj)
         raise TypeError(f'{obj} is not str.')
+
+    def replace(self, mapping: Dict[str, int]) -> 'Label':
+        label = mapping.get(self.label, self.label)
+        return CategoryLabel(label=label)
 
 
 class OffsetLabel(Label):
@@ -63,6 +71,14 @@ class OffsetLabel(Label):
         else:
             raise TypeError(f'{obj} is invalid type.')
 
+    def replace(self, mapping: Dict[str, int]) -> 'Label':
+        label = mapping.get(self.label, self.label)
+        return OffsetLabel(
+            label=label,
+            start_offset=self.start_offset,
+            end_offset=self.end_offset
+        )
+
 
 class TextLabel(Label):
     text: str
@@ -80,3 +96,6 @@ class TextLabel(Label):
             return cls(text=obj)
         else:
             raise TypeError(f'{obj} is not str.')
+
+    def replace(self, mapping: Dict[str, str]) -> 'Label':
+        return self
