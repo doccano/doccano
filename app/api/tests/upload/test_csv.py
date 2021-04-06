@@ -3,6 +3,7 @@ import shutil
 import tempfile
 import unittest
 
+from ...views.upload.data import TextData
 from ...views.upload.dataset import CsvDataset
 from ...views.upload.label import CategoryLabel
 
@@ -25,30 +26,31 @@ class TestCsvDataset(unittest.TestCase):
             label = [CategoryLabel(label='Label')]
         self.create_file(content)
         record = next(dataset.load(self.test_file))
-        self.assertEqual(record.data, data)
+        self.assertEqual(record.data.text, data)
         self.assertEqual(record.label, label)
 
     def test_can_load_default_column_names(self):
         content = 'label,text\nLabel,Text'
-        dataset = CsvDataset(filenames=[], label_class=CategoryLabel)
+        dataset = CsvDataset(filenames=[], label_class=CategoryLabel, data_class=TextData)
         self.assert_record(content, dataset)
 
     def test_can_change_delimiter(self):
         content = 'label\ttext\nLabel\tText'
-        dataset = CsvDataset(filenames=[], label_class=CategoryLabel, delimiter='\t')
+        dataset = CsvDataset(filenames=[], label_class=CategoryLabel, data_class=TextData, delimiter='\t')
         self.assert_record(content, dataset)
 
     def test_can_specify_column_name(self):
         content = 'star,body\nLabel,Text'
-        dataset = CsvDataset(filenames=[], label_class=CategoryLabel, column_data='body', column_label='star')
+        dataset = CsvDataset(filenames=[], label_class=CategoryLabel, data_class=TextData,
+                             column_data='body', column_label='star')
         self.assert_record(content, dataset)
 
     def test_can_load_only_text_column(self):
         content = 'star,text\nLabel,Text'
-        dataset = CsvDataset(filenames=[], label_class=CategoryLabel)
+        dataset = CsvDataset(filenames=[], label_class=CategoryLabel, data_class=TextData)
         self.assert_record(content, dataset, label=[])
 
     def test_does_not_match_column_and_row(self):
         content = 'text,label\nText'
-        dataset = CsvDataset(filenames=[], label_class=CategoryLabel)
+        dataset = CsvDataset(filenames=[], label_class=CategoryLabel, data_class=TextData)
         self.assert_record(content, dataset, label=[])

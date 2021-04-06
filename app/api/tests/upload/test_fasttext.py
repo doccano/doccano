@@ -3,6 +3,7 @@ import shutil
 import tempfile
 import unittest
 
+from ...views.upload.data import TextData
 from ...views.upload.dataset import FastTextDataset
 from ...views.upload.label import CategoryLabel
 
@@ -25,11 +26,11 @@ class TestFastTextDataset(unittest.TestCase):
             label = [CategoryLabel(label='Label')]
         self.create_file(content)
         record = next(dataset.load(self.test_file))
-        self.assertEqual(record.data, data)
+        self.assertEqual(record.data.text, data)
         self.assertEqual(record.label, label)
 
     def test_can_load_default_column_names(self):
         content = '__label__sauce __label__cheese Text'
-        dataset = FastTextDataset(filenames=[], label_class=CategoryLabel)
+        dataset = FastTextDataset(filenames=[], label_class=CategoryLabel, data_class=TextData)
         label = [CategoryLabel(label='sauce'), CategoryLabel(label='cheese')]
         self.assert_record(content, dataset, label=label)
