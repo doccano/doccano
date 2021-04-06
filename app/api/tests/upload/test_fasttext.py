@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from ...views.upload.dataset import FastTextDataset
+from ...views.upload.label import CategoryLabel
 
 
 class TestFastTextDataset(unittest.TestCase):
@@ -21,7 +22,7 @@ class TestFastTextDataset(unittest.TestCase):
 
     def assert_record(self, content, dataset, data='Text', label=None):
         if label is None:
-            label = ['Label']
+            label = [CategoryLabel(label='Label')]
         self.create_file(content)
         record = next(dataset.load(self.test_file))
         self.assertEqual(record.data, data)
@@ -29,5 +30,6 @@ class TestFastTextDataset(unittest.TestCase):
 
     def test_can_load_default_column_names(self):
         content = '__label__sauce __label__cheese Text'
-        dataset = FastTextDataset(filenames=[])
-        self.assert_record(content, dataset, label=['sauce', 'cheese'])
+        dataset = FastTextDataset(filenames=[], label_class=CategoryLabel)
+        label = [CategoryLabel(label='sauce'), CategoryLabel(label='cheese')]
+        self.assert_record(content, dataset, label=label)

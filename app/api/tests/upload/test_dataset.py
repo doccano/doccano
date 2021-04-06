@@ -4,6 +4,7 @@ import tempfile
 import unittest
 
 from ...views.upload.dataset import Dataset
+from ...views.upload.label import Label
 
 
 class TestDataset(unittest.TestCase):
@@ -22,18 +23,18 @@ class TestDataset(unittest.TestCase):
 
     def test_can_load_utf8(self):
         self.create_file()
-        dataset = Dataset(filenames=[])
+        dataset = Dataset(filenames=[], label_class=Label)
         record = next(dataset.load(self.test_file))
         self.assertEqual(record.filename, self.test_file)
 
     def test_cannot_load_shiftjis_without_specifying_encoding(self):
         self.create_file('shift_jis')
-        dataset = Dataset(filenames=[])
+        dataset = Dataset(filenames=[], label_class=Label)
         with self.assertRaises(UnicodeDecodeError):
             next(dataset.load(self.test_file))
 
     def test_can_load_shiftjis_with_specifying_encoding(self):
         self.create_file('shift_jis')
-        dataset = Dataset(filenames=[], encoding='shift_jis')
+        dataset = Dataset(filenames=[], label_class=Label, encoding='shift_jis')
         record = next(dataset.load(self.test_file))
         self.assertEqual(record.filename, self.test_file)
