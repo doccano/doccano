@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from importlib import reload
 from os import environ
 
-from app import settings
+from django.conf import settings
 from django.test import TestCase
 
 
