@@ -33,7 +33,7 @@ class Record:
 
     @property
     def label(self):
-        return [label.name for label in self._label if label.has_name()]
+        return [label.name for label in self._label if label.has_name() and label.name]
 
 
 class Records:

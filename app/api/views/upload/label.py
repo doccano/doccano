@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict
+from typing import Any, Dict, Union
 
 from pydantic import BaseModel
 
@@ -28,7 +28,7 @@ class Label(BaseModel, abc.ABC):
 
 
 class CategoryLabel(Label):
-    label: str
+    label: Union[str, int]
 
     def has_name(self) -> bool:
         return True
@@ -44,12 +44,12 @@ class CategoryLabel(Label):
         raise TypeError(f'{obj} is not str.')
 
     def replace(self, mapping: Dict[str, int]) -> 'Label':
-        label = mapping.get(self.label, self.label)
+        label = mapping[self.label]
         return CategoryLabel(label=label)
 
 
 class OffsetLabel(Label):
-    label: str
+    label: Union[str, int]
     start_offset: int
     end_offset: int
 
@@ -72,7 +72,7 @@ class OffsetLabel(Label):
             raise TypeError(f'{obj} is invalid type.')
 
     def replace(self, mapping: Dict[str, int]) -> 'Label':
-        label = mapping.get(self.label, self.label)
+        label = mapping[self.label]
         return OffsetLabel(
             label=label,
             start_offset=self.start_offset,

@@ -11,7 +11,13 @@ class Labels:
     def replace_label(self, mapping: Optional[Dict[str, int]] = None):
         if not mapping:
             return self
-        labels = [label.replace(mapping) for label in self.labels]
+        labels = []
+        for label in self.labels:
+            try:
+                label = label.replace(mapping)
+                labels.append(label)
+            except KeyError:
+                pass
         return Labels(labels)
 
     def dict(self) -> List[dict]:
