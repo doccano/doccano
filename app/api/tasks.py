@@ -30,11 +30,13 @@ def injest_data(user_id, project_id, filenames, format: str, **kwargs):
         data_serializer.is_valid()
         data = data_serializer.save(project=project)
 
-        label_serializer = LabelSerializer(data=batch.label(), many=True)
+        stored_labels = {label.text for label in project.labels.all()}
+        labels = [label for label in batch.label() if label['text'] not in stored_labels]
+        label_serializer = LabelSerializer(data=labels, many=True)
         label_serializer.is_valid()
         label_serializer.save(project=project)
 
-        mapping = {label['text']: label['id'] for label in project.labels.values()}
+        mapping = {label.text: label.id for label in project.labels.all()}
         annotation = batch.annotation(mapping)
         for a, d in zip(annotation, data):
             append_field(a, document=d.id)
