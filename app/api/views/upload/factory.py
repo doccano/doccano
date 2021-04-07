@@ -1,5 +1,13 @@
+from . import data
 from . import dataset
 from . import label
+
+
+def get_data_class(project_type: str):
+    if project_type in ['DocumentClassification', 'SequenceLabeling', 'Seq2seq']:
+        return data.TextData
+    else:
+        return data.FileData
 
 
 def get_dataset_class(format: str):
