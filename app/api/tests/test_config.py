@@ -2,9 +2,8 @@ from contextlib import contextmanager
 from importlib import reload
 from os import environ
 
-from django.test import TestCase
-
 from app import settings
+from django.test import TestCase
 
 
 class TestDatabaseUrl(TestCase):

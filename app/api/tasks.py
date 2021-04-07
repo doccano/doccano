@@ -6,8 +6,9 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
 from .models import Document, Label, Project
-from .serializers import LabelSerializer, DocumentSerializer
-from .views.upload.factory import get_data_class, get_dataset_class, get_label_class
+from .serializers import DocumentSerializer, LabelSerializer
+from .views.upload.factory import (get_data_class, get_dataset_class,
+                                   get_label_class)
 from .views.upload.utils import append_field
 
 

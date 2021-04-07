@@ -1,6 +1,4 @@
-from . import data
-from . import dataset
-from . import label
+from . import data, dataset, label
 
 
 def get_data_class(project_type: str):
