@@ -1,4 +1,6 @@
 import { Plugin } from '@nuxt/types'
+import { APITaskStatusRepository } from '@/repositories/celery/apiTaskStatusRepository'
+import { TaskStatusApplicationService } from '@/services/application/celery/taskStatusApplicationService'
 import { APICatalogRepository } from '../repositories/upload/apiCatalogRepository'
 import { CatalogApplicationService } from '../services/application/upload/catalogApplicationService'
 import { APIParseRepository } from '../repositories/upload/apiParseRepository'
@@ -52,6 +54,7 @@ export interface Services {
   auth: AuthApplicationService,
   catalog: CatalogApplicationService,
   parse: ParseApplicationService,
+  taskStatus: TaskStatusApplicationService,
 }
 
 declare module 'vue/types/vue' {
@@ -78,6 +81,7 @@ const plugin: Plugin = (context, inject) => {
   const authRepository = new APIAuthRepository()
   const catalogRepository = new APICatalogRepository()
   const parseRepository = new APIParseRepository()
+  const taskStatusRepository = new APITaskStatusRepository()
 
   const label      = new LabelApplicationService(labelRepository)
   const member     = new MemberApplicationService(memberRepository)
@@ -96,6 +100,7 @@ const plugin: Plugin = (context, inject) => {
   const auth = new AuthApplicationService(authRepository)
   const catalog = new CatalogApplicationService(catalogRepository)
   const parse = new ParseApplicationService(parseRepository)
+  const taskStatus = new TaskStatusApplicationService(taskStatusRepository)
   
   const services: Services = {
     label,
@@ -115,6 +120,7 @@ const plugin: Plugin = (context, inject) => {
     auth,
     catalog,
     parse,
+    taskStatus,
   }
   inject('services', services)
 }

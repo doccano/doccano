@@ -8,5 +8,6 @@ export class ParseApplicationService {
   public async analyze(projectId: string, format: string, uploadIds: number[]): Promise<string> {
     const item = await this.repository.analyze(projectId, format, uploadIds)
     return item
+
   }
 }
