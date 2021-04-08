@@ -12,6 +12,7 @@ def get_data_class(project_type: str):
 
 def get_dataset_class(format: str):
     mapping = {
+        catalog.TextFile.name: dataset.TextFileDataset,
         catalog.CSV.name: dataset.CsvDataset,
         catalog.JSONL.name: dataset.JSONLDataset,
         catalog.JSON.name: dataset.JSONDataset,
