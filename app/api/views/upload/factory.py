@@ -11,26 +11,24 @@ def get_data_class(project_type: str):
 
 
 def get_dataset_class(format: str):
-    if format == catalog.CSV:
-        return dataset.CsvDataset
-    elif format == catalog.JSONL:
-        return dataset.JSONLDataset
-    elif format == catalog.JSONL:
-        return dataset.JSONDataset
-    elif format == catalog.FastText:
-        return dataset.FastTextDataset
-    elif format == catalog.EXCEL:
-        return dataset.ExcelDataset
-    else:
+    mapping = {
+        catalog.CSV.name: dataset.CsvDataset,
+        catalog.JSONL.name: dataset.JSONLDataset,
+        catalog.JSON.name: dataset.JSONDataset,
+        catalog.FastText.name: dataset.FastTextDataset,
+        catalog.Excel.name: dataset.ExcelDataset
+    }
+    if format not in mapping:
         ValueError(f'Invalid format: {format}')
+    return mapping[format]
 
 
 def get_label_class(project_type: str):
-    if project_type == DOCUMENT_CLASSIFICATION:
-        return label.CategoryLabel
-    elif project_type == SEQUENCE_LABELING:
-        return label.OffsetLabel
-    elif project_type == SEQ2SEQ:
-        return label.TextLabel
-    else:
+    mapping = {
+        DOCUMENT_CLASSIFICATION: label.CategoryLabel,
+        SEQUENCE_LABELING: label.OffsetLabel,
+        SEQ2SEQ: label.TextLabel
+    }
+    if project_type not in mapping:
         ValueError(f'Invalid project type: {project_type}')
+    return mapping[project_type]
