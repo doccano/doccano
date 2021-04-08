@@ -1,4 +1,8 @@
 import { Plugin } from '@nuxt/types'
+import { APICatalogRepository } from '../repositories/upload/apiCatalogRepository'
+import { CatalogApplicationService } from '../services/application/upload/catalogApplicationService'
+import { APIParseRepository } from '../repositories/upload/apiParseRepository'
+import { ParseApplicationService } from '../services/application/upload/parseApplicationService'
 import { APISequenceLabelingRepository } from '~/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
 import { APISeq2seqRepository } from '~/repositories/tasks/seq2seq/apiSeq2seq'
 import { APIConfigRepository } from '~/repositories/autoLabeling/config/apiConfigRepository'
@@ -45,7 +49,9 @@ export interface Services {
   option: OptionApplicationService,
   config: ConfigApplicationService,
   template: TemplateApplicationService,
-  auth: AuthApplicationService
+  auth: AuthApplicationService,
+  catalog: CatalogApplicationService,
+  parse: ParseApplicationService,
 }
 
 declare module 'vue/types/vue' {
@@ -70,6 +76,8 @@ const plugin: Plugin = (context, inject) => {
   const configRepository     = new APIConfigRepository()
   const templateRepository   = new APITemplateRepository()
   const authRepository = new APIAuthRepository()
+  const catalogRepository = new APICatalogRepository()
+  const parseRepository = new APIParseRepository()
 
   const label      = new LabelApplicationService(labelRepository)
   const member     = new MemberApplicationService(memberRepository)
@@ -86,6 +94,8 @@ const plugin: Plugin = (context, inject) => {
   const config = new ConfigApplicationService(configRepository)
   const template = new TemplateApplicationService(templateRepository)
   const auth = new AuthApplicationService(authRepository)
+  const catalog = new CatalogApplicationService(catalogRepository)
+  const parse = new ParseApplicationService(parseRepository)
   
   const services: Services = {
     label,
@@ -102,7 +112,9 @@ const plugin: Plugin = (context, inject) => {
     option,
     config,
     template,
-    auth
+    auth,
+    catalog,
+    parse,
   }
   inject('services', services)
 }
