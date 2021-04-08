@@ -27,8 +27,8 @@ class UploadAPI(APIView):
 
     def post(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
-        upload_ids = request.data('upload_ids')
-        format = request.data('format')
+        upload_ids = request.data['uploadIds']
+        format = request.data['format']
 
         tus = [TemporaryUpload.objects.get(upload_id=upload_id) for upload_id in upload_ids]
         sus = [store_upload(tu.upload_id, destination_file_path=tu.upload_name) for tu in tus]
