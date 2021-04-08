@@ -1,5 +1,5 @@
-from . import data, dataset, label, catalog
-from ...models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
+from ...models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
+from . import catalog, data, dataset, label
 
 
 def get_data_class(project_type: str):

@@ -6,10 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .catalog import Options
 from ...models import Project
 from ...permissions import IsProjectAdmin
 from ...tasks import injest_data
+from .catalog import Options
 
 
 class DatasetCatalog(APIView):
@@ -27,8 +27,8 @@ class UploadAPI(APIView):
 
     def post(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
-        upload_ids = request.data['uploadIds']
-        format = request.data['format']
+        upload_ids = request.data.pop('uploadIds')
+        format = request.data.pop('format')
 
         tus = [TemporaryUpload.objects.get(upload_id=upload_id) for upload_id in upload_ids]
         sus = [store_upload(tu.upload_id, destination_file_path=tu.upload_name) for tu in tus]
@@ -37,6 +37,7 @@ class UploadAPI(APIView):
             user_id=request.user.id,
             project_id=project_id,
             filenames=filenames,
-            format=format
+            format=format,
+            **request.data
         )
         return Response({'task_id': task.task_id})

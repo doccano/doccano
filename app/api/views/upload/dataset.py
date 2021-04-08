@@ -118,7 +118,7 @@ class CsvDataset(Dataset):
 
             column_data = self.kwargs.get('column_data', 'text')
             if column_data not in header:
-                message = f'{column_data} does not exist in the header: {header}'
+                message = f'Column `{column_data}` does not exist in the header: {header}'
                 raise FileParseException(filename, 1, message)
 
             for line_num, row in enumerate(reader, start=2):

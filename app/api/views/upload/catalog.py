@@ -2,8 +2,10 @@ from collections import defaultdict
 from typing import Dict, List, Type
 
 from pydantic import BaseModel
+from typing_extensions import Literal
 
-from ...models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
+from ...models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
+
 CSV = 'CSV'
 FastText = 'fastText'
 JSON = 'JSON'
@@ -18,7 +20,7 @@ class OptionColumn(BaseModel):
 
 
 class OptionDelimiter(OptionColumn):
-    delimiter: str = ','
+    delimiter: Literal[',', '\t', ';', '|', ' '] = ','
 
 
 class OptionNone(BaseModel):
