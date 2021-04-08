@@ -49,6 +49,11 @@ class TextFile(Format):
     accept_types = 'text/*'
 
 
+class TextLine(Format):
+    name = 'TextLine'
+    accept_types = 'text/*'
+
+
 class CoNLL(Format):
     name = 'CoNLL'
     accept_types = 'text/*'
@@ -86,6 +91,7 @@ class Options:
 
 # Text Classification
 Options.register(DOCUMENT_CLASSIFICATION, TextFile, OptionNone)
+Options.register(DOCUMENT_CLASSIFICATION, TextLine, OptionNone)
 Options.register(DOCUMENT_CLASSIFICATION, CSV, OptionDelimiter)
 Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionNone)
 Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionColumn)
@@ -94,11 +100,13 @@ Options.register(DOCUMENT_CLASSIFICATION, Excel, OptionColumn)
 
 # Sequence Labeling
 Options.register(SEQUENCE_LABELING, TextFile, OptionNone)
+Options.register(SEQUENCE_LABELING, TextLine, OptionNone)
 Options.register(SEQUENCE_LABELING, JSONL, OptionColumn)
 Options.register(SEQUENCE_LABELING, CoNLL, OptionNone)
 
 # Sequence to sequence
 Options.register(SEQ2SEQ, TextFile, OptionNone)
+Options.register(SEQ2SEQ, TextLine, OptionNone)
 Options.register(SEQ2SEQ, CSV, OptionDelimiter)
 Options.register(SEQ2SEQ, JSON, OptionColumn)
 Options.register(SEQ2SEQ, JSONL, OptionColumn)
