@@ -1,9 +1,18 @@
 from django.urls import include, path
-from rest_framework.authtoken.views import obtain_auth_token
 
 from . import views
 
 urlpatterns_project = [
+    path(
+        route='upload',
+        view=views.upload.view.UploadAPI.as_view(),
+        name='upload'
+    ),
+    path(
+        route='catalog',
+        view=views.upload.view.DatasetCatalog.as_view(),
+        name='catalog'
+    ),
     path(
         route='statistics',
         view=views.StatisticsAPI.as_view(),
@@ -173,11 +182,6 @@ urlpatterns = [
         route='tasks/status/<task_id>',
         view=views.TaskStatus.as_view(),
         name='task_status'
-    ),
-    path(
-        route='tasks/test',
-        view=views.TaskTest.as_view(),
-        name='task_test'
     ),
     path(
         route='projects/<int:project_id>',

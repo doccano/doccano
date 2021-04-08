@@ -10,3 +10,4 @@ from .role import *
 from .statistics import *
 from .task import *
 from .user import *
+from .upload import *
