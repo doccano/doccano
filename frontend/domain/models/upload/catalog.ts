@@ -1,14 +1,15 @@
 export class Catalog {
   constructor(
     public name: string,
+    public example: string,
     public accept_types: string,
     public properties: object
   ) {}
 
   static valueOf(
-    { name, accept_types, properties }:
-    { name: string, accept_types: string, properties: object }
+    { name, example, accept_types, properties }:
+    { name: string, example: string, accept_types: string, properties: object }
   ): Catalog {
-    return new Catalog(name, accept_types, properties)
+    return new Catalog(name, example, accept_types, properties)
   }
 }

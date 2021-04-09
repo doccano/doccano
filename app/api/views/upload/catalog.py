@@ -4,6 +4,7 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
+from . import examples
 from ...models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
 
 
@@ -82,32 +83,42 @@ class Options:
     @classmethod
     def filter_by_task(cls, task_name: str):
         options = cls.options[task_name]
-        return [{**format.dict(), **option.schema()} for format, option in options]
+        return [
+            {
+                **format.dict(),
+                **option.schema(),
+                'example': example
+            } for format, option, example in options
+        ]
 
     @classmethod
-    def register(cls, task: str, format: Type[Format], option: Type[BaseModel]):
-        cls.options[task].append((format, option))
+    def register(cls,
+                 task: str,
+                 format: Type[Format],
+                 option: Type[BaseModel],
+                 example: str):
+        cls.options[task].append((format, option, example))
 
 
 # Text Classification
-Options.register(DOCUMENT_CLASSIFICATION, TextFile, OptionNone)
-Options.register(DOCUMENT_CLASSIFICATION, TextLine, OptionNone)
-Options.register(DOCUMENT_CLASSIFICATION, CSV, OptionDelimiter)
-Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionNone)
-Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionColumn)
-Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionColumn)
-Options.register(DOCUMENT_CLASSIFICATION, Excel, OptionColumn)
+Options.register(DOCUMENT_CLASSIFICATION, TextFile, OptionNone, examples.Generic_TextFile)
+Options.register(DOCUMENT_CLASSIFICATION, TextLine, OptionNone, examples.Generic_TextLine)
+Options.register(DOCUMENT_CLASSIFICATION, CSV, OptionDelimiter, examples.Category_CSV)
+Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionNone, examples.Category_fastText)
+Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionColumn, examples.Category_JSON)
+Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionColumn, examples.Category_JSONL)
+Options.register(DOCUMENT_CLASSIFICATION, Excel, OptionColumn, examples.Category_CSV)
 
 # Sequence Labeling
-Options.register(SEQUENCE_LABELING, TextFile, OptionNone)
-Options.register(SEQUENCE_LABELING, TextLine, OptionNone)
-Options.register(SEQUENCE_LABELING, JSONL, OptionColumn)
-Options.register(SEQUENCE_LABELING, CoNLL, OptionNone)
+Options.register(SEQUENCE_LABELING, TextFile, OptionNone, examples.Generic_TextFile)
+Options.register(SEQUENCE_LABELING, TextLine, OptionNone, examples.Generic_TextLine)
+Options.register(SEQUENCE_LABELING, JSONL, OptionColumn, examples.Offset_JSONL)
+Options.register(SEQUENCE_LABELING, CoNLL, OptionNone, examples.Offset_CoNLL)
 
 # Sequence to sequence
-Options.register(SEQ2SEQ, TextFile, OptionNone)
-Options.register(SEQ2SEQ, TextLine, OptionNone)
-Options.register(SEQ2SEQ, CSV, OptionDelimiter)
-Options.register(SEQ2SEQ, JSON, OptionColumn)
-Options.register(SEQ2SEQ, JSONL, OptionColumn)
-Options.register(SEQ2SEQ, Excel, OptionColumn)
+Options.register(SEQ2SEQ, TextFile, OptionNone, examples.Generic_TextFile)
+Options.register(SEQ2SEQ, TextLine, OptionNone, examples.Generic_TextLine)
+Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
+Options.register(SEQ2SEQ, JSON, OptionColumn, examples.Text_JSON)
+Options.register(SEQ2SEQ, JSONL, OptionColumn, examples.Text_JSONL)
+Options.register(SEQ2SEQ, Excel, OptionColumn, examples.Text_CSV)
