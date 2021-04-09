@@ -2,8 +2,9 @@ from contextlib import contextmanager
 from importlib import reload
 from os import environ
 
-from django.conf import settings
 from django.test import TestCase
+
+from app import settings
 
 
 class TestDatabaseUrl(TestCase):
@@ -42,4 +43,3 @@ def setenv(key, value):
     reload(settings)
     yield
     del environ[key]
-
