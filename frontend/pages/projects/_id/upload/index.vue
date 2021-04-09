@@ -1,19 +1,79 @@
 <template>
-  <file-pond
-    ref="pond"
-    label-idle="Drop files here..."
-    :allow-multiple="true"
-    :server="server"
-    :files="myFiles"
-    @init="handleFilePondInit"
-  />
+  <v-card>
+    <v-card-text>
+      <v-select
+        v-model="selected"
+        :items="catalog"
+        item-text="name"
+        label="File format"
+        outlined
+      />
+      <v-form v-model="valid">
+        <v-text-field
+          v-for="(item, key) in textFields"
+          :key="key"
+          v-model="option[key]"
+          :label="item.title"
+          :rules="requiredRules"
+          outlined
+        />
+        <v-select
+          v-for="(val, key) in selectFields"
+          :key="key"
+          v-model="option[key]"
+          :items="val.enum"
+          :label="val.title"
+          :rules="requiredRules"
+          outlined
+        >
+          <template v-slot:selection="{ item }">
+            {{ toVisualize(item) }}
+          </template>
+          <template v-slot:item="{ item }">
+            {{ toVisualize(item) }}
+          </template>
+        </v-select>
+      </v-form>
+      <file-pond
+        v-if="selected"
+        ref="pond"
+        chunk-uploads="true"
+        label-idle="Drop files here..."
+        :allow-multiple="true"
+        :accepted-file-types="acceptedFileTypes"
+        :server="server"
+        :files="myFiles"
+        @processfile="handleFilePondProcessfile"
+        @removefile="handleFilePondRemovefile"
+      />
+      <v-data-table
+        v-if="errors.length > 0"
+        :headers="headers"
+        :items="errors"
+        class="elevation-1"
+      ></v-data-table>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer />
+      <v-btn
+        class='text-capitalize me-2'
+        :disabled="isDisabled"
+        @click="injest"
+      >
+        Injest
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
 import Cookies from 'js-cookie'
 import vueFilePond from "vue-filepond"
 import "filepond/dist/filepond.min.css"
-const FilePond = vueFilePond()
+import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
+const FilePond = vueFilePond(
+  FilePondPluginFileValidateType,
+)
 
 export default {
   layout: 'project',
@@ -24,25 +84,130 @@ export default {
   
   data() {
     return {
+      catalog: [],
+      selected: null,
       myFiles: [],
+      option: {},
+      taskId: null,
+      polling: null,
+      errors: [],
+      headers: [
+        { text: 'Filename', value: 'filename' },
+        { text: 'Line', value: 'line' },
+        { text: 'Message', value: 'message' }
+      ],
+      requiredRules: [
+        v => !!v || 'Field value is required'
+      ],
       server: {
         url: '/v1/fp',
         headers: {
           'X-CSRFToken': Cookies.get('csrftoken'),
         },
-        process: '/process/',
+        process: {
+          url: '/process/',
+          method: 'POST',
+        },
+        patch: '/patch/',
         revert: '/revert/',
         restore: '/restore/',
         load: '/load/',
         fetch: '/fetch/'
+      },
+      uploadedFiles: [],
+      valid: false
+    }
+  },
+
+  computed: {
+    isDisabled() {
+      return this.uploadedFiles.length === 0 || this.taskId !== null || !this.valid
+    },
+    properties() {
+      const item = this.catalog.find(item => item.name === this.selected)
+      if (item) {
+        return item.properties
+      } else {
+        return {}
+      }
+    },
+    textFields() {
+      const asArray = Object.entries(this.properties)
+      const textFields = asArray.filter(([key, value]) => !('enum' in value))
+      return Object.fromEntries(textFields)
+    },
+    selectFields() {
+      const asArray = Object.entries(this.properties)
+      const textFields = asArray.filter(([key, value]) => 'enum' in value)
+      return Object.fromEntries(textFields)
+    },
+    acceptedFileTypes() {
+      const item = this.catalog.find(item => item.name === this.selected)
+      if (item) {
+        return item.acceptTypes
+      } else {
+        return ''
       }
     }
   },
 
+  watch: {
+    selected() {
+      const item = this.catalog.find(item => item.name === this.selected)
+      for (const [key, value] of Object.entries(item.properties)) {
+        this.option[key] = value.default
+      }
+    }
+  },
+
+  async created() {
+    this.catalog = await this.$services.catalog.list(this.$route.params.id)
+    this.pollData()
+  },
+
   methods: {
-    handleFilePondInit() {
-      console.log("FilePond has initialized");
+    handleFilePondProcessfile(error, file) {
+      console.log(error)
+      this.uploadedFiles.push(file)
+      this.$nextTick()
     },
+    handleFilePondRemovefile(error, file) {
+      console.log(error)
+      const index = this.uploadedFiles.findIndex(item => item.id === file.id)
+      if (index > -1) {
+          this.uploadedFiles.splice(index, 1)
+          this.$nextTick()
+      }
+    },
+    async injest() {
+      this.taskId = await this.$services.parse.analyze(
+        this.$route.params.id,
+        this.selected,
+        this.uploadedFiles.map(item => item.serverId),
+        this.option
+      )
+    },
+    pollData() {
+		  this.polling = setInterval(async() => {
+        if (this.taskId) {
+          const res = await this.$services.taskStatus.get(this.taskId)
+          if (res.ready) {
+            this.taskId = null
+            this.errors = res.result.error
+            this.myFiles = []
+          }
+        }
+  		}, 3000)
+	  },
+    toVisualize(text) {
+      if (text === '\t') {
+        return 'Tab'
+      } else if (text === ' ') {
+        return 'Space'
+      } else {
+        return text
+      }
+    }
   },
 };
 </script>
