@@ -54,7 +54,7 @@ def injest_data(user_id, project_id, filenames, format: str, **kwargs):
         annotation = example.annotation(mapping)
         append_field(annotation, document=data.id)
         annotation_serializer = annotation_serializer_class(
-            data=list(itertools.chain(*annotation)),
+            data=annotation,
             many=True
         )
         if not annotation_serializer.is_valid():
