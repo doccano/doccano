@@ -59,7 +59,11 @@ class Dataset:
 
     def __iter__(self) -> Iterator[Record]:
         for filename in self.filenames:
-            yield from self.load(filename)
+            try:
+                yield from self.load(filename)
+            except UnicodeDecodeError as err:
+                message = str(err)
+                raise FileParseException(filename, line_num=-1, message=message)
 
     def load(self, filename: str) -> Iterator[Record]:
         """Loads a file content."""
