@@ -3,7 +3,7 @@ import json
 from typing import Dict, Iterator, List, Optional, Type
 
 import pyexcel
-from seqeval.scheme import IOB2, IOE2, IOBES, BILOU, Tokens
+from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
 from .data import BaseData
 from .exception import FileParseException
