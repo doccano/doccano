@@ -26,7 +26,7 @@ class TestDataset(unittest.TestCase):
         self.create_file()
         dataset = Dataset(filenames=[], label_class=Label, data_class=TextData)
         record = next(dataset.load(self.test_file))
-        self.assertEqual(record.data.filename, self.test_file)
+        self.assertEqual(record.data['filename'], self.test_file)
 
     def test_cannot_load_shiftjis_without_specifying_encoding(self):
         self.create_file('shift_jis')
@@ -38,4 +38,4 @@ class TestDataset(unittest.TestCase):
         self.create_file('shift_jis')
         dataset = Dataset(filenames=[], label_class=Label, data_class=TextData, encoding='shift_jis')
         record = next(dataset.load(self.test_file))
-        self.assertEqual(record.data.filename, self.test_file)
+        self.assertEqual(record.data['filename'], self.test_file)
