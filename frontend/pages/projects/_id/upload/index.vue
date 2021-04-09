@@ -234,6 +234,8 @@ export default {
         return 'Tab'
       } else if (text === ' ') {
         return 'Space'
+      } else if (text === '') {
+        return 'None'
       } else {
         return text
       }

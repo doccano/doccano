@@ -62,8 +62,8 @@ class OffsetLabel(Label):
 
     @classmethod
     def parse(cls, obj: Any):
-        if isinstance(obj, list):
-            columns = ['label', 'start_offset', 'end_offset']
+        if isinstance(obj, list) or isinstance(obj, tuple):
+            columns = ['start_offset', 'end_offset', 'label']
             obj = zip(columns, obj)
             return cls.parse_obj(obj)
         elif isinstance(obj, dict):

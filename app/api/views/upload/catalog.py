@@ -75,6 +75,7 @@ class OptionNone(BaseModel):
 
 class OptionCoNLL(BaseModel):
     scheme: Literal['IOB2', 'IOE2', 'IOBES', 'BILOU'] = 'IOB2'
+    delimiter: Literal[' ', ''] = ' '
 
 
 class Options:
@@ -113,7 +114,7 @@ Options.register(DOCUMENT_CLASSIFICATION, Excel, OptionColumn, examples.Category
 Options.register(SEQUENCE_LABELING, TextFile, OptionNone, examples.Generic_TextFile)
 Options.register(SEQUENCE_LABELING, TextLine, OptionNone, examples.Generic_TextLine)
 Options.register(SEQUENCE_LABELING, JSONL, OptionColumn, examples.Offset_JSONL)
-Options.register(SEQUENCE_LABELING, CoNLL, OptionNone, examples.Offset_CoNLL)
+Options.register(SEQUENCE_LABELING, CoNLL, OptionCoNLL, examples.Offset_CoNLL)
 
 # Sequence to sequence
 Options.register(SEQ2SEQ, TextFile, OptionNone, examples.Generic_TextFile)

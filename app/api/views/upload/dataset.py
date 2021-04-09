@@ -3,6 +3,7 @@ import json
 from typing import Dict, Iterator, List, Optional, Type
 
 import pyexcel
+from seqeval.scheme import IOB2, IOE2, IOBES, BILOU, Tokens
 
 from .data import BaseData
 from .exception import FileParseException
@@ -72,7 +73,7 @@ class Dataset:
         if column_data not in row:
             message = f'{column_data} does not exist.'
             raise FileParseException(filename, line_num, message)
-        text = row.pop(self.kwargs.get('column_data', 'text'))
+        text = row.pop(column_data)
         label = row.pop(self.kwargs.get('column_label', 'label'), [])
         label = [label] if isinstance(label, str) else label
         label = [self.label_class.parse(o) for o in label]
@@ -174,8 +175,48 @@ class FastTextDataset(Dataset):
                 yield record
 
 
-class ConllDataset(Dataset):
+class CoNLLDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
         with open(filename, encoding=self.encoding) as f:
-            pass
+            words, tags = [], []
+            delimiter = self.kwargs.get('delimiter', ' ')
+            for line_num, line in enumerate(f, start=1):
+                line = line.rstrip()
+                if line:
+                    tokens = line.split('\t')
+                    if len(tokens) != 2:
+                        message = 'A line must be separated by tab and has two columns.'
+                        raise FileParseException(filename, line_num, message)
+                    word, tag = tokens
+                    words.append(word)
+                    tags.append(tag)
+                else:
+                    text = delimiter.join(words)
+                    data = self.data_class.parse(filename=filename, text=text)
+                    labels = self.get_label(words, tags, delimiter)
+                    record = Record(data=data, label=labels)
+                    yield record
+                    words, tags = [], []
+
+    def get_scheme(self, scheme: str):
+        mapping = {
+            'IOB2': IOB2,
+            'IOE2': IOE2,
+            'IOBES': IOBES,
+            'BILOU': BILOU
+        }
+        return mapping[scheme]
+
+    def get_label(self, words: List[str], tags: List[str], delimiter: str) -> List[Label]:
+        scheme = self.get_scheme(self.kwargs.get('scheme', 'IOB2'))
+        tokens = Tokens(tags, scheme)
+        labels = []
+        for entity in tokens.entities:
+            text = delimiter.join(words[:entity.start])
+            start = len(text) + len(delimiter) if text else len(text)
+            chunk = words[entity.start: entity.end]
+            text = delimiter.join(chunk)
+            end = start + len(text)
+            labels.append(self.label_class.parse((start, end, entity.tag)))
+        return labels

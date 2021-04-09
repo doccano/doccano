@@ -18,7 +18,8 @@ def get_dataset_class(format: str):
         catalog.JSONL.name: dataset.JSONLDataset,
         catalog.JSON.name: dataset.JSONDataset,
         catalog.FastText.name: dataset.FastTextDataset,
-        catalog.Excel.name: dataset.ExcelDataset
+        catalog.Excel.name: dataset.ExcelDataset,
+        catalog.CoNLL.name: dataset.CoNLLDataset
     }
     if format not in mapping:
         ValueError(f'Invalid format: {format}')
