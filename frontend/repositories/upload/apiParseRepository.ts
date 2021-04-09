@@ -16,4 +16,9 @@ export class APIParseRepository implements ParseRepository {
     const response = await this.request.post(url, data)
     return response.data.task_id
   }
+
+  revert(serverId: string): void {
+    const url = `/fp/revert/`
+    this.request.delete(url, serverId)
+  }
 }

@@ -34,6 +34,14 @@
           </template>
         </v-select>
       </v-form>
+      <v-sheet
+        v-if="selected"
+        :dark="!$vuetify.theme.dark"
+        :light="$vuetify.theme.dark"
+        class="mb-5 pa-5"
+      >
+      <pre>{{ example }}</pre>
+      </v-sheet>
       <file-pond
         v-if="selected"
         ref="pond"
@@ -87,7 +95,7 @@ export default {
       catalog: [],
       selected: null,
       myFiles: [],
-      option: {},
+      option: {'column_data': '', 'column_label': '', 'delimiter': ''},
       taskId: null,
       polling: null,
       errors: [],
@@ -115,7 +123,7 @@ export default {
         fetch: '/fetch/'
       },
       uploadedFiles: [],
-      valid: false
+      valid: false,
     }
   },
 
@@ -148,6 +156,22 @@ export default {
       } else {
         return ''
       }
+    },
+    example() {
+      const item = this.catalog.find(item => item.name === this.selected)
+      if (item) {
+        const column_data = 'column_data'
+        const column_label = 'column_label'
+        if (column_data in this.option && column_label in this.option) {
+          return item.example.replaceAll(column_data, this.option[column_data])
+                             .replaceAll(column_label, this.option[column_label])
+                             .trim()
+        } else {
+          return item.example.trim()
+        }
+      } else {
+        return ''
+      }
     }
   },
 
@@ -157,6 +181,11 @@ export default {
       for (const [key, value] of Object.entries(item.properties)) {
         this.option[key] = value.default
       }
+      this.myFiles = []
+      for (const file of this.uploadedFiles) {
+        this.$services.parse.revert(file.serverId)
+      }
+      this.uploadedFiles = []
     }
   },
 
@@ -195,6 +224,7 @@ export default {
             this.taskId = null
             this.errors = res.result.error
             this.myFiles = []
+            this.uploadedFiles = []
           }
         }
   		}, 3000)

@@ -9,4 +9,8 @@ export class ParseApplicationService {
     const item = await this.repository.analyze(projectId, format, uploadIds, option)
     return item
   }
+
+  public revert(serverId: string): void {
+    this.repository.revert(serverId)
+  }
 }
