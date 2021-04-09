@@ -55,15 +55,15 @@ Text_JSON = """
 """
 
 Text_JSONL = """
-{"text": "Hello!", "labels": ["こんにちは！"]}
-{"text": "Good morning.", "labels": ["おはようございます。"]}
-{"text": "See you.", "labels": ["さようなら。"]}
+{"column_data": "Hello!", "column_label": ["こんにちは！"]}
+{"column_data": "Good morning.", "column_label": ["おはようございます。"]}
+{"column_data": "See you.", "column_label": ["さようなら。"]}
 """
 
 Offset_JSONL = """
-{"text": "EU rejects German call to boycott British lamb.", "labels": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]}
-{"text": "Peter Blackburn", "labels": [ [0, 15, "PERSON"] ]}
-{"text": "President Obama", "labels": [ [10, 15, "PERSON"] ]}
+{"column_data": "EU rejects German call to boycott British lamb.", "column_label": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]}
+{"column_data": "Peter Blackburn", "column_label": [ [0, 15, "PERSON"] ]}
+{"column_data": "President Obama", "column_label": [ [10, 15, "PERSON"] ]}
 """
 
 Offset_CoNLL = """
