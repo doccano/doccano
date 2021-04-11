@@ -25,7 +25,7 @@ class DocumentFilter(FilterSet):
 
     class Meta:
         model = Document
-        fields = ('project', 'text', 'meta', 'created_at', 'updated_at',
+        fields = ('project', 'text', 'created_at', 'updated_at',
                   'doc_annotations__label__id', 'seq_annotations__label__id',
                   'doc_annotations__isnull', 'seq_annotations__isnull', 'seq2seq_annotations__isnull',
                   'speech2text_annotations__isnull')

@@ -23,7 +23,6 @@
           v-model="option[key]"
           :items="val.enum"
           :label="val.title"
-          :rules="requiredRules"
           outlined
         >
           <template v-slot:selection="{ item }">
@@ -186,6 +185,7 @@ export default {
         this.$services.parse.revert(file.serverId)
       }
       this.uploadedFiles = []
+      this.errors = []
     }
   },
 

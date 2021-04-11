@@ -81,7 +81,7 @@ class Dataset:
         label = row.pop(self.kwargs.get('column_label', 'label'), [])
         label = [label] if isinstance(label, str) else label
         label = [self.label_class.parse(o) for o in label]
-        data = self.data_class.parse(text=text, filename=filename, metadata=row)
+        data = self.data_class.parse(text=text, filename=filename, meta=row)
         record = Record(data=data, label=label)
         return record
 

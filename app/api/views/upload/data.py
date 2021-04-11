@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 class BaseData(BaseModel, abc.ABC):
     filename: str
-    metadata: Dict = {}
+    meta: Dict = {}
 
     @classmethod
     def parse(cls, **kwargs):
