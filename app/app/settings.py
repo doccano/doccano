@@ -339,10 +339,12 @@ if DEBUG:
         'http://localhost:3000'
     )
 
+MEDIA_ROOT = path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 # Filepond settings.
 DJANGO_DRF_FILEPOND_UPLOAD_TMP = path.join(BASE_DIR, 'filepond-temp-uploads')
-DJANGO_DRF_FILEPOND_FILE_STORE_PATH = path.join(BASE_DIR, 'filepond_uploads')
-
+DJANGO_DRF_FILEPOND_FILE_STORE_PATH = MEDIA_ROOT
 
 # Celery settings
 DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191
