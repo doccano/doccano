@@ -37,7 +37,7 @@ class JSON(Format):
 
 class JSONL(Format):
     name = 'JSONL'
-    accept_types = 'application/jsonl'
+    accept_types = '*'
 
 
 class Excel(Format):

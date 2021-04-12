@@ -42,12 +42,23 @@
       <pre>{{ example }}</pre>
       </v-sheet>
       <file-pond
-        v-if="selected"
+        v-if="selected && acceptedFileTypes !== '*'"
         ref="pond"
         chunk-uploads="true"
         label-idle="Drop files here..."
         :allow-multiple="true"
         :accepted-file-types="acceptedFileTypes"
+        :server="server"
+        :files="myFiles"
+        @processfile="handleFilePondProcessfile"
+        @removefile="handleFilePondRemovefile"
+      />
+      <file-pond
+        v-if="selected && acceptedFileTypes === '*'"
+        ref="pond"
+        chunk-uploads="true"
+        label-idle="Drop files here..."
+        :allow-multiple="true"
         :server="server"
         :files="myFiles"
         @processfile="handleFilePondProcessfile"
