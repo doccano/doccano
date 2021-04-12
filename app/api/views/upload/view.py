@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import get_object_or_404
 from django_drf_filepond.api import store_upload
 from django_drf_filepond.models import TemporaryUpload
@@ -31,7 +33,13 @@ class UploadAPI(APIView):
         format = request.data.pop('format')
 
         tus = [TemporaryUpload.objects.get(upload_id=upload_id) for upload_id in upload_ids]
-        sus = [store_upload(tu.upload_id, destination_file_path=tu.upload_name) for tu in tus]
+        sus = [
+            store_upload(
+                tu.upload_id,
+                destination_file_path=os.path.join(tu.file.name, tu.upload_name)
+            )
+            for tu in tus
+        ]
         filenames = [su.file.path for su in sus]
         task = injest_data.delay(
             user_id=request.user.id,
