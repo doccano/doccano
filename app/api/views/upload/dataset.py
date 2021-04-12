@@ -1,9 +1,11 @@
 import csv
+import io
 import json
 from typing import Dict, Iterator, List, Optional, Type
 
 import pydantic.error_wrappers
 import pyexcel
+from chardet.universaldetector import UniversalDetector
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
 from .data import BaseData
@@ -68,10 +70,26 @@ class Dataset:
 
     def load(self, filename: str) -> Iterator[Record]:
         """Loads a file content."""
-        with open(filename, encoding=self.encoding) as f:
+        encoding = self.detect_encoding(filename)
+        with open(filename, encoding=encoding) as f:
             data = self.data_class.parse(filename=filename, text=f.read())
             record = Record(data=data)
             yield record
+
+    def detect_encoding(self, filename: str, buffer_size=io.DEFAULT_BUFFER_SIZE):
+        if self.encoding != 'Auto':
+            return self.encoding
+        with open(filename, 'rb') as f:
+            detector = UniversalDetector()
+            while True:
+                read = f.read(buffer_size)
+                detector.feed(read)
+                if detector.done:
+                    break
+            if detector.done:
+                return detector.result['encoding']
+            else:
+                return 'utf-8'
 
     def from_row(self, filename: str, row: Dict, line_num: int) -> Record:
         column_data = self.kwargs.get('column_data', 'text')
@@ -101,7 +119,8 @@ class FileBaseDataset(Dataset):
 class TextFileDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
-        with open(filename, encoding=self.encoding) as f:
+        encoding = self.detect_encoding(filename)
+        with open(filename, encoding=encoding) as f:
             data = self.data_class.parse(filename=filename, text=f.read())
             record = Record(data=data)
             yield record
@@ -110,7 +129,8 @@ class TextFileDataset(Dataset):
 class TextLineDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
-        with open(filename, encoding=self.encoding) as f:
+        encoding = self.detect_encoding(filename)
+        with open(filename, encoding=encoding) as f:
             for line in f:
                 data = self.data_class.parse(filename=filename, text=line.rstrip())
                 record = Record(data=data)
@@ -120,7 +140,8 @@ class TextLineDataset(Dataset):
 class CsvDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
-        with open(filename, encoding=self.encoding) as f:
+        encoding = self.detect_encoding(filename)
+        with open(filename, encoding=encoding) as f:
             delimiter = self.kwargs.get('delimiter', ',')
             reader = csv.reader(f, delimiter=delimiter)
             header = next(reader)
@@ -138,7 +159,8 @@ class CsvDataset(Dataset):
 class JSONDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
-        with open(filename, encoding=self.encoding) as f:
+        encoding = self.detect_encoding(filename)
+        with open(filename, encoding=encoding) as f:
             dataset = json.load(f)
             for line_num, row in enumerate(dataset, start=1):
                 yield self.from_row(filename, row, line_num)
@@ -147,7 +169,8 @@ class JSONDataset(Dataset):
 class JSONLDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
-        with open(filename, encoding=self.encoding) as f:
+        encoding = self.detect_encoding(filename)
+        with open(filename, encoding=encoding) as f:
             for line_num, line in enumerate(f, start=1):
                 row = json.loads(line)
                 yield self.from_row(filename, row, line_num)
@@ -164,7 +187,8 @@ class ExcelDataset(Dataset):
 class FastTextDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
-        with open(filename, encoding=self.encoding) as f:
+        encoding = self.detect_encoding(filename)
+        with open(filename, encoding=encoding) as f:
             for line_num, line in enumerate(f, start=1):
                 labels = []
                 tokens = []
@@ -186,7 +210,8 @@ class FastTextDataset(Dataset):
 class CoNLLDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
-        with open(filename, encoding=self.encoding) as f:
+        encoding = self.detect_encoding(filename)
+        with open(filename, encoding=encoding) as f:
             words, tags = [], []
             delimiter = self.kwargs.get('delimiter', ' ')
             for line_num, line in enumerate(f, start=1):
