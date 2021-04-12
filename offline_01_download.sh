@@ -50,7 +50,7 @@ mkdir -p "${static_dir}offline/"
 app_dir="app/server/templates"
 frontend_dir="frontend"
 
-for ((i = 0; i < "$(expr ${#links[@]} / $n_columns)"; ++i)); do
+for ((i = 0; i < $(expr "${#links[@]}" / "$n_columns"); ++i)); do
     idx_local=$(expr $i \* $n_columns + 0)
     idx_link=$(expr $i \* $n_columns + 1)
     local="${links[$idx_local]}"
