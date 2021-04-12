@@ -2,6 +2,7 @@ import csv
 import json
 from typing import Dict, Iterator, List, Optional, Type
 
+import pydantic.error_wrappers
 import pyexcel
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
@@ -80,7 +81,10 @@ class Dataset:
         text = row.pop(column_data)
         label = row.pop(self.kwargs.get('column_label', 'label'), [])
         label = [label] if isinstance(label, str) else label
-        label = [self.label_class.parse(o) for o in label]
+        try:
+            label = [self.label_class.parse(o) for o in label]
+        except pydantic.error_wrappers.ValidationError:
+            label = []
         data = self.data_class.parse(text=text, filename=filename, meta=row)
         record = Record(data=data, label=label)
         return record
