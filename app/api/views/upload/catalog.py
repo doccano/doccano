@@ -6,6 +6,7 @@ from typing_extensions import Literal
 
 from ...models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
 from . import examples
+
 encodings = Literal[
     'Auto',
     'ascii',
