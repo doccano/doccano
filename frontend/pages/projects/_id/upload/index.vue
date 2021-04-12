@@ -1,6 +1,12 @@
 <template>
   <v-card>
     <v-card-text>
+      <v-overlay :value="taskId">
+        <v-progress-circular
+          indeterminate
+          size="64"
+        />
+      </v-overlay>
       <v-select
         v-model="selected"
         :items="catalog"
