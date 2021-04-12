@@ -1,5 +1,8 @@
 <template>
   <v-card>
+    <v-card-title>
+      {{ $t('dataset.importDataTitle') }}
+    </v-card-title>
     <v-card-text>
       <v-overlay :value="taskId">
         <v-progress-circular
@@ -80,7 +83,7 @@
     <v-card-actions>
       <v-spacer />
       <v-btn
-        class='text-capitalize me-2'
+        class='text-capitalize me-2 primary'
         :disabled="isDisabled"
         @click="injest"
       >
