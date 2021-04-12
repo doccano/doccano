@@ -152,7 +152,7 @@ class JSONLDataset(Dataset):
 class ExcelDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
-        records = pyexcel.iget_records(filename)
+        records = pyexcel.iget_records(file_name=filename)
         for line_num, row in enumerate(records, start=1):
             yield self.from_row(filename, row, line_num)
 
