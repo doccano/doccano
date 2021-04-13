@@ -310,7 +310,7 @@ ALLOWED_HOSTS = ['*']
 
 # Size of the batch for creating documents
 # on the import phase
-IMPORT_BATCH_SIZE = env.int('IMPORT_BATCH_SIZE', 500)
+IMPORT_BATCH_SIZE = env.int('IMPORT_BATCH_SIZE', 1000)
 
 GOOGLE_TRACKING_ID = env('GOOGLE_TRACKING_ID', 'UA-125643874-2').strip()
 
