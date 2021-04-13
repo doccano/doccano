@@ -3,7 +3,7 @@
 ## Use Case
 These offline deployment scripts are suited for deploying Doccano on an air gapped Ubuntu 18.04/20.04 virtual machine (VM 2) with no internet connectivity.
 
-The preparation requires another machine (VM 1) with internet access and `docker`/`docker-compose` preinstalled and running the same Ubuntu distribution as VM 2.  
+The preparation requires another machine (VM 1) with internet access and `docker`/`docker-compose` preinstalled (with $USER in `docker` group) and running the same Ubuntu distribution as VM 2.  
 
 The focus is primarily on the `docker-compose`-based production deployment.
 
