@@ -26,4 +26,4 @@ RUN apt-get update \
 
 COPY tools/ /opt/bin/
 
-ENTRYPOINT [ "/opt/bin/run.sh" ]
+ENTRYPOINT [ "/opt/bin/prod-django.sh" ]
