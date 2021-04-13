@@ -44,8 +44,10 @@ declare -a links=("offline/vs2015.min.css"           "https://cdnjs.cloudflare.c
                   "offline/google-roboto.css"        "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
                   )
 
-static_dir="app/server/static/"
-mkdir -p "${static_dir}offline/"
+static_dir_app="app/server/static/"
+static_dir_frontend="frontend/static/"
+mkdir -p "${static_dir_app}offline/"
+mkdir -p "${static_dir_frontend}offline/"
 
 # root replace directories
 app_dir="app/server/templates"
@@ -58,12 +60,14 @@ for ((i = 0; i < $(expr "${#links[@]}" / "$n_columns"); ++i)); do
     link="${links[$idx_link]}"
 
     echo "Storing file to $local: $link"
-    wget --content-on-error -q --show-progress -O "${static_dir}${local}" $link 2>/dev/null
+    wget --content-on-error -q --show-progress -O "${static_dir_app}${local}" $link 2>/dev/null
     if [ $? -eq 0 ]; then
+        # Copy to frontend static dir
+        cp "${static_dir_app}${local}" "${static_dir_frontend}${local}"
         # For Django: Use 'static' for template, use ^ as delimiter for sed
         find $app_dir      -type f -exec sed -i "s^${link}^{% static \'${local}\' %}^g" {} \;
         # For Vue: Use // for same host, use ^ as delimiter for sed
-        find $frontend_dir -type f -exec sed -i "s^${link}^//static/${local}^g" {} \;
+        find $frontend_dir -type f -exec sed -i "s^${link}^/${local}^g" {} \;
     else
         echo "Failed to transform for offline use: $link"
     fi
