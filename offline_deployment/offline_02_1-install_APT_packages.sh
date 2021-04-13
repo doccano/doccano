@@ -8,7 +8,10 @@ unset DIR
 pdir="/offline_packages"
 abs_pdir="$(pwd)${pdir}"
 sudo mv /etc/apt/sources.list /etc/apt/sources.list.bak
-sudo sh "deb [trusted=yes] file:${abs_pdir}"
+cat <<EOF > sources.list
+deb [trusted=yes] file://${abs_pdir} ./
+EOF
+sudo mv sources.list /etc/apt/sources.list
 
 # Install APT packages
 sudo apt-get update
