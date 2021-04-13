@@ -230,6 +230,14 @@ class Comment(models.Model):
         ordering = ('-created_at', )
 
 
+class Tag(models.Model):
+    text = models.TextField()
+    project = models.ForeignKey(Project, related_name='tags', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.text
+
+
 class Annotation(models.Model):
     objects = AnnotationManager()
 
