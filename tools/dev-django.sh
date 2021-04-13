@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -o errexit
 
-if [[ -z "${VIRTUAL_ENV}" ]]; then
-    source "$(pipenv --venv)/bin/activate"
-fi
-
-#root="$(dirname "$0")/.."
-#app="${root}/app"
 app="/src/app"
 
 echo "Initializing database"
