@@ -33,6 +33,7 @@ export class ProjectDTO {
   uploadFormats: FormatDTO[]
   permitApprove: Boolean
   filterOption: String
+  tags: Object[]
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -50,7 +51,8 @@ export class ProjectDTO {
     this.uploadFormats = item.uploadFormats.map(f => new FormatDTO(f))
     this.permitApprove = item.permitApprove
     this.filterOption = item.filterOption
+    this.tags = item.tags
   }
 }
 
-export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomizeDocOrder' | 'enableShareAnnotation' | 'singleClassClassification'>
+export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomizeDocOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'tags'>
