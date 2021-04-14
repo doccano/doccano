@@ -11,6 +11,13 @@ sed -i 's|version: "3.7"|version: "3.3"|g' ../docker-compose.prod.yml
 sed -i 's^dockerfile: app/Dockerfile.prod^dockerfile: app/Dockerfile.prod\n    image: doccano-app:custom^g' ../docker-compose.prod.yml
 sed -i 's^dockerfile: nginx/Dockerfile^dockerfile: nginx/Dockerfile\n    image: doccano-nginx:custom^g'     ../docker-compose.prod.yml
 
+# Modify Dockerfile for nginx to add python3 and offline patch
+sed -i 's|FROM nginx|COPY offline_deployment/offline_patcher.py /patch.py\
+RUN apk add -U --no-cache py3-requests \\\
+  \&\& mkdir -p /app/dist/static/offline \&\& python3 /patch.py /app/dist /app/dist/static/offline /offline\
+\
+FROM nginx|' ../nginx/Dockerfile
+
 docker-compose -f ../docker-compose.prod.yml pull
 docker-compose -f ../docker-compose.prod.yml build
 
