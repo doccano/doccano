@@ -8,10 +8,12 @@ def main():
     root_folder = sys.argv[1]
     # offline folder to store static offline files
     offline_folder = sys.argv[2]
+    # offline link prefix
+    offline_prefix = sys.argv[3]
 
 
     offline_file = os.path.join(offline_folder, "offline_{}.{}")
-    offline_link = "offline/offline_{}.{}"
+    offline_link = offline_prefix + "/offline_{}.{}"
 
     mime_ptn = re.compile(r"(?P<mime>(?P<t1>[\w^\/]+)\/(?P<t2>[\S\.^\;]+))(\;|$)", re.IGNORECASE)
     #link_ptn = re.compile(r"(?P<encl>[\S\"\'])(?P<link>https?:\/\/(?P<host>[\S^:\/)]+)(?P<port>\:[0-9]+)?\/((?!(?P=encl)).)+)(?P=encl)", re.IGNORECASE)
