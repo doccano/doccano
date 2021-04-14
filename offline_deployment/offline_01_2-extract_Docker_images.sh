@@ -18,6 +18,19 @@ RUN apk add -U --no-cache py3-requests \\\
 \
 FROM nginx|' ../nginx/Dockerfile
 
+# Modify Dockerfile for app to add python3 and offline patch
+# TODO: Remark: Not needed due to SPA frontend
+#sed -i 's|COPY ./Pipfile\* /app/|COPY ./Pipfile\* /app/\
+#COPY offline_deployment/offline_patcher.py /patch.py\
+#RUN apt-get update \
+#  \&\& apt-get install -y --no-install-recommends \
+#       python3 python3-requests \
+#  \&\& apt-get clean \\\
+#  \&\& rm -rf /var/lib/apt/lists/\*\
+#  \&\& mkdir -p /app/server/static/offline \&\& python3 /patch.py /app/server /server/static/offline\
+#\
+#|' ../app/Dockerfile.prod
+
 docker-compose -f ../docker-compose.prod.yml pull
 docker-compose -f ../docker-compose.prod.yml build
 
