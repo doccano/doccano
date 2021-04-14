@@ -51,7 +51,19 @@ pip install doccano
 After installation, simply run the following command:
 
 ```bash
-doccano
+# Initialize database.
+doccano init
+# Create a super user.
+doccano createuser --username admin --password pass
+# Start the webserver.
+doccano webserver -p 8000
+```
+
+And in another terminal, run the following command:
+
+```bash
+# Start the task queue.
+doccano task
 ```
 
 Go to <http://0.0.0.0:8000/>.
