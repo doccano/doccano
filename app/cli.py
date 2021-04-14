@@ -1,12 +1,37 @@
 import argparse
+import multiprocessing
 import os
 import sys
 import subprocess
+
+import gunicorn.app.base
+import gunicorn.util
 
 from .app.celery import app
 base = os.path.abspath(os.path.dirname(__file__))
 manage_path = os.path.join(base, 'manage.py')
 parser = argparse.ArgumentParser(description='doccano, text annotation for machine learning practitioners.')
+
+
+def number_of_workers():
+    return (multiprocessing.cpu_count() * 2) + 1
+
+
+class StandaloneApplication(gunicorn.app.base.BaseApplication):
+
+    def __init__(self, options=None):
+        self.options = options or {}
+        super().__init__()
+
+    def load_config(self):
+        config = {key: value for key, value in self.options.items()
+                  if key in self.cfg.settings and value is not None}
+        for key, value in config.items():
+            self.cfg.set(key.lower(), value)
+
+    def load(self):
+        sys.path.append(base)
+        return gunicorn.util.import_app('app.wsgi')
 
 
 def command_db_init(args):
@@ -27,7 +52,12 @@ def command_user_create(args):
 
 def command_run_webserver(args):
     print(f'Starting server with port {args.port}.')
-    subprocess.call([sys.executable, manage_path, 'runserver', f'0.0.0.0:{args.port}'])
+    options = {
+        'bind': '%s:%s' % ('0.0.0.0', args.port),
+        'workers': number_of_workers(),
+        'chdir': base
+    }
+    StandaloneApplication(options).run()
 
 
 def command_run_task_queue(args):
