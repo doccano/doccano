@@ -17,7 +17,7 @@ def main():
 
     mime_ptn = re.compile(r"(?P<mime>(?P<t1>[\w^\/]+)\/(?P<t2>[\S\.^\;]+))(\;|$)", re.IGNORECASE)
     #link_ptn = re.compile(r"(?P<encl>[\S\"\'])(?P<link>https?:\/\/(?P<host>[\S^:\/)]+)(?P<port>\:[0-9]+)?\/((?!(?P=encl)).)+)(?P=encl)", re.IGNORECASE)
-    link_ptn = re.compile(r"[\(\'\"\ ](?P<link>https?:\/\/(?P<host>[\S^:\/)]+)(?P<port>\:[0-9]+)?\/[^\(\)\'\"\ ]+)(?P<encl_stop>[\(\)\'\"\ ])")
+    link_ptn = re.compile(r"[\(\'\"\ ](?P<link>https?:\/\/(?P<host>(?P<h_host>((?=[^\:\/])(?=[\S]).)+))(?P<port>\:[0-9]+)?\/[^\(\)\'\"\ ]+)(?P<encl_stop>[\(\)\'\"\ ])")
 
     # Block special hosts
     forbidden_hosts = [
