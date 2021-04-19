@@ -18,8 +18,12 @@ class BaseRepository(abc.ABC):
 
 class TextRepository(BaseRepository):
 
+    @property
+    def docs(self):
+        return self.project.documents.all()
+
     def list(self, export_approved=False):
-        docs = self.project.documents.all()
+        docs = self.docs
         if export_approved:
             docs = docs.exclude(annotations_approved_by=None)
 
@@ -41,6 +45,12 @@ class TextRepository(BaseRepository):
 
 class TextClassificationRepository(TextRepository):
 
+    @property
+    def docs(self):
+        return self.project.documents.prefetch_related(
+            'doc_annotations__user', 'doc_annotations__label'
+        )
+
     def label_per_user(self, doc) -> Dict:
         label_per_user = defaultdict(list)
         for a in doc.doc_annotations.all():
@@ -49,6 +59,12 @@ class TextClassificationRepository(TextRepository):
 
 
 class SequenceLabelingRepository(TextRepository):
+
+    @property
+    def docs(self):
+        return self.project.documents.prefetch_related(
+            'seq_annotations__user', 'seq_annotations__label'
+        )
 
     def label_per_user(self, doc) -> Dict:
         label_per_user = defaultdict(list)
@@ -59,6 +75,12 @@ class SequenceLabelingRepository(TextRepository):
 
 
 class Seq2seqRepository(TextRepository):
+
+    @property
+    def docs(self):
+        return self.project.documents.prefetch_related(
+            'seq2seq_annotations__user', 'seq2seq_annotations__text'
+        )
 
     def label_per_user(self, doc) -> Dict:
         label_per_user = defaultdict(list)
