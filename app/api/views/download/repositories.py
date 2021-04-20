@@ -40,6 +40,20 @@ class TextRepository(BaseRepository):
                     user=user,
                     metadata=doc.meta
                 )
+            # todo:
+            # If there is no label, export the doc with `unknown` user.
+            # This is a quick solution.
+            # In the future, the doc without label will be exported
+            # with the user who approved the doc.
+            # This means I will allow each user to be able to approve the doc.
+            if len(label_per_user):
+                yield Record(
+                    id=doc.id,
+                    data=doc.text,
+                    label=[],
+                    user='unknown',
+                    metadata={}
+                )
 
     @abc.abstractmethod
     def label_per_user(self, doc) -> Dict:
