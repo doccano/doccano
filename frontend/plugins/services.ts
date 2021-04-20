@@ -39,6 +39,8 @@ import { APIDownloadFormatRepository } from '~/repositories/download/apiDownload
 import { APIDownloadRepository } from '~/repositories/download/apiDownloadRepository'
 import { DownloadApplicationService } from '~/services/application/download/downloadApplicationService'
 import { DownloadFormatApplicationService } from '~/services/application/download/downloadFormatApplicationService'
+import { APITagRepository } from '~/repositories/tag/apiTagRepository'
+import { TagApplicationService } from '~/services/application/tag/tagApplicationService'
 
 export interface Services {
   label: LabelApplicationService,
@@ -61,6 +63,7 @@ export interface Services {
   taskStatus: TaskStatusApplicationService,
   downloadFormat: DownloadFormatApplicationService,
   download: DownloadApplicationService,
+  tag: TagApplicationService,
 }
 
 declare module 'vue/types/vue' {
@@ -83,6 +86,7 @@ const plugin: Plugin = (context, inject) => {
   const seq2seqRepository = new APISeq2seqRepository()
   const optionRepository     = new LocalStorageOptionRepository()
   const configRepository     = new APIConfigRepository()
+  const tagRepository = new APITagRepository()
   const templateRepository   = new APITemplateRepository()
   const authRepository = new APIAuthRepository()
   const catalogRepository = new APICatalogRepository()
@@ -104,6 +108,7 @@ const plugin: Plugin = (context, inject) => {
   const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
   const option = new OptionApplicationService(optionRepository)
   const config = new ConfigApplicationService(configRepository)
+  const tag = new TagApplicationService(tagRepository)
   const template = new TemplateApplicationService(templateRepository)
   const auth = new AuthApplicationService(authRepository)
   const catalog = new CatalogApplicationService(catalogRepository)
@@ -133,6 +138,7 @@ const plugin: Plugin = (context, inject) => {
     taskStatus,
     downloadFormat,
     download,
+    tag,
   }
   inject('services', services)
 }

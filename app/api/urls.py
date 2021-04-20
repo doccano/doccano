@@ -68,6 +68,11 @@ urlpatterns_project = [
         name='annotation_detail'
     ),
     path(
+        route='tags',
+        view=views.TagList.as_view(),
+        name='tag_list'
+    ),
+    path(
         route='docs/<int:doc_id>/comments',
         view=views.CommentListDoc.as_view(),
         name='comment_list_doc'
@@ -122,7 +127,6 @@ urlpatterns_project = [
         view=views.AutoLabelingAnnotation.as_view(),
         name='auto_labeling_annotation'
     ),
-
     path(
         route='auto-labeling-template-testing',
         view=views.AutoLabelingTemplateTest.as_view(),

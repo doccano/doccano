@@ -14,6 +14,7 @@ export class ProjectDTO {
   pageLink: string
   permitApprove: Boolean
   filterOption: String
+  tags: Object[]
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -29,7 +30,8 @@ export class ProjectDTO {
     this.pageLink = item.annotationPageLink
     this.permitApprove = item.permitApprove
     this.filterOption = item.filterOption
+    this.tags = item.tags
   }
 }
 
-export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomizeDocOrder' | 'enableShareAnnotation' | 'singleClassClassification'>
+export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomizeDocOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'tags'>
