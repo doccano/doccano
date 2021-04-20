@@ -2,7 +2,7 @@
   <v-select
     :value="annotatedLabel"
     chips
-    :items="labels"
+    :items="getLabels"
     item-text="text"
     hide-details
     hide-selected
@@ -21,11 +21,7 @@
         @click="select"
         @click:close="remove(item)"
       >
-        <v-avatar
-          left
-          color="white"
-          class="black--text font-weight-bold"
-        >
+        <v-avatar left color="white" class="black--text font-weight-bold">
           {{ item.suffixKey }}
         </v-avatar>
         {{ item.text }}
@@ -36,11 +32,7 @@
         :color="item.backgroundColor"
         :text-color="$contrastColor(item.backgroundColor)"
       >
-        <v-avatar
-          left
-          color="white"
-          class="black--text font-weight-bold"
-        >
+        <v-avatar left color="white" class="black--text font-weight-bold">
           {{ item.suffixKey }}
         </v-avatar>
         {{ item.text }}
@@ -55,39 +47,49 @@ export default {
     labels: {
       type: Array,
       default: () => [],
-      required: true
+      required: true,
     },
     annotations: {
       type: Array,
-      default: () => ([]),
-      required: true
-    }
+      default: () => [],
+      required: true,
+    },
   },
 
   computed: {
     annotatedLabel() {
-      const labelIds = this.annotations.map(item => item.label)
-      return this.labels.find(item => labelIds.includes(item.id))
-    }
+      const labelIds = this.annotations.map((item) => item.label);
+      return this.labels.find((item) => labelIds.includes(item.id));
+    },
+    getLabels() {
+      if (this.annotations.length !== 0) {
+        const target = this.annotatedLabel.text;
+        return this.labels.filter(it => it.text.slice(0, target.length) === target)
+      } else {
+        return this.labels.filter((it) => !it.text.includes("/"));
+      }
+    },
   },
 
   methods: {
     addOrRemove(val) {
       if (val) {
-        this.add(val)
+        this.add(val);
       } else {
-        this.remove(this.annotatedLabel)
+        this.remove(this.annotatedLabel);
       }
     },
 
     add(label) {
-      this.$emit('add', label.id)
+      this.$emit("add", label.id);
     },
 
     remove(label) {
-      const annotation = this.annotations.find(item => item.label === label.id)
-      this.$emit('remove', annotation.id)
-    }
-  }
-}
+      const annotation = this.annotations.find(
+        (item) => item.label === label.id
+      );
+      this.$emit("remove", annotation.id);
+    },
+  },
+};
 </script>
