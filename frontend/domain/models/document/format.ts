@@ -28,7 +28,7 @@ const CSVItem = (example: string) => { return new FormatItem(example, 'csv', 'CS
 const ExcelItem = (example: string) => { return new FormatItem(example, 'excel', 'Excel', 'xlsx') }
 const FastTextItem = (example: string) => { return new FormatItem(example, 'txt', 'fastText', 'txt') }
 const JSONLItem = (example: string) => { return new FormatItem(example, 'json', 'JSONL', 'jsonl') }
-const JSONLLabelItem = (example: string) => { return new FormatItem(example, 'json', 'JSONL(text label)', 'jsonl') }
+const JSONLLabelItem = (example: string) => { return new FormatItem(example, 'jsonl', 'JSONL(text label)', 'jsonl') }
 const PlainItem = (example: string) => { return new FormatItem(example, 'plain', 'Plain text', 'txt') }
 
 export class FormatFactory {
