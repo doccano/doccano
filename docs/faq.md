@@ -18,7 +18,7 @@ Please check the following list.
 
 ## I want to add annotators annotators/annotation approvers
 
-1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin`).
+1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin/`).
 2. Add a user to `Users` table (`Add` link).
 3. **Logout from Django Admin site.** [You'll face login error without logout of Django Admin site](https://github.com/doccano/doccano/issues/723).
 4. Add the user to the project in the member page (`/projects/{project_id}/members`).
@@ -27,7 +27,7 @@ Please check the following list.
 
 For ordinary user:
 
-1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin`).
+1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin/`).
 2. Open `Users` table.
 3. Open user you want to change password.
 4. In `Password` property, you'll see: `Raw passwords are not stored, so there is no way to see this user's password, but you can change the password using *this form*.` Click `this form` link.

@@ -17,7 +17,7 @@
           </v-card>
         </v-col>
         <v-col cols="12" md="3">
-          <metadata-box :metadata="JSON.parse(currentDoc.meta)" />
+          <list-metadata :metadata="JSON.parse(currentDoc.meta)" />
         </v-col>
       </v-row>
     </v-container>
@@ -25,15 +25,15 @@
 </template>
 
 <script>
-import MetadataBox from '@/components/organisms/annotation/MetadataBox'
-import EntityItemBox from '~/components/organisms/annotation/EntityItemBox'
+import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import EntityItemBox from '~/components/tasks/sequenceLabeling/EntityItemBox'
 
 export default {
   layout: 'demo',
 
   components: {
     EntityItemBox,
-    MetadataBox
+    ListMetadata
   },
 
   data() {
@@ -42,34 +42,34 @@ export default {
         {
           id: 4,
           text: 'LOC',
-          prefix_key: null,
-          suffix_key: 'l',
-          background_color: '#7c20e0',
-          text_color: '#ffffff'
+          prefixKey: null,
+          suffixKey: 'l',
+          backgroundColor: '#7c20e0',
+          textColor: '#ffffff'
         },
         {
           id: 5,
           text: 'MISC',
-          prefix_key: null,
-          suffix_key: 'm',
-          background_color: '#fbb028',
-          text_color: '#000000'
+          prefixKey: null,
+          suffixKey: 'm',
+          backgroundColor: '#fbb028',
+          textColor: '#000000'
         },
         {
           id: 6,
           text: 'ORG',
-          prefix_key: null,
-          suffix_key: 'o',
-          background_color: '#e6d176',
-          text_color: '#000000'
+          prefixKey: null,
+          suffixKey: 'o',
+          backgroundColor: '#e6d176',
+          textColor: '#000000'
         },
         {
           id: 7,
           text: 'PER',
-          prefix_key: null,
-          suffix_key: 'p',
-          background_color: '#6a74b9',
-          text_color: '#ffffff'
+          prefixKey: null,
+          suffixKey: 'p',
+          backgroundColor: '#6a74b9',
+          textColor: '#ffffff'
         }
       ],
       currentDoc: {
@@ -80,8 +80,8 @@ export default {
             id: 17,
             prob: 0.0,
             label: 4,
-            start_offset: 60,
-            end_offset: 70,
+            startOffset: 60,
+            endOffset: 70,
             user: 1,
             document: 8
           },
@@ -89,8 +89,8 @@ export default {
             id: 19,
             prob: 0.0,
             label: 4,
-            start_offset: 165,
-            end_offset: 172,
+            startOffset: 165,
+            endOffset: 172,
             user: 1,
             document: 8
           },
@@ -98,8 +98,8 @@ export default {
             id: 16,
             prob: 0.0,
             label: 6,
-            start_offset: 14,
-            end_offset: 22,
+            startOffset: 14,
+            endOffset: 22,
             user: 1,
             document: 8
           },
@@ -107,8 +107,8 @@ export default {
             id: 18,
             prob: 0.0,
             label: 6,
-            start_offset: 73,
-            end_offset: 87,
+            startOffset: 73,
+            endOffset: 87,
             user: 1,
             document: 8
           },
@@ -116,8 +116,8 @@ export default {
             id: 20,
             prob: 0.0,
             label: 7,
-            start_offset: 181,
-            end_offset: 193,
+            startOffset: 181,
+            endOffset: 193,
             user: 1,
             document: 8
           }
@@ -139,8 +139,8 @@ export default {
     addEntity(startOffset, endOffset, labelId) {
       const payload = {
         id: Math.floor(Math.random() * Math.floor(Number.MAX_SAFE_INTEGER)),
-        start_offset: startOffset,
-        end_offset: endOffset,
+        startOffset,
+        endOffset,
         label: labelId
       }
       this.currentDoc.annotations.push(payload)

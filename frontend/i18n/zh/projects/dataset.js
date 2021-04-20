@@ -13,7 +13,10 @@ export default {
   importDataPlaceholder: '请导入文件',
   exportDataTitle: '导出数据',
   exportDataMessage: '请选择文件格式',
+  exportDataMessage2: '选择文件',
   deleteDocumentsTitle: '删除文档',
   deleteDocumentsMessage: '你确定要从这个项目中删除这些文档吗？',
+  deleteBulkDocumentsTitle: '删除全部文档',
+  deleteBulkDocumentsMessage: '你确定要从这个项目中删除全部文档吗？',
   pageText: '{0}-{1} of {2}'
 }

@@ -2,7 +2,8 @@ from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import Subquery
 from django.shortcuts import get_object_or_404
-from rest_framework.permissions import BasePermission, SAFE_METHODS, IsAdminUser
+from rest_framework.permissions import (SAFE_METHODS, BasePermission,
+                                        IsAdminUser)
 
 from .models import Project, Role, RoleMapping
 
@@ -103,3 +104,7 @@ def is_in_role(role_name, user_id, project_id):
         project_id=project_id,
         role_id=Subquery(Role.objects.filter(name=role_name).values('id')),
     ).exists()
+
+
+IsInProjectReadOnlyOrAdmin = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly | IsProjectAdmin)
+IsInProjectOrAdmin = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)

@@ -1,13 +1,14 @@
-from django.test import TestCase, override_settings
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
+from django.test import TestCase, override_settings
 from model_mommy import mommy
 
-from ..models import Label, DocumentAnnotation, SequenceAnnotation, Seq2seqAnnotation, Speech2textAnnotation
-from ..serializers import DocumentAnnotationSerializer
-from ..serializers import SequenceAnnotationSerializer
-from ..serializers import Seq2seqAnnotationSerializer
-from ..serializers import Speech2textAnnotationSerializer
+from ..models import (DocumentAnnotation, Label, Seq2seqAnnotation,
+                      SequenceAnnotation, Speech2textAnnotation)
+from ..serializers import (DocumentAnnotationSerializer,
+                           Seq2seqAnnotationSerializer,
+                           SequenceAnnotationSerializer,
+                           Speech2textAnnotationSerializer)
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')

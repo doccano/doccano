@@ -135,6 +135,14 @@ $ docker-compose -f docker-compose.dev.yml up
 
 Go to <http://127.0.0.1:3000/>.
 
+
+Run Backend API-Tests:
+
+You can run the API-Tests for the backend with the following command:
+```bash
+docker exec doccano_backend_1 pipenv run app/manage.py test api
+```
+
 ### Add annotators (optionally)
 
 If you want to add annotators/annotation approvers, see [Frequently Asked Questions](./docs/faq.md)
