@@ -36,9 +36,11 @@ class DownloadAPI(APIView):
     def post(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
         format = request.data.pop('format')
+        export_approved = request.data.pop('exportApproved', False)
         task = export_dataset.delay(
             project_id=project_id,
             format=format,
+            export_approved=export_approved,
             **request.data
         )
         return Response({'task_id': task.task_id})

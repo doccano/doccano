@@ -6,10 +6,11 @@ export class APIDownloadRepository implements DownloadRepository {
     private readonly request = ApiService
   ) {}
 
-  async prepare(projectId: string, format: string): Promise<string> {
+  async prepare(projectId: string, format: string, exportApproved: boolean): Promise<string> {
     const url = `/projects/${projectId}/download`
     const data = {
       format,
+      exportApproved,
     }
     const response = await this.request.post(url, data)
     return response.data.task_id

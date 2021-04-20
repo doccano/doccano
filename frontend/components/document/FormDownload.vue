@@ -41,9 +41,8 @@
         </v-sheet>
         <h2>{{ $t('dataset.exportDataMessage2') }}</h2>
         <v-checkbox
-          v-model="onlyApproved"
+          v-model="exportApproved"
           label="Export only approved documents"
-          color="success"
           hide-details
         />
       </v-form>
@@ -66,7 +65,7 @@ export default Vue.extend({
     return {
       file: null,
       fileFormatRules,
-      onlyApproved: false,
+      exportApproved: false,
       selectedFormat: null as any,
       valid: false,
       formats: [] as FormatDTO[],
@@ -96,7 +95,7 @@ export default Vue.extend({
       this.$emit('cancel')
     },
     async downloadRequest() {
-      this.taskId = await this.$services.download.request(this.projectId, this.selectedFormat.name)
+      this.taskId = await this.$services.download.request(this.projectId, this.selectedFormat.name, this.exportApproved)
       this.pollData()
     },
     pollData() {

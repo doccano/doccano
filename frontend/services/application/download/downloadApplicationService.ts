@@ -5,8 +5,8 @@ export class DownloadApplicationService {
     private readonly repository: DownloadRepository
   ) {}
 
-  public async request(projectId: string, format: string): Promise<string> {
-    const item = await this.repository.prepare(projectId, format)
+  public async request(projectId: string, format: string, exportApproved: boolean): Promise<string> {
+    const item = await this.repository.prepare(projectId, format, exportApproved)
     return item
   }
 
