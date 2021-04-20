@@ -37,9 +37,7 @@
       </v-dialog>
       <v-dialog v-model="dialogDownload">
         <form-download
-          :formats="project.downloadFormats"
           @cancel="dialogDownload=false"
-          @download="download"
         />
       </v-dialog>
     </v-card-title>
@@ -63,7 +61,7 @@ import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
 import FormDownload from '@/components/document/FormDownload.vue'
 import { DocumentListDTO, DocumentDTO } from '~/services/application/document/documentData'
 import ActionMenu from '~/components/document/ActionMenu.vue'
-import { ProjectDTO, FormatDTO } from '~/services/application/project/projectData'
+import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   layout: 'project',
@@ -127,14 +125,6 @@ export default Vue.extend({
       this.$fetch()
       this.dialogDeleteAll = false
       this.selected = []
-    },
-    async download(format: FormatDTO, filename: string, onlyApproved: boolean) {
-      await this.$services.document.download(
-        this.projectId,
-        filename,
-        format,
-        onlyApproved
-      )
     },
     upload() {
       this.$router.push(`/projects/${this.projectId}/upload`)

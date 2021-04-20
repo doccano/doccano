@@ -83,16 +83,6 @@ urlpatterns_project = [
         name='comment_detail'
     ),
     path(
-        route='docs/upload',
-        view=views.TextUploadAPI.as_view(),
-        name='doc_uploader'
-    ),
-    path(
-        route='docs/download',
-        view=views.TextDownloadAPI.as_view(),
-        name='doc_downloader'
-    ),
-    path(
         route='roles',
         view=views.RoleMappingList.as_view(),
         name='rolemapping_list'
