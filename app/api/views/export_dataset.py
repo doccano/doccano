@@ -26,7 +26,8 @@ class DownloadAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):
-        task = AsyncResult(kwargs['task_id'])
+        task_id = request.GET['taskId']
+        task = AsyncResult(task_id)
         ready = task.ready()
         if ready:
             filename = task.result

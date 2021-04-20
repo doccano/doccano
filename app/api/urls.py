@@ -19,9 +19,9 @@ urlpatterns_project = [
         name='download-format'
     ),
     path(
-        route='export',
+        route='download',
         view=views.DownloadAPI.as_view(),
-        name='export-dataset'
+        name='download-dataset'
     ),
     path(
         route='statistics',
