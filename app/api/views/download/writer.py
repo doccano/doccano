@@ -23,7 +23,7 @@ class BaseWriter:
         save_file = '{}.zip'.format(os.path.join(self.tmpdir, str(uuid.uuid4())))
         with zipfile.ZipFile(save_file, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
             for file in filenames:
-                zf.write(file)
+                zf.write(filename=file, arcname=os.path.basename(file))
         return save_file
 
 
