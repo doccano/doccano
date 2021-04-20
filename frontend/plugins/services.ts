@@ -35,6 +35,10 @@ import { TemplateApplicationService } from '~/services/application/autoLabeling/
 import { APITextClassificationRepository } from '~/repositories/tasks/textClassification/apiTextClassification'
 import { TextClassificationApplicationService } from '~/services/application/tasks/textClassification/textClassificationApplicationService'
 import { AuthApplicationService } from '~/services/application/auth/authApplicationService'
+import { APIDownloadFormatRepository } from '~/repositories/download/apiDownloadFormatRepository'
+import { APIDownloadRepository } from '~/repositories/download/apiDownloadRepository'
+import { DownloadApplicationService } from '~/services/application/download/downloadApplicationService'
+import { DownloadFormatApplicationService } from '~/services/application/download/downloadFormatApplicationService'
 
 export interface Services {
   label: LabelApplicationService,
@@ -55,6 +59,8 @@ export interface Services {
   catalog: CatalogApplicationService,
   parse: ParseApplicationService,
   taskStatus: TaskStatusApplicationService,
+  downloadFormat: DownloadFormatApplicationService,
+  download: DownloadApplicationService,
 }
 
 declare module 'vue/types/vue' {
@@ -82,6 +88,8 @@ const plugin: Plugin = (context, inject) => {
   const catalogRepository = new APICatalogRepository()
   const parseRepository = new APIParseRepository()
   const taskStatusRepository = new APITaskStatusRepository()
+  const downloadFormatRepository = new APIDownloadFormatRepository()
+  const downloadRepository = new APIDownloadRepository()
 
   const label      = new LabelApplicationService(labelRepository)
   const member     = new MemberApplicationService(memberRepository)
@@ -101,6 +109,8 @@ const plugin: Plugin = (context, inject) => {
   const catalog = new CatalogApplicationService(catalogRepository)
   const parse = new ParseApplicationService(parseRepository)
   const taskStatus = new TaskStatusApplicationService(taskStatusRepository)
+  const downloadFormat = new DownloadFormatApplicationService(downloadFormatRepository)
+  const download = new DownloadApplicationService(downloadRepository)
   
   const services: Services = {
     label,
@@ -121,6 +131,8 @@ const plugin: Plugin = (context, inject) => {
     catalog,
     parse,
     taskStatus,
+    downloadFormat,
+    download,
   }
   inject('services', services)
 }
