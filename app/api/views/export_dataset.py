@@ -6,13 +6,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ...models import Project
-from ...permissions import IsProjectAdmin
-from ...tasks import export_dataset
-from .catalog import Options
+from ..models import Project
+from ..permissions import IsProjectAdmin
+from ..tasks import export_dataset
+from .download.catalog import Options
 
 
-class DatasetCatalog(APIView):
+class DownloadDatasetCatalog(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):

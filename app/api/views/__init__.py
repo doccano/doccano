@@ -2,6 +2,7 @@ from .annotation import *
 from .auto_labeling import *
 from .comment import *
 from .document import *
+from .export_dataset import *
 from .health import *
 from .import_export import *
 from .label import *

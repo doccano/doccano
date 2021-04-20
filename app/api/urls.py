@@ -14,6 +14,16 @@ urlpatterns_project = [
         name='catalog'
     ),
     path(
+        route='download-format',
+        view=views.DownloadDatasetCatalog.as_view(),
+        name='download-format'
+    ),
+    path(
+        route='export',
+        view=views.DownloadAPI.as_view(),
+        name='export-dataset'
+    ),
+    path(
         route='statistics',
         view=views.StatisticsAPI.as_view(),
         name='statistics'),
