@@ -79,7 +79,7 @@ class Seq2seqRepository(TextRepository):
     @property
     def docs(self):
         return self.project.documents.prefetch_related(
-            'seq2seq_annotations__user', 'seq2seq_annotations__text'
+            'seq2seq_annotations__user'
         )
 
     def label_per_user(self, doc) -> Dict:
