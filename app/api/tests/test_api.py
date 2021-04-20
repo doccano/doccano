@@ -833,6 +833,59 @@ class TestCommentListAPI(APITestCase):
         remove_all_role_mappings()
 
 
+class TestTagAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.main_project_member_name = 'project_member_name'
+        cls.main_project_member_pass = 'project_member_pass'
+        cls.super_user_name = 'super_user_name'
+        cls.super_user_pass = 'super_user_pass'
+        create_default_roles()
+        main_project_member = User.objects.create_user(username=cls.main_project_member_name,
+                                                       password=cls.main_project_member_pass)
+        super_user = User.objects.create_superuser(username=cls.super_user_name,
+                                      password=cls.super_user_pass,
+                                      email='fizz@buzz.com')
+        cls.main_project = mommy.make('TextClassificationProject', users=[main_project_member, super_user])
+        assign_user_to_role(project_member=main_project_member, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        assign_user_to_role(project_member=super_user, project=cls.main_project,
+                            role_name=settings.ROLE_ANNOTATOR)
+        cls.tag = mommy.make('Tag', project=cls.main_project, text='Tag 1')
+        cls.url = reverse(viewname='tag_list', args=[cls.main_project.id])
+        cls.project_url = reverse(viewname='project_list')
+        cls.delete_url = reverse(viewname='tag_list', args=[cls.main_project.id])
+
+    def test_create_tag(self):
+        self.client.login(username=self.super_user_name,
+                        password=self.super_user_pass)
+        response = self.client.post(self.url, data={'text': 'Tag 2'})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.get(self.project_url, format='json')
+        self.assertTrue(response.data[0]['tags'][1]['text'] == 'Tag 2' ,'Content of tags differs.')
+
+    def test_tag_list(self):
+        self.client.login(username=self.main_project_member_name,
+                        password=self.main_project_member_pass)
+        response = self.client.get(self.project_url, format='json')
+        self.assertTrue(len(response.data[0]['tags']) == 1 ,'Number of tags differs expected amount.')
+        self.assertTrue(response.data[0]['tags'][0]['text'] == 'Tag 1' ,'Content of tags differs.')
+
+    def test_delete_tag(self):
+        self.client.login(username=self.super_user_name,
+                        password=self.super_user_pass)
+        response = self.client.delete(self.delete_url, data={'id': self.tag.id})
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        response = self.client.get(self.project_url, format='json')
+        self.assertTrue(len(response.data[0]['tags']) == 0 ,'Number of tags differs expected amount.')
+
+
+    @classmethod
+    def doCleanups(cls):
+        remove_all_role_mappings()
+
+
 class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
 
     @classmethod

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (Comment, Document, DocumentAnnotation, Label, Project,
                      Role, RoleMapping, Seq2seqAnnotation, Seq2seqProject,
-                     SequenceAnnotation, SequenceLabelingProject,
+                     SequenceAnnotation, SequenceLabelingProject, Tag,
                      TextClassificationProject)
 
 
@@ -53,6 +53,13 @@ class RoleMappingAdmin(admin.ModelAdmin):
     ordering = ('user',)
     search_fields = ('user__username',)
 
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('project', 'text', )
+    ordering = ('project', 'text', )
+    search_fields = ('text',)
+
+
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('user', 'document', 'text', 'created_at', )
     ordering = ('user', 'created_at', )
@@ -71,3 +78,4 @@ admin.site.register(Seq2seqProject, ProjectAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(RoleMapping, RoleMappingAdmin)
 admin.site.register(Comment, CommentAdmin)
+admin.site.register(Tag, TagAdmin)

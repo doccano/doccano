@@ -10,7 +10,7 @@ from .models import (AutoLabelingConfig, Comment, Document, DocumentAnnotation,
                      Label, Project, Role, RoleMapping, Seq2seqAnnotation,
                      Seq2seqProject, SequenceAnnotation,
                      SequenceLabelingProject, Speech2textAnnotation,
-                     Speech2textProject, TextClassificationProject)
+                     Speech2textProject, Tag, TextClassificationProject)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -69,6 +69,14 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('user', 'document')
 
 
+class TagSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Tag
+        fields = ('id', 'project', 'text', )
+        read_only_fields = ('id', 'project')
+
+
 class DocumentSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
@@ -103,6 +111,7 @@ class ApproverSerializer(DocumentSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     current_users_role = serializers.SerializerMethodField()
+    tags = TagSerializer(many=True, required=False)
 
     def get_current_users_role(self, instance):
         role_abstractor = {
@@ -122,8 +131,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
-                  'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification')
-        read_only_fields = ('updated_at', 'users', 'current_users_role')
+                  'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification', 'tags')
+        read_only_fields = ('updated_at', 'users', 'current_users_role', 'tags')
 
 
 class TextClassificationProjectSerializer(ProjectSerializer):
