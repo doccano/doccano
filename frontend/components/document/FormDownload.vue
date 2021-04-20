@@ -4,7 +4,7 @@
     title="Export Data"
     agree-text="Export"
     cancel-text="Cancel"
-    @agree="download"
+    @agree="downloadRequest"
     @cancel="cancel"
   >
     <template #content>
@@ -21,7 +21,7 @@
           <v-radio
             v-for="(format, i) in formats"
             :key="i"
-            :label="format.text"
+            :label="format.name"
             :value="format"
           />
         </v-radio-group>
@@ -31,14 +31,9 @@
           :light="$vuetify.theme.dark"
           class="mb-5 pa-5"
         >
-          <pre>{{ selectedFormat.example }}</pre>
+          <pre>{{ selectedFormat.example.trim() }}</pre>
         </v-sheet>
         <h2>{{ $t('dataset.exportDataMessage2') }}</h2>
-        <v-text-field
-          v-model="filename"
-          placeholder="Name the file"
-          :rules="[v => !!v || 'File name is required']"
-        />
         <v-checkbox
           v-model="onlyApproved"
           label="Export only approved documents"
@@ -54,29 +49,39 @@
 import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
 import { fileFormatRules } from '@/rules/index'
+import { FormatDTO } from '~/services/application/download/formatData'
 
 export default Vue.extend({
   components: {
     BaseCard
   },
 
-  props: {
-    formats: {
-      type: Array,
-      default: () => [],
-      required: true
-    }
-  },
-
   data() {
     return {
       file: null,
-      filename: null,
       fileFormatRules,
       onlyApproved: false,
-      selectedFormat: null,
+      selectedFormat: null as any,
       valid: false,
+      formats: [] as FormatDTO[],
+      taskId: '',
+      polling: null,
     }
+  },
+
+  computed: {
+    projectId() {
+      return this.$route.params.id
+    }
+  },
+
+  async created() {
+    this.formats = await this.$services.downloadFormat.list(this.projectId)
+  },
+
+  beforeDestroy() {
+    // @ts-ignore
+	  clearInterval(this.polling)
   },
 
   methods: {
@@ -84,10 +89,23 @@ export default Vue.extend({
       (this.$refs.format as HTMLFormElement).reset()
       this.$emit('cancel')
     },
-    download() {
-      this.$emit('download', this.selectedFormat, this.filename, this.onlyApproved)
-      this.cancel()
-    }
+    async downloadRequest() {
+      this.taskId = await this.$services.download.request(this.projectId, this.selectedFormat.name)
+      this.pollData()
+    },
+    pollData() {
+      // @ts-ignore
+		  this.polling = setInterval(async() => {
+        if (this.taskId) {
+          const res = await this.$services.taskStatus.get(this.taskId)
+          if (res.ready) {
+            this.$services.download.download(this.projectId, this.taskId)
+            this.taskId = ''
+            this.cancel()
+          }
+        }
+  		}, 3000)
+	  },
   }  
 })
 </script>
