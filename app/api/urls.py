@@ -5,12 +5,12 @@ from . import views
 urlpatterns_project = [
     path(
         route='upload',
-        view=views.upload.view.UploadAPI.as_view(),
+        view=views.UploadAPI.as_view(),
         name='upload'
     ),
     path(
         route='catalog',
-        view=views.upload.view.DatasetCatalog.as_view(),
+        view=views.DatasetCatalog.as_view(),
         name='catalog'
     ),
     path(

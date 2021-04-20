@@ -4,11 +4,11 @@ from .comment import *
 from .document import *
 from .export_dataset import *
 from .health import *
+from .import_dataset import *
 from .import_export import *
 from .label import *
 from .project import *
 from .role import *
 from .statistics import *
 from .task import *
-from .upload import *
 from .user import *
