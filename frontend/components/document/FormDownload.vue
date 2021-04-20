@@ -8,6 +8,12 @@
     @cancel="cancel"
   >
     <template #content>
+      <v-overlay :value="taskId">
+        <v-progress-circular
+          indeterminate
+          size="64"
+        />
+      </v-overlay>
       <v-form
         ref="form"
         v-model="valid"
@@ -104,7 +110,7 @@ export default Vue.extend({
             this.cancel()
           }
         }
-  		}, 3000)
+  		}, 1000)
 	  },
   }  
 })
