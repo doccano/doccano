@@ -214,6 +214,10 @@ export default {
     this.pollData()
   },
 
+  beforeDestroy() {
+	  clearInterval(this.polling)
+  },
+
   methods: {
     handleFilePondProcessfile(error, file) {
       console.log(error)
