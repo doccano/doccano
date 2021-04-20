@@ -8,7 +8,7 @@
     @cancel="cancel"
   >
     <template #content>
-      <v-overlay :value="taskId">
+      <v-overlay :value="isProcessing">
         <v-progress-circular
           indeterminate
           size="64"
@@ -67,10 +67,11 @@ export default Vue.extend({
       fileFormatRules,
       exportApproved: false,
       selectedFormat: null as any,
-      valid: false,
       formats: [] as FormatDTO[],
       taskId: '',
       polling: null,
+      valid: false,
+      isProcessing: false,
     }
   },
 
@@ -92,9 +93,14 @@ export default Vue.extend({
   methods: {
     cancel() {
       (this.$refs.format as HTMLFormElement).reset()
+      this.taskId = ''
+      this.exportApproved = false
+      this.selectedFormat = null
+      this.isProcessing = false
       this.$emit('cancel')
     },
     async downloadRequest() {
+      this.isProcessing = true
       this.taskId = await this.$services.download.request(this.projectId, this.selectedFormat.name, this.exportApproved)
       this.pollData()
     },
@@ -105,7 +111,6 @@ export default Vue.extend({
           const res = await this.$services.taskStatus.get(this.taskId)
           if (res.ready) {
             this.$services.download.download(this.projectId, this.taskId)
-            this.taskId = ''
             this.cancel()
           }
         }
