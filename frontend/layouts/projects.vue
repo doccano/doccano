@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import TheHeader from '~/components/organisms/layout/TheHeader'
+import TheHeader from '~/components/layout/TheHeader'
 
 export default {
   components: {

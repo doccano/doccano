@@ -8,12 +8,12 @@ import re
 from collections import defaultdict
 
 import conllu
-from chardet import UniversalDetector
-from django.db import transaction
-from django.conf import settings
-from colour import Color
 import pyexcel
-from rest_framework.renderers import JSONRenderer
+from chardet import UniversalDetector
+from colour import Color
+from django.conf import settings
+from django.db import transaction
+from rest_framework.renderers import BaseRenderer, JSONRenderer
 from seqeval.metrics.sequence_labeling import get_entities
 
 from .exceptions import FileParseException
@@ -495,6 +495,44 @@ class JSONLRenderer(JSONRenderer):
                              cls=self.encoder_class,
                              ensure_ascii=self.ensure_ascii,
                              allow_nan=not self.strict) + '\n'
+
+
+class FastTextPainter(object):
+
+    @staticmethod
+    def paint_labels(documents, labels):
+        serializer = DocumentSerializer(documents, many=True)
+        serializer_labels = LabelSerializer(labels, many=True)
+        data = []
+        for d in serializer.data:
+            labels = []
+            for a in d['annotations']:
+                label_obj = [x for x in serializer_labels.data if x['id'] == a['label']][0]
+                labels.append('__label__{}'.format(label_obj['text'].replace(' ', '_')))
+            text = d['text'].replace('\n', ' ')
+            if labels:
+                data.append('{} {}'.format(' '.join(labels), text))
+            else:
+                data.append(text)
+        return data
+
+
+class PlainTextRenderer(BaseRenderer):
+    media_type = 'text/plain'
+    format = 'txt'
+    charset = 'utf-8'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        if data is None:
+            return bytes()
+
+        if not isinstance(data, list):
+            data = [data]
+
+        buffer = io.BytesIO()
+        for d in data:
+            buffer.write((d + '\n').encode(self.charset))
+        return buffer.getvalue()
 
 
 class JSONPainter(object):

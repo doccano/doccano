@@ -1,6 +1,10 @@
-export default async function({ app, store, route, redirect }) {
-  if (store.getters['projects/isEmpty']) {
+import _ from 'lodash'
+
+export default _.debounce(async function({ app, store, route, redirect }) {
+  try {
     await store.dispatch('projects/setCurrentProject', route.params.id)
+  } catch(e) {
+    redirect('/projects')
   }
   const role = store.getters['projects/getCurrentUserRole']
   const projectRoot = app.localePath('/projects/' + route.params.id)
@@ -8,4 +12,4 @@ export default async function({ app, store, route, redirect }) {
   if (!role.is_project_admin && path !== projectRoot) {
     return redirect(projectRoot)
   }
-}
+}, 1000)

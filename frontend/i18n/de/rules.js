@@ -4,7 +4,7 @@ export default {
   },
   labelNameRules: {
     labelRequired: 'Labelname wird benötigt',
-    labelLessThan30Chars: 'Labelname muss kürzer als 30 Zeichen sein'
+    labelLessThan100Chars: 'Labelname muss kürzer als 100 Zeichen sein'
   },
   userNameRules: {
     userNameRequired: 'Benutzername wird benötigt',

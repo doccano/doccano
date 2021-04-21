@@ -13,13 +13,13 @@
           <seq2seq-box
             :text="currentDoc.text"
             :annotations="currentDoc.annotations"
-            :delete-annotation="_deleteAnnotation"
-            :update-annotation="_updateAnnotation"
-            :create-annotation="_createAnnotation"
+            @delete:annotation="_deleteAnnotation"
+            @update:annotation="_updateAnnotation"
+            @create:annotation="_createAnnotation"
           />
         </v-col>
         <v-col cols="12" md="3">
-          <metadata-box :metadata="JSON.parse(currentDoc.meta)" />
+          <list-metadata :metadata="JSON.parse(currentDoc.meta)" />
         </v-col>
       </v-row>
     </v-container>
@@ -27,15 +27,15 @@
 </template>
 
 <script>
-import MetadataBox from '@/components/organisms/annotation/MetadataBox'
-import Seq2seqBox from '~/components/organisms/annotation/Seq2seqBox'
+import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
   layout: 'demo',
 
   components: {
     Seq2seqBox,
-    MetadataBox
+    ListMetadata
   },
 
   data() {

@@ -7,8 +7,8 @@
 </template>
 
 <script>
-import TheFooter from '@/components/organisms/layout/TheFooter'
-import TheHeader from '@/components/organisms/layout/TheHeader'
+import TheFooter from '@/components/layout/TheFooter'
+import TheHeader from '@/components/layout/TheHeader'
 
 export default {
   middleware: ['check-auth'],

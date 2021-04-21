@@ -4,7 +4,11 @@ export default {
   },
   labelNameRules: {
     labelRequired: 'Label name is required',
-    labelLessThan30Chars: 'Label name must be less than 30 characters'
+    labelLessThan100Chars: 'Label name must be less than 100 characters',
+    duplicated: 'The label name is already used.'
+  },
+  keyNameRules: {
+    duplicated: 'The key is already used.'
   },
   userNameRules: {
     userNameRequired: 'User name is required',
@@ -29,7 +33,7 @@ export default {
   },
   uploadFileRules: {
     fileRequired: 'File is required',
-    fileLessThan1MB: 'File size should be less than 1 MB!'
+    fileLessThan1MB: 'File size should be less than 100 MB!'
   },
   passwordRules: {
     passwordRequired: 'Password is required',

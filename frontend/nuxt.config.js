@@ -50,7 +50,10 @@ export default {
   plugins: [
     '~/plugins/filters.js',
     '~/plugins/vue-youtube.js',
-    '~/plugins/vue-shortkey.js'
+    '~/plugins/vue-shortkey.js',
+    '~/plugins/services.ts',
+    '~/plugins/color.ts',
+    '~/plugins/role.ts'
   ],
   /*
   ** Nuxt.js modules
@@ -64,6 +67,7 @@ export default {
   ],
 
   buildModules: [
+    '@nuxt/typescript-build',
     ['@nuxtjs/google-analytics', {
       id: process.env.GOOGLE_TRACKING_ID
     }]
@@ -126,12 +130,18 @@ export default {
     */
     publicPath: process.env.PUBLIC_PATH || '/_nuxt/',
     extend(config, ctx) {
+      // config.module.rules.push({
+      //   test: /\.(txt|csv|conll|jsonl)$/i,
+      //   loader: 'file-loader',
+      //   options: {
+      //     name: '[path][name].[ext]'
+      //   }
+      // })
       config.module.rules.push({
-        test: /\.(txt|csv|conll|jsonl)$/i,
-        loader: 'file-loader',
-        options: {
-          name: '[path][name].[ext]'
-        }
+        enforce: 'pre',
+        test: /\.(txt|csv|json|jsonl)$/,
+        loader: 'raw-loader',
+        exclude: /(node_modules)/
       })
     }
   }
