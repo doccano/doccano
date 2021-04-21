@@ -3,13 +3,13 @@ FROM python:${PYTHON_VERSION}-slim-buster
 
 CMD ["python3"]
 
-WORKDIR /app
+WORKDIR /backend
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-COPY ./app/ /app/
-COPY ./Pipfile* /app/
+COPY ./backend/ /backend/
+COPY ./Pipfile* /backend/
 
 # hadolint ignore=DL3013
 RUN apt-get update \

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -o errexit
 
-app="/src/app"
+app="/src/backend"
 
 echo "Initializing database"
 python "${app}/manage.py" wait_for_db

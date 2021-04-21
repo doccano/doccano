@@ -104,10 +104,10 @@ TEMPLATES = [
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
             ],
-            'libraries': {
-                'analytics': 'server.templatetags.analytics',
-                'utils_templating': 'authentification.templatetags.utils_templating',
-            },
+            # 'libraries': {
+            #     'analytics': 'server.templatetags.analytics',
+            #     'utils_templating': 'authentification.templatetags.utils_templating',
+            # },
         },
     },
 ]

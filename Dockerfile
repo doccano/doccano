@@ -48,8 +48,8 @@ RUN pip install --no-cache-dir -U pip \
  && rm -rf /deps
 
 COPY --chown=doccano:doccano . /doccano
-WORKDIR /doccano/app
-COPY --from=frontend-builder /frontend/dist /doccano/app/client/dist
+WORKDIR /doccano/backend
+COPY --from=frontend-builder /frontend/dist /doccano/backend/client/dist
 RUN python manage.py collectstatic --noinput
 
 VOLUME /data

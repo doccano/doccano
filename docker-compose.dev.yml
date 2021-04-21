@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: app/Dockerfile.dev
+      dockerfile: backend/Dockerfile.dev
     volumes:
       - .:/src
       - venv:/root/.local/share
@@ -27,7 +27,7 @@ services:
   celery:
     build:
       context: .
-      dockerfile: app/Dockerfile.dev
+      dockerfile: backend/Dockerfile.dev
     volumes:
       - .:/src
       - venv:/root/.local/share

@@ -41,6 +41,7 @@ required = [
     'django-celery-results>=2.0.1',
     'django-drf-filepond>=0.3.0',
     'sqlalchemy>=1.4.7',
+    'gunicorn>=20.1.0',
 ]
 
 setup(
@@ -56,7 +57,7 @@ setup(
     packages=find_packages(exclude=('*.tests',)),
     entry_points={
         'console_scripts': [
-            'doccano = app.cli:main'
+            'doccano = backend.cli:main'
         ]
     },
     install_requires=required,

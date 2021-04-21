@@ -4,10 +4,10 @@ services:
   backend:
     build:
       context: .
-      dockerfile: app/Dockerfile.prod
+      dockerfile: backend/Dockerfile.prod
     volumes:
-      - static_volume:/app/staticfiles
-      - media:/app/media
+      - static_volume:/backend/staticfiles
+      - media:/backend/media
     environment:
       ADMIN_USERNAME: "admin"
       ADMIN_PASSWORD: "password"
@@ -25,9 +25,9 @@ services:
   celery:
     build:
       context: .
-      dockerfile: app/Dockerfile.prod
+      dockerfile: backend/Dockerfile.prod
     volumes:
-      - media:/app/media
+      - media:/backend/media
     entrypoint: ["/opt/bin/prod-celery.sh"]
     environment:
       PYTHONUNBUFFERED: "1"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -o errexit
 
-cd /app
+cd /backend
 
 (
   echo "Waiting for database"
