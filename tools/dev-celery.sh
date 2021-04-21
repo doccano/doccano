@@ -2,7 +2,7 @@
 set -o errexit
 
 app="/src/backend"
-cd app
+cd "/src/backend"
 
 (
   echo "Waiting for database"
