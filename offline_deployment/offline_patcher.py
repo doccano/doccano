@@ -1,8 +1,46 @@
+#!/usr/bin/env python3
 import sys, os, re
-from glob import glob
 import uuid
 from urllib.parse import urljoin
 import requests
+
+"""Script Information
+
+This script scans all files of a given directory [1] for URL addresses and
+hyperlink references.
+All found URLs are requested for Content-Type.
+For certain Content-Types (like js, css, or fonts), the file is downloaded and
+stored locally into a given directory [2] and the existing URLs are altered
+to a local URL location (with a given URL prefix [3]).
+
+Downloaded files are scanned for URLs recursively.
+Relative references in CSS files are an edge case that is
+handled separately by a specific regex pattern.
+
+Arguments:
+ 1. <root directory [1]>
+ 2. <local offline storage directory [2]>
+ 3. <HTTP URL location prefix [3]>
+
+Example:
+ - Given:
+   - File ./webspace/index.html, containing URL: https://example.com/library.js
+   - Directory ./webspace/static, containing static files,
+       serving content on HTTP location: /staticfiles
+
+ - Call:
+   $> python3 offline_patcher.py webspace/ webspace/static /staticfiles
+
+ - Result:
+   - Library from https://example.com/library.js is stored as file:
+       webspace/static/offline_<uuid>.js
+   - Link in file webspace/index.html is replaced to:
+       /staticfiles/offline_<uuid>.js
+   - File webspace/static/offline_<uuid>.js is scanned recursively for URLs
+
+Author: Johann Frei
+"""
+
 
 def main():
     # root folder to scan for URLs
@@ -12,19 +50,17 @@ def main():
     # offline link prefix
     offline_prefix = sys.argv[3]
 
-
     offline_file = os.path.join(offline_folder, "offline_{}.{}")
     offline_link = offline_prefix + "/offline_{}.{}"
 
     mime_ptn = re.compile(r"(?P<mime>(?P<t1>[\w^\/]+)\/(?P<t2>[\S\.^\;]+))(\;|$)", re.IGNORECASE)
-    #link_ptn = re.compile(r"(?P<encl>[\S\"\'])(?P<link>https?:\/\/(?P<host>[\S^:\/)]+)(?P<port>\:[0-9]+)?\/((?!(?P=encl)).)+)(?P=encl)", re.IGNORECASE)
 
-    # Regex to find matches like: "https://<host>[:<port>]/a/link/location.html"
+    # regex to find matches like: "https://<host>[:<port>]/a/link/location.html"
     link_ptn = re.compile(r"[\(\'\"\ ](?P<link>https?:\/\/(?P<host>(?P<h_host>((?=[^\(\)\'\"\ \:\/])(?=[\S]).)+))(?P<port>\:[0-9]+)?\/[^\(\)\'\"\ ]+)(?P<encl_stop>[\(\)\'\"\ ])")
-    # Regex to find matches like: url(../relative/parent_directory/links/without/quotes/are/hard)
+    # regex to find matches like: url(../relative/parent_directory/links/without/quotes/are/hard)
     link_ptn_url = re.compile(r"url\([\"\']?(?P<link>((?=[^\)\"\'])(?=[\S]).)+)[\"\']?\)")
 
-    # Block special hosts
+    # block special hosts
     forbidden_hosts = [
         re.compile(r"^.*registry\.npmjs\.org$"), # No yarnpkg repository
         re.compile(r"^.*yarnpkg\.com$"), # No yarnpkg repository
