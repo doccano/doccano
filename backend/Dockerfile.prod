@@ -1,0 +1,29 @@
+ARG PYTHON_VERSION="3.8.6"
+FROM python:${PYTHON_VERSION}-slim-buster
+
+CMD ["python3"]
+
+WORKDIR /backend
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+COPY ./backend/ /backend/
+COPY ./Pipfile* /backend/
+
+# hadolint ignore=DL3013
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    netcat=1.* \
+    libpq-dev=11.* \
+    unixodbc-dev=2.* \
+    g++=4:* \
+ && pip install --no-cache-dir pipenv==2020.11.15 \
+ && pipenv install --system --deploy \
+ && pip uninstall -y pipenv virtualenv-clone virtualenv \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
+COPY tools/ /opt/bin/
+
+ENTRYPOINT [ "/opt/bin/prod-django.sh" ]

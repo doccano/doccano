@@ -1,21 +1,4 @@
 import { ProjectReadItem, CurrentUsersRole, ProjectType } from '~/domain/models/project/project'
-import { FormatItem } from '~/domain/models/document/format'
-
-
-export class FormatDTO {
-  example: string
-  type: string
-  text: string
-  extension: string
-
-  constructor(item: FormatItem) {
-    this.example = item.example
-    this.type = item.type
-    this.text = item.text
-    this.extension = item.extension
-  }
-}
-
 
 export class ProjectDTO {
   id: number
@@ -29,8 +12,6 @@ export class ProjectDTO {
   enableShareAnnotation: boolean
   singleClassClassification: boolean
   pageLink: string
-  downloadFormats: FormatDTO[]
-  uploadFormats: FormatDTO[]
   permitApprove: Boolean
   filterOption: String
   tags: Object[]
@@ -47,8 +28,6 @@ export class ProjectDTO {
     this.enableShareAnnotation = item.collaborative_annotation
     this.singleClassClassification = item.single_class_classification
     this.pageLink = item.annotationPageLink
-    this.downloadFormats = item.downloadFormats.map(f => new FormatDTO(f))
-    this.uploadFormats = item.uploadFormats.map(f => new FormatDTO(f))
     this.permitApprove = item.permitApprove
     this.filterOption = item.filterOption
     this.tags = item.tags

@@ -30,7 +30,7 @@
       />
     </template>
     <template v-slot:sidebar>
-      <list-metadata :metadata="JSON.parse(doc.meta)" />
+      <list-metadata :metadata="doc.meta" />
     </template>
   </layout-text>
 </template>

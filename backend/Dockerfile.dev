@@ -1,0 +1,22 @@
+ARG PYTHON_VERSION="3.8.6"
+FROM python:${PYTHON_VERSION}-slim-buster
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    wget=1.* \
+    netcat=1.* \
+    libpq-dev=11.* \
+    unixodbc-dev=2.* \
+    g++=4:* \
+    libssl-dev=1.* \
+ && apt-get clean
+
+WORKDIR /src
+COPY ./Pipfile* /src/
+
+RUN pip install --upgrade pip && pip install pipenv==2020.11.15 \
+    && pipenv install --system --dev
+
+COPY tools/ /opt/bin/
+
+ENTRYPOINT [ "/opt/bin/dev-django.sh" ]

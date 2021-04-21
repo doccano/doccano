@@ -116,7 +116,7 @@
             v-model="tagInput"
             clearable
             prepend-icon="add_circle"
-            v-on:keyup.enter="addTag()"
+            @keyup.enter="addTag()"
             @click:prepend="addTag()">
             </v-text-field>
           </v-col>

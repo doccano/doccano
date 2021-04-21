@@ -1,17 +1,17 @@
-include app/manage.py
-include app/requirements.txt
+include backend/manage.py
+include backend/requirements.txt
 include README.md
 exclude *.yml
 exclude *.yaml
 
-graft app/staticfiles
-graft app/client
-graft app/doccano
+graft backend/staticfiles
+graft backend/client
+graft backend/doccano
 
-prune app/staticfiles/bundle
-prune app/staticfiles/assets
-prune app/staticfiles/components
-prune app/server/static
+prune backend/staticfiles/bundle
+prune backend/staticfiles/assets
+prune backend/staticfiles/components
+prune backend/server/static
 prune frontend
 prune docs
 prune nginx
