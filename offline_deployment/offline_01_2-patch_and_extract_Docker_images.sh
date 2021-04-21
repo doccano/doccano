@@ -37,3 +37,4 @@ docker-compose -f ../docker-compose.prod.yml build
 docker image save -o doccano-backend.tar doccano-backend:custom
 docker image save -o doccano-nginx.tar   doccano-nginx:custom
 docker image save -o postgres.tar        postgres:13.1-alpine
+docker image save -o rabbitmq.tar        rabbitmq:3.8

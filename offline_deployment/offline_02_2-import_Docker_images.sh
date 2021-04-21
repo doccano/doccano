@@ -12,3 +12,4 @@ sed -i 's^dockerfile: nginx/Dockerfile^dockerfile: nginx/Dockerfile\n    image: 
 docker image load -i doccano-backend.tar
 docker image load -i doccano-nginx.tar
 docker image load -i postgres.tar
+docker image load -i rabbitmq.tar
