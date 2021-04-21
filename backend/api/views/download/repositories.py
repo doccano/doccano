@@ -46,7 +46,7 @@ class TextRepository(BaseRepository):
             # In the future, the doc without label will be exported
             # with the user who approved the doc.
             # This means I will allow each user to be able to approve the doc.
-            if len(label_per_user):
+            if len(label_per_user) == 0:
                 yield Record(
                     id=doc.id,
                     data=doc.text,
