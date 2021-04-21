@@ -8,7 +8,7 @@ unset DIR
 # create certificate pair
 sudo apt-get install -y openssl
 openssl req -new -newkey rsa:4096 -sha256 -nodes -x509 -keyout ./nginx/cert.key -out ./nginx/cert.crt \
-   -subj "/C=DE/ST=Bayern/L=Augsburg/O=Universität Augsburg/OU=Misit/CN=*.informatik.uni-augsburg.de"
+   -subj "/C=US/ST=StateCode/L=LocationName/O=OrganizationName/OU=OrganizationUnit/CN=doccano.herokuapp.com"
 
 # define cert paths inside container
 ssl_cert="/certs/cert.crt"
