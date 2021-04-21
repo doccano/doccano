@@ -14,7 +14,7 @@ sed -i 's^dockerfile: nginx/Dockerfile^dockerfile: nginx/Dockerfile\n    image: 
 # Modify Dockerfile for nginx to add python3 and offline patch
 sed -i 's|FROM nginx|COPY offline_deployment/offline_patcher.py /patch.py\
 RUN apk add -U --no-cache py3-requests \\\
-  \&\& mkdir -p /backend/dist/offline \&\& python3 /patch.py /backend/dist /backend/dist/offline /offline\
+  \&\& mkdir -p /app/dist/offline \&\& python3 /patch.py /app/dist /app/dist/offline /offline\
 \
 FROM nginx|' ../nginx/Dockerfile
 
