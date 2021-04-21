@@ -45,14 +45,14 @@ export class DocumentItem {
   constructor(
     public id: number,
     public text: string,
-    public meta: string,
+    public meta: object,
     public annotationApprover: boolean | null,
     public commentCount: number
   ) {}
 
   static valueOf(
     { id, text, meta, annotation_approver, comment_count }:
-    { id: number, text: string, meta: string, annotation_approver: boolean | null, comment_count: number }
+    { id: number, text: string, meta: object, annotation_approver: boolean | null, comment_count: number }
   ): DocumentItem {
     return new DocumentItem(id, text, meta, annotation_approver, comment_count)
   }

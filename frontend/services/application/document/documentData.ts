@@ -4,7 +4,7 @@ import { DocumentItem, DocumentItemList } from '~/domain/models/document/documen
 export class DocumentDTO {
   id: number;
   text: string;
-  meta: string;
+  meta: object;
   annotationApprover: boolean | null;
   commentCount: number;
   isApproved: boolean;

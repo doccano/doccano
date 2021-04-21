@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title>
       <action-menu
-        @upload="dialogUpload=true"
+        @upload="upload"
         @download="dialogDownload=true"
       />
       <v-btn
@@ -35,19 +35,9 @@
           @remove="removeAll"
         />
       </v-dialog>
-      <v-dialog v-model="dialogUpload">
-        <form-upload
-          :formats="project.uploadFormats"
-          :upload-document="upload"
-          @cancel="dialogUpload=false"
-          @success="$fetch();dialogUpload=false"
-        />
-      </v-dialog>
       <v-dialog v-model="dialogDownload">
         <form-download
-          :formats="project.downloadFormats"
           @cancel="dialogDownload=false"
-          @download="download"
         />
       </v-dialog>
     </v-card-title>
@@ -69,10 +59,9 @@ import DocumentList from '@/components/document/DocumentList.vue'
 import FormDelete from '@/components/document/FormDelete.vue'
 import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
 import FormDownload from '@/components/document/FormDownload.vue'
-import FormUpload from '@/components/document/FormUpload.vue'
 import { DocumentListDTO, DocumentDTO } from '~/services/application/document/documentData'
 import ActionMenu from '~/components/document/ActionMenu.vue'
-import { ProjectDTO, FormatDTO } from '~/services/application/project/projectData'
+import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   layout: 'project',
@@ -83,7 +72,6 @@ export default Vue.extend({
     FormDelete,
     FormDeleteBulk,
     FormDownload,
-    FormUpload
   },
 
   async fetch() {
@@ -94,12 +82,9 @@ export default Vue.extend({
 
   data() {
     return {
-      dialogCreate: false,
       dialogDelete: false,
       dialogDeleteAll: false,
-      dialogUpload: false,
       dialogDownload: false,
-      formats: [] as FormatDTO[],
       project: {} as ProjectDTO,
       item: {} as DocumentListDTO,
       selected: [] as DocumentDTO[],
@@ -141,18 +126,8 @@ export default Vue.extend({
       this.dialogDeleteAll = false
       this.selected = []
     },
-    async download(format: FormatDTO, filename: string, onlyApproved: boolean) {
-      await this.$services.document.download(
-        this.projectId,
-        filename,
-        format,
-        onlyApproved
-      )
-    },
-    async upload(file: File, format: string) {
-      await this.$services.document.upload(
-        this.projectId, file, format
-      )
+    upload() {
+      this.$router.push(`/projects/${this.projectId}/upload`)
     },
     updateQuery(query: object) {
       this.$router.push(query)

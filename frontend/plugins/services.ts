@@ -1,4 +1,10 @@
 import { Plugin } from '@nuxt/types'
+import { APITaskStatusRepository } from '@/repositories/celery/apiTaskStatusRepository'
+import { TaskStatusApplicationService } from '@/services/application/celery/taskStatusApplicationService'
+import { APICatalogRepository } from '../repositories/upload/apiCatalogRepository'
+import { CatalogApplicationService } from '../services/application/upload/catalogApplicationService'
+import { APIParseRepository } from '../repositories/upload/apiParseRepository'
+import { ParseApplicationService } from '../services/application/upload/parseApplicationService'
 import { APISequenceLabelingRepository } from '~/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
 import { APISeq2seqRepository } from '~/repositories/tasks/seq2seq/apiSeq2seq'
 import { APIConfigRepository } from '~/repositories/autoLabeling/config/apiConfigRepository'
@@ -29,6 +35,12 @@ import { TemplateApplicationService } from '~/services/application/autoLabeling/
 import { APITextClassificationRepository } from '~/repositories/tasks/textClassification/apiTextClassification'
 import { TextClassificationApplicationService } from '~/services/application/tasks/textClassification/textClassificationApplicationService'
 import { AuthApplicationService } from '~/services/application/auth/authApplicationService'
+import { APIDownloadFormatRepository } from '~/repositories/download/apiDownloadFormatRepository'
+import { APIDownloadRepository } from '~/repositories/download/apiDownloadRepository'
+import { DownloadApplicationService } from '~/services/application/download/downloadApplicationService'
+import { DownloadFormatApplicationService } from '~/services/application/download/downloadFormatApplicationService'
+import { APITagRepository } from '~/repositories/tag/apiTagRepository'
+import { TagApplicationService } from '~/services/application/tag/tagApplicationService'
 
 export interface Services {
   label: LabelApplicationService,
@@ -45,7 +57,13 @@ export interface Services {
   option: OptionApplicationService,
   config: ConfigApplicationService,
   template: TemplateApplicationService,
-  auth: AuthApplicationService
+  auth: AuthApplicationService,
+  catalog: CatalogApplicationService,
+  parse: ParseApplicationService,
+  taskStatus: TaskStatusApplicationService,
+  downloadFormat: DownloadFormatApplicationService,
+  download: DownloadApplicationService,
+  tag: TagApplicationService,
 }
 
 declare module 'vue/types/vue' {
@@ -68,8 +86,14 @@ const plugin: Plugin = (context, inject) => {
   const seq2seqRepository = new APISeq2seqRepository()
   const optionRepository     = new LocalStorageOptionRepository()
   const configRepository     = new APIConfigRepository()
+  const tagRepository = new APITagRepository()
   const templateRepository   = new APITemplateRepository()
   const authRepository = new APIAuthRepository()
+  const catalogRepository = new APICatalogRepository()
+  const parseRepository = new APIParseRepository()
+  const taskStatusRepository = new APITaskStatusRepository()
+  const downloadFormatRepository = new APIDownloadFormatRepository()
+  const downloadRepository = new APIDownloadRepository()
 
   const label      = new LabelApplicationService(labelRepository)
   const member     = new MemberApplicationService(memberRepository)
@@ -84,8 +108,14 @@ const plugin: Plugin = (context, inject) => {
   const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
   const option = new OptionApplicationService(optionRepository)
   const config = new ConfigApplicationService(configRepository)
+  const tag = new TagApplicationService(tagRepository)
   const template = new TemplateApplicationService(templateRepository)
   const auth = new AuthApplicationService(authRepository)
+  const catalog = new CatalogApplicationService(catalogRepository)
+  const parse = new ParseApplicationService(parseRepository)
+  const taskStatus = new TaskStatusApplicationService(taskStatusRepository)
+  const downloadFormat = new DownloadFormatApplicationService(downloadFormatRepository)
+  const download = new DownloadApplicationService(downloadRepository)
   
   const services: Services = {
     label,
@@ -102,7 +132,13 @@ const plugin: Plugin = (context, inject) => {
     option,
     config,
     template,
-    auth
+    auth,
+    catalog,
+    parse,
+    taskStatus,
+    downloadFormat,
+    download,
+    tag,
   }
   inject('services', services)
 }

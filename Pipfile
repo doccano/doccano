@@ -15,6 +15,8 @@ pytest = "*"
 autopep8 = "*"
 pytest-cov = "*"
 mypy = "*"
+watchdog = "*"
+argh = "*"
 
 [packages]
 django = "*"
@@ -45,6 +47,10 @@ gunicorn = "*"
 fasteners = "*"
 auto-labeling-pipeline = "*"
 dj-rest-auth = "*"
+django-drf-filepond = "*"
+celery = "*"
+django-celery-results = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.8"

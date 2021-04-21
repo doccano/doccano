@@ -1,4 +1,3 @@
-import { FormatFactory, FormatItem } from '../document/format'
 export interface CurrentUsersRole {
   is_project_admin:       boolean;
   is_annotator:           boolean;
@@ -22,6 +21,7 @@ export class ProjectReadItem {
     public collaborative_annotation:    boolean,
     public single_class_classification: boolean,
     public resourcetype:                string,
+    public tags:                        Object[],
   ) {}
 
   static valueOf(
@@ -37,7 +37,8 @@ export class ProjectReadItem {
       randomize_document_order,
       collaborative_annotation,
       single_class_classification,
-      resourcetype
+      resourcetype,
+      tags
     }:
     {
       id:                          number,
@@ -51,7 +52,8 @@ export class ProjectReadItem {
       randomize_document_order:    boolean,
       collaborative_annotation:    boolean,
       single_class_classification: boolean,
-      resourcetype:                string
+      resourcetype:                string,
+      tags:                        Object[]
     }
   ): ProjectReadItem {
     return new ProjectReadItem(
@@ -66,7 +68,8 @@ export class ProjectReadItem {
       randomize_document_order,
       collaborative_annotation,
       single_class_classification,
-      resourcetype
+      resourcetype,
+      tags
     )
   }
 
@@ -78,14 +81,6 @@ export class ProjectReadItem {
     }
     const url = `/projects/${this.id}/${mapping[this.project_type]}`
     return url
-  }
-
-  get downloadFormats(): FormatItem[] {
-    return new FormatFactory(this.project_type).createDownloadFormat()
-  }
-
-  get uploadFormats(): FormatItem[] {
-    return new FormatFactory(this.project_type).createUploadFormat()
   }
 
   get permitApprove(): Boolean {
@@ -118,7 +113,8 @@ export class ProjectReadItem {
       randomize_document_order: this.randomize_document_order,
       collaborative_annotation: this.collaborative_annotation,
       single_class_classification: this.single_class_classification,
-      resourcetype: this.resourcetype
+      resourcetype: this.resourcetype,
+      tags: this.tags
     }
   }
 }

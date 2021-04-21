@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Preparation
       run: |
-        mkdir app/client
+        mkdir backend/client
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
@@ -21,7 +21,7 @@ jobs:
       run: |
         yarn install
         yarn build
-        cp -r dist ../app/client/
+        cp -r dist ../backend/client/
       working-directory: ./frontend
       env:
         PUBLIC_PATH: "/static/_nuxt/"
@@ -37,7 +37,7 @@ jobs:
     - name: collectstatic
       run: |
         pipenv run collectstatic
-      working-directory: ./app
+      working-directory: ./backend
     - name: Build a binary wheel and a source tarball
       run: |
         python setup.py sdist
