@@ -56,7 +56,7 @@ doccano init
 # Create a super user.
 doccano createuser --username admin --password pass
 # Start the webserver.
-doccano webserver -p 8000
+doccano webserver --port 8000
 ```
 
 And in another terminal, run the following command:
