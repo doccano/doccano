@@ -265,20 +265,26 @@ class SequenceAnnotation(Annotation):
         unique_together = ('document', 'user', 'label', 'start_offset', 'end_offset')
 
 
-class AnnotationRelations:
+class AnnotationRelations(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     annotation_id_1 = models.IntegerField()
     annotation_id_2 = models.IntegerField()
     type = models.CharField(max_length=50)
 
+    def __str__(self):
+        return f"{self.annotation_id_1} - {self.annotation_id_2} - {type}"
+
     class Meta:
         unique_together = ('timestamp', 'user', 'annotation_id_1', 'annotation_id_2', 'type')
 
 
-class RelationTypes:
+class RelationTypes(models.Model):
     color = models.TextField()
     name = models.TextField()
+
+    def __str__(self):
+        return self.name
 
     class Meta:
         unique_together = ('color', 'name')

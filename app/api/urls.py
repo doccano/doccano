@@ -168,6 +168,11 @@ urlpatterns = [
         view=views.AutoLabelingConfigParameterTest.as_view(),
         name='auto_labeling_parameter_testing'
     ),
+    path( #TODO: questo va sotto urlpatterns_project e deve prendere un int:project_id> come sotto
+        route='relationtypes',
+        view=views.RelationTypesList.as_view(),
+        name='roles'
+    ),
     path(
         route='projects/<int:project_id>',
         view=views.ProjectDetail.as_view(),

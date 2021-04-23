@@ -10,7 +10,7 @@ from .models import (AutoLabelingConfig, Comment, Document, DocumentAnnotation,
                      Label, Project, Role, RoleMapping, Seq2seqAnnotation,
                      Seq2seqProject, SequenceAnnotation,
                      SequenceLabelingProject, Speech2textAnnotation,
-                     Speech2textProject, TextClassificationProject)
+                     Speech2textProject, TextClassificationProject, RelationTypes)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -277,3 +277,13 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
                 'You need to correctly specify the required fields: {}'.format(required_fields)
             )
         return data
+
+
+class RelationTypesSerializer(serializers.ModelSerializer):
+
+    def validate(self, attrs):
+        return super().validate(attrs)
+
+    class Meta:
+        model = RelationTypes
+        fields = ('id', 'color', 'name')
