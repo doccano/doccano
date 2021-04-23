@@ -54,7 +54,7 @@
           />
         </v-card-title>
         <v-divider />
-        <v-card-text class="title highlight" v-text="doc.text" />
+        <v-card-text class="title highlight text-pre-wrap" v-text="doc.text" />
       </v-card>
     </template>
     <template v-slot:sidebar>
@@ -190,3 +190,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.text-pre-wrap {
+  white-space: pre-wrap !important;
+}
+</style>

@@ -19,7 +19,7 @@
     </template>
     <template v-slot:content>
       <v-card class="mb-5">
-        <v-card-text class="title" v-text="doc.text" />
+        <v-card-text class="title text-pre-wrap" v-text="doc.text" />
       </v-card>
       <seq2seq-box
         :text="doc.text"
@@ -149,3 +149,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.text-pre-wrap {
+  white-space: pre-wrap !important;
+}
+</style>
