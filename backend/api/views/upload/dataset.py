@@ -1,8 +1,10 @@
 import csv
 import io
 import json
+import os
 from typing import Dict, Iterator, List, Optional, Type
 
+import chardet
 import pydantic.error_wrappers
 import pyexcel
 from chardet.universaldetector import UniversalDetector
@@ -79,11 +81,20 @@ class Dataset:
     def detect_encoding(self, filename: str, buffer_size=io.DEFAULT_BUFFER_SIZE):
         if self.encoding != 'Auto':
             return self.encoding
+
+        # For a small file.
+        if os.path.getsize(filename) < buffer_size:
+            detected = chardet.detect(open(filename, 'rb').read())
+            return detected.get('encoding', 'utf-8')
+
+        # For a large file.
         with open(filename, 'rb') as f:
             detector = UniversalDetector()
             while True:
-                read = f.read(buffer_size)
-                detector.feed(read)
+                binary = f.read(buffer_size)
+                detector.feed(binary)
+                if binary == b'':
+                    break
                 if detector.done:
                     break
             if detector.done:
