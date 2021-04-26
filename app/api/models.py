@@ -282,6 +282,7 @@ class AnnotationRelations(models.Model):
 class RelationTypes(models.Model):
     color = models.TextField()
     name = models.TextField()
+    project = models.ForeignKey(Project, related_name='relation_types', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

@@ -24,6 +24,21 @@ urlpatterns_project = [
         name='label_detail'
     ),
     path(
+        route='relation_types',
+        view=views.RelationTypesList.as_view(),
+        name='relation_types_list'
+    ),
+    path(
+        route='relation_type-upload',
+        view=views.RelationTypesUploadAPI.as_view(),
+        name='relation_type-upload'
+    ),
+    path(
+        route='relation_types/<int:relation_type_id>',
+        view=views.RelationTypesDetail.as_view(),
+        name='relation_type_detail'
+    ),
+    path(
         route='docs',
         view=views.DocumentList.as_view(),
         name='doc_list'
@@ -167,11 +182,6 @@ urlpatterns = [
         route='auto-labeling-parameter-testing',
         view=views.AutoLabelingConfigParameterTest.as_view(),
         name='auto_labeling_parameter_testing'
-    ),
-    path( #TODO: questo va sotto urlpatterns_project e deve prendere un int:project_id> come sotto
-        route='relationtypes',
-        view=views.RelationTypesList.as_view(),
-        name='roles'
     ),
     path(
         route='projects/<int:project_id>',
