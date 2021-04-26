@@ -71,7 +71,7 @@ export default {
             document: 8
           }
         ],
-        meta: '{"wikiPageId":2}',
+        meta: { wikiPageId: 2},
         annotation_approver: null
       }
     }
