@@ -353,7 +353,12 @@ try:
     CELERY_BROKER_URL = env('CELERY_BROKER_URL')
 except EnvError:
     try:
-        CELERY_BROKER_URL = 'sqla+{}'.format(env('DATABASE_URL'))
+        # quickfix for Heroku.
+        # See https://github.com/doccano/doccano/issues/1327.
+        uri = env('DATABASE_URL')
+        if uri.startswith('postgres://'):
+            uri = uri.replace('postgres://', 'postgresql://', 1)
+        CELERY_BROKER_URL = 'sqla+{}'.format(uri)
     except EnvError:
         CELERY_BROKER_URL = 'sqla+sqlite:///{}'.format(DATABASES['default']['NAME'])
 CELERY_ACCEPT_CONTENT = ['application/json']
