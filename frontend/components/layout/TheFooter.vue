@@ -15,7 +15,7 @@
         white--text
         xs12
       >
-        &copy; {{ new Date().getFullYear() }} doccano
+        &copy; {{ new Date().getFullYear() }} Powered by doccano
       </v-flex>
     </v-layout>
   </v-footer>

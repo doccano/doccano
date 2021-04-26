@@ -1,5 +1,5 @@
 <template>
-  <v-main>
+  <v-main style="background: black;">
     <the-top-banner />
     <feature-cards />
     <the-bottom-banner />
@@ -7,15 +7,11 @@
 </template>
 
 <script>
-import FeatureCards from '@/components/layout/FeatureCards'
 import TheTopBanner from '@/components/layout/TheTopBanner'
-import TheBottomBanner from '@/components/layout/TheBottomBanner'
 
 export default {
   components: {
-    FeatureCards,
     TheTopBanner,
-    TheBottomBanner
   }
 }
 </script>
