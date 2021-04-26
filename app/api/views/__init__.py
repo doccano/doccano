@@ -10,3 +10,4 @@ from .role import *
 from .statistics import *
 from .user import *
 from .relation_types import *
+from .annotation_relations import *

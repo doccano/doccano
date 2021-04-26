@@ -39,6 +39,21 @@ urlpatterns_project = [
         name='relation_type_detail'
     ),
     path(
+        route='annotation_relations',
+        view=views.AnnotationRelationsList.as_view(),
+        name='relation_types_list'
+    ),
+    path(
+        route='annotation_relation-upload',
+        view=views.AnnotationRelationsUploadAPI.as_view(),
+        name='annotation_relation-upload'
+    ),
+    path(
+        route='annotation_relations/<int:annotation_relation_id>',
+        view=views.AnnotationRelationsDetail.as_view(),
+        name='annotation_relation_detail'
+    ),
+    path(
         route='docs',
         view=views.DocumentList.as_view(),
         name='doc_list'

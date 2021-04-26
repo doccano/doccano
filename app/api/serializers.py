@@ -10,7 +10,7 @@ from .models import (AutoLabelingConfig, Comment, Document, DocumentAnnotation,
                      Label, Project, Role, RoleMapping, Seq2seqAnnotation,
                      Seq2seqProject, SequenceAnnotation,
                      SequenceLabelingProject, Speech2textAnnotation,
-                     Speech2textProject, TextClassificationProject, RelationTypes)
+                     Speech2textProject, TextClassificationProject, RelationTypes, AnnotationRelations)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -287,3 +287,13 @@ class RelationTypesSerializer(serializers.ModelSerializer):
     class Meta:
         model = RelationTypes
         fields = ('id', 'color', 'name')
+
+
+class AnnotationRelationsSerializer(serializers.ModelSerializer):
+
+    def validate(self, attrs):
+        return super().validate(attrs)
+
+    class Meta:
+        model = AnnotationRelations
+        fields = ('id', 'annotation_id_1', 'annotation_id_2', 'type', 'user', 'timestamp')

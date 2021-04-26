@@ -26,9 +26,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('annotation_id_1', models.IntegerField()),
                 ('annotation_id_2', models.IntegerField()),
-                ('type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.RelationTypes')),
-                ('timestamp', models.DateTimeField(auto_now_add=True))
+                ('type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.RelationTypes')),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('timestamp', models.DateTimeField(auto_now_add=True)),
+                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='annotation_relations', to='api.Project'))
             ],
         )
     ]
