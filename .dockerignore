@@ -4,7 +4,6 @@
 !nginx/
 !tests/
 !tools/
-!offline_deployment/
 !.coveragerc
 !.flake8
 !Dockerfile
