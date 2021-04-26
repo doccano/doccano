@@ -1,5 +1,5 @@
 <template>
-  <v-main>
+  <v-main style="background: black;">
     <the-top-banner />
     <feature-cards />
     <the-bottom-banner />
