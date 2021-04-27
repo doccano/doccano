@@ -158,11 +158,6 @@ urlpatterns = [
         name='features'
     ),
     path(
-        route='cloud-upload',
-        view=views.CloudUploadAPI.as_view(),
-        name='cloud_uploader'
-    ),
-    path(
         route='projects',
         view=views.ProjectList.as_view(),
         name='project_list'

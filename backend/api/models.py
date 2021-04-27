@@ -40,22 +40,10 @@ class Project(PolymorphicModel):
     def get_absolute_url(self):
         return reverse('upload', args=[self.id])
 
-    def get_bundle_name(self):
-        raise NotImplementedError()
-
-    def get_bundle_name_upload(self):
-        raise NotImplementedError()
-
-    def get_bundle_name_download(self):
-        raise NotImplementedError()
-
     def get_annotation_serializer(self):
         raise NotImplementedError()
 
     def get_annotation_class(self):
-        raise NotImplementedError()
-
-    def get_storage(self, data):
         raise NotImplementedError()
 
     def __str__(self):
@@ -64,15 +52,6 @@ class Project(PolymorphicModel):
 
 class TextClassificationProject(Project):
 
-    def get_bundle_name(self):
-        return 'document_classification'
-
-    def get_bundle_name_upload(self):
-        return 'upload_text_classification'
-
-    def get_bundle_name_download(self):
-        return 'download_text_classification'
-
     def get_annotation_serializer(self):
         from .serializers import DocumentAnnotationSerializer
         return DocumentAnnotationSerializer
@@ -80,21 +59,8 @@ class TextClassificationProject(Project):
     def get_annotation_class(self):
         return DocumentAnnotation
 
-    def get_storage(self, data):
-        from .utils import ClassificationStorage
-        return ClassificationStorage(data, self)
-
 
 class SequenceLabelingProject(Project):
-
-    def get_bundle_name(self):
-        return 'sequence_labeling'
-
-    def get_bundle_name_upload(self):
-        return 'upload_sequence_labeling'
-
-    def get_bundle_name_download(self):
-        return 'download_sequence_labeling'
 
     def get_annotation_serializer(self):
         from .serializers import SequenceAnnotationSerializer
@@ -103,21 +69,8 @@ class SequenceLabelingProject(Project):
     def get_annotation_class(self):
         return SequenceAnnotation
 
-    def get_storage(self, data):
-        from .utils import SequenceLabelingStorage
-        return SequenceLabelingStorage(data, self)
-
 
 class Seq2seqProject(Project):
-
-    def get_bundle_name(self):
-        return 'seq2seq'
-
-    def get_bundle_name_upload(self):
-        return 'upload_seq2seq'
-
-    def get_bundle_name_download(self):
-        return 'download_seq2seq'
 
     def get_annotation_serializer(self):
         from .serializers import Seq2seqAnnotationSerializer
@@ -126,21 +79,8 @@ class Seq2seqProject(Project):
     def get_annotation_class(self):
         return Seq2seqAnnotation
 
-    def get_storage(self, data):
-        from .utils import Seq2seqStorage
-        return Seq2seqStorage(data, self)
-
 
 class Speech2textProject(Project):
-
-    def get_bundle_name(self):
-        return 'speech2text'
-
-    def get_bundle_name_upload(self):
-        return 'upload_speech2text'
-
-    def get_bundle_name_download(self):
-        return 'download_speech2text'
 
     def get_annotation_serializer(self):
         from .serializers import Speech2textAnnotationSerializer
@@ -148,10 +88,6 @@ class Speech2textProject(Project):
 
     def get_annotation_class(self):
         return Speech2textAnnotation
-
-    def get_storage(self, data):
-        from .utils import Speech2textStorage
-        return Speech2textStorage(data, self)
 
 
 class Label(models.Model):
