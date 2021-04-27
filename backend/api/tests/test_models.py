@@ -18,10 +18,6 @@ class TestTextClassificationProject(TestCase):
     def setUpTestData(cls):
         cls.project = mommy.make('TextClassificationProject')
 
-    def test_get_bundle_name(self):
-        template = self.project.get_bundle_name()
-        self.assertEqual(template, 'document_classification')
-
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
         self.assertEqual(serializer, DocumentAnnotationSerializer)
@@ -37,10 +33,6 @@ class TestSequenceLabelingProject(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.project = mommy.make('SequenceLabelingProject')
-
-    def test_get_bundle_name(self):
-        template = self.project.get_bundle_name()
-        self.assertEqual(template, 'sequence_labeling')
 
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
@@ -58,10 +50,6 @@ class TestSeq2seqProject(TestCase):
     def setUpTestData(cls):
         cls.project = mommy.make('Seq2seqProject')
 
-    def test_get_bundle_name(self):
-        template = self.project.get_bundle_name()
-        self.assertEqual(template, 'seq2seq')
-
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
         self.assertEqual(serializer, Seq2seqAnnotationSerializer)
@@ -77,10 +65,6 @@ class TestSpeech2textProject(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.project = mommy.make('Speech2textProject')
-
-    def test_get_bundle_name(self):
-        template = self.project.get_bundle_name()
-        self.assertEqual(template, 'speech2text')
 
     def test_get_annotation_serializer(self):
         serializer = self.project.get_annotation_serializer()
