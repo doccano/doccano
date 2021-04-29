@@ -2,7 +2,7 @@ import botocore.exceptions
 import requests
 from auto_labeling_pipeline.mappings import MappingTemplate
 from auto_labeling_pipeline.menu import Options
-from auto_labeling_pipeline.models import RequestModelFactory
+from auto_labeling_pipeline.models import RequestModelFactory, RequestModel
 from auto_labeling_pipeline.pipeline import pipeline
 from auto_labeling_pipeline.postprocessing import PostProcessor
 from auto_labeling_pipeline.task import TaskFactory
@@ -19,6 +19,19 @@ from ..exceptions import (AutoLabeliingPermissionDenied, AutoLabelingException,
 from ..models import AutoLabelingConfig, Document, Project
 from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
 from ..serializers import AutoLabelingConfigSerializer
+
+from typing import Type
+
+
+@classmethod
+def monkey_patched_find(cls, model_name: str) -> Type[RequestModel]:
+        for subclass in RequestModel.__subclasses__():
+            if subclass.Config.title == model_name:
+                return subclass
+        raise NameError(f'{model_name} is not found.')
+
+
+RequestModelFactory.find = monkey_patched_find
 
 
 class AutoLabelingTemplateListAPI(APIView):
@@ -109,6 +122,7 @@ class AutoLabelingConfigParameterTest(APIView):
         model_name = self.request.data['model_name']
         model_attrs = self.request.data['model_attrs']
         sample_text = self.request.data['text']
+
         try:
             model = RequestModelFactory.create(model_name, model_attrs)
         except Exception:
@@ -120,8 +134,8 @@ class AutoLabelingConfigParameterTest(APIView):
                 'You need to correctly specify the required fields: {}'.format(required_fields)
             )
         try:
-            request = model.build()
-            response = request.send(text=sample_text)
+            # request = model.build()
+            response = model.send(text=sample_text)
             return Response(response, status=status.HTTP_200_OK)
         except requests.exceptions.ConnectionError:
             raise URLConnectionError
