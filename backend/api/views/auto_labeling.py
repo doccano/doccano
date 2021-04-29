@@ -134,7 +134,6 @@ class AutoLabelingConfigParameterTest(APIView):
                 'You need to correctly specify the required fields: {}'.format(required_fields)
             )
         try:
-            # request = model.build()
             response = model.send(text=sample_text)
             return Response(response, status=status.HTTP_200_OK)
         except requests.exceptions.ConnectionError:
