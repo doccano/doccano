@@ -109,7 +109,7 @@ class JSONWriter(BaseWriter):
 
         for filename, f in writers.items():
             content = contents[filename]
-            json.dump(content, f)
+            json.dump(content, f, ensure_ascii=False)
             f.close()
 
         save_file = self.write_zip(writers)
@@ -135,7 +135,7 @@ class JSONLWriter(LineWriter):
             'data': record.data,
             'label': record.label,
             **record.metadata
-        })
+        }, ensure_ascii=False)
 
 
 class FastTextWriter(LineWriter):
