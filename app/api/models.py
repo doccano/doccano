@@ -265,6 +265,33 @@ class SequenceAnnotation(Annotation):
         unique_together = ('document', 'user', 'label', 'start_offset', 'end_offset')
 
 
+class RelationTypes(models.Model):
+    color = models.TextField()
+    name = models.TextField()
+    project = models.ForeignKey(Project, related_name='relation_types', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        unique_together = ('color', 'name')
+
+
+class AnnotationRelations(models.Model):
+    annotation_id_1 = models.IntegerField()
+    annotation_id_2 = models.IntegerField()
+    type = models.ForeignKey(RelationTypes, related_name='annotation_relations', on_delete=models.CASCADE)
+    timestamp = models.DateTimeField()
+    user = models.ForeignKey(User, related_name='annotation_relations', on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, related_name='annotation_relations', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.__dict__.__str__()
+
+    class Meta:
+        unique_together = ('annotation_id_1', 'annotation_id_2', 'type', 'project')
+
+
 class Seq2seqAnnotation(Annotation):
     # Override AnnotationManager for custom functionality
     objects = Seq2seqAnnotationManager()

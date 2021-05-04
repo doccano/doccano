@@ -24,6 +24,36 @@ urlpatterns_project = [
         name='label_detail'
     ),
     path(
+        route='relation_types',
+        view=views.RelationTypesList.as_view(),
+        name='relation_types_list'
+    ),
+    path(
+        route='relation_type-upload',
+        view=views.RelationTypesUploadAPI.as_view(),
+        name='relation_type-upload'
+    ),
+    path(
+        route='relation_types/<int:relation_type_id>',
+        view=views.RelationTypesDetail.as_view(),
+        name='relation_type_detail'
+    ),
+    path(
+        route='annotation_relations',
+        view=views.AnnotationRelationsList.as_view(),
+        name='relation_types_list'
+    ),
+    path(
+        route='annotation_relation-upload',
+        view=views.AnnotationRelationsUploadAPI.as_view(),
+        name='annotation_relation-upload'
+    ),
+    path(
+        route='annotation_relations/<int:annotation_relation_id>',
+        view=views.AnnotationRelationsDetail.as_view(),
+        name='annotation_relation_detail'
+    ),
+    path(
         route='docs',
         view=views.DocumentList.as_view(),
         name='doc_list'
