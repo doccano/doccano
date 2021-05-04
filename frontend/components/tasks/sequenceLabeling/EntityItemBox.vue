@@ -1,50 +1,59 @@
 <template>
-  <div class="highlight-container highlight-container--bottom-labels" @click="open" @touchend="open">
-    <entity-item
-      v-for="(chunk, i) in chunks"
-      :key="i"
-      :content="chunk.text"
-      :newline="chunk.newline"
-      :label="chunk.label"
-      :color="chunk.color"
-      :labels="labels"
-      @remove="deleteAnnotation(chunk.id)"
-      @update="updateEntity($event.id, chunk.id)"
-    />
-    <v-menu
-      v-model="showMenu"
-      :position-x="x"
-      :position-y="y"
-      absolute
-      offset-y
-    >
-      <v-list
-        dense
-        min-width="150"
-        max-height="400"
-        class="overflow-y-auto"
-      >
-        <v-list-item
-          v-for="(label, i) in labels"
-          :key="i"
-          v-shortkey="[label.suffixKey]"
-          @shortkey="assignLabel(label.id)"
-          @click="assignLabel(label.id)"
-        >
-          <v-list-item-content>
-            <v-list-item-title v-text="label.text" />
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-list-item-action-text v-text="label.suffixKey" />
-          </v-list-item-action>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-  </div>
+<div id="connections-wrapper">
+   <div class="highlight-container highlight-container--bottom-labels" @click="open" @touchend="open">
+     <entity-item
+         v-for="(chunk, i) in chunks"
+         :key="i"
+         :spanid="chunk.id"
+         :content="chunk.text"
+         :newline="chunk.newline"
+         :label="chunk.label"
+         :color="chunk.color"
+         :labels="labels"
+         :selected-chunk-id="selectedChunkId"
+         @remove="deleteAnnotation(chunk.id)"
+         @update="updateEntity($event.id, chunk.id)"
+         @selectLinkSource="selectLinkSource(chunk)"
+     />
+     <v-menu
+         v-model="showMenu"
+         :position-x="x"
+         :position-y="y"
+         absolute
+         offset-y
+     >
+       <v-list
+           dense
+           min-width="150"
+           max-height="400"
+           class="overflow-y-auto"
+       >
+         <v-list-item
+             v-for="(label, i) in labels"
+             :key="i"
+             v-shortkey="[label.suffixKey]"
+             @shortkey="assignLabel(label.id)"
+             @click="assignLabel(label.id)"
+         >
+           <v-list-item-content>
+             <v-list-item-title v-text="label.text"/>
+           </v-list-item-content>
+           <v-list-item-action>
+             <v-list-item-action-text v-text="label.suffixKey"/>
+           </v-list-item-action>
+         </v-list-item>
+       </v-list>
+     </v-menu>
+   </div>
+
+   <canvas id="connections">
+   </canvas>
+</div>
 </template>
 
 <script>
 import EntityItem from './EntityItem'
+
 export default {
   components: {
     EntityItem
@@ -76,6 +85,16 @@ export default {
       required: true
     },
     addEntity: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    selectedChunkId: {
+      type: Number,
+      default: -1,
+      required: true
+    },
+    selectLinkSource: {
       type: Function,
       default: () => ([]),
       required: true
@@ -111,7 +130,8 @@ export default {
           id: entity.id,
           label: label.text,
           color: label.backgroundColor,
-          text: piece
+          text: piece,
+          selectedAsLinkSource: false
         })
       }
       // add the rest of text.
@@ -125,6 +145,71 @@ export default {
       }
       return obj
     }
+  },
+  updated() {
+    this.$nextTick(() => {
+      // SIMULATION ONLY
+
+      // svuota il canvas adeguandolo alla dimensione reale del <div> col testo
+      const parentPos = document.getElementById('connections-wrapper').getBoundingClientRect();
+      const canvas = document.getElementById('connections');
+      canvas.width = parentPos.width;
+      canvas.height = parentPos.height;
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, parentPos.width, parentPos.height);
+
+      // simulo una relazione tra le prime due annotazioni
+      let one, two;
+
+      this.chunks.forEach(function(chunk) {
+        if (chunk.id) {
+          if (!one) {
+            one = chunk;
+          } else if (!two) {
+            two = chunk;
+          }
+        }
+      });
+
+      // disegno la pseudo relazione nel canvas
+      if (one && two) {
+        let childPos = document.getElementById('spn-' + one.id).getBoundingClientRect();
+        const x1 = (childPos.x + childPos.width / 2) - parentPos.x;
+        const y1 = (childPos.y + childPos.height / 2) - parentPos.y;
+
+        childPos = document.getElementById('spn-' + two.id).getBoundingClientRect();
+        const x2 = (childPos.x + childPos.width / 2) - parentPos.x;
+        const y2 = (childPos.y + childPos.height / 2) - parentPos.y;
+
+        ctx.lineWidth = 3;
+        ctx.moveTo(x1, y1);
+
+        if (y1 === y2) {
+          ctx.strokeStyle = one.color;
+          ctx.lineTo(x1, y1 + 25);
+          ctx.stroke();
+
+          const gradient = ctx.createLinearGradient(x1, y1 + 25, x2, y1 + 25);
+          gradient.addColorStop(0, one.color);
+          gradient.addColorStop(1, two.color);
+          ctx.strokeStyle = gradient;
+          ctx.lineTo(x2, y1 + 25);
+          ctx.stroke();
+
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+
+        } else {
+          const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+          gradient.addColorStop(0, one.color);
+          gradient.addColorStop(1, two.color);
+          ctx.strokeStyle = gradient;
+
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+      }
+    });
   },
   methods: {
     makeChunks(text) {
@@ -152,6 +237,7 @@ export default {
       })
       return chunks
     },
+
     show(e) {
       e.preventDefault()
       this.showMenu = false
@@ -161,6 +247,7 @@ export default {
         this.showMenu = true
       })
     },
+
     setSpanInfo() {
       let selection
       // Modern browsers.
@@ -180,6 +267,7 @@ export default {
       this.start = [...preSelectionRange.toString()].length
       this.end = this.start + [...range.toString()].length
     },
+
     validateSpan() {
       if ((typeof this.start === 'undefined') || (typeof this.end === 'undefined')) {
         return false
@@ -200,12 +288,14 @@ export default {
       }
       return true
     },
+
     open(e) {
       this.setSpanInfo()
       if (this.validateSpan()) {
         this.show(e)
       }
     },
+
     assignLabel(labelId) {
       if (this.validateSpan()) {
         this.addEntity(this.start, this.end, labelId)
@@ -222,14 +312,31 @@ export default {
 .highlight-container.highlight-container--bottom-labels {
   align-items: flex-start;
 }
+
 .highlight-container {
-  line-height: 42px!important;
+  line-height: 50px !important;
   display: flex;
   flex-wrap: wrap;
   white-space: pre-wrap;
   cursor: default;
+  position: relative;
+  z-index: 1;
 }
+
 .highlight-container.highlight-container--bottom-labels .highlight.bottom {
   margin-top: 6px;
+}
+
+#connections-wrapper {
+  position: relative;
+}
+
+#connections-wrapper canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 </style>

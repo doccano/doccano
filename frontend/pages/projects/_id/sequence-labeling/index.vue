@@ -17,7 +17,7 @@
         class="d-flex d-sm-none"
       />
     </template>
-    <template v-slot:content>
+    <template v-slot:content  >
       <v-card>
         <v-card-text class="title">
           <entity-item-box
@@ -27,6 +27,8 @@
             :delete-annotation="remove"
             :update-entity="update"
             :add-entity="add"
+            :selected-chunk-id="selectedChunkId"
+            :select-link-source="selectLinkSource"
           />
         </v-card-text>
       </v-card>
@@ -77,7 +79,8 @@ export default {
       docs: [],
       labels: [],
       project: {},
-      enableAutoLabeling: false
+      enableAutoLabeling: false,
+      selectedChunkId: -1
     }
   },
 
@@ -148,6 +151,12 @@ export default {
       const approved = !this.doc.isApproved
       await this.$services.document.approve(this.projectId, this.doc.id, approved)
       await this.$fetch()
+    },
+
+    selectLinkSource(chunk) {
+      console.log(chunk.id);
+      console.log(this.selectedChunkId);
+      this.selectedChunkId = (this.selectedChunkId === chunk.id) ? -1 : chunk.id;
     }
   },
 
