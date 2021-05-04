@@ -156,6 +156,11 @@ export default {
     selectLinkSource(chunk) {
       console.log(chunk.id);
       console.log(this.selectedChunkId);
+
+      if (this.selectedChunkId !== -1) {
+        console.log('aggiungi link [' + this.selectedChunkId + ', ' + chunk.id + ']');
+      }
+
       this.selectedChunkId = (this.selectedChunkId === chunk.id) ? -1 : chunk.id;
     }
   },
