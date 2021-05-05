@@ -1,15 +1,17 @@
 <template>
   <v-menu
-      v-if="label"
+      v-if="label && !showLinksMenu"
       v-model="showMenu"
       offset-y
   >
     <template v-slot:activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
         <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
-            :class="{ active: spanid === selectedChunkId }" class="iconify target-selector" data-icon="mdi-link-variant"
-            @click.stop="onLinkClick"></span></span><span :data-label="label" :style="{ backgroundColor: color, color: textColor }"
-                                                          class="highlight__label"/>
+            v-if="!showMenu && sourceChunk.none" class="choose-link-type" @click.stop="selectSourceAndShowLinkTypes"></span><span
+            v-if="!showMenu && sourceChunk.id === spanid" class="active-link-source" @click.stop="abortNewLink"></span><span
+            v-if="selectedLinkType > -1 && sourceChunk.id && sourceChunk.id !== spanid" class="choose-target"
+            @click.stop="selectTarget"></span></span><span
+          :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label"/>
       </span>
     </template>
 
@@ -35,6 +37,40 @@
       </v-list-item>
     </v-list>
   </v-menu>
+
+  <v-menu
+      v-else-if="label && showLinksMenu"
+      v-model="showMenu"
+      offset-y
+  >
+    <template v-slot:activator="{ on }">
+      <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
+        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span
+          :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label"/>
+      </span>
+    </template>
+
+    <v-list
+        dense
+        min-width="150"
+        max-height="400"
+        class="overflow-y-auto"
+    >
+      <v-list-item
+          v-for="(item, i) in labels"
+          :key="i"
+          @click="selectLinkType(item)"
+      >
+        <v-list-item-content>
+          <v-list-item-title v-text="'LINK - ' + item.text"/>
+        </v-list-item-content>
+        <v-list-item-action>
+          <v-list-item-action-text v-text="item.suffixKey"/>
+        </v-list-item-action>
+      </v-list-item>
+    </v-list>
+  </v-menu>
+
   <span v-else :class="[newline ? 'newline' : '']">{{ content }}</span>
 </template>
 
@@ -69,32 +105,63 @@ export default {
     newline: {
       type: Boolean
     },
-    selectedChunkId: {
+    sourceChunk: {
+      type: Object,
+      default: () => {
+      }
+    },
+    selectedLinkType: {
       type: Number,
-      default: -1
+      default: -1,
+      required: true
     }
   },
+
   data() {
     return {
-      showMenu: false
+      showMenu: false,
+      showLinksMenu: false
     }
   },
+
   computed: {
     textColor() {
       return idealColor(this.color)
     }
   },
+
   methods: {
     update(label) {
       this.$emit('update', label)
       this.showMenu = false
     },
+
     remove() {
       this.$emit('remove')
     },
-    onLinkClick() {
-      this.$emit('selectLinkSource');
+
+    selectSourceAndShowLinkTypes() {
+      this.showMenu = true;
+      this.showLinksMenu = true;
+      this.$emit('selectSource');
+    },
+
+    selectLinkType(type) {
       this.showMenu = false;
+      this.showLinksMenu = false;
+      this.$emit('selectLinkType', type);
+    },
+
+    selectTarget() {
+      this.showMenu = false;
+      this.showLinksMenu = false;
+      this.$emit('selectTarget');
+    },
+
+    abortNewLink() {
+      this.showMenu = false;
+      this.showLinksMenu = false;
+      this.$emit('abortNewLink');
     }
   }
 }
@@ -137,11 +204,22 @@ export default {
   display: block;
 }
 
-.highlight .target-selector:before {
-  content: 'L';
+.highlight .choose-link-type:before {
+  content: 'R';
 }
 
-.highlight .target-selector {
+.highlight .active-link-source:before {
+  content: 'R';
+}
+
+.highlight .choose-target:before {
+  content: '+';
+}
+
+.highlight .choose-link-type,
+.highlight .active-link-source,
+.highlight .choose-target {
+  display: none;
   position: absolute;
   top: -12px;
   right: -11px;
@@ -153,9 +231,14 @@ export default {
   text-align: center;
 }
 
-.highlight .target-selector.active {
+.highlight:hover .choose-link-type,
+.highlight:hover .choose-target {
   display: block;
-  background: #008ad6;
+}
+
+.highlight .active-link-source {
+  display: block;
+  background: #00a4cf;
   color: #ffffff;
 }
 

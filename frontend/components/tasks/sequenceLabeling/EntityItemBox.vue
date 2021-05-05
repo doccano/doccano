@@ -1,54 +1,58 @@
 <template>
-<div id="connections-wrapper">
-   <div class="highlight-container highlight-container--bottom-labels" @click="open" @touchend="open">
-     <entity-item
-         v-for="(chunk, i) in chunks"
-         :key="i"
-         :spanid="chunk.id"
-         :content="chunk.text"
-         :newline="chunk.newline"
-         :label="chunk.label"
-         :color="chunk.color"
-         :labels="labels"
-         :selected-chunk-id="selectedChunkId"
-         @remove="deleteAnnotation(chunk.id)"
-         @update="updateEntity($event.id, chunk.id)"
-         @selectLinkSource="selectLinkSource(chunk)"
-     />
-     <v-menu
-         v-model="showMenu"
-         :position-x="x"
-         :position-y="y"
-         absolute
-         offset-y
-     >
-       <v-list
-           dense
-           min-width="150"
-           max-height="400"
-           class="overflow-y-auto"
-       >
-         <v-list-item
-             v-for="(label, i) in labels"
-             :key="i"
-             v-shortkey="[label.suffixKey]"
-             @shortkey="assignLabel(label.id)"
-             @click="assignLabel(label.id)"
-         >
-           <v-list-item-content>
-             <v-list-item-title v-text="label.text"/>
-           </v-list-item-content>
-           <v-list-item-action>
-             <v-list-item-action-text v-text="label.suffixKey"/>
-           </v-list-item-action>
-         </v-list-item>
-       </v-list>
-     </v-menu>
-   </div>
+  <div id="connections-wrapper">
+    <div class="highlight-container highlight-container--bottom-labels" @click="open" @touchend="open">
+      <entity-item
+          v-for="(chunk, i) in chunks"
+          :key="i"
+          :spanid="chunk.id"
+          :content="chunk.text"
+          :newline="chunk.newline"
+          :label="chunk.label"
+          :color="chunk.color"
+          :labels="labels"
+          :source-chunk="sourceChunk"
+          :selected-link-type="selectedLinkType"
+          @remove="deleteAnnotation(chunk.id)"
+          @update="updateEntity($event.id, chunk.id)"
+          @selectSource="selectSource(chunk)"
+          @selectTarget="selectTarget(chunk)"
+          @selectLinkType="selectLinkType($event.id)"
+          @abortNewLink="abortNewLink()"
+      />
+      <v-menu
+          v-model="showMenu"
+          :position-x="x"
+          :position-y="y"
+          absolute
+          offset-y
+      >
+        <v-list
+            dense
+            min-width="150"
+            max-height="400"
+            class="overflow-y-auto"
+        >
+          <v-list-item
+              v-for="(label, i) in labels"
+              :key="i"
+              v-shortkey="[label.suffixKey]"
+              @shortkey="assignLabel(label.id)"
+              @click="assignLabel(label.id)"
+          >
+            <v-list-item-content>
+              <v-list-item-title v-text="label.text"/>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-list-item-action-text v-text="label.suffixKey"/>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+    </div>
 
-   <canvas id="connections">
-   </canvas>
-</div>
+    <canvas id="connections">
+    </canvas>
+  </div>
 </template>
 
 <script>
@@ -58,6 +62,7 @@ export default {
   components: {
     EntityItem
   },
+
   props: {
     text: {
       type: String,
@@ -89,17 +94,39 @@ export default {
       default: () => ([]),
       required: true
     },
-    selectedChunkId: {
+    sourceChunk: {
+      type: Object,
+      default: () => {
+      },
+      required: true
+    },
+    selectedLinkType: {
       type: Number,
       default: -1,
       required: true
     },
-    selectLinkSource: {
+    selectSource: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    selectTarget: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    selectLinkType: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    abortNewLink: {
       type: Function,
       default: () => ([]),
       required: true
     }
   },
+
   data() {
     return {
       showMenu: false,
@@ -109,6 +136,7 @@ export default {
       end: 0
     }
   },
+
   computed: {
     sortedEntities() {
       return this.entities.slice().sort((a, b) => a.startOffset - b.startOffset)
@@ -131,7 +159,8 @@ export default {
           label: label.text,
           color: label.backgroundColor,
           text: piece,
-          selectedAsLinkSource: false
+          selectedAsLinkSource: false,
+          links: []
         })
       }
       // add the rest of text.
@@ -146,6 +175,7 @@ export default {
       return obj
     }
   },
+
   updated() {
     this.$nextTick(() => {
       // SIMULATION ONLY
@@ -158,59 +188,42 @@ export default {
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, parentPos.width, parentPos.height);
 
-      // simulo una relazione tra le prime due annotazioni
-      let one, two;
+      this.chunks.forEach(function(fromChunk) {
+        if (fromChunk.links) {
+          fromChunk.links.forEach(function(toChunk) {
+            let childPos = document.getElementById('spn-' + fromChunk.id).getBoundingClientRect();
+            const x1 = (childPos.x + childPos.width / 2) - parentPos.x;
+            const y1 = (childPos.y + childPos.height / 2) - parentPos.y;
 
-      this.chunks.forEach(function(chunk) {
-        if (chunk.id) {
-          if (!one) {
-            one = chunk;
-          } else if (!two) {
-            two = chunk;
-          }
+            childPos = document.getElementById('spn-' + toChunk.id).getBoundingClientRect();
+            const x2 = (childPos.x + childPos.width / 2) - parentPos.x;
+            const y2 = (childPos.y + childPos.height / 2) - parentPos.y;
+
+            ctx.beginPath();
+            ctx.lineWidth = 3;
+            ctx.moveTo(x1, y1);
+            ctx.strokeStyle = fromChunk.color;
+
+            if (y1 === y2) {
+              ctx.lineTo(x1, y1 + 35);
+              ctx.stroke();
+
+              ctx.lineTo(x2, y1 + 35);
+              ctx.stroke();
+
+              ctx.lineTo(x2, y2);
+              ctx.stroke();
+
+            } else {
+              ctx.lineTo(x2, y2);
+              ctx.stroke();
+            }
+          });
         }
       });
-
-      // disegno la pseudo relazione nel canvas
-      if (one && two) {
-        let childPos = document.getElementById('spn-' + one.id).getBoundingClientRect();
-        const x1 = (childPos.x + childPos.width / 2) - parentPos.x;
-        const y1 = (childPos.y + childPos.height / 2) - parentPos.y;
-
-        childPos = document.getElementById('spn-' + two.id).getBoundingClientRect();
-        const x2 = (childPos.x + childPos.width / 2) - parentPos.x;
-        const y2 = (childPos.y + childPos.height / 2) - parentPos.y;
-
-        ctx.lineWidth = 3;
-        ctx.moveTo(x1, y1);
-
-        if (y1 === y2) {
-          ctx.strokeStyle = one.color;
-          ctx.lineTo(x1, y1 + 25);
-          ctx.stroke();
-
-          const gradient = ctx.createLinearGradient(x1, y1 + 25, x2, y1 + 25);
-          gradient.addColorStop(0, one.color);
-          gradient.addColorStop(1, two.color);
-          ctx.strokeStyle = gradient;
-          ctx.lineTo(x2, y1 + 25);
-          ctx.stroke();
-
-          ctx.lineTo(x2, y2);
-          ctx.stroke();
-
-        } else {
-          const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-          gradient.addColorStop(0, one.color);
-          gradient.addColorStop(1, two.color);
-          ctx.strokeStyle = gradient;
-
-          ctx.lineTo(x2, y2);
-          ctx.stroke();
-        }
-      }
     });
   },
+
   methods: {
     makeChunks(text) {
       const chunks = []
@@ -290,6 +303,8 @@ export default {
     },
 
     open(e) {
+      this.$emit('abortNewLink');
+
       this.setSpanInfo()
       if (this.validateSpan()) {
         this.show(e)
@@ -314,7 +329,7 @@ export default {
 }
 
 .highlight-container {
-  line-height: 50px !important;
+  line-height: 70px !important;
   display: flex;
   flex-wrap: wrap;
   white-space: pre-wrap;

@@ -2,39 +2,43 @@
   <layout-text v-if="doc.id">
     <template v-slot:header>
       <toolbar-laptop
-        :doc-id="doc.id"
-        :enable-auto-labeling.sync="enableAutoLabeling"
-        :guideline-text="project.guideline"
-        :is-reviewd="doc.isApproved"
-        :show-approve-button="project.permitApprove"
-        :total="docs.count"
-        class="d-none d-sm-block"
-        @click:clear-label="clear"
-        @click:review="approve"
+          :doc-id="doc.id"
+          :enable-auto-labeling.sync="enableAutoLabeling"
+          :guideline-text="project.guideline"
+          :is-reviewd="doc.isApproved"
+          :show-approve-button="project.permitApprove"
+          :total="docs.count"
+          class="d-none d-sm-block"
+          @click:clear-label="clear"
+          @click:review="approve"
       />
       <toolbar-mobile
-        :total="docs.count"
-        class="d-flex d-sm-none"
+          :total="docs.count"
+          class="d-flex d-sm-none"
       />
     </template>
-    <template v-slot:content  >
+    <template v-slot:content>
       <v-card>
         <v-card-text class="title">
           <entity-item-box
-            :labels="labels"
-            :text="doc.text"
-            :entities="annotations"
-            :delete-annotation="remove"
-            :update-entity="update"
-            :add-entity="add"
-            :selected-chunk-id="selectedChunkId"
-            :select-link-source="selectLinkSource"
+              :labels="labels"
+              :text="doc.text"
+              :entities="annotations"
+              :delete-annotation="remove"
+              :update-entity="update"
+              :add-entity="add"
+              :source-chunk="sourceChunk"
+              :selected-link-type="selectedLinkType"
+              :select-source="selectSource"
+              :select-target="selectTarget"
+              :select-link-type="selectLinkType"
+              :abort-new-link="abortNewLink"
           />
         </v-card-text>
       </v-card>
     </template>
     <template v-slot:sidebar>
-      <list-metadata :metadata="JSON.parse(doc.meta)" />
+      <list-metadata :metadata="JSON.parse(doc.meta)"/>
     </template>
   </layout-text>
 </template>
@@ -60,11 +64,11 @@ export default {
 
   async fetch() {
     this.docs = await this.$services.document.fetchOne(
-      this.projectId,
-      this.$route.query.page,
-      this.$route.query.q,
-      this.$route.query.isChecked,
-      this.project.filterOption
+        this.projectId,
+        this.$route.query.page,
+        this.$route.query.q,
+        this.$route.query.isChecked,
+        this.project.filterOption
     )
     const doc = this.docs.items[0]
     if (this.enableAutoLabeling) {
@@ -80,7 +84,10 @@ export default {
       labels: [],
       project: {},
       enableAutoLabeling: false,
-      selectedChunkId: -1
+      sourceChunk: {
+        none: true
+      },
+      selectedLinkType: -1
     }
   },
 
@@ -116,20 +123,24 @@ export default {
 
   methods: {
     async list(docId) {
+      this.abortNewLink();
       this.annotations = await this.$services.sequenceLabeling.list(this.projectId, docId)
     },
 
     async remove(id) {
+      this.abortNewLink();
       await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
     },
 
     async add(startOffset, endOffset, labelId) {
+      this.abortNewLink();
       await this.$services.sequenceLabeling.create(this.projectId, this.doc.id, labelId, startOffset, endOffset)
       await this.list(this.doc.id)
     },
 
     async update(labelId, annotationId) {
+      this.abortNewLink();
       await this.$services.sequenceLabeling.changeLabel(this.projectId, this.doc.id, annotationId, labelId)
       await this.list(this.doc.id)
     },
@@ -153,19 +164,34 @@ export default {
       await this.$fetch()
     },
 
-    selectLinkSource(chunk) {
-      console.log(chunk.id);
-      console.log(this.selectedChunkId);
+    selectSource(chunk) {
+      this.sourceChunk = chunk;
+    },
 
-      if (this.selectedChunkId !== -1) {
-        console.log('aggiungi link [' + this.selectedChunkId + ', ' + chunk.id + ']');
+    selectTarget(chunk) {
+      // skips links duplicates
+      if (!chunk.links.find(ch => ch.id === this.sourceChunk.id)) {
+        this.sourceChunk.links.push({
+          id: chunk.id,
+          type: this.selectedLinkType
+        });
       }
+      this.abortNewLink();
+    },
 
-      this.selectedChunkId = (this.selectedChunkId === chunk.id) ? -1 : chunk.id;
+    selectLinkType(type) {
+      this.selectedLinkType = type;
+    },
+
+    abortNewLink() {
+      this.sourceChunk = {
+        none: true
+      };
+      this.selectedLinkType = -1;
     }
   },
 
-  validate({ params, query }) {
+  validate({params, query}) {
     return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   }
 }
