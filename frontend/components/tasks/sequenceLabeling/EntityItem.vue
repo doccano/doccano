@@ -7,7 +7,7 @@
     <template v-slot:activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
         <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
-            v-if="!showMenu && sourceChunk.none" class="choose-link-type" @click.stop="selectSourceAndShowLinkTypes"></span><span
+            v-if="false && !showMenu && sourceChunk.none" class="choose-link-type" @click.stop="selectSourceAndShowLinkTypes"></span><span
             v-if="!showMenu && sourceChunk.id === spanid" class="active-link-source" @click.stop="abortNewLink"></span><span
             v-if="selectedLinkType > -1 && sourceChunk.id && sourceChunk.id !== spanid" class="choose-target"
             @click.stop="selectTarget"></span></span><span
