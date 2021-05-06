@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from ..models import Document, Project
 from ..permissions import (IsAnnotationApprover, IsInProjectOrAdmin,
                            IsOwnAnnotation, IsProjectAdmin)
-from ..serializers import ApproverSerializer
+from ..serializers import ApproverSerializer, get_annotation_serializer
 
 
 class AnnotationList(generics.ListCreateAPIView):
@@ -20,7 +20,7 @@ class AnnotationList(generics.ListCreateAPIView):
         return get_object_or_404(Project, pk=self.kwargs['project_id'])
 
     def get_serializer_class(self):
-        self.serializer_class = self.project.get_annotation_serializer()
+        self.serializer_class = get_annotation_serializer(task=self.project.project_type)
         return self.serializer_class
 
     def get_queryset(self):
@@ -59,7 +59,7 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
 
     def get_serializer_class(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = project.get_annotation_serializer()
+        self.serializer_class = get_annotation_serializer(task=project.project_type)
         return self.serializer_class
 
     def get_queryset(self):

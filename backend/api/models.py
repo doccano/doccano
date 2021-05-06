@@ -33,9 +33,6 @@ class Project(PolymorphicModel):
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)
 
-    def get_annotation_serializer(self):
-        raise NotImplementedError()
-
     def get_annotation_class(self):
         raise NotImplementedError()
 
@@ -45,19 +42,11 @@ class Project(PolymorphicModel):
 
 class TextClassificationProject(Project):
 
-    def get_annotation_serializer(self):
-        from .serializers import DocumentAnnotationSerializer
-        return DocumentAnnotationSerializer
-
     def get_annotation_class(self):
         return DocumentAnnotation
 
 
 class SequenceLabelingProject(Project):
-
-    def get_annotation_serializer(self):
-        from .serializers import SequenceAnnotationSerializer
-        return SequenceAnnotationSerializer
 
     def get_annotation_class(self):
         return SequenceAnnotation
@@ -65,19 +54,11 @@ class SequenceLabelingProject(Project):
 
 class Seq2seqProject(Project):
 
-    def get_annotation_serializer(self):
-        from .serializers import Seq2seqAnnotationSerializer
-        return Seq2seqAnnotationSerializer
-
     def get_annotation_class(self):
         return Seq2seqAnnotation
 
 
 class Speech2textProject(Project):
-
-    def get_annotation_serializer(self):
-        from .serializers import Speech2textAnnotationSerializer
-        return Speech2textAnnotationSerializer
 
     def get_annotation_class(self):
         return Speech2textAnnotation
