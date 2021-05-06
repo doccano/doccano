@@ -136,7 +136,7 @@ class JSONLWriter(LineWriter):
             'data': record.data,
             'label': record.label,
             **record.metadata
-        },ensure_ascii=False)
+        }, ensure_ascii=False)
 
 
 class FastTextWriter(LineWriter):
