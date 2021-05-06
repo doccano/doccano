@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from ...models import SEQUENCE_LABELING
 from .utils import (assign_user_to_role, create_default_roles,
                     remove_all_role_mappings)
 
@@ -25,7 +26,11 @@ class TestCommentListAPI(APITestCase):
                                                         password=cls.another_project_member_pass)
         User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
 
-        main_project = mommy.make('SequenceLabelingProject', users=[cls.project_member, another_project_member])
+        main_project = mommy.make(
+            _model='SequenceLabelingProject',
+            project_type=SEQUENCE_LABELING,
+            users=[cls.project_member, another_project_member]
+        )
         main_project_doc = mommy.make('Document', project=main_project)
         cls.comment = mommy.make('Comment', document=main_project_doc, text='comment 1', user=cls.project_member)
         mommy.make('Comment', document=main_project_doc, text='comment 2', user=cls.project_member)
@@ -41,20 +46,20 @@ class TestCommentListAPI(APITestCase):
 
     def test_returns_comments_to_project_member(self):
         self.client.login(username=self.project_member_name,
-                        password=self.project_member_pass)
+                          password=self.project_member_pass)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
 
         self.client.login(username=self.another_project_member_name,
-                        password=self.another_project_member_pass)
+                          password=self.another_project_member_pass)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 3)
 
     def test_does_not_return_comments_to_non_project_member(self):
         self.client.login(username=self.non_project_member_name,
-                        password=self.non_project_member_pass)
+                          password=self.non_project_member_pass)
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 

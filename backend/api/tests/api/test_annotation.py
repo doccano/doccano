@@ -5,7 +5,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from ...models import SequenceAnnotation
+from ...models import (DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING,
+                       SequenceAnnotation)
 from .utils import (TestUtilsMixin, assign_user_to_role, create_default_roles,
                     remove_all_role_mappings)
 
@@ -28,18 +29,29 @@ class TestAnnotationListAPI(APITestCase, TestUtilsMixin):
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
 
-        main_project = mommy.make('SequenceLabelingProject', users=[project_member, another_project_member])
+        main_project = mommy.make(
+            _model='SequenceLabelingProject',
+            users=[project_member, another_project_member],
+            project_type=SEQUENCE_LABELING
+        )
         main_project_label = mommy.make('Label', project=main_project)
         main_project_doc = mommy.make('Document', project=main_project)
         mommy.make('SequenceAnnotation', document=main_project_doc, user=project_member)
         mommy.make('SequenceAnnotation', document=main_project_doc, user=another_project_member)
 
-        sub_project = mommy.make('SequenceLabelingProject', users=[non_project_member])
+        sub_project = mommy.make(
+            _model='SequenceLabelingProject',
+            users=[non_project_member],
+            project_type=SEQUENCE_LABELING
+        )
         sub_project_doc = mommy.make('Document', project=sub_project)
         mommy.make('SequenceAnnotation', document=sub_project_doc)
 
-        cls.classification_project = mommy.make('TextClassificationProject',
-                                                users=[project_member, another_project_member])
+        cls.classification_project = mommy.make(
+            _model='TextClassificationProject',
+            users=[project_member, another_project_member],
+            project_type=DOCUMENT_CLASSIFICATION
+        )
         cls.classification_project_label_1 = mommy.make('Label', project=cls.classification_project)
         cls.classification_project_label_2 = mommy.make('Label', project=cls.classification_project)
         cls.classification_project_document = mommy.make('Document', project=cls.classification_project)
@@ -166,17 +178,23 @@ class TestAnnotationDetailAPI(APITestCase):
         non_project_member = User.objects.create_user(username=cls.non_project_member_name,
                                                       password=cls.non_project_member_pass)
 
-        main_project = mommy.make('SequenceLabelingProject',
-                                  users=[super_user, project_member, another_project_member])
+        main_project = mommy.make(
+            _model='SequenceLabelingProject',
+            users=[super_user, project_member, another_project_member],
+            project_type=SEQUENCE_LABELING
+        )
         main_project_doc = mommy.make('Document', project=main_project)
         main_project_entity = mommy.make('SequenceAnnotation',
                                          document=main_project_doc, user=project_member)
         another_entity = mommy.make('SequenceAnnotation',
                                     document=main_project_doc, user=another_project_member)
 
-        shared_project = mommy.make('SequenceLabelingProject',
-                                    collaborative_annotation=True,
-                                    users=[project_member, another_project_member])
+        shared_project = mommy.make(
+            _model='SequenceLabelingProject',
+            collaborative_annotation=True,
+            users=[project_member, another_project_member],
+            project_type=SEQUENCE_LABELING
+        )
         shared_project_doc = mommy.make('Document', project=shared_project)
         shared_entity = mommy.make('SequenceAnnotation', document=shared_project_doc, user=another_project_member)
 

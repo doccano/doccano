@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from ...models import DOCUMENT_CLASSIFICATION
 from .utils import (assign_user_to_role, create_default_roles,
                     remove_all_role_mappings)
 
@@ -33,8 +34,16 @@ class TestProjectListAPI(APITestCase):
         User.objects.create_superuser(username=cls.super_user_name,
                                       password=cls.super_user_pass,
                                       email='fizz@buzz.com')
-        cls.main_project = mommy.make('TextClassificationProject', users=[main_project_member])
-        cls.sub_project = mommy.make('TextClassificationProject', users=[sub_project_member])
+        cls.main_project = mommy.make(
+            _model='TextClassificationProject',
+            project_type=DOCUMENT_CLASSIFICATION,
+            users=[main_project_member]
+        )
+        cls.sub_project = mommy.make(
+            _model='TextClassificationProject',
+            project_type=DOCUMENT_CLASSIFICATION,
+            users=[sub_project_member]
+        )
         assign_user_to_role(project_member=main_project_member, project=cls.main_project,
                             role_name=settings.ROLE_ANNOTATOR)
         assign_user_to_role(project_member=sub_project_member, project=cls.sub_project,
@@ -118,8 +127,16 @@ class TestProjectDetailAPI(APITestCase):
                                                    password=cls.admin_user_pass,
                                                    email='fizz@buzz.com')
 
-        cls.main_project = mommy.make('TextClassificationProject', users=[cls.project_member, project_admin])
-        mommy.make('TextClassificationProject', users=[non_project_member])
+        cls.main_project = mommy.make(
+            _model='TextClassificationProject',
+            project_type=DOCUMENT_CLASSIFICATION,
+            users=[cls.project_member, project_admin]
+        )
+        mommy.make(
+            _model='TextClassificationProject',
+            project_type=DOCUMENT_CLASSIFICATION,
+            users=[non_project_member]
+        )
         cls.url = reverse(viewname='project_detail', args=[cls.main_project.id])
         cls.data = {'description': 'lorem'}
         assign_user_to_role(project_member=cls.project_member, project=cls.main_project,
@@ -182,7 +199,11 @@ class TestTagAPI(APITestCase):
         super_user = User.objects.create_superuser(username=cls.super_user_name,
                                       password=cls.super_user_pass,
                                       email='fizz@buzz.com')
-        cls.main_project = mommy.make('TextClassificationProject', users=[main_project_member, super_user])
+        cls.main_project = mommy.make(
+            _model='TextClassificationProject',
+            project_type=DOCUMENT_CLASSIFICATION,
+            users=[main_project_member, super_user]
+        )
         assign_user_to_role(project_member=main_project_member, project=cls.main_project,
                             role_name=settings.ROLE_ANNOTATOR)
         assign_user_to_role(project_member=super_user, project=cls.main_project,

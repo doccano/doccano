@@ -4,7 +4,7 @@ from model_mommy import mommy
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from ...models import Document
+from ...models import DOCUMENT_CLASSIFICATION, Document
 from .utils import (TestUtilsMixin, assign_user_to_role, create_default_roles,
                     remove_all_role_mappings)
 
@@ -27,7 +27,11 @@ class TestStatisticsAPI(APITestCase, TestUtilsMixin):
                                               password=cls.other_user_pass,
                                               email='bar@buzz.com')
 
-        cls.project = mommy.make('TextClassificationProject', users=[super_user])
+        cls.project = mommy.make(
+            _model='TextClassificationProject',
+            project_type=DOCUMENT_CLASSIFICATION,
+            users=[super_user]
+        )
         doc1 = mommy.make('Document', project=cls.project)
         doc2 = mommy.make('Document', project=cls.project)
         mommy.make('DocumentAnnotation', document=doc1, user=super_user)
