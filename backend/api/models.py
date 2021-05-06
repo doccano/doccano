@@ -7,7 +7,6 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import m2m_changed, post_save, pre_delete
 from django.dispatch import receiver
-from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
 from .managers import (AnnotationManager, RoleMappingManager,
@@ -36,9 +35,6 @@ class Project(PolymorphicModel):
     randomize_document_order = models.BooleanField(default=False)
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)
-
-    def get_absolute_url(self):
-        return reverse('upload', args=[self.id])
 
     def get_annotation_serializer(self):
         raise NotImplementedError()
