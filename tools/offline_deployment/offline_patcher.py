@@ -115,7 +115,6 @@ def main():
             for spot in link_findings_default + link_findings_url_prefix:
                 absolute_link = spot["abs"]
                 found_link = spot["found"]
-                found_host = spot["host"]
 
                 if absolute_link not in valid_urls:
                     # check link
