@@ -59,7 +59,7 @@ def make_project(
         SEQUENCE_LABELING: 'SequenceLabelingProject',
         SEQ2SEQ: 'Seq2seqProject',
         SPEECH2TEXT: 'Speech2TextProject'
-    }[task]
+    }.get(task, 'Project')
     project = mommy.make(
         _model=project_model,
         project_type=task,
@@ -78,6 +78,10 @@ def make_project(
 
 def make_tag(project):
     return mommy.make('Tag', project=project)
+
+
+def make_label(project):
+    return mommy.make('Label', project=project)
 
 
 class TestUtilsMixin:

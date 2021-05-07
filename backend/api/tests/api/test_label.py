@@ -1,117 +1,92 @@
 import os
 
 from django.conf import settings
-from django.contrib.auth.models import User
-from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from .utils import (DATA_DIR, assign_user_to_role, create_default_roles,
+from .utils import (DATA_DIR, make_label, make_project, make_user,
                     remove_all_role_mappings)
 
 
-class TestLabelListAPI(APITestCase):
+class TestLabelList(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.project_member_name = 'project_member_name'
-        cls.project_member_pass = 'project_member_pass'
-        cls.non_project_member_name = 'non_project_member_name'
-        cls.non_project_member_pass = 'non_project_member_pass'
-        cls.admin_user_name = 'admin_user_name'
-        cls.admin_user_pass = 'admin_user_pass'
-        create_default_roles()
-        cls.project_member = User.objects.create_user(username=cls.project_member_name,
-                                                      password=cls.project_member_pass)
-        non_project_member = User.objects.create_user(username=cls.non_project_member_name,
-                                                      password=cls.non_project_member_pass)
-        project_admin = User.objects.create_superuser(username=cls.admin_user_name,
-                                                   password=cls.admin_user_pass,
-                                                   email='fizz@buzz.com')
-        cls.main_project = mommy.make('Project', users=[cls.project_member, project_admin])
-        cls.main_project_label = mommy.make('Label', project=cls.main_project)
+        cls.non_member = make_user(username='bob')
+        cls.project_a = make_project(
+            task='Any',
+            users=['admin', 'approver', 'annotator'],
+            roles=[
+                settings.ROLE_PROJECT_ADMIN,
+                settings.ROLE_ANNOTATION_APPROVER,
+                settings.ROLE_ANNOTATOR,
+            ]
+        )
+        cls.label = make_label(cls.project_a.item)
+        cls.url = reverse(viewname='label_list', args=[cls.project_a.item.id])
 
-        sub_project = mommy.make('Project', users=[non_project_member])
-        other_project = mommy.make('Project', users=[project_admin])
-        mommy.make('Label', project=sub_project)
-        cls.url = reverse(viewname='label_list', args=[cls.main_project.id])
-        cls.other_url = reverse(viewname='label_list', args=[other_project.id])
-        cls.data = {'text': 'example'}
-        assign_user_to_role(project_member=cls.project_member, project=cls.main_project,
-                            role_name=settings.ROLE_ANNOTATOR)
+        # Ensure that the API does not return the labels of the other project.
+        cls.project_b = make_project(
+            task='Any',
+            users=['admin'],
+            roles=[settings.ROLE_PROJECT_ADMIN]
+        )
+        make_label(cls.project_b.item)
 
     def test_returns_labels_to_project_member(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        for member in self.project_a.users:
+            self.client.force_login(member)
+            response = self.client.get(self.url)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(len(response.data), 1)
+            self.assertEqual(response.data[0]['id'], self.label.id)
 
-    def test_do_not_return_labels_to_non_project_member(self):
-        self.client.login(username=self.non_project_member_name,
-                          password=self.non_project_member_pass)
-        response = self.client.get(self.url, format='json')
+    def test_does_not_return_labels_to_non_project_member(self):
+        self.client.force_login(self.non_member)
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_do_not_return_labels_of_other_projects(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
-        label = response.data[0]
-        num_labels = len(response.data)
-        self.assertEqual(num_labels, len(self.main_project.labels.all()))
-        self.assertEqual(label['id'], self.main_project_label.id)
+    def test_does_not_return_labels_to_unauthenticated_user(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestLabelCreate(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.non_member = make_user(username='bob')
+        cls.project = make_project(
+            task='Any',
+            users=['admin', 'approver', 'annotator'],
+            roles=[
+                settings.ROLE_PROJECT_ADMIN,
+                settings.ROLE_ANNOTATION_APPROVER,
+                settings.ROLE_ANNOTATOR,
+            ]
+        )
+        cls.url = reverse(viewname='label_list', args=[cls.project.item.id])
+        cls.data = {'text': 'example'}
 
     def test_allows_admin_to_create_label(self):
-        self.client.login(username=self.admin_user_name,
-                          password=self.admin_user_pass)
-        response = self.client.post(self.url, format='json', data=self.data)
+        self.client.force_login(self.project.users[0])
+        response = self.client.post(self.url, data=self.data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    def test_can_create_multiple_labels_without_shortcut_key(self):
-        self.client.login(username=self.admin_user_name,
-                          password=self.admin_user_pass)
-        labels = [
-            {'text': 'Ruby', 'prefix_key': None, 'suffix_key': None},
-            {'text': 'PHP', 'prefix_key': None, 'suffix_key': None}
-        ]
-        for label in labels:
-            response = self.client.post(self.url, format='json', data=label)
-            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    def test_disallows_non_admin_to_create_label(self):
+        for member in self.project.users[1:]:
+            self.client.force_login(member)
+            response = self.client.post(self.url, data=self.data)
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_can_create_same_label_in_multiple_projects(self):
-        self.client.login(username=self.admin_user_name,
-                          password=self.admin_user_pass)
-        label = {'text': 'LOC', 'prefix_key': None, 'suffix_key': 'l'}
-        response = self.client.post(self.url, format='json', data=label)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        response = self.client.post(self.other_url, format='json', data=label)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    def test_disallows_non_project_member_to_create_label(self):
+        self.client.force_login(self.non_member)
+        response = self.client.post(self.url, data=self.data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_can_create_same_suffix_with_different_prefix(self):
-        self.client.login(username=self.admin_user_name,
-                          password=self.admin_user_pass)
-        label = {'text': 'Person', 'prefix_key': None, 'suffix_key': 'p'}
-        response = self.client.post(self.url, format='json', data=label)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        label = {'text': 'Percentage', 'prefix_key': 'ctrl', 'suffix_key': 'p'}
-        response = self.client.post(self.url, format='json', data=label)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-
-    def test_cannot_create_same_shortcut_key(self):
-        self.client.login(username=self.admin_user_name,
-                          password=self.admin_user_pass)
-        label = {'text': 'Person', 'prefix_key': None, 'suffix_key': 'p'}
-        response = self.client.post(self.url, format='json', data=label)
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        label = {'text': 'Percentage', 'prefix_key': None, 'suffix_key': 'p'}
-        response = self.client.post(self.url, format='json', data=label)
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_disallows_project_member_to_create_label(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.post(self.url, format='json', data=self.data)
+    def test_disallows_unauthenticated_user_to_create_label(self):
+        response = self.client.post(self.url, data=self.data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @classmethod
@@ -123,71 +98,77 @@ class TestLabelDetailAPI(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.project_member_name = 'project_member_name'
-        cls.project_member_pass = 'project_member_pass'
-        cls.non_project_member_name = 'non_project_member_name'
-        cls.non_project_member_pass = 'non_project_member_pass'
-        cls.super_user_name = 'super_user_name'
-        cls.super_user_pass = 'super_user_pass'
-        create_default_roles()
-        project_member = User.objects.create_user(username=cls.project_member_name,
-                                                  password=cls.project_member_pass)
-        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
-        # Todo: change super_user to project_admin.
-        super_user = User.objects.create_superuser(username=cls.super_user_name,
-                                                   password=cls.super_user_pass,
-                                                   email='fizz@buzz.com')
-        project = mommy.make('Project', users=[project_member, super_user])
-        cls.label = mommy.make('Label', project=project)
-        cls.label_with_shortcut = mommy.make('Label', suffix_key='l', project=project)
-        cls.url = reverse(viewname='label_detail', args=[project.id, cls.label.id])
-        cls.url_with_shortcut = reverse(viewname='label_detail', args=[project.id, cls.label_with_shortcut.id])
+        cls.non_member = make_user(username='bob')
+        cls.project = make_project(
+            task='Any',
+            users=['admin', 'approver', 'annotator'],
+            roles=[
+                settings.ROLE_PROJECT_ADMIN,
+                settings.ROLE_ANNOTATION_APPROVER,
+                settings.ROLE_ANNOTATOR,
+            ]
+        )
+        cls.label = make_label(cls.project.item)
+        cls.url = reverse(viewname='label_detail', args=[cls.project.item.id, cls.label.id])
         cls.data = {'text': 'example'}
-        create_default_roles()
-        assign_user_to_role(project_member=project_member, project=project,
-                            role_name=settings.ROLE_ANNOTATOR)
 
     def test_returns_label_to_project_member(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.data['id'], self.label.id)
+        for member in self.project.users:
+            self.client.force_login(member)
+            response = self.client.get(self.url)
+            self.assertEqual(response.data['id'], self.label.id)
 
-    def test_do_not_return_label_to_non_project_member(self):
-        self.client.login(username=self.non_project_member_name,
-                          password=self.non_project_member_pass)
-        response = self.client.get(self.url, format='json')
+    def test_does_not_return_label_to_non_project_member(self):
+        self.client.force_login(self.non_member)
+        response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
-    def test_allows_superuser_to_update_label(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        response = self.client.patch(self.url, format='json', data=self.data)
+    def test_does_not_return_label_to_unauthenticated_user(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def update_label(self, user=None, expected_status=status.HTTP_403_FORBIDDEN):
+        if user:
+            self.client.force_login(user)
+        response = self.client.patch(self.url, data=self.data)
+        self.assertEqual(response.status_code, expected_status)
+        return response
+
+    def test_allows_admin_to_update_label(self):
+        response = self.update_label(
+            user=self.project.users[0],
+            expected_status=status.HTTP_200_OK
+        )
         self.assertEqual(response.data['text'], self.data['text'])
 
-    def test_allows_superuser_to_update_label_with_shortcut(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        response = self.client.patch(self.url_with_shortcut, format='json', data={'suffix_key': 's'})
-        self.assertEqual(response.data['suffix_key'], 's')
+    def test_disallows_non_admin_to_update_label(self):
+        for member in self.project.users[1:]:
+            self.update_label(member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_project_member_to_update_label(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.patch(self.url, format='json', data=self.data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_disallows_non_project_member_to_update_label(self):
+        self.update_label(self.non_member, status.HTTP_403_FORBIDDEN)
 
-    def test_allows_superuser_to_delete_label(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        response = self.client.delete(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+    def test_disallows_unauthenticated_user_to_update_label(self):
+        self.update_label(expected_status=status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_project_member_to_delete_label(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        response = self.client.delete(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def delete_label(self, user=None, expected_status=status.HTTP_403_FORBIDDEN):
+        if user:
+            self.client.force_login(user)
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, expected_status)
+
+    def test_allows_admin_to_delete_label(self):
+        self.delete_label(self.project.users[0], status.HTTP_204_NO_CONTENT)
+
+    def test_disallows_non_admin_to_delete_label(self):
+        for member in self.project.users[1:]:
+            self.delete_label(member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_non_project_member_to_delete_label(self):
+        self.delete_label(self.non_member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_unauthenticated_user_to_delete_label(self):
+        self.delete_label(expected_status=status.HTTP_403_FORBIDDEN)
 
     @classmethod
     def doCleanups(cls):
@@ -198,43 +179,40 @@ class TestLabelUploadAPI(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.project_member_name = 'project_member_name'
-        cls.project_member_pass = 'project_member_pass'
-        cls.non_project_member_name = 'non_project_member_name'
-        cls.non_project_member_pass = 'non_project_member_pass'
-        cls.super_user_name = 'super_user_name'
-        cls.super_user_pass = 'super_user_pass'
-        create_default_roles()
-        project_member = User.objects.create_user(username=cls.project_member_name,
-                                                  password=cls.project_member_pass)
-        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
-        project_admin = User.objects.create_user(username=cls.super_user_name,
-                                                 password=cls.super_user_pass)
-        project = mommy.make('Project', users=[project_member, project_admin])
-        cls.url = reverse(viewname='label_upload', args=[project.id])
-        create_default_roles()
-        assign_user_to_role(project_member=project_admin, project=project, role_name=settings.ROLE_PROJECT_ADMIN)
-        assign_user_to_role(project_member=project_member, project=project, role_name=settings.ROLE_ANNOTATOR)
+        cls.non_member = make_user(username='bob')
+        cls.project = make_project(
+            task='Any',
+            users=['admin', 'approver', 'annotator'],
+            roles=[
+                settings.ROLE_PROJECT_ADMIN,
+                settings.ROLE_ANNOTATION_APPROVER,
+                settings.ROLE_ANNOTATOR,
+            ]
+        )
+        cls.url = reverse(viewname='label_upload', args=[cls.project.item.id])
 
-    def help_to_upload_file(self, filename, expected_status):
+    def upload_file(self, filename, user=None, expected_status=status.HTTP_403_FORBIDDEN):
+        if user:
+            self.client.force_login(user)
         with open(os.path.join(DATA_DIR, filename), 'rb') as f:
             response = self.client.post(self.url, data={'file': f})
         self.assertEqual(response.status_code, expected_status)
 
     def test_allows_project_admin_to_upload_label(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        self.help_to_upload_file('valid_labels.json', status.HTTP_201_CREATED)
+        self.upload_file('valid_labels.json', self.project.users[0], status.HTTP_201_CREATED)
 
     def test_disallows_project_member_to_upload_label(self):
-        self.client.login(username=self.project_member_name,
-                          password=self.project_member_pass)
-        self.help_to_upload_file('valid_labels.json', status.HTTP_403_FORBIDDEN)
+        for member in self.project.users[1:]:
+            self.upload_file('valid_labels.json', member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_non_project_member_to_upload_label(self):
+        self.upload_file('valid_labels.json', self.non_member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_unauthenticated_user_to_upload_label(self):
+        self.upload_file('valid_labels.json', expected_status=status.HTTP_403_FORBIDDEN)
 
     def test_try_to_upload_invalid_file(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        self.help_to_upload_file('invalid_labels.json', status.HTTP_400_BAD_REQUEST)
+        self.upload_file('invalid_labels.json', self.project.users[0], status.HTTP_400_BAD_REQUEST)
 
     @classmethod
     def doCleanups(cls):
