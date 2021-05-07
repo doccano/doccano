@@ -6,19 +6,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from .utils import (DATA_DIR, make_label, make_project, make_user,
-                    remove_all_role_mappings)
-
-
-def prepare_project():
-    return make_project(
-        task='Any',
-        users=['admin', 'approver', 'annotator'],
-        roles=[
-            settings.ROLE_PROJECT_ADMIN,
-            settings.ROLE_ANNOTATION_APPROVER,
-            settings.ROLE_ANNOTATOR,
-        ]
-    )
+                    prepare_project)
 
 
 class TestLabelList(APITestCase):
@@ -83,10 +71,6 @@ class TestLabelCreate(APITestCase):
 
     def test_disallows_unauthenticated_user_to_create_label(self):
         self.assert_create_label(expected_status=status.HTTP_403_FORBIDDEN)
-
-    @classmethod
-    def doCleanups(cls):
-        remove_all_role_mappings()
 
 
 class TestLabelDetailAPI(APITestCase):
@@ -157,10 +141,6 @@ class TestLabelDetailAPI(APITestCase):
     def test_disallows_unauthenticated_user_to_delete_label(self):
         self.assert_delete_label(expected_status=status.HTTP_403_FORBIDDEN)
 
-    @classmethod
-    def doCleanups(cls):
-        remove_all_role_mappings()
-
 
 class TestLabelUploadAPI(APITestCase):
 
@@ -192,7 +172,3 @@ class TestLabelUploadAPI(APITestCase):
 
     def test_try_to_upload_invalid_file(self):
         self.assert_upload_file('invalid_labels.json', self.project.users[0], status.HTTP_400_BAD_REQUEST)
-
-    @classmethod
-    def doCleanups(cls):
-        remove_all_role_mappings()

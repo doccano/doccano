@@ -84,6 +84,18 @@ def make_label(project):
     return mommy.make('Label', project=project)
 
 
+def prepare_project(task: str = 'Any'):
+    return make_project(
+        task=task,
+        users=['admin', 'approver', 'annotator'],
+        roles=[
+            settings.ROLE_PROJECT_ADMIN,
+            settings.ROLE_ANNOTATION_APPROVER,
+            settings.ROLE_ANNOTATOR,
+        ]
+    )
+
+
 class TestUtilsMixin:
     def _patch_project(self, project, attribute, value):
         old_value = getattr(project, attribute, None)
