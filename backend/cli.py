@@ -61,7 +61,7 @@ def command_run_webserver(args):
 
 
 def command_run_task_queue(args):
-    print(f'Starting task queue.')
+    print('Starting task queue.')
     app.worker_main(
         argv=[
             '--app=app',
