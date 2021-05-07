@@ -28,7 +28,7 @@ export class APITagRepository implements TagRepository {
   }
 
   async delete(projectId: string, tagId: number): Promise<void> {
-    const url = `/projects/${projectId}/tags`
-    await this.request.delete(url, { id: tagId })
+    const url = `/projects/${projectId}/tags/${tagId}`
+    await this.request.delete(url)
   }
 }
