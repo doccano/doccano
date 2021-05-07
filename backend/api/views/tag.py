@@ -1,14 +1,17 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Project, Tag
+from ..permissions import IsInProjectReadOnlyOrAdmin
 from ..serializers import TagSerializer
 
 
 class TagList(generics.ListCreateAPIView):
     serializer_class = TagSerializer
     pagination_class = None
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
