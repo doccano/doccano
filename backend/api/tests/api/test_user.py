@@ -1,24 +1,42 @@
-from django.contrib.auth.models import User
+from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from .utils import create_default_roles
+from .utils import make_user
 
 
 class TestUserAPI(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.super_user_name = 'super_user_name'
-        cls.super_user_pass = 'super_user_pass'
-        create_default_roles()
-        User.objects.create_superuser(username=cls.super_user_name,
-                                      password=cls.super_user_pass,
-                                      email='fizz@buzz.com')
+        cls.user = make_user(username='bob')
         cls.url = reverse(viewname='user_list')
 
-    def test_returns_user_count(self):
-        self.client.login(username=self.super_user_name,
-                          password=self.super_user_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(1, len(response.data))
+    def test_allow_authenticated_user_to_get_users(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['username'], self.user.username)
+
+    def test_disallow_unauthenticated_user_to_get_users(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestMeAPI(APITestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = make_user(username='bob')
+        cls.url = reverse(viewname='me')
+
+    def test_return_own_information(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.data['id'], self.user.id)
+        self.assertEqual(response.data['username'], self.user.username)
+
+    def test_does_not_return_information_to_unauthenticated_user(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
