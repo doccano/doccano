@@ -5,6 +5,8 @@ from typing import List
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from model_mommy import mommy
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from ...models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
                        SPEECH2TEXT, Role, RoleMapping)
@@ -107,3 +109,35 @@ class TestUtilsMixin:
             project.save()
 
         self.addCleanup(cleanup_project)
+
+
+class CRUDMixin(APITestCase):
+    url = ''
+    data = {}
+
+    def assert_fetch(self, user=None, expected=status.HTTP_403_FORBIDDEN):
+        if user:
+            self.client.force_login(user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, expected)
+        return response
+
+    def assert_create(self, user=None, expected=status.HTTP_403_FORBIDDEN):
+        if user:
+            self.client.force_login(user)
+        response = self.client.post(self.url, data=self.data, format='json')
+        self.assertEqual(response.status_code, expected)
+        return response
+
+    def assert_update(self, user=None, expected=status.HTTP_403_FORBIDDEN):
+        if user:
+            self.client.force_login(user)
+        response = self.client.patch(self.url, data=self.data, format='json')
+        self.assertEqual(response.status_code, expected)
+        return response
+
+    def assert_delete(self, user=None, expected=status.HTTP_403_FORBIDDEN):
+        if user:
+            self.client.force_login(user)
+        response = self.client.delete(self.url)
+        self.assertEqual(response.status_code, expected)
