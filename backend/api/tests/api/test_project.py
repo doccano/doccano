@@ -45,12 +45,12 @@ class TestProjectCreate(APITestCase):
 
     def test_allow_authenticated_user_to_create_project(self):
         self.client.force_login(self.user)
-        response = self.client.post(self.url, data=self.data)
+        response = self.client.post(self.url, data=self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data['name'], self.data['name'])
 
     def test_disallow_unauthenticated_user_to_create_project(self):
-        response = self.client.post(self.url, self.data)
+        response = self.client.post(self.url, self.data, format='json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
@@ -76,7 +76,7 @@ class TestProjectDetailAPI(APITestCase):
 
     def assert_update_project(self, user, expected):
         self.client.force_login(user)
-        response = self.client.patch(self.url, data=self.data)
+        response = self.client.patch(self.url, data=self.data, format='json')
         self.assertEqual(response.status_code, expected)
         return response
 

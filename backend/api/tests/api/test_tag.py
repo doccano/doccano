@@ -43,7 +43,7 @@ class TestTagCreate(APITestCase):
     def assert_create_tag(self, user=None, expected=status.HTTP_403_FORBIDDEN):
         if user:
             self.client.force_login(user)
-        response = self.client.post(self.url, data=self.data)
+        response = self.client.post(self.url, data=self.data, format='json')
         self.assertEqual(response.status_code, expected)
         return response
 

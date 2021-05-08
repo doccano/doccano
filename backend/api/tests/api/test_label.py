@@ -56,7 +56,7 @@ class TestLabelCreate(APITestCase):
     def assert_create_label(self, user=None, expected_status=status.HTTP_403_FORBIDDEN):
         if user:
             self.client.force_login(user)
-        response = self.client.post(self.url, data=self.data)
+        response = self.client.post(self.url, data=self.data, format='json')
         self.assertEqual(response.status_code, expected_status)
 
     def test_allows_admin_to_create_label(self):
@@ -101,7 +101,7 @@ class TestLabelDetailAPI(APITestCase):
     def assert_update_label(self, user=None, expected_status=status.HTTP_403_FORBIDDEN):
         if user:
             self.client.force_login(user)
-        response = self.client.patch(self.url, data=self.data)
+        response = self.client.patch(self.url, data=self.data, format='json')
         self.assertEqual(response.status_code, expected_status)
         return response
 
