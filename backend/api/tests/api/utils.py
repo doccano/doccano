@@ -47,7 +47,8 @@ def make_user(username: str = 'bob'):
 def make_project(
         task: str,
         users: List[str],
-        roles: List[str] = None):
+        roles: List[str] = None,
+        collaborative_annotation=False):
     create_default_roles()
 
     # create users.
@@ -65,7 +66,8 @@ def make_project(
     project = mommy.make(
         _model=project_model,
         project_type=task,
-        users=users
+        users=users,
+        collaborative_annotation=collaborative_annotation
     )
 
     # assign roles to the users.
@@ -94,7 +96,17 @@ def make_comment(doc, user):
     return mommy.make('Comment', document=doc, user=user)
 
 
-def prepare_project(task: str = 'Any'):
+def make_annotation(task, doc, user):
+    annotation_model = {
+        DOCUMENT_CLASSIFICATION: 'DocumentAnnotation',
+        SEQUENCE_LABELING: 'SequenceAnnotation',
+        SEQ2SEQ: 'Seq2seqAnnotation',
+        SPEECH2TEXT: 'Speech2textAnnotation'
+    }.get(task)
+    return mommy.make(annotation_model, document=doc, user=user)
+
+
+def prepare_project(task: str = 'Any', collaborative_annotation=False):
     return make_project(
         task=task,
         users=['admin', 'approver', 'annotator'],
@@ -102,7 +114,8 @@ def prepare_project(task: str = 'Any'):
             settings.ROLE_PROJECT_ADMIN,
             settings.ROLE_ANNOTATION_APPROVER,
             settings.ROLE_ANNOTATOR,
-        ]
+        ],
+        collaborative_annotation=collaborative_annotation
     )
 
 
