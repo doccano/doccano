@@ -54,7 +54,7 @@ $ git clone https://github.com/doccano/doccano.git
 $ cd doccano
 $ pipenv sync --dev
 $ pipenv shell
-$ cd app
+$ cd backend
 $ python manage.py migrate
 $ python manage.py create_roles
 $ python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
@@ -64,7 +64,7 @@ $ python manage.py runserver
 ### Node.js
 
 ```bash
-$ cd doccano/frontend
+$ cd frontend
 $ yarn install
 $ yarn dev
 ```
