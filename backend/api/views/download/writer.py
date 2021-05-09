@@ -64,7 +64,7 @@ class CsvWriter(BaseWriter):
         for record in records:
             filename = os.path.join(self.tmpdir, f'{record.user}.{self.extension}')
             if filename not in writers:
-                f = open(filename, mode='a')
+                f = open(filename, mode='a', encoding='utf-8')
                 writer = csv.DictWriter(f, header)
                 writer.writeheader()
                 writers[filename] = writer
@@ -72,11 +72,12 @@ class CsvWriter(BaseWriter):
             writer = writers[filename]
             line = self.create_line(record)
             writer.writerow(line)
+        
+        for f in file_handlers:
+            f.close()
         save_file = self.write_zip(writers)
         for file in writers:
             os.remove(file)
-        for f in file_handlers:
-            f.close()
         return save_file
 
     def create_line(self, record) -> Dict:
@@ -102,14 +103,14 @@ class JSONWriter(BaseWriter):
         for record in records:
             filename = os.path.join(self.tmpdir, f'{record.user}.{self.extension}')
             if filename not in writers:
-                f = open(filename, mode='a')
+                f = open(filename, mode='a', encoding='utf-8')
                 writers[filename] = f
             line = self.create_line(record)
             contents[filename].append(line)
 
         for filename, f in writers.items():
             content = contents[filename]
-            json.dump(content, f)
+            json.dump(content, f, ensure_ascii=False)
             f.close()
 
         save_file = self.write_zip(writers)
@@ -135,7 +136,7 @@ class JSONLWriter(LineWriter):
             'data': record.data,
             'label': record.label,
             **record.metadata
-        })
+        }, ensure_ascii=False)
 
 
 class FastTextWriter(LineWriter):
