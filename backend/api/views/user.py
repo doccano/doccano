@@ -24,4 +24,3 @@ class Users(generics.ListAPIView):
     pagination_class = None
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('username',)
-

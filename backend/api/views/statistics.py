@@ -37,7 +37,7 @@ class StatisticsAPI(APIView):
 
     @staticmethod
     def _get_user_completion_data(annotation_class, annotation_filter):
-        all_annotation_objects  = annotation_class.objects.filter(annotation_filter)
+        all_annotation_objects = annotation_class.objects.filter(annotation_filter)
         set_user_data = collections.defaultdict(set)
         for ind_obj in all_annotation_objects.values('user__username', 'document__id'):
             set_user_data[ind_obj['user__username']].add(ind_obj['document__id'])

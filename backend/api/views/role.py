@@ -59,4 +59,3 @@ class RoleMappingDetail(generics.RetrieveUpdateAPIView):
             super().perform_update(serializer)
         except IntegrityError:
             raise RoleAlreadyAssignedException
-
