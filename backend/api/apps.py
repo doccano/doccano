@@ -1,3 +1,5 @@
+import importlib
+
 from django.apps import AppConfig
 
 
@@ -6,4 +8,4 @@ class ApiConfig(AppConfig):
     verbose_name = 'Api'
 
     def ready(self):
-        import api.signals
+        importlib.import_module('api.signals')
