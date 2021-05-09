@@ -86,6 +86,14 @@ def make_label(project):
     return mommy.make('Label', project=project)
 
 
+def make_doc(project):
+    return mommy.make('Document', project=project)
+
+
+def make_comment(doc, user):
+    return mommy.make('Comment', document=doc, user=user)
+
+
 def prepare_project(task: str = 'Any'):
     return make_project(
         task=task,
