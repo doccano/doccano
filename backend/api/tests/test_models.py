@@ -92,7 +92,10 @@ class TestLabel(TestCase):
         label = Label(project=project,
                       text='example',
                       suffix_key='a')
-        label.full_clean()
+        try:
+            label.full_clean()
+        except ValidationError:
+            self.fail(msg=ValidationError)
 
     def test_can_add_label_suffix_key_with_prefix_key(self):
         project = mommy.make('Project')
@@ -100,7 +103,10 @@ class TestLabel(TestCase):
                       text='example',
                       prefix_key='ctrl',
                       suffix_key='a')
-        label.full_clean()
+        try:
+            label.full_clean()
+        except ValidationError:
+            self.fail(msg=ValidationError)
 
 
 class TestDocumentAnnotation(TestCase):
