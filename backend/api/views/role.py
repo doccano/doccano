@@ -10,10 +10,10 @@ from ..permissions import IsProjectAdmin
 from ..serializers import RoleMappingSerializer, RoleSerializer
 
 
-class Roles(generics.ListCreateAPIView):
+class Roles(generics.ListAPIView):
     serializer_class = RoleSerializer
     pagination_class = None
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
+    permission_classes = [IsAuthenticated]
     queryset = Role.objects.all()
 
 
@@ -43,7 +43,7 @@ class RoleMappingList(generics.ListCreateAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
+class RoleMappingDetail(generics.RetrieveUpdateAPIView):
     queryset = RoleMapping.objects.all()
     serializer_class = RoleMappingSerializer
     lookup_url_kwarg = 'rolemapping_id'
@@ -59,4 +59,3 @@ class RoleMappingDetail(generics.RetrieveUpdateDestroyAPIView):
             super().perform_update(serializer)
         except IntegrityError:
             raise RoleAlreadyAssignedException
-

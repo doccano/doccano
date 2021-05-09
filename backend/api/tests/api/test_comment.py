@@ -1,121 +1,131 @@
-from django.conf import settings
-from django.contrib.auth.models import User
-from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
-from rest_framework.test import APITestCase
 
-from .utils import (assign_user_to_role, create_default_roles,
-                    remove_all_role_mappings)
+from .utils import (CRUDMixin, make_comment, make_doc, make_user,
+                    prepare_project)
 
 
-class TestCommentListAPI(APITestCase):
+class TestCommentListDocAPI(CRUDMixin):
+
     @classmethod
     def setUpTestData(cls):
-        cls.project_member_name = 'project_member_name'
-        cls.project_member_pass = 'project_member_pass'
-        cls.another_project_member_name = 'another_project_member_name'
-        cls.another_project_member_pass = 'another_project_member_pass'
-        cls.non_project_member_name = 'non_project_member_name'
-        cls.non_project_member_pass = 'non_project_member_pass'
-        create_default_roles()
-        cls.project_member = User.objects.create_user(username=cls.project_member_name,
-                                                    password=cls.project_member_pass)
-        another_project_member = User.objects.create_user(username=cls.another_project_member_name,
-                                                        password=cls.another_project_member_pass)
-        User.objects.create_user(username=cls.non_project_member_name, password=cls.non_project_member_pass)
+        cls.project = prepare_project()
+        cls.non_member = make_user()
+        doc = make_doc(cls.project.item)
+        make_comment(doc, cls.project.users[0])
+        cls.data = {'text': 'example'}
+        cls.url = reverse(viewname='comment_list_doc', args=[cls.project.item.id, doc.id])
 
-        main_project = mommy.make('SequenceLabelingProject', users=[cls.project_member, another_project_member])
-        main_project_doc = mommy.make('Document', project=main_project)
-        cls.comment = mommy.make('Comment', document=main_project_doc, text='comment 1', user=cls.project_member)
-        mommy.make('Comment', document=main_project_doc, text='comment 2', user=cls.project_member)
-        mommy.make('Comment', document=main_project_doc, text='comment 3', user=another_project_member)
+    def test_allows_project_member_to_list_comments(self):
+        for member in self.project.users:
+            response = self.assert_fetch(member, status.HTTP_200_OK)
+            self.assertEqual(len(response.data), 1)
 
-        cls.url = reverse(viewname='comment_list_doc', args=[main_project.id, main_project_doc.id])
-        cls.url_project = reverse(viewname='comment_list_project', args=[main_project.id])
+    def test_denies_non_project_member_to_list_comments(self):
+        self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
 
-        assign_user_to_role(project_member=cls.project_member, project=main_project,
-                            role_name=settings.ROLE_ANNOTATOR)
-        assign_user_to_role(project_member=another_project_member, project=main_project,
-                            role_name=settings.ROLE_ANNOTATOR)
+    def test_denies_unauthenticated_user_to_list_comments(self):
+        self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
 
-    def test_returns_comments_to_project_member(self):
-        self.client.login(username=self.project_member_name,
-                        password=self.project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
+    def test_allows_project_member_to_create_comment(self):
+        for member in self.project.users:
+            self.assert_create(member, status.HTTP_201_CREATED)
 
-        self.client.login(username=self.another_project_member_name,
-                        password=self.another_project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
+    def test_denies_non_project_member_to_create_comment(self):
+        self.assert_create(self.non_member, status.HTTP_403_FORBIDDEN)
 
-    def test_does_not_return_comments_to_non_project_member(self):
-        self.client.login(username=self.non_project_member_name,
-                        password=self.non_project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_does_not_allow_deletion_by_non_project_member(self):
-        self.client.login(username=self.non_project_member_name,
-                        password=self.non_project_member_pass)
-        response = self.client.delete('{}/{}'.format(self.url, self.comment.id), format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_does_not_allow_deletion_of_non_owned_comment(self):
-        self.client.login(username=self.another_project_member_name,
-                        password=self.another_project_member_pass)
-        response = self.client.delete('{}/{}'.format(self.url, self.comment.id), format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_create_update_delete_comment(self):
-        self.client.login(username=self.project_member_name,
-                        password=self.project_member_pass)
-        response = self.client.post(self.url, format='json', data={'text': 'comment'})
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['user'], self.project_member.id)
-        self.assertEqual(response.data['text'], 'comment')
-        url = '{}/{}'.format(self.url, response.data['id'])
-
-        # check if all comments are fetched
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 4)
-
-        # update comment
-        response = self.client.patch(url, format='json', data={'text': 'new comment'})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['text'], 'new comment')
-
-        # delete comment
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
-
-    def test_returns_project_comments_to_project_member(self):
-        self.client.login(username=self.project_member_name,
-                        password=self.project_member_pass)
-        response = self.client.get(self.url_project, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
-
-        self.client.login(username=self.another_project_member_name,
-                        password=self.another_project_member_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 3)
-
-    def test_does_not_return_project_comments_to_non_project_member(self):
-        self.client.login(username=self.non_project_member_name,
-                        password=self.non_project_member_pass)
-        response = self.client.get(self.url_project, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def test_denies_unauthenticated_user_to_create_comment(self):
+        self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
 
-    @classmethod
-    def doCleanups(cls):
-        remove_all_role_mappings()
+class TestCommentListProjectAPI(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project()
+        self.non_member = make_user()
+        self.doc = make_doc(self.project.item)
+        make_comment(self.doc, self.project.users[0])
+        self.url = reverse(viewname='comment_list_project', args=[self.project.item.id])
+
+    def test_allows_project_member_to_list_comments(self):
+        for member in self.project.users:
+            response = self.assert_fetch(member, status.HTTP_200_OK)
+            self.assertEqual(len(response.data), 1)
+
+    def test_denies_non_project_member_to_list_comments(self):
+        self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
+
+    def test_denies_unauthenticated_user_to_list_comments(self):
+        self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
+
+    def assert_bulk_delete(self, user=None, expected=status.HTTP_403_FORBIDDEN):
+        ids = [item.id for item in self.doc.comments.all()]
+        if user:
+            self.client.force_login(user)
+        response = self.client.delete(self.url, data={'ids': ids}, format='json')
+        self.assertEqual(response.status_code, expected)
+
+    def test_allows_project_member_to_delete_comments(self):
+        # Todo: Disallow non admin to delete comments.
+        for member in self.project.users:
+            self.assert_bulk_delete(member, status.HTTP_204_NO_CONTENT)
+            response = self.client.get(self.url)
+            self.assertEqual(len(response.data), 0)
+
+    def test_denies_non_project_member_to_delete_comments(self):
+        self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
+
+    def test_denies_unauthenticated_user_to_delete_comments(self):
+        self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
+
+
+class TestCommentDetailAPI(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project()
+        self.non_member = make_user()
+        doc = make_doc(self.project.item)
+        comment = make_comment(doc, self.project.users[0])
+        self.data = {'text': 'example'}
+        self.url = reverse(viewname='comment_detail', args=[self.project.item.id, doc.id, comment.id])
+
+    def test_allows_comment_owner_to_get_comment(self):
+        # Todo: Allows project member to get comment.
+        self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+
+    def test_disallows_non_comment_owner_to_get_comment(self):
+        for member in self.project.users[1:]:
+            self.assert_fetch(member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_non_project_member_to_get_comment(self):
+        self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_unauthenticated_user_to_get_comment(self):
+        self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
+
+    def test_allows_comment_owner_to_update_comment(self):
+        response = self.assert_update(self.project.users[0], status.HTTP_200_OK)
+        self.assertEqual(response.data['text'], self.data['text'])
+
+    def test_disallows_non_comment_owner_to_update_comment(self):
+        for member in self.project.users[1:]:
+            self.assert_update(member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_non_project_member_to_update_comment(self):
+        self.assert_update(self.non_member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_unauthenticated_user_to_update_comment(self):
+        self.assert_update(expected=status.HTTP_403_FORBIDDEN)
+
+    def test_allows_comment_owner_to_delete_comment(self):
+        self.assert_delete(self.project.users[0], status.HTTP_204_NO_CONTENT)
+
+    def test_disallows_non_comment_owner_to_delete_comment(self):
+        for member in self.project.users[1:]:
+            self.assert_delete(member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_non_project_member_to_delete_comment(self):
+        self.assert_delete(self.non_member, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_unauthenticated_user_to_delete_comment(self):
+        self.assert_delete(expected=status.HTTP_403_FORBIDDEN)

@@ -18,7 +18,8 @@ from ..exceptions import (AutoLabeliingPermissionDenied, AutoLabelingException,
                           URLConnectionError)
 from ..models import AutoLabelingConfig, Document, Project
 from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
-from ..serializers import AutoLabelingConfigSerializer
+from ..serializers import (AutoLabelingConfigSerializer,
+                           get_annotation_serializer)
 
 
 class AutoLabelingTemplateListAPI(APIView):
@@ -170,7 +171,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
 
     def get_serializer_class(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = project.get_annotation_serializer()
+        self.serializer_class = get_annotation_serializer(task=project.project_type)
         return self.serializer_class
 
     def get_queryset(self):

@@ -6,9 +6,10 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from .models import (AutoLabelingConfig, Comment, Document, DocumentAnnotation,
-                     Label, Project, Role, RoleMapping, Seq2seqAnnotation,
-                     Seq2seqProject, SequenceAnnotation,
+from .models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
+                     SPEECH2TEXT, AutoLabelingConfig, Comment, Document,
+                     DocumentAnnotation, Label, Project, Role, RoleMapping,
+                     Seq2seqAnnotation, Seq2seqProject, SequenceAnnotation,
                      SequenceLabelingProject, Speech2textAnnotation,
                      Speech2textProject, Tag, TextClassificationProject)
 
@@ -85,7 +86,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         project = instance.project
         model = project.get_annotation_class()
-        serializer = project.get_annotation_serializer()
+        serializer = get_annotation_serializer(task=project.project_type)
         annotations = model.objects.filter(document=instance.id)
         if request and not project.collaborative_annotation:
             annotations = annotations.filter(user=request.user)
@@ -131,7 +132,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
-                  'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification', 'tags')
+                  'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification',
+                  'tags')
         read_only_fields = ('updated_at', 'users', 'current_users_role', 'tags')
 
 
@@ -190,7 +192,6 @@ class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
 
 
 class DocumentAnnotationSerializer(serializers.ModelSerializer):
-    # label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
     label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
     document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
 
@@ -201,7 +202,6 @@ class DocumentAnnotationSerializer(serializers.ModelSerializer):
 
 
 class SequenceAnnotationSerializer(serializers.ModelSerializer):
-    #label = ProjectFilteredPrimaryKeyRelatedField(queryset=Label.objects.all())
     label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
     document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
 
@@ -286,3 +286,16 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
                 'You need to correctly specify the required fields: {}'.format(required_fields)
             )
         return data
+
+
+def get_annotation_serializer(task: str):
+    mapping = {
+        DOCUMENT_CLASSIFICATION: DocumentAnnotationSerializer,
+        SEQUENCE_LABELING: SequenceAnnotationSerializer,
+        SEQ2SEQ: Seq2seqAnnotationSerializer,
+        SPEECH2TEXT: Speech2textAnnotationSerializer
+    }
+    try:
+        return mapping[task]
+    except KeyError:
+        raise ValueError(f'{task} is not implemented.')

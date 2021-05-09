@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -o errexit
 
-app="/src/backend"
 cd "/src/backend"
 
 (

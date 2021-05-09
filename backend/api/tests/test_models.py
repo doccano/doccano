@@ -5,10 +5,6 @@ from model_mommy import mommy
 
 from ..models import (DocumentAnnotation, Label, Seq2seqAnnotation,
                       SequenceAnnotation, Speech2textAnnotation)
-from ..serializers import (DocumentAnnotationSerializer,
-                           Seq2seqAnnotationSerializer,
-                           SequenceAnnotationSerializer,
-                           Speech2textAnnotationSerializer)
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -17,10 +13,6 @@ class TestTextClassificationProject(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.project = mommy.make('TextClassificationProject')
-
-    def test_get_annotation_serializer(self):
-        serializer = self.project.get_annotation_serializer()
-        self.assertEqual(serializer, DocumentAnnotationSerializer)
 
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
@@ -34,10 +26,6 @@ class TestSequenceLabelingProject(TestCase):
     def setUpTestData(cls):
         cls.project = mommy.make('SequenceLabelingProject')
 
-    def test_get_annotation_serializer(self):
-        serializer = self.project.get_annotation_serializer()
-        self.assertEqual(serializer, SequenceAnnotationSerializer)
-
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
         self.assertEqual(klass, SequenceAnnotation)
@@ -50,10 +38,6 @@ class TestSeq2seqProject(TestCase):
     def setUpTestData(cls):
         cls.project = mommy.make('Seq2seqProject')
 
-    def test_get_annotation_serializer(self):
-        serializer = self.project.get_annotation_serializer()
-        self.assertEqual(serializer, Seq2seqAnnotationSerializer)
-
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
         self.assertEqual(klass, Seq2seqAnnotation)
@@ -65,10 +49,6 @@ class TestSpeech2textProject(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.project = mommy.make('Speech2textProject')
-
-    def test_get_annotation_serializer(self):
-        serializer = self.project.get_annotation_serializer()
-        self.assertEqual(serializer, Speech2textAnnotationSerializer)
 
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
@@ -112,7 +92,10 @@ class TestLabel(TestCase):
         label = Label(project=project,
                       text='example',
                       suffix_key='a')
-        label.full_clean()
+        try:
+            label.full_clean()
+        except ValidationError:
+            self.fail(msg=ValidationError)
 
     def test_can_add_label_suffix_key_with_prefix_key(self):
         project = mommy.make('Project')
@@ -120,7 +103,10 @@ class TestLabel(TestCase):
                       text='example',
                       prefix_key='ctrl',
                       suffix_key='a')
-        label.full_clean()
+        try:
+            label.full_clean()
+        except ValidationError:
+            self.fail(msg=ValidationError)
 
 
 class TestDocumentAnnotation(TestCase):

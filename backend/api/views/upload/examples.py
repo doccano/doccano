@@ -61,7 +61,7 @@ Text_JSONL = """
 """
 
 Offset_JSONL = """
-{"column_data": "EU rejects German call to boycott British lamb.", "column_label": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]}
+{"column_data": "EU rejects German call to boycott British lamb.", "column_label": [ [0, 2, "ORG"], ... ]}
 {"column_data": "Peter Blackburn", "column_label": [ [0, 15, "PERSON"] ]}
 {"column_data": "President Obama", "column_label": [ [10, 15, "PERSON"] ]}
 """

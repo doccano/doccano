@@ -72,7 +72,7 @@ class CsvWriter(BaseWriter):
             writer = writers[filename]
             line = self.create_line(record)
             writer.writerow(line)
-        
+
         for f in file_handlers:
             f.close()
         save_file = self.write_zip(writers)
