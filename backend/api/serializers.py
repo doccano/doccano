@@ -8,10 +8,12 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
                      SPEECH2TEXT, AutoLabelingConfig, Comment, Document,
-                     DocumentAnnotation, Label, Project, Role, RoleMapping,
-                     Seq2seqAnnotation, Seq2seqProject, SequenceAnnotation,
-                     SequenceLabelingProject, Speech2textAnnotation,
-                     Speech2textProject, Tag, TextClassificationProject)
+                     DocumentAnnotation, Image, ImageCategoryLabel,
+                     ImageClassificationProject, Label, Project, Role,
+                     RoleMapping, Seq2seqAnnotation, Seq2seqProject,
+                     SequenceAnnotation, SequenceLabelingProject,
+                     Speech2textAnnotation, Speech2textProject, Tag,
+                     TextClassificationProject)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -103,6 +105,31 @@ class DocumentSerializer(serializers.ModelSerializer):
         fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver', 'comment_count')
 
 
+class ImageSerializer(serializers.ModelSerializer):
+    annotations = serializers.SerializerMethodField()
+    annotation_approver = serializers.SerializerMethodField()
+
+    def get_annotations(self, instance):
+        request = self.context.get('request')
+        project = instance.project
+        model = project.get_annotation_class()
+        serializer = get_annotation_serializer(task=project.project_type)
+        annotations = model.objects.filter(document=instance.id)
+        if request and not project.collaborative_annotation:
+            annotations = annotations.filter(user=request.user)
+        serializer = serializer(annotations, many=True)
+        return serializer.data
+
+    @classmethod
+    def get_annotation_approver(cls, instance):
+        approver = instance.annotations_approved_by
+        return approver.username if approver else None
+
+    class Meta:
+        model = Image
+        fields = ('id', 'filename', 'annotations', 'meta', 'annotation_approver', 'comment_count')
+
+
 class ApproverSerializer(DocumentSerializer):
 
     class Meta:
@@ -170,6 +197,14 @@ class Speech2textProjectSerializer(ProjectSerializer):
         read_only_fields = ('updated_at', 'users', 'current_users_role')
 
 
+class ImageClassificationProjectSerializer(ProjectSerializer):
+
+    class Meta:
+        model = ImageClassificationProject
+        fields = ProjectSerializer.Meta.fields
+        read_only_fields = ProjectSerializer.Meta.read_only_fields
+
+
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
     model_serializer_mapping = {
         Project: ProjectSerializer,
@@ -177,6 +212,7 @@ class ProjectPolymorphicSerializer(PolymorphicSerializer):
         SequenceLabelingProject: SequenceLabelingProjectSerializer,
         Seq2seqProject: Seq2seqProjectSerializer,
         Speech2textProject: Speech2textProjectSerializer,
+        ImageClassificationProject: ImageClassificationProjectSerializer
     }
 
 
@@ -226,6 +262,16 @@ class Speech2textAnnotationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Speech2textAnnotation
         fields = ('id', 'prob', 'text', 'user', 'document', 'created_at', 'updated_at')
+        read_only_fields = ('user',)
+
+
+class ImageClassificationLabelSerializer(serializers.ModelSerializer):
+    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    image = serializers.PrimaryKeyRelatedField(queryset=Image.objects.all())
+
+    class Meta:
+        model = ImageCategoryLabel
+        fields = ('id', 'prob', 'label', 'user', 'image', 'created_at', 'updated_at')
         read_only_fields = ('user',)
 
 
