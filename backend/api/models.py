@@ -64,6 +64,12 @@ class Speech2textProject(Project):
         return Speech2textAnnotation
 
 
+class ImageClassificationProject(Project):
+
+    def get_annotation_class(self):
+        return ImageCategoryLabel
+
+
 class Label(models.Model):
     PREFIX_KEYS = (
         ('ctrl', 'ctrl'),
@@ -120,6 +126,22 @@ class Document(models.Model):
     @property
     def comment_count(self):
         return Comment.objects.filter(document=self.id).count()
+
+
+class Image(models.Model):
+    project = models.ForeignKey(Project, related_name='images', on_delete=models.CASCADE)
+    meta = models.JSONField(default=dict)
+    filename = models.FilePathField(default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    annotations_approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return self.filename
+
+    @property
+    def comment_count(self):
+        return Comment.objects.count()
 
 
 class Comment(models.Model):
@@ -201,6 +223,14 @@ class Speech2textAnnotation(Annotation):
 
     class Meta:
         unique_together = ('document', 'user')
+
+
+class ImageCategoryLabel(Annotation):
+    image = models.ForeignKey(Image, related_name='categories', on_delete=models.CASCADE)
+    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('image', 'user', 'label')
 
 
 class Role(models.Model):
