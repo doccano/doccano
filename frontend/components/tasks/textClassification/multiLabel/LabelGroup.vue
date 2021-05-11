@@ -54,7 +54,7 @@ export default {
     getLabelMap() {
       let map = []
       try {
-        map = JSON.parse(this.text.match(/(?<=@concepts ).*/)[0]).concepts
+        map = JSON.parse(this.text.match(/(?<=@taboola-doccano-concept ).*/)[0]).concepts
       } catch (error) { }
       return map
     }
@@ -84,7 +84,7 @@ export default {
 
     getLabelText(item,index) {
       console.log("getLabelText",this.text)
-      if (this.text.startsWith('@concepts')){
+      if (this.text.startsWith('@taboola-doccano-concept')){
          return _.get(this,`getLabelMap[${index}].text`,"")
       }else{
         return item.text

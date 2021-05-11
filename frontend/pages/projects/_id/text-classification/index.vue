@@ -132,10 +132,10 @@ export default {
     getText() {
    
       const text = _.get(this,"doc.text","")
-      if (text.startsWith('@concepts')){
+      if (text.startsWith('@taboola-doccano-concept')){
         let content = ""
         try {
-         content = JSON.parse(text.match(/(?<=@concepts ).*/)[0]).analyzed_text   
+         content = JSON.parse(text.match(/(?<=@taboola-doccano-concept ).*/)[0]).analyzed_text   
         } catch (error) {}
         return content
       }else{
@@ -144,7 +144,7 @@ export default {
     },
     getNote() {
       const text = _.get(this,"doc.text","")
-      if (text.startsWith('@concepts')){
+      if (text.startsWith('@taboola-doccano-concept')){
         return this.$t('guideline.conceptsSelect')
       }else {
         return this.$t('guideline.conceptsSelect')
