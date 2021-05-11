@@ -6,13 +6,13 @@
     @change="addOrRemove"
   >
     <v-chip
-      v-for="item in labels"
+      v-for="(item, index) in labels"
       :key="item.id"
       :color="item.backgroundColor"
       filter
       :text-color="$contrastColor(item.backgroundColor)"
     >
-      {{ item.text }}
+      {{getLabelText(item,index)}}
       <v-avatar
         right
         color="white"
@@ -38,6 +38,11 @@ export default {
       type: Array,
       default: () => ([]),
       required: true
+    },
+    text: {
+      type: String,
+      default: '',
+      required: true
     }
   },
 
@@ -45,6 +50,13 @@ export default {
     annotatedLabel() {
       const labelIds = this.annotations.map(item => item.label)
       return labelIds.map(id => this.labels.findIndex(item => item.id === id))
+    },
+    getLabelMap() {
+      let map = []
+      try {
+        map = JSON.parse(this.text.match(/(?<=@concepts ).*/)[0]).concepts
+      } catch (error) { }
+      return map
     }
   },
 
@@ -68,6 +80,15 @@ export default {
     remove(label) {
       const annotation = this.annotations.find(item => item.label === label.id)
       this.$emit('remove', annotation.id)
+    },
+
+    getLabelText(item,index) {
+      console.log("getLabelText",this.text)
+      if (this.text.startsWith('@concepts')){
+         return _.get(this,`getLabelMap[${index}].text`,"")
+      }else{
+        return item.text
+      }
     }
   }
 }

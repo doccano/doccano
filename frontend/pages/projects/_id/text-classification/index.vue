@@ -35,12 +35,16 @@
         v-shortkey="shortKeys"
         @shortkey="addOrRemove"
       >
-        <v-card-title>
+        <v-card-title> 
+          {{getNote}}
+        </v-card-title> 
+        <v-card-title> 
           <label-group
             v-if="labelOption === 0"
             :labels="labels"
             :annotations="annotations"
             :single-label="project.singleClassClassification"
+            :text="doc.text"
             @add="add"
             @remove="remove"
           />
@@ -49,12 +53,13 @@
             :labels="labels"
             :annotations="annotations"
             :single-label="project.singleClassClassification"
+            :text="doc.text"
             @add="add"
             @remove="remove"
           />
         </v-card-title>
         <v-divider />
-        <v-card-text class="title highlight" v-text="doc.text" />
+        <v-card-text class="title highlight" v-text="getText" />
       </v-card>
     </template>
     <template v-slot:sidebar>
@@ -122,6 +127,27 @@ export default {
         return {}
       } else {
         return this.docs.items[0]
+      }
+    },
+    getText() {
+   
+      const text = _.get(this,"doc.text","")
+      if (text.startsWith('@concepts')){
+        let content = ""
+        try {
+         content = JSON.parse(text.match(/(?<=@concepts ).*/)[0]).analyzed_text   
+        } catch (error) {}
+        return content
+      }else{
+        return text
+      }
+    },
+    getNote() {
+      const text = _.get(this,"doc.text","")
+      if (text.startsWith('@concepts')){
+        return this.$t('guideline.conceptsSelect')
+      }else {
+        return this.$t('guideline.conceptsSelect')
       }
     }
   },
