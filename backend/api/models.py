@@ -115,7 +115,7 @@ class Document(models.Model):
     text = models.TextField()
     project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
     meta = models.JSONField(default=dict)
-    filename = models.FilePathField(default='')
+    filename = models.FileField(default='.')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     annotations_approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -131,7 +131,7 @@ class Document(models.Model):
 class Image(models.Model):
     project = models.ForeignKey(Project, related_name='images', on_delete=models.CASCADE)
     meta = models.JSONField(default=dict)
-    filename = models.FilePathField(default='')
+    filename = models.FileField(default='.')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     annotations_approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

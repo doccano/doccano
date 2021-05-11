@@ -80,7 +80,7 @@ class TagSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'project')
 
 
-class DocumentSerializer(serializers.ModelSerializer):
+class BaseDataSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
 
@@ -99,36 +99,21 @@ class DocumentSerializer(serializers.ModelSerializer):
     def get_annotation_approver(cls, instance):
         approver = instance.annotations_approved_by
         return approver.username if approver else None
+
+
+class DocumentSerializer(BaseDataSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver', 'comment_count')
+        fields = ('id', 'filename', 'text', 'annotations', 'meta', 'annotation_approver', 'comment_count')
 
 
-class ImageSerializer(serializers.ModelSerializer):
-    annotations = serializers.SerializerMethodField()
-    annotation_approver = serializers.SerializerMethodField()
-    filename = serializers.FilePathField(path='.')
-
-    def get_annotations(self, instance):
-        request = self.context.get('request')
-        project = instance.project
-        model = project.get_annotation_class()
-        serializer = get_annotation_serializer(task=project.project_type)
-        annotations = model.objects.filter(document=instance.id)
-        if request and not project.collaborative_annotation:
-            annotations = annotations.filter(user=request.user)
-        serializer = serializer(annotations, many=True)
-        return serializer.data
-
-    @classmethod
-    def get_annotation_approver(cls, instance):
-        approver = instance.annotations_approved_by
-        return approver.username if approver else None
+class ImageSerializer(BaseDataSerializer):
 
     class Meta:
         model = Image
         fields = ('id', 'filename', 'annotations', 'meta', 'annotation_approver', 'comment_count')
+        read_only_fields = ['filename']
 
 
 class ApproverSerializer(DocumentSerializer):
