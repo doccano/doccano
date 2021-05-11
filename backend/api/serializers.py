@@ -108,6 +108,7 @@ class DocumentSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
+    filename = serializers.FilePathField(path='.')
 
     def get_annotations(self, instance):
         request = self.context.get('request')

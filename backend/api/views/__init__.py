@@ -4,6 +4,7 @@ from .comment import *
 from .document import *
 from .export_dataset import *
 from .health import *
+from .image import *
 from .import_dataset import *
 from .import_export import *
 from .label import *

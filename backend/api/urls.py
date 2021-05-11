@@ -53,6 +53,16 @@ urlpatterns_project = [
         name='doc_detail'
     ),
     path(
+        route='images',
+        view=views.ImageList.as_view(),
+        name='image_list'
+    ),
+    path(
+        route='images/<int:image_id>',
+        view=views.ImageDetail.as_view(),
+        name='image_detail'
+    ),
+    path(
         route='docs/<int:doc_id>/approve-labels',
         view=views.ApproveLabelsAPI.as_view(),
         name='approve_labels'

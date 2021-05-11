@@ -92,6 +92,10 @@ def make_doc(project):
     return mommy.make('Document', project=project)
 
 
+def make_image(project):
+    return mommy.make('Image', project=project)
+
+
 def make_comment(doc, user):
     return mommy.make('Comment', document=doc, user=user)
 
