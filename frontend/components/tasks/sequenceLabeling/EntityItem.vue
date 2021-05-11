@@ -1,13 +1,14 @@
 <template>
   <v-menu
-      v-if="label && !showLinksMenu"
+      v-if="label && !activeMenu"
       v-model="showMenu"
       offset-y
+      :close-on-content-click="false"
   >
     <template v-slot:activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
         <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
-            v-if="false && !showMenu && sourceChunk.none" class="choose-link-type" @click.stop="selectSourceAndShowLinkTypes"></span><span
+            v-if="!showMenu && sourceChunk.none" class="choose-link-type" @click.stop="showActiveLinks"></span><span
             v-if="!showMenu && sourceChunk.id === spanid" class="active-link-source" @click.stop="abortNewLink"></span><span
             v-if="selectedLinkType > -1 && sourceChunk.id && sourceChunk.id !== spanid" class="choose-target"
             @click.stop="selectTarget"></span></span><span
@@ -39,8 +40,57 @@
   </v-menu>
 
   <v-menu
-      v-else-if="label && showLinksMenu"
-      v-model="showMenu"
+      v-else-if="label && activeMenu==='active-links'"
+      v-model="showActiveLinksMenu"
+      offset-y
+      :close-on-content-click="false"
+  >
+    <template v-slot:activator="{ on }">
+      <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
+        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span
+          :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label"/>
+      </span>
+    </template>
+
+    <v-list
+        dense
+        min-width="150"
+        max-height="400"
+        class="overflow-y-auto"
+    >
+      <v-list-item @click="showNewLinkTypes">
+        <v-list-item-content>
+          <v-list-item-title>new relation...</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+
+      <v-list-item
+          v-for="(target, i) in sourceChunk.links"
+          :key="i"
+      >
+        <v-list-item-content>
+          <v-list-item-title v-text="target.id"></v-list-item-title>
+          <v-list-item-subtitle v-text="target.id"></v-list-item-subtitle>
+        </v-list-item-content>
+
+        <v-list-item-action>
+          <v-btn icon>
+            <v-icon color="grey lighten-1">mdi-lead-pencil</v-icon>
+          </v-btn>
+        </v-list-item-action>
+
+        <v-list-item-action>
+          <v-btn icon>
+            <v-icon color="grey lighten-1">mdi-delete</v-icon>
+          </v-btn>
+        </v-list-item-action>
+      </v-list-item>
+    </v-list>
+  </v-menu>
+
+  <v-menu
+      v-else-if="label && activeMenu==='new-link'"
+      v-model="showNewLinkMenu"
       offset-y
   >
     <template v-slot:activator="{ on }">
@@ -56,17 +106,21 @@
         max-height="400"
         class="overflow-y-auto"
     >
-      <v-list-item
-          v-for="(item, i) in labels"
-          :key="i"
-          @click="selectLinkType(item)"
-      >
+      <v-list-item>
         <v-list-item-content>
-          <v-list-item-title v-text="'LINK - ' + item.text"/>
+          <v-list-item-title>choose relation type:</v-list-item-title>
         </v-list-item-content>
-        <v-list-item-action>
-          <v-list-item-action-text v-text="item.suffixKey"/>
-        </v-list-item-action>
+      </v-list-item>
+
+      <v-list-item @click="selectTarget()">
+        <v-list-item-content>
+          <v-list-item-title>tipo1</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item @click="selectTarget()">
+        <v-list-item-content>
+          <v-list-item-title>tipo2</v-list-item-title>
+        </v-list-item-content>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -120,7 +174,9 @@ export default {
   data() {
     return {
       showMenu: false,
-      showLinksMenu: false
+      showActiveLinksMenu: false,
+      showNewLinkMenu: false,
+      activeMenu: false
     }
   },
 
@@ -140,28 +196,40 @@ export default {
       this.$emit('remove')
     },
 
-    selectSourceAndShowLinkTypes() {
-      this.showMenu = true;
-      this.showLinksMenu = true;
-      this.$emit('selectSource');
+    showActiveLinks() {
+      this.showActiveLinksMenu = true;
+      this.activeMenu = 'active-links';
+      // this.$emit('selectSource');
+    },
+
+    showNewLinkTypes() {
+      console.log('showNewLinkTypes');
+      this.showNewLinkMenu = true;
+      this.activeMenu = 'new-link';
+      console.log(this.showNewLinkMenu);
+      console.log(this.activeMenu);
     },
 
     selectLinkType(type) {
       this.showMenu = false;
-      this.showLinksMenu = false;
+      this.activeMenu = false;
       this.$emit('selectLinkType', type);
     },
 
     selectTarget() {
       this.showMenu = false;
-      this.showLinksMenu = false;
+      this.activeMenu = false;
       this.$emit('selectTarget');
     },
 
     abortNewLink() {
       this.showMenu = false;
-      this.showLinksMenu = false;
+      this.activeMenu = false;
       this.$emit('abortNewLink');
+    },
+
+    doNothing() {
+      console.log(5);
     }
   }
 }
