@@ -38,9 +38,9 @@ Go to <http://127.0.0.1:8000/>.
 You can setup local development environment as follows:
 
 ```bash
-$ git clone https://github.com/doccano/doccano.git
-$ cd doccano
-$ docker-compose -f docker-compose.dev.yml up
+git clone https://github.com/doccano/doccano.git
+cd doccano
+docker-compose -f docker-compose.dev.yml up
 ```
 
 Go to <http://127.0.0.1:3000/>.
@@ -50,23 +50,30 @@ Or, you can setup via Python and Node.js:
 ### Python
 
 ```bash
-$ git clone https://github.com/doccano/doccano.git
-$ cd doccano
-$ pipenv sync --dev
-$ pipenv shell
-$ cd backend
-$ python manage.py migrate
-$ python manage.py create_roles
-$ python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
-$ python manage.py runserver
+git clone https://github.com/doccano/doccano.git
+cd doccano
+pipenv sync --dev
+pipenv shell
+cd backend
+python manage.py migrate
+python manage.py create_roles
+python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+python manage.py runserver
+```
+
+In another terminal, you need to run Celery to use import/export dataset feature:
+
+```bash
+cd doccano/backend
+celery --app=app worker --loglevel=INFO --concurrency=1
 ```
 
 ### Node.js
 
 ```bash
-$ cd frontend
-$ yarn install
-$ yarn dev
+cd frontend
+yarn install
+yarn dev
 ```
 
 Go to <http://127.0.0.1:3000/>.
