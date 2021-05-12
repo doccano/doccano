@@ -44,7 +44,7 @@ class StatisticsAPI(APIView):
         return {i: len(set_user_data[i]) for i in set_user_data}
 
     def progress(self, project):
-        docs = project.documents
+        docs = project.examples
         annotation_class = project.get_annotation_class()
         total = docs.count()
         annotation_filter = Q(document_id__in=docs.all())

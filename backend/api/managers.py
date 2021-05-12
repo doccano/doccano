@@ -9,7 +9,7 @@ class AnnotationManager(Manager):
     def get_label_per_data(self, project):
         label_count = Counter()
         user_count = Counter()
-        docs = project.documents.all()
+        docs = project.examples.all()
         annotations = self.filter(document_id__in=docs.all())
 
         for d in annotations.values('label__text', 'user__username').annotate(Count('label'), Count('user')):
@@ -24,7 +24,7 @@ class Seq2seqAnnotationManager(Manager):
     def get_label_per_data(self, project):
         label_count = Counter()
         user_count = Counter()
-        docs = project.documents.all()
+        docs = project.examples.all()
         annotations = self.filter(document_id__in=docs.all())
 
         for d in annotations.values('text', 'user__username').annotate(Count('text'), Count('user')):

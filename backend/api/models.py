@@ -111,42 +111,45 @@ class Label(models.Model):
         )
 
 
-class Document(models.Model):
-    text = models.TextField()
-    project = models.ForeignKey(Project, related_name='documents', on_delete=models.CASCADE)
+class Example(PolymorphicModel):
     meta = models.JSONField(default=dict)
     filename = models.FileField(default='.')
+    project = models.ForeignKey(Project, related_name='examples', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     annotations_approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    @property
+    def comment_count(self):
+        return Comment.objects.filter(example=self.id).count()
+
+
+class Document(Example):
+    text = models.TextField()
+    example = models.OneToOneField(Example,
+                                   on_delete=models.CASCADE,
+                                   primary_key=True,
+                                   db_column='id',
+                                   parent_link=True)
 
     def __str__(self):
         return self.text[:50]
 
-    @property
-    def comment_count(self):
-        return Comment.objects.filter(document=self.id).count()
 
-
-class Image(models.Model):
-    project = models.ForeignKey(Project, related_name='images', on_delete=models.CASCADE)
-    meta = models.JSONField(default=dict)
-    filename = models.FileField(default='.')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    annotations_approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+class Image(Example):
+    example = models.OneToOneField(Example,
+                                   on_delete=models.CASCADE,
+                                   primary_key=True,
+                                   db_column='id',
+                                   parent_link=True)
 
     def __str__(self):
         return self.filename
 
-    @property
-    def comment_count(self):
-        return Comment.objects.count()
-
 
 class Comment(models.Model):
     text = models.TextField()
-    document = models.ForeignKey(Document, related_name='comments', on_delete=models.CASCADE)
+    example = models.ForeignKey(Example, related_name='comments', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -154,10 +157,6 @@ class Comment(models.Model):
     @property
     def username(self):
         return self.user.username
-
-    @property
-    def document_text(self):
-        return self.document.text
 
     class Meta:
         ordering = ('-created_at', )

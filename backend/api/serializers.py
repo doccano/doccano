@@ -13,7 +13,7 @@ from .models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
                      RoleMapping, Seq2seqAnnotation, Seq2seqProject,
                      SequenceAnnotation, SequenceLabelingProject,
                      Speech2textAnnotation, Speech2textProject, Tag,
-                     TextClassificationProject)
+                     TextClassificationProject, Example)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -68,8 +68,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'user', 'username', 'document', 'document_text', 'text', 'created_at', )
-        read_only_fields = ('user', 'document')
+        fields = ('id', 'user', 'username', 'example', 'text', 'created_at', )
+        read_only_fields = ('user', 'example')
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -100,20 +100,32 @@ class BaseDataSerializer(serializers.ModelSerializer):
         approver = instance.annotations_approved_by
         return approver.username if approver else None
 
+    class Meta:
+        model = Example
+        fields = ['id', 'filename', 'annotations', 'meta', 'annotation_approver', 'comment_count']
+        read_only_fields = ['filename']
+
 
 class DocumentSerializer(BaseDataSerializer):
 
     class Meta:
         model = Document
-        fields = ('id', 'filename', 'text', 'annotations', 'meta', 'annotation_approver', 'comment_count')
+        fields = BaseDataSerializer.Meta.fields + ['text']
 
 
 class ImageSerializer(BaseDataSerializer):
 
     class Meta:
         model = Image
-        fields = ('id', 'filename', 'annotations', 'meta', 'annotation_approver', 'comment_count')
-        read_only_fields = ['filename']
+        fields = BaseDataSerializer.Meta.fields
+
+
+class ExampleSerializer(PolymorphicSerializer):
+    model_serializer_mapping = {
+        Example: BaseDataSerializer,
+        Document: DocumentSerializer,
+        Image: ImageSerializer
+    }
 
 
 class ApproverSerializer(DocumentSerializer):

@@ -22,7 +22,7 @@ class ImageList(generics.ListCreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
 
-        queryset = project.images
+        queryset = project.examples
         if project.randomize_document_order:
             random.seed(self.request.user.id)
             value = random.randrange(2, 20)

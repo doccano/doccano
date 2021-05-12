@@ -61,7 +61,7 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'document', 'text', 'created_at', )
+    list_display = ('user', 'example', 'text', 'created_at', )
     ordering = ('user', 'created_at', )
     search_fields = ('user',)
 

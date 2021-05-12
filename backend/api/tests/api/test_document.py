@@ -11,7 +11,7 @@ class TestDocumentListAPI(CRUDMixin):
         self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
         self.non_member = make_user()
         make_doc(self.project.item)
-        self.data = {'text': 'example'}
+        self.data = {'text': 'example', 'resourcetype': 'Document'}
         self.url = reverse(viewname='doc_list', args=[self.project.item.id])
 
     def test_allows_project_member_to_list_docs(self):

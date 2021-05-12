@@ -10,11 +10,11 @@ from rest_framework.response import Response
 from ..filters import DocumentFilter
 from ..models import Document, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin
-from ..serializers import DocumentSerializer
+from ..serializers import DocumentSerializer, ExampleSerializer
 
 
 class DocumentList(generics.ListCreateAPIView):
-    serializer_class = DocumentSerializer
+    serializer_class = ExampleSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ('text',)
     ordering_fields = ('created_at', 'updated_at', 'doc_annotations__updated_at',
@@ -25,14 +25,14 @@ class DocumentList(generics.ListCreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
 
-        queryset = project.documents
+        queryset = project.examples.instance_of(Document)
+        queryset.model = Document
         if project.randomize_document_order:
             random.seed(self.request.user.id)
             value = random.randrange(2, 20)
             queryset = queryset.annotate(sort_id=F('id') % value).order_by('sort_id', 'id')
         else:
             queryset = queryset.order_by('id')
-
         return queryset
 
     def perform_create(self, serializer):

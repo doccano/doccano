@@ -97,7 +97,7 @@ def make_image(project):
 
 
 def make_comment(doc, user):
-    return mommy.make('Comment', document=doc, user=user)
+    return mommy.make('Comment', example=doc, user=user)
 
 
 def make_annotation(task, doc, user):
