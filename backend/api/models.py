@@ -13,11 +13,13 @@ DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
 SPEECH2TEXT = 'Speech2text'
+IMAGE_CLASSIFICATION = 'ImageClassification'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
     (SPEECH2TEXT, 'speech to text'),
+    (IMAGE_CLASSIFICATION, 'image classification')
 )
 
 

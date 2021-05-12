@@ -4,7 +4,7 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from ...models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
+from ...models import DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
 from . import examples
 
 encodings = Literal[
@@ -162,6 +162,11 @@ class CoNLL(Format):
     accept_types = 'text/*'
 
 
+class ImageFile(Format):
+    name = 'ImageFile'
+    accept_types = 'image/png, image/jpeg, image/bmp, image/gif'
+
+
 class OptionColumn(BaseModel):
     encoding: encodings = 'utf_8'
     column_data: str = 'text'
@@ -228,3 +233,6 @@ Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
 Options.register(SEQ2SEQ, JSON, OptionColumn, examples.Text_JSON)
 Options.register(SEQ2SEQ, JSONL, OptionColumn, examples.Text_JSONL)
 Options.register(SEQ2SEQ, Excel, OptionColumn, examples.Text_CSV)
+
+# Image classification
+Options.register(IMAGE_CLASSIFICATION, ImageFile, OptionNone, examples.Generic_ImageFile)
