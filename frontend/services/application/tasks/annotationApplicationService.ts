@@ -8,7 +8,11 @@ export class AnnotationApplicationService<T extends AnnotationModel> {
   ) {}
 
   public async delete(projectId: string, docId: number, annotationId: number): Promise<void> {
-    await this.repository.delete(projectId, docId, annotationId)
+    try {
+      await this.repository.delete(projectId, docId, annotationId)   
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   public async clear(projectId: string, docId: number): Promise<void> {

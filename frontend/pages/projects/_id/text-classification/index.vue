@@ -35,7 +35,7 @@
         v-shortkey="shortKeys"
         @shortkey="addOrRemove"
       >
-        <v-card-title> 
+        <v-card-title v-if="getNote"> 
           {{getNote}}
         </v-card-title> 
         <v-card-title> 
@@ -147,7 +147,7 @@ export default {
       if (text.startsWith('@taboola-doccano-concept')){
         return this.$t('guideline.conceptsSelect')
       }else {
-        return this.$t('guideline.conceptsSelect')
+        return null
       }
     }
   },

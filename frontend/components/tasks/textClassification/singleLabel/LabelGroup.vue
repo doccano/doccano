@@ -24,6 +24,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 export default {
   props: {
     labels: {
@@ -57,12 +59,16 @@ export default {
     },
 
     add(label) {
-      this.$emit('add', label.id)
+      if(_.get(label,'id',false)!==false){
+        this.$emit('add', label.id)
+      }
     },
 
     remove(label) {
-      const annotation = this.annotations.find(item => item.label === label.id)
-      this.$emit('remove', annotation.id)
+      if(_.get(label,'id',false)!==false){
+        const annotation = this.annotations.find(item => item.label === label.id)
+        this.$emit('remove', annotation.id)
+      }
     }
   }
 }
