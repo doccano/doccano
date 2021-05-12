@@ -27,7 +27,7 @@ class DocumentList(generics.ListCreateAPIView):
 
         queryset = project.examples.instance_of(Document)
         queryset.model = Document
-        if project.randomize_document_order:
+        if project.random_order:
             random.seed(self.request.user.id)
             value = random.randrange(2, 20)
             queryset = queryset.annotate(sort_id=F('id') % value).order_by('sort_id', 'id')

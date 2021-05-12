@@ -23,7 +23,7 @@ class ImageList(generics.ListCreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
 
         queryset = project.examples
-        if project.randomize_document_order:
+        if project.random_order:
             random.seed(self.request.user.id)
             value = random.randrange(2, 20)
             queryset = queryset.annotate(sort_id=F('id') % value).order_by('sort_id', 'id')

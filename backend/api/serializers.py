@@ -8,12 +8,12 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
                      SPEECH2TEXT, AutoLabelingConfig, Comment, Document,
-                     DocumentAnnotation, Image, ImageCategoryLabel,
+                     DocumentAnnotation, Example, Image, ImageCategoryLabel,
                      ImageClassificationProject, Label, Project, Role,
                      RoleMapping, Seq2seqAnnotation, Seq2seqProject,
                      SequenceAnnotation, SequenceLabelingProject,
                      Speech2textAnnotation, Speech2textProject, Tag,
-                     TextClassificationProject, Example)
+                     TextClassificationProject)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -157,7 +157,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
-                  'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification',
+                  'updated_at', 'random_order', 'collaborative_annotation', 'single_class_classification',
                   'tags')
         read_only_fields = ('updated_at', 'users', 'current_users_role', 'tags')
 
@@ -191,7 +191,7 @@ class Speech2textProjectSerializer(ProjectSerializer):
     class Meta:
         model = Speech2textProject
         fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
-                  'updated_at', 'randomize_document_order')
+                  'updated_at', 'random_order')
         read_only_fields = ('updated_at', 'users', 'current_users_role')
 
 
