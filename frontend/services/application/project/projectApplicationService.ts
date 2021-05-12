@@ -54,7 +54,7 @@ export class ProjectApplicationService {
       item.description,
       item.guideline,
       item.projectType,
-      item.enableRandomizeDocOrder,
+      item.enableRandomOrder,
       item.enableShareAnnotation,
       item.singleClassClassification
     )

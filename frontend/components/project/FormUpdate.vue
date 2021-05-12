@@ -128,7 +128,7 @@
           >
             <h3>Shuffle</h3>
             <v-checkbox
-              v-model="project.enableRandomizeDocOrder"
+              v-model="project.enableRandomOrder"
               :label="$t('overview.randomizeDocOrder')"
             />
           </v-col>
@@ -185,7 +185,7 @@ export default {
   },
 
   watch: {
-    'project.enableRandomizeDocOrder'() {
+    'project.enableRandomOrder'() {
       this.doneEdit()
     },
     'project.enableShareAnnotation'() {

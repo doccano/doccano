@@ -49,9 +49,9 @@
           @change="updateValue('singleClassClassification', $event === true)"
         />
         <v-checkbox
-          :value="enableRandomizeDocOrder"
+          :value="enableRandomOrder"
           :label="$t('overview.randomizeDocOrder')"
-          @change="updateValue('enableRandomizeDocOrder', $event === true)"
+          @change="updateValue('enableRandomOrder', $event === true)"
         />
         <v-checkbox
           :value="enableShareAnnotation"
@@ -89,7 +89,7 @@ export default Vue.extend({
       default: '',
       required: true
     },
-    enableRandomizeDocOrder: {
+    enableRandomOrder: {
       type: Boolean,
       default: false,
       required: true
