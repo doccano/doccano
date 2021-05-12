@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import Document, Project
+from ..models import Example, Project
 from ..permissions import (IsAnnotationApprover, IsInProjectOrAdmin,
                            IsOwnAnnotation, IsProjectAdmin)
 from ..serializers import ApproverSerializer, get_annotation_serializer
@@ -69,12 +69,12 @@ class AnnotationDetail(generics.RetrieveUpdateDestroyAPIView):
         return self.queryset
 
 
-class ApproveLabelsAPI(APIView):
+class ApprovalAPI(APIView):
     permission_classes = [IsAuthenticated & (IsAnnotationApprover | IsProjectAdmin)]
 
     def post(self, request, *args, **kwargs):
         approved = self.request.data.get('approved', True)
-        document = get_object_or_404(Document, pk=self.kwargs['doc_id'])
-        document.annotations_approved_by = self.request.user if approved else None
-        document.save()
-        return Response(ApproverSerializer(document).data)
+        example = get_object_or_404(Example, pk=self.kwargs['data_id'])
+        example.annotations_approved_by = self.request.user if approved else None
+        example.save()
+        return Response(ApproverSerializer(example).data)
