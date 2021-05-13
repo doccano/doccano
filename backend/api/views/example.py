@@ -1,4 +1,3 @@
-import abc
 import random
 
 from django.db.models import F
@@ -9,26 +8,26 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..filters import DocumentFilter
-from ..models import Document, Image, Project
+from ..models import Document, Example, Image, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin
-from ..serializers import (DocumentSerializer, ExampleSerializer,
-                           ImageSerializer)
+from ..serializers import DocumentSerializer, ExampleSerializer, ImageSerializer
 
 
 class ExampleList(generics.ListCreateAPIView):
+    serializer_class = ExampleSerializer
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    ordering_fields = ('created_at', 'updated_at')
+    model = Example
 
     @property
     def project(self):
         return get_object_or_404(Project, pk=self.kwargs['project_id'])
 
-    @abc.abstractmethod
-    def get_examples(self):
-        raise NotImplementedError()
-
     def get_queryset(self):
-        queryset = self.get_examples()
+        queryset = self.model.objects.filter(project=self.project)
         if self.project.random_order:
+            # Todo: fix the algorithm.
             random.seed(self.request.user.id)
             value = random.randrange(2, 20)
             queryset = queryset.annotate(sort_id=F('id') % value).order_by('sort_id', 'id')
@@ -50,18 +49,16 @@ class ExampleList(generics.ListCreateAPIView):
 
 
 class DocumentList(ExampleList):
-    serializer_class = ExampleSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    serializer_class = DocumentSerializer
     search_fields = ('text',)
-    ordering_fields = ('created_at', 'updated_at', 'doc_annotations__updated_at',
-                       'seq_annotations__updated_at', 'seq2seq_annotations__updated_at')
     filter_class = DocumentFilter
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    model = Document
 
-    def get_examples(self):
-        queryset = self.project.examples.instance_of(Document)
-        queryset.model = Document
-        return queryset
+
+class ImageList(ExampleList):
+    serializer_class = ImageSerializer
+    search_fields = ('filename',)
+    model = Image
 
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -69,19 +66,6 @@ class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = DocumentSerializer
     lookup_url_kwarg = 'doc_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
-
-
-class ImageList(ExampleList):
-    serializer_class = ImageSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('filename',)
-    ordering_fields = ('created_at', 'updated_at')
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
-
-    def get_examples(self):
-        queryset = self.project.examples.instance_of(Image)
-        queryset.model = Image
-        return queryset
 
 
 class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
