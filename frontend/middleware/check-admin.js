@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-export default _.debounce(async function ({ app, store, route, redirect }) {
+export default _.debounce(async function({ app, store, route, redirect }) {
   try {
     await store.dispatch('projects/setCurrentProject', route.params.id)
   } catch (e) {

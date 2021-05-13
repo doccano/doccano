@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-export const truncate = function (text, length, clamp) {
+export const truncate = function(text, length, clamp) {
   text = text || ''
   clamp = clamp || '...'
   length = length || 30
