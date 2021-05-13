@@ -10,7 +10,11 @@ export class TextClassificationApplicationService extends AnnotationApplicationS
   }
 
   public async create(projectId: string, docId: number, labelId: number): Promise<void> {
-    const item = new TextClassificationItem(0, labelId, 0)
-    await this.repository.create(projectId, docId, item)
+    try {      
+      const item = new TextClassificationItem(0, labelId, 0)
+      await this.repository.create(projectId, docId, item)
+    } catch (error) {
+      console.log(error)
+    }
   }
 }

@@ -2,14 +2,14 @@
   <v-combobox
     v-model="annotatedLabels"
     chips
-    :items="labels"
+    :items="mappingLabels"
     item-text="text"
     hide-details
     hide-selected
     multiple
     class="pt-0"
     :search-input.sync="search"
-    @change="search=''"
+    @change="search = ''"
   >
     <template v-slot:selection="{ attrs, item, select, selected }">
       <v-chip
@@ -21,14 +21,10 @@
         @click="select"
         @click:close="remove(item)"
       >
-        <v-avatar
-          left
-          color="white"
-          class="black--text font-weight-bold"
-        >
+        <v-avatar left color="white" class="black--text font-weight-bold">
           {{ item.suffixKey }}
         </v-avatar>
-        {{ item.text }}
+          {{ item.text }}
       </v-chip>
     </template>
     <template v-slot:item="{ item }">
@@ -36,20 +32,19 @@
         :color="item.backgroundColor"
         :text-color="$contrastColor(item.backgroundColor)"
       >
-        <v-avatar
-          left
-          color="white"
-          class="black--text font-weight-bold"
-        >
+        <v-avatar left color="white" class="black--text font-weight-bold">
           {{ item.suffixKey }}
         </v-avatar>
-        {{ item.text }}
+             {{ item.text }} 
       </v-chip>
     </template>
   </v-combobox>
 </template>
 
 <script>
+import _ from 'lodash'
+import { conceptToken } from "@/app.config.js"
+
 export default {
   props: {
     labels: {
@@ -61,6 +56,11 @@ export default {
       type: Array,
       default: () => ([]),
       required: true
+    },
+    text: {
+      type: String,
+      default: '',
+      required: true
     }
   },
 
@@ -71,10 +71,14 @@ export default {
   },
 
   computed: {
+    mappingLabels() {
+      return this.getLabel(this.labels)
+    },
     annotatedLabels: {
       get() {
         const labelIds = this.annotations.map(item => item.label)
-        return this.labels.filter(item => labelIds.includes(item.id))
+        const labels = this.labels.filter(item => labelIds.includes(item.id))
+        return this.getLabel(labels)
       },
       set(newValue) {
         if (newValue.length > this.annotations.length) {
@@ -91,17 +95,42 @@ export default {
           }
         }
       }
-    }
+    },
+    getLabelMap() {
+      let map = []
+      try {
+        const reg = new RegExp( '(?<=' + conceptToken + ' ).*', 'g')
+        map = JSON.parse(this.text.match(reg)[0]).concepts
+      } catch (error) { }
+      return map
+    },
   },
 
   methods: {
     add(label) {
-      this.$emit('add', label.id)
+       if(_.get(label,'id',false)!==false){
+          this.$emit('add', label.id)
+       }
     },
 
     remove(label) {
-      const annotation = this.annotations.find(item => item.label === label.id)
-      this.$emit('remove', annotation.id)
+       if(_.get(label,'id',false)!==false){
+        const annotation = this.annotations.find(item => item.label === label.id)
+        this.$emit('remove', annotation.id)
+       }
+    },
+
+    getLabel(labels) {
+      if (this.text.startsWith(conceptToken)){
+          return labels.map(it=>{
+            return {
+              ...it,
+              text:this.getLabelMap[it.text].text
+            }
+          })
+      }else{
+        return labels
+      }
     }
   }
 }

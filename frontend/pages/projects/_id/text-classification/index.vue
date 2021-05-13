@@ -35,12 +35,16 @@
         v-shortkey="shortKeys"
         @shortkey="addOrRemove"
       >
-        <v-card-title>
+        <v-card-title v-if="getNote"> 
+          {{getNote}}
+        </v-card-title> 
+        <v-card-title> 
           <label-group
             v-if="labelOption === 0"
             :labels="labels"
             :annotations="annotations"
             :single-label="project.singleClassClassification"
+            :text="doc.text"
             @add="add"
             @remove="remove"
           />
@@ -49,12 +53,13 @@
             :labels="labels"
             :annotations="annotations"
             :single-label="project.singleClassClassification"
+            :text="doc.text"
             @add="add"
             @remove="remove"
           />
         </v-card-title>
         <v-divider />
-        <v-card-text class="title highlight" v-text="doc.text" />
+        <v-card-text class="title highlight" v-text="getText" />
       </v-card>
     </template>
     <template v-slot:sidebar>
@@ -71,6 +76,7 @@ import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+import { conceptToken } from "@/app.config.js"
 
 export default {
   layout: 'workspace',
@@ -122,6 +128,28 @@ export default {
         return {}
       } else {
         return this.docs.items[0]
+      }
+    },
+    getText() {
+   
+      const text = _.get(this,"doc.text","")
+      if (text.startsWith(conceptToken)){
+        let content = ""
+        try {
+         const reg = new RegExp( '(?<=' + conceptToken + ' ).*', 'g')
+         content = JSON.parse(text.match(reg)[0]).analyzed_text   
+        } catch (error) {}
+        return content
+      }else{
+        return text
+      }
+    },
+    getNote() {
+      const text = _.get(this,"doc.text","")
+      if (text.startsWith(conceptToken)){
+        return this.$t('guideline.conceptsSelect')
+      }else {
+        return null
       }
     }
   },

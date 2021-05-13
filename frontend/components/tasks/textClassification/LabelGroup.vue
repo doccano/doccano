@@ -10,6 +10,7 @@
     v-else
     :annotations="annotations"
     :labels="labels"
+    :text="text"
     @add="$emit('add', $event)"
     @remove="$emit('remove', $event)"
   />
@@ -39,6 +40,11 @@ export default {
     singleLabel: {
       type: Boolean,
       default: false,
+      required: true
+    },
+    text: {
+      type: String,
+      default: "",
       required: true
     }
   }
