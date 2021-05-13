@@ -26,6 +26,7 @@
 
 <script>
 import _ from 'lodash'
+import { conceptToken } from "@/app.config.js"
 
 export default {
   props: {
@@ -54,7 +55,8 @@ export default {
     getLabelMap() {
       let map = []
       try {
-        map = JSON.parse(this.text.match(/(?<=@taboola-doccano-concept ).*/)[0]).concepts
+        const reg = new RegExp( '(?<=' + conceptToken + ' ).*', 'g')
+        map = JSON.parse(this.text.match(reg)[0]).concepts
       } catch (error) { }
       return map
     }
@@ -88,8 +90,7 @@ export default {
     },
 
     getLabelText(item,index) {
-      console.log("getLabelText",this.text)
-      if (this.text.startsWith('@taboola-doccano-concept')){
+      if (this.text.startsWith(conceptToken)){
          return _.get(this,`getLabelMap[${index}].text`,"")
       }else{
         return item.text

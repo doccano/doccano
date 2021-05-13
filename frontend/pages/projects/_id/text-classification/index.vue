@@ -76,6 +76,7 @@ import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+import { conceptToken } from "@/app.config.js"
 
 export default {
   layout: 'workspace',
@@ -132,10 +133,11 @@ export default {
     getText() {
    
       const text = _.get(this,"doc.text","")
-      if (text.startsWith('@taboola-doccano-concept')){
+      if (text.startsWith(conceptToken)){
         let content = ""
         try {
-         content = JSON.parse(text.match(/(?<=@taboola-doccano-concept ).*/)[0]).analyzed_text   
+         const reg = new RegExp( '(?<=' + conceptToken + ' ).*', 'g')
+         content = JSON.parse(text.match(reg)[0]).analyzed_text   
         } catch (error) {}
         return content
       }else{
@@ -144,7 +146,7 @@ export default {
     },
     getNote() {
       const text = _.get(this,"doc.text","")
-      if (text.startsWith('@taboola-doccano-concept')){
+      if (text.startsWith(conceptToken)){
         return this.$t('guideline.conceptsSelect')
       }else {
         return null
