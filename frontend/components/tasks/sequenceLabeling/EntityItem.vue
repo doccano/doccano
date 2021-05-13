@@ -3,14 +3,13 @@
       v-if="label && !activeMenu"
       v-model="showMenu"
       offset-y
-      :close-on-content-click="false"
   >
     <template v-slot:activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
         <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
             v-if="!showMenu && sourceChunk.none" class="choose-link-type" @click.stop="showActiveLinks"></span><span
             v-if="!showMenu && sourceChunk.id === spanid" class="active-link-source" @click.stop="abortNewLink"></span><span
-            v-if="selectedLinkType > -1 && sourceChunk.id && sourceChunk.id !== spanid" class="choose-target"
+            v-if="sourceLinkType.id > -1 && sourceChunk.id && sourceChunk.id !== spanid" class="choose-target"
             @click.stop="selectTarget"></span></span><span
           :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label"/>
       </span>
@@ -43,11 +42,11 @@
       v-else-if="label && activeMenu==='active-links'"
       v-model="showActiveLinksMenu"
       offset-y
-      :close-on-content-click="false"
   >
     <template v-slot:activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
-        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span
+        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
+            class="active-link-source" @click.stop="abortNewLink"></span></span><span
           :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label"/>
       </span>
     </template>
@@ -58,29 +57,28 @@
         max-height="400"
         class="overflow-y-auto"
     >
-      <v-list-item @click="showNewLinkTypes">
+      <v-list-item @click.stop="showNewLinkTypes">
         <v-list-item-content>
           <v-list-item-title>new relation...</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
 
       <v-list-item
-          v-for="(target, i) in sourceChunk.links"
+          v-for="(link, i) in sourceChunk.links"
           :key="i"
       >
         <v-list-item-content>
-          <v-list-item-title v-text="target.id"></v-list-item-title>
-          <v-list-item-subtitle v-text="target.id"></v-list-item-subtitle>
+          <v-list-item-subtitle v-text="link.targetName"></v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-action>
-          <v-btn icon>
+          <v-btn icon @click.stop="selectLinkAndShowTypes(link)">
             <v-icon color="grey lighten-1">mdi-lead-pencil</v-icon>
           </v-btn>
         </v-list-item-action>
 
         <v-list-item-action>
-          <v-btn icon>
+          <v-btn icon @click.stop="deleteLink(link, i)">
             <v-icon color="grey lighten-1">mdi-delete</v-icon>
           </v-btn>
         </v-list-item-action>
@@ -95,7 +93,8 @@
   >
     <template v-slot:activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
-        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon></span><span
+        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
+            class="active-link-source" @click.stop="abortNewLink"></span></span><span
           :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label"/>
       </span>
     </template>
@@ -112,15 +111,51 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item @click="selectTarget()">
+      <v-list-item
+          v-for="(type, i) in linkTypes"
+          :key="i"
+          @click="selectNewLinkType(type)"
+      >
+        <v-list-item-action>
+          <v-list-item-action-text v-text="type.name"/>
+        </v-list-item-action>
+      </v-list-item>
+    </v-list>
+  </v-menu>
+
+  <v-menu
+      v-else-if="label && activeMenu==='change-link'"
+      v-model="showChangeLinkMenu"
+      offset-y
+  >
+    <template v-slot:activator="{ on }">
+      <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
+        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
+            class="active-link-source" @click.stop="abortNewLink"></span></span><span
+          :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label"/>
+      </span>
+    </template>
+
+    <v-list
+        dense
+        min-width="150"
+        max-height="400"
+        class="overflow-y-auto"
+    >
+      <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>tipo1</v-list-item-title>
+          <v-list-item-title>change relation type:</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item @click="selectTarget()">
-        <v-list-item-content>
-          <v-list-item-title>tipo2</v-list-item-title>
-        </v-list-item-content>
+
+      <v-list-item
+          v-for="(type, i) in linkTypes"
+          :key="i"
+          @click="changeLinkType(type)"
+      >
+        <v-list-item-action>
+          <v-list-item-action-text v-text="type.name"/>
+        </v-list-item-action>
       </v-list-item>
     </v-list>
   </v-menu>
@@ -156,6 +191,11 @@ export default {
       default: () => [],
       required: true
     },
+    linkTypes: {
+      type: Array,
+      default: () => [],
+      required: true
+    },
     newline: {
       type: Boolean
     },
@@ -164,9 +204,10 @@ export default {
       default: () => {
       }
     },
-    selectedLinkType: {
-      type: Number,
-      default: -1,
+    sourceLinkType: {
+      type: Object,
+      default: () => {
+      },
       required: true
     }
   },
@@ -176,6 +217,7 @@ export default {
       showMenu: false,
       showActiveLinksMenu: false,
       showNewLinkMenu: false,
+      showChangeLinkMenu: false,
       activeMenu: false
     }
   },
@@ -189,47 +231,63 @@ export default {
   methods: {
     update(label) {
       this.$emit('update', label)
-      this.showMenu = false
+      this.closeAllMenus();
     },
 
     remove() {
       this.$emit('remove')
     },
 
+    closeAllMenus() {
+      this.showMenu = false;
+      this.showActiveLinksMenu = false;
+      this.showNewLinkMenu = false;
+      this.showChangeLinkMenu = false;
+      this.activeMenu = false;
+    },
+
     showActiveLinks() {
+      this.closeAllMenus();
       this.showActiveLinksMenu = true;
       this.activeMenu = 'active-links';
-      // this.$emit('selectSource');
+      this.$emit('selectSource');
     },
 
     showNewLinkTypes() {
-      console.log('showNewLinkTypes');
-      this.showNewLinkMenu = true;
+      this.closeAllMenus();
       this.activeMenu = 'new-link';
-      console.log(this.showNewLinkMenu);
-      console.log(this.activeMenu);
+      this.showNewLinkMenu = true;
     },
 
-    selectLinkType(type) {
-      this.showMenu = false;
-      this.activeMenu = false;
-      this.$emit('selectLinkType', type);
+    selectLinkAndShowTypes(link) {
+      this.closeAllMenus();
+      this.activeMenu = 'change-link';
+      this.showChangeLinkMenu = true;
+      this.$emit('selectLink', link);
+    },
+
+    deleteLink(link, i) {
+      this.$emit('deleteLink', {id: link.id, ndx: i});
+    },
+
+    selectNewLinkType(type) {
+      this.closeAllMenus();
+      this.$emit('selectNewLinkType', type);
+    },
+
+    changeLinkType(type) {
+      this.closeAllMenus();
+      this.$emit('changeLinkType', type);
     },
 
     selectTarget() {
-      this.showMenu = false;
-      this.activeMenu = false;
+      this.closeAllMenus();
       this.$emit('selectTarget');
     },
 
     abortNewLink() {
-      this.showMenu = false;
-      this.activeMenu = false;
-      this.$emit('abortNewLink');
-    },
-
-    doNothing() {
-      console.log(5);
+      this.closeAllMenus();
+      this.$emit('hideAllLinkMenus');
     }
   }
 }

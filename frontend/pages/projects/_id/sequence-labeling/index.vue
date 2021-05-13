@@ -22,17 +22,21 @@
         <v-card-text class="title">
           <entity-item-box
               :labels="labels"
+              :link-types="linkTypes"
               :text="doc.text"
               :entities="annotations"
               :delete-annotation="remove"
               :update-entity="update"
               :add-entity="add"
               :source-chunk="sourceChunk"
-              :selected-link-type="selectedLinkType"
+              :source-link-type="sourceLinkType"
               :select-source="selectSource"
               :select-target="selectTarget"
-              :select-link-type="selectLinkType"
-              :abort-new-link="abortNewLink"
+              :select-link="selectLink"
+              :delete-link="deleteLink"
+              :select-new-link-type="selectNewLinkType"
+              :change-link-type="changeLinkType"
+              :hide-all-link-menus="hideAllLinkMenus"
           />
         </v-card-text>
       </v-card>
@@ -50,6 +54,11 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import EntityItemBox from '~/components/tasks/sequenceLabeling/EntityItemBox'
+
+const NONE = {
+  id: -1,
+  none: true
+};
 
 export default {
   layout: 'workspace',
@@ -82,12 +91,12 @@ export default {
       annotations: [],
       docs: [],
       labels: [],
+      linkTypes: [],
       project: {},
       enableAutoLabeling: false,
-      sourceChunk: {
-        none: true
-      },
-      selectedLinkType: -1
+      sourceChunk: NONE,
+      sourceLink: NONE,
+      sourceLinkType: NONE
     }
   },
 
@@ -118,29 +127,44 @@ export default {
 
   async created() {
     this.labels = await this.$services.label.list(this.projectId)
+
+    // FIXME: attach the real api
+    this.linkTypes = [
+      {
+        "id": 1,
+        "name": "soggetto di",
+        "color": "#FFEB3B"
+      },
+      {
+        "id": 1,
+        "name": "relativo a",
+        "color": "#B71C1C"
+      }
+    ];
+
     this.project = await this.$services.project.findById(this.projectId)
   },
 
   methods: {
     async list(docId) {
-      this.abortNewLink();
+      this.hideAllLinkMenus();
       this.annotations = await this.$services.sequenceLabeling.list(this.projectId, docId)
     },
 
     async remove(id) {
-      this.abortNewLink();
+      this.hideAllLinkMenus();
       await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
     },
 
     async add(startOffset, endOffset, labelId) {
-      this.abortNewLink();
+      this.hideAllLinkMenus();
       await this.$services.sequenceLabeling.create(this.projectId, this.doc.id, labelId, startOffset, endOffset)
       await this.list(this.doc.id)
     },
 
     async update(labelId, annotationId) {
-      this.abortNewLink();
+      this.hideAllLinkMenus();
       await this.$services.sequenceLabeling.changeLabel(this.projectId, this.doc.id, annotationId, labelId)
       await this.list(this.doc.id)
     },
@@ -169,25 +193,43 @@ export default {
     },
 
     selectTarget(chunk) {
-      // skips links duplicates
+      // skips duplicated links
       if (!chunk.links.find(ch => ch.id === this.sourceChunk.id)) {
         this.sourceChunk.links.push({
           id: chunk.id,
-          type: this.selectedLinkType
+          type: this.sourceLinkType.id,
+          color: this.sourceLinkType.color,
+          targetName: chunk.text
         });
       }
-      this.abortNewLink();
+      this.hideAllLinkMenus();
     },
 
-    selectLinkType(type) {
-      this.selectedLinkType = type;
+    selectLink(link) {
+      this.sourceLink = link;
     },
 
-    abortNewLink() {
-      this.sourceChunk = {
-        none: true
-      };
-      this.selectedLinkType = -1;
+    deleteLink(id, ndx) {
+      this.sourceChunk.links.splice(ndx, 1);
+      this.sourceLink = NONE;
+      this.hideAllLinkMenus();
+    },
+
+    selectNewLinkType(type) {
+      this.sourceLinkType = type;
+    },
+
+    changeLinkType(type) {
+      if (this.sourceLink) {
+        this.sourceLink.type = type.id;
+        this.sourceLink.color = type.color;
+      }
+      this.hideAllLinkMenus();
+    },
+
+    hideAllLinkMenus() {
+      this.sourceChunk = NONE;
+      this.sourceLinkType = NONE;
     }
   },
 

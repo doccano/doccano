@@ -10,14 +10,18 @@
           :label="chunk.label"
           :color="chunk.color"
           :labels="labels"
+          :link-types="linkTypes"
           :source-chunk="sourceChunk"
-          :selected-link-type="selectedLinkType"
+          :source-link-type="sourceLinkType"
           @remove="deleteAnnotation(chunk.id)"
           @update="updateEntity($event.id, chunk.id)"
           @selectSource="selectSource(chunk)"
           @selectTarget="selectTarget(chunk)"
-          @selectLinkType="selectLinkType($event.id)"
-          @abortNewLink="abortNewLink()"
+          @selectLink="selectLink($event)"
+          @deleteLink="deleteLink($event.id, $event.ndx)"
+          @selectNewLinkType="selectNewLinkType($event)"
+          @changeLinkType="changeLinkType($event)"
+          @hideAllLinkMenus="hideAllLinkMenus()"
       />
       <v-menu
           v-model="showMenu"
@@ -74,6 +78,11 @@ export default {
       default: () => ([]),
       required: true
     },
+    linkTypes: {
+      type: Array,
+      default: () => ([]),
+      required: true
+    },
     entities: {
       type: Array,
       default: () => ([]),
@@ -100,9 +109,9 @@ export default {
       },
       required: true
     },
-    selectedLinkType: {
-      type: Number,
-      default: -1,
+    sourceLinkType: {
+      type: Object,
+      default: () => {},
       required: true
     },
     selectSource: {
@@ -115,12 +124,27 @@ export default {
       default: () => ([]),
       required: true
     },
-    selectLinkType: {
+    selectLink: {
       type: Function,
       default: () => ([]),
       required: true
     },
-    abortNewLink: {
+    deleteLink: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    selectNewLinkType: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    changeLinkType: {
+      type: Function,
+      default: () => ([]),
+      required: true
+    },
+    hideAllLinkMenus: {
       type: Function,
       default: () => ([]),
       required: true
@@ -178,9 +202,6 @@ export default {
 
   updated() {
     this.$nextTick(() => {
-      // SIMULATION ONLY
-
-      // svuota il canvas adeguandolo alla dimensione reale del <div> col testo
       const parentPos = document.getElementById('connections-wrapper').getBoundingClientRect();
       const canvas = document.getElementById('connections');
       canvas.width = parentPos.width;
@@ -202,7 +223,7 @@ export default {
             ctx.beginPath();
             ctx.lineWidth = 3;
             ctx.moveTo(x1, y1);
-            ctx.strokeStyle = fromChunk.color;
+            ctx.strokeStyle = toChunk.color;
 
             if (y1 === y2) {
               ctx.lineTo(x1, y1 + 35);
@@ -303,7 +324,7 @@ export default {
     },
 
     open(e) {
-      this.$emit('abortNewLink');
+      this.$emit('hideAllLinkMenus');
 
       this.setSpanInfo()
       if (this.validateSpan()) {
