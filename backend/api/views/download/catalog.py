@@ -4,7 +4,8 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from ...models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
+from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+                       SEQUENCE_LABELING)
 from . import examples
 
 
@@ -82,3 +83,6 @@ Options.register(SEQUENCE_LABELING, JSONL, OptionNone, examples.Offset_JSONL)
 Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
 Options.register(SEQ2SEQ, JSON, OptionNone, examples.Text_JSON)
 Options.register(SEQ2SEQ, JSONL, OptionNone, examples.Text_JSONL)
+
+# Image Classification
+Options.register(IMAGE_CLASSIFICATION, JSONL, OptionNone, examples.CategoryImageClassification)
