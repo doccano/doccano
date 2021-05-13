@@ -1,35 +1,35 @@
 export const state = () => ({
-  current: {},
+  current: {}
 })
 
 export const getters = {
-  currentProject(state) {
+  currentProject (state) {
     return state.current
   },
-  getCurrentUserRole(state) {
+  getCurrentUserRole (state) {
     return state.current.current_users_role || {}
   },
-  canViewApproveButton(state) {
+  canViewApproveButton (state) {
     const role = state.current.current_users_role
     return role && !role.is_annotator
   },
-  getLink(state) {
+  getLink (state) {
     return state.current.pageLink
-  },
+  }
 }
 
 export const mutations = {
-  setCurrent(state, payload) {
+  setCurrent (state, payload) {
     state.current = payload
   }
 }
 
 export const actions = {
-  async setCurrentProject({ commit }, projectId) {
+  async setCurrentProject ({ commit }, projectId) {
     try {
       const response = await this.$services.project.findById(projectId)
       commit('setCurrent', response)
-    } catch(error) {
+    } catch (error) {
       throw new Error(error)
     }
   }
