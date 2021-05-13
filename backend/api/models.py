@@ -73,19 +73,30 @@ class ImageClassificationProject(Project):
 
 
 class Label(models.Model):
-    PREFIX_KEYS = (
-        ('ctrl', 'ctrl'),
-        ('shift', 'shift'),
-        ('ctrl shift', 'ctrl shift')
-    )
-    SUFFIX_KEYS = tuple(
-        (c, c) for c in string.digits + string.ascii_lowercase
-    )
-
     text = models.CharField(max_length=100)
-    prefix_key = models.CharField(max_length=10, blank=True, null=True, choices=PREFIX_KEYS)
-    suffix_key = models.CharField(max_length=1, blank=True, null=True, choices=SUFFIX_KEYS)
-    project = models.ForeignKey(Project, related_name='labels', on_delete=models.CASCADE)
+    prefix_key = models.CharField(
+        max_length=10,
+        blank=True,
+        null=True,
+        choices=(
+            ('ctrl', 'ctrl'),
+            ('shift', 'shift'),
+            ('ctrl shift', 'ctrl shift')
+        )
+    )
+    suffix_key = models.CharField(
+        max_length=1,
+        blank=True,
+        null=True,
+        choices=tuple(
+            (c, c) for c in string.digits + string.ascii_lowercase
+        )
+    )
+    project = models.ForeignKey(
+        to=Project,
+        on_delete=models.CASCADE,
+        related_name='labels'
+    )
     background_color = models.CharField(max_length=7, default='#209cee')
     text_color = models.CharField(max_length=7, default='#ffffff')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -97,13 +108,15 @@ class Label(models.Model):
     def clean(self):
         # Don't allow shortcut key not to have a suffix key.
         if self.prefix_key and not self.suffix_key:
-            raise ValidationError('Shortcut key may not have a suffix key.')
+            message = 'Shortcut key may not have a suffix key.'
+            raise ValidationError(message)
 
         # each shortcut (prefix key + suffix key) can only be assigned to one label
         if self.suffix_key or self.prefix_key:
             other_labels = self.project.labels.exclude(id=self.id)
             if other_labels.filter(suffix_key=self.suffix_key, prefix_key=self.prefix_key).exists():
-                raise ValidationError('A label with this shortcut already exists in the project')
+                message = 'A label with the shortcut already exists in the project.'
+                raise ValidationError(message)
 
         super().clean()
 
@@ -137,26 +150,12 @@ class Example(PolymorphicModel):
 
 class Document(Example):
     text = models.TextField()
-    example = models.OneToOneField(
-        to=Example,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        db_column='id',
-        parent_link=True
-    )
 
     def __str__(self):
         return self.text[:50]
 
 
 class Image(Example):
-    example = models.OneToOneField(
-        to=Example,
-        on_delete=models.CASCADE,
-        primary_key=True,
-        db_column='id',
-        parent_link=True
-    )
 
     def __str__(self):
         return self.filename
@@ -244,7 +243,7 @@ class Span(Annotation):
 
     def clean(self):
         if self.start_offset >= self.end_offset:
-            raise ValidationError('start_offset is after end_offset')
+            raise ValidationError('start_offset > end_offset')
 
     class Meta:
         unique_together = (
@@ -284,9 +283,20 @@ class Role(models.Model):
 
 
 class RoleMapping(models.Model):
-    user = models.ForeignKey(User, related_name='role_mappings', on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, related_name='role_mappings', on_delete=models.CASCADE)
-    role = models.ForeignKey(Role, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='role_mappings'
+    )
+    project = models.ForeignKey(
+        to=Project,
+        on_delete=models.CASCADE,
+        related_name='role_mappings'
+    )
+    role = models.ForeignKey(
+        to=Role,
+        on_delete=models.CASCADE
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = RoleMappingManager()
@@ -295,7 +305,8 @@ class RoleMapping(models.Model):
         other_rolemappings = self.project.role_mappings.exclude(id=self.id)
 
         if other_rolemappings.filter(user=self.user, project=self.project).exists():
-            raise ValidationError('This user is already assigned to a role in this project.')
+            message = 'This user is already assigned to a role in this project.'
+            raise ValidationError(message)
 
     class Meta:
         unique_together = ("user", "project")
@@ -306,7 +317,11 @@ class AutoLabelingConfig(models.Model):
     model_attrs = models.JSONField(default=dict)
     template = models.TextField(default='')
     label_mapping = models.JSONField(default=dict)
-    project = models.ForeignKey(Project, related_name='auto_labeling_config', on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        to=Project,
+        on_delete=models.CASCADE,
+        related_name='auto_labeling_config'
+    )
     default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -319,6 +334,8 @@ class AutoLabelingConfig(models.Model):
         try:
             RequestModelFactory.find(self.model_name)
         except NameError:
-            raise ValidationError(f'The specified model name {self.model_name} does not exist.')
+            message = f'The specified model name {self.model_name} does not exist.'
+            raise ValidationError(message)
         except Exception:
-            raise ValidationError('The attributes does not match the model.')
+            message = 'The attributes does not match the model.'
+            raise ValidationError(message)
