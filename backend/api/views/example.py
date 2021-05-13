@@ -10,7 +10,8 @@ from rest_framework.response import Response
 from ..filters import DocumentFilter
 from ..models import Document, Example, Image, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin
-from ..serializers import DocumentSerializer, ExampleSerializer, ImageSerializer
+from ..serializers import (DocumentSerializer, ExampleSerializer,
+                           ImageSerializer)
 
 
 class ExampleList(generics.ListCreateAPIView):

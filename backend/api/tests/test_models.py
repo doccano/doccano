@@ -3,8 +3,7 @@ from django.db.utils import IntegrityError
 from django.test import TestCase, override_settings
 from model_mommy import mommy
 
-from ..models import (DocumentAnnotation, Label, Seq2seqAnnotation,
-                      SequenceAnnotation, Speech2textAnnotation)
+from ..models import Category, Label, Span, TextLabel
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -16,7 +15,7 @@ class TestTextClassificationProject(TestCase):
 
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
-        self.assertEqual(klass, DocumentAnnotation)
+        self.assertEqual(klass, Category)
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -28,7 +27,7 @@ class TestSequenceLabelingProject(TestCase):
 
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
-        self.assertEqual(klass, SequenceAnnotation)
+        self.assertEqual(klass, Span)
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -40,7 +39,7 @@ class TestSeq2seqProject(TestCase):
 
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
-        self.assertEqual(klass, Seq2seqAnnotation)
+        self.assertEqual(klass, TextLabel)
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -52,7 +51,7 @@ class TestSpeech2textProject(TestCase):
 
     def test_get_annotation_class(self):
         klass = self.project.get_annotation_class()
-        self.assertEqual(klass, Speech2textAnnotation)
+        self.assertEqual(klass, TextLabel)
 
 
 class TestLabel(TestCase):
@@ -109,36 +108,36 @@ class TestLabel(TestCase):
             self.fail(msg=ValidationError)
 
 
-class TestDocumentAnnotation(TestCase):
+class TestCategory(TestCase):
 
     def test_uniqueness(self):
-        a = mommy.make('DocumentAnnotation')
+        a = mommy.make('Category')
         with self.assertRaises(IntegrityError):
-            DocumentAnnotation(document=a.document, user=a.user, label=a.label).save()
+            Category(example=a.example, user=a.user, label=a.label).save()
 
 
 class TestSequenceAnnotation(TestCase):
 
     def test_uniqueness(self):
-        a = mommy.make('SequenceAnnotation')
+        a = mommy.make('Span')
         with self.assertRaises(IntegrityError):
-            SequenceAnnotation(document=a.document,
-                               user=a.user,
-                               label=a.label,
-                               start_offset=a.start_offset,
-                               end_offset=a.end_offset).save()
+            Span(example=a.example,
+                 user=a.user,
+                 label=a.label,
+                 start_offset=a.start_offset,
+                 end_offset=a.end_offset).save()
 
     def test_position_constraint(self):
         with self.assertRaises(ValidationError):
-            mommy.make('SequenceAnnotation',
+            mommy.make('Span',
                        start_offset=1, end_offset=0).clean()
 
 
 class TestSeq2seqAnnotation(TestCase):
 
     def test_uniqueness(self):
-        a = mommy.make('Seq2seqAnnotation')
+        a = mommy.make('TextLabel')
         with self.assertRaises(IntegrityError):
-            Seq2seqAnnotation(document=a.document,
-                              user=a.user,
-                              text=a.text).save()
+            TextLabel(example=a.example,
+                      user=a.user,
+                      text=a.text).save()

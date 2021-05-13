@@ -34,8 +34,8 @@ class TestStatisticsAPI(APITestCase, TestUtilsMixin):
         )
         doc1 = mommy.make('Document', project=cls.project)
         doc2 = mommy.make('Document', project=cls.project)
-        mommy.make('DocumentAnnotation', document=doc1, user=super_user)
-        mommy.make('DocumentAnnotation', document=doc2, user=other_user)
+        mommy.make('Category', example=doc1, user=super_user)
+        mommy.make('Category', example=doc2, user=other_user)
         cls.url = reverse(viewname='statistics', args=[cls.project.id])
         cls.doc = Document.objects.filter(project=cls.project)
 

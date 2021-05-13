@@ -45,31 +45,31 @@ class Project(PolymorphicModel):
 class TextClassificationProject(Project):
 
     def get_annotation_class(self):
-        return DocumentAnnotation
+        return Category
 
 
 class SequenceLabelingProject(Project):
 
     def get_annotation_class(self):
-        return SequenceAnnotation
+        return Span
 
 
 class Seq2seqProject(Project):
 
     def get_annotation_class(self):
-        return Seq2seqAnnotation
+        return TextLabel
 
 
 class Speech2textProject(Project):
 
     def get_annotation_class(self):
-        return Speech2textAnnotation
+        return TextLabel
 
 
 class ImageClassificationProject(Project):
 
     def get_annotation_class(self):
-        return ImageCategoryLabel
+        return Category
 
 
 class Label(models.Model):
@@ -116,10 +116,19 @@ class Label(models.Model):
 class Example(PolymorphicModel):
     meta = models.JSONField(default=dict)
     filename = models.FileField(default='.')
-    project = models.ForeignKey(Project, related_name='examples', on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        to=Project,
+        on_delete=models.CASCADE,
+        related_name='examples'
+    )
+    annotations_approved_by = models.ForeignKey(
+        to=User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    annotations_approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     @property
     def comment_count(self):
@@ -128,22 +137,26 @@ class Example(PolymorphicModel):
 
 class Document(Example):
     text = models.TextField()
-    example = models.OneToOneField(Example,
-                                   on_delete=models.CASCADE,
-                                   primary_key=True,
-                                   db_column='id',
-                                   parent_link=True)
+    example = models.OneToOneField(
+        to=Example,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        db_column='id',
+        parent_link=True
+    )
 
     def __str__(self):
         return self.text[:50]
 
 
 class Image(Example):
-    example = models.OneToOneField(Example,
-                                   on_delete=models.CASCADE,
-                                   primary_key=True,
-                                   db_column='id',
-                                   parent_link=True)
+    example = models.OneToOneField(
+        to=Example,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        db_column='id',
+        parent_link=True
+    )
 
     def __str__(self):
         return self.filename
@@ -151,8 +164,16 @@ class Image(Example):
 
 class Comment(models.Model):
     text = models.TextField()
-    example = models.ForeignKey(Example, related_name='comments', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    example = models.ForeignKey(
+        to=Example,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        null=True
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -166,7 +187,11 @@ class Comment(models.Model):
 
 class Tag(models.Model):
     text = models.TextField()
-    project = models.ForeignKey(Project, related_name='tags', on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        to=Project,
+        on_delete=models.CASCADE,
+        related_name='tags'
+    )
 
     def __str__(self):
         return self.text
@@ -185,17 +210,35 @@ class Annotation(models.Model):
         abstract = True
 
 
-class DocumentAnnotation(Annotation):
-    document = models.ForeignKey(Document, related_name='doc_annotations', on_delete=models.CASCADE)
-    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+class Category(Annotation):
+    example = models.ForeignKey(
+        to=Example,
+        on_delete=models.CASCADE,
+        related_name='categories'
+    )
+    label = models.ForeignKey(
+        to=Label,
+        on_delete=models.CASCADE
+    )
 
     class Meta:
-        unique_together = ('document', 'user', 'label')
+        unique_together = (
+            'example',
+            'user',
+            'label'
+        )
 
 
-class SequenceAnnotation(Annotation):
-    document = models.ForeignKey(Document, related_name='seq_annotations', on_delete=models.CASCADE)
-    label = models.ForeignKey(Label, on_delete=models.CASCADE)
+class Span(Annotation):
+    example = models.ForeignKey(
+        to=Example,
+        on_delete=models.CASCADE,
+        related_name='spans'
+    )
+    label = models.ForeignKey(
+        to=Label,
+        on_delete=models.CASCADE
+    )
     start_offset = models.IntegerField()
     end_offset = models.IntegerField()
 
@@ -204,34 +247,30 @@ class SequenceAnnotation(Annotation):
             raise ValidationError('start_offset is after end_offset')
 
     class Meta:
-        unique_together = ('document', 'user', 'label', 'start_offset', 'end_offset')
+        unique_together = (
+            'example',
+            'user',
+            'label',
+            'start_offset',
+            'end_offset'
+        )
 
 
-class Seq2seqAnnotation(Annotation):
-    # Override AnnotationManager for custom functionality
+class TextLabel(Annotation):
     objects = Seq2seqAnnotationManager()
-
-    document = models.ForeignKey(Document, related_name='seq2seq_annotations', on_delete=models.CASCADE)
-    text = models.CharField(max_length=500)
-
-    class Meta:
-        unique_together = ('document', 'user', 'text')
-
-
-class Speech2textAnnotation(Annotation):
-    document = models.ForeignKey(Document, related_name='speech2text_annotations', on_delete=models.CASCADE)
+    example = models.ForeignKey(
+        to=Example,
+        on_delete=models.CASCADE,
+        related_name='texts'
+    )
     text = models.TextField()
 
     class Meta:
-        unique_together = ('document', 'user')
-
-
-class ImageCategoryLabel(Annotation):
-    image = models.ForeignKey(Image, related_name='categories', on_delete=models.CASCADE)
-    label = models.ForeignKey(Label, on_delete=models.CASCADE)
-
-    class Meta:
-        unique_together = ('image', 'user', 'label')
+        unique_together = (
+            'example',
+            'user',
+            'text'
+        )
 
 
 class Role(models.Model):

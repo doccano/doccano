@@ -102,12 +102,12 @@ def make_comment(doc, user):
 
 def make_annotation(task, doc, user):
     annotation_model = {
-        DOCUMENT_CLASSIFICATION: 'DocumentAnnotation',
-        SEQUENCE_LABELING: 'SequenceAnnotation',
-        SEQ2SEQ: 'Seq2seqAnnotation',
-        SPEECH2TEXT: 'Speech2textAnnotation'
+        DOCUMENT_CLASSIFICATION: 'Category',
+        SEQUENCE_LABELING: 'Span',
+        SEQ2SEQ: 'TextLabel',
+        SPEECH2TEXT: 'TextLabel'
     }.get(task)
-    return mommy.make(annotation_model, document=doc, user=user)
+    return mommy.make(annotation_model, example=doc, user=user)
 
 
 def prepare_project(task: str = 'Any', collaborative_annotation=False):

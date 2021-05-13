@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import DOCUMENT_CLASSIFICATION, DocumentAnnotation
+from ...models import DOCUMENT_CLASSIFICATION, Category
 from .utils import (CRUDMixin, make_annotation, make_doc, make_label,
                     make_user, prepare_project)
 
@@ -30,7 +30,7 @@ class TestAnnotationList(CRUDMixin):
 
     def test_allows_project_member_to_bulk_delete_annotation(self):
         self.assert_delete(self.project.users[0], status.HTTP_204_NO_CONTENT)
-        count = DocumentAnnotation.objects.count()
+        count = Category.objects.count()
         self.assertEqual(count, 2)  # delete only own annotation
 
 
@@ -51,7 +51,7 @@ class TestSharedAnnotationList(CRUDMixin):
 
     def test_allows_project_member_to_bulk_delete_annotation(self):
         self.assert_delete(self.project.users[0], status.HTTP_204_NO_CONTENT)
-        count = DocumentAnnotation.objects.count()
+        count = Category.objects.count()
         self.assertEqual(count, 0)  # delete all annotation in the doc
 
 
