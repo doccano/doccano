@@ -1,7 +1,7 @@
 from django.db.models import Count, Q
 from django_filters.rest_framework import BooleanFilter, FilterSet
 
-from .models import Document
+from .models import Example
 
 
 class DocumentFilter(FilterSet):
@@ -25,7 +25,7 @@ class DocumentFilter(FilterSet):
         return queryset
 
     class Meta:
-        model = Document
+        model = Example
         fields = (
             'project', 'text', 'created_at', 'updated_at',
             'categories__label__id', 'spans__label__id',

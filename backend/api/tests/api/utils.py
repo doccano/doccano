@@ -89,11 +89,11 @@ def make_label(project):
 
 
 def make_doc(project):
-    return mommy.make('Document', project=project)
+    return mommy.make('Example', project=project)
 
 
 def make_image(project):
-    return mommy.make('Image', project=project)
+    return mommy.make('Example', project=project)
 
 
 def make_comment(doc, user):

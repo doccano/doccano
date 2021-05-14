@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import (Category, Comment, Document, Label, Project, Role,
+from .models import (Category, Comment, Example, Label, Project, Role,
                      RoleMapping, Seq2seqProject, SequenceLabelingProject,
                      Span, Tag, TextClassificationProject, TextLabel)
 
@@ -11,7 +11,7 @@ class LabelAdmin(admin.ModelAdmin):
     search_fields = ('text',)
 
 
-class DocumentAdmin(admin.ModelAdmin):
+class ExampleAdmin(admin.ModelAdmin):
     list_display = ('text', 'project', 'meta')
     ordering = ('project',)
     search_fields = ('text',)
@@ -66,7 +66,7 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Span, SpanAdmin)
 admin.site.register(TextLabel, TextLabelAdmin)
 admin.site.register(Label, LabelAdmin)
-admin.site.register(Document, DocumentAdmin)
+admin.site.register(Example, ExampleAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(TextClassificationProject, ProjectAdmin)
 admin.site.register(SequenceLabelingProject, ProjectAdmin)

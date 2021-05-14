@@ -3,7 +3,7 @@ import itertools
 from collections import defaultdict
 from typing import Dict, Iterator, List
 
-from ...models import Document, Project
+from ...models import Example, Project
 from .data import Record
 
 
@@ -66,7 +66,7 @@ class TextRepository(BaseRepository):
 
     @property
     def docs(self):
-        return Document.objects.filter(project=self.project)
+        return Example.objects.filter(project=self.project)
 
     def list(self, export_approved=False):
         docs = self.docs
@@ -113,7 +113,7 @@ class TextClassificationRepository(TextRepository):
 
     @property
     def docs(self):
-        return Document.objects.filter(project=self.project).prefetch_related(
+        return Example.objects.filter(project=self.project).prefetch_related(
             'categories__user', 'categories__label'
         )
 
@@ -128,7 +128,7 @@ class SequenceLabelingRepository(TextRepository):
 
     @property
     def docs(self):
-        return Document.objects.filter(project=self.project).prefetch_related(
+        return Example.objects.filter(project=self.project).prefetch_related(
             'spans__user', 'spans__label'
         )
 
@@ -144,7 +144,7 @@ class Seq2seqRepository(TextRepository):
 
     @property
     def docs(self):
-        return Document.objects.filter(project=self.project).prefetch_related(
+        return Example.objects.filter(project=self.project).prefetch_related(
             'texts__user'
         )
 

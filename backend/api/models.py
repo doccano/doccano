@@ -126,7 +126,7 @@ class Label(models.Model):
         )
 
 
-class Example(PolymorphicModel):
+class Example(models.Model):
     meta = models.JSONField(default=dict)
     filename = models.FileField(default='.')
     project = models.ForeignKey(
@@ -140,25 +140,13 @@ class Example(PolymorphicModel):
         null=True,
         blank=True
     )
+    text = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def comment_count(self):
         return Comment.objects.filter(example=self.id).count()
-
-
-class Document(Example):
-    text = models.TextField()
-
-    def __str__(self):
-        return self.text[:50]
-
-
-class Image(Example):
-
-    def __str__(self):
-        return self.filename
 
 
 class Comment(models.Model):

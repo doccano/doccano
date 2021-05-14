@@ -8,10 +8,10 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
                      SPEECH2TEXT, AutoLabelingConfig, Category, Comment,
-                     Document, Example, Image, ImageClassificationProject,
-                     Label, Project, Role, RoleMapping, Seq2seqProject,
-                     SequenceLabelingProject, Span, Speech2textProject, Tag,
-                     TextClassificationProject, TextLabel)
+                     Example, ImageClassificationProject, Label, Project, Role,
+                     RoleMapping, Seq2seqProject, SequenceLabelingProject,
+                     Span, Speech2textProject, Tag, TextClassificationProject,
+                     TextLabel)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -78,7 +78,7 @@ class TagSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'project')
 
 
-class BaseDataSerializer(serializers.ModelSerializer):
+class ExampleSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
 
@@ -100,36 +100,22 @@ class BaseDataSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Example
-        fields = ['id', 'filename', 'annotations', 'meta', 'annotation_approver', 'comment_count']
+        fields = [
+            'id',
+            'filename',
+            'annotations',
+            'meta',
+            'annotation_approver',
+            'comment_count',
+            'text'
+        ]
         read_only_fields = ['filename']
 
 
-class DocumentSerializer(BaseDataSerializer):
+class ApproverSerializer(ExampleSerializer):
 
     class Meta:
-        model = Document
-        fields = BaseDataSerializer.Meta.fields + ['text']
-
-
-class ImageSerializer(BaseDataSerializer):
-
-    class Meta:
-        model = Image
-        fields = BaseDataSerializer.Meta.fields
-
-
-class ExampleSerializer(PolymorphicSerializer):
-    model_serializer_mapping = {
-        Example: BaseDataSerializer,
-        Document: DocumentSerializer,
-        Image: ImageSerializer
-    }
-
-
-class ApproverSerializer(DocumentSerializer):
-
-    class Meta:
-        model = Document
+        model = Example
         fields = ('id', 'annotation_approver')
 
 

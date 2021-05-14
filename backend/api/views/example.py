@@ -8,10 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..filters import DocumentFilter
-from ..models import Document, Example, Image, Project
+from ..models import Example, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin
-from ..serializers import (DocumentSerializer, ExampleSerializer,
-                           ImageSerializer)
+from ..serializers import ExampleSerializer
 
 
 class ExampleList(generics.ListCreateAPIView):
@@ -50,27 +49,23 @@ class ExampleList(generics.ListCreateAPIView):
 
 
 class DocumentList(ExampleList):
-    serializer_class = DocumentSerializer
     search_fields = ('text',)
     filter_class = DocumentFilter
-    model = Document
 
 
 class ImageList(ExampleList):
-    serializer_class = ImageSerializer
     search_fields = ('filename',)
-    model = Image
 
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
+    queryset = Example.objects.all()
+    serializer_class = ExampleSerializer
     lookup_url_kwarg = 'doc_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
 
 class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Image.objects.all()
-    serializer_class = ImageSerializer
+    queryset = Example.objects.all()
+    serializer_class = ExampleSerializer
     lookup_url_kwarg = 'image_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
