@@ -6,12 +6,12 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from .models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                     SPEECH2TEXT, AutoLabelingConfig, Category, Comment,
-                     Example, ImageClassificationProject, Label, Project, Role,
-                     RoleMapping, Seq2seqProject, SequenceLabelingProject,
-                     Span, Speech2textProject, Tag, TextClassificationProject,
-                     TextLabel)
+from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+                     SEQUENCE_LABELING, SPEECH2TEXT, AutoLabelingConfig,
+                     Category, Comment, Example, ImageClassificationProject,
+                     Label, Project, Role, RoleMapping, Seq2seqProject,
+                     SequenceLabelingProject, Span, Speech2textProject, Tag,
+                     TextClassificationProject, TextLabel)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -320,7 +320,8 @@ def get_annotation_serializer(task: str):
         DOCUMENT_CLASSIFICATION: CategorySerializer,
         SEQUENCE_LABELING: SpanSerializer,
         SEQ2SEQ: TextLabelSerializer,
-        SPEECH2TEXT: TextLabelSerializer
+        SPEECH2TEXT: TextLabelSerializer,
+        IMAGE_CLASSIFICATION: CategorySerializer,
     }
     try:
         return mapping[task]
