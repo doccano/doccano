@@ -117,7 +117,7 @@ export default Vue.extend({
 
   computed: {
     projectTypes() {
-      return ['DocumentClassification', 'SequenceLabeling', 'Seq2seq']
+      return ['DocumentClassification', 'SequenceLabeling', 'Seq2seq', 'ImageClassification']
     }
   },
 

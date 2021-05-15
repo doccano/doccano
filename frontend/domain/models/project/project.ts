@@ -169,7 +169,8 @@ export class ProjectWriteItem {
     const mapping = {
       DocumentClassification: 'TextClassificationProject',
       SequenceLabeling      : 'SequenceLabelingProject',
-      Seq2seq               : 'Seq2seqProject'
+      Seq2seq               : 'Seq2seqProject',
+      ImageClassification   : 'ImageClassificationProject',
     }
     return mapping[this.project_type]
   }
