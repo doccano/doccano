@@ -140,61 +140,64 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
-                  'updated_at', 'random_order', 'collaborative_annotation', 'single_class_classification',
-                  'tags')
-        read_only_fields = ('updated_at', 'users', 'current_users_role', 'tags')
+        fields = (
+            'id',
+            'name',
+            'description',
+            'guideline',
+            'users',
+            'current_users_role',
+            'project_type',
+            'updated_at',
+            'random_order',
+            'collaborative_annotation',
+            'single_class_classification',
+            'tags'
+        )
+        read_only_fields = (
+            'updated_at',
+            'users',
+            'current_users_role',
+            'tags'
+        )
 
 
 class TextClassificationProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = TextClassificationProject
-        fields = ProjectSerializer.Meta.fields
-        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class SequenceLabelingProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = SequenceLabelingProject
-        fields = ProjectSerializer.Meta.fields
-        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class Seq2seqProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = Seq2seqProject
-        fields = ProjectSerializer.Meta.fields
-        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class Speech2textProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = Speech2textProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
-                  'updated_at', 'random_order')
-        read_only_fields = ('updated_at', 'users', 'current_users_role')
 
 
 class ImageClassificationProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = ImageClassificationProject
-        fields = ProjectSerializer.Meta.fields
-        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
     model_serializer_mapping = {
         Project: ProjectSerializer,
-        TextClassificationProject: TextClassificationProjectSerializer,
-        SequenceLabelingProject: SequenceLabelingProjectSerializer,
-        Seq2seqProject: Seq2seqProjectSerializer,
-        Speech2textProject: Speech2textProjectSerializer,
-        ImageClassificationProject: ImageClassificationProjectSerializer
+        **{
+            cls.Meta.model: cls for cls in ProjectSerializer.__subclasses__()
+        }
     }
 
 
