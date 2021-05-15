@@ -228,6 +228,7 @@ export default {
   flex-wrap: wrap;
   white-space: pre-wrap;
   cursor: default;
+  direction: rtl;
 }
 .highlight-container.highlight-container--bottom-labels .highlight.bottom {
   margin-top: 6px;
