@@ -41,7 +41,17 @@
         />
       </v-dialog>
     </v-card-title>
+    <image-list
+      v-if="project.projectType === 'ImageClassification'"
+      v-model="selected"
+      :items="item.items"
+      :is-loading="isLoading"
+      :total="item.count"
+      @update:query="updateQuery"
+      @click:labeling="movePage"
+    />
     <document-list
+      v-else
       v-model="selected"
       :items="item.items"
       :is-loading="isLoading"
@@ -56,6 +66,7 @@
 import Vue from 'vue'
 import _ from 'lodash'
 import DocumentList from '@/components/document/DocumentList.vue'
+import ImageList from '@/components/image/ImageList.vue'
 import FormDelete from '@/components/document/FormDelete.vue'
 import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
 import FormDownload from '@/components/document/FormDownload.vue'
@@ -69,6 +80,7 @@ export default Vue.extend({
   components: {
     ActionMenu,
     DocumentList,
+    ImageList,
     FormDelete,
     FormDeleteBulk,
     FormDownload,
