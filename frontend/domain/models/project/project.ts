@@ -77,7 +77,8 @@ export class ProjectReadItem {
     const mapping = {
       DocumentClassification: 'text-classification',
       SequenceLabeling      : 'sequence-labeling',
-      Seq2seq               : 'sequence-to-sequence'
+      Seq2seq               : 'sequence-to-sequence',
+      ImageClassification   : 'image-classification',
     }
     const url = `/projects/${this.id}/${mapping[this.project_type]}`
     return url
