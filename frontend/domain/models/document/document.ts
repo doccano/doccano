@@ -47,14 +47,21 @@ export class DocumentItem {
     public text: string,
     public meta: object,
     public annotationApprover: boolean | null,
-    public commentCount: number
+    public commentCount: number,
+    public filename: string,
   ) {}
 
   static valueOf(
-    { id, text, meta, annotation_approver, comment_count }:
-    { id: number, text: string, meta: object, annotation_approver: boolean | null, comment_count: number }
+    { id, text, meta, annotation_approver, comment_count, filename }:
+    { id: number, text: string, meta: object, annotation_approver: boolean | null, comment_count: number, filename: string }
   ): DocumentItem {
-    return new DocumentItem(id, text, meta, annotation_approver, comment_count)
+    return new DocumentItem(id, text, meta, annotation_approver, comment_count, filename)
+  }
+
+  get url() {
+    const l = this.filename.indexOf('media/')
+    const r = this.filename.indexOf('media/', l + 1)
+    return this.filename.slice(0, l) + this.filename.slice(r)
   }
 
   toObject(): Object {
