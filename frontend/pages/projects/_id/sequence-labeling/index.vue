@@ -128,19 +128,7 @@ export default {
   async created() {
     this.labels = await this.$services.label.list(this.projectId)
 
-    // FIXME: attach the real api
-    this.linkTypes = [
-      {
-        "id": 1,
-        "name": "soggetto di",
-        "color": "#FFEB3B"
-      },
-      {
-        "id": 1,
-        "name": "relativo a",
-        "color": "#B71C1C"
-      }
-    ];
+    this.linkTypes = await this.$services.linkTypes.list(this.projectId)
 
     this.project = await this.$services.project.findById(this.projectId)
   },
@@ -195,6 +183,9 @@ export default {
     selectTarget(chunk) {
       // skips duplicated links
       if (!chunk.links.find(ch => ch.id === this.sourceChunk.id)) {
+        // await this.$services.sequenceLabeling.createLink(this.projectId, this.doc.id, this.sourceChunk.id, chunk.id, this.sourceLinkType.id)
+        // await this.list(this.doc.id)
+
         this.sourceChunk.links.push({
           id: chunk.id,
           type: this.sourceLinkType.id,

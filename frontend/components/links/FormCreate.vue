@@ -1,7 +1,7 @@
 <template>
   <base-card
     :disabled="!valid"
-    :title="$t('labels.createLabel')"
+    :title="$t('labels.createLink')"
     :agree-text="$t('generic.save')"
     :cancel-text="$t('generic.cancel')"
     @agree="$emit('save')"
@@ -10,30 +10,22 @@
     <template #content>
       <v-form v-model="valid">
         <v-text-field
-          :value="text"
-          :label="$t('labels.labelName')"
+          :value="name"
+          :label="$t('labels.linkName')"
           :rules="[rules.required, rules.counter, rules.nameDuplicated]"
           prepend-icon="label"
           single-line
           counter
           autofocus
-          @input="updateValue('text', $event)"
-        />
-        <v-select
-          :value="suffixKey"
-          :items="shortkeys"
-          :label="$t('labels.key')"
-          :rules="[rules.keyDuplicated]"
-          prepend-icon="mdi-keyboard"
-          @input="updateValue('suffixKey', $event)"
+          @input="updateValue('name', $event)"
         />
         <v-color-picker
-          :value="backgroundColor"
+          :value="color"
           :rules="[rules.required]"
           show-swatches
           hide-mode-switch
           width="800"
-          @input="updateValue('backgroundColor', $event)"
+          @input="updateValue('color', $event)"
         />
       </v-form>
     </template>
@@ -50,7 +42,7 @@ export default Vue.extend({
   },
 
   props: {
-    text: {
+    name: {
       type: String,
       default: '',
       required: true
@@ -59,17 +51,12 @@ export default Vue.extend({
       type: String,
       default: null,
     },
-    backgroundColor: {
+    color: {
       type: String,
       default: '#ffffff',
       required: true
     },
     usedNames: {
-      type: Array,
-      default: () => [],
-      required: true
-    },
-    usedKeys: {
       type: Array,
       default: () => [],
       required: true

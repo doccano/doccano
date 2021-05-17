@@ -1,19 +1,27 @@
-import { LinkItem } from '~/domain/models/links/link'
+import { LinkTypeItem, LinkItem } from '~/domain/models/links/link'
+
+export class LinkTypeDTO {
+  id: number
+  name: string
+  color: string
+
+  constructor(item: LinkTypeItem) {
+    this.id = item.id
+    this.name = item.name
+    this.color = item.color
+  }
+}
 
 export class LinkDTO {
   id: number
-  text: string
-  prefixKey: string | null
-  suffixKey: string | null
-  backgroundColor: string
-  textColor: string
+  annotation_id_1: number
+  annotation_id_2: number
+  type: number
 
   constructor(item: LinkItem) {
     this.id = item.id
-    this.text = item.text
-    this.prefixKey = item.prefixKey
-    this.suffixKey = item.suffixKey
-    this.backgroundColor = item.backgroundColor
-    this.textColor = '#ffffff'
+    this.annotation_id_1 = item.annotation_id_1
+    this.annotation_id_2 = item.annotation_id_2
+    this.type = item.type
   }
 }

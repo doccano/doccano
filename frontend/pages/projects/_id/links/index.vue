@@ -16,7 +16,6 @@
       <v-dialog v-model="dialogCreate">
         <form-create
           v-bind.sync="editedItem"
-          :used-keys="usedKeys"
           :used-names="usedNames"
           @cancel="close"
           @save="save"
@@ -30,8 +29,6 @@
         />
       </v-dialog>
     </v-card-title>
-
-    <p>WORK IN PROGRESS... THIS WILL BECOME THE RELATIONS TYPE CRUD PAGE</p>
 
     <links-list
       v-model="selected"
@@ -48,7 +45,7 @@ import ActionMenu from '@/components/links/ActionMenu.vue'
 import FormCreate from '@/components/links/FormCreate.vue'
 import FormDelete from '@/components/links/FormDelete.vue'
 import LinksList from '~/components/links/LinksList.vue'
-import { LinkDTO } from '~/services/application/links/linkData'
+import { LinkTypeDTO } from '~/services/application/links/linkData'
 
 export default Vue.extend({
   layout: 'project',
@@ -62,7 +59,7 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.items = await this.$services.links.list(this.projectId)
+    this.items = await this.$services.linkTypes.list(this.projectId)
     this.isLoading = false
   },
 
@@ -73,21 +70,15 @@ export default Vue.extend({
       dialogUpload: false,
       editedIndex: -1,
       editedItem: {
-        text: '',
-        prefixKey: null,
-        suffixKey: null,
-        backgroundColor: '#2196F3',
-        textColor: '#ffffff'
-      } as LinkDTO,
+        name: '',
+        color: '#ffffff'
+      } as LinkTypeDTO,
       defaultItem: {
-        text: '',
-        prefixKey: null,
-        suffixKey: null,
-        backgroundColor: '#2196F3',
-        textColor: '#ffffff'
-      } as LinkDTO,
-      items: [] as LinkDTO[],
-      selected: [] as LinkDTO[],
+        name: '',
+        color: '#ffffff'
+      } as LinkTypeDTO,
+      items: [] as LinkTypeDTO[],
+      selected: [] as LinkTypeDTO[],
       isLoading: false,
       errorMessage: ''
     }
@@ -102,22 +93,17 @@ export default Vue.extend({
     },
     usedNames(): string[] {
       const item = this.items[this.editedIndex] // to remove myself
-      return this.items.filter(_ => _ !== item).map(item => item.text)
-    },
-    usedKeys(): string[] {
-      const item = this.items[this.editedIndex] // to remove myself
-      return this.items.filter(_ => _ !== item).map(item => item.suffixKey)
-                       .filter(item => item !==null) as string[]
+      return this.items.filter(_ => _ !== item).map(item => item.name)
     }
   },
 
   methods: {
     async create() {
-      await this.$services.links.create(this.projectId, this.editedItem)
+      await this.$services.linkTypes.create(this.projectId, this.editedItem)
     },
 
     async update() {
-      await this.$services.links.update(this.projectId, this.editedItem)
+      await this.$services.linkTypes.update(this.projectId, this.editedItem)
     },
 
     save() {
@@ -139,7 +125,7 @@ export default Vue.extend({
     },
 
     async remove() {
-      await this.$services.links.bulkDelete(this.projectId, this.selected)
+      await this.$services.linkTypes.bulkDelete(this.projectId, this.selected)
       this.$fetch()
       this.dialogDelete = false
       this.selected = []
@@ -149,7 +135,7 @@ export default Vue.extend({
       this.errorMessage = ''
     },
 
-    editItem(item: LinkDTO) {
+    editItem(item: LinkTypeDTO) {
       this.editedIndex = this.items.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogCreate = true

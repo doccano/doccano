@@ -10,12 +10,12 @@ import {APIProjectRepository} from '~/repositories/project/apiProjectRepository'
 import {LocalStorageOptionRepository} from '~/repositories/option/apiOptionRepository'
 import {APIMemberRepository} from '~/repositories/member/apiMemberRepository'
 import {APILabelRepository} from '~/repositories/label/apiLabelRepository'
-import {ApiLinksRepository} from "~/repositories/links/apiLinksRepository";
+import {ApiLinkTypesRepository} from "~/repositories/links/apiLinkTypesRepository";
 import {APIDocumentRepository} from '~/repositories/document/apiDocumentRepository'
 import {APICommentRepository} from '~/repositories/comment/apiCommentRepository'
 import {APIAuthRepository} from '~/repositories/auth/apiAuthRepository'
 import {LabelApplicationService} from '~/services/application/label/labelApplicationService'
-import {LinksApplicationService} from "~/services/application/links/linksApplicationService";
+import {LinkTypesApplicationService} from "~/services/application/links/linkTypesApplicationService";
 import {MemberApplicationService} from '~/services/application/member/memberApplicationService'
 import {UserApplicationService} from '~/services/application/user/userApplicationService'
 import {RoleApplicationService} from '~/services/application/role/roleApplicationService'
@@ -31,10 +31,11 @@ import {TemplateApplicationService} from '~/services/application/autoLabeling/te
 import {APITextClassificationRepository} from '~/repositories/tasks/textClassification/apiTextClassification'
 import {TextClassificationApplicationService} from '~/services/application/tasks/textClassification/textClassificationApplicationService'
 import {AuthApplicationService} from '~/services/application/auth/authApplicationService'
+import {ApiLinkRepository} from "~/repositories/links/apiLinkRepository";
 
 export interface Services {
     label: LabelApplicationService,
-    links: LinksApplicationService,
+    linkTypes: LinkTypesApplicationService,
     member: MemberApplicationService,
     user: UserApplicationService,
     role: RoleApplicationService,
@@ -59,7 +60,8 @@ declare module 'vue/types/vue' {
 
 const plugin: Plugin = (context, inject) => {
     const labelRepository = new APILabelRepository()
-    const linksRepository = new ApiLinksRepository()
+    const linkTypesRepository = new ApiLinkTypesRepository()
+    const linkRepository = new ApiLinkRepository()
     const memberRepository = new APIMemberRepository()
     const userRepository = new APIUserRepository()
     const roleRepository = new APIRoleRepository()
@@ -76,7 +78,7 @@ const plugin: Plugin = (context, inject) => {
     const authRepository = new APIAuthRepository()
 
     const label = new LabelApplicationService(labelRepository)
-    const links = new LinksApplicationService(linksRepository)
+    const linkTypes = new LinkTypesApplicationService(linkTypesRepository)
     const member = new MemberApplicationService(memberRepository)
     const user = new UserApplicationService(userRepository)
     const role = new RoleApplicationService(roleRepository)
@@ -85,7 +87,7 @@ const plugin: Plugin = (context, inject) => {
     const statistics = new StatisticsApplicationService(statisticsRepository)
     const document = new DocumentApplicationService(documentRepository)
     const textClassification = new TextClassificationApplicationService(textClassificationRepository)
-    const sequenceLabeling = new SequenceLabelingApplicationService(sequenceLabelingRepository)
+    const sequenceLabeling = new SequenceLabelingApplicationService(sequenceLabelingRepository, linkRepository)
     const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
     const option = new OptionApplicationService(optionRepository)
     const config = new ConfigApplicationService(configRepository)
@@ -94,7 +96,7 @@ const plugin: Plugin = (context, inject) => {
 
     const services: Services = {
         label,
-        links,
+        linkTypes,
         member,
         user,
         role,

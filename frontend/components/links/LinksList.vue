@@ -27,12 +27,12 @@
         filled
       />
     </template>
-    <template v-slot:[`item.backgroundColor`]="props">
+    <template v-slot:[`item.color`]="props">
       <v-chip
-        :color="props.item.backgroundColor"
-        :text-color="$contrastColor(props.item.backgroundColor)"
+        :color="props.item.color"
+        :text-color="$contrastColor(props.item.color)"
       >
-        {{ props.item.backgroundColor }}
+        {{ props.item.color }}
       </v-chip>
     </template>
     <template v-slot:[`item.actions`]="{ item }">
@@ -48,7 +48,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import { LinkDTO } from '~/services/application/links/linkData'
+import { LinkTypeDTO } from '~/services/application/links/linkData'
 
 export default Vue.extend({
   props: {
@@ -58,12 +58,12 @@ export default Vue.extend({
       required: true
     },
     items: {
-      type: Array as PropType<LinkDTO[]>,
+      type: Array as PropType<LinkTypeDTO[]>,
       default: () => [],
       required: true
     },
     value: {
-      type: Array as PropType<LinkDTO[]>,
+      type: Array as PropType<LinkTypeDTO[]>,
       default: () => [],
       required: true
     }
@@ -78,10 +78,9 @@ export default Vue.extend({
   computed: {
     headers() {
       return [
-        { text: this.$t('generic.name'),    value: 'text' },
-        { text: this.$t('links.shortkey'), value: 'suffixKey' },
-        { text: this.$t('links.color'),    value: 'backgroundColor' },
-        { text: 'Actions', value: 'actions', sortable: false },
+        { text: this.$t('generic.name'),  value: 'name' },
+        { text: this.$t('labels.color'),  value: 'color' },
+        { text: 'Actions',                value: 'actions', sortable: false },
       ]
     }
   }
