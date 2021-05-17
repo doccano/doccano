@@ -20,6 +20,7 @@ class ExampleList(generics.ListCreateAPIView):
     ordering_fields = ('created_at', 'updated_at')
     search_fields = ('text', 'filename')
     model = Example
+    filter_class = DocumentFilter
 
     @property
     def project(self):
