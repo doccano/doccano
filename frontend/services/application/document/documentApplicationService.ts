@@ -83,7 +83,7 @@ export class DocumentApplicationService {
       item.meta,
       item.annotationApprover,
       item.commentCount,
-      item.filename
+      item.fileUrl
     )
   }
 }

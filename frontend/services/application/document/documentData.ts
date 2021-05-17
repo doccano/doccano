@@ -8,16 +8,20 @@ export class DocumentDTO {
   annotationApprover: boolean | null;
   commentCount: number;
   isApproved: boolean;
+  fileUrl: string;
   filename: string;
+  url: string;
 
   constructor(item: DocumentItem) {
-    this.id = item.id;
-    this.text = item.text;
-    this.meta = item.meta;
-    this.annotationApprover = item.annotationApprover;
-    this.commentCount = item.commentCount;
-    this.isApproved = !!item.annotationApprover;
-    this.filename = item.url
+    this.id = item.id
+    this.text = item.text
+    this.meta = item.meta
+    this.annotationApprover = item.annotationApprover
+    this.commentCount = item.commentCount
+    this.isApproved = !!item.annotationApprover
+    this.fileUrl = item.fileUrl
+    this.filename = item.filename
+    this.url = item.url
   }
 }
 

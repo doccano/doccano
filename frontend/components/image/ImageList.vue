@@ -29,9 +29,9 @@
         filled
       />
     </template>
-    <template v-slot:[`item.filename`]="{ item }">
+    <template v-slot:[`item.url`]="{ item }">
       <v-img
-        :src="item.filename"
+        :src="item.url"
         aspect-ratio="1"
         height="150"
         max-height="150"
@@ -98,6 +98,11 @@ export default Vue.extend({
       return [
         {
           text: 'Image',
+          value: 'url',
+          sortable: false
+        },
+        {
+          text: 'Filename',
           value: 'filename',
           sortable: false
         },

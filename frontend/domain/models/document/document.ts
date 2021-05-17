@@ -48,7 +48,7 @@ export class DocumentItem {
     public meta: object,
     public annotationApprover: boolean | null,
     public commentCount: number,
-    public filename: string,
+    public fileUrl: string,
   ) {}
 
   static valueOf(
@@ -59,9 +59,14 @@ export class DocumentItem {
   }
 
   get url() {
-    const l = this.filename.indexOf('media/')
-    const r = this.filename.indexOf('media/', l + 1)
-    return this.filename.slice(0, l) + this.filename.slice(r)
+    const l = this.fileUrl.indexOf('media/')
+    const r = this.fileUrl.indexOf('media/', l + 1)
+    return this.fileUrl.slice(0, l) + this.fileUrl.slice(r)
+  }
+
+  get filename() {
+    const items = this.fileUrl.split('/')
+    return items[items.length - 1]
   }
 
   toObject(): Object {
