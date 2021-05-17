@@ -52,7 +52,7 @@ class ExampleList(generics.ListCreateAPIView):
 class ExampleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Example.objects.all()
     serializer_class = ExampleSerializer
-    lookup_url_kwarg = 'data_id'
+    lookup_url_kwarg = 'example_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
 

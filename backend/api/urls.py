@@ -43,15 +43,16 @@ urlpatterns_project = [
         name='label_detail'
     ),
     path(
-        route='data',
+        route='examples',
         view=views.ExampleList.as_view(),
-        name='data_list'
+        name='example_list'
     ),
     path(
-        route='data/<int:data_id>',
+        route='examples/<int:example_id>',
         view=views.ExampleDetail.as_view(),
-        name='data_detail'
+        name='example_detail'
     ),
+    # Todo: remove.
     path(
         route='docs',
         view=views.DocumentList.as_view(),
@@ -63,10 +64,11 @@ urlpatterns_project = [
         name='doc_detail'
     ),
     path(
-        route='approval/<int:data_id>',
+        route='approval/<int:example_id>',
         view=views.ApprovalAPI.as_view(),
         name='approve_labels'
     ),
+    # Todo: change.
     path(
         route='docs/<int:doc_id>/annotations',
         view=views.AnnotationList.as_view(),
@@ -88,7 +90,7 @@ urlpatterns_project = [
         name='tag_detail'
     ),
     path(
-        route='docs/<int:doc_id>/comments',
+        route='examples/<int:example_id>/comments',
         view=views.CommentListDoc.as_view(),
         name='comment_list_doc'
     ),
@@ -98,7 +100,7 @@ urlpatterns_project = [
         name='comment_list_project'
     ),
     path(
-        route='docs/<int:doc_id>/comments/<int:comment_id>',
+        route='examples/<int:example_id>/comments/<int:comment_id>',
         view=views.CommentDetail.as_view(),
         name='comment_detail'
     ),
