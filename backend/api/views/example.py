@@ -18,6 +18,7 @@ class ExampleList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     ordering_fields = ('created_at', 'updated_at')
+    search_fields = ('text', 'filename')
     model = Example
 
     @property
@@ -48,24 +49,20 @@ class ExampleList(generics.ListCreateAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ExampleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Example.objects.all()
+    serializer_class = ExampleSerializer
+    lookup_url_kwarg = 'data_id'
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+
+
 class DocumentList(ExampleList):
     search_fields = ('text',)
     filter_class = DocumentFilter
-
-
-class ImageList(ExampleList):
-    search_fields = ('filename',)
 
 
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Example.objects.all()
     serializer_class = ExampleSerializer
     lookup_url_kwarg = 'doc_id'
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
-
-
-class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Example.objects.all()
-    serializer_class = ExampleSerializer
-    lookup_url_kwarg = 'image_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]

@@ -1,7 +1,7 @@
-import { DocumentItem, DocumentItemList } from '~/domain/models/document/document'
+import { ExampleItem, ExampleItemList } from '~/domain/models/example/example'
 
 
-export class DocumentDTO {
+export class ExampleDTO {
   id: number;
   text: string;
   meta: object;
@@ -12,7 +12,7 @@ export class DocumentDTO {
   filename: string;
   url: string;
 
-  constructor(item: DocumentItem) {
+  constructor(item: ExampleItem) {
     this.id = item.id
     this.text = item.text
     this.meta = item.meta
@@ -25,16 +25,16 @@ export class DocumentDTO {
   }
 }
 
-export class DocumentListDTO {
+export class ExampleListDTO {
   count: number
   next : string | null
   prev : string | null
-  items: DocumentDTO[]
+  items: ExampleDTO[]
 
-  constructor(item: DocumentItemList) {
+  constructor(item: ExampleItemList) {
     this.count = item.count
     this.next = item.next
     this.prev = item.prev
-    this.items = item.items.map(_ => new DocumentDTO(_))
+    this.items = item.items.map(_ => new ExampleDTO(_))
   }
 }

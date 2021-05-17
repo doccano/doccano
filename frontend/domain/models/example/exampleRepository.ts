@@ -1,13 +1,13 @@
-import { DocumentItem, DocumentItemList } from '~/domain/models/document/document'
+import { ExampleItem, ExampleItemList } from '~/domain/models/example/example'
 
 export type SearchOption = {[key: string]: string | (string | null)[]}
 
-export interface DocumentRepository {
-  list(projectId: string, { limit, offset, q, isChecked, filterName }: SearchOption): Promise<DocumentItemList>
+export interface ExampleRepository {
+  list(projectId: string, { limit, offset, q, isChecked, filterName }: SearchOption): Promise<ExampleItemList>
 
-  create(projectId: string, item: DocumentItem): Promise<DocumentItem>
+  create(projectId: string, item: ExampleItem): Promise<ExampleItem>
 
-  update(projectId: string, item: DocumentItem): Promise<DocumentItem>
+  update(projectId: string, item: ExampleItem): Promise<ExampleItem>
 
   bulkDelete(projectId: string, ids: number[]): Promise<void>
 

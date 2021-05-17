@@ -12,7 +12,7 @@ class TestDocumentListAPI(CRUDMixin):
         self.non_member = make_user()
         make_doc(self.project.item)
         self.data = {'text': 'example'}
-        self.url = reverse(viewname='doc_list', args=[self.project.item.id])
+        self.url = reverse(viewname='data_list', args=[self.project.item.id])
 
     def test_allows_project_member_to_list_docs(self):
         for member in self.project.users:
@@ -47,7 +47,7 @@ class TestDocumentDetail(CRUDMixin):
         self.non_member = make_user()
         doc = make_doc(self.project.item)
         self.data = {'text': 'example'}
-        self.url = reverse(viewname='doc_detail', args=[self.project.item.id, doc.id])
+        self.url = reverse(viewname='data_detail', args=[self.project.item.id, doc.id])
 
     def test_allows_project_member_to_get_doc(self):
         for member in self.project.users:

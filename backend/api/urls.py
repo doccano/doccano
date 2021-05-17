@@ -43,6 +43,16 @@ urlpatterns_project = [
         name='label_detail'
     ),
     path(
+        route='data',
+        view=views.ExampleList.as_view(),
+        name='data_list'
+    ),
+    path(
+        route='data/<int:data_id>',
+        view=views.ExampleDetail.as_view(),
+        name='data_detail'
+    ),
+    path(
         route='docs',
         view=views.DocumentList.as_view(),
         name='doc_list'
@@ -51,16 +61,6 @@ urlpatterns_project = [
         route='docs/<int:doc_id>',
         view=views.DocumentDetail.as_view(),
         name='doc_detail'
-    ),
-    path(
-        route='images',
-        view=views.ImageList.as_view(),
-        name='image_list'
-    ),
-    path(
-        route='images/<int:image_id>',
-        view=views.ImageDetail.as_view(),
-        name='image_detail'
     ),
     path(
         route='approval/<int:data_id>',

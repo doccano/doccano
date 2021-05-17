@@ -1,29 +1,29 @@
 import ApiService from '@/services/api.service'
-import { DocumentRepository, SearchOption } from '@/domain/models/document/documentRepository'
-import { DocumentItem, DocumentItemList } from '~/domain/models/document/document'
+import { ExampleRepository, SearchOption } from '~/domain/models/example/exampleRepository'
+import { ExampleItem, ExampleItemList } from '~/domain/models/example/example'
 
 
-export class APIDocumentRepository implements DocumentRepository {
+export class APIExampleRepository implements ExampleRepository {
   constructor(
     private readonly request = ApiService
   ) {}
 
-  async list(projectId: string, { limit = '10', offset = '0', q = '', isChecked = '', filterName = '' }: SearchOption): Promise<DocumentItemList> {
+  async list(projectId: string, { limit = '10', offset = '0', q = '', isChecked = '', filterName = '' }: SearchOption): Promise<ExampleItemList> {
     const url = `/projects/${projectId}/docs?limit=${limit}&offset=${offset}&q=${q}&${filterName}=${isChecked}`
     const response = await this.request.get(url)
-    return DocumentItemList.valueOf(response.data)
+    return ExampleItemList.valueOf(response.data)
   }
 
-  async create(projectId: string, item: DocumentItem): Promise<DocumentItem> {
+  async create(projectId: string, item: ExampleItem): Promise<ExampleItem> {
     const url = `/projects/${projectId}/docs`
     const response = await this.request.post(url, item.toObject())
-    return DocumentItem.valueOf(response.data)
+    return ExampleItem.valueOf(response.data)
   }
 
-  async update(projectId: string, item: DocumentItem): Promise<DocumentItem> {
+  async update(projectId: string, item: ExampleItem): Promise<ExampleItem> {
     const url = `/projects/${projectId}/docs/${item.id}`
     const response = await this.request.patch(url, item.toObject())
-    return DocumentItem.valueOf(response.data)
+    return ExampleItem.valueOf(response.data)
   }
 
   async bulkDelete(projectId: string, ids: number[]): Promise<void> {
