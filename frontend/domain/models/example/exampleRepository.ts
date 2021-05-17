@@ -13,9 +13,5 @@ export interface ExampleRepository {
 
   deleteAll(projectId: string): Promise<void>
 
-  uploadFile(projectId: string, payload: FormData): Promise<void>
-
-  exportFile(projectId: string, format: string, onlyApproved: boolean): Promise<any>
-
   approve(projectId: string, docId: number, approved: boolean): Promise<void>
 }

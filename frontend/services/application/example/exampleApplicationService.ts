@@ -53,25 +53,6 @@ export class ExampleApplicationService {
     return this.repository.bulkDelete(projectId, ids)
   }
 
-  public async download(
-    projectId: string, filename: string, format: any, onlyApproved: boolean
-  ): Promise<void> {
-    const response = await this.repository.exportFile(projectId, format.type, onlyApproved)
-    const url = window.URL.createObjectURL(new Blob([response.data]))
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', `${filename}.${format.extension}`)
-    document.body.appendChild(link)
-    link.click()
-  }
-
-  public async upload(projectId: string, file: File, format: string): Promise<void> {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('format', format)
-    const response = await this.repository.uploadFile(projectId, formData)
-  }
-
   public async approve(projectId: string, docId: number, approved: boolean): Promise<void> {
     await this.repository.approve(projectId, docId, approved)
   }
