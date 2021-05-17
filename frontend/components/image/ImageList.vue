@@ -97,7 +97,7 @@ export default Vue.extend({
     headers() {
       return [
         {
-          text: this.$t('dataset.text'),
+          text: 'Image',
           value: 'filename',
           sortable: false
         },
