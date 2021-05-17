@@ -31,7 +31,7 @@ class FileRepository(BaseRepository):
             for user, label in label_per_user.items():
                 yield Record(
                     id=example.id,
-                    data=example.filename,
+                    data=str(example.filename).split('/')[-1],
                     label=label,
                     user=user,
                     metadata=example.meta
@@ -45,7 +45,7 @@ class FileRepository(BaseRepository):
             if len(label_per_user) == 0:
                 yield Record(
                     id=example.id,
-                    data=example.text,
+                    data=str(example.filename).split('/')[-1],
                     label=[],
                     user='unknown',
                     metadata={}
