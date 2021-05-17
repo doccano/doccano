@@ -66,13 +66,13 @@
 <script lang="ts">
 import Vue from 'vue'
 import _ from 'lodash'
-import DocumentList from '@/components/document/DocumentList.vue'
-import FormDelete from '@/components/document/FormDelete.vue'
-import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
-import FormDownload from '@/components/document/FormDownload.vue'
+import DocumentList from '@/components/example/DocumentList.vue'
+import FormDelete from '@/components/example/FormDelete.vue'
+import FormDeleteBulk from '@/components/example/FormDeleteBulk.vue'
+import FormDownload from '@/components/example/FormDownload.vue'
 import ImageList from '~/components/example/ImageList.vue'
 import { ExampleListDTO, ExampleDTO } from '~/services/application/example/exampleData'
-import ActionMenu from '~/components/document/ActionMenu.vue'
+import ActionMenu from '~/components/example/ActionMenu.vue'
 import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
