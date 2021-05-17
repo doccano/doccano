@@ -71,7 +71,7 @@ class DataFactory:
         mapping = {label.text: label.id for label in project.labels.all()}
         annotation = [example.annotation(mapping) for example in examples]
         for a, id in zip(annotation, ids):
-            append_field(a, document=id)
+            append_field(a, example=id)
         annotation = list(itertools.chain(*annotation))
         for a in annotation:
             if 'label' in a:
