@@ -43,7 +43,7 @@
           </template>
         </v-select>
         <v-checkbox
-          v-if="projectType === 'DocumentClassification'"
+          v-if="hasSingleLabelOption"
           :value="singleClassClassification"
           label="Allow single label"
           @change="updateValue('singleClassClassification', $event === true)"
@@ -118,6 +118,12 @@ export default Vue.extend({
   computed: {
     projectTypes() {
       return ['DocumentClassification', 'SequenceLabeling', 'Seq2seq', 'ImageClassification']
+    },
+    hasSingleLabelOption() {
+      return [
+        'DocumentClassification',
+        'ImageClassification',
+      ].includes(this.projectType)
     }
   },
 
