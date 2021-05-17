@@ -179,7 +179,7 @@ class OptionDelimiter(OptionColumn):
     delimiter: Literal[',', '\t', ';', '|', ' '] = ','
 
 
-class OptionNone(BaseModel):
+class OptionEncoding(BaseModel):
     encoding: encodings = 'utf_8'
 
 
@@ -187,6 +187,10 @@ class OptionCoNLL(BaseModel):
     encoding: encodings = 'utf_8'
     scheme: Literal['IOB2', 'IOE2', 'IOBES', 'BILOU'] = 'IOB2'
     delimiter: Literal[' ', ''] = ' '
+
+
+class OptionNone(BaseModel):
+    pass
 
 
 class Options:
@@ -213,23 +217,23 @@ class Options:
 
 
 # Text Classification
-Options.register(DOCUMENT_CLASSIFICATION, TextFile, OptionNone, examples.Generic_TextFile)
-Options.register(DOCUMENT_CLASSIFICATION, TextLine, OptionNone, examples.Generic_TextLine)
+Options.register(DOCUMENT_CLASSIFICATION, TextFile, OptionEncoding, examples.Generic_TextFile)
+Options.register(DOCUMENT_CLASSIFICATION, TextLine, OptionEncoding, examples.Generic_TextLine)
 Options.register(DOCUMENT_CLASSIFICATION, CSV, OptionDelimiter, examples.Category_CSV)
-Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionNone, examples.Category_fastText)
+Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionEncoding, examples.Category_fastText)
 Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionColumn, examples.Category_JSON)
 Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionColumn, examples.Category_JSONL)
 Options.register(DOCUMENT_CLASSIFICATION, Excel, OptionColumn, examples.Category_CSV)
 
 # Sequence Labeling
-Options.register(SEQUENCE_LABELING, TextFile, OptionNone, examples.Generic_TextFile)
-Options.register(SEQUENCE_LABELING, TextLine, OptionNone, examples.Generic_TextLine)
+Options.register(SEQUENCE_LABELING, TextFile, OptionEncoding, examples.Generic_TextFile)
+Options.register(SEQUENCE_LABELING, TextLine, OptionEncoding, examples.Generic_TextLine)
 Options.register(SEQUENCE_LABELING, JSONL, OptionColumn, examples.Offset_JSONL)
 Options.register(SEQUENCE_LABELING, CoNLL, OptionCoNLL, examples.Offset_CoNLL)
 
 # Sequence to sequence
-Options.register(SEQ2SEQ, TextFile, OptionNone, examples.Generic_TextFile)
-Options.register(SEQ2SEQ, TextLine, OptionNone, examples.Generic_TextLine)
+Options.register(SEQ2SEQ, TextFile, OptionEncoding, examples.Generic_TextFile)
+Options.register(SEQ2SEQ, TextLine, OptionEncoding, examples.Generic_TextLine)
 Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
 Options.register(SEQ2SEQ, JSON, OptionColumn, examples.Text_JSON)
 Options.register(SEQ2SEQ, JSONL, OptionColumn, examples.Text_JSONL)
