@@ -57,7 +57,6 @@
         <v-img
           contain
           :src="doc.filename"
-          aspect-ratio="1"
           :max-height="imageSize.height"
           class="grey lighten-2"
         />
