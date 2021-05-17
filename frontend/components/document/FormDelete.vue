@@ -3,7 +3,7 @@
     :items="selected"
     :title="$t('dataset.deleteDocumentsTitle')"
     :message="$t('dataset.deleteDocumentsMessage')"
-    item-key="text"
+    :item-key="itemKey"
     @ok="$emit('remove')"
     @cancel="$emit('cancel')"
   />
@@ -22,6 +22,10 @@ export default Vue.extend({
     selected: {
       type: Array,
       default: () => []
+    },
+    itemKey: {
+      type: String,
+      default: 'text'
     }
   }
 })

@@ -25,6 +25,7 @@
       <v-dialog v-model="dialogDelete">
         <form-delete
           :selected="selected"
+          :item-key="itemKey"
           @cancel="dialogDelete=false"
           @remove="remove"
         />
@@ -42,7 +43,7 @@
       </v-dialog>
     </v-card-title>
     <image-list
-      v-if="project.projectType === 'ImageClassification'"
+      v-if="isImageTask"
       v-model="selected"
       :items="item.items"
       :is-loading="isLoading"
@@ -110,6 +111,16 @@ export default Vue.extend({
     },
     projectId(): string {
       return this.$route.params.id
+    },
+    isImageTask(): boolean {
+      return this.project.projectType === 'ImageClassification'
+    },
+    itemKey(): string {
+      if (this.isImageTask) {
+        return 'filename'
+      } else {
+        return 'text'
+      }
     }
   },
 

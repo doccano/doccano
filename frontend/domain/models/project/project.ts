@@ -4,7 +4,7 @@ export interface CurrentUsersRole {
   is_annotation_approver: boolean;
 }
 
-export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq'
+export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'ImageClassification'
 
 
 export class ProjectReadItem {
