@@ -91,11 +91,13 @@ export class ProjectReadItem {
 
   get filterOption() {
     if (this.project_type === 'DocumentClassification') {
-      return 'doc_annotations__isnull'
+      return 'categories__isnull'
     } else if (this.project_type === 'SequenceLabeling') {
-      return 'seq_annotations__isnull'
+      return 'spans__isnull'
     } else if (this.project_type === 'Seq2seq') {
-      return 'seq2seq_annotations__isnull'
+      return 'texts__isnull'
+    } else if (this.project_type === 'ImageClassification') {
+      return 'categories__isnull'
     } else {
       return ''
     }
