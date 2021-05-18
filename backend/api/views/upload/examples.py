@@ -10,6 +10,12 @@ Generic_ImageFile = """
 └── 202104210945.png
 """
 
+Generic_AudioFile = """
+├── 202104210943.mp3
+├── 202104210944.mp3
+└── 202104210945.mp3
+"""
+
 Generic_TextLine = """
 Terrible customer service.
 Really great transaction.
