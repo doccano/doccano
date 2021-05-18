@@ -2,7 +2,7 @@
   <layout-text v-if="image.id">
     <template v-slot:header>
       <toolbar-laptop
-        :image-id="image.id"
+        :doc-id="image.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
         :is-reviewd="image.isApproved"
