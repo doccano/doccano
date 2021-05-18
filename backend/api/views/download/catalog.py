@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing_extensions import Literal
 
 from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
-                       SEQUENCE_LABELING)
+                       SEQUENCE_LABELING, SPEECH2TEXT)
 from . import examples
 
 
@@ -86,3 +86,6 @@ Options.register(SEQ2SEQ, JSONL, OptionNone, examples.Text_JSONL)
 
 # Image Classification
 Options.register(IMAGE_CLASSIFICATION, JSONL, OptionNone, examples.CategoryImageClassification)
+
+# Speech to Text
+Options.register(SPEECH2TEXT, JSONL, OptionNone, examples.Speech2Text)
