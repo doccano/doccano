@@ -12,11 +12,15 @@ class TestDocumentListAPI(CRUDMixin):
         self.non_member = make_user()
         make_doc(self.project.item)
         self.data = {'text': 'example'}
-        self.url = reverse(viewname='doc_list', args=[self.project.item.id])
+        self.url = reverse(viewname='example_list', args=[self.project.item.id])
 
     def test_allows_project_member_to_list_docs(self):
         for member in self.project.users:
-            self.assert_fetch(member, status.HTTP_200_OK)
+            response = self.assert_fetch(member, status.HTTP_200_OK)
+            self.assertEqual(response.data['count'], 1)
+            self.assertIn('results', response.data)
+            for item in response.data['results']:
+                self.assertIn('text', item)
 
     def test_denies_non_project_member_to_list_docs(self):
         self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
@@ -25,7 +29,8 @@ class TestDocumentListAPI(CRUDMixin):
         self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
 
     def test_allows_project_admin_to_create_doc(self):
-        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        response = self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assertEqual(response.data['text'], self.data['text'])
 
     def test_denies_non_project_admin_to_create_doc(self):
         for member in self.project.users[1:]:
@@ -42,11 +47,12 @@ class TestDocumentDetail(CRUDMixin):
         self.non_member = make_user()
         doc = make_doc(self.project.item)
         self.data = {'text': 'example'}
-        self.url = reverse(viewname='doc_detail', args=[self.project.item.id, doc.id])
+        self.url = reverse(viewname='example_detail', args=[self.project.item.id, doc.id])
 
     def test_allows_project_member_to_get_doc(self):
         for member in self.project.users:
-            self.assert_fetch(member, status.HTTP_200_OK)
+            response = self.assert_fetch(member, status.HTTP_200_OK)
+            self.assertIn('text', response.data)
 
     def test_denies_non_project_member_to_get_doc(self):
         self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
@@ -55,7 +61,8 @@ class TestDocumentDetail(CRUDMixin):
         self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
 
     def test_allows_project_admin_to_update_doc(self):
-        self.assert_update(self.project.users[0], status.HTTP_200_OK)
+        response = self.assert_update(self.project.users[0], status.HTTP_200_OK)
+        self.assertEqual(response.data['text'], self.data['text'])
 
     def test_denies_non_project_admin_to_update_doc(self):
         for member in self.project.users[1:]:

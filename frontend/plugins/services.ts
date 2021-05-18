@@ -16,7 +16,7 @@ import { APIProjectRepository } from '~/repositories/project/apiProjectRepositor
 import { LocalStorageOptionRepository} from '~/repositories/option/apiOptionRepository'
 import { APIMemberRepository } from '~/repositories/member/apiMemberRepository'
 import { APILabelRepository } from '~/repositories/label/apiLabelRepository'
-import { APIDocumentRepository } from '~/repositories/document/apiDocumentRepository'
+import { APIExampleRepository } from '~/repositories/example/apiDocumentRepository'
 import { APICommentRepository } from '~/repositories/comment/apiCommentRepository'
 import { APIAuthRepository } from '~/repositories/auth/apiAuthRepository'
 import { LabelApplicationService } from '~/services/application/label/labelApplicationService'
@@ -26,7 +26,7 @@ import { RoleApplicationService } from '~/services/application/role/roleApplicat
 import { ProjectApplicationService } from '~/services/application/project/projectApplicationService'
 import { CommentApplicationService } from '~/services/application/comment/commentApplicationService'
 import { StatisticsApplicationService } from '~/services/application/statistics/statisticsApplicationService'
-import { DocumentApplicationService } from '~/services/application/document/documentApplicationService'
+import { ExampleApplicationService } from '~/services/application/example/exampleApplicationService'
 import { OptionApplicationService } from '~/services/application/option/optionApplicationService'
 import { SequenceLabelingApplicationService } from '~/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
 import { Seq2seqApplicationService } from '~/services/application/tasks/seq2seq/seq2seqApplicationService'
@@ -50,7 +50,7 @@ export interface Services {
   project: ProjectApplicationService,
   comment: CommentApplicationService,
   statistics: StatisticsApplicationService,
-  document: DocumentApplicationService,
+  example: ExampleApplicationService,
   textClassification: TextClassificationApplicationService,
   sequenceLabeling: SequenceLabelingApplicationService,
   seq2seq: Seq2seqApplicationService,
@@ -80,7 +80,7 @@ const plugin: Plugin = (context, inject) => {
   const projectRepository    = new APIProjectRepository()
   const commentRepository    = new APICommentRepository()
   const statisticsRepository = new APIStatisticsRepository()
-  const documentRepository   = new APIDocumentRepository()
+  const exampleRepository    = new APIExampleRepository()
   const textClassificationRepository = new APITextClassificationRepository()
   const sequenceLabelingRepository   = new APISequenceLabelingRepository()
   const seq2seqRepository = new APISeq2seqRepository()
@@ -102,7 +102,7 @@ const plugin: Plugin = (context, inject) => {
   const project    = new ProjectApplicationService(projectRepository)
   const comment    = new CommentApplicationService(commentRepository)
   const statistics = new StatisticsApplicationService(statisticsRepository)
-  const document   = new DocumentApplicationService(documentRepository)
+  const example    = new ExampleApplicationService(exampleRepository)
   const textClassification = new TextClassificationApplicationService(textClassificationRepository)
   const sequenceLabeling   = new SequenceLabelingApplicationService(sequenceLabelingRepository)
   const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
@@ -125,7 +125,7 @@ const plugin: Plugin = (context, inject) => {
     project,
     comment,
     statistics,
-    document,
+    example,
     textClassification,
     sequenceLabeling,
     seq2seq,

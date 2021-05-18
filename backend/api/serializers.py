@@ -6,12 +6,12 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from .models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                     SPEECH2TEXT, AutoLabelingConfig, Comment, Document,
-                     DocumentAnnotation, Label, Project, Role, RoleMapping,
-                     Seq2seqAnnotation, Seq2seqProject, SequenceAnnotation,
-                     SequenceLabelingProject, Speech2textAnnotation,
-                     Speech2textProject, Tag, TextClassificationProject)
+from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+                     SEQUENCE_LABELING, SPEECH2TEXT, AutoLabelingConfig,
+                     Category, Comment, Example, ImageClassificationProject,
+                     Label, Project, Role, RoleMapping, Seq2seqProject,
+                     SequenceLabelingProject, Span, Speech2textProject, Tag,
+                     TextClassificationProject, TextLabel)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -66,8 +66,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ('id', 'user', 'username', 'document', 'document_text', 'text', 'created_at', )
-        read_only_fields = ('user', 'document')
+        fields = ('id', 'user', 'username', 'example', 'text', 'created_at', )
+        read_only_fields = ('user', 'example')
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -78,7 +78,7 @@ class TagSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'project')
 
 
-class DocumentSerializer(serializers.ModelSerializer):
+class ExampleSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
 
@@ -87,7 +87,7 @@ class DocumentSerializer(serializers.ModelSerializer):
         project = instance.project
         model = project.get_annotation_class()
         serializer = get_annotation_serializer(task=project.project_type)
-        annotations = model.objects.filter(document=instance.id)
+        annotations = model.objects.filter(example=instance.id)
         if request and not project.collaborative_annotation:
             annotations = annotations.filter(user=request.user)
         serializer = serializer(annotations, many=True)
@@ -99,14 +99,23 @@ class DocumentSerializer(serializers.ModelSerializer):
         return approver.username if approver else None
 
     class Meta:
-        model = Document
-        fields = ('id', 'text', 'annotations', 'meta', 'annotation_approver', 'comment_count')
+        model = Example
+        fields = [
+            'id',
+            'filename',
+            'annotations',
+            'meta',
+            'annotation_approver',
+            'comment_count',
+            'text'
+        ]
+        read_only_fields = ['filename']
 
 
-class ApproverSerializer(DocumentSerializer):
+class ApproverSerializer(ExampleSerializer):
 
     class Meta:
-        model = Document
+        model = Example
         fields = ('id', 'annotation_approver')
 
 
@@ -131,101 +140,119 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
-                  'updated_at', 'randomize_document_order', 'collaborative_annotation', 'single_class_classification',
-                  'tags')
-        read_only_fields = ('updated_at', 'users', 'current_users_role', 'tags')
+        fields = (
+            'id',
+            'name',
+            'description',
+            'guideline',
+            'users',
+            'current_users_role',
+            'project_type',
+            'updated_at',
+            'random_order',
+            'collaborative_annotation',
+            'single_class_classification',
+            'tags'
+        )
+        read_only_fields = (
+            'updated_at',
+            'users',
+            'current_users_role',
+            'tags'
+        )
 
 
 class TextClassificationProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = TextClassificationProject
-        fields = ProjectSerializer.Meta.fields
-        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class SequenceLabelingProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = SequenceLabelingProject
-        fields = ProjectSerializer.Meta.fields
-        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class Seq2seqProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = Seq2seqProject
-        fields = ProjectSerializer.Meta.fields
-        read_only_fields = ProjectSerializer.Meta.read_only_fields
 
 
 class Speech2textProjectSerializer(ProjectSerializer):
 
-    class Meta:
+    class Meta(ProjectSerializer.Meta):
         model = Speech2textProject
-        fields = ('id', 'name', 'description', 'guideline', 'users', 'current_users_role', 'project_type',
-                  'updated_at', 'randomize_document_order')
-        read_only_fields = ('updated_at', 'users', 'current_users_role')
+
+
+class ImageClassificationProjectSerializer(ProjectSerializer):
+
+    class Meta(ProjectSerializer.Meta):
+        model = ImageClassificationProject
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
     model_serializer_mapping = {
         Project: ProjectSerializer,
-        TextClassificationProject: TextClassificationProjectSerializer,
-        SequenceLabelingProject: SequenceLabelingProjectSerializer,
-        Seq2seqProject: Seq2seqProjectSerializer,
-        Speech2textProject: Speech2textProjectSerializer,
+        **{
+            cls.Meta.model: cls for cls in ProjectSerializer.__subclasses__()
+        }
     }
 
 
-class ProjectFilteredPrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
-
-    def get_queryset(self):
-        view = self.context.get('view', None)
-        request = self.context.get('request', None)
-        queryset = super(ProjectFilteredPrimaryKeyRelatedField, self).get_queryset()
-        if not request or not queryset or not view:
-            return None
-        return queryset.filter(project=view.kwargs['project_id'])
-
-
-class DocumentAnnotationSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+    example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
 
     class Meta:
-        model = DocumentAnnotation
-        fields = ('id', 'prob', 'label', 'user', 'document', 'created_at', 'updated_at')
-        read_only_fields = ('user', )
-
-
-class SequenceAnnotationSerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
-
-    class Meta:
-        model = SequenceAnnotation
-        fields = ('id', 'prob', 'label', 'start_offset', 'end_offset', 'user', 'document', 'created_at', 'updated_at')
+        model = Category
+        fields = (
+            'id',
+            'prob',
+            'user',
+            'example',
+            'created_at',
+            'updated_at',
+            'label',
+        )
         read_only_fields = ('user',)
 
 
-class Seq2seqAnnotationSerializer(serializers.ModelSerializer):
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+class SpanSerializer(serializers.ModelSerializer):
+    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
 
     class Meta:
-        model = Seq2seqAnnotation
-        fields = ('id', 'text', 'user', 'document', 'prob', 'created_at', 'updated_at')
+        model = Span
+        fields = (
+            'id',
+            'prob',
+            'user',
+            'example',
+            'created_at',
+            'updated_at',
+            'label',
+            'start_offset',
+            'end_offset',
+        )
         read_only_fields = ('user',)
 
 
-class Speech2textAnnotationSerializer(serializers.ModelSerializer):
-    document = serializers.PrimaryKeyRelatedField(queryset=Document.objects.all())
+class TextLabelSerializer(serializers.ModelSerializer):
+    example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
 
     class Meta:
-        model = Speech2textAnnotation
-        fields = ('id', 'prob', 'text', 'user', 'document', 'created_at', 'updated_at')
+        model = TextLabel
+        fields = (
+            'id',
+            'prob',
+            'user',
+            'example',
+            'created_at',
+            'updated_at',
+            'text',
+        )
         read_only_fields = ('user',)
 
 
@@ -290,10 +317,11 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
 
 def get_annotation_serializer(task: str):
     mapping = {
-        DOCUMENT_CLASSIFICATION: DocumentAnnotationSerializer,
-        SEQUENCE_LABELING: SequenceAnnotationSerializer,
-        SEQ2SEQ: Seq2seqAnnotationSerializer,
-        SPEECH2TEXT: Speech2textAnnotationSerializer
+        DOCUMENT_CLASSIFICATION: CategorySerializer,
+        SEQUENCE_LABELING: SpanSerializer,
+        SEQ2SEQ: TextLabelSerializer,
+        SPEECH2TEXT: TextLabelSerializer,
+        IMAGE_CLASSIFICATION: CategorySerializer,
     }
     try:
         return mapping[task]

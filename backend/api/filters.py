@@ -1,14 +1,13 @@
 from django.db.models import Count, Q
 from django_filters.rest_framework import BooleanFilter, FilterSet
 
-from .models import Document
+from .models import Example
 
 
 class DocumentFilter(FilterSet):
-    seq_annotations__isnull = BooleanFilter(field_name='seq_annotations', method='filter_annotations')
-    doc_annotations__isnull = BooleanFilter(field_name='doc_annotations', method='filter_annotations')
-    seq2seq_annotations__isnull = BooleanFilter(field_name='seq2seq_annotations', method='filter_annotations')
-    speech2text_annotations__isnull = BooleanFilter(field_name='speech2text_annotations', method='filter_annotations')
+    spans__isnull = BooleanFilter(field_name='spans', method='filter_annotations')
+    categories__isnull = BooleanFilter(field_name='categories', method='filter_annotations')
+    texts__isnull = BooleanFilter(field_name='texts', method='filter_annotations')
 
     def filter_annotations(self, queryset, field_name, value):
         queryset = queryset.annotate(num_annotations=Count(
@@ -26,8 +25,9 @@ class DocumentFilter(FilterSet):
         return queryset
 
     class Meta:
-        model = Document
-        fields = ('project', 'text', 'created_at', 'updated_at',
-                  'doc_annotations__label__id', 'seq_annotations__label__id',
-                  'doc_annotations__isnull', 'seq_annotations__isnull', 'seq2seq_annotations__isnull',
-                  'speech2text_annotations__isnull')
+        model = Example
+        fields = (
+            'project', 'text', 'created_at', 'updated_at',
+            'categories__label__id', 'spans__label__id',
+            'categories__isnull', 'spans__isnull', 'texts__isnull'
+        )

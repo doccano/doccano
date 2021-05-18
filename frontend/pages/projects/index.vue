@@ -71,7 +71,7 @@ export default Vue.extend({
         name: '',
         description: '',
         projectType: 'DocumentClassification',
-        enableRandomizeDocOrder: false,
+        enableRandomOrder: false,
         enableShareAnnotation: false,
         singleClassClassification: false
       } as ProjectWriteDTO,
@@ -79,7 +79,7 @@ export default Vue.extend({
         name: '',
         description: '',
         projectType: 'DocumentClassification',
-        enableRandomizeDocOrder: false,
+        enableRandomOrder: false,
         enableShareAnnotation: false,
         singleClassClassification: false
       } as ProjectWriteDTO,

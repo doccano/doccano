@@ -43,15 +43,15 @@
           </template>
         </v-select>
         <v-checkbox
-          v-if="projectType === 'DocumentClassification'"
+          v-if="hasSingleLabelOption"
           :value="singleClassClassification"
           label="Allow single label"
           @change="updateValue('singleClassClassification', $event === true)"
         />
         <v-checkbox
-          :value="enableRandomizeDocOrder"
+          :value="enableRandomOrder"
           :label="$t('overview.randomizeDocOrder')"
-          @change="updateValue('enableRandomizeDocOrder', $event === true)"
+          @change="updateValue('enableRandomOrder', $event === true)"
         />
         <v-checkbox
           :value="enableShareAnnotation"
@@ -89,7 +89,7 @@ export default Vue.extend({
       default: '',
       required: true
     },
-    enableRandomizeDocOrder: {
+    enableRandomOrder: {
       type: Boolean,
       default: false,
       required: true
@@ -117,7 +117,13 @@ export default Vue.extend({
 
   computed: {
     projectTypes() {
-      return ['DocumentClassification', 'SequenceLabeling', 'Seq2seq']
+      return ['DocumentClassification', 'SequenceLabeling', 'Seq2seq', 'ImageClassification']
+    },
+    hasSingleLabelOption() {
+      return [
+        'DocumentClassification',
+        'ImageClassification',
+      ].includes(this.projectType)
     }
   },
 

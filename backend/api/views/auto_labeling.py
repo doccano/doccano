@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from ..exceptions import (AutoLabeliingPermissionDenied, AutoLabelingException,
                           AWSTokenError, SampleDataException,
                           URLConnectionError)
-from ..models import AutoLabelingConfig, Document, Project
+from ..models import AutoLabelingConfig, Example, Project
 from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
 from ..serializers import (AutoLabelingConfigSerializer,
                            get_annotation_serializer)
@@ -199,7 +199,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
 
     def extract(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        doc = get_object_or_404(Document, pk=self.kwargs['doc_id'])
+        doc = get_object_or_404(Example, pk=self.kwargs['doc_id'])
         config = project.auto_labeling_config.first()
         if not config:
             raise AutoLabeliingPermissionDenied()

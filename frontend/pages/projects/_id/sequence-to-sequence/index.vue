@@ -55,7 +55,7 @@ export default {
   },
 
   async fetch() {
-    this.docs = await this.$services.document.fetchOne(
+    this.docs = await this.$services.example.fetchOne(
       this.projectId,
       this.$route.query.page,
       this.$route.query.q,
@@ -139,7 +139,7 @@ export default {
 
     async approve() {
       const approved = !this.doc.isApproved
-      await this.$services.document.approve(this.projectId, this.doc.id, approved)
+      await this.$services.example.approve(this.projectId, this.doc.id, approved)
       await this.$fetch()
     }
   },

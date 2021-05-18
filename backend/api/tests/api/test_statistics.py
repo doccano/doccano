@@ -4,7 +4,7 @@ from model_mommy import mommy
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from ...models import DOCUMENT_CLASSIFICATION, Document
+from ...models import DOCUMENT_CLASSIFICATION, Example
 from .utils import (TestUtilsMixin, assign_user_to_role, create_default_roles,
                     remove_all_role_mappings)
 
@@ -32,12 +32,12 @@ class TestStatisticsAPI(APITestCase, TestUtilsMixin):
             project_type=DOCUMENT_CLASSIFICATION,
             users=[super_user]
         )
-        doc1 = mommy.make('Document', project=cls.project)
-        doc2 = mommy.make('Document', project=cls.project)
-        mommy.make('DocumentAnnotation', document=doc1, user=super_user)
-        mommy.make('DocumentAnnotation', document=doc2, user=other_user)
+        doc1 = mommy.make('Example', project=cls.project)
+        doc2 = mommy.make('Example', project=cls.project)
+        mommy.make('Category', example=doc1, user=super_user)
+        mommy.make('Category', example=doc2, user=other_user)
         cls.url = reverse(viewname='statistics', args=[cls.project.id])
-        cls.doc = Document.objects.filter(project=cls.project)
+        cls.doc = Example.objects.filter(project=cls.project)
 
         assign_user_to_role(project_member=other_user, project=cls.project,
                             role_name=settings.ROLE_ANNOTATOR)

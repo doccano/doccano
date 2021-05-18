@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
-from .models import Document, Label, Project
+from .models import Example, Label, Project
 from .views.download.factory import create_repository, create_writer
 from .views.download.service import ExportApplicationService
 from .views.upload.exception import FileParseException
@@ -71,7 +71,7 @@ class DataFactory:
         mapping = {label.text: label.id for label in project.labels.all()}
         annotation = [example.annotation(mapping) for example in examples]
         for a, id in zip(annotation, ids):
-            append_field(a, document=id)
+            append_field(a, example=id)
         annotation = list(itertools.chain(*annotation))
         for a in annotation:
             if 'label' in a:
@@ -102,7 +102,7 @@ def injest_data(user_id, project_id, filenames, format: str, **kwargs):
     it = iter(dataset)
     buffer = Buffer()
     factory = DataFactory(
-        data_class=Document,
+        data_class=Example,
         label_class=Label,
         annotation_class=project.get_annotation_class()
     )

@@ -113,7 +113,8 @@ export default {
         { title: this.$t('home.demoNER'), link: 'named-entity-recognition' },
         { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
         { title: this.$t('home.demoTranslation'), link: 'translation' },
-        { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' }
+        { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' },
+        { title: 'Image Classification', link: 'image-classification' },
       ]
     }
   },

@@ -1,9 +1,9 @@
-export class DocumentItemList {
+export class ExampleItemList {
   constructor(
     private _count: number,
     private _next: string | null,
     private _prev: string | null,
-    private _items: DocumentItem[]
+    private _items: ExampleItem[]
   ) {}
 
   static valueOf(
@@ -14,9 +14,9 @@ export class DocumentItemList {
       previous: string | null,
       results : Array<any>
   }
-  ): DocumentItemList {
-    const items = results.map(item => DocumentItem.valueOf(item))
-    return new DocumentItemList(
+  ): ExampleItemList {
+    const items = results.map(item => ExampleItem.valueOf(item))
+    return new ExampleItemList(
       count,
       next,
       previous,
@@ -36,25 +36,37 @@ export class DocumentItemList {
     return this._prev
   }
 
-  get items(): DocumentItem[] {
+  get items(): ExampleItem[] {
     return this._items
   }
 }
 
-export class DocumentItem {
+export class ExampleItem {
   constructor(
     public id: number,
     public text: string,
     public meta: object,
     public annotationApprover: boolean | null,
-    public commentCount: number
+    public commentCount: number,
+    public fileUrl: string,
   ) {}
 
   static valueOf(
-    { id, text, meta, annotation_approver, comment_count }:
-    { id: number, text: string, meta: object, annotation_approver: boolean | null, comment_count: number }
-  ): DocumentItem {
-    return new DocumentItem(id, text, meta, annotation_approver, comment_count)
+    { id, text, meta, annotation_approver, comment_count, filename }:
+    { id: number, text: string, meta: object, annotation_approver: boolean | null, comment_count: number, filename: string }
+  ): ExampleItem {
+    return new ExampleItem(id, text, meta, annotation_approver, comment_count, filename)
+  }
+
+  get url() {
+    const l = this.fileUrl.indexOf('media/')
+    const r = this.fileUrl.indexOf('media/', l + 1)
+    return this.fileUrl.slice(0, l) + this.fileUrl.slice(r)
+  }
+
+  get filename() {
+    const items = this.fileUrl.split('/')
+    return items[items.length - 1]
   }
 
   toObject(): Object {

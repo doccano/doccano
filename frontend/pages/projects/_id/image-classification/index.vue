@@ -1,13 +1,13 @@
 <template>
-  <layout-text v-if="doc.id">
+  <layout-text v-if="image.id">
     <template v-slot:header>
       <toolbar-laptop
-        :doc-id="doc.id"
+        :doc-id="image.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
-        :is-reviewd="doc.isApproved"
+        :is-reviewd="image.isApproved"
         :show-approve-button="project.permitApprove"
-        :total="docs.count"
+        :total="images.count"
         class="d-none d-sm-block"
         @click:clear-label="clear"
         @click:review="approve"
@@ -26,7 +26,7 @@
         </v-btn-toggle>
       </toolbar-laptop>
       <toolbar-mobile
-        :total="docs.count"
+        :total="images.count"
         class="d-flex d-sm-none"
       />
     </template>
@@ -54,11 +54,16 @@
           />
         </v-card-title>
         <v-divider />
-        <v-card-text class="title highlight text-pre-wrap" v-text="doc.text" />
+        <v-img
+          contain
+          :src="image.url"
+          :max-height="imageSize.height"
+          class="grey lighten-2"
+        />
       </v-card>
     </template>
     <template v-slot:sidebar>
-      <list-metadata :metadata="doc.meta" />
+      <list-metadata :metadata="image.meta" />
     </template>
   </layout-text>
 </template>
@@ -85,28 +90,33 @@ export default {
   },
 
   async fetch() {
-    this.docs = await this.$services.example.fetchOne(
+    this.images = await this.$services.example.fetchOne(
       this.projectId,
       this.$route.query.page,
       this.$route.query.q,
       this.$route.query.isChecked,
       this.project.filterOption
     )
-    const doc = this.docs.items[0]
+    const image = this.images.items[0]
+    this.setImageSize(image)
     if (this.enableAutoLabeling) {
-      await this.autoLabel(doc.id)
+      await this.autoLabel(image.id)
     }
-    await this.list(doc.id)
+    await this.list(image.id)
   },
 
   data() {
     return {
       annotations: [],
-      docs: [],
+      images: [],
       labels: [],
       project: {},
       enableAutoLabeling: false,
-      labelOption: 0
+      labelOption: 0,
+      imageSize: {
+        height: 0,
+        width: 0
+      }
     }
   },
 
@@ -117,11 +127,11 @@ export default {
     projectId() {
       return this.$route.params.id
     },
-    doc() {
-      if (_.isEmpty(this.docs) || this.docs.items.length === 0) {
+    image() {
+      if (_.isEmpty(this.images) || this.images.items.length === 0) {
         return {}
       } else {
-        return this.docs.items[0]
+        return this.images.items[0]
       }
     }
   },
@@ -130,7 +140,7 @@ export default {
     '$route.query': '$fetch',
     enableAutoLabeling(val) {
       if (val) {
-        this.list(this.doc.id)
+        this.list(this.image.id)
       }
     }
   },
@@ -141,18 +151,18 @@ export default {
   },
 
   methods: {
-    async list(docId) {
-      this.annotations = await this.$services.textClassification.list(this.projectId, docId)
+    async list(imageId) {
+      this.annotations = await this.$services.textClassification.list(this.projectId, imageId)
     },
 
     async remove(id) {
-      await this.$services.textClassification.delete(this.projectId, this.doc.id, id)
-      await this.list(this.doc.id)
+      await this.$services.textClassification.delete(this.projectId, this.image.id, id)
+      await this.list(this.image.id)
     },
 
     async add(labelId) {
-      await this.$services.textClassification.create(this.projectId, this.doc.id, labelId)
-      await this.list(this.doc.id)
+      await this.$services.textClassification.create(this.projectId, this.image.id, labelId)
+      await this.list(this.image.id)
     },
 
     async addOrRemove(event) {
@@ -166,22 +176,32 @@ export default {
     },
 
     async clear() {
-      await this.$services.textClassification.clear(this.projectId, this.doc.id)
-      await this.list(this.doc.id)
+      await this.$services.textClassification.clear(this.projectId, this.image.id)
+      await this.list(this.image.id)
     },
 
-    async autoLabel(docId) {
+    async autoLabel(imageId) {
       try {
-        await this.$services.textClassification.autoLabel(this.projectId, docId)
+        await this.$services.textClassification.autoLabel(this.projectId, imageId)
       } catch (e) {
         console.log(e.response.data.detail)
       }
     },
 
     async approve() {
-      const approved = !this.doc.isApproved
-      await this.$services.example.approve(this.projectId, this.doc.id, approved)
+      const approved = !this.image.isApproved
+      await this.$services.example.approve(this.projectId, this.image.id, approved)
       await this.$fetch()
+    },
+
+    setImageSize(val) {
+      const img = new Image()
+      const self = this
+      img.onload = function() {
+        self.imageSize.height = this.height
+        self.imageSize.width = this.width
+      }
+      img.src = val.url
     }
   },
 

@@ -33,7 +33,11 @@ schema_view = get_schema_view(
    public=True,
 )
 
-urlpatterns = [
+urlpatterns = []
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += [
     path('admin/', admin.site.urls),
     path('social/', include('social_django.urls')),
     path('api-auth/', include('rest_framework.urls')),
@@ -44,5 +48,3 @@ urlpatterns = [
 
 if 'cloud_browser' in settings.INSTALLED_APPS:
     urlpatterns.append(path('cloud-storage/', include('cloud_browser.urls')))
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

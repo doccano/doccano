@@ -4,6 +4,12 @@ Generic_TextFile = """
 └── 202104210945.txt
 """
 
+Generic_ImageFile = """
+├── 202104210943.png
+├── 202104210944.png
+└── 202104210945.png
+"""
+
 Generic_TextLine = """
 Terrible customer service.
 Really great transaction.

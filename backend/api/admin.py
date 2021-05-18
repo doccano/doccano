@@ -1,9 +1,8 @@
 from django.contrib import admin
 
-from .models import (Comment, Document, DocumentAnnotation, Label, Project,
-                     Role, RoleMapping, Seq2seqAnnotation, Seq2seqProject,
-                     SequenceAnnotation, SequenceLabelingProject, Tag,
-                     TextClassificationProject)
+from .models import (Category, Comment, Example, Label, Project, Role,
+                     RoleMapping, Seq2seqProject, SequenceLabelingProject,
+                     Span, Tag, TextClassificationProject, TextLabel)
 
 
 class LabelAdmin(admin.ModelAdmin):
@@ -12,34 +11,31 @@ class LabelAdmin(admin.ModelAdmin):
     search_fields = ('text',)
 
 
-class DocumentAdmin(admin.ModelAdmin):
+class ExampleAdmin(admin.ModelAdmin):
     list_display = ('text', 'project', 'meta')
     ordering = ('project',)
     search_fields = ('text',)
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'project_type', 'randomize_document_order', 'collaborative_annotation')
+    list_display = ('name', 'description', 'project_type', 'random_order', 'collaborative_annotation')
     ordering = ('project_type',)
     search_fields = ('name',)
 
 
-class SequenceAnnotationAdmin(admin.ModelAdmin):
-    list_display = ('document', 'label', 'start_offset', 'user')
-    ordering = ('document',)
-    search_fields = ('document__text',)
+class SpanAdmin(admin.ModelAdmin):
+    list_display = ('example', 'label', 'start_offset', 'user')
+    ordering = ('example',)
 
 
-class DocumentAnnotationAdmin(admin.ModelAdmin):
-    list_display = ('document', 'label', 'user')
-    ordering = ('document',)
-    search_fields = ('document__text',)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('example', 'label', 'user')
+    ordering = ('example',)
 
 
-class Seq2seqAnnotationAdmin(admin.ModelAdmin):
-    list_display = ('document', 'text', 'user')
-    ordering = ('document',)
-    search_fields = ('document__text',)
+class TextLabelAdmin(admin.ModelAdmin):
+    list_display = ('example', 'text', 'user')
+    ordering = ('example',)
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -61,16 +57,16 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'document', 'text', 'created_at', )
+    list_display = ('user', 'example', 'text', 'created_at', )
     ordering = ('user', 'created_at', )
     search_fields = ('user',)
 
 
-admin.site.register(DocumentAnnotation, DocumentAnnotationAdmin)
-admin.site.register(SequenceAnnotation, SequenceAnnotationAdmin)
-admin.site.register(Seq2seqAnnotation, Seq2seqAnnotationAdmin)
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Span, SpanAdmin)
+admin.site.register(TextLabel, TextLabelAdmin)
 admin.site.register(Label, LabelAdmin)
-admin.site.register(Document, DocumentAdmin)
+admin.site.register(Example, ExampleAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(TextClassificationProject, ProjectAdmin)
 admin.site.register(SequenceLabelingProject, ProjectAdmin)

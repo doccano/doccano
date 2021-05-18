@@ -16,13 +16,13 @@ class CommentListDoc(generics.ListCreateAPIView):
 
     def get_queryset(self):
         queryset = self.model.objects.filter(
-            document__project_id=self.kwargs['project_id'],
-            document=self.kwargs['doc_id']
+            example__project_id=self.kwargs['project_id'],
+            example=self.kwargs['example_id']
         )
         return queryset
 
     def perform_create(self, serializer):
-        serializer.save(document_id=self.kwargs['doc_id'], user=self.request.user)
+        serializer.save(example_id=self.kwargs['example_id'], user=self.request.user)
 
 
 class CommentListProject(generics.ListAPIView):
@@ -35,7 +35,7 @@ class CommentListProject(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = self.model.objects.filter(
-            document__project_id=self.kwargs['project_id']
+            example__project_id=self.kwargs['project_id']
         )
         return queryset
 

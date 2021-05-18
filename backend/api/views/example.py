@@ -8,40 +8,40 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..filters import DocumentFilter
-from ..models import Document, Project
+from ..models import Example, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin
-from ..serializers import DocumentSerializer
+from ..serializers import ExampleSerializer
 
 
-class DocumentList(generics.ListCreateAPIView):
-    serializer_class = DocumentSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('text',)
-    ordering_fields = ('created_at', 'updated_at', 'doc_annotations__updated_at',
-                       'seq_annotations__updated_at', 'seq2seq_annotations__updated_at')
-    filter_class = DocumentFilter
+class ExampleList(generics.ListCreateAPIView):
+    serializer_class = ExampleSerializer
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    ordering_fields = ('created_at', 'updated_at')
+    search_fields = ('text', 'filename')
+    model = Example
+    filter_class = DocumentFilter
+
+    @property
+    def project(self):
+        return get_object_or_404(Project, pk=self.kwargs['project_id'])
 
     def get_queryset(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-
-        queryset = project.documents
-        if project.randomize_document_order:
+        queryset = self.model.objects.filter(project=self.project)
+        if self.project.random_order:
+            # Todo: fix the algorithm.
             random.seed(self.request.user.id)
             value = random.randrange(2, 20)
             queryset = queryset.annotate(sort_id=F('id') % value).order_by('sort_id', 'id')
         else:
             queryset = queryset.order_by('id')
-
         return queryset
 
     def perform_create(self, serializer):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        serializer.save(project=project)
+        serializer.save(project=self.project)
 
     def delete(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        queryset = project.documents
+        queryset = self.project.examples
         delete_ids = request.data['ids']
         if delete_ids:
             queryset.filter(pk__in=delete_ids).delete()
@@ -50,8 +50,20 @@ class DocumentList(generics.ListCreateAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class ExampleDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Example.objects.all()
+    serializer_class = ExampleSerializer
+    lookup_url_kwarg = 'example_id'
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+
+
+class DocumentList(ExampleList):
+    search_fields = ('text',)
+    filter_class = DocumentFilter
+
+
 class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Document.objects.all()
-    serializer_class = DocumentSerializer
+    queryset = Example.objects.all()
+    serializer_class = ExampleSerializer
     lookup_url_kwarg = 'doc_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]

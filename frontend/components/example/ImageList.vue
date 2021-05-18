@@ -29,9 +29,15 @@
         filled
       />
     </template>
-    <template v-slot:[`item.text`]="{ item }">
-      <span class="d-flex d-sm-none">{{ item.text | truncate(50) }}</span>
-      <span class="d-none d-sm-flex">{{ item.text | truncate(200) }}</span>
+    <template v-slot:[`item.url`]="{ item }">
+      <v-img
+        :src="item.url"
+        aspect-ratio="1"
+        height="150"
+        max-height="150"
+        width="150"
+        class="grey lighten-2"
+      />
     </template>
     <template v-slot:[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
@@ -54,7 +60,7 @@
 <script lang="ts">
 import Vue, { PropType } from 'vue'
 import { DataOptions } from 'vuetify/types'
-import { DocumentDTO } from '~/services/application/document/documentData'
+import { ExampleDTO } from '~/services/application/example/exampleData'
 
 export default Vue.extend({
   props: {
@@ -64,12 +70,12 @@ export default Vue.extend({
       required: true
     },
     items: {
-      type: Array as PropType<DocumentDTO[]>,
+      type: Array as PropType<ExampleDTO[]>,
       default: () => [],
       required: true
     },
     value: {
-      type: Array as PropType<DocumentDTO[]>,
+      type: Array as PropType<ExampleDTO[]>,
       default: () => [],
       required: true
     },
@@ -91,8 +97,13 @@ export default Vue.extend({
     headers() {
       return [
         {
-          text: this.$t('dataset.text'),
-          value: 'text',
+          text: 'Image',
+          value: 'url',
+          sortable: false
+        },
+        {
+          text: 'Filename',
+          value: 'filename',
           sortable: false
         },
         {
@@ -140,7 +151,7 @@ export default Vue.extend({
   },
 
   methods: {
-    toLabeling(item: DocumentDTO) {
+    toLabeling(item: ExampleDTO) {
       const index = this.items.indexOf(item)
       const offset = (this.options.page - 1) * this.options.itemsPerPage
       const page = (offset + index + 1).toString()

@@ -39,20 +39,20 @@ class StatisticsAPI(APIView):
     def _get_user_completion_data(annotation_class, annotation_filter):
         all_annotation_objects = annotation_class.objects.filter(annotation_filter)
         set_user_data = collections.defaultdict(set)
-        for ind_obj in all_annotation_objects.values('user__username', 'document__id'):
-            set_user_data[ind_obj['user__username']].add(ind_obj['document__id'])
+        for ind_obj in all_annotation_objects.values('user__username', 'example__id'):
+            set_user_data[ind_obj['user__username']].add(ind_obj['example__id'])
         return {i: len(set_user_data[i]) for i in set_user_data}
 
     def progress(self, project):
-        docs = project.documents
+        docs = project.examples
         annotation_class = project.get_annotation_class()
         total = docs.count()
-        annotation_filter = Q(document_id__in=docs.all())
+        annotation_filter = Q(example_id__in=docs.all())
         user_data = self._get_user_completion_data(annotation_class, annotation_filter)
         if not project.collaborative_annotation:
             annotation_filter &= Q(user_id=self.request.user)
         done = annotation_class.objects.filter(annotation_filter)\
-            .aggregate(Count('document', distinct=True))['document__count']
+            .aggregate(Count('example', distinct=True))['example__count']
         remaining = total - done
         return {'total': total, 'remaining': remaining, 'user': user_data}
 

@@ -25,6 +25,7 @@
       <v-dialog v-model="dialogDelete">
         <form-delete
           :selected="selected"
+          :item-key="itemKey"
           @cancel="dialogDelete=false"
           @remove="remove"
         />
@@ -41,7 +42,17 @@
         />
       </v-dialog>
     </v-card-title>
+    <image-list
+      v-if="isImageTask"
+      v-model="selected"
+      :items="item.items"
+      :is-loading="isLoading"
+      :total="item.count"
+      @update:query="updateQuery"
+      @click:labeling="movePage"
+    />
     <document-list
+      v-else
       v-model="selected"
       :items="item.items"
       :is-loading="isLoading"
@@ -55,12 +66,13 @@
 <script lang="ts">
 import Vue from 'vue'
 import _ from 'lodash'
-import DocumentList from '@/components/document/DocumentList.vue'
-import FormDelete from '@/components/document/FormDelete.vue'
-import FormDeleteBulk from '@/components/document/FormDeleteBulk.vue'
-import FormDownload from '@/components/document/FormDownload.vue'
-import { DocumentListDTO, DocumentDTO } from '~/services/application/document/documentData'
-import ActionMenu from '~/components/document/ActionMenu.vue'
+import DocumentList from '@/components/example/DocumentList.vue'
+import FormDelete from '@/components/example/FormDelete.vue'
+import FormDeleteBulk from '@/components/example/FormDeleteBulk.vue'
+import FormDownload from '@/components/example/FormDownload.vue'
+import ImageList from '~/components/example/ImageList.vue'
+import { ExampleListDTO, ExampleDTO } from '~/services/application/example/exampleData'
+import ActionMenu from '~/components/example/ActionMenu.vue'
 import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
@@ -69,6 +81,7 @@ export default Vue.extend({
   components: {
     ActionMenu,
     DocumentList,
+    ImageList,
     FormDelete,
     FormDeleteBulk,
     FormDownload,
@@ -76,7 +89,7 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.item = await this.$services.document.list(this.projectId, this.$route.query)
+    this.item = await this.$services.example.list(this.projectId, this.$route.query)
     this.isLoading = false
   },
 
@@ -86,8 +99,8 @@ export default Vue.extend({
       dialogDeleteAll: false,
       dialogDownload: false,
       project: {} as ProjectDTO,
-      item: {} as DocumentListDTO,
-      selected: [] as DocumentDTO[],
+      item: {} as ExampleListDTO,
+      selected: [] as ExampleDTO[],
       isLoading: false
     }
   },
@@ -98,6 +111,16 @@ export default Vue.extend({
     },
     projectId(): string {
       return this.$route.params.id
+    },
+    isImageTask(): boolean {
+      return this.project.projectType === 'ImageClassification'
+    },
+    itemKey(): string {
+      if (this.isImageTask) {
+        return 'filename'
+      } else {
+        return 'text'
+      }
     }
   },
 
@@ -115,13 +138,13 @@ export default Vue.extend({
 
   methods: {
     async remove() {
-      await this.$services.document.bulkDelete(this.projectId, this.selected)
+      await this.$services.example.bulkDelete(this.projectId, this.selected)
       this.$fetch()
       this.dialogDelete = false
       this.selected = []
     },
     async removeAll() {
-      await this.$services.document.bulkDelete(this.projectId, [])
+      await this.$services.example.bulkDelete(this.projectId, [])
       this.$fetch()
       this.dialogDeleteAll = false
       this.selected = []
