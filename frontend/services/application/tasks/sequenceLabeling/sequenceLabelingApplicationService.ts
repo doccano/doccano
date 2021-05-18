@@ -27,8 +27,16 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
         await this.repository.update(projectId, docId, annotationId, labelId)
     }
 
-    public async createLink(projectId: string, docId: number, sourceId: number, targetId: number, linkType: number): Promise<void> {
-        const link = new LinkItem(0, sourceId, targetId, linkType);
+    public async createLink(projectId: string, sourceId: number, targetId: number, linkType: number, userId: number): Promise<void> {
+        const link = new LinkItem(0, sourceId, targetId, linkType, userId, (new Date()).toISOString());
         await this.linkRepository.create(projectId, link);
+    }
+
+    public async deleteLink(projectId: string, linkId: number): Promise<void> {
+        await this.linkRepository.bulkDelete(projectId, [linkId]);
+    }
+
+    public async updateLink(projectId: string, linkId: number, linkType: number): Promise<void> {
+        await this.linkRepository.update(projectId, linkId, linkType);
     }
 }

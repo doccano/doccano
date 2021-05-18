@@ -184,7 +184,7 @@ export default {
           color: label.backgroundColor,
           text: piece,
           selectedAsLinkSource: false,
-          links: []
+          links: [] // must use targetId to get target label (it's not stored)
         })
       }
       // add the rest of text.
@@ -211,19 +211,19 @@ export default {
 
       this.chunks.forEach(function(fromChunk) {
         if (fromChunk.links) {
-          fromChunk.links.forEach(function(toChunk) {
+          fromChunk.links.forEach(function(link) {
             let childPos = document.getElementById('spn-' + fromChunk.id).getBoundingClientRect();
             const x1 = (childPos.x + childPos.width / 2) - parentPos.x;
             const y1 = (childPos.y + childPos.height / 2) - parentPos.y;
 
-            childPos = document.getElementById('spn-' + toChunk.id).getBoundingClientRect();
+            childPos = document.getElementById('spn-' + link.targetId).getBoundingClientRect();
             const x2 = (childPos.x + childPos.width / 2) - parentPos.x;
             const y2 = (childPos.y + childPos.height / 2) - parentPos.y;
 
             ctx.beginPath();
             ctx.lineWidth = 3;
             ctx.moveTo(x1, y1);
-            ctx.strokeStyle = toChunk.color;
+            ctx.strokeStyle = link.color;
 
             if (y1 === y2) {
               ctx.lineTo(x1, y1 + 35);

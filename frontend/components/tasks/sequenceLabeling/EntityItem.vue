@@ -68,7 +68,7 @@
           :key="i"
       >
         <v-list-item-content>
-          <v-list-item-subtitle v-text="link.targetName"></v-list-item-subtitle>
+          <v-list-item-subtitle v-text="link.targetLabel"></v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-action>

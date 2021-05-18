@@ -73,15 +73,17 @@ export class LinkItem {
         public id: number,
         public annotation_id_1: number,
         public annotation_id_2: number,
-        public type: number
+        public type: number,
+        public user: number,
+        public timestamp: string
     ) {
     }
 
     static valueOf(
-        {id, annotation_id_1, annotation_id_2, type}:
-            { id: number, annotation_id_1: number, annotation_id_2: number, type: number }
+        {id, annotation_id_1, annotation_id_2, type, user, timestamp}:
+            { id: number, annotation_id_1: number, annotation_id_2: number, type: number, user:number, timestamp:string }
     ): LinkItem {
-        return new LinkItem(id, annotation_id_1, annotation_id_2, type)
+        return new LinkItem(id, annotation_id_1, annotation_id_2, type, user, timestamp)
     }
 
     toObject(): Object {
@@ -89,7 +91,9 @@ export class LinkItem {
             id: this.id,
             annotation_id_1: this.annotation_id_1,
             annotation_id_2: this.annotation_id_2,
-            type: this.type
+            type: this.type,
+            user: this.user,
+            timestamp: this.timestamp
         }
     }
 }

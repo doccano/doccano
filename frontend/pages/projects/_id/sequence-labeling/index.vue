@@ -49,6 +49,7 @@
 
 <script>
 import _ from 'lodash'
+import {mapGetters} from 'vuex'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
@@ -101,6 +102,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters('auth', ['isAuthenticated', 'getUsername', 'getUserId']),
+
     shortKeys() {
       return Object.fromEntries(this.labels.map(item => [item.id, [item.suffixKey]]))
     },
@@ -183,14 +186,15 @@ export default {
     selectTarget(chunk) {
       // skips duplicated links
       if (!chunk.links.find(ch => ch.id === this.sourceChunk.id)) {
-        // await this.$services.sequenceLabeling.createLink(this.projectId, this.doc.id, this.sourceChunk.id, chunk.id, this.sourceLinkType.id)
+        // await this.$services.sequenceLabeling.createLink(this.projectId, this.sourceChunk.id, chunk.id, this.sourceLinkType.id, this.getUserId)
         // await this.list(this.doc.id)
 
         this.sourceChunk.links.push({
-          id: chunk.id,
+          id: -1,
           type: this.sourceLinkType.id,
           color: this.sourceLinkType.color,
-          targetName: chunk.text
+          targetId: chunk.id,
+          targetLabel: chunk.text
         });
       }
       this.hideAllLinkMenus();
@@ -200,14 +204,21 @@ export default {
       this.sourceLink = link;
     },
 
-    deleteLink(id, ndx) {
-      this.sourceChunk.links.splice(ndx, 1);
-      this.sourceLink = NONE;
+    async deleteLink(id, ndx) {
+      await this.$services.sequenceLabeling.deleteLink(this.projectId, this.sourceChunk.links[ndx].id)
+      await this.list(this.doc.id)
+
+      // this.sourceChunk.links.splice(ndx, 1);
+      // this.sourceLink = NONE;
+
       this.hideAllLinkMenus();
     },
 
-    selectNewLinkType(type) {
-      this.sourceLinkType = type;
+    async selectNewLinkType(type) {
+      await this.$services.sequenceLabeling.updateLink(this.projectId, 0, this.sourceLinkType.id)
+      await this.list(this.doc.id)
+
+      // this.sourceLinkType = type;
     },
 
     changeLinkType(type) {
