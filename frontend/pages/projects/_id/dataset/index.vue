@@ -130,7 +130,7 @@ export default Vue.extend({
       return this.project.projectType === 'Speech2text'
     },
     itemKey(): string {
-      if (this.isImageTask) {
+      if (this.isImageTask || this.isAudioTask) {
         return 'filename'
       } else {
         return 'text'
