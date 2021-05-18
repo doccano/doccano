@@ -4,7 +4,7 @@ export interface CurrentUsersRole {
   is_annotation_approver: boolean;
 }
 
-export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'ImageClassification'
+export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'ImageClassification' | 'Speech2text'
 
 
 export class ProjectReadItem {
@@ -79,6 +79,7 @@ export class ProjectReadItem {
       SequenceLabeling      : 'sequence-labeling',
       Seq2seq               : 'sequence-to-sequence',
       ImageClassification   : 'image-classification',
+      Speech2text           : 'speech-to-text',
     }
     const url = `/projects/${this.id}/${mapping[this.project_type]}`
     return url
@@ -98,6 +99,8 @@ export class ProjectReadItem {
       return 'texts__isnull'
     } else if (this.project_type === 'ImageClassification') {
       return 'categories__isnull'
+    } else if (this.project_type === 'Speech2text') {
+      return 'texts__isnull'
     } else {
       return ''
     }
@@ -174,6 +177,7 @@ export class ProjectWriteItem {
       SequenceLabeling      : 'SequenceLabelingProject',
       Seq2seq               : 'Seq2seqProject',
       ImageClassification   : 'ImageClassificationProject',
+      Speech2text           : 'Speech2textProject',
     }
     return mapping[this.project_type]
   }

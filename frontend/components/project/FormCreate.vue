@@ -117,7 +117,13 @@ export default Vue.extend({
 
   computed: {
     projectTypes() {
-      return ['DocumentClassification', 'SequenceLabeling', 'Seq2seq', 'ImageClassification']
+      return [
+        'DocumentClassification',
+        'SequenceLabeling',
+        'Seq2seq',
+        'ImageClassification',
+        'Speech2text',
+      ]
     },
     hasSingleLabelOption() {
       return [
