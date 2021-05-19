@@ -115,6 +115,7 @@ export default {
         { title: this.$t('home.demoTranslation'), link: 'translation' },
         { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' },
         { title: 'Image Classification', link: 'image-classification' },
+        { title: 'Speech to Text', link: 'speech-to-text' },
       ]
     }
   },
