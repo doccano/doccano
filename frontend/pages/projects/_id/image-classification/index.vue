@@ -70,12 +70,14 @@
 
 <script>
 import _ from 'lodash'
+import { toRefs } from '@nuxtjs/composition-api'
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import LabelSelect from '@/components/tasks/textClassification/LabelSelect'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+import { useLabelList } from '@/composables/useLabelList'
 
 export default {
   layout: 'workspace',
@@ -87,6 +89,16 @@ export default {
     ListMetadata,
     ToolbarLaptop,
     ToolbarMobile
+  },
+
+  setup() {
+    const { state, getLabelList, shortKeys } = useLabelList()
+
+    return {
+      ...toRefs(state),
+      getLabelList,
+      shortKeys,
+    }
   },
 
   async fetch() {
@@ -109,7 +121,6 @@ export default {
     return {
       annotations: [],
       images: [],
-      labels: [],
       project: {},
       enableAutoLabeling: false,
       labelOption: 0,
@@ -121,9 +132,6 @@ export default {
   },
 
   computed: {
-    shortKeys() {
-      return Object.fromEntries(this.labels.map(item => [item.id, [item.suffixKey]]))
-    },
     projectId() {
       return this.$route.params.id
     },
@@ -146,7 +154,7 @@ export default {
   },
 
   async created() {
-    this.labels = await this.$services.label.list(this.projectId)
+    this.getLabelList(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
   },
 
@@ -166,12 +174,12 @@ export default {
     },
 
     async addOrRemove(event) {
-      const label = this.labels.find(item => item.id === parseInt(event.srcKey, 10))
-      const annotation = this.annotations.find(item => item.label === label.id)
+      const labelId = parseInt(event.srcKey, 10)
+      const annotation = this.annotations.find(item => item.label === labelId)
       if (annotation) {
         await this.remove(annotation.id)
       } else {
-        await this.add(label.id)
+        await this.add(labelId)
       }
     },
 
