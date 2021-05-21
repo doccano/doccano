@@ -13,5 +13,7 @@ export interface ExampleRepository {
 
   deleteAll(projectId: string): Promise<void>
 
+  findById(projectId: string, exampleId: number): Promise<ExampleItem>
+
   approve(projectId: string, docId: number, approved: boolean): Promise<void>
 }

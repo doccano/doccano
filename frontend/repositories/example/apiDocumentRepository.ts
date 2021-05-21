@@ -36,6 +36,12 @@ export class APIExampleRepository implements ExampleRepository {
     await this.request.delete(url)
   }
 
+  async findById(projectId: string, exampleId: number): Promise<ExampleItem> {
+    const url = `/projects/${projectId}/examples/${exampleId}`
+    const response = await this.request.get(url)
+    return ExampleItem.valueOf(response.data)
+  }
+
   async approve(projectId: string, exampleId: number, approved: boolean): Promise<void> {
     const url = `/projects/${projectId}/approval/${exampleId}`
     await this.request.post(url, { approved })
