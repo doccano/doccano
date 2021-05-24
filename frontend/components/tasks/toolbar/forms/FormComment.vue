@@ -25,20 +25,25 @@ import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
 import Comment from '@/components/comment/Comment.vue'
 import FormCreate from '@/components/comment/FormCreate.vue'
+import _ from 'lodash'
 import { CommentReadDTO } from '~/services/application/comment/commentData'
 
 export default Vue.extend({
   components: {
     BaseCard,
     Comment,
-    FormCreate
+    FormCreate,
   },
 
   props: {
     docId: {
       type: Number,
       required: true
-    }
+    },
+    dialogComment: {
+      type: Boolean,
+      default: false
+    },
   },
 
   async fetch() {
@@ -61,9 +66,18 @@ export default Vue.extend({
       },
       immediate: true,
       deep: true
+    },
+    dialogComment:{
+      handler(val) {
+        if(val){
+          this.list()
+        }
+      },
+      immediate: true,
+      deep: true
     }
   },
-
+  
   methods: {
     async list() {
       this.comments = await this.$services.comment.list(this.$route.params.id, this.docId)

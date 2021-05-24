@@ -33,6 +33,7 @@
         <v-dialog v-model="dialogComment">
           <form-comment
             :doc-id="docId"
+            :dialogComment="dialogComment"
             @click:cancel="dialogComment=false"
           />
         </v-dialog>
