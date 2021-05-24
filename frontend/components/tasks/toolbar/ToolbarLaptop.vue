@@ -171,16 +171,9 @@ export default Vue.extend({
       }})
     },
     
-    async updateAutoLabeling(isEnable: boolean) {
+    updateAutoLabeling(isEnable: boolean) {
       if (isEnable) {
-        try {
-          const projectId = this.$route.params.id
-          await this.$services.textClassification.autoLabel(projectId, this.docId)
-          this.$emit('update:enable-auto-labeling', true)
-          this.errorMessage = ''
-        } catch (e) {
-          this.errorMessage = e.response.data.detail
-        }
+        this.$emit('update:enable-auto-labeling', true)
       } else {
         this.$emit('update:enable-auto-labeling', false)
       }
