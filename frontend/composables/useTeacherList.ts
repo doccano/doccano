@@ -21,7 +21,7 @@ export const useTeacherList = (service: any) => {
     await getTeacherList(projectId, exampleId)
   }
 
-  const annotateExample = async(
+  const annotateLabel = async(
     projectId: string,
     exampleId: number,
     labelId: number
@@ -46,10 +46,27 @@ export const useTeacherList = (service: any) => {
     await getTeacherList(projectId, exampleId)
   }
 
+  const annotateOrRemoveLabel = async(
+    projectId: string,
+    exampleId: number,
+    srcKey: string
+  ) => {
+    const labelId = parseInt(srcKey, 10)
+    // @ts-ignore
+    const annotation = state.teacherList.find(item => item.label === labelId)
+    if (annotation) {
+    // @ts-ignore
+      await removeTeacher(projectId, exampleId, annotation.id)
+    } else {
+      await annotateLabel(projectId, exampleId, labelId)
+    }
+  }
+
   return {
     state,
     getTeacherList,
-    annotateExample,
+    annotateLabel,
+    annotateOrRemoveLabel,
     removeTeacher,
     clearTeacherList,
     autoLabel,
