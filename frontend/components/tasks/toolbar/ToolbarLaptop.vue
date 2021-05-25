@@ -77,7 +77,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import ButtonAutoLabeling from './buttons/ButtonAutoLabeling.vue'
+// import ButtonAutoLabeling from './buttons/ButtonAutoLabeling.vue'
 import ButtonClear from './buttons/ButtonClear.vue'
 import ButtonComment from './buttons/ButtonComment.vue'
 import ButtonFilter from './buttons/ButtonFilter.vue'
@@ -91,7 +91,7 @@ import FormGuideline from './forms/FormGuideline.vue'
 
 export default Vue.extend({
   components: {
-    ButtonAutoLabeling,
+    // ButtonAutoLabeling,
     ButtonClear,
     ButtonComment,
     ButtonFilter,
@@ -136,7 +136,7 @@ export default Vue.extend({
 
   data() {
     return {
-      dialogAutoLabeling: false,
+      // dialogAutoLabeling: false,
       dialogClear: false,
       dialogComment: false,
       dialogGuideline: false,
