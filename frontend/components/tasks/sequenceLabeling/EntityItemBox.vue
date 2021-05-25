@@ -17,7 +17,6 @@
           @update="updateEntity($event.id, chunk.id)"
           @selectSource="selectSource(chunk)"
           @selectTarget="selectTarget(chunk)"
-          @selectLink="selectLink($event)"
           @deleteLink="deleteLink($event.id, $event.ndx)"
           @selectNewLinkType="selectNewLinkType($event)"
           @changeLinkType="changeLinkType($event)"
@@ -121,11 +120,6 @@ export default {
       required: true
     },
     selectTarget: {
-      type: Function,
-      default: () => ([]),
-      required: true
-    },
-    selectLink: {
       type: Function,
       default: () => ([]),
       required: true

@@ -32,7 +32,6 @@
               :source-link-type="sourceLinkType"
               :select-source="selectSource"
               :select-target="selectTarget"
-              :select-link="selectLink"
               :delete-link="deleteLink"
               :select-new-link-type="selectNewLinkType"
               :change-link-type="changeLinkType"
@@ -201,32 +200,17 @@ export default {
     },
 
     async selectTarget(chunk) {
-      // skips duplicated links
+      // to avoid duplicated links:
       if (!chunk.links.find(ch => ch.id === this.sourceChunk.id)) {
-        await this.$services.sequenceLabeling.createLink(this.projectId, this.sourceChunk.id, chunk.id, this.sourceLinkType.id, this.getUserId)
-        await this.list(this.doc.id)
-
-        // this.sourceChunk.links.push({
-        //   id: -1,
-        //   type: this.sourceLinkType.id,
-        //   color: this.sourceLinkType.color,
-        //   targetId: chunk.id,
-        //   targetLabel: chunk.text
-        // });
+        await this.$services.sequenceLabeling.createLink(this.projectId, this.sourceChunk.id, chunk.id, this.sourceLinkType.id, this.getUserId);
+        await this.list(this.doc.id);
       }
       this.hideAllLinkMenus();
     },
 
-    selectLink(link) {
-      this.sourceLink = link;
-    },
-
-    deleteLink(id, ndx) {
-      // await this.$services.sequenceLabeling.deleteLink(this.projectId, this.sourceChunk.links[ndx].id)
-      // await this.list(this.doc.id)
-
-      this.sourceChunk.links.splice(ndx, 1);
-      this.sourceLink = NONE;
+    async deleteLink(id, ndx) {
+      await this.$services.sequenceLabeling.deleteLink(this.projectId, this.sourceChunk.links[ndx].id)
+      await this.list(this.doc.id)
 
       this.hideAllLinkMenus();
     },

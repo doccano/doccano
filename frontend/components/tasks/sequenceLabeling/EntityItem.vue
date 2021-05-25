@@ -72,12 +72,6 @@
         </v-list-item-content>
 
         <v-list-item-action>
-          <v-btn icon @click.stop="selectLinkAndShowTypes(link)">
-            <v-icon color="grey lighten-1">mdi-lead-pencil</v-icon>
-          </v-btn>
-        </v-list-item-action>
-
-        <v-list-item-action>
           <v-btn icon @click.stop="deleteLink(link, i)">
             <v-icon color="grey lighten-1">mdi-delete</v-icon>
           </v-btn>
@@ -115,43 +109,6 @@
           v-for="(type, i) in linkTypes"
           :key="i"
           @click="selectNewLinkType(type)"
-      >
-        <v-list-item-action>
-          <v-list-item-action-text v-text="type.name"/>
-        </v-list-item-action>
-      </v-list-item>
-    </v-list>
-  </v-menu>
-
-  <v-menu
-      v-else-if="label && activeMenu==='change-link'"
-      v-model="showChangeLinkMenu"
-      offset-y
-  >
-    <template v-slot:activator="{ on }">
-      <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
-        <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
-            class="active-link-source" @click.stop="abortNewLink"></span></span><span
-          :data-label="label" :style="{ backgroundColor: color, color: textColor }" class="highlight__label"/>
-      </span>
-    </template>
-
-    <v-list
-        dense
-        min-width="150"
-        max-height="400"
-        class="overflow-y-auto"
-    >
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title>change relation type:</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-item
-          v-for="(type, i) in linkTypes"
-          :key="i"
-          @click="changeLinkType(type)"
       >
         <v-list-item-action>
           <v-list-item-action-text v-text="type.name"/>
@@ -257,13 +214,6 @@ export default {
       this.closeAllMenus();
       this.activeMenu = 'new-link';
       this.showNewLinkMenu = true;
-    },
-
-    selectLinkAndShowTypes(link) {
-      this.closeAllMenus();
-      this.activeMenu = 'change-link';
-      this.showChangeLinkMenu = true;
-      this.$emit('selectLink', link);
     },
 
     deleteLink(link, i) {
