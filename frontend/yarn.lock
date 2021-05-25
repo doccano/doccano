@@ -12440,6 +12440,11 @@ watchpack@^1.6.1:
     chokidar "^3.4.0"
     watchpack-chokidar2 "^2.0.0"
 
+wavesurfer.js@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/wavesurfer.js/-/wavesurfer.js-5.0.1.tgz#df48f39cfb15c106793a60d266bef64dd7ae0acd"
+  integrity sha512-N4Inb9dVOybLLY5vd4A8DGVINmyXaF7zUWQvOObKdLzVbFbegUGa+zesOW/E0rv4MVaec7K0FQ/wb7aP28Uy4g==
+
 webidl-conversions@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-5.0.0.tgz#ae59c8a00b121543a2acc65c0434f57b0fc11aff"
