@@ -1,6 +1,8 @@
 import ApiService from '@/services/api.service'
 import {LinkRepository} from "~/domain/models/links/linkRepository";
 import {LinkItem} from "~/domain/models/links/link";
+import {LabelItem} from "~/domain/models/label/label";
+import {LabelItemResponse} from "~/repositories/label/apiLabelRepository";
 
 export interface LinkResponse {
     id: number
@@ -15,6 +17,13 @@ export class ApiLinkRepository implements LinkRepository {
     constructor(
         private readonly request = ApiService
     ) {
+    }
+
+    async list(projectId: string): Promise<LinkItem[]> {
+        const url = `/projects/${projectId}/annotation_relations`
+        const response = await this.request.get(url)
+        const responseLinks: LinkResponse[] = response.data
+        return responseLinks.map(link => LinkItem.valueOf(link))
     }
 
     async create(projectId: string, item: LinkItem): Promise<LinkItem> {

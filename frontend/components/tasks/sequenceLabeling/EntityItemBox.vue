@@ -111,7 +111,8 @@ export default {
     },
     sourceLinkType: {
       type: Object,
-      default: () => {},
+      default: () => {
+      },
       required: true
     },
     selectSource: {
@@ -165,6 +166,7 @@ export default {
     sortedEntities() {
       return this.entities.slice().sort((a, b) => a.startOffset - b.startOffset)
     },
+
     chunks() {
       let chunks = []
       let startOffset = 0
@@ -184,13 +186,32 @@ export default {
           color: label.backgroundColor,
           text: piece,
           selectedAsLinkSource: false,
-          links: [] // must use targetId to get target label (it's not stored)
+          links: entity.links ? entity.links.map(link => {
+            return {
+              id: link.id,
+              type: link.type,
+              color: this.getColor(link.type),
+              targetId: link.annotation_id_2,
+              targetLabel: null // target label can be computed only after all chunks are made, see line 204
+            }
+          }) : null
         })
       }
       // add the rest of text.
-      chunks = chunks.concat(this.makeChunks(characters.slice(startOffset, characters.length).join('')))
-      return chunks
+      chunks = chunks.concat(this.makeChunks(characters.slice(startOffset, characters.length).join('')));
+
+      // populate the links. Must be done after chunk creation
+      chunks.forEach(chunk => {
+        if (chunk.links) {
+          chunk.links.forEach(link => {
+            link.targetLabel = chunks.find(target => target.id === link.targetId).text;
+          });
+        }
+      });
+
+      return chunks;
     },
+
     labelObject() {
       const obj = {}
       for (const label of this.labels) {
@@ -206,37 +227,130 @@ export default {
       const canvas = document.getElementById('connections');
       canvas.width = parentPos.width;
       canvas.height = parentPos.height;
+
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, parentPos.width, parentPos.height);
 
-      this.chunks.forEach(function(fromChunk) {
-        if (fromChunk.links) {
-          fromChunk.links.forEach(function(link) {
-            let childPos = document.getElementById('spn-' + fromChunk.id).getBoundingClientRect();
-            const x1 = (childPos.x + childPos.width / 2) - parentPos.x;
-            const y1 = (childPos.y + childPos.height / 2) - parentPos.y;
+      const topPoints = this.drawnCountPoints(this.chunks.length);
+      const bottomPoints = this.drawnCountPoints(this.chunks.length);
+
+      const chunks = this.chunks;
+
+      chunks.forEach(function(sourceChunk, sourceNdx) {
+        if (sourceChunk.links) {
+          sourceChunk.links.forEach(function(link) {
+            let childPos = document.getElementById('spn-' + sourceChunk.id).getBoundingClientRect();
+            const y1 = childPos.y - parentPos.y;
 
             childPos = document.getElementById('spn-' + link.targetId).getBoundingClientRect();
-            const x2 = (childPos.x + childPos.width / 2) - parentPos.x;
-            const y2 = (childPos.y + childPos.height / 2) - parentPos.y;
+            const y2 = childPos.y - parentPos.y;
+
+            const targetNdx = chunks.findIndex(ch => ch.id === link.targetId);
+
+            if (y1 < y2) {
+              bottomPoints[sourceNdx].count++;
+              topPoints[targetNdx].count++;
+
+            } else if (y1 > y2) {
+              topPoints[sourceNdx].count++;
+              bottomPoints[targetNdx].count++;
+
+            } else {
+              bottomPoints[sourceNdx].count++;
+              bottomPoints[targetNdx].count++;
+            }
+          });
+        }
+      });
+
+      chunks.forEach(function(sourceChunk, sourceNdx) {
+        if (sourceChunk.links) {
+          sourceChunk.links.forEach(function(link) {
+            const sourcePos = document.getElementById('spn-' + sourceChunk.id).getBoundingClientRect();
+            let x1 = sourcePos.x - parentPos.x;
+            let y1 = sourcePos.y - parentPos.y;
+
+            const targetPos = document.getElementById('spn-' + link.targetId).getBoundingClientRect();
+            let x2 = targetPos.x - parentPos.x;
+            let y2 = targetPos.y - parentPos.y;
+
+            const targetNdx = chunks.findIndex(ch => ch.id === link.targetId);
 
             ctx.beginPath();
             ctx.lineWidth = 3;
-            ctx.moveTo(x1, y1);
             ctx.strokeStyle = link.color;
 
-            if (y1 === y2) {
-              ctx.lineTo(x1, y1 + 35);
-              ctx.stroke();
+            if (y1 < y2) {
+              bottomPoints[sourceNdx].drawn++;
+              topPoints[targetNdx].drawn++;
 
-              ctx.lineTo(x2, y1 + 35);
-              ctx.stroke();
+              x1 += bottomPoints[sourceNdx].drawn * sourcePos.width / (bottomPoints[sourceNdx].count + 1);
+              y1 += sourcePos.height;
 
+              x2 += topPoints[targetNdx].drawn * targetPos.width / (topPoints[targetNdx].count + 1);
+
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(x1, y1 + 12);
+              ctx.lineTo(x2, y2 - 12);
               ctx.lineTo(x2, y2);
+              ctx.stroke();
+
+              ctx.fillStyle = link.color;
+              ctx.beginPath();
+              ctx.moveTo(x2, y2);
+              ctx.lineTo(x2 - 3, y2 - 5);
+              ctx.lineTo(x2 + 3, y2 - 5);
+              ctx.lineTo(x2, y2);
+              ctx.closePath();
+              ctx.stroke();
+
+            } else if (y1 > y2) {
+              topPoints[sourceNdx].drawn++;
+              bottomPoints[targetNdx].drawn++;
+
+              x1 += topPoints[sourceNdx].drawn * sourcePos.width / (topPoints[sourceNdx].count + 1);
+
+              x2 += bottomPoints[targetNdx].drawn * targetPos.width / (bottomPoints[targetNdx].count + 1);
+              y2 += targetPos.height;
+
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(x1, y1 - 12);
+              ctx.lineTo(x2, y2 + 12);
+              ctx.lineTo(x2, y2);
+              ctx.stroke();
+
+              ctx.fillStyle = link.color;
+              ctx.beginPath();
+              ctx.moveTo(x2, y2);
+              ctx.lineTo(x2 - 3, y2 + 5);
+              ctx.lineTo(x2 + 3, y2 + 5);
+              ctx.lineTo(x2, y2);
+              ctx.closePath();
               ctx.stroke();
 
             } else {
+              bottomPoints[sourceNdx].drawn++;
+              bottomPoints[targetNdx].drawn++;
+
+              x1 += bottomPoints[sourceNdx].drawn * sourcePos.width / (bottomPoints[sourceNdx].count + 1);
+              y1 += sourcePos.height;
+
+              x2 += bottomPoints[targetNdx].drawn * targetPos.width / (bottomPoints[targetNdx].count + 1);
+              y2 += targetPos.height;
+
+              ctx.moveTo(x1, y1);
+              ctx.lineTo(x1, y1 + 12);
+              ctx.lineTo(x2, y2 + 12);
               ctx.lineTo(x2, y2);
+              ctx.stroke();
+
+              ctx.fillStyle = link.color;
+              ctx.beginPath();
+              ctx.moveTo(x2, y2);
+              ctx.lineTo(x2 - 3, y2 + 5);
+              ctx.lineTo(x2 + 3, y2 + 5);
+              ctx.lineTo(x2, y2);
+              ctx.closePath();
               ctx.stroke();
             }
           });
@@ -339,6 +453,27 @@ export default {
         this.start = 0
         this.end = 0
       }
+    },
+
+    getColor(typeId) {
+      const type = this.linkTypes.find(type => type.id === typeId);
+      if (type) {
+        return type.color;
+      }
+      return "#787878";
+    },
+
+    drawnCountPoints(size) {
+      const points = Array(size);
+
+      for (let i = 0; i < points.length; i++) {
+        points[i] = {
+          drawn: 0,
+          count: 0
+        }
+      }
+
+      return points;
     }
   }
 }

@@ -92,6 +92,7 @@ export default {
       annotations: [],
       docs: [],
       labels: [],
+      links: [],
       linkTypes: [],
       project: {},
       enableAutoLabeling: false,
@@ -139,7 +140,23 @@ export default {
   methods: {
     async list(docId) {
       this.hideAllLinkMenus();
-      this.annotations = await this.$services.sequenceLabeling.list(this.projectId, docId)
+
+      const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId);
+      const links = await this.$services.sequenceLabeling.listLinks(this.projectId);
+
+      annotations.forEach(function(annotation) {
+        annotation.links = links.filter(link => link.annotation_id_1 === annotation.id);
+      });
+
+      this.annotations = annotations;
+      this.links = links;
+    },
+
+    populateLinks() {
+      const links = this.links;
+      this.annotations.forEach(function(annotation) {
+        annotation.links = links.filter(link => link.annotation_id_1 === annotation.id);
+      });
     },
 
     async remove(id) {
@@ -183,19 +200,19 @@ export default {
       this.sourceChunk = chunk;
     },
 
-    selectTarget(chunk) {
+    async selectTarget(chunk) {
       // skips duplicated links
       if (!chunk.links.find(ch => ch.id === this.sourceChunk.id)) {
-        // await this.$services.sequenceLabeling.createLink(this.projectId, this.sourceChunk.id, chunk.id, this.sourceLinkType.id, this.getUserId)
-        // await this.list(this.doc.id)
+        await this.$services.sequenceLabeling.createLink(this.projectId, this.sourceChunk.id, chunk.id, this.sourceLinkType.id, this.getUserId)
+        await this.list(this.doc.id)
 
-        this.sourceChunk.links.push({
-          id: -1,
-          type: this.sourceLinkType.id,
-          color: this.sourceLinkType.color,
-          targetId: chunk.id,
-          targetLabel: chunk.text
-        });
+        // this.sourceChunk.links.push({
+        //   id: -1,
+        //   type: this.sourceLinkType.id,
+        //   color: this.sourceLinkType.color,
+        //   targetId: chunk.id,
+        //   targetLabel: chunk.text
+        // });
       }
       this.hideAllLinkMenus();
     },
@@ -204,25 +221,25 @@ export default {
       this.sourceLink = link;
     },
 
-    async deleteLink(id, ndx) {
-      await this.$services.sequenceLabeling.deleteLink(this.projectId, this.sourceChunk.links[ndx].id)
-      await this.list(this.doc.id)
+    deleteLink(id, ndx) {
+      // await this.$services.sequenceLabeling.deleteLink(this.projectId, this.sourceChunk.links[ndx].id)
+      // await this.list(this.doc.id)
 
-      // this.sourceChunk.links.splice(ndx, 1);
-      // this.sourceLink = NONE;
+      this.sourceChunk.links.splice(ndx, 1);
+      this.sourceLink = NONE;
 
       this.hideAllLinkMenus();
     },
 
-    async selectNewLinkType(type) {
-      await this.$services.sequenceLabeling.updateLink(this.projectId, 0, this.sourceLinkType.id)
-      await this.list(this.doc.id)
-
-      // this.sourceLinkType = type;
+    selectNewLinkType(type) {
+      this.sourceLinkType = type;
     },
 
     changeLinkType(type) {
       if (this.sourceLink) {
+        // await this.$services.sequenceLabeling.updateLink(this.projectId, 0, this.sourceLinkType.id)
+        // await this.list(this.doc.id)
+
         this.sourceLink.type = type.id;
         this.sourceLink.color = type.color;
       }
