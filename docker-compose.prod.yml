@@ -60,7 +60,7 @@ services:
       - static_volume:/static
       - media:/media
     ports:
-      - 80:80
+      - 80:8080
     depends_on:
       - backend
     networks:
