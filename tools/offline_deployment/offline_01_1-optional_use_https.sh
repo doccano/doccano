@@ -14,8 +14,8 @@ openssl req -new -newkey rsa:4096 -sha256 -nodes -x509 -keyout ./nginx/cert.key 
 ssl_cert="/certs/cert.crt"
 ssl_cert_key="/certs/cert.key"
 
-# edit nginx.conf
-sed -i "s|listen 80;|listen 443 ssl;\n    ssl_certificate $ssl_cert;\n    ssl_certificate_key $ssl_cert_key;|g" nginx/nginx.conf
+# edit default.conf
+sed -i "s|listen 80;|listen 443 ssl;\n    ssl_certificate $ssl_cert;\n    ssl_certificate_key $ssl_cert_key;|g" nginx/default.conf
 
 # edit nginx Dockerfile
 echo "RUN mkdir -p /certs/"                >> nginx/Dockerfile
