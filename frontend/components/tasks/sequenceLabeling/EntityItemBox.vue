@@ -19,7 +19,6 @@
           @selectTarget="selectTarget(chunk)"
           @deleteLink="deleteLink($event.id, $event.ndx)"
           @selectNewLinkType="selectNewLinkType($event)"
-          @changeLinkType="changeLinkType($event)"
           @hideAllLinkMenus="hideAllLinkMenus()"
       />
       <v-menu
@@ -130,11 +129,6 @@ export default {
       required: true
     },
     selectNewLinkType: {
-      type: Function,
-      default: () => ([]),
-      required: true
-    },
-    changeLinkType: {
       type: Function,
       default: () => ([]),
       required: true
