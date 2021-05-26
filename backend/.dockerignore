@@ -6,5 +6,6 @@
 **/.env
 **/junitxml/
 **/staticfiles/
+**/media/
 **/venv/
 **/__pycache__/
