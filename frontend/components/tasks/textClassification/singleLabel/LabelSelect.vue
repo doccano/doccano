@@ -22,6 +22,7 @@
         @click:close="remove(item)"
       >
         <v-avatar
+          v-if="item.suffixKey"
           left
           color="white"
           class="black--text font-weight-bold"
@@ -37,6 +38,7 @@
         :text-color="$contrastColor(item.backgroundColor)"
       >
         <v-avatar
+          v-if="item.suffixKey"
           left
           color="white"
           class="black--text font-weight-bold"

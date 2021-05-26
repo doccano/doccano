@@ -4,7 +4,7 @@ The important files/directories are as follows:
 
 ```
 /
-├── app/
+├── backend/
 ├── frontend/
 ├── nginx/
 ├── tools/
@@ -14,9 +14,9 @@ The important files/directories are as follows:
 
 Consider them:
 
-**[app/](https://github.com/doccano/doccano/tree/master/app)**
+**[backend/](https://github.com/doccano/doccano/tree/master/backend)**
 
-The `app/` directory contains backend code. See [below](#Backend).
+The `backend/` directory contains backend code. See [below](#Backend).
 
 **[frontend/](https://github.com/doccano/doccano/tree/master/frontend)**
 
@@ -45,7 +45,7 @@ In the future, they will be integrated into the current code or removed:
 
 ```
 /
-├── app/
+├── backend/
 ├── └── server/
 ```
 
@@ -56,24 +56,24 @@ The important directories are as follows:
 
 ```
 /
-├── app/
+├── backend/
 ├── ├── api/
 ├── ├── app/
 └── └── authentification/
 ```
 
-**[app/api/](https://github.com/doccano/doccano/tree/master/app/api)**
+**[backend/api/](https://github.com/doccano/doccano/tree/master/backend/api)**
 
-The `app/api` directory contains backend API application. We use [Django Rest Framework](https://www.django-rest-framework.org) to implement the API.
+The `backend/api` directory contains backend API application. We use [Django Rest Framework](https://www.django-rest-framework.org) to implement the API.
 If you want to add new API, change the contents of this directory.
 
-**[app/app/](https://github.com/doccano/doccano/tree/master/app/app)**
+**[backend/app/](https://github.com/doccano/doccano/tree/master/backend/app)**
 
-The `app/app` directory contains Django project settings. See [Writing your first Django app, part 1](https://docs.djangoproject.com/en/3.0/intro/tutorial01/#creating-a-project).
+The `backend/app` directory contains Django project settings. See [Writing your first Django app, part 1](https://docs.djangoproject.com/en/3.0/intro/tutorial01/#creating-a-project).
 
-**[app/authentification/](https://github.com/doccano/doccano/tree/master/app/authentification)**
+**[backend/authentification/](https://github.com/doccano/doccano/tree/master/backend/authentification)**
 
-The `app/authentification` directory contains authentification application. It is mainly used for user signup.
+The `backend/authentification` directory contains authentification application. It is mainly used for user signup.
 
 ## Frontend
 

@@ -1,11 +1,10 @@
-import { FormatFactory, FormatItem } from '../document/format'
 export interface CurrentUsersRole {
   is_project_admin:       boolean;
   is_annotator:           boolean;
   is_annotation_approver: boolean;
 }
 
-export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq'
+export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'ImageClassification'
 
 
 export class ProjectReadItem {
@@ -18,10 +17,11 @@ export class ProjectReadItem {
     public current_users_role:          CurrentUsersRole,
     public project_type:                ProjectType,
     public updated_at:                  string,
-    public randomize_document_order:    boolean,
+    public random_order:                boolean,
     public collaborative_annotation:    boolean,
     public single_class_classification: boolean,
     public resourcetype:                string,
+    public tags:                        Object[],
   ) {}
 
   static valueOf(
@@ -34,10 +34,11 @@ export class ProjectReadItem {
       current_users_role,
       project_type,
       updated_at,
-      randomize_document_order,
+      random_order,
       collaborative_annotation,
       single_class_classification,
-      resourcetype
+      resourcetype,
+      tags
     }:
     {
       id:                          number,
@@ -48,10 +49,11 @@ export class ProjectReadItem {
       current_users_role:          CurrentUsersRole,
       project_type:                ProjectType,
       updated_at:                  string,
-      randomize_document_order:    boolean,
+      random_order:                boolean,
       collaborative_annotation:    boolean,
       single_class_classification: boolean,
-      resourcetype:                string
+      resourcetype:                string,
+      tags:                        Object[]
     }
   ): ProjectReadItem {
     return new ProjectReadItem(
@@ -63,10 +65,11 @@ export class ProjectReadItem {
       current_users_role,
       project_type,
       updated_at,
-      randomize_document_order,
+      random_order,
       collaborative_annotation,
       single_class_classification,
-      resourcetype
+      resourcetype,
+      tags
     )
   }
 
@@ -74,18 +77,11 @@ export class ProjectReadItem {
     const mapping = {
       DocumentClassification: 'text-classification',
       SequenceLabeling      : 'sequence-labeling',
-      Seq2seq               : 'sequence-to-sequence'
+      Seq2seq               : 'sequence-to-sequence',
+      ImageClassification   : 'image-classification',
     }
     const url = `/projects/${this.id}/${mapping[this.project_type]}`
     return url
-  }
-
-  get downloadFormats(): FormatItem[] {
-    return new FormatFactory(this.project_type).createDownloadFormat()
-  }
-
-  get uploadFormats(): FormatItem[] {
-    return new FormatFactory(this.project_type).createUploadFormat()
   }
 
   get permitApprove(): Boolean {
@@ -95,11 +91,13 @@ export class ProjectReadItem {
 
   get filterOption() {
     if (this.project_type === 'DocumentClassification') {
-      return 'doc_annotations__isnull'
+      return 'categories__isnull'
     } else if (this.project_type === 'SequenceLabeling') {
-      return 'seq_annotations__isnull'
+      return 'spans__isnull'
     } else if (this.project_type === 'Seq2seq') {
-      return 'seq2seq_annotations__isnull'
+      return 'texts__isnull'
+    } else if (this.project_type === 'ImageClassification') {
+      return 'categories__isnull'
     } else {
       return ''
     }
@@ -115,10 +113,11 @@ export class ProjectReadItem {
       current_users_role: this.current_users_role,
       project_type: this.project_type,
       updated_at: this.updated_at,
-      randomize_document_order: this.randomize_document_order,
+      random_order: this.random_order,
       collaborative_annotation: this.collaborative_annotation,
       single_class_classification: this.single_class_classification,
-      resourcetype: this.resourcetype
+      resourcetype: this.resourcetype,
+      tags: this.tags
     }
   }
 }
@@ -130,7 +129,7 @@ export class ProjectWriteItem {
     public description:                 string,
     public guideline:                   string,
     public project_type:                ProjectType,
-    public randomize_document_order:    boolean,
+    public random_order:                boolean,
     public collaborative_annotation:    boolean,
     public single_class_classification: boolean
   ) {}
@@ -142,7 +141,7 @@ export class ProjectWriteItem {
       description,
       guideline,
       project_type,
-      randomize_document_order,
+      random_order,
       collaborative_annotation,
       single_class_classification
     }:
@@ -152,7 +151,7 @@ export class ProjectWriteItem {
       description:                 string,
       guideline:                   string,
       project_type:                ProjectType,
-      randomize_document_order:    boolean,
+      random_order:                boolean,
       collaborative_annotation:    boolean,
       single_class_classification: boolean
     }
@@ -163,7 +162,7 @@ export class ProjectWriteItem {
       description,
       guideline,
       project_type,
-      randomize_document_order,
+      random_order,
       collaborative_annotation,
       single_class_classification
     )
@@ -173,7 +172,8 @@ export class ProjectWriteItem {
     const mapping = {
       DocumentClassification: 'TextClassificationProject',
       SequenceLabeling      : 'SequenceLabelingProject',
-      Seq2seq               : 'Seq2seqProject'
+      Seq2seq               : 'Seq2seqProject',
+      ImageClassification   : 'ImageClassificationProject',
     }
     return mapping[this.project_type]
   }
@@ -185,7 +185,7 @@ export class ProjectWriteItem {
       description: this.description,
       guideline: this.guideline,
       project_type: this.project_type,
-      randomize_document_order: this.randomize_document_order,
+      random_order: this.random_order,
       collaborative_annotation: this.collaborative_annotation,
       single_class_classification: this.single_class_classification,
       resourcetype: this.resourceType

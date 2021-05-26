@@ -104,9 +104,31 @@
             cols="12"
             sm="6"
           >
+            <h3>Tags</h3>
+            <v-chip
+              v-for="tag in tags"
+              :key="tag.id"
+              close
+              outlined
+              @click:close="removeTag(tag.id)">{{tag.text}}
+            </v-chip>
+            <v-text-field
+            v-model="tagInput"
+            clearable
+            prepend-icon="add_circle"
+            @keyup.enter="addTag()"
+            @click:prepend="addTag()">
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row>
+          <v-col
+            cols="12"
+            sm="6"
+          >
             <h3>Shuffle</h3>
             <v-checkbox
-              v-model="project.enableRandomizeDocOrder"
+              v-model="project.enableRandomOrder"
               :label="$t('overview.randomizeDocOrder')"
             />
           </v-col>
@@ -134,12 +156,15 @@ import { projectNameRules, descriptionRules } from '@/rules/index'
 export default {
   async fetch() {
     this.project = await this.$services.project.findById(this.projectId)
+    this.getTags()
   },
 
   data() {
     return {
       project: {},
+      tags: {},
       beforeEditCache: {},
+      tagInput: '',
       edit: {
         name: false,
         desc: false
@@ -160,7 +185,7 @@ export default {
   },
 
   watch: {
-    'project.enableRandomizeDocOrder'() {
+    'project.enableRandomOrder'() {
       this.doneEdit()
     },
     'project.enableShareAnnotation'() {
@@ -200,6 +225,21 @@ export default {
 
     validate() {
       return this.$refs.form.validate()
+    },
+
+    async getTags(){
+        this.tags = await this.$services.tag.list(this.projectId)
+    },
+
+    addTag(){
+      this.$services.tag.create(this.projectId, this.tagInput)
+      this.tagInput = ''
+      this.getTags()
+    },
+
+    removeTag(id){
+      this.$services.tag.delete(this.projectId, id)
+      this.tags = this.tags.filter(tag => tag.id !== id)
     }
   }
 }

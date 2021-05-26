@@ -19,7 +19,7 @@
           />
         </v-col>
         <v-col cols="12" md="3">
-          <list-metadata :metadata="JSON.parse(currentDoc.meta)" />
+          <list-metadata :metadata="currentDoc.meta" />
         </v-col>
       </v-row>
     </v-container>
@@ -57,7 +57,7 @@ export default {
             document: 8
           }
         ],
-        meta: '{"wikiPageId":2}',
+        meta: { wikiPageId: 2},
         annotation_approver: null
       }
     }

@@ -19,7 +19,7 @@
           />
         </v-col>
         <v-col cols="12" md="3">
-          <list-metadata :metadata="JSON.parse(currentDoc.meta)" />
+          <list-metadata :metadata="currentDoc.meta" />
         </v-col>
       </v-row>
     </v-container>
@@ -51,7 +51,17 @@ export default {
             document: 8
           }
         ],
-        meta: '{"department.department_id": "INT", "department.name": "CHAR", "department.num_employee": "INT", "head.head_id": "INT", "head.name": "INT", "head.age": "INT", "management.department_id": "INT", "management.head_id": "INT", "management.temporary_acting": "VARCHAR"}',
+        meta: {
+          "department.department_id": "INT",
+          "department.name": "CHAR",
+          "department.num_employee": "INT",
+          "head.head_id": "INT",
+          "head.name": "INT",
+          "head.age": "INT",
+          "management.department_id": "INT",
+          "management.head_id": "INT",
+          "management.temporary_acting": "VARCHAR"
+        },
         annotation_approver: null
       }
     }

@@ -1,21 +1,4 @@
 import { ProjectReadItem, CurrentUsersRole, ProjectType } from '~/domain/models/project/project'
-import { FormatItem } from '~/domain/models/document/format'
-
-
-export class FormatDTO {
-  example: string
-  type: string
-  text: string
-  extension: string
-
-  constructor(item: FormatItem) {
-    this.example = item.example
-    this.type = item.type
-    this.text = item.text
-    this.extension = item.extension
-  }
-}
-
 
 export class ProjectDTO {
   id: number
@@ -25,14 +8,13 @@ export class ProjectDTO {
   current_users_role: CurrentUsersRole
   projectType: ProjectType
   updatedAt: string
-  enableRandomizeDocOrder: boolean
+  enableRandomOrder: boolean
   enableShareAnnotation: boolean
   singleClassClassification: boolean
   pageLink: string
-  downloadFormats: FormatDTO[]
-  uploadFormats: FormatDTO[]
   permitApprove: Boolean
   filterOption: String
+  tags: Object[]
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -42,15 +24,14 @@ export class ProjectDTO {
     this.current_users_role = item.current_users_role
     this.projectType = item.project_type
     this.updatedAt = item.updated_at
-    this.enableRandomizeDocOrder = item.randomize_document_order
+    this.enableRandomOrder = item.random_order
     this.enableShareAnnotation = item.collaborative_annotation
     this.singleClassClassification = item.single_class_classification
     this.pageLink = item.annotationPageLink
-    this.downloadFormats = item.downloadFormats.map(f => new FormatDTO(f))
-    this.uploadFormats = item.uploadFormats.map(f => new FormatDTO(f))
     this.permitApprove = item.permitApprove
     this.filterOption = item.filterOption
+    this.tags = item.tags
   }
 }
 
-export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomizeDocOrder' | 'enableShareAnnotation' | 'singleClassClassification'>
+export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'tags'>

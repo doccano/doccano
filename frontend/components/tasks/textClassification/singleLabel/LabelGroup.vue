@@ -13,6 +13,7 @@
     >
       {{ item.text }}
       <v-avatar
+        v-if="item.suffixKey"
         right
         color="white"
         class="black--text font-weight-bold"

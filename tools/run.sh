@@ -26,4 +26,21 @@ if [[ -n "${ADMIN_USERNAME}" ]] && [[ -n "${ADMIN_PASSWORD}" ]] && [[ -n "${ADMI
 fi
 
 echo "Starting django"
-gunicorn --bind="0.0.0.0:${PORT:-8000}" --workers="${WORKERS:-4}" app.wsgi --timeout 300
+# gunicorn --bind="0.0.0.0:${PORT:-8000}" --workers="${WORKERS:-4}" app.wsgi --timeout 300
+gunicorn --bind="0.0.0.0:${PORT:-8000}" --workers="${WORKERS:-1}" app.wsgi --timeout=300 &
+gunicorn_pid="$!"
+
+celery --app=app worker --loglevel=INFO --concurrency="${CELERY_WORKERS:-1}" &
+celery_pid="$!"
+
+while :; do
+  if [[ ! -e "/proc/${celery_pid}" ]]; then
+    echo "celery crashed" >&2
+    exit 1
+  elif [[ ! -e "/proc/${gunicorn_pid}" ]]; then
+    echo "gunicorn crashed" >&2
+    exit 2
+  else
+    sleep 10
+  fi
+done

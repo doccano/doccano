@@ -48,9 +48,10 @@ RUN pip install --no-cache-dir -U pip \
  && rm -rf /deps
 
 COPY --chown=doccano:doccano . /doccano
-WORKDIR /doccano/app
-COPY --from=frontend-builder /frontend/dist /doccano/app/client/dist
+WORKDIR /doccano/backend
+COPY --from=frontend-builder /frontend/dist /doccano/backend/client/dist
 RUN python manage.py collectstatic --noinput
+RUN chown -R doccano:doccano .
 
 VOLUME /data
 ENV DATABASE_URL="sqlite:////data/doccano.db"
@@ -59,6 +60,7 @@ ENV DEBUG="True"
 ENV SECRET_KEY="change-me-in-production"
 ENV PORT="8000"
 ENV WORKERS="2"
+ENV CELERY_WORKERS="2"
 ENV GOOGLE_TRACKING_ID=""
 ENV AZURE_APPINSIGHTS_IKEY=""
 

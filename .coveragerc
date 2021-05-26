@@ -1,14 +1,14 @@
 [report]
 omit =
-  app/app/wsgi.py
-  app/classifier/*
-  app/server/migrations/*
-  app/server/templatetags/*
-  app/server/tests/*
-  app/api/migrations/*
-  app/api/tests/*
-  app/authentification/tests/*
-  app/authentification/templatetags/*
+  backend/app/wsgi.py
+  backend/classifier/*
+  backend/server/migrations/*
+  backend/server/templatetags/*
+  backend/server/tests/*
+  backend/api/migrations/*
+  backend/api/tests/*
+  backend/authentification/tests/*
+  backend/authentification/templatetags/*
 
 exclude_lines =
   pragma: no cover

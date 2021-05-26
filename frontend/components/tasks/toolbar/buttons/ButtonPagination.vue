@@ -113,9 +113,15 @@ export default Vue.extend({
       this.$emit('click:jump', page)
     },
     prevPage() {
+      if (this.value === 1) {
+        return
+      }
       this.$emit('click:prev')
     },
     nextPage() {
+      if (this.value === this.total) {
+        return
+      }
       this.$emit('click:next')
     },
     firstPage() {

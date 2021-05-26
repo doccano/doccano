@@ -19,7 +19,7 @@
     </template>
     <template v-slot:content>
       <v-card class="mb-5">
-        <v-card-text class="title" v-text="doc.text" />
+        <v-card-text class="title text-pre-wrap" v-text="doc.text" />
       </v-card>
       <seq2seq-box
         :text="doc.text"
@@ -30,7 +30,7 @@
       />
     </template>
     <template v-slot:sidebar>
-      <list-metadata :metadata="JSON.parse(doc.meta)" />
+      <list-metadata :metadata="doc.meta" />
     </template>
   </layout-text>
 </template>
@@ -55,7 +55,7 @@ export default {
   },
 
   async fetch() {
-    this.docs = await this.$services.document.fetchOne(
+    this.docs = await this.$services.example.fetchOne(
       this.projectId,
       this.$route.query.page,
       this.$route.query.q,
@@ -139,7 +139,7 @@ export default {
 
     async approve() {
       const approved = !this.doc.isApproved
-      await this.$services.document.approve(this.projectId, this.doc.id, approved)
+      await this.$services.example.approve(this.projectId, this.doc.id, approved)
       await this.$fetch()
     }
   },
@@ -149,3 +149,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.text-pre-wrap {
+  white-space: pre-wrap !important;
+}
+</style>

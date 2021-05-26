@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: app/Dockerfile.dev
+      dockerfile: backend/Dockerfile.dev
     volumes:
       - .:/src
       - venv:/root/.local/share
@@ -12,6 +12,7 @@ services:
       ADMIN_USERNAME: "admin"
       ADMIN_PASSWORD: "password"
       ADMIN_EMAIL: "admin@example.com"
+      CELERY_BROKER_URL: "amqp://doccano:doccano@rabbitmq"
       DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
       ALLOW_SIGNUP: "False"
       DEBUG: "True"
@@ -22,6 +23,34 @@ services:
     networks:
       - network-backend
       - network-frontend
+
+  celery:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.dev
+    volumes:
+      - .:/src
+      - venv:/root/.local/share
+    entrypoint: ["/src/tools/dev-celery.sh"]
+    environment:
+      PYTHONUNBUFFERED: "1"
+      CELERY_BROKER_URL: "amqp://doccano:doccano@rabbitmq"
+      DATABASE_URL: "postgres://doccano:doccano@postgres:5432/doccano?sslmode=disable"
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - network-backend
+
+  rabbitmq:
+    image: rabbitmq:3.8
+    environment:
+      RABBITMQ_DEFAULT_USER: "doccano"
+      RABBITMQ_DEFAULT_PASS: "doccano"
+    ports:
+      - 5672:5672
+    networks:
+      - network-backend
 
   frontend:
     image: node:13.7.0

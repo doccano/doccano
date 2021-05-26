@@ -9,7 +9,6 @@
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
       'showFirstLastPage': true,
-      'items-per-page-options': [5, 10, 15, $t('generic.all')],
       'items-per-page-text': $t('vuetify.itemsPerPageText'),
       'page-text': $t('dataset.pageText')
     }"
@@ -34,6 +33,13 @@
     </template>
     <template v-slot:[`item.updatedAt`]="{ item }">
       <span>{{ item.updatedAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm') }}</span>
+    </template>
+    <template v-slot:[`item.tags`]="{ item }">
+      <v-chip
+      v-for="tag in item.tags"
+      :key="tag.id"
+      outlined>{{tag.text}}
+      </v-chip>
     </template>
   </v-data-table>
 </template>
@@ -76,8 +82,9 @@ export default Vue.extend({
         { text: this.$t('generic.description'), value: 'description' },
         { text: this.$t('generic.type'), value: 'projectType' },
         { text: 'Updated', value: 'updatedAt' },
+        { text: 'Tags', value: 'tags'}
       ]
     }
-  } 
+  }
 })
 </script>

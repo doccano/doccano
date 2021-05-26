@@ -1,5 +1,5 @@
 *
-!app/
+!backend/
 !frontend/
 !nginx/
 !tests/
@@ -10,16 +10,16 @@
 !Pipfile.lock
 !Pipfile
 
-app/**/bundle/
-app/**/node_modules/
-app/**/webpack-stats.json
+backend/**/bundle/
+backend/**/node_modules/
+backend/**/webpack-stats.json
 
-app/**/*.sqlite3
-app/**/.env
-app/**/junitxml/
-app/**/staticfiles/
-app/**/venv/
-app/**/__pycache__/
+backend/**/*.sqlite3
+backend/**/.env
+backend/**/junitxml/
+backend/**/staticfiles/
+backend/**/venv/
+backend/**/__pycache__/
 tests/**/__pycache__/
 
 frontend/.nuxt/
