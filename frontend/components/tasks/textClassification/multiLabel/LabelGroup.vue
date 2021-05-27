@@ -6,7 +6,7 @@
     @change="addOrRemove"
   >
     <v-chip
-      v-for="(item, index) in labels"
+      v-for="(item, index) in getLabels"
       :key="item.id"
       :color="item.backgroundColor"
       filter
@@ -59,6 +59,14 @@ export default {
         map = JSON.parse(this.text.match(reg)[0]).concepts
       } catch (error) { }
       return map
+    },
+    getLabels() {
+      if(this.text.startsWith(conceptToken)){
+        const labelNum = this.getLabelMap.length
+        return this.labels.slice(0,labelNum)
+      }else{
+        return this.labels
+      }
     }
   },
 

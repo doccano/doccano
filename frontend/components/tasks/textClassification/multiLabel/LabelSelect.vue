@@ -122,7 +122,8 @@ export default {
 
     getLabel(labels) {
       if (this.text.startsWith(conceptToken)){
-          return labels.map(it=>{
+          const labelNum = this.getLabelMap.length
+          return labels.slice(0,labelNum).map(it=>{
             return {
               ...it,
               text:this.getLabelMap[it.text].text
