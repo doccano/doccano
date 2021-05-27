@@ -31,7 +31,8 @@ COPY --chown=doccano:doccano tools/ /opt/bin/
 RUN mkdir -p /backend/staticfiles \
   && chown -R doccano:doccano /backend/staticfiles \
   && mkdir -p /backend/client/dist/static \
-  && chown -R doccano:doccano /backend/client/dist/static
+  && chown -R doccano:doccano /backend/client/dist/static \
+  && chown -R doccano:doccano /backend/
 
 USER doccano:doccano
 VOLUME /backend/staticfiles
