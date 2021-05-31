@@ -88,6 +88,9 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 ]
 
+if DEBUG:
+    MIDDLEWARE.append('api.middleware.RangesMiddleware')
+
 ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
