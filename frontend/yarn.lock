@@ -2092,6 +2092,11 @@
   dependencies:
     source-map "^0.6.1"
 
+"@types/wavesurfer.js@^5.0.1":
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/@types/wavesurfer.js/-/wavesurfer.js-5.0.1.tgz#5f0f77a4dbbe842114f60b7add06d82f99a471be"
+  integrity sha512-BSIsRxbXR+gZxSdW3/WSgucjt2njpGi21BCcBAmV+Fif4Qhe6/Od0RnTmM5Fbq9U1VZLmbWOCTwakdSCGP88og==
+
 "@types/webpack-bundle-analyzer@^3.9.0":
   version "3.9.1"
   resolved "https://registry.yarnpkg.com/@types/webpack-bundle-analyzer/-/webpack-bundle-analyzer-3.9.1.tgz#27a8923a4e71c13ac5f043f34f12136d8c99cf8e"
