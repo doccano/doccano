@@ -7,11 +7,12 @@ from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
-                     SEQUENCE_LABELING, SPEECH2TEXT, AutoLabelingConfig,
-                     Category, Comment, Example, ImageClassificationProject,
-                     Label, Project, Role, RoleMapping, Seq2seqProject,
+                     SEQUENCE_LABELING, SPEECH2TEXT, AnnotationRelations,
+                     AutoLabelingConfig, Category, Comment, Example,
+                     ImageClassificationProject, Label, Project, RelationTypes,
+                     Role, RoleMapping, Seq2seqProject,
                      SequenceLabelingProject, Span, Speech2textProject, Tag,
-                     TextClassificationProject, TextLabel, RelationTypes, AnnotationRelations)
+                     TextClassificationProject, TextLabel)
 
 
 class UserSerializer(serializers.ModelSerializer):

@@ -1,6 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
-
 from api.models import Project, Role, RoleMapping, User
+from django.core.management.base import BaseCommand, CommandError
 
 
 class Command(BaseCommand):
