@@ -1,9 +1,10 @@
+from django.contrib.auth.views import (PasswordResetCompleteView,
+                                       PasswordResetConfirmView,
+                                       PasswordResetDoneView)
 from django.urls import path
-from django.contrib.auth.views import PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
-from .views import SignupView
 from .utils import activate
-
+from .views import SignupView
 
 urlpatterns = [
     path('password_reset/done/', PasswordResetDoneView.as_view(),
