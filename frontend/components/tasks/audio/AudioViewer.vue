@@ -87,13 +87,14 @@ export default Vue.extend({
       zoom: 0,
       volume: 0.6,
       speed: 1,
-      speeds: [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
+      speeds: [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
     }
   },
 
   watch: {
     source() {
       this.load()
+      this.isPlaying = false
     }
   },
 
