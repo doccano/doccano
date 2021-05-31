@@ -18,15 +18,10 @@
       />
     </template>
     <template v-slot:content>
-      <audio
-        controls
-        :src="item.url"
-        class="mt-2 mb-5"
-        style="width:100%;"
-      >
-        Your browser does not support the
-        <code>audio</code> element.
-      </audio>
+      <audio-viewer
+        :source="item.url"
+        class="mb-5"
+      />
       <seq2seq-box
         :text="item.text"
         :annotations="annotations"
@@ -48,11 +43,13 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
+import AudioViewer from '~/components/tasks/audio/AudioViewer'
 
 export default {
   layout: 'workspace',
 
   components: {
+    AudioViewer,
     LayoutText,
     ListMetadata,
     Seq2seqBox,
