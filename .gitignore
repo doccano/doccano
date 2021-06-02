@@ -204,6 +204,5 @@ webpack-stats.json
 /app/doccano.db
 /app/run.bat
 /frontend/components/layout/doccano.json
-/frontend/package-lock.json
 /frontend/run.bat
 /run-docker-dev.bat
