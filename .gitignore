@@ -201,3 +201,8 @@ bundle/
 webpack-stats.json
 
 .vscode
+/app/doccano.db
+/app/run.bat
+/frontend/components/layout/doccano.json
+/frontend/run.bat
+/run-docker-dev.bat

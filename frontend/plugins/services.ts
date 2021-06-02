@@ -41,9 +41,13 @@ import { DownloadApplicationService } from '~/services/application/download/down
 import { DownloadFormatApplicationService } from '~/services/application/download/downloadFormatApplicationService'
 import { APITagRepository } from '~/repositories/tag/apiTagRepository'
 import { TagApplicationService } from '~/services/application/tag/tagApplicationService'
+import {ApiLinkRepository} from "~/repositories/links/apiLinkRepository";
+import {LinkTypesApplicationService} from "~/services/application/links/linkTypesApplicationService";
+import {ApiLinkTypesRepository} from "~/repositories/links/apiLinkTypesRepository";
 
 export interface Services {
   label: LabelApplicationService,
+  linkTypes: LinkTypesApplicationService,
   member: MemberApplicationService,
   user: UserApplicationService,
   role: RoleApplicationService,
@@ -74,6 +78,7 @@ declare module 'vue/types/vue' {
 
 const plugin: Plugin = (context, inject) => {
   const labelRepository      = new APILabelRepository()
+  const linkTypesRepository = new ApiLinkTypesRepository()
   const memberRepository     = new APIMemberRepository()
   const userRepository       = new APIUserRepository()
   const roleRepository       = new APIRoleRepository()
@@ -83,6 +88,7 @@ const plugin: Plugin = (context, inject) => {
   const exampleRepository    = new APIExampleRepository()
   const textClassificationRepository = new APITextClassificationRepository()
   const sequenceLabelingRepository   = new APISequenceLabelingRepository()
+  const linkRepository = new ApiLinkRepository()
   const seq2seqRepository = new APISeq2seqRepository()
   const optionRepository     = new LocalStorageOptionRepository()
   const configRepository     = new APIConfigRepository()
@@ -96,6 +102,7 @@ const plugin: Plugin = (context, inject) => {
   const downloadRepository = new APIDownloadRepository()
 
   const label      = new LabelApplicationService(labelRepository)
+  const linkTypes = new LinkTypesApplicationService(linkTypesRepository)
   const member     = new MemberApplicationService(memberRepository)
   const user       = new UserApplicationService(userRepository)
   const role       = new RoleApplicationService(roleRepository)
@@ -104,7 +111,7 @@ const plugin: Plugin = (context, inject) => {
   const statistics = new StatisticsApplicationService(statisticsRepository)
   const example    = new ExampleApplicationService(exampleRepository)
   const textClassification = new TextClassificationApplicationService(textClassificationRepository)
-  const sequenceLabeling   = new SequenceLabelingApplicationService(sequenceLabelingRepository)
+  const sequenceLabeling   = new SequenceLabelingApplicationService(sequenceLabelingRepository, linkRepository)
   const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
   const option = new OptionApplicationService(optionRepository)
   const config = new ConfigApplicationService(configRepository)
@@ -119,6 +126,7 @@ const plugin: Plugin = (context, inject) => {
   
   const services: Services = {
     label,
+    linkTypes,
     member,
     user,
     role,

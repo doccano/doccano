@@ -1,10 +1,9 @@
 from django.urls import path
 
-from .views import IndexView
-from .views import ProjectView, DatasetView, DataUpload, LabelView, StatsView, GuidelineView, UsersView
-from .views import ProjectsView, DataDownload
-from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTranslation
-
+from .views import (DataDownload, DatasetView, DataUpload,
+                    DemoNamedEntityRecognition, DemoTextClassification,
+                    DemoTranslation, GuidelineView, IndexView, LabelView,
+                    ProjectsView, ProjectView, StatsView, UsersView)
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),

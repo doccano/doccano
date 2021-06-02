@@ -1,11 +1,15 @@
 export const state = () => ({
   username: null,
+  id: null,
   isAuthenticated: false
 })
 
 export const mutations = {
   setUsername(state, username) {
     state.username = username
+  },
+  setUserId(state, userId) {
+    state.id = userId
   },
   clearUsername(state) {
     state.username = null
@@ -21,6 +25,9 @@ export const getters = {
   },
   getUsername(state) {
     return state.username
+  },
+  getUserId(state) {
+    return state.id
   }
 }
 
@@ -38,6 +45,7 @@ export const actions = {
       const user = await this.$services.user.getMyProfile()
       commit('setAuthenticated', true)
       commit('setUsername', user.username)
+      commit('setUserId', user.id)
     } catch {
       commit('setAuthenticated', false)
     }

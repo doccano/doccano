@@ -1,10 +1,9 @@
-from django.shortcuts import render
-from django.shortcuts import redirect
-from django.contrib.auth import login
+from django.contrib.auth import get_user_model, login
+from django.shortcuts import redirect, render
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
+
 from .tokens import account_activation_token
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 

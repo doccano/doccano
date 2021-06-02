@@ -1,13 +1,14 @@
 import argparse
 import multiprocessing
 import os
-import sys
 import subprocess
+import sys
 
 import gunicorn.app.base
 import gunicorn.util
 
 from .app.celery import app
+
 base = os.path.abspath(os.path.dirname(__file__))
 manage_path = os.path.join(base, 'manage.py')
 parser = argparse.ArgumentParser(description='doccano, text annotation for machine learning practitioners.')

@@ -7,6 +7,7 @@ export default {
   exportLabels: 'Exportiere Labels',
   labelName: 'Labelname',
   labelMessage: 'Labelname wird benötigt',
+  createLink: 'Create Link',
   key: 'Schlüssel',
   deleteLabel: 'Lösche Label',
   deleteMessage: 'Bist du dir sicher, dass du diese Labels aus dem Projekt löschen willst?',
