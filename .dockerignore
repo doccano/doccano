@@ -17,6 +17,9 @@ backend/**/webpack-stats.json
 backend/**/*.sqlite3
 backend/**/.env
 backend/**/junitxml/
+backend/media
+backend/filepond-temp-uploads
+backend/stored_uploads
 backend/**/staticfiles/
 backend/**/venv/
 backend/**/__pycache__/

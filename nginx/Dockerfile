@@ -19,7 +19,8 @@ COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 
 RUN chown -R doccano:doccano /var/cache/nginx \
-  && chmod -R g+w /var/cache/nginx
+  && chmod -R g+w /var/cache/nginx \
+  && chown -R doccano:doccano /media
 
 EXPOSE 8080
 
