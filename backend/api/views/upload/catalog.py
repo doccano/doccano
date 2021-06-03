@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing_extensions import Literal
 
 from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
-                       SEQUENCE_LABELING)
+                       SEQUENCE_LABELING, SPEECH2TEXT)
 from . import examples
 
 encodings = Literal[
@@ -168,6 +168,11 @@ class ImageFile(Format):
     accept_types = 'image/png, image/jpeg, image/bmp, image/gif'
 
 
+class AudioFile(Format):
+    name = 'AudioFile'
+    accept_types = 'audio/ogg, audio/aac, audio/mpeg, audio/wav'
+
+
 class OptionColumn(BaseModel):
     encoding: encodings = 'utf_8'
     column_data: str = 'text'
@@ -241,3 +246,6 @@ Options.register(SEQ2SEQ, Excel, OptionColumn, examples.Text_CSV)
 
 # Image classification
 Options.register(IMAGE_CLASSIFICATION, ImageFile, OptionNone, examples.Generic_ImageFile)
+
+# Speech to Text
+Options.register(SPEECH2TEXT, AudioFile, OptionNone, examples.Generic_AudioFile)

@@ -15,6 +15,7 @@ export default {
     'Text Classification',
     'Sequence Labeling',
     'Sequence to sequence',
-    'Image Classification'
+    'Image Classification',
+    'Speech to Text',
   ]
 }

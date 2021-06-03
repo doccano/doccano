@@ -51,6 +51,15 @@
       @update:query="updateQuery"
       @click:labeling="movePage"
     />
+    <audio-list
+      v-else-if="isAudioTask"
+      v-model="selected"
+      :items="item.items"
+      :is-loading="isLoading"
+      :total="item.count"
+      @update:query="updateQuery"
+      @click:labeling="movePage"
+    />
     <document-list
       v-else
       v-model="selected"
@@ -71,6 +80,7 @@ import FormDelete from '@/components/example/FormDelete.vue'
 import FormDeleteBulk from '@/components/example/FormDeleteBulk.vue'
 import FormDownload from '@/components/example/FormDownload.vue'
 import ImageList from '~/components/example/ImageList.vue'
+import AudioList from '~/components/example/AudioList.vue'
 import { ExampleListDTO, ExampleDTO } from '~/services/application/example/exampleData'
 import ActionMenu from '~/components/example/ActionMenu.vue'
 import { ProjectDTO } from '~/services/application/project/projectData'
@@ -80,6 +90,7 @@ export default Vue.extend({
 
   components: {
     ActionMenu,
+    AudioList,
     DocumentList,
     ImageList,
     FormDelete,
@@ -115,8 +126,11 @@ export default Vue.extend({
     isImageTask(): boolean {
       return this.project.projectType === 'ImageClassification'
     },
+    isAudioTask(): boolean {
+      return this.project.projectType === 'Speech2text'
+    },
     itemKey(): string {
-      if (this.isImageTask) {
+      if (this.isImageTask || this.isAudioTask) {
         return 'filename'
       } else {
         return 'text'

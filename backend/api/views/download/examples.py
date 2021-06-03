@@ -62,3 +62,12 @@ CategoryImageClassification = """
     }
 ]
 """
+
+Speech2Text = """
+[
+    {
+        "filename": "20210514.mp3",
+        "label": ["Lorem ipsum dolor sit amet"]
+    }
+]
+"""

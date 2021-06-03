@@ -62,6 +62,15 @@ class FileRepository(BaseRepository):
         return {'all': value}
 
 
+class Speech2TextRepository(FileRepository):
+
+    def label_per_user(self, example) -> Dict:
+        label_per_user = defaultdict(list)
+        for a in example.texts.all():
+            label_per_user[a.user.username].append(a.text)
+        return label_per_user
+
+
 class TextRepository(BaseRepository):
 
     @property

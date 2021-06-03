@@ -1,81 +1,75 @@
 <template>
-  <layout-text v-if="doc.id">
+  <layout-text v-if="example.id">
     <template v-slot:header>
       <toolbar-laptop
-        :doc-id="doc.id"
+        :doc-id="example.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
-        :is-reviewd="doc.isApproved"
+        :is-reviewd="example.isApproved"
         :show-approve-button="project.permitApprove"
-        :total="docs.count"
+        :total="totalExample"
         class="d-none d-sm-block"
-        @click:clear-label="clear"
-        @click:review="approve"
+        @click:clear-label="clearTeacherList(project.id, example.id)"
+        @click:review="approve(project.id)"
       >
-        <v-btn-toggle
-          v-model="labelOption"
-          mandatory
+        <button-label-switch
           class="ms-2"
-        >
-          <v-btn icon>
-            <v-icon>mdi-format-list-bulleted</v-icon>
-          </v-btn>
-          <v-btn icon>
-            <v-icon>mdi-text</v-icon>
-          </v-btn>
-        </v-btn-toggle>
+          @change="labelComponent=$event"
+        />
       </toolbar-laptop>
       <toolbar-mobile
-        :total="docs.count"
+        :total="totalExample"
         class="d-flex d-sm-none"
       />
     </template>
     <template v-slot:content>
       <v-card
         v-shortkey="shortKeys"
-        @shortkey="addOrRemove"
+        @shortkey="annotateOrRemoveLabel(project.id, example.id, $event.srcKey)"
       >
         <v-card-title>
-          <label-group
-            v-if="labelOption === 0"
+          <component
+            :is="labelComponent"
             :labels="labels"
-            :annotations="annotations"
+            :annotations="teacherList"
             :single-label="project.singleClassClassification"
-            @add="add"
-            @remove="remove"
-          />
-          <label-select
-            v-else
-            :labels="labels"
-            :annotations="annotations"
-            :single-label="project.singleClassClassification"
-            @add="add"
-            @remove="remove"
+            @add="annotateLabel(project.id, example.id, $event)"
+            @remove="removeTeacher(project.id, example.id, $event)"
           />
         </v-card-title>
         <v-divider />
-        <v-card-text class="title highlight text-pre-wrap" v-text="doc.text" />
+        <v-card-text
+          class="title highlight"
+          style="white-space: pre-wrap;"
+          v-text="example.text"
+        />
       </v-card>
     </template>
     <template v-slot:sidebar>
-      <list-metadata :metadata="doc.meta" />
+      <list-metadata :metadata="example.meta" />
     </template>
   </layout-text>
 </template>
 
 <script>
-import _ from 'lodash'
+import { toRefs, useContext, useFetch, ref, watch } from '@nuxtjs/composition-api'
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import LabelSelect from '@/components/tasks/textClassification/LabelSelect'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+import ButtonLabelSwitch from '@/components/tasks/toolbar/buttons/ButtonLabelSwitch'
+import { useExampleItem } from '@/composables/useExampleItem'
+import { useLabelList } from '@/composables/useLabelList'
+import { useProjectItem } from '@/composables/useProjectItem'
+import { useTeacherList } from '@/composables/useTeacherList'
 
 export default {
   layout: 'workspace',
 
   components: {
+    ButtonLabelSwitch,
     LabelGroup,
     LabelSelect,
     LayoutText,
@@ -84,104 +78,59 @@ export default {
     ToolbarMobile
   },
 
-  async fetch() {
-    this.docs = await this.$services.example.fetchOne(
-      this.projectId,
-      this.$route.query.page,
-      this.$route.query.q,
-      this.$route.query.isChecked,
-      this.project.filterOption
-    )
-    const doc = this.docs.items[0]
-    if (this.enableAutoLabeling) {
-      await this.autoLabel(doc.id)
-    }
-    await this.list(doc.id)
-  },
+  setup() {
+    const { app, params, query } = useContext()
+    const projectId = params.value.id
+    const { state: projectState, getProjectById } = useProjectItem()
+    const { state: exampleState, approve, getExample } = useExampleItem()
+    const {
+      state: teacherState,
+      annotateLabel,
+      annotateOrRemoveLabel,
+      autoLabel,
+      clearTeacherList,
+      getTeacherList,
+      removeTeacher
+    } = useTeacherList(app.$services.textClassification)
+    const enableAutoLabeling = ref(false)
+    const { state: labelState, getLabelList, shortKeys } = useLabelList()
+    const labelComponent = ref('label-group')
 
-  data() {
+    getLabelList(projectId)
+    getProjectById(projectId)
+
+    const { fetch } = useFetch(async() => {
+      await getExample(
+        projectId,
+        projectState.project.filterOption,
+        query.value
+      )
+      if (enableAutoLabeling.value) {
+        try {
+          await autoLabel(projectId, exampleState.example.id)
+        } catch(e) {
+          enableAutoLabeling.value = false
+          alert(e.response.data.detail)
+        }
+      } else {
+        await getTeacherList(projectId, exampleState.example.id)
+      }
+    })
+    watch(query, fetch)
+
     return {
-      annotations: [],
-      docs: [],
-      labels: [],
-      project: {},
-      enableAutoLabeling: false,
-      labelOption: 0
-    }
-  },
-
-  computed: {
-    shortKeys() {
-      return Object.fromEntries(this.labels.map(item => [item.id, [item.suffixKey]]))
-    },
-    projectId() {
-      return this.$route.params.id
-    },
-    doc() {
-      if (_.isEmpty(this.docs) || this.docs.items.length === 0) {
-        return {}
-      } else {
-        return this.docs.items[0]
-      }
-    }
-  },
-
-  watch: {
-    '$route.query': '$fetch',
-    enableAutoLabeling(val) {
-      if (val) {
-        this.list(this.doc.id)
-      }
-    }
-  },
-
-  async created() {
-    this.labels = await this.$services.label.list(this.projectId)
-    this.project = await this.$services.project.findById(this.projectId)
-  },
-
-  methods: {
-    async list(docId) {
-      this.annotations = await this.$services.textClassification.list(this.projectId, docId)
-    },
-
-    async remove(id) {
-      await this.$services.textClassification.delete(this.projectId, this.doc.id, id)
-      await this.list(this.doc.id)
-    },
-
-    async add(labelId) {
-      await this.$services.textClassification.create(this.projectId, this.doc.id, labelId)
-      await this.list(this.doc.id)
-    },
-
-    async addOrRemove(event) {
-      const label = this.labels.find(item => item.id === parseInt(event.srcKey, 10))
-      const annotation = this.annotations.find(item => item.label === label.id)
-      if (annotation) {
-        await this.remove(annotation.id)
-      } else {
-        await this.add(label.id)
-      }
-    },
-
-    async clear() {
-      await this.$services.textClassification.clear(this.projectId, this.doc.id)
-      await this.list(this.doc.id)
-    },
-
-    async autoLabel(docId) {
-      try {
-        await this.$services.textClassification.autoLabel(this.projectId, docId)
-      } catch (e) {
-        console.log(e.response.data.detail)
-      }
-    },
-
-    async approve() {
-      const approved = !this.doc.isApproved
-      await this.$services.example.approve(this.projectId, this.doc.id, approved)
-      await this.$fetch()
+      ...toRefs(labelState),
+      ...toRefs(projectState),
+      ...toRefs(teacherState),
+      ...toRefs(exampleState),
+      approve,
+      annotateLabel,
+      annotateOrRemoveLabel,
+      clearTeacherList,
+      enableAutoLabeling,
+      labelComponent,
+      removeTeacher,
+      shortKeys,
     }
   },
 
@@ -190,9 +139,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-.text-pre-wrap {
-  white-space: pre-wrap !important;
-}
-</style>

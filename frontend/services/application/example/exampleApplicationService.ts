@@ -53,6 +53,11 @@ export class ExampleApplicationService {
     return this.repository.bulkDelete(projectId, ids)
   }
 
+  public async findById(projectId: string, exampleId: number): Promise<ExampleDTO> {
+    const response = await this.repository.findById(projectId, exampleId)
+    return new ExampleDTO(response)
+  }
+
   public async approve(projectId: string, docId: number, approved: boolean): Promise<void> {
     await this.repository.approve(projectId, docId, approved)
   }

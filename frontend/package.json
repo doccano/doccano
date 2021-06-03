@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.12.0",
+    "@nuxtjs/composition-api": "^0.23.4",
     "@nuxtjs/proxy": "^2.0.1",
     "@nuxtjs/vuetify": "^1.11.2",
     "@toast-ui/vue-editor": "^1.1.1",
@@ -36,6 +37,7 @@
     "vue-shortkey": "^3.1.7",
     "vue-youtube": "^1.4.0",
     "vuetify": "^2.3.4",
+    "wavesurfer.js": "^5.0.1",
     "yarn": "^1.22.4"
   },
   "devDependencies": {
@@ -46,6 +48,7 @@
     "@nuxtjs/eslint-module": "^2.0.0",
     "@nuxtjs/google-analytics": "^2.3.0",
     "@types/lodash": "^4.14.168",
+    "@types/wavesurfer.js": "^5.0.1",
     "@vue/test-utils": "^1.0.3",
     "axios-mock-adapter": "^1.18.1",
     "babel-core": "7.0.0-bridge.0",
