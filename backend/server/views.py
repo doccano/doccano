@@ -1,15 +1,16 @@
-import sys
 import logging
+import sys
+
 sys.path.append('../api')
 
+from api.models import Project, RoleMapping
+from api.permissions import ProjectAdminMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView
 from django.views.generic.list import ListView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from api.permissions import ProjectAdminMixin
-from api.models import Project, RoleMapping
 from app import settings
 
 logger = logging.getLogger(__name__)

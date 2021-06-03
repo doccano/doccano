@@ -41,6 +41,16 @@ class LabelValidationError(APIException):
     default_detail = 'You cannot create a label with same name or shortcut key.'
 
 
+class AnnotationRelationValidationError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'You cannot create an annotation relation between the same annotation.'
+
+
+class RelationTypesValidationError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = 'You cannot create a relation type with same name or color.'
+
+
 class RoleConstraintException(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'The project needs at least one administrator.'

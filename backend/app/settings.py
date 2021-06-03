@@ -18,7 +18,6 @@ import dj_database_url
 from environs import Env, EnvError
 from furl import furl
 
-
 # Build paths inside the project like this: path.join(BASE_DIR, ...)
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 

@@ -1,4 +1,5 @@
 from .annotation import *
+from .annotation_relations import *
 from .auto_labeling import *
 from .comment import *
 from .example import *
@@ -8,6 +9,7 @@ from .import_dataset import *
 from .import_export import *
 from .label import *
 from .project import *
+from .relation_types import *
 from .role import *
 from .statistics import *
 from .tag import *

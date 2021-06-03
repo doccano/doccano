@@ -1,9 +1,9 @@
 import sys
+
 sys.path.append('../api')
 
-from django import forms
-
 from api.models import Project
+from django import forms
 
 
 class ProjectForm(forms.ModelForm):

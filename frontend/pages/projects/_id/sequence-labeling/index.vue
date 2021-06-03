@@ -22,11 +22,19 @@
         <v-card-text class="title">
           <entity-item-box
             :labels="labels"
+            :link-types="linkTypes"
             :text="doc.text"
             :entities="annotations"
             :delete-annotation="remove"
             :update-entity="update"
             :add-entity="add"
+            :source-chunk="sourceChunk"
+            :source-link-type="sourceLinkType"
+            :select-source="selectSource"
+            :select-target="selectTarget"
+            :delete-link="deleteLink"
+            :select-new-link-type="selectNewLinkType"
+            :hide-all-link-menus="hideAllLinkMenus"
           />
         </v-card-text>
       </v-card>
@@ -39,13 +47,17 @@
 
 <script>
 import _ from 'lodash'
-import { toRefs } from '@nuxtjs/composition-api'
+import {mapGetters} from 'vuex'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import EntityItemBox from '@/components/tasks/sequenceLabeling/EntityItemBox'
-import { useLabelList } from '@/composables/useLabelList'
+import EntityItemBox from '~/components/tasks/sequenceLabeling/EntityItemBox'
+
+const NONE = {
+  id: -1,
+  none: true
+};
 
 export default {
   layout: 'workspace',
@@ -56,16 +68,6 @@ export default {
     ListMetadata,
     ToolbarLaptop,
     ToolbarMobile
-  },
-
-  setup() {
-    const { state, getLabelList, shortKeys } = useLabelList()
-
-    return {
-      ...toRefs(state),
-      getLabelList,
-      shortKeys,
-    }
   },
 
   async fetch() {
@@ -87,12 +89,23 @@ export default {
     return {
       annotations: [],
       docs: [],
+      labels: [],
+      links: [],
+      linkTypes: [],
       project: {},
-      enableAutoLabeling: false
+      enableAutoLabeling: false,
+      sourceChunk: NONE,
+      sourceLink: NONE,
+      sourceLinkType: NONE
     }
   },
 
   computed: {
+    ...mapGetters('auth', ['isAuthenticated', 'getUsername', 'getUserId']),
+
+    shortKeys() {
+      return Object.fromEntries(this.labels.map(item => [item.id, [item.suffixKey]]))
+    },
     projectId() {
       return this.$route.params.id
     },
@@ -115,26 +128,49 @@ export default {
   },
 
   async created() {
-    this.getLabelList(this.projectId)
+    this.labels = await this.$services.label.list(this.projectId)
+
+    this.linkTypes = await this.$services.linkTypes.list(this.projectId)
+
     this.project = await this.$services.project.findById(this.projectId)
   },
 
   methods: {
     async list(docId) {
-      this.annotations = await this.$services.sequenceLabeling.list(this.projectId, docId)
+      this.hideAllLinkMenus();
+
+      const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId);
+      const links = await this.$services.sequenceLabeling.listLinks(this.projectId);
+
+      annotations.forEach(function(annotation) {
+        annotation.links = links.filter(link => link.annotation_id_1 === annotation.id);
+      });
+
+      this.annotations = annotations;
+      this.links = links;
+    },
+
+    populateLinks() {
+      const links = this.links;
+      this.annotations.forEach(function(annotation) {
+        annotation.links = links.filter(link => link.annotation_id_1 === annotation.id);
+      });
     },
 
     async remove(id) {
+      this.hideAllLinkMenus();
       await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
     },
 
     async add(startOffset, endOffset, labelId) {
+      this.hideAllLinkMenus();
       await this.$services.sequenceLabeling.create(this.projectId, this.doc.id, labelId, startOffset, endOffset)
       await this.list(this.doc.id)
     },
 
     async update(labelId, annotationId) {
+      this.hideAllLinkMenus();
       await this.$services.sequenceLabeling.changeLabel(this.projectId, this.doc.id, annotationId, labelId)
       await this.list(this.doc.id)
     },
@@ -156,6 +192,35 @@ export default {
       const approved = !this.doc.isApproved
       await this.$services.example.approve(this.projectId, this.doc.id, approved)
       await this.$fetch()
+    },
+
+    selectSource(chunk) {
+      this.sourceChunk = chunk;
+    },
+
+    async selectTarget(chunk) {
+      // to avoid duplicated links:
+      if (!chunk.links.find(ch => ch.id === this.sourceChunk.id)) {
+        await this.$services.sequenceLabeling.createLink(this.projectId, this.sourceChunk.id, chunk.id, this.sourceLinkType.id, this.getUserId);
+        await this.list(this.doc.id);
+      }
+      this.hideAllLinkMenus();
+    },
+
+    async deleteLink(id, ndx) {
+      await this.$services.sequenceLabeling.deleteLink(this.projectId, this.sourceChunk.links[ndx].id)
+      await this.list(this.doc.id)
+
+      this.hideAllLinkMenus();
+    },
+
+    selectNewLinkType(type) {
+      this.sourceLinkType = type;
+    },
+
+    hideAllLinkMenus() {
+      this.sourceChunk = NONE;
+      this.sourceLinkType = NONE;
     }
   },
 

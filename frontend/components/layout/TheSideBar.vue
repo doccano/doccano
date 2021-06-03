@@ -61,6 +61,7 @@ export default {
         { icon: 'mdi-home', text: this.$t('projectHome.home'), link: '', adminOnly: false },
         { icon: 'mdi-database', text: this.$t('dataset.dataset'), link: 'dataset', adminOnly: true },
         { icon: 'label', text: this.$t('labels.labels'), link: 'labels', adminOnly: true },
+        { icon: 'label', text: 'Relations', link: 'links', adminOnly: true },
         { icon: 'person', text: this.$t('members.members'), link: 'members', adminOnly: true },
         { icon: 'mdi-comment-account-outline', text: 'Comments', link: 'comments', adminOnly: true },
         { icon: 'mdi-book-open-outline', text: this.$t('guideline.guideline'), link: 'guideline', adminOnly: true },

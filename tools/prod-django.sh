@@ -4,7 +4,6 @@ set -o errexit
 
 echo "Making staticfiles"
 static_dir=staticfiles
-mkdir -p client/dist/static
 if [[ ! -d $static_dir ]] || [[ -z $(ls -A $static_dir) ]]; then
   echo "Executing collectstatic"
   python manage.py collectstatic --noinput;
