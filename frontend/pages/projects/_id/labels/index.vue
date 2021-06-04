@@ -56,6 +56,7 @@ import FormDelete from '@/components/label/FormDelete.vue'
 import FormUpload from '@/components/label/FormUpload.vue'
 import LabelList from '@/components/label/LabelList.vue'
 import { LabelDTO } from '~/services/application/label/labelData'
+import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   layout: 'project',
@@ -183,8 +184,14 @@ export default Vue.extend({
     }
   },
 
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
+  validate({ params, app }) {
+    if (/^\d+$/.test(params.id)) {
+      return app.$services.project.findById(params.id)
+      .then((res:ProjectDTO) => {
+        return res.canDefineLabel
+      })
+    }
+    return false
   }
 })
 </script>
