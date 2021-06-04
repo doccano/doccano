@@ -46,6 +46,7 @@ import FormCreate from '@/components/links/FormCreate.vue'
 import FormDelete from '@/components/links/FormDelete.vue'
 import LinksList from '~/components/links/LinksList.vue'
 import { LinkTypeDTO } from '~/services/application/links/linkData'
+import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   layout: 'project',
@@ -142,8 +143,14 @@ export default Vue.extend({
     }
   },
 
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
+  validate({ params, app }) {
+    if (/^\d+$/.test(params.id)) {
+      return app.$services.project.findById(params.id)
+      .then((res:ProjectDTO) => {
+        return res.canDefineRelation
+      })
+    }
+    return false
   }
 })
 </script>
