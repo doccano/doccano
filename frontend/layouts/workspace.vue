@@ -14,6 +14,7 @@
       <the-side-bar
         :link="getLink"
         :role="getCurrentUserRole"
+        :project="currentProject"
       />
     </v-navigation-drawer>
 
@@ -43,7 +44,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink', 'getCurrentUserRole'])
+    ...mapGetters('projects', ['getLink', 'getCurrentUserRole', 'currentProject'])
   },
   
   watch: {

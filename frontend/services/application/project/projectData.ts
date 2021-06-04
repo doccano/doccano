@@ -15,6 +15,8 @@ export class ProjectDTO {
   permitApprove: Boolean
   filterOption: String
   tags: Object[]
+  canDefineLabel: Boolean
+  canDefineRelation: Boolean
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -31,6 +33,8 @@ export class ProjectDTO {
     this.permitApprove = item.permitApprove
     this.filterOption = item.filterOption
     this.tags = item.tags
+    this.canDefineLabel = item.canDefineLabel
+    this.canDefineRelation = item.canDefineRelation
   }
 }
 

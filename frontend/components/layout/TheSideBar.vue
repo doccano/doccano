@@ -46,6 +46,11 @@ export default {
       type: Object,
       default: () => {},
       required: true
+    },
+    project: {
+      type: Object,
+      default: () => {},
+      required: true
     }
   },
 
@@ -58,24 +63,66 @@ export default {
   computed: {
     filteredItems() {
       const items = [
-        { icon: 'mdi-home', text: this.$t('projectHome.home'), link: '', adminOnly: false },
-        { icon: 'mdi-database', text: this.$t('dataset.dataset'), link: 'dataset', adminOnly: true },
-        { icon: 'label', text: this.$t('labels.labels'), link: 'labels', adminOnly: true },
-        { icon: 'label', text: 'Relations', link: 'links', adminOnly: true },
-        { icon: 'person', text: this.$t('members.members'), link: 'members', adminOnly: true },
-        { icon: 'mdi-comment-account-outline', text: 'Comments', link: 'comments', adminOnly: true },
-        { icon: 'mdi-book-open-outline', text: this.$t('guideline.guideline'), link: 'guideline', adminOnly: true },
-        { icon: 'mdi-chart-bar', text: this.$t('statistics.statistics'), link: 'statistics', adminOnly: true },
-        { icon: 'mdi-cog', text: this.$t('settings.title'), link: 'settings', adminOnly: true }
+        {
+          icon: 'mdi-home',
+          text: this.$t('projectHome.home'),
+          link: '',
+          isVisible: true
+        },
+        {
+          icon: 'mdi-database',
+          text: this.$t('dataset.dataset'),
+          link: 'dataset',
+          isVisible: this.role.is_project_admin
+        },
+        {
+          icon: 'label',
+          text: this.$t('labels.labels'),
+          link: 'labels',
+          isVisible: this.role.is_project_admin && this.project.canDefineLabel
+        },
+        {
+          icon: 'label',
+          text: 'Relations',
+          link: 'links',
+          isVisible: this.role.is_project_admin && this.project.canDefineRelation
+        },
+        {
+          icon: 'person',
+          text: this.$t('members.members'),
+          link: 'members',
+          isVisible: this.role.is_project_admin
+        },
+        {
+          icon: 'mdi-comment-account-outline',
+          text: 'Comments',
+          link: 'comments',
+          isVisible: this.role.is_project_admin
+        },
+        {
+          icon: 'mdi-book-open-outline',
+          text: this.$t('guideline.guideline'),
+          link: 'guideline',
+          isVisible: this.role.is_project_admin
+        },
+        {
+          icon: 'mdi-chart-bar',
+          text: this.$t('statistics.statistics'),
+          link: 'statistics',
+          isVisible: this.role.is_project_admin
+        },
+        {
+          icon: 'mdi-cog',
+          text: this.$t('settings.title'),
+          link: 'settings',
+          isVisible: this.role.is_project_admin
+        }
       ]
-      return items.filter(item => this.isVisible(item))
+      return items.filter(item => item.isVisible)
     }
   },
 
   methods: {
-    isVisible(item) {
-      return !item.adminOnly || this.role.is_project_admin
-    },
     toLabeling() {
       const query = this.$services.option.findOption(this.$route.params.id)
       this.$router.push({

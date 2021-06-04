@@ -90,6 +90,22 @@ export class ProjectReadItem {
     return role && !role.is_annotator
   }
 
+  get canDefineLabel() {
+    const allowedProjectTypes = [
+      'DocumentClassification',
+      'SequenceLabeling',
+      'ImageClassification'
+    ]
+    return allowedProjectTypes.includes(this.project_type)
+  }
+
+  get canDefineRelation() {
+    const allowedProjectTypes = [
+      'SequenceLabeling'
+    ]
+    return allowedProjectTypes.includes(this.project_type)
+  }
+
   get filterOption() {
     if (this.project_type === 'DocumentClassification') {
       return 'categories__isnull'
