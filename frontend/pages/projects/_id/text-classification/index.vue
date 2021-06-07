@@ -102,7 +102,6 @@ export default {
     const { fetch } = useFetch(async() => {
       await getExample(
         projectId,
-        projectState.project.filterOption,
         query.value
       )
       if (enableAutoLabeling.value) {

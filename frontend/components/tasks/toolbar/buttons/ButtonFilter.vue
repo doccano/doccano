@@ -51,8 +51,8 @@ export default {
     return {
       items: [
         { title: this.$t('annotation.filterOption1'), param: '' },
-        { title: this.$t('annotation.filterOption2'), param: 'false' },
-        { title: this.$t('annotation.filterOption3'), param: 'true' }
+        { title: this.$t('annotation.filterOption2'), param: 'true' },
+        { title: this.$t('annotation.filterOption3'), param: 'false' }
       ]
     }
   },

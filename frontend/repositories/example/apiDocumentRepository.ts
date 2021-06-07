@@ -8,8 +8,8 @@ export class APIExampleRepository implements ExampleRepository {
     private readonly request = ApiService
   ) {}
 
-  async list(projectId: string, { limit = '10', offset = '0', q = '', isChecked = '', filterName = '' }: SearchOption): Promise<ExampleItemList> {
-    const url = `/projects/${projectId}/examples?limit=${limit}&offset=${offset}&q=${q}&${filterName}=${isChecked}`
+  async list(projectId: string, { limit = '10', offset = '0', q = '', isChecked = '' }: SearchOption): Promise<ExampleItemList> {
+    const url = `/projects/${projectId}/examples?limit=${limit}&offset=${offset}&q=${q}&confirmed=${isChecked}`
     const response = await this.request.get(url)
     return ExampleItemList.valueOf(response.data)
   }
@@ -49,6 +49,6 @@ export class APIExampleRepository implements ExampleRepository {
 
   async confirm(projectId: string, exampleId: number): Promise<void> {
     const url = `/projects/${projectId}/examples/${exampleId}/states`
-    await this.request.post(url)
+    await this.request.post(url, {})
   }
 }

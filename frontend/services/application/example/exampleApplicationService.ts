@@ -17,14 +17,13 @@ export class ExampleApplicationService {
     }
   }
 
-  public async fetchOne(projectId: string, page: string, q: string, isChecked: string, filterName: string): Promise<ExampleListDTO> {
+  public async fetchOne(projectId: string, page: string, q: string, isChecked: string): Promise<ExampleListDTO> {
     const offset = (parseInt(page, 10) - 1).toString()
     const options: SearchOption = {
       limit: '1',
       offset,
       q,
       isChecked,
-      filterName
     }
     return await this.list(projectId, options)
   }
