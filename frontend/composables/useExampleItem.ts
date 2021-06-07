@@ -13,10 +13,9 @@ export const useExampleItem = () => {
 
   const getExample = async(
     projectId: string,
-    filterOption: string,
     { page, q, isChecked }: { page: string, q: string, isChecked: string}
   ) => {
-    const examples = await exampleService.fetchOne(projectId, page, q, isChecked, filterOption)
+    const examples = await exampleService.fetchOne(projectId, page, q, isChecked)
     state.totalExample = examples.count
     if (!_.isEmpty(examples) && examples.items.length !== 0) {
       state.example = examples.items[0]
@@ -29,17 +28,16 @@ export const useExampleItem = () => {
     state.example = await exampleService.findById(projectId, state.example.id)
   }
 
-  const approve = async(
+  const confirm = async(
     projectId: string,
   ) => {
-    const approved = !state.example.isApproved
-    await exampleService.approve(projectId, state.example.id, approved)
+    await exampleService.confirm(projectId, state.example.id)
     await getExampleById(projectId)
   }
 
   return {
     state,
-    approve,
+    confirm,
     getExample,
   }
 }

@@ -106,22 +106,6 @@ export class ProjectReadItem {
     return allowedProjectTypes.includes(this.project_type)
   }
 
-  get filterOption() {
-    if (this.project_type === 'DocumentClassification') {
-      return 'categories__isnull'
-    } else if (this.project_type === 'SequenceLabeling') {
-      return 'spans__isnull'
-    } else if (this.project_type === 'Seq2seq') {
-      return 'texts__isnull'
-    } else if (this.project_type === 'ImageClassification') {
-      return 'categories__isnull'
-    } else if (this.project_type === 'Speech2text') {
-      return 'texts__isnull'
-    } else {
-      return ''
-    }
-  }
-
   toObject(): Object {
     return {
       id: this.id,

@@ -49,13 +49,22 @@ export class ExampleItem {
     public annotationApprover: boolean | null,
     public commentCount: number,
     public fileUrl: string,
+    public isConfirmed: boolean
   ) {}
 
   static valueOf(
-    { id, text, meta, annotation_approver, comment_count, filename }:
-    { id: number, text: string, meta: object, annotation_approver: boolean | null, comment_count: number, filename: string }
+    { id, text, meta, annotation_approver, comment_count, filename, is_confirmed }:
+    {
+      id: number,
+      text: string,
+      meta: object,
+      annotation_approver: boolean | null,
+      comment_count: number,
+      filename: string,
+      is_confirmed: boolean
+  }
   ): ExampleItem {
-    return new ExampleItem(id, text, meta, annotation_approver, comment_count, filename)
+    return new ExampleItem(id, text, meta, annotation_approver, comment_count, filename, is_confirmed)
   }
 
   get url() {

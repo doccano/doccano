@@ -9,8 +9,8 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      SEQUENCE_LABELING, SPEECH2TEXT, AnnotationRelations,
                      AutoLabelingConfig, Category, Comment, Example,
-                     ImageClassificationProject, Label, Project, RelationTypes,
-                     Role, RoleMapping, Seq2seqProject,
+                     ExampleState, ImageClassificationProject, Label, Project,
+                     RelationTypes, Role, RoleMapping, Seq2seqProject,
                      SequenceLabelingProject, Span, Speech2textProject, Tag,
                      TextClassificationProject, TextLabel)
 
@@ -82,6 +82,7 @@ class TagSerializer(serializers.ModelSerializer):
 class ExampleSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
+    is_confirmed = serializers.SerializerMethodField()
 
     def get_annotations(self, instance):
         request = self.context.get('request')
@@ -99,6 +100,9 @@ class ExampleSerializer(serializers.ModelSerializer):
         approver = instance.annotations_approved_by
         return approver.username if approver else None
 
+    def get_is_confirmed(self, instance):
+        return instance.states.count() > 0
+
     class Meta:
         model = Example
         fields = [
@@ -108,9 +112,18 @@ class ExampleSerializer(serializers.ModelSerializer):
             'meta',
             'annotation_approver',
             'comment_count',
-            'text'
+            'text',
+            'is_confirmed'
         ]
-        read_only_fields = ['filename']
+        read_only_fields = ['filename', 'is_confirmed']
+
+
+class ExampleStateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ExampleState
+        fields = ('id', 'example', 'confirmed_by')
+        read_only_fields = ('id', 'example', 'confirmed_by')
 
 
 class ApproverSerializer(ExampleSerializer):

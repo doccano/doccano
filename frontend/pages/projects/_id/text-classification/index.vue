@@ -5,12 +5,12 @@
         :doc-id="example.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
-        :is-reviewd="example.isApproved"
+        :is-reviewd="example.isConfirmed"
         :show-approve-button="project.permitApprove"
         :total="totalExample"
         class="d-none d-sm-block"
         @click:clear-label="clearTeacherList(project.id, example.id)"
-        @click:review="approve(project.id)"
+        @click:review="confirm(project.id)"
       >
         <button-label-switch
           class="ms-2"
@@ -82,7 +82,7 @@ export default {
     const { app, params, query } = useContext()
     const projectId = params.value.id
     const { state: projectState, getProjectById } = useProjectItem()
-    const { state: exampleState, approve, getExample } = useExampleItem()
+    const { state: exampleState, confirm, getExample } = useExampleItem()
     const {
       state: teacherState,
       annotateLabel,
@@ -102,7 +102,6 @@ export default {
     const { fetch } = useFetch(async() => {
       await getExample(
         projectId,
-        projectState.project.filterOption,
         query.value
       )
       if (enableAutoLabeling.value) {
@@ -123,7 +122,7 @@ export default {
       ...toRefs(projectState),
       ...toRefs(teacherState),
       ...toRefs(exampleState),
-      approve,
+      confirm,
       annotateLabel,
       annotateOrRemoveLabel,
       clearTeacherList,

@@ -31,3 +31,25 @@ class DocumentFilter(FilterSet):
             'categories__label__id', 'spans__label__id',
             'categories__isnull', 'spans__isnull', 'texts__isnull'
         )
+
+
+class ExampleFilter(FilterSet):
+    confirmed = BooleanFilter(field_name='states', method='filter_by_state')
+
+    def filter_by_state(self, queryset, field_name, is_confirmed: bool):
+        queryset = queryset.annotate(
+            num_confirm=Count(
+                expression=field_name,
+                filter=Q(**{f'{field_name}__confirmed_by': self.request.user}) |
+                Q(project__collaborative_annotation=True)
+            )
+        )
+        if is_confirmed:
+            queryset = queryset.filter(num_confirm__gte=1)
+        else:
+            queryset = queryset.filter(num_confirm__lte=0)
+        return queryset
+
+    class Meta:
+        model = Example
+        fields = ('project', 'text', 'created_at', 'updated_at')

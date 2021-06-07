@@ -17,14 +17,13 @@ export class ExampleApplicationService {
     }
   }
 
-  public async fetchOne(projectId: string, page: string, q: string, isChecked: string, filterName: string): Promise<ExampleListDTO> {
+  public async fetchOne(projectId: string, page: string, q: string, isChecked: string): Promise<ExampleListDTO> {
     const offset = (parseInt(page, 10) - 1).toString()
     const options: SearchOption = {
       limit: '1',
       offset,
       q,
       isChecked,
-      filterName
     }
     return await this.list(projectId, options)
   }
@@ -62,6 +61,10 @@ export class ExampleApplicationService {
     await this.repository.approve(projectId, docId, approved)
   }
 
+  public async confirm(projectId: string, exampleId: number): Promise<void> {
+    await this.repository.confirm(projectId, exampleId)
+  }
+
   private toModel(item: ExampleDTO): ExampleItem {
     return new ExampleItem(
       item.id,
@@ -69,7 +72,8 @@ export class ExampleApplicationService {
       item.meta,
       item.annotationApprover,
       item.commentCount,
-      item.fileUrl
+      item.fileUrl,
+      item.isConfirmed
     )
   }
 }

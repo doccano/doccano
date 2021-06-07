@@ -5,12 +5,12 @@
         :doc-id="image.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
-        :is-reviewd="image.isApproved"
+        :is-reviewd="image.isConfirmed"
         :show-approve-button="project.permitApprove"
         :total="images.count"
         class="d-none d-sm-block"
         @click:clear-label="clear"
-        @click:review="approve"
+        @click:review="confirm"
       >
         <v-btn-toggle
           v-model="labelOption"
@@ -106,8 +106,7 @@ export default {
       this.projectId,
       this.$route.query.page,
       this.$route.query.q,
-      this.$route.query.isChecked,
-      this.project.filterOption
+      this.$route.query.isChecked
     )
     const image = this.images.items[0]
     this.setImageSize(image)
@@ -196,9 +195,8 @@ export default {
       }
     },
 
-    async approve() {
-      const approved = !this.image.isApproved
-      await this.$services.example.approve(this.projectId, this.image.id, approved)
+    async confirm() {
+      await this.$services.example.confirm(this.projectId, this.image.id)
       await this.$fetch()
     },
 

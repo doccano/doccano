@@ -5,12 +5,12 @@
         :doc-id="doc.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
-        :is-reviewd="doc.isApproved"
+        :is-reviewd="doc.isConfirmed"
         :show-approve-button="project.permitApprove"
         :total="docs.count"
         class="d-none d-sm-block"
         @click:clear-label="clear"
-        @click:review="approve"
+        @click:review="confirm"
       />
       <toolbar-mobile
         :total="docs.count"
@@ -59,8 +59,7 @@ export default {
       this.projectId,
       this.$route.query.page,
       this.$route.query.q,
-      this.$route.query.isChecked,
-      this.project.filterOption
+      this.$route.query.isChecked
     )
     const doc = this.docs.items[0]
     if (this.enableAutoLabeling) {
@@ -137,9 +136,8 @@ export default {
       }
     },
 
-    async approve() {
-      const approved = !this.doc.isApproved
-      await this.$services.example.approve(this.projectId, this.doc.id, approved)
+    async confirm() {
+      await this.$services.example.confirm(this.projectId, this.doc.id)
       await this.$fetch()
     }
   },
