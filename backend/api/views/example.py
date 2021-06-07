@@ -7,7 +7,7 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from ..filters import DocumentFilter
+from ..filters import DocumentFilter, ExampleFilter
 from ..models import Example, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin
 from ..serializers import ExampleSerializer
@@ -20,7 +20,7 @@ class ExampleList(generics.ListCreateAPIView):
     ordering_fields = ('created_at', 'updated_at')
     search_fields = ('text', 'filename')
     model = Example
-    filter_class = DocumentFilter
+    filter_class = ExampleFilter
 
     @property
     def project(self):

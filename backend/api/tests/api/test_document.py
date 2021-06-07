@@ -1,11 +1,13 @@
+from django.utils.http import urlencode
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from ...models import DOCUMENT_CLASSIFICATION
-from .utils import CRUDMixin, make_doc, make_user, prepare_project
+from .utils import (CRUDMixin, make_doc, make_example_state, make_user,
+                    prepare_project)
 
 
-class TestDocumentListAPI(CRUDMixin):
+class TestExampleListAPI(CRUDMixin):
 
     def setUp(self):
         self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
@@ -40,7 +42,48 @@ class TestDocumentListAPI(CRUDMixin):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
 
-class TestDocumentDetail(CRUDMixin):
+class TestExampleListFilter(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.example = make_doc(self.project.item)
+        make_example_state(self.example, self.project.users[0])
+
+    def reverse(self, query_kwargs=None):
+        base_url = reverse(viewname='example_list', args=[self.project.item.id])
+        self.url = '{}?{}'.format(base_url, urlencode(query_kwargs))
+
+    def assert_filter(self, data, user, expected):
+        self.reverse(query_kwargs=data)
+        response = self.assert_fetch(user, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], expected)
+
+    def test_returns_example_if_confirmed_is_true(self):
+        user = self.project.users[0]
+        self.assert_filter(data={'confirmed': 'True'}, user=user, expected=1)
+
+    def test_does_not_return_example_if_confirmed_is_false(self):
+        user = self.project.users[0]
+        self.assert_filter(data={'confirmed': 'False'}, user=user, expected=0)
+
+    def test_returns_example_if_confirmed_is_empty(self):
+        user = self.project.users[0]
+        self.assert_filter(data={'confirmed': ''}, user=user, expected=1)
+
+    def test_does_not_return_example_if_user_is_different(self):
+        user = self.project.users[1]
+        self.assert_filter(data={'confirmed': 'True'}, user=user, expected=0)
+
+    def test_returns_example_if_user_is_different(self):
+        user = self.project.users[1]
+        self.assert_filter(data={'confirmed': 'False'}, user=user, expected=1)
+
+    def test_returns_example_if_user_is_different_and_confirmed_is_empty(self):
+        user = self.project.users[1]
+        self.assert_filter(data={'confirmed': ''}, user=user, expected=1)
+
+
+class TestExampleDetail(CRUDMixin):
 
     def setUp(self):
         self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
