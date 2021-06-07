@@ -5,12 +5,12 @@
         :doc-id="item.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
-        :is-reviewd="item.isApproved"
+        :is-reviewd="item.isConfirmed"
         :show-approve-button="project.permitApprove"
         :total="items.count"
         class="d-none d-sm-block"
         @click:clear-label="clear"
-        @click:review="approve"
+        @click:review="confirm"
       />
       <toolbar-mobile
         :total="items.count"
@@ -140,9 +140,8 @@ export default {
       }
     },
 
-    async approve() {
-      const approved = !this.item.isApproved
-      await this.$services.example.approve(this.projectId, this.item.id, approved)
+    async confirm() {
+      await this.$services.example.confirm(this.projectId, this.item.id)
       await this.$fetch()
     }
   },

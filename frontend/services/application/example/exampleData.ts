@@ -11,6 +11,7 @@ export class ExampleDTO {
   fileUrl: string;
   filename: string;
   url: string;
+  isConfirmed: boolean;
 
   constructor(item: ExampleItem) {
     this.id = item.id
@@ -22,6 +23,7 @@ export class ExampleDTO {
     this.fileUrl = item.fileUrl
     this.filename = item.filename
     this.url = item.url
+    this.isConfirmed = item.isConfirmed
   }
 }
 

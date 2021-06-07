@@ -62,6 +62,10 @@ export class ExampleApplicationService {
     await this.repository.approve(projectId, docId, approved)
   }
 
+  public async confirm(projectId: string, exampleId: number): Promise<void> {
+    await this.repository.confirm(projectId, exampleId)
+  }
+
   private toModel(item: ExampleDTO): ExampleItem {
     return new ExampleItem(
       item.id,
@@ -69,7 +73,8 @@ export class ExampleApplicationService {
       item.meta,
       item.annotationApprover,
       item.commentCount,
-      item.fileUrl
+      item.fileUrl,
+      item.isConfirmed
     )
   }
 }

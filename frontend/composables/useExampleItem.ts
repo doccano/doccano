@@ -29,17 +29,16 @@ export const useExampleItem = () => {
     state.example = await exampleService.findById(projectId, state.example.id)
   }
 
-  const approve = async(
+  const confirm = async(
     projectId: string,
   ) => {
-    const approved = !state.example.isApproved
-    await exampleService.approve(projectId, state.example.id, approved)
+    await exampleService.confirm(projectId, state.example.id)
     await getExampleById(projectId)
   }
 
   return {
     state,
-    approve,
+    confirm,
     getExample,
   }
 }
