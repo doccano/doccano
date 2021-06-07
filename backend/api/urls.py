@@ -135,6 +135,11 @@ urlpatterns_project = [
         name='comment_detail'
     ),
     path(
+      route='examples/<int:example_id>/states',
+      view=views.ExampleStateList.as_view(),
+      name='example_state_list'
+    ),
+    path(
         route='roles',
         view=views.RoleMappingList.as_view(),
         name='rolemapping_list'

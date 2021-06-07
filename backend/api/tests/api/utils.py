@@ -100,6 +100,10 @@ def make_comment(doc, user):
     return mommy.make('Comment', example=doc, user=user)
 
 
+def make_example_state(example, user):
+    return mommy.make('ExampleState', example=example, confirmed_by=user)
+
+
 def make_annotation(task, doc, user):
     annotation_model = {
         DOCUMENT_CLASSIFICATION: 'Category',
