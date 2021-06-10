@@ -180,6 +180,11 @@ urlpatterns_project = [
         name='auto_labeling_annotation'
     ),
     path(
+        route='auto-labeling-parameter-testing',
+        view=views.AutoLabelingConfigParameterTest.as_view(),
+        name='auto_labeling_parameter_testing'
+    ),
+    path(
         route='auto-labeling-template-testing',
         view=views.AutoLabelingTemplateTest.as_view(),
         name='auto_labeling_template_test'
@@ -223,11 +228,6 @@ urlpatterns = [
         route='roles',
         view=views.Roles.as_view(),
         name='roles'
-    ),
-    path(
-        route='auto-labeling-parameter-testing',
-        view=views.AutoLabelingConfigParameterTest.as_view(),
-        name='auto_labeling_parameter_testing'
     ),
     path(
         route='tasks/status/<task_id>',

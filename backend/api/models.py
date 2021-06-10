@@ -1,4 +1,5 @@
 import string
+from typing import Literal
 
 from auto_labeling_pipeline.models import RequestModelFactory
 from django.contrib.auth.models import User
@@ -38,6 +39,9 @@ class Project(PolymorphicModel):
     def get_annotation_class(self):
         raise NotImplementedError()
 
+    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+        raise NotImplementedError()
+
     def __str__(self):
         return self.name
 
@@ -47,11 +51,17 @@ class TextClassificationProject(Project):
     def get_annotation_class(self):
         return Category
 
+    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+        return task == 'text'
+
 
 class SequenceLabelingProject(Project):
 
     def get_annotation_class(self):
         return Span
+
+    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+        return task == 'text'
 
 
 class Seq2seqProject(Project):
@@ -59,17 +69,26 @@ class Seq2seqProject(Project):
     def get_annotation_class(self):
         return TextLabel
 
+    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+        return task == 'text'
+
 
 class Speech2textProject(Project):
 
     def get_annotation_class(self):
         return TextLabel
 
+    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+        return task == 'speech'
+
 
 class ImageClassificationProject(Project):
 
     def get_annotation_class(self):
         return Category
+
+    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+        return task == 'image'
 
 
 class Label(models.Model):

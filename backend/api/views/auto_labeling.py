@@ -106,12 +106,16 @@ class AutoLabelingConfigTest(APIView):
 class AutoLabelingConfigParameterTest(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
-    def post(self, *args, **kwargs):
+    @property
+    def project(self):
+        return get_object_or_404(Project, pk=self.kwargs['project_id'])
+
+    def create_model(self):
         model_name = self.request.data['model_name']
         model_attrs = self.request.data['model_attrs']
-        sample_text = self.request.data['text']
         try:
             model = RequestModelFactory.create(model_name, model_attrs)
+            return model
         except Exception:
             model = RequestModelFactory.find(model_name)
             schema = model.schema()
@@ -120,15 +124,32 @@ class AutoLabelingConfigParameterTest(APIView):
                 'The attributes does not match the model.'
                 'You need to correctly specify the required fields: {}'.format(required_fields)
             )
+
+    def send_request(self, model, example):
         try:
-            response = model.send(text=sample_text)
-            return Response(response, status=status.HTTP_200_OK)
+            response = model.send(example)
+            return response
         except requests.exceptions.ConnectionError:
             raise URLConnectionError
         except botocore.exceptions.ClientError:
             raise AWSTokenError()
         except Exception as e:
             raise e
+
+    def prepare_example(self):
+        if self.project.is_task_of('text'):
+            return self.request.data['text']
+        elif self.project.is_task_of('image'):
+            return ''
+        elif self.project.is_task_of('speech'):
+            raise NotImplementedError('can not handle speech data now.')
+        raise NotImplementedError('The project type is unknown.')
+
+    def post(self, *args, **kwargs):
+        model = self.create_model()
+        example = self.prepare_example()
+        response = self.send_request(model=model, example=example)
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class AutoLabelingTemplateTest(APIView):
