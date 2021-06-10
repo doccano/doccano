@@ -1,3 +1,5 @@
+import base64
+
 import botocore.exceptions
 import requests
 from auto_labeling_pipeline.mappings import MappingTemplate
@@ -20,6 +22,12 @@ from ..models import AutoLabelingConfig, Example, Project
 from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
 from ..serializers import (AutoLabelingConfigSerializer,
                            get_annotation_serializer)
+
+
+def load_data_as_b64(filepath):
+    with open(filepath, 'rb') as f:
+        byte_str = base64.b64encode(f.read())
+        return byte_str.decode('utf-8')
 
 
 class AutoLabelingTemplateListAPI(APIView):
@@ -137,13 +145,7 @@ class AutoLabelingConfigParameterTest(APIView):
             raise e
 
     def prepare_example(self):
-        if self.project.is_task_of('text'):
-            return self.request.data['text']
-        elif self.project.is_task_of('image'):
-            return ''
-        elif self.project.is_task_of('speech'):
-            raise NotImplementedError('can not handle speech data now.')
-        raise NotImplementedError('The project type is unknown.')
+        return self.request.data['text']
 
     def post(self, *args, **kwargs):
         model = self.create_model()
