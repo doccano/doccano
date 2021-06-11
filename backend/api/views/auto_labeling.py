@@ -223,14 +223,21 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    def get_example(self, project):
+        example = get_object_or_404(Example, pk=self.kwargs['doc_id'])
+        if project.is_task_of('text'):
+            return example.text
+        else:
+            return load_data_as_b64(str(example.filename))
+
     def extract(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        doc = get_object_or_404(Example, pk=self.kwargs['doc_id'])
+        example = self.get_example(project)
         config = project.auto_labeling_config.first()
         if not config:
             raise AutoLabeliingPermissionDenied()
         return execute_pipeline(
-            text=doc.text,
+            text=example,
             project_type=project.project_type,
             model_name=config.model_name,
             model_attrs=config.model_attrs,
