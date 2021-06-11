@@ -36,9 +36,19 @@
             Please input sample text and press the <strong>Test</strong> button.
           </p>
           <v-text-field
+            v-if="project.isTextProject"
             v-model="sampleText"
             outlined
             label="Sample Text"
+          />
+          <v-file-input
+            v-else
+            v-model="file"
+            label="File input"
+            prepend-icon=""
+            prepend-inner-icon="$file"
+            outlined
+            @change="onChange"
           />
           <v-alert
             v-for="(error, index) in errorMessages"
@@ -128,7 +138,27 @@ export default Vue.extend({
 
   data() {
     return {
-      sampleText: ''
+      sampleText: '',
+      file: null,
+      project: {}
+    }
+  },
+
+  async created() {
+    this.project = await this.$services.project.findById(this.$route.params.id)
+  },
+
+  methods: {
+    onChange() {
+      const reader = new FileReader()
+      if(this.file) {
+        reader.onload = () => {
+          // @ts-ignore
+          this.sampleText = reader.result.split(',').pop()
+        }
+      // @ts-ignore
+      reader.readAsDataURL(this.file)
+    }
     }
   }
 })

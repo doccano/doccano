@@ -106,6 +106,15 @@ export class ProjectReadItem {
     return allowedProjectTypes.includes(this.project_type)
   }
 
+  get isTextProject() {
+    const allowedProjectTypes = [
+      'DocumentClassification',
+      'SequenceLabeling',
+      'Seq2seq'
+    ]
+    return allowedProjectTypes.includes(this.project_type)
+  }
+
   toObject(): Object {
     return {
       id: this.id,

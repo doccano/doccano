@@ -37,8 +37,8 @@ export class ConfigApplicationService {
     })
   }
 
-  public testParameters(item: ConfigItem, text: string) {
-    return this.configRepository.testParameters(item, text)
+  public testParameters(projectId: string, item: ConfigItem, text: string) {
+    return this.configRepository.testParameters(projectId, item, text)
     .then((value) => {
       return value
     })

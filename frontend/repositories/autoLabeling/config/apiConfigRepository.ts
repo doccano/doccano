@@ -61,8 +61,8 @@ export class APIConfigRepository implements ConfigRepository {
     return responseItem
   }
 
-  async testParameters(item: ConfigItem, text: string) {
-    const url = 'auto-labeling-parameter-testing'
+  async testParameters(projectId: string, item: ConfigItem, text: string) {
+    const url = `/projects/${projectId}/auto-labeling-parameter-testing`
     const response = await this.request.post(url, {...item.toAPI(), text})
     const responseItem: ConfigTestResponse = response.data
     return responseItem

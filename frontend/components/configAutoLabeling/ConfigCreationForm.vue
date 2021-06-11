@@ -119,8 +119,9 @@ export default Vue.extend({
       })
     },
     testParameters(text: string) {
+      const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
-      const promise = this.$services.config.testParameters(item, text)
+      const promise = this.$services.config.testParameters(projectId, item, text)
       this.testConfig(promise, 'parameter')
     },
     testTemplate() {
