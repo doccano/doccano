@@ -1,6 +1,7 @@
 import pathlib
 from unittest.mock import patch
 
+from auto_labeling_pipeline.mappings import AmazonComprehendSentimentTemplate
 from auto_labeling_pipeline.models import RequestModelFactory
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -42,3 +43,31 @@ class TestConfigParameter(CRUDMixin):
         self.assert_create(self.project.users[0], status.HTTP_200_OK)
         _, kwargs = mock.call_args
         self.assertEqual(kwargs['example'], self.data['text'])
+
+
+class TestTemplateMapping(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.data = {
+            'response': {
+                'Sentiment': 'NEUTRAL',
+                'SentimentScore': {
+                    'Positive': 0.004438233096152544,
+                    'Negative': 0.0005306027014739811,
+                    'Neutral': 0.9950305223464966,
+                    'Mixed': 5.80838445785048e-7
+                }
+            },
+            'template': AmazonComprehendSentimentTemplate().load()
+        }
+        self.url = reverse(viewname='auto_labeling_template_test', args=[self.project.item.id])
+
+    def test_template_mapping(self):
+        response = self.assert_create(self.project.users[0], status.HTTP_200_OK)
+        expected = [{'label': 'NEUTRAL'}]
+        self.assertEqual(response.json(), expected)
+
+    def test_json_decode_error(self):
+        self.data['template'] = ''
+        self.assert_create(self.project.users[0], status.HTTP_400_BAD_REQUEST)

@@ -1,4 +1,5 @@
 import base64
+import json
 
 import botocore.exceptions
 import requests
@@ -16,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..exceptions import (AutoLabeliingPermissionDenied, AutoLabelingException,
-                          AWSTokenError, SampleDataException,
+                          AWSTokenError, SampleDataException, TemplateMappingError,
                           URLConnectionError)
 from ..models import AutoLabelingConfig, Example, Project
 from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
@@ -166,7 +167,10 @@ class AutoLabelingTemplateTest(APIView):
             label_collection=task.label_collection,
             template=template
         )
-        labels = template.render(response)
+        try:
+            labels = template.render(response)
+        except json.decoder.JSONDecodeError:
+            raise TemplateMappingError()
         if not labels.dict():
             raise SampleDataException()
         return Response(labels.dict(), status=status.HTTP_200_OK)

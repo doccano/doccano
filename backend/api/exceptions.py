@@ -36,6 +36,10 @@ class SampleDataException(ValidationError):
                      'Please specify another sample data which returns at least one label.'
 
 
+class TemplateMappingError(ValidationError):
+    default_detail = 'The response cannot be mapped. You might need to change the template.'
+
+
 class LabelValidationError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'You cannot create a label with same name or shortcut key.'
