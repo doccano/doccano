@@ -87,3 +87,24 @@ class TestLabelMapping(CRUDMixin):
         response = self.assert_create(self.project.users[0], status.HTTP_200_OK)
         expected = [{'label': 'Negative'}]
         self.assertEqual(response.json(), expected)
+
+
+class TestConfigCreation(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.data = {
+            'model_name': 'Amazon Comprehend Sentiment Analysis',
+            'model_attrs': {
+                'aws_access_key': 'str',
+                'aws_secret_access_key': 'str',
+                'region_name': 'us-east-1',
+                'language_code': 'en'
+            },
+            'template': AmazonComprehendSentimentTemplate().load(),
+            'label_mapping': {'NEGATIVE': 'Negative'}
+        }
+        self.url = reverse(viewname='auto_labeling_configs', args=[self.project.item.id])
+
+    def test_create_config(self):
+        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)

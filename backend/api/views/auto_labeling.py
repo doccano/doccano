@@ -17,8 +17,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..exceptions import (AutoLabeliingPermissionDenied, AutoLabelingException,
-                          AWSTokenError, SampleDataException, TemplateMappingError,
-                          URLConnectionError)
+                          AWSTokenError, SampleDataException,
+                          TemplateMappingError, URLConnectionError)
 from ..models import AutoLabelingConfig, Example, Project
 from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
 from ..serializers import (AutoLabelingConfigSerializer,
