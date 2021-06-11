@@ -125,7 +125,7 @@ GOOGLE_TRACKING_ID: "UA-12345678-1"
 Run doccano:
 
 ```bash
-$ docker-compose -f docker-compose.prod.yml up
+$ docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
 ```
 
 Go to <http://0.0.0.0/>.
@@ -142,7 +142,7 @@ ADMIN_PASSWORD: "password"
 Run Doccano:
 
 ```bash
-$ docker-compose -f docker-compose.dev.yml up
+$ docker-compose -f docker-compose.dev.yml --env-file ./config/.env.example up
 ```
 
 Go to <http://127.0.0.1:3000/>.
