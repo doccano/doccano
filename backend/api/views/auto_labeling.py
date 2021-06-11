@@ -203,7 +203,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         model = project.get_annotation_class()
-        queryset = model.objects.filter(example=self.kwargs['doc_id'])
+        queryset = model.objects.filter(example=self.kwargs['example_id'])
         if not project.collaborative_annotation:
             queryset = queryset.filter(user=self.request.user)
         return queryset
@@ -224,7 +224,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
         serializer.save(user=self.request.user)
 
     def get_example(self, project):
-        example = get_object_or_404(Example, pk=self.kwargs['doc_id'])
+        example = get_object_or_404(Example, pk=self.kwargs['example_id'])
         if project.is_task_of('text'):
             return example.text
         else:
@@ -248,7 +248,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
     def transform(self, labels):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         for label in labels:
-            label['example'] = self.kwargs['doc_id']
+            label['example'] = self.kwargs['example_id']
             if 'label' in label:
                 label['label'] = project.labels.get(text=label.pop('label')).id
         return labels
