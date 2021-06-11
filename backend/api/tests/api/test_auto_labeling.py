@@ -71,3 +71,19 @@ class TestTemplateMapping(CRUDMixin):
     def test_json_decode_error(self):
         self.data['template'] = ''
         self.assert_create(self.project.users[0], status.HTTP_400_BAD_REQUEST)
+
+
+class TestLabelMapping(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.data = {
+            'response': [{'label': 'NEGATIVE'}],
+            'label_mapping': {'NEGATIVE': 'Negative'}
+        }
+        self.url = reverse(viewname='auto_labeling_mapping_test', args=[self.project.item.id])
+
+    def test_label_mapping(self):
+        response = self.assert_create(self.project.users[0], status.HTTP_200_OK)
+        expected = [{'label': 'Negative'}]
+        self.assertEqual(response.json(), expected)
