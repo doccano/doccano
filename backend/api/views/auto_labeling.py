@@ -1,4 +1,3 @@
-import base64
 import json
 
 import botocore.exceptions
@@ -23,12 +22,6 @@ from ..models import AutoLabelingConfig, Example, Project
 from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
 from ..serializers import (AutoLabelingConfigSerializer,
                            get_annotation_serializer)
-
-
-def load_data_as_b64(filepath):
-    with open(filepath, 'rb') as f:
-        byte_str = base64.b64encode(f.read())
-        return byte_str.decode('utf-8')
 
 
 class AutoLabelingTemplateListAPI(APIView):
@@ -228,7 +221,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
         if project.is_task_of('text'):
             return example.text
         else:
-            return load_data_as_b64(str(example.filename))
+            return str(example.filename)
 
     def extract(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])

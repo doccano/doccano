@@ -7,7 +7,6 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from ...models import DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION
-from ...views.auto_labeling import load_data_as_b64
 from .utils import (CRUDMixin, make_auto_labeling_config, make_doc, make_image,
                     prepare_project)
 
@@ -40,7 +39,7 @@ class TestConfigParameter(CRUDMixin):
 
     @patch('api.views.auto_labeling.AutoLabelingConfigParameterTest.send_request', return_value={})
     def test_called_with_image(self, mock):
-        self.data['text'] = load_data_as_b64(data_dir / 'images/1500x500.jpeg')
+        self.data['text'] = str(data_dir / 'images/1500x500.jpeg')
         self.assert_create(self.project.users[0], status.HTTP_200_OK)
         _, kwargs = mock.call_args
         self.assertEqual(kwargs['example'], self.data['text'])
@@ -139,5 +138,5 @@ class TestAutoLabelingImage(CRUDMixin):
     def test_text_task(self, mock):
         self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
         _, kwargs = mock.call_args
-        expected = load_data_as_b64(str(self.example.filename))
+        expected = str(self.example.filename)
         self.assertEqual(kwargs['text'], expected)
