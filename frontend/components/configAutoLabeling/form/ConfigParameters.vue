@@ -37,18 +37,13 @@
           </p>
           <v-text-field
             v-if="project.isTextProject"
-            v-model="sampleText"
+            v-model="payload"
             outlined
             label="Sample Text"
           />
-          <v-file-input
+          <file-field
             v-else
-            v-model="file"
-            label="File input"
-            prepend-icon=""
-            prepend-inner-icon="$file"
-            outlined
-            @change="onChange"
+            v-model="payload"
           />
           <v-alert
             v-for="(error, index) in errorMessages"
@@ -87,7 +82,7 @@
           v-show="!isPassed"
           color="primary"
           class="text-capitalize"
-          @click="$emit('onTest', sampleText)"
+          @click="$emit('onTest', payload)"
         >
           Test
         </v-btn>
@@ -107,10 +102,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import ObjectField from './ObjectField.vue'
+import FileField from './FileField.vue'
 
 export default Vue.extend({
   components: {
-    ObjectField
+    ObjectField,
+    FileField,
   },
 
   props: {
@@ -138,28 +135,13 @@ export default Vue.extend({
 
   data() {
     return {
-      sampleText: '',
-      file: null,
+      payload: '',
       project: {}
     }
   },
 
   async created() {
     this.project = await this.$services.project.findById(this.$route.params.id)
-  },
-
-  methods: {
-    onChange() {
-      const reader = new FileReader()
-      if(this.file) {
-        reader.onload = () => {
-          // @ts-ignore
-          this.sampleText = reader.result.split(',').pop()
-        }
-      // @ts-ignore
-      reader.readAsDataURL(this.file)
-    }
-    }
   }
 })
 </script>
