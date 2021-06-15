@@ -9,6 +9,7 @@ from auto_labeling_pipeline.pipeline import pipeline
 from auto_labeling_pipeline.postprocessing import PostProcessor
 from auto_labeling_pipeline.task import TaskFactory
 from django.shortcuts import get_object_or_404
+from django_drf_filepond.models import TemporaryUpload
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -139,7 +140,12 @@ class AutoLabelingConfigParameterTest(APIView):
             raise e
 
     def prepare_example(self):
-        return self.request.data['text']
+        text = self.request.data['text']
+        if self.project.is_task_of('text'):
+            return text
+        else:
+            tu = TemporaryUpload.objects.get(upload_id=text)
+            return tu.get_file_path()
 
     def post(self, *args, **kwargs):
         model = self.create_model()
