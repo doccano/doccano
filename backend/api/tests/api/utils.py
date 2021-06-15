@@ -8,8 +8,8 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ...models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                       SPEECH2TEXT, Role, RoleMapping)
+from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+                       SEQUENCE_LABELING, SPEECH2TEXT, Role, RoleMapping)
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
 
@@ -61,7 +61,8 @@ def make_project(
         DOCUMENT_CLASSIFICATION: 'TextClassificationProject',
         SEQUENCE_LABELING: 'SequenceLabelingProject',
         SEQ2SEQ: 'Seq2seqProject',
-        SPEECH2TEXT: 'Speech2TextProject'
+        SPEECH2TEXT: 'Speech2TextProject',
+        IMAGE_CLASSIFICATION: 'ImageClassificationProject'
     }.get(task, 'Project')
     project = mommy.make(
         _model=project_model,
@@ -89,11 +90,11 @@ def make_label(project):
 
 
 def make_doc(project):
-    return mommy.make('Example', project=project)
+    return mommy.make('Example', text='example', project=project)
 
 
-def make_image(project):
-    return mommy.make('Example', project=project)
+def make_image(project, filepath):
+    return mommy.make('Example', filename=filepath, project=project)
 
 
 def make_comment(doc, user):
@@ -102,6 +103,10 @@ def make_comment(doc, user):
 
 def make_example_state(example, user):
     return mommy.make('ExampleState', example=example, confirmed_by=user)
+
+
+def make_auto_labeling_config(project):
+    return mommy.make('AutoLabelingConfig', project=project)
 
 
 def make_annotation(task, doc, user):

@@ -18,6 +18,12 @@
       />
     </template>
     <template v-slot:content>
+      <v-overlay :value="isLoading">
+        <v-progress-circular
+          indeterminate
+          size="64"
+        />
+      </v-overlay>
       <audio-viewer
         :source="item.url"
         class="mb-5"
@@ -58,6 +64,7 @@ export default {
   },
 
   async fetch() {
+    this.isLoading = true
     this.items = await this.$services.example.fetchOne(
       this.projectId,
       this.$route.query.page,
@@ -69,6 +76,7 @@ export default {
       await this.autoLabel(item.id)
     }
     await this.list(item.id)
+    this.isLoading = false
   },
 
   data() {
@@ -76,7 +84,8 @@ export default {
       annotations: [],
       items: [],
       project: {},
-      enableAutoLabeling: false
+      enableAutoLabeling: false,
+      isLoading: false
     }
   },
 

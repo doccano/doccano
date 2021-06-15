@@ -1,3 +1,5 @@
+import json
+
 import botocore.exceptions
 import requests
 from auto_labeling_pipeline.mappings import MappingTemplate
@@ -7,6 +9,7 @@ from auto_labeling_pipeline.pipeline import pipeline
 from auto_labeling_pipeline.postprocessing import PostProcessor
 from auto_labeling_pipeline.task import TaskFactory
 from django.shortcuts import get_object_or_404
+from django_drf_filepond.models import TemporaryUpload
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
@@ -15,7 +18,7 @@ from rest_framework.views import APIView
 
 from ..exceptions import (AutoLabeliingPermissionDenied, AutoLabelingException,
                           AWSTokenError, SampleDataException,
-                          URLConnectionError)
+                          TemplateMappingError, URLConnectionError)
 from ..models import AutoLabelingConfig, Example, Project
 from ..permissions import IsInProjectOrAdmin, IsProjectAdmin
 from ..serializers import (AutoLabelingConfigSerializer,
@@ -106,12 +109,16 @@ class AutoLabelingConfigTest(APIView):
 class AutoLabelingConfigParameterTest(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
-    def post(self, *args, **kwargs):
+    @property
+    def project(self):
+        return get_object_or_404(Project, pk=self.kwargs['project_id'])
+
+    def create_model(self):
         model_name = self.request.data['model_name']
         model_attrs = self.request.data['model_attrs']
-        sample_text = self.request.data['text']
         try:
             model = RequestModelFactory.create(model_name, model_attrs)
+            return model
         except Exception:
             model = RequestModelFactory.find(model_name)
             schema = model.schema()
@@ -120,15 +127,31 @@ class AutoLabelingConfigParameterTest(APIView):
                 'The attributes does not match the model.'
                 'You need to correctly specify the required fields: {}'.format(required_fields)
             )
+
+    def send_request(self, model, example):
         try:
-            response = model.send(text=sample_text)
-            return Response(response, status=status.HTTP_200_OK)
+            response = model.send(example)
+            return response
         except requests.exceptions.ConnectionError:
             raise URLConnectionError
         except botocore.exceptions.ClientError:
             raise AWSTokenError()
         except Exception as e:
             raise e
+
+    def prepare_example(self):
+        text = self.request.data['text']
+        if self.project.is_task_of('text'):
+            return text
+        else:
+            tu = TemporaryUpload.objects.get(upload_id=text)
+            return tu.get_file_path()
+
+    def post(self, *args, **kwargs):
+        model = self.create_model()
+        example = self.prepare_example()
+        response = self.send_request(model=model, example=example)
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class AutoLabelingTemplateTest(APIView):
@@ -143,7 +166,10 @@ class AutoLabelingTemplateTest(APIView):
             label_collection=task.label_collection,
             template=template
         )
-        labels = template.render(response)
+        try:
+            labels = template.render(response)
+        except json.decoder.JSONDecodeError:
+            raise TemplateMappingError()
         if not labels.dict():
             raise SampleDataException()
         return Response(labels.dict(), status=status.HTTP_200_OK)
@@ -176,7 +202,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         model = project.get_annotation_class()
-        queryset = model.objects.filter(example=self.kwargs['doc_id'])
+        queryset = model.objects.filter(example=self.kwargs['example_id'])
         if not project.collaborative_annotation:
             queryset = queryset.filter(user=self.request.user)
         return queryset
@@ -196,14 +222,21 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    def get_example(self, project):
+        example = get_object_or_404(Example, pk=self.kwargs['example_id'])
+        if project.is_task_of('text'):
+            return example.text
+        else:
+            return str(example.filename)
+
     def extract(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        doc = get_object_or_404(Example, pk=self.kwargs['doc_id'])
+        example = self.get_example(project)
         config = project.auto_labeling_config.first()
         if not config:
             raise AutoLabeliingPermissionDenied()
         return execute_pipeline(
-            text=doc.text,
+            text=example,
             project_type=project.project_type,
             model_name=config.model_name,
             model_attrs=config.model_attrs,
@@ -214,7 +247,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
     def transform(self, labels):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         for label in labels:
-            label['example'] = self.kwargs['doc_id']
+            label['example'] = self.kwargs['example_id']
             if 'label' in label:
                 label['label'] = project.labels.get(text=label.pop('label')).id
         return labels

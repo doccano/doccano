@@ -16,6 +16,7 @@ export class ProjectDTO {
   tags: Object[]
   canDefineLabel: Boolean
   canDefineRelation: Boolean
+  isTextProject: Boolean
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -33,6 +34,7 @@ export class ProjectDTO {
     this.tags = item.tags
     this.canDefineLabel = item.canDefineLabel
     this.canDefineRelation = item.canDefineRelation
+    this.isTextProject = item.isTextProject
   }
 }
 

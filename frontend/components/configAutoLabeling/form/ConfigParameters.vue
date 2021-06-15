@@ -36,9 +36,14 @@
             Please input sample text and press the <strong>Test</strong> button.
           </p>
           <v-text-field
-            v-model="sampleText"
+            v-if="project.isTextProject"
+            v-model="payload"
             outlined
             label="Sample Text"
+          />
+          <file-field
+            v-else
+            v-model="payload"
           />
           <v-alert
             v-for="(error, index) in errorMessages"
@@ -77,7 +82,7 @@
           v-show="!isPassed"
           color="primary"
           class="text-capitalize"
-          @click="$emit('onTest', sampleText)"
+          @click="$emit('onTest', payload)"
         >
           Test
         </v-btn>
@@ -97,10 +102,12 @@
 <script lang="ts">
 import Vue from 'vue'
 import ObjectField from './ObjectField.vue'
+import FileField from './FileField.vue'
 
 export default Vue.extend({
   components: {
-    ObjectField
+    ObjectField,
+    FileField,
   },
 
   props: {
@@ -128,8 +135,13 @@ export default Vue.extend({
 
   data() {
     return {
-      sampleText: ''
+      payload: '',
+      project: {}
     }
+  },
+
+  async created() {
+    this.project = await this.$services.project.findById(this.$route.params.id)
   }
 })
 </script>
