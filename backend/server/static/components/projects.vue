@@ -38,6 +38,7 @@
               select(v-model="projectType", name="project_type", required)
                 option(value="", selected="selected") ---------
                 option(value="DocumentClassification") document classification
+                option(value="DocumentSimilarity") document similarity
                 option(value="SequenceLabeling") sequence labeling
                 option(value="Seq2seq") sequence to sequence
                 option(value="Speech2text") speech to text
@@ -64,8 +65,7 @@
                 required
               )
               | Share annotations across all users
-
-          div.field(v-if="projectType === 'DocumentClassification'")
+          div.field(v-if="(projectType === 'DocumentClassification') || (projectType === 'DocumentSimilariy')")
             label.checkbox
               input(
                 v-model="singleClassClassification"
@@ -105,6 +105,7 @@
                       select(v-model="selected")
                         option(selected) All Project
                         option Text Classification
+                        option Text Similarity
                         option Sequence Labeling
                         option Seq2seq
                         option Speech to text
@@ -208,6 +209,9 @@ export default {
       if (projectType === 'DocumentClassification') {
         return this.selected === 'Text Classification';
       }
+      if (projectType === 'DocumentSimilarity') {
+        return this.selected === 'Text Similarity';
+      }
       if (projectType === 'SequenceLabeling') {
         return this.selected === 'Sequence Labeling';
       }
@@ -254,6 +258,9 @@ export default {
     resourceType() {
       if (this.projectType === 'DocumentClassification') {
         return 'TextClassificationProject';
+      }
+      if (this.projectType === 'DocumentSimilarity') {
+        return 'TextSimilarityProject';
       }
       if (this.projectType === 'SequenceLabeling') {
         return 'SequenceLabelingProject';

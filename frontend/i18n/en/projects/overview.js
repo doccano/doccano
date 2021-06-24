@@ -3,6 +3,7 @@ export default {
   projectName: 'Project name',
   projectType: 'Project type',
   textClassification: 'Text Classification',
+  textSimilarity: 'Text Similarity',
   sequenceLabeling: 'Sequence Labeling',
   sequenceToSequence: 'Sequence to sequence',
   randomizeDocOrder: 'Randomize document order',

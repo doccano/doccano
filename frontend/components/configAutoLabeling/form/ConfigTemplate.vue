@@ -28,6 +28,9 @@
           <pre>Text Classification</pre>
           <pre>[{ "label": "Cat" }, ...]</pre>
           <br>
+          <pre>Text Similarity</pre>
+          <pre>[{ "label": "Cat" }, ...]</pre>
+          <br>
           <pre>Sequence Labeling</pre>
           <pre>[{ "label": "Cat", "start_offset": 0, "end_offset": 5 }, ...]</pre>
           <br>

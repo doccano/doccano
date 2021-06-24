@@ -44,6 +44,7 @@ class Migration(migrations.Migration):
             model_name='project',
             name='project_type',
             field=models.CharField(choices=[('DocumentClassification', 'document classification'),
+                                            ('DocumentSimilarity', 'document similarity'),
                                             ('SequenceLabeling', 'sequence labeling'),
                                             ('Seq2seq', 'sequence to sequence'),
                                             ('Speech2text', 'speech to text')], max_length=30),

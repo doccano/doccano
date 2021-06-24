@@ -119,6 +119,7 @@ export default Vue.extend({
     projectTypes() {
       return [
         'DocumentClassification',
+        'DocumentSimilarity',
         'SequenceLabeling',
         'Seq2seq',
         'ImageClassification',
@@ -128,6 +129,7 @@ export default Vue.extend({
     hasSingleLabelOption() {
       return [
         'DocumentClassification',
+        'DocumentSimilarity',
         'ImageClassification',
       ].includes(this.projectType)
     }

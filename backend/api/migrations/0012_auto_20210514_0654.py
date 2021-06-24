@@ -148,7 +148,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='project',
             name='project_type',
-            field=models.CharField(choices=[('DocumentClassification', 'document classification'), ('SequenceLabeling', 'sequence labeling'), ('Seq2seq', 'sequence to sequence'), ('Speech2text', 'speech to text'), ('ImageClassification', 'image classification')], max_length=30),
+            field=models.CharField(choices=[('DocumentClassification', 'document classification'), ('DocumentSimilarity', 'document similarity'), ('SequenceLabeling', 'sequence labeling'), ('Seq2seq', 'sequence to sequence'), ('Speech2text', 'speech to text'), ('ImageClassification', 'image classification')], max_length=30),
         ),
         migrations.DeleteModel(
             name='Document',

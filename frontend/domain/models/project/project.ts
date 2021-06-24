@@ -4,7 +4,7 @@ export interface CurrentUsersRole {
   is_annotation_approver: boolean;
 }
 
-export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'ImageClassification' | 'Speech2text'
+export type ProjectType = 'DocumentClassification' | 'DocumentSimilarity' | 'SequenceLabeling' | 'Seq2seq' | 'ImageClassification' | 'Speech2text'
 
 
 export class ProjectReadItem {
@@ -76,6 +76,7 @@ export class ProjectReadItem {
   get annotationPageLink(): string {
     const mapping = {
       DocumentClassification: 'text-classification',
+      DocumentSimilarity    : 'text-similarity',
       SequenceLabeling      : 'sequence-labeling',
       Seq2seq               : 'sequence-to-sequence',
       ImageClassification   : 'image-classification',
@@ -93,6 +94,7 @@ export class ProjectReadItem {
   get canDefineLabel() {
     const allowedProjectTypes = [
       'DocumentClassification',
+      'DocumentSimilarity',
       'SequenceLabeling',
       'ImageClassification'
     ]
@@ -174,6 +176,7 @@ export class ProjectWriteItem {
   get resourceType(): string {
     const mapping = {
       DocumentClassification: 'TextClassificationProject',
+      DocumentSimilarity    : 'TextSimilarityProject',
       SequenceLabeling      : 'SequenceLabelingProject',
       Seq2seq               : 'Seq2seqProject',
       ImageClassification   : 'ImageClassificationProject',

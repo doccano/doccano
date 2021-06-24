@@ -6,13 +6,13 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+from .models import (DOCUMENT_CLASSIFICATION, DOCUMENT_SIMILARITY, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      SEQUENCE_LABELING, SPEECH2TEXT, AnnotationRelations,
                      AutoLabelingConfig, Category, Comment, Example,
                      ExampleState, ImageClassificationProject, Label, Project,
                      RelationTypes, Role, RoleMapping, Seq2seqProject,
                      SequenceLabelingProject, Span, Speech2textProject, Tag,
-                     TextClassificationProject, TextLabel)
+                     TextClassificationProject, TextSimilarityProject, TextLabel)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -182,6 +182,12 @@ class TextClassificationProjectSerializer(ProjectSerializer):
         model = TextClassificationProject
 
 
+class TextSimilarityProjectSerializer(ProjectSerializer):
+
+    class Meta(ProjectSerializer.Meta):
+        model = TextSimilarityProject
+
+
 class SequenceLabelingProjectSerializer(ProjectSerializer):
 
     class Meta(ProjectSerializer.Meta):
@@ -332,6 +338,7 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
 def get_annotation_serializer(task: str):
     mapping = {
         DOCUMENT_CLASSIFICATION: CategorySerializer,
+        DOCUMENT_SIMILARITY: CategorySerializer,
         SEQUENCE_LABELING: SpanSerializer,
         SEQ2SEQ: TextLabelSerializer,
         SPEECH2TEXT: TextLabelSerializer,

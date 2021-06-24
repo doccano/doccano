@@ -133,6 +133,21 @@ class TextClassificationRepository(TextRepository):
         return label_per_user
 
 
+class TextSimilarityRepository(TextRepository):
+
+    @property
+    def docs(self):
+        return Example.objects.filter(project=self.project).prefetch_related(
+            'categories__user', 'categories__label'
+        )
+
+    def label_per_user(self, doc) -> Dict:
+        label_per_user = defaultdict(list)
+        for a in doc.categories.all():
+            label_per_user[a.user.username].append(a.label.text)
+        return label_per_user
+
+
 class SequenceLabelingRepository(TextRepository):
 
     @property

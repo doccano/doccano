@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('guideline', models.TextField(default='')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('project_type', models.CharField(choices=[('DocumentClassification', 'document classification'), ('SequenceLabeling', 'sequence labeling'), ('Seq2seq', 'sequence to sequence')], max_length=30)),
+                ('project_type', models.CharField(choices=[('DocumentClassification', 'document classification'), ('DocumentSimilarity', 'document similarity'), ('SequenceLabeling', 'sequence labeling'), ('Seq2seq', 'sequence to sequence')], max_length=30)),
                 ('randomize_document_order', models.BooleanField(default=False)),
                 ('collaborative_annotation', models.BooleanField(default=False)),
             ],
@@ -140,6 +140,19 @@ class Migration(migrations.Migration):
             name='TextClassificationProject',
             fields=[
                 ('project_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='api.Project')),
+            ],
+            options={
+                'abstract': False,
+                'base_manager_name': 'objects',
+            },
+            bases=('api.project',),
+        ),
+        migrations.CreateModel(
+            name='TextSimilarityProject',
+            fields=[
+                ('project_ptr',
+                 models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True,
+                                      primary_key=True, serialize=False, to='api.Project')),
             ],
             options={
                 'abstract': False,

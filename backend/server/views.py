@@ -124,6 +124,13 @@ class DemoTextClassification(TemplateView):
     }
 
 
+class DemoTextSimilarity(TemplateView):
+    template_name = 'annotation.html'
+    extra_context = {
+        'bundle_name': 'demo_text_similarity',
+    }
+
+
 class DemoNamedEntityRecognition(TemplateView):
     template_name = 'annotation.html'
     extra_context = {

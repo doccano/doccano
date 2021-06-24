@@ -3,6 +3,7 @@ export default {
   projectName: '项目名称',
   projectType: '项目类型',
   textClassification: '文本分类',
+  textSimilarity: 'Text Similarity',
   sequenceLabeling: '序列标注',
   sequenceToSequence: '序列到序列',
   randomizeDocOrder: '随机文档顺序',

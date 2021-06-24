@@ -10,12 +10,14 @@ from .managers import (AnnotationManager, RoleMappingManager,
                        Seq2seqAnnotationManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
+DOCUMENT_SIMILARITY = 'DocumentSimilarity'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
 SPEECH2TEXT = 'Speech2text'
 IMAGE_CLASSIFICATION = 'ImageClassification'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
+    (DOCUMENT_SIMILARITY, 'document similarity'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
     (SPEECH2TEXT, 'speech to text'),
@@ -43,6 +45,12 @@ class Project(PolymorphicModel):
 
 
 class TextClassificationProject(Project):
+
+    def get_annotation_class(self):
+        return Category
+
+
+class TextSimilarityProject(Project):
 
     def get_annotation_class(self):
         return Category

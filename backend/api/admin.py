@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import (Category, Comment, Example, Label, Project, Role,
                      RoleMapping, Seq2seqProject, SequenceLabelingProject,
-                     Span, Tag, TextClassificationProject, TextLabel)
+                     Span, Tag, TextClassificationProject, TextSimilarityProject, TextLabel)
 
 
 class LabelAdmin(admin.ModelAdmin):
@@ -69,6 +69,7 @@ admin.site.register(Label, LabelAdmin)
 admin.site.register(Example, ExampleAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(TextClassificationProject, ProjectAdmin)
+admin.site.register(TextSimilarityProject, ProjectAdmin)
 admin.site.register(SequenceLabelingProject, ProjectAdmin)
 admin.site.register(Seq2seqProject, ProjectAdmin)
 admin.site.register(Role, RoleAdmin)

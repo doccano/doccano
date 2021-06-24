@@ -1,6 +1,6 @@
 from typing import Type
 
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+from ...models import (DOCUMENT_CLASSIFICATION, DOCUMENT_SIMILARITY, IMAGE_CLASSIFICATION, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
 from . import catalog, repositories, writer
 
@@ -8,6 +8,7 @@ from . import catalog, repositories, writer
 def create_repository(project) -> repositories.BaseRepository:
     mapping = {
         DOCUMENT_CLASSIFICATION: repositories.TextClassificationRepository,
+        DOCUMENT_SIMILARITY: repositories.TextSimilarityRepository,
         SEQUENCE_LABELING: repositories.SequenceLabelingRepository,
         SEQ2SEQ: repositories.Seq2seqRepository,
         IMAGE_CLASSIFICATION: repositories.FileRepository,

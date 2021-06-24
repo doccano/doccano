@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (DataDownload, DatasetView, DataUpload,
-                    DemoNamedEntityRecognition, DemoTextClassification,
+                    DemoNamedEntityRecognition, DemoTextClassification, DemoTextSimilarity,
                     DemoTranslation, GuidelineView, IndexView, LabelView,
                     ProjectsView, ProjectView, StatsView, UsersView)
 
@@ -26,6 +26,8 @@ urlpatterns = [
          UsersView.as_view(), name='users'),
     path('demo/text-classification/',
          DemoTextClassification.as_view(), name='demo-text-classification'),
+    path('demo/text-similarity/',
+         DemoTextSimilarity.as_view(), name='demo-text-similarity'),
     path('demo/named-entity-recognition/',
          DemoNamedEntityRecognition.as_view(), name='demo-named-entity-recognition'),
     path('demo/translation/', DemoTranslation.as_view(), name='demo-translation'),

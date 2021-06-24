@@ -4,7 +4,7 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+from ...models import (DOCUMENT_CLASSIFICATION, DOCUMENT_SIMILARITY, IMAGE_CLASSIFICATION, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
 from . import examples
 
@@ -229,6 +229,15 @@ Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionEncoding, examples.Cat
 Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionColumn, examples.Category_JSON)
 Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionColumn, examples.Category_JSONL)
 Options.register(DOCUMENT_CLASSIFICATION, Excel, OptionColumn, examples.Category_CSV)
+
+# Text Similarity
+Options.register(DOCUMENT_SIMILARITY, TextFile, OptionEncoding, examples.Generic_TextFile)
+Options.register(DOCUMENT_SIMILARITY, TextLine, OptionEncoding, examples.Generic_TextLine)
+Options.register(DOCUMENT_SIMILARITY, CSV, OptionDelimiter, examples.Category_CSV)
+Options.register(DOCUMENT_SIMILARITY, FastText, OptionEncoding, examples.Category_fastText)
+Options.register(DOCUMENT_SIMILARITY, JSON, OptionColumn, examples.Category_JSON)
+Options.register(DOCUMENT_SIMILARITY, JSONL, OptionColumn, examples.Category_JSONL)
+Options.register(DOCUMENT_SIMILARITY, Excel, OptionColumn, examples.Category_CSV)
 
 # Sequence Labeling
 Options.register(SEQUENCE_LABELING, TextFile, OptionEncoding, examples.Generic_TextFile)

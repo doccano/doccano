@@ -19,6 +19,18 @@ class TestTextClassificationProject(TestCase):
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
+class TestTextSimilarityProject(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.project = mommy.make('TextSimilarityProject')
+
+    def test_get_annotation_class(self):
+        klass = self.project.get_annotation_class()
+        self.assertEqual(klass, Category)
+
+
+@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
 class TestSequenceLabelingProject(TestCase):
 
     @classmethod
