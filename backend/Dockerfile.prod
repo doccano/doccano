@@ -11,7 +11,6 @@ ENV PYTHONUNBUFFERED 1
 RUN groupadd -g 61000 doccano \
   && useradd -g 61000 -l -M -s /bin/false -u 61000 doccano
 
-COPY --chown=doccano:doccano ./backend/ /backend/
 COPY --chown=doccano:doccano ./Pipfile* /backend/
 
 # hadolint ignore=DL3013
@@ -32,6 +31,8 @@ RUN mkdir -p /backend/staticfiles \
   && mkdir -p /backend/client/dist/static \
   && mkdir -p /backend/media \
   && chown -R doccano:doccano /backend/
+
+COPY --chown=doccano:doccano ./backend/ /backend/
 
 USER doccano:doccano
 VOLUME /backend/staticfiles
