@@ -19,8 +19,10 @@
     </v-card-title>
     <comment-list
       v-model="selected"
+      :examples="examples.items"
       :items="items"
       :is-loading="isLoading"
+      @click:labeling="movePage"
     />
   </v-card>
 </template>
@@ -29,6 +31,8 @@
 import Vue from 'vue'
 import CommentList from '@/components/comment/CommentList.vue'
 import { CommentReadDTO } from '~/services/application/comment/commentData'
+import { ExampleListDTO } from '~/services/application/example/exampleData'
+import { ProjectDTO } from '~/services/application/project/projectData'
 import FormDelete from '~/components/comment/FormDelete.vue'
 
 export default Vue.extend({
@@ -41,15 +45,20 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
+    this.project = await this.$services.project.findById(this.projectId)
     this.items = await this.$services.comment.listProjectComment(this.projectId)
+    const example = await this.$services.example.fetchOne(this.projectId,'1','','') // to fetch the count of examples
+    this.examples = await this.$services.example.list(this.projectId, {limit: example.count.toString()})
     this.isLoading = false
   },
 
   data() {
     return {
       dialogDelete: false,
+      project: {} as ProjectDTO,
       items: [] as CommentReadDTO[],
       selected: [] as CommentReadDTO[],
+      examples: {} as ExampleListDTO,
       isLoading: false
     }
   },
@@ -69,6 +78,15 @@ export default Vue.extend({
       this.$fetch()
       this.dialogDelete = false
       this.selected = []
+    },
+    updateQuery(query: object) {
+      this.$router.push(query)
+    },
+    movePage(query: object) {
+      this.updateQuery({
+        path: this.localePath(this.project.pageLink),
+        query
+      })
     }
   },
 
