@@ -1,9 +1,9 @@
 from django.contrib import admin
 
-from .models import (Category, Comment, Example, Label, Project, Role,
-                     RoleMapping, Seq2seqProject, SequenceLabelingProject,
-                     Span, Tag, TextClassificationProject, TextLabel,
-                     AutoLabelingConfig)
+from .models import (AutoLabelingConfig, Category, Comment, Example, Label,
+                     Project, Role, RoleMapping, Seq2seqProject,
+                     SequenceLabelingProject, Span, Tag,
+                     TextClassificationProject, TextLabel)
 
 
 class LabelAdmin(admin.ModelAdmin):
