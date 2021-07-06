@@ -32,6 +32,7 @@ class DownloadAPI(APIView):
         if ready:
             filename = task.result
             return FileResponse(open(filename, mode='rb'), as_attachment=True)
+        return Response({'status': 'Not ready'})
 
     def post(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
