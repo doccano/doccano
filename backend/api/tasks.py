@@ -1,4 +1,3 @@
-import datetime
 import itertools
 
 from celery import shared_task
