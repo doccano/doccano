@@ -83,7 +83,6 @@ class DataFactory:
     def create(self, examples, user, project):
         self.create_label(examples, project)
         ids = self.create_data(examples, project)
-        logger.debug(f'IDS {[ids[i].text for i in range(15)]}')
         self.create_annotation(examples, ids, user, project)
 
 
