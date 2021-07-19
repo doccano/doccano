@@ -103,7 +103,8 @@ export default Vue.extend({
       get(): UserDTO {
         return {
           id: this.value.user,
-          username: this.value.username
+          username: this.value.username,
+          isStaff: false
         }
       },
       set(val: MemberDTO) {
