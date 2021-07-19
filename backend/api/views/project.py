@@ -3,6 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from ..exceptions import ProjectCreationPermissionDenied
 from ..models import Project
 from ..permissions import IsInProjectReadOnlyOrAdmin
 from ..serializers import ProjectPolymorphicSerializer, ProjectSerializer
@@ -17,7 +18,10 @@ class ProjectList(generics.ListCreateAPIView):
         return self.request.user.projects
 
     def perform_create(self, serializer):
-        serializer.save(users=[self.request.user])
+        if self.request.user.is_staff:
+            serializer.save(users=[self.request.user])
+        else:
+            raise ProjectCreationPermissionDenied()
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
