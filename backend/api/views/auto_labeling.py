@@ -16,7 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..exceptions import (AutoLabeliingPermissionDenied, AutoLabelingException,
+from ..exceptions import (AutoLabelingException, AutoLabelingPermissionDenied,
                           AWSTokenError, SampleDataException,
                           TemplateMappingError, URLConnectionError)
 from ..models import AutoLabelingConfig, Example, Project
@@ -234,7 +234,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
         example = self.get_example(project)
         config = project.auto_labeling_config.first()
         if not config:
-            raise AutoLabeliingPermissionDenied()
+            raise AutoLabelingPermissionDenied()
         return execute_pipeline(
             text=example,
             project_type=project.project_type,

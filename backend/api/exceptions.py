@@ -18,7 +18,7 @@ class AutoLabelingException(APIException):
     default_detail = 'Auto labeling not allowed for the document with labels.'
 
 
-class AutoLabeliingPermissionDenied(PermissionDenied):
+class AutoLabelingPermissionDenied(PermissionDenied):
     default_detail = 'You do not have permission to perform auto labeling.' \
                      'Please ask the project administrators to add you.'
 
