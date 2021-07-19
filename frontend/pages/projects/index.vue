@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title v-if="isStaff">
       <v-btn
         class="text-capitalize"
         color="primary"
@@ -41,6 +41,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapGetters } from 'vuex'
 import ProjectList from '@/components/project/ProjectList.vue'
 import { ProjectDTO, ProjectWriteDTO } from '~/services/application/project/projectData'
 import FormDelete from '~/components/project/FormDelete.vue'
@@ -90,6 +91,7 @@ export default Vue.extend({
   },
 
   computed: {
+    ...mapGetters('auth', ['isStaff']),
     canDelete(): boolean {
       return this.selected.length > 0
     },
