@@ -40,7 +40,7 @@ services:
       - network-backend
 
   rabbitmq:
-    image: rabbitmq:3.8
+    image: rabbitmq:3.8-alpine
     environment:
       RABBITMQ_DEFAULT_USER: "doccano"
       RABBITMQ_DEFAULT_PASS: "doccano"
@@ -67,7 +67,7 @@ services:
       - network-frontend
 
   postgres:
-    image: postgres:13.1-alpine
+    image: postgres:13.3-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
