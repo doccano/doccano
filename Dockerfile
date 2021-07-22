@@ -35,7 +35,7 @@ RUN pip install --upgrade pip \
  && pip install --no-cache-dir -r /requirements.txt \
  && pip wheel --no-cache-dir -r /requirements.txt -w /deps
 
-FROM python:${PYTHON_VERSION}-slim-buster AS runtime
+FROM python:${PYTHON_VERSION} AS runtime
 
 RUN useradd -ms /bin/sh doccano
 
