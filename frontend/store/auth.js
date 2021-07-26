@@ -53,7 +53,7 @@ export const actions = {
       commit('setAuthenticated', true)
       commit('setUsername', user.username)
       commit('setUserId', user.id)
-      commit('setIsStaff', false)
+      commit('setIsStaff', user.isStaff)
     } catch {
       commit('setAuthenticated', false)
       commit('setIsStaff', false)
