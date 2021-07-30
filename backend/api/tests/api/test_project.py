@@ -39,11 +39,16 @@ class TestProjectCreate(CRUDMixin):
             'resourcetype': 'TextClassificationProject'
         }
 
-    def test_allow_authenticated_user_to_create_project(self):
+    def test_allows_staff_user_to_create_project(self):
+        self.user.is_staff = True
+        self.user.save()
         response = self.assert_create(self.user, status.HTTP_201_CREATED)
         self.assertEqual(response.data['name'], self.data['name'])
 
-    def test_disallow_unauthenticated_user_to_create_project(self):
+    def test_disallows_non_staff_user_to_create_project(self):
+        self.assert_create(self.user, status.HTTP_403_FORBIDDEN)
+
+    def test_disallows_unauthenticated_user_to_create_project(self):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
 

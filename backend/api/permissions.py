@@ -98,6 +98,13 @@ class IsAnnotationApprover(RolePermission):
     role_name = settings.ROLE_ANNOTATION_APPROVER
 
 
+class IsStaff(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_superuser or request.user.is_staff:
+            return True
+        return False
+
+
 def is_in_role(role_name, user_id, project_id):
     return RoleMapping.objects.filter(
         user_id=user_id,

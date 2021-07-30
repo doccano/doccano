@@ -4,14 +4,20 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ..models import Project
-from ..permissions import IsInProjectReadOnlyOrAdmin
+from ..permissions import IsInProjectReadOnlyOrAdmin, IsStaff
 from ..serializers import ProjectPolymorphicSerializer, ProjectSerializer
 
 
 class ProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectPolymorphicSerializer
     pagination_class = None
-    permission_classes = [IsAuthenticated, ]
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [IsAuthenticated, ]
+        else:
+            self.permission_classes = [IsAuthenticated & IsStaff]
+        return super().get_permissions()
 
     def get_queryset(self):
         return self.request.user.projects

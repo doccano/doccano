@@ -1,7 +1,8 @@
 export const state = () => ({
   username: null,
   id: null,
-  isAuthenticated: false
+  isAuthenticated: false,
+  isStaff: false
 })
 
 export const mutations = {
@@ -16,6 +17,9 @@ export const mutations = {
   },
   setAuthenticated(state, isAuthenticated) {
     state.isAuthenticated = isAuthenticated
+  },
+  setIsStaff(state, isStaff) {
+    state.isStaff = isStaff
   }
 }
 
@@ -28,6 +32,9 @@ export const getters = {
   },
   getUserId(state) {
     return state.id
+  },
+  isStaff(state) {
+    return state.isStaff
   }
 }
 
@@ -46,13 +53,16 @@ export const actions = {
       commit('setAuthenticated', true)
       commit('setUsername', user.username)
       commit('setUserId', user.id)
+      commit('setIsStaff', user.isStaff)
     } catch {
       commit('setAuthenticated', false)
+      commit('setIsStaff', false)
     }
   },
   async logout({ commit }) {
     await this.$services.auth.logout()
     commit('setAuthenticated', false)
+    commit('setIsStaff', false)
     commit('clearUsername')
   }
 }
