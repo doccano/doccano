@@ -7,7 +7,19 @@
     :no-data-text="$t('vuetify.noDataAvailable')"
     disable-pagination
     class="elevation-1"
-  />
+  >
+    <template v-slot:item.value="{ item }">
+      <template v-if="item.key.indexOf('im_url') > -1">
+        <a :href="item.value" target="_blank"><img :src="item.value" style="height: 250px" /></a>
+      </template>
+      <template v-else-if="item.key.indexOf('url') > -1">
+        <a :href="item.value" target="_blank">{{ item.value }}</a>
+      </template>
+      <template v-else>
+        {{ item.value }}
+      </template>
+    </template>
+  </v-data-table>
 </template>
 
 <script lang="ts">
