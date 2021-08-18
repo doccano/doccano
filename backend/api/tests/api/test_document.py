@@ -12,7 +12,7 @@ class TestExampleListAPI(CRUDMixin):
     def setUp(self):
         self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
         self.non_member = make_user()
-        make_doc(self.project.item)
+        self.example = make_doc(self.project.item)
         self.data = {'text': 'example'}
         self.url = reverse(viewname='example_list', args=[self.project.item.id])
 
@@ -41,6 +41,14 @@ class TestExampleListAPI(CRUDMixin):
     def test_denies_unauthenticated_user_to_create_doc(self):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
+    def test_is_confirmed(self):
+        make_example_state(self.example, self.project.users[0])
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertTrue(response.data['results'][0]['is_confirmed'])
+
+    def test_is_not_confirmed(self):
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertFalse(response.data['results'][0]['is_confirmed'])
 
 class TestExampleListFilter(CRUDMixin):
 
