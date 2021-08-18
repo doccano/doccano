@@ -12,7 +12,6 @@ export class ProjectDTO {
   enableShareAnnotation: boolean
   singleClassClassification: boolean
   pageLink: string
-  permitApprove: Boolean
   tags: Object[]
   canDefineLabel: Boolean
   canDefineRelation: Boolean
@@ -30,7 +29,6 @@ export class ProjectDTO {
     this.enableShareAnnotation = item.collaborative_annotation
     this.singleClassClassification = item.single_class_classification
     this.pageLink = item.annotationPageLink
-    this.permitApprove = item.permitApprove
     this.tags = item.tags
     this.canDefineLabel = item.canDefineLabel
     this.canDefineRelation = item.canDefineRelation
