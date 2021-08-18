@@ -20,7 +20,7 @@ class ExampleStateList(generics.ListCreateAPIView):
         queryset = ExampleState.objects.filter(example=self.kwargs['example_id'])
         if self.can_confirm_per_user:
             queryset = queryset.filter(confirmed_by=self.request.user)
-        current_user_role = RoleMapping.objects.get(user_id=self.request.user.id, project_id=self.kwargs['project_id']).role
+        current_user_role = RoleMapping.objects.get(user=self.request.user, project_id=self.kwargs['project_id']).role
         ids = [q.id for q in queryset if q.confirmed_user_role == current_user_role]
         queryset = queryset.filter(id__in=ids)
         return queryset
