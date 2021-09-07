@@ -60,4 +60,28 @@ export class Statistics {
       labels
     }
   }
+
+  private makeProgressData(roleName: string, labels: string[]) {
+    const confirmed = this.confirmedCount[roleName]
+    const unconfirmed = this.total - confirmed
+    return {
+      datasets: [{
+        data: [confirmed, unconfirmed],
+        backgroundColor: ['#00d1b2', '#ffdd57']
+      }],
+      labels
+    }
+  }
+
+  public annotatorProgress(labels: string[]) {
+    return this.makeProgressData('annotator', labels)
+  }
+
+  public approverProgress(labels: string[]) {
+    return this.makeProgressData('annotation_approver', labels)
+  }
+
+  public adminProgress(labels: string[]) {
+    return this.makeProgressData('project_admin', labels)
+  }
 }
