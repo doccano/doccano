@@ -147,7 +147,7 @@ class Label(models.Model):
 
 class Example(models.Model):
     meta = models.JSONField(default=dict)
-    filename = models.FileField(default='.')
+    filename = models.FileField(default='.', max_length=1024)
     project = models.ForeignKey(
         to=Project,
         on_delete=models.CASCADE,
