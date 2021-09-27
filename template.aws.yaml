@@ -143,9 +143,9 @@ Resources:
           yum install -y git
           git clone https://github.com/doccano/doccano.git
           cd doccano
-          sed -i s/\$\{ADMIN_USERNAME\}/${Username}/g docker-compose.prod.yml
-          sed -i s/\$\{ADMIN_PASSWORD\}/${Password}/g docker-compose.prod.yml
-          docker-compose -f docker-compose.prod.yml up -d
+          sed -i s/admin/${Username}/g ./config/.env.example
+          sed -i s/password/${Password}/g ./config/.env.example
+          docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up -d
       Tags:
         - Key: Name
           Value: doccano
