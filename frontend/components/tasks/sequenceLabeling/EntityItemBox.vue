@@ -210,8 +210,9 @@ export default {
     }
   },    
   beforeUpdate()  {
-    const arabic = /[\u0600-\u06FF]/;
-    if (arabic.test(this.text[0])) {
+    const arabicUnicodeRange = /[\u0600-\u06FF]/;
+    const hebrewUnicodeRange = /[\u0590-\u05FF]/;
+    if (arabicUnicodeRange.test(this.text[0]) || hebrewUnicodeRange.test(this.text[0])) {
       if (this.classes.includes("rtl")) {
         return;
       }
