@@ -73,7 +73,7 @@ export default {
           icon: 'mdi-database',
           text: this.$t('dataset.dataset'),
           link: 'dataset',
-          isVisible: this.role.is_project_admin
+          isVisible: true
         },
         {
           icon: 'label',

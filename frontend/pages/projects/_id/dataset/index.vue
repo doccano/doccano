@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-title>
+    <v-card-title v-if="isProjectAdmin">
       <action-menu
         @upload="upload"
         @download="dialogDownload=true"
@@ -112,7 +112,8 @@ export default Vue.extend({
       project: {} as ProjectDTO,
       item: {} as ExampleListDTO,
       selected: [] as ExampleDTO[],
-      isLoading: false
+      isLoading: false,
+      isProjectAdmin: false
     }
   },
 
@@ -148,6 +149,7 @@ export default Vue.extend({
 
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
+    this.isProjectAdmin = this.project.current_users_role.is_project_admin
   },
 
   methods: {
