@@ -5,7 +5,7 @@
         <v-form>
           <h4 class="text-h6">Set parameters</h4>
           <p class="font-weight-regular body-1">
-            You can set parameters to fetch API response.
+            You can set parameters to fetch API response.The text will be send in the request through a field with a custom name. The field can be defined in Param, Headers or Body. To define it, set a key you want and set the value as "{{ text }}".
           </p>
           <template v-for="item in value">
             <v-text-field
