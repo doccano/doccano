@@ -1,4 +1,3 @@
-import datetime
 import itertools
 
 from celery import shared_task 
@@ -63,10 +62,8 @@ class DataFactory:
             self.data_class(project=project, **example.data)
             for example in examples
         ]
-        now = datetime.datetime.now()
-        self.data_class.objects.bulk_create(dataset)
-        ids = self.data_class.objects.filter(created_at__gte=now)
-        return list(ids)
+        results = self.data_class.objects.bulk_create(dataset)
+        return results
 
     def create_annotation(self, examples, ids, user, project):
         mapping = {label.text: label.id for label in project.labels.all()}
