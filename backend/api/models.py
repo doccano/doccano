@@ -339,7 +339,7 @@ class AutoLabelingConfig(models.Model):
     model_name = models.CharField(max_length=100)
     model_attrs = models.JSONField(default=dict)
     template = models.TextField(default='')
-    label_mapping = models.JSONField(default=dict)
+    label_mapping = models.JSONField(default=dict, blank=True)
     project = models.ForeignKey(
         to=Project,
         on_delete=models.CASCADE,

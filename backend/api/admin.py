@@ -1,8 +1,9 @@
 from django.contrib import admin
 
-from .models import (Category, Comment, Example, Label, Project, Role,
-                     RoleMapping, Seq2seqProject, SequenceLabelingProject,
-                     Span, Tag, TextClassificationProject, TextLabel)
+from .models import (AutoLabelingConfig, Category, Comment, Example, Label,
+                     Project, Role, RoleMapping, Seq2seqProject,
+                     SequenceLabelingProject, Span, Tag,
+                     TextClassificationProject, TextLabel)
 
 
 class LabelAdmin(admin.ModelAdmin):
@@ -62,6 +63,18 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('user',)
 
 
+class AutoLabelingConfigAdmin(admin.ModelAdmin):
+    list_display = ('project', 'model_name', 'model_attrs',)
+    ordering = ('project',)
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return ["model_name"]
+        else:
+            return []
+
+
+admin.site.register(AutoLabelingConfig, AutoLabelingConfigAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Span, SpanAdmin)
 admin.site.register(TextLabel, TextLabelAdmin)
