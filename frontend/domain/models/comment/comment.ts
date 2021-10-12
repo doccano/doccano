@@ -41,18 +41,17 @@ export class CommentItem {
     public id: number,
     public user: number,
     public username: string,
-    public document: number,
-    public documentText: string,
+    public example: number,
     public text: string,
     public createdAt: string
   ) {}
 
   static valueOf(
-    { id, user, username, document, document_text, text, created_at }:
-    { id: number, user: number, username: string, document: number,
-      document_text: string, text: string, created_at: string }
+    { id, user, username, example, text, created_at }:
+    { id: number, user: number, username: string, example: number,
+      text: string, created_at: string }
   ): CommentItem {
-    return new CommentItem(id, user, username, document, document_text, text, created_at)
+    return new CommentItem(id, user, username, example, text, created_at)
   }
 
   by(userId: number) {
@@ -64,8 +63,7 @@ export class CommentItem {
       id: this.id,
       user: this.user,
       username: this.username,
-      document: this.document,
-      document_text: this.documentText,
+      document: this.example,
       text: this.text,
       created_at: this.createdAt
     }

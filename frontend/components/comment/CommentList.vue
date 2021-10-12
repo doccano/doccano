@@ -20,9 +20,6 @@
     <template v-slot:[`item.createdAt`]="{ item }">
       <span>{{ item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm') }}</span>
     </template>
-    <template v-slot:[`item.documentText`]="{ item }">
-      {{ item.documentText | truncate(200) }}
-    </template>
     <template v-slot:top>
       <v-text-field
         v-model="search"
@@ -33,6 +30,15 @@
         filled
       />
     </template>
+    <template v-slot:[`item.action`]="{ item }">
+      <v-btn
+        small
+        color="primary text-capitalize"
+        @click="toLabeling(item)"
+      >
+        {{ $t('dataset.annotate') }}
+      </v-btn>
+    </template>
   </v-data-table>
 </template>
 
@@ -41,6 +47,7 @@ import Vue, { PropType } from 'vue'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
 import { CommentReadDTO } from '~/services/application/comment/commentData'
+import { ExampleDTO } from '~/services/application/example/exampleData'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
@@ -49,6 +56,11 @@ export default Vue.extend({
     isLoading: {
       type: Boolean,
       default: false,
+      required: true
+    },
+    examples: {
+      type: Array as PropType<ExampleDTO[]>,
+      default: () => [],
       required: true
     },
     items: {
@@ -69,9 +81,17 @@ export default Vue.extend({
       headers: [
         { text: this.$t('dataset.text'), value: 'text' },
         { text: this.$t('user.username'), value: 'username' },
-        { text: this.$t('comments.document'), value: 'documentText' },
-        { text: this.$t('comments.created_at'), value: 'createdAt' }
+        { text: this.$t('comments.created_at'), value: 'createdAt' },
+        { text: this.$t('dataset.action'), value: 'action' },
       ]
+    }
+  },
+
+  methods: {
+    toLabeling(item: CommentReadDTO) {
+      const index = this.examples.findIndex((example: ExampleDTO) => example.id === item.example)
+      const page = (index + 1).toString()
+      this.$emit('click:labeling', { page, q: this.search })
     }
   }
 })

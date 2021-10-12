@@ -5,7 +5,7 @@ export class CommentReadDTO {
   id: number;
   user: number;
   username: string;
-  documentText: string;
+  example: number;
   text: string;
   createdAt: string;
 
@@ -13,7 +13,7 @@ export class CommentReadDTO {
     this.id = item.id;
     this.user = item.user;
     this.username = item.username;
-    this.documentText = item.documentText;
+    this.example = item.example;
     this.text = item.text;
     this.createdAt = item.createdAt;
   }

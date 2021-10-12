@@ -23,7 +23,7 @@ export class CommentApplicationService {
 
   public update(projectId: string, docId: number, item: CommentReadDTO): Promise<CommentItem> {
     const comment = new CommentItem(
-      item.id, item.user, item.username, docId, item.documentText, item.text, item.createdAt
+      item.id, item.user, item.username, docId, item.text, item.createdAt
     )
     return this.repository.update(projectId, docId, comment)
   }

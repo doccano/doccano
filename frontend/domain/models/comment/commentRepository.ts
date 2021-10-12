@@ -4,8 +4,7 @@ export interface CommentItemResponse {
   id: number,
   user: number,
   username: string,
-  document: number,
-  document_text: string,
+  example: number,
   text: string,
   created_at: string
 }
