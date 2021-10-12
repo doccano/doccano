@@ -1,6 +1,8 @@
 import string
 from typing import Literal
 
+from django import db
+
 from auto_labeling_pipeline.models import RequestModelFactory
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -92,7 +94,7 @@ class ImageClassificationProject(Project):
 
 
 class Label(models.Model):
-    text = models.CharField(max_length=100)
+    text = models.CharField(max_length=100, db_index=True)
     prefix_key = models.CharField(
         max_length=10,
         blank=True,
@@ -118,7 +120,7 @@ class Label(models.Model):
     )
     background_color = models.CharField(max_length=7, default='#209cee')
     text_color = models.CharField(max_length=7, default='#ffffff')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -143,6 +145,7 @@ class Label(models.Model):
         unique_together = (
             ('project', 'text'),
         )
+        ordering = ['created_at']
 
 
 class Example(models.Model):
@@ -160,12 +163,15 @@ class Example(models.Model):
         blank=True
     )
     text = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def comment_count(self):
         return Comment.objects.filter(example=self.id).count()
+
+    class Meta:
+        ordering = ['created_at']
 
 
 class ExampleState(models.Model):
@@ -196,7 +202,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
@@ -204,7 +210,7 @@ class Comment(models.Model):
         return self.user.username
 
     class Meta:
-        ordering = ('-created_at', )
+        ordering = ['created_at']
 
 
 class Tag(models.Model):

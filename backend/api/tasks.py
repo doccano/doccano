@@ -1,7 +1,8 @@
 import datetime
 import itertools
 
-from celery import shared_task
+from celery import shared_task 
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -14,7 +15,7 @@ from .views.upload.factory import (get_data_class, get_dataset_class,
                                    get_label_class)
 from .views.upload.utils import append_field
 
-
+logger = get_task_logger(__name__)
 class Buffer:
 
     def __init__(self, buffer_size=settings.IMPORT_BATCH_SIZE):
@@ -120,6 +121,7 @@ def injest_data(user_id, project_id, filenames, format: str, **kwargs):
             factory.create(buffer.data, user, project)
             buffer.clear()
     if not buffer.is_empty():
+        logger.debug(f'BUFFER LEN {len(buffer)}')
         factory.create(buffer.data, user, project)
         buffer.clear()
 
