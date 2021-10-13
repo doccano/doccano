@@ -101,7 +101,14 @@ class ExampleSerializer(serializers.ModelSerializer):
         return approver.username if approver else None
 
     def get_is_confirmed(self, instance):
-        return instance.states.count() > 0
+        user = self.context.get('request').user
+        if instance.project.collaborative_annotation:
+            current_user_role = RoleMapping.objects.get(user_id=user.id, project_id=instance.project.id).role
+            state_ids = [state.id for state in instance.states.all() if state.confirmed_user_role == current_user_role]
+            states = instance.states.filter(id__in=state_ids)
+        else:
+            states = instance.states.filter(confirmed_by_id=user.id)
+        return states.count() > 0
 
     class Meta:
         model = Example

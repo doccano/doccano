@@ -6,7 +6,6 @@
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
         :is-reviewd="doc.isConfirmed"
-        :show-approve-button="project.permitApprove"
         :total="docs.count"
         class="d-none d-sm-block"
         @click:clear-label="clear"

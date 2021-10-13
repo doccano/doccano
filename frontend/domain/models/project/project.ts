@@ -85,11 +85,6 @@ export class ProjectReadItem {
     return url
   }
 
-  get permitApprove(): Boolean {
-    const role = this.current_users_role
-    return role && !role.is_annotator
-  }
-
   get canDefineLabel() {
     const allowedProjectTypes = [
       'DocumentClassification',

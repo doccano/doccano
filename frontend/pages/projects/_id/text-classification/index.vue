@@ -6,7 +6,6 @@
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
         :is-reviewd="example.isConfirmed"
-        :show-approve-button="project.permitApprove"
         :total="totalExample"
         class="d-none d-sm-block"
         @click:clear-label="clearTeacherList(project.id, example.id)"
