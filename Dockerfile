@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION="3.9.6-slim-buster"
+ARG PYTHON_VERSION="3.8.12-slim-buster"
 ARG NODE_VERSION="16.5-alpine3.14"
 FROM node:${NODE_VERSION} AS frontend-builder
 
