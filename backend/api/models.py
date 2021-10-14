@@ -1,8 +1,6 @@
 import string
 from typing import Literal
 
-from django import db
-
 from auto_labeling_pipeline.models import RequestModelFactory
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError

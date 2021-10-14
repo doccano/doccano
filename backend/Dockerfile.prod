@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION="3.9.6-slim-buster"
+ARG PYTHON_VERSION="3.8.12-slim-buster"
 FROM python:${PYTHON_VERSION}
 
 CMD ["python3"]

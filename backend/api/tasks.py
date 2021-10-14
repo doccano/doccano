@@ -1,6 +1,6 @@
 import itertools
 
-from celery import shared_task 
+from celery import shared_task
 from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -15,6 +15,8 @@ from .views.upload.factory import (get_data_class, get_dataset_class,
 from .views.upload.utils import append_field
 
 logger = get_task_logger(__name__)
+
+
 class Buffer:
 
     def __init__(self, buffer_size=settings.IMPORT_BATCH_SIZE):

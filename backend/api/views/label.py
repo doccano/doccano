@@ -15,12 +15,14 @@ from ..models import Label, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
 from ..serializers import LabelSerializer
 
+
 def camel_to_snake(name):
-  name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-  return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
 
 def camel_to_snake_dict(d):
-   return {camel_to_snake(k): v for k,v in d.items()}
+    return {camel_to_snake(k): v for k, v in d.items()}
 
 
 class LabelList(generics.ListCreateAPIView):
