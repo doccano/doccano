@@ -21,7 +21,7 @@
         <div class="annotation-text pa-4">
           <entity-editor
             :dark="$vuetify.theme.dark"
-            :rtl="rtl"
+            :rtl="isRTL"
             :text="doc.text"
             :entities="annotations"
             :entity-labels="labels"
@@ -43,7 +43,7 @@
 
 <script>
 import _ from 'lodash'
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
@@ -91,6 +91,7 @@ export default {
 
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'getUsername', 'getUserId']),
+    ...mapGetters('config', ['isRTL']),
 
     shortKeys() {
       return Object.fromEntries(this.labels.map(item => [item.id, [item.suffixKey]]))
