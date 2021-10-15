@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
@@ -13,6 +14,15 @@ from ..exceptions import LabelValidationError
 from ..models import Label, Project
 from ..permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
 from ..serializers import LabelSerializer
+
+
+def camel_to_snake(name):
+    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
+
+def camel_to_snake_dict(d):
+    return {camel_to_snake(k): v for k, v in d.items()}
 
 
 class LabelList(generics.ListCreateAPIView):
@@ -52,6 +62,7 @@ class LabelUploadAPI(APIView):
         project = get_object_or_404(Project, pk=kwargs['project_id'])
         try:
             labels = json.load(request.data['file'])
+            labels = list(map(camel_to_snake_dict, labels))
             serializer = LabelSerializer(data=labels, many=True)
             serializer.is_valid(raise_exception=True)
             serializer.save(project=project)

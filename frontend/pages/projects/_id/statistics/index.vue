@@ -5,9 +5,12 @@
       lg="4"
     >
       <v-card>
-        <doughnut-chart
-          :chart-data="stats.progress"
-        />
+        <v-card-title>{{ $t('members.roles.annotator') }}</v-card-title>
+        <v-card-text>
+          <doughnut-chart
+            :chart-data="stats.annotatorProgress"
+          />
+        </v-card-text>
       </v-card>
     </v-col>
     <v-col
@@ -15,9 +18,12 @@
       lg="4"
     >
       <v-card>
-        <bar-chart
-          :chart-data="stats.label"
-        />
+        <v-card-title>{{ $t('members.roles.annotationApprover') }}</v-card-title>
+        <v-card-text>
+          <doughnut-chart
+            :chart-data="stats.approverProgress"
+          />
+        </v-card-text>
       </v-card>
     </v-col>
     <v-col
@@ -25,9 +31,38 @@
       lg="4"
     >
       <v-card>
-        <bar-chart
-          :chart-data="stats.user"
-        />
+        <v-card-title>{{ $t('members.roles.projectAdmin') }}</v-card-title>
+        <v-card-text>
+          <doughnut-chart
+            :chart-data="stats.adminProgress"
+          />
+        </v-card-text>
+      </v-card>
+    </v-col>
+    <v-col
+      cols="12"
+      lg="4"
+    >
+      <v-card>
+        <v-card-title>Label Stats</v-card-title>
+        <v-card-text>
+          <bar-chart
+            :chart-data="stats.label"
+          />
+        </v-card-text>
+      </v-card>
+    </v-col>
+    <v-col
+      cols="12"
+      lg="4"
+    >
+      <v-card>
+        <v-card-title>User Stats</v-card-title>
+        <v-card-text>
+          <bar-chart
+            :chart-data="stats.user"
+          />
+        </v-card-text>
       </v-card>
     </v-col>
   </v-row>

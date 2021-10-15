@@ -1,5 +1,5 @@
-ARG NODE_VERSION="13.7"
-FROM node:${NODE_VERSION}-alpine AS frontend-builder
+ARG NODE_VERSION="16.5-alpine3.14"
+FROM node:${NODE_VERSION} AS frontend-builder
 
 COPY frontend/ /app/
 WORKDIR /app
@@ -9,7 +9,7 @@ RUN apk add -U --no-cache git python3 make g++ \
   && yarn build \
   && apk del --no-cache git make g++
 
-FROM nginx:1.17.4-alpine AS runtime
+FROM nginx:1.21.1-alpine AS runtime
 
 RUN addgroup -g 61000 doccano \
   && adduser -G doccano -S doccano -u 61000

@@ -323,7 +323,6 @@ export default {
   flex-wrap: wrap;
   align-items: center;
   padding: 2px 2px 0 6px;
-  background: #ffffff;
 }
 
 .highlight.bottom .highlight__content:after {

@@ -1,10 +1,11 @@
+from django.conf import settings
 from django.utils.http import urlencode
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from ...models import DOCUMENT_CLASSIFICATION
-from .utils import (CRUDMixin, make_doc, make_example_state, make_user,
-                    prepare_project)
+from .utils import (CRUDMixin, assign_user_to_role, make_doc,
+                    make_example_state, make_user, prepare_project)
 
 
 class TestExampleListAPI(CRUDMixin):
@@ -12,7 +13,7 @@ class TestExampleListAPI(CRUDMixin):
     def setUp(self):
         self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
         self.non_member = make_user()
-        make_doc(self.project.item)
+        self.example = make_doc(self.project.item)
         self.data = {'text': 'example'}
         self.url = reverse(viewname='example_list', args=[self.project.item.id])
 
@@ -40,6 +41,49 @@ class TestExampleListAPI(CRUDMixin):
 
     def test_denies_unauthenticated_user_to_create_doc(self):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
+
+    def test_is_confirmed(self):
+        make_example_state(self.example, self.project.users[0])
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertTrue(response.data['results'][0]['is_confirmed'])
+
+    def test_is_not_confirmed(self):
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertFalse(response.data['results'][0]['is_confirmed'])
+
+    def test_does_not_share_another_user_confirmed(self):
+        make_example_state(self.example, self.project.users[0])
+        response = self.assert_fetch(self.project.users[1], status.HTTP_200_OK)
+        self.assertFalse(response.data['results'][0]['is_confirmed'])
+
+
+class TestExampleListCollaborative(CRUDMixin):
+    def setUp(self):
+        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.example = make_doc(self.project.item)
+        self.url = reverse(viewname='example_list', args=[self.project.item.id])
+
+    def test_shares_confirmed_in_same_role(self):
+        annotator1 = make_user()
+        assign_user_to_role(annotator1, self.project.item, settings.ROLE_ANNOTATOR)
+        annotator2 = make_user()
+        assign_user_to_role(annotator2, self.project.item, settings.ROLE_ANNOTATOR)
+
+        make_example_state(self.example, annotator1)
+        response = self.assert_fetch(annotator1, status.HTTP_200_OK)
+        self.assertTrue(response.data['results'][0]['is_confirmed'])
+        response = self.assert_fetch(annotator2, status.HTTP_200_OK)
+        self.assertTrue(response.data['results'][0]['is_confirmed'])
+
+    def test_does_not_share_confirmed_in_other_role(self):
+        admin = self.project.users[0]
+        approver = self.project.users[1]
+
+        make_example_state(self.example, admin)
+        response = self.assert_fetch(admin, status.HTTP_200_OK)
+        self.assertTrue(response.data['results'][0]['is_confirmed'])
+        response = self.assert_fetch(approver, status.HTTP_200_OK)
+        self.assertFalse(response.data['results'][0]['is_confirmed'])
 
 
 class TestExampleListFilter(CRUDMixin):

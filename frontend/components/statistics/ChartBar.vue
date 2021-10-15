@@ -31,7 +31,10 @@ export default {
             }
           ]
         },
-        maintainAspectRatio: false
+        maintainAspectRatio: false,
+        legend: {
+          display: false
+        }
       }
     }
   },

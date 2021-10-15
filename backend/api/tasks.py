@@ -1,7 +1,7 @@
-import datetime
 import itertools
 
 from celery import shared_task
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
@@ -13,6 +13,8 @@ from .views.upload.exception import FileParseException
 from .views.upload.factory import (get_data_class, get_dataset_class,
                                    get_label_class)
 from .views.upload.utils import append_field
+
+logger = get_task_logger(__name__)
 
 
 class Buffer:
@@ -62,10 +64,8 @@ class DataFactory:
             self.data_class(project=project, **example.data)
             for example in examples
         ]
-        now = datetime.datetime.now()
-        self.data_class.objects.bulk_create(dataset)
-        ids = self.data_class.objects.filter(created_at__gte=now)
-        return list(ids)
+        results = self.data_class.objects.bulk_create(dataset)
+        return results
 
     def create_annotation(self, examples, ids, user, project):
         mapping = {label.text: label.id for label in project.labels.all()}
@@ -120,6 +120,7 @@ def injest_data(user_id, project_id, filenames, format: str, **kwargs):
             factory.create(buffer.data, user, project)
             buffer.clear()
     if not buffer.is_empty():
+        logger.debug(f'BUFFER LEN {len(buffer)}')
         factory.create(buffer.data, user, project)
         buffer.clear()
 

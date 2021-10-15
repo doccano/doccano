@@ -92,7 +92,7 @@ class ImageClassificationProject(Project):
 
 
 class Label(models.Model):
-    text = models.CharField(max_length=100)
+    text = models.CharField(max_length=100, db_index=True)
     prefix_key = models.CharField(
         max_length=10,
         blank=True,
@@ -118,7 +118,7 @@ class Label(models.Model):
     )
     background_color = models.CharField(max_length=7, default='#209cee')
     text_color = models.CharField(max_length=7, default='#ffffff')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -143,11 +143,12 @@ class Label(models.Model):
         unique_together = (
             ('project', 'text'),
         )
+        ordering = ['created_at']
 
 
 class Example(models.Model):
     meta = models.JSONField(default=dict)
-    filename = models.FileField(default='.')
+    filename = models.FileField(default='.', max_length=1024)
     project = models.ForeignKey(
         to=Project,
         on_delete=models.CASCADE,
@@ -160,12 +161,15 @@ class Example(models.Model):
         blank=True
     )
     text = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
     def comment_count(self):
         return Comment.objects.filter(example=self.id).count()
+
+    class Meta:
+        ordering = ['created_at']
 
 
 class ExampleState(models.Model):
@@ -183,6 +187,11 @@ class ExampleState(models.Model):
     class Meta:
         unique_together = (('example', 'confirmed_by'),)
 
+    @property
+    def confirmed_user_role(self):
+        role_mapping = RoleMapping.objects.get(user=self.confirmed_by, project=self.example.project)
+        return role_mapping.role
+
 
 class Comment(models.Model):
     text = models.TextField()
@@ -196,7 +205,7 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         null=True
     )
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     @property
@@ -204,7 +213,7 @@ class Comment(models.Model):
         return self.user.username
 
     class Meta:
-        ordering = ('-created_at', )
+        ordering = ['created_at']
 
 
 class Tag(models.Model):
@@ -339,7 +348,7 @@ class AutoLabelingConfig(models.Model):
     model_name = models.CharField(max_length=100)
     model_attrs = models.JSONField(default=dict)
     template = models.TextField(default='')
-    label_mapping = models.JSONField(default=dict)
+    label_mapping = models.JSONField(default=dict, blank=True)
     project = models.ForeignKey(
         to=Project,
         on_delete=models.CASCADE,

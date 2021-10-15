@@ -6,7 +6,6 @@
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
         :is-reviewd="image.isConfirmed"
-        :show-approve-button="project.permitApprove"
         :total="images.count"
         class="d-none d-sm-block"
         @click:clear-label="clear"

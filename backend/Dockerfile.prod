@@ -1,5 +1,5 @@
-ARG PYTHON_VERSION="3.8.6"
-FROM python:${PYTHON_VERSION}-slim-buster
+ARG PYTHON_VERSION="3.8.12-slim-buster"
+FROM python:${PYTHON_VERSION}
 
 CMD ["python3"]
 
@@ -11,7 +11,6 @@ ENV PYTHONUNBUFFERED 1
 RUN groupadd -g 61000 doccano \
   && useradd -g 61000 -l -M -s /bin/false -u 61000 doccano
 
-COPY --chown=doccano:doccano ./backend/ /backend/
 COPY --chown=doccano:doccano ./Pipfile* /backend/
 
 # hadolint ignore=DL3013
@@ -21,7 +20,8 @@ RUN apt-get update \
     libpq-dev=11.* \
     unixodbc-dev=2.* \
     g++=4:* \
- && pip install --no-cache-dir pipenv==2020.11.15 \
+ && pip install --upgrade pip \
+ && pip install --no-cache-dir pipenv \
  && pipenv install --system --deploy \
  && pip uninstall -y pipenv virtualenv-clone virtualenv \
  && apt-get clean \
@@ -32,6 +32,8 @@ RUN mkdir -p /backend/staticfiles \
   && mkdir -p /backend/client/dist/static \
   && mkdir -p /backend/media \
   && chown -R doccano:doccano /backend/
+
+COPY --chown=doccano:doccano ./backend/ /backend/
 
 USER doccano:doccano
 VOLUME /backend/staticfiles
