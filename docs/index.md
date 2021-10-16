@@ -14,7 +14,7 @@ First demo is one of the sequence labeling tasks, named-entity recognition. You 
 
 ![Named Entity Recognition](./images/demo/named_entity_annotation.gif)
 
-### [Sentiment analysis](https://doccano.herokuapp.com/demo/text-classification/)
+### [Text Classification](https://doccano.herokuapp.com/demo/text-classification/)
 
 Second demo is one of the text classification tasks, topic classification. Since there may be more than one category, you can annotate multi-labels.
 
