@@ -11460,10 +11460,10 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-v-annotator@0.1.19:
-  version "0.1.19"
-  resolved "https://registry.yarnpkg.com/v-annotator/-/v-annotator-0.1.19.tgz#18eee887511d6c0d270ae51772c8b701c6f3f4f6"
-  integrity sha512-zkEVJlQZv2v3l6HZGPdHWRHFdbpqgUj9tMUKPXTEDp9yDRLRaDlkKj75JU7YQ9WkqksWKj0ZRDqNz6EkI7dOmQ==
+v-annotator@0.1.20:
+  version "0.1.20"
+  resolved "https://registry.yarnpkg.com/v-annotator/-/v-annotator-0.1.20.tgz#320f4797a25403f7c4360ebc81c1491ec9c82239"
+  integrity sha512-K3MZSAls/aB401dCJHqN3CsZY+YSd5weDJePpBBDnaMfbCn/v7QghAMUrcDxZoLGFakXM8/xRhRIGgDhoDo+Dg==
   dependencies:
     "@flatten-js/interval-tree" "^1.0.14"
     core-js "^3.6.5"
