@@ -193,6 +193,7 @@ class SequenceLabelingProjectSerializer(ProjectSerializer):
 
     class Meta(ProjectSerializer.Meta):
         model = SequenceLabelingProject
+        fields = ProjectSerializer.Meta.fields + ('allow_overlapping', 'grapheme_mode')
 
 
 class Seq2seqProjectSerializer(ProjectSerializer):
