@@ -16,6 +16,8 @@ export class ProjectDTO {
   canDefineLabel: Boolean
   canDefineRelation: Boolean
   isTextProject: Boolean
+  allowOverlapping: Boolean
+  graphemeMode: Boolean
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -33,6 +35,8 @@ export class ProjectDTO {
     this.canDefineLabel = item.canDefineLabel
     this.canDefineRelation = item.canDefineRelation
     this.isTextProject = item.isTextProject
+    this.allowOverlapping = item.allow_overlapping
+    this.graphemeMode = item.grapheme_mode
   }
 }
 

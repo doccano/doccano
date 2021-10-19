@@ -21,6 +21,8 @@ export class ProjectReadItem {
     public collaborative_annotation:    boolean,
     public single_class_classification: boolean,
     public resourcetype:                string,
+    public allow_overlapping:           boolean,
+    public grapheme_mode:               boolean,
     public tags:                        Object[],
   ) {}
 
@@ -38,6 +40,8 @@ export class ProjectReadItem {
       collaborative_annotation,
       single_class_classification,
       resourcetype,
+      allow_overlapping,
+      grapheme_mode,
       tags
     }:
     {
@@ -53,6 +57,8 @@ export class ProjectReadItem {
       collaborative_annotation:    boolean,
       single_class_classification: boolean,
       resourcetype:                string,
+      allow_overlapping:           boolean,
+      grapheme_mode:               boolean,
       tags:                        Object[]
     }
   ): ProjectReadItem {
@@ -69,6 +75,8 @@ export class ProjectReadItem {
       collaborative_annotation,
       single_class_classification,
       resourcetype,
+      allow_overlapping,
+      grapheme_mode,
       tags
     )
   }
@@ -124,6 +132,8 @@ export class ProjectReadItem {
       collaborative_annotation: this.collaborative_annotation,
       single_class_classification: this.single_class_classification,
       resourcetype: this.resourcetype,
+      allow_overlapping: this.allow_overlapping,
+      grapheme_mode: this.grapheme_mode,
       tags: this.tags
     }
   }

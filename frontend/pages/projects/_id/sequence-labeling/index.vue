@@ -27,7 +27,8 @@
             :entity-labels="labels"
             :relations="links"
             :relation-labels="linkTypes"
-            :allow-overlapping="allowOverlapping"
+            :allow-overlapping="project.allowOverlapping"
+            :grapheme-mode="project.graphemeMode"
             @addEntity="addEntity"
             @click:entity="updateEntity"
             @contextmenu:entity="deleteEntity"
@@ -78,7 +79,6 @@ export default {
   data() {
     return {
       annotations: [],
-      allowOverlapping: false,
       docs: [],
       labels: [],
       links: [],
