@@ -36,12 +36,19 @@
           @shortkey="addOrUpdateEntity(label.id)"
           @click="addOrUpdateEntity(label.id)"
         >
+          <v-list-item-action>
+            <v-chip
+              v-if="label.suffixKey"
+              :color="label.backgroundColor"
+              outlined
+              small
+              v-text="label.suffixKey"
+            />
+            <span v-else class="mr-8" />
+          </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title v-text="label.text"/>
           </v-list-item-content>
-          <v-list-item-action>
-            <v-list-item-action-text v-text="label.suffixKey"/>
-          </v-list-item-action>
         </v-list-item>
       </v-list>
     </v-menu>
