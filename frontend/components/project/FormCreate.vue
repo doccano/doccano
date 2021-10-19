@@ -64,9 +64,28 @@
         <v-checkbox
           v-if="isSequenceLabelingProject"
           :value="graphemeMode"
-          label="Use grapheme mode"
           @change="updateValue('graphemeMode', $event === true)"
-        />
+        >
+          <template v-slot:label>
+            <div>
+              Count
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <a
+                    target="_blank"
+                    href="https://unicode.org/reports/tr29/"
+                    @click.stop
+                    v-on="on"
+                  >
+                    grapheme clusters
+                  </a>
+                </template>
+                Like emoji(🌷, 💩, and 👍)
+              </v-tooltip>
+              as one character
+            </div>
+          </template>
+        </v-checkbox>
         <v-checkbox
           :value="enableRandomOrder"
           :label="$t('overview.randomizeDocOrder')"
