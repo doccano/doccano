@@ -81,10 +81,10 @@ class TestProjectDetailAPI(CRUDMixin):
 
     @classmethod
     def setUpTestData(cls):
-        cls.project = prepare_project()
+        cls.project = prepare_project('SequenceLabeling')
         cls.non_member = make_user()
         cls.url = reverse(viewname='project_detail', args=[cls.project.item.id])
-        cls.data = {'description': 'lorem'}
+        cls.data = {'description': 'lorem', 'resourcetype': 'SequenceLabelingProject'}
 
     def test_return_project_to_member(self):
         for member in self.project.users:

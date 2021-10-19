@@ -42,6 +42,6 @@ class ProjectList(generics.ListCreateAPIView):
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectPolymorphicSerializer
     lookup_url_kwarg = 'project_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
