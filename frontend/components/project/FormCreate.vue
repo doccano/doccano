@@ -54,6 +54,13 @@
           label="Allow overlapping entity"
           @change="updateValue('allowOverlapping', $event === true)"
         />
+        <v-img
+          v-if="isSequenceLabelingProject"
+          :src="require('~/assets/project/creation.gif')"
+          height="200"
+          position="left"
+          contain
+        />
         <v-checkbox
           v-if="isSequenceLabelingProject"
           :value="graphemeMode"
