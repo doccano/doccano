@@ -36,7 +36,9 @@
           @shortkey="addOrUpdateEntity(label.id)"
           @click="addOrUpdateEntity(label.id)"
         >
-          <v-list-item-action>
+          <v-list-item-action
+            v-if="hasAnySuffixKey"
+          >
             <v-chip
               v-if="label.suffixKey"
               :color="label.backgroundColor"
@@ -117,6 +119,12 @@ export default Vue.extend({
       endOffset: 0,
       entityId: -1,
     };
+  },
+
+  computed: {
+    hasAnySuffixKey(): boolean {
+      return this.entityLabels.some((label: any) => label.suffixKey !== null)
+    }
   },
 
   methods: {
