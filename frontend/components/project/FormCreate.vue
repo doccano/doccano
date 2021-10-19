@@ -49,6 +49,18 @@
           @change="updateValue('singleClassClassification', $event === true)"
         />
         <v-checkbox
+          v-if="isSequenceLabelingProject"
+          :value="allowOverlapping"
+          label="Allow overlapping entity"
+          @change="updateValue('allowOverlapping', $event === true)"
+        />
+        <v-checkbox
+          v-if="isSequenceLabelingProject"
+          :value="graphemeMode"
+          label="Use grapheme mode"
+          @change="updateValue('graphemeMode', $event === true)"
+        />
+        <v-checkbox
           :value="enableRandomOrder"
           :label="$t('overview.randomizeDocOrder')"
           @change="updateValue('enableRandomOrder', $event === true)"
@@ -103,6 +115,14 @@ export default Vue.extend({
       type: Boolean,
       default: false,
       required: true
+    },
+    allowOverlapping: {
+      type: Boolean,
+      default: false
+    },
+    graphemeMode: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -130,6 +150,9 @@ export default Vue.extend({
         'DocumentClassification',
         'ImageClassification',
       ].includes(this.projectType)
+    },
+    isSequenceLabelingProject() {
+      return this.projectType === 'SequenceLabeling'
     }
   },
 
