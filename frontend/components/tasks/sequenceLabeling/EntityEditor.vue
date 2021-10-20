@@ -9,7 +9,7 @@
       :relations="relations"
       :relation-labels="relationLabels"
       :allow-overlapping="allowOverlapping"
-      :per-code-point="perCodePoint"
+      :grapheme-mode="graphemeMode"
       @add:entity="handleAddEvent"
       @click:entity="handleEntityClickEvent"
       @click:relation="updateRelation"
@@ -104,7 +104,7 @@ export default Vue.extend({
       default: false,
       required: false,
     },
-    perCodePoint: {
+    graphemeMode: {
       type: Boolean,
       default: false,
     },
