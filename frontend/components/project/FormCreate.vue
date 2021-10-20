@@ -80,7 +80,7 @@
                     grapheme clusters
                   </a>
                 </template>
-                Like emoji(🌷, 💩, and 👍)
+                Like emoji(🌷, 💩, and 👍), CRLF(\r\n), and so on.
               </v-tooltip>
               as one character
             </div>
