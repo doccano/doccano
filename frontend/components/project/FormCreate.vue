@@ -49,6 +49,44 @@
           @change="updateValue('singleClassClassification', $event === true)"
         />
         <v-checkbox
+          v-if="isSequenceLabelingProject"
+          :value="allowOverlapping"
+          label="Allow overlapping entity"
+          @change="updateValue('allowOverlapping', $event === true)"
+        />
+        <v-img
+          v-if="isSequenceLabelingProject"
+          :src="require('~/assets/project/creation.gif')"
+          height="200"
+          position="left"
+          contain
+        />
+        <v-checkbox
+          v-if="isSequenceLabelingProject"
+          :value="graphemeMode"
+          @change="updateValue('graphemeMode', $event === true)"
+        >
+          <template v-slot:label>
+            <div>
+              Count
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on }">
+                  <a
+                    target="_blank"
+                    href="https://unicode.org/reports/tr29/"
+                    @click.stop
+                    v-on="on"
+                  >
+                    grapheme clusters
+                  </a>
+                </template>
+                Like emoji(🌷, 💩, and 👍), CRLF(\r\n), and so on.
+              </v-tooltip>
+              as one character
+            </div>
+          </template>
+        </v-checkbox>
+        <v-checkbox
           :value="enableRandomOrder"
           :label="$t('overview.randomizeDocOrder')"
           @change="updateValue('enableRandomOrder', $event === true)"
@@ -103,6 +141,14 @@ export default Vue.extend({
       type: Boolean,
       default: false,
       required: true
+    },
+    allowOverlapping: {
+      type: Boolean,
+      default: false
+    },
+    graphemeMode: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -130,6 +176,9 @@ export default Vue.extend({
         'DocumentClassification',
         'ImageClassification',
       ].includes(this.projectType)
+    },
+    isSequenceLabelingProject() {
+      return this.projectType === 'SequenceLabeling'
     }
   },
 

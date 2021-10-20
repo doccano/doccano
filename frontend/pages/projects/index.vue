@@ -74,7 +74,9 @@ export default Vue.extend({
         projectType: 'DocumentClassification',
         enableRandomOrder: false,
         enableShareAnnotation: false,
-        singleClassClassification: false
+        singleClassClassification: false,
+        allowOverlapping: false,
+        graphemeMode: false
       } as ProjectWriteDTO,
       defaultItem: {
         name: '',
@@ -82,7 +84,9 @@ export default Vue.extend({
         projectType: 'DocumentClassification',
         enableRandomOrder: false,
         enableShareAnnotation: false,
-        singleClassClassification: false
+        singleClassClassification: false,
+        allowOverlapping: false,
+        graphemeMode: false
       } as ProjectWriteDTO,
       items: [] as ProjectDTO[],
       selected: [] as ProjectDTO[],

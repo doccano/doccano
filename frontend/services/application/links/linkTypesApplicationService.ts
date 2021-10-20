@@ -14,12 +14,12 @@ export class LinkTypesApplicationService {
   }
 
   public create(projectId: string, item: LinkTypeDTO): void {
-    const label = new LinkTypeItem(0, item.name, item.color)
+    const label = new LinkTypeItem(0, item.text, item.color)
     this.repository.create(projectId, label)
   }
 
   public update(projectId: string, item: LinkTypeDTO): void {
-    const label = new LinkTypeItem(item.id, item.name, item.color)
+    const label = new LinkTypeItem(item.id, item.text, item.color)
     this.repository.update(projectId, label)
   }
 

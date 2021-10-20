@@ -56,6 +56,8 @@ class TextClassificationProject(Project):
 
 
 class SequenceLabelingProject(Project):
+    allow_overlapping = models.BooleanField(default=False)
+    grapheme_mode = models.BooleanField(default=False)
 
     def get_annotation_class(self):
         return Span

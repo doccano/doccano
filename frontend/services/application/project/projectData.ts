@@ -13,9 +13,11 @@ export class ProjectDTO {
   singleClassClassification: boolean
   pageLink: string
   tags: Object[]
-  canDefineLabel: Boolean
-  canDefineRelation: Boolean
-  isTextProject: Boolean
+  canDefineLabel: boolean
+  canDefineRelation: boolean
+  isTextProject: boolean
+  allowOverlapping: boolean
+  graphemeMode: boolean
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -33,7 +35,9 @@ export class ProjectDTO {
     this.canDefineLabel = item.canDefineLabel
     this.canDefineRelation = item.canDefineRelation
     this.isTextProject = item.isTextProject
+    this.allowOverlapping = item.allow_overlapping
+    this.graphemeMode = item.grapheme_mode
   }
 }
 
-export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'tags'>
+export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'allowOverlapping' | 'graphemeMode' | 'tags'>

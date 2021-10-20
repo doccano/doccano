@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from ..models import Project
 from ..permissions import IsInProjectReadOnlyOrAdmin, IsStaff
-from ..serializers import ProjectPolymorphicSerializer, ProjectSerializer
+from ..serializers import ProjectPolymorphicSerializer
 
 
 class ProjectList(generics.ListCreateAPIView):
@@ -42,6 +42,6 @@ class ProjectList(generics.ListCreateAPIView):
 
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
+    serializer_class = ProjectPolymorphicSerializer
     lookup_url_kwarg = 'project_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]

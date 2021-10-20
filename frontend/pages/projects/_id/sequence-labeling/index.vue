@@ -18,24 +18,22 @@
     </template>
     <template v-slot:content>
       <v-card>
-        <v-card-text class="title">
-          <entity-item-box
-            :labels="labels"
-            :link-types="linkTypes"
+        <div class="annotation-text pa-4">
+          <entity-editor
+            :dark="$vuetify.theme.dark"
+            :rtl="isRTL"
             :text="doc.text"
             :entities="annotations"
-            :delete-annotation="remove"
-            :update-entity="update"
-            :add-entity="add"
-            :source-chunk="sourceChunk"
-            :source-link-type="sourceLinkType"
-            :select-source="selectSource"
-            :select-target="selectTarget"
-            :delete-link="deleteLink"
-            :select-new-link-type="selectNewLinkType"
-            :hide-all-link-menus="hideAllLinkMenus"
+            :entity-labels="labels"
+            :relations="links"
+            :relation-labels="linkTypes"
+            :allow-overlapping="project.allowOverlapping"
+            :grapheme-mode="project.graphemeMode"
+            @addEntity="addEntity"
+            @click:entity="updateEntity"
+            @contextmenu:entity="deleteEntity"
           />
-        </v-card-text>
+        </div>
       </v-card>
     </template>
     <template v-slot:sidebar>
@@ -46,23 +44,18 @@
 
 <script>
 import _ from 'lodash'
-import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import EntityItemBox from '~/components/tasks/sequenceLabeling/EntityItemBox'
-
-const NONE = {
-  id: -1,
-  none: true
-};
+import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 
 export default {
   layout: 'workspace',
 
   components: {
-    EntityItemBox,
+    EntityEditor,
     LayoutText,
     ListMetadata,
     ToolbarLaptop,
@@ -92,14 +85,13 @@ export default {
       linkTypes: [],
       project: {},
       enableAutoLabeling: false,
-      sourceChunk: NONE,
-      sourceLink: NONE,
-      sourceLinkType: NONE
+      rtl: false,
     }
   },
 
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'getUsername', 'getUserId']),
+    ...mapGetters('config', ['isRTL']),
 
     shortKeys() {
       return Object.fromEntries(this.labels.map(item => [item.id, [item.suffixKey]]))
@@ -127,48 +119,29 @@ export default {
 
   async created() {
     this.labels = await this.$services.label.list(this.projectId)
-
     this.linkTypes = await this.$services.linkTypes.list(this.projectId)
-
     this.project = await this.$services.project.findById(this.projectId)
   },
 
   methods: {
     async list(docId) {
-      this.hideAllLinkMenus();
-
       const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId);
       const links = await this.$services.sequenceLabeling.listLinks(this.projectId);
-
-      annotations.forEach(function(annotation) {
-        annotation.links = links.filter(link => link.annotation_id_1 === annotation.id);
-      });
-
       this.annotations = annotations;
       this.links = links;
     },
 
-    populateLinks() {
-      const links = this.links;
-      this.annotations.forEach(function(annotation) {
-        annotation.links = links.filter(link => link.annotation_id_1 === annotation.id);
-      });
-    },
-
-    async remove(id) {
-      this.hideAllLinkMenus();
+    async deleteEntity(id) {
       await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
     },
 
-    async add(startOffset, endOffset, labelId) {
-      this.hideAllLinkMenus();
+    async addEntity(startOffset, endOffset, labelId) {
       await this.$services.sequenceLabeling.create(this.projectId, this.doc.id, labelId, startOffset, endOffset)
       await this.list(this.doc.id)
     },
 
-    async update(labelId, annotationId) {
-      this.hideAllLinkMenus();
+    async updateEntity(annotationId, labelId) {
       await this.$services.sequenceLabeling.changeLabel(this.projectId, this.doc.id, annotationId, labelId)
       await this.list(this.doc.id)
     },
@@ -190,35 +163,6 @@ export default {
       await this.$services.example.confirm(this.projectId, this.doc.id)
       await this.$fetch()
     },
-
-    selectSource(chunk) {
-      this.sourceChunk = chunk;
-    },
-
-    async selectTarget(chunk) {
-      // to avoid duplicated links:
-      if (!chunk.links.find(ch => ch.id === this.sourceChunk.id)) {
-        await this.$services.sequenceLabeling.createLink(this.projectId, this.sourceChunk.id, chunk.id, this.sourceLinkType.id, this.getUserId);
-        await this.list(this.doc.id);
-      }
-      this.hideAllLinkMenus();
-    },
-
-    async deleteLink(id, ndx) {
-      await this.$services.sequenceLabeling.deleteLink(this.projectId, this.sourceChunk.links[ndx].id)
-      await this.list(this.doc.id)
-
-      this.hideAllLinkMenus();
-    },
-
-    selectNewLinkType(type) {
-      this.sourceLinkType = type;
-    },
-
-    hideAllLinkMenus() {
-      this.sourceChunk = NONE;
-      this.sourceLinkType = NONE;
-    }
   },
 
   validate({ params, query }) {
@@ -226,3 +170,13 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.annotation-text {
+  font-size: 1.25rem !important;
+  font-weight: 500;
+  line-height: 2rem;
+  font-family: "Roboto", sans-serif !important;
+  opacity: 0.6;
+}
+</style>

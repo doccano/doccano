@@ -71,11 +71,11 @@ export default Vue.extend({
       dialogUpload: false,
       editedIndex: -1,
       editedItem: {
-        name: '',
+        text: '',
         color: '#ffffff'
       } as LinkTypeDTO,
       defaultItem: {
-        name: '',
+        text: '',
         color: '#ffffff'
       } as LinkTypeDTO,
       items: [] as LinkTypeDTO[],
@@ -94,7 +94,7 @@ export default Vue.extend({
     },
     usedNames(): string[] {
       const item = this.items[this.editedIndex] // to remove myself
-      return this.items.filter(_ => _ !== item).map(item => item.name)
+      return this.items.filter(_ => _ !== item).map(item => item.text)
     }
   },
 

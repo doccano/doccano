@@ -81,6 +81,16 @@
       </template>
       <v-list>
         <v-subheader>{{ getUsername }}</v-subheader>
+        <v-list-item>
+          <v-list-item-content>
+            <v-switch
+              :input-value="isRTL"
+              :label="direction"
+              @change="toggleRTL"
+              class="ms-1"
+            />
+          </v-list-item-content>
+        </v-list-item>
         <v-list-item @click="signout">
           <v-list-item-icon>
             <v-icon>mdi-logout</v-icon>
@@ -116,21 +126,27 @@ export default {
         { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' },
         { title: 'Image Classification', link: 'image-classification' },
         { title: 'Speech to Text', link: 'speech-to-text' },
-      ]
+      ],
     }
   },
 
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'getUsername']),
     ...mapGetters('projects', ['currentProject']),
+    ...mapGetters('config', ['isRTL']),
 
     isIndividualProject() {
       return this.$route.name && this.$route.name.startsWith('projects-id')
+    },
+
+    direction() {
+      return this.isRTL ? 'RTL' : 'LTR'
     }
   },
 
   methods: {
     ...mapActions('auth', ['logout']),
+    ...mapActions('config', ['toggleRTL']),
     signout() {
       this.logout()
       this.$router.push(this.localePath('/'))

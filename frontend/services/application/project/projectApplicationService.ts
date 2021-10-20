@@ -56,7 +56,9 @@ export class ProjectApplicationService {
       item.projectType,
       item.enableRandomOrder,
       item.enableShareAnnotation,
-      item.singleClassClassification
+      item.singleClassClassification,
+      item.allowOverlapping,
+      item.graphemeMode
     )
   }
 }
