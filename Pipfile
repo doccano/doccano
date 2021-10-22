@@ -51,6 +51,7 @@ django-drf-filepond = "*"
 celery = "*"
 django-celery-results = "*"
 sqlalchemy = "*"
+waitress = "*"
 
 [requires]
 python_version = "3.8"
