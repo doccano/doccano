@@ -6,8 +6,8 @@ import subprocess
 import sys
 
 from .app.celery import app
-
 base = os.path.abspath(os.path.dirname(__file__))
+sys.path.append(base)
 manage_path = os.path.join(base, 'manage.py')
 parser = argparse.ArgumentParser(description='doccano, text annotation for machine learning practitioners.')
 
@@ -16,7 +16,7 @@ def number_of_workers():
     return (multiprocessing.cpu_count() * 2) + 1
 
 
-def run_on_windows(args):
+def run_on_nix(args):
     import gunicorn.app.base
     import gunicorn.util
 
@@ -33,7 +33,6 @@ def run_on_windows(args):
                 self.cfg.set(key.lower(), value)
 
         def load(self):
-            sys.path.append(base)
             return gunicorn.util.import_app('app.wsgi')
 
     options = {
@@ -44,7 +43,7 @@ def run_on_windows(args):
     StandaloneApplication(options).run()
 
 
-def run_on_nix(args):
+def run_on_windows(args):
     from waitress import serve
     from app.wsgi import application
     serve(application, port=args.port)
