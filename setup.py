@@ -42,6 +42,7 @@ required = [
     'django-drf-filepond>=0.3.0',
     'sqlalchemy>=1.4.7',
     'gunicorn>=20.1.0',
+    'waitress>=2.0.0',
 ]
 
 setup(
