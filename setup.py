@@ -43,6 +43,8 @@ required = [
     'sqlalchemy>=1.4.7',
     'gunicorn>=20.1.0',
     'waitress>=2.0.0',
+    'pydantic>=1.8.2',
+    'chardet>=4.0.0'
 ]
 
 setup(
