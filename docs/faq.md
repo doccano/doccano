@@ -1,5 +1,41 @@
 # FAQ
 
+## How to create a user
+
+After running doccano webserver, login to the admin site(in the case of pip installation) via <http://localhost:{port}/admin/>. The below is the example of port `8000` and username `admin`. If you set your own port or username and password on running the server, please change to your one.
+
+![](images/faq/user_creation/login.png)
+
+After login to the admin site, select `Users`:
+
+![](images/faq/user_creation/select_users.png)
+
+Select the ADD USER button in the upper right corner:
+
+![](images/faq/user_creation/select_add_user.png)
+
+After entering the username and password for the new user, select the `SAVE` button:
+
+![](images/faq/user_creation/create_user.png)
+
+Congratulations. Now you are able to log in to doccano as a new user. After logging out of the admin site, try logging in as a new user.
+
+## How to add a user to your project
+
+Note: This step assumes you have already created a new user. See [How to create a user](#how-to-create-a-user) in detail.
+
+After logging in to doccano, select your project. Note that you must be the administrator of the project to add users to the project.
+
+Select `Members` from the left side menu. If you are not the administrator of the project, `Members` will not be displayed.
+
+![](images/faq/add_annotator/select_members.png)
+
+Select the `Add` button to display the form. Fill in this form with the user name and role you want to add to the project. Then, select the `Save` button.
+
+![](images/faq/add_annotator/select_user.png)
+
+Congratulations. Now the new user are able to access the project.
+
 ## I can't upload my data
 
 Please check the following list.
@@ -15,13 +51,6 @@ Please check the following list.
 - Lack of field: Data file should not contain blank field.
 
 **You don't need your real & all data to validate file format. The picked data & masked data is suitable if your data is large or secret.**
-
-## I want to add annotators annotators/annotation approvers
-
-1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin/`).
-2. Add a user to `Users` table (`Add` link).
-3. **Logout from Django Admin site.** [You'll face login error without logout of Django Admin site](https://github.com/doccano/doccano/issues/723).
-4. Add the user to the project in the member page (`/projects/{project_id}/members`).
 
 ## I want to change user's or admin's password
 
