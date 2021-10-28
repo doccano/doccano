@@ -36,6 +36,28 @@ Select the `Add` button to display the form. Fill in this form with the user nam
 
 Congratulations. Now the new user are able to access the project.
 
+## How to change the password
+
+After running doccano webserver, login to the admin site(in the case of pip installation) via <http://localhost:{port}/admin/>. Note that you need to have a staff permission to login to the admin site. If you don't have it, please ask the administrator to change your password.
+
+![](images/faq/user_creation/login.png)
+
+After login to the admin site, select `Users`:
+
+![](images/faq/user_creation/select_users.png)
+
+Select the user you want to change the password:
+
+![](images/faq/how_to_change_password/user_list.png)
+
+Click `this form` link:
+
+![](images/faq/how_to_change_password/user_page.png)
+
+After showing a form below, change password there:
+
+![](images/faq/how_to_change_password/change_password.png)
+
 ## I can't upload my data
 
 Please check the following list.
@@ -51,23 +73,6 @@ Please check the following list.
 - Lack of field: Data file should not contain blank field.
 
 **You don't need your real & all data to validate file format. The picked data & masked data is suitable if your data is large or secret.**
-
-## I want to change user's or admin's password
-
-For ordinary user:
-
-1. Login to [Django Admin](https://djangobook.com/django-admin-site/) (URL: `/admin/`).
-2. Open `Users` table.
-3. Open user you want to change password.
-4. In `Password` property, you'll see: `Raw passwords are not stored, so there is no way to see this user's password, but you can change the password using *this form*.` Click `this form` link.
-5. Fill the form. Click `CHANGE PASSWORD` button.
-6. **Logout from Django Admin site.** [You'll face login error without logout of Django Admin site](https://github.com/doccano/doccano/issues/723).
-
-For the superuser account credentials, you have to set new password in the `docker-compose.dev.yml` and `docker-compose.prod.yml` files:
-
-```yml
-ADMIN_PASSWORD: "new_password"
-```
 
 ## I want to change port number
 
