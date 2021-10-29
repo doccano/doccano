@@ -15,8 +15,8 @@ const factory = (values = {}) => {
   })
 }
 
-describe('Foo', () => {
-  it('welcome メッセージを描画する', () => {
+describe('FormGuideline test', () => {
+  it('display guideline text', () => {
     const wrapper = factory()
     expect(wrapper.find('.tui-editor-contents').text()).toEqual('Hello')
   })
