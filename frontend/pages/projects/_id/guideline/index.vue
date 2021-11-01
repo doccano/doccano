@@ -1,10 +1,10 @@
 <template>
   <editor
-    :initialValue="project.guideline"
+    ref="toastuiEditor"
+    :initial-value="project.guideline"
     :options="editorOptions"
     preview-style="vertical"
     height="inherit"
-    ref="toastuiEditor"
     @change="updateProject"
   />
 </template>
@@ -18,10 +18,15 @@ import { Editor } from '@toast-ui/vue-editor'
 import '@/assets/style/editor.css'
 
 export default {
-  layout: 'project',
 
   components: {
     Editor
+  },
+
+  layout: 'project',
+
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   },
 
   data() {
@@ -48,10 +53,6 @@ export default {
         this.$services.project.update(this.project)
       }
     }, 1000)
-  },
-
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
   }
 }
 </script>

@@ -16,7 +16,7 @@
     show-select
     @input="$emit('input', $event)"
   >
-    <template v-slot:top>
+    <template #top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
@@ -26,7 +26,7 @@
         filled
       />
     </template>
-    <template v-slot:[`item.backgroundColor`]="props">
+    <template #[`item.backgroundColor`]="props">
       <v-chip
         :color="props.item.backgroundColor"
         :text-color="$contrastColor(props.item.backgroundColor)"
@@ -34,7 +34,7 @@
         {{ props.item.backgroundColor }}
       </v-chip>
     </template>
-    <template v-slot:[`item.actions`]="{ item }">
+    <template #[`item.actions`]="{ item }">
       <v-icon
         small
         @click="$emit('edit', item)"

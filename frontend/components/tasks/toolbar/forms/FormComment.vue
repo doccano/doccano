@@ -41,15 +41,15 @@ export default Vue.extend({
     }
   },
 
-  async fetch() {
-    this.user = await this.$services.user.getMyProfile()
-  },
-
   data() {
     return {
       user: {},
       comments: [] as CommentReadDTO[],
     }
+  },
+
+  async fetch() {
+    this.user = await this.$services.user.getMyProfile()
   },
 
   watch: {

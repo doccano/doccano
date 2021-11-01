@@ -59,7 +59,6 @@ import { LabelDTO } from '~/services/application/label/labelData'
 import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
-  layout: 'project',
 
   components: {
     ActionMenu,
@@ -68,11 +67,16 @@ export default Vue.extend({
     FormUpload,
     LabelList
   },
+  layout: 'project',
 
-  async fetch() {
-    this.isLoading = true
-    this.items = await this.$services.label.list(this.projectId)
-    this.isLoading = false
+  validate({ params, app }) {
+    if (/^\d+$/.test(params.id)) {
+      return app.$services.project.findById(params.id)
+      .then((res:ProjectDTO) => {
+        return res.canDefineLabel
+      })
+    }
+    return false
   },
 
   data() {
@@ -100,6 +104,12 @@ export default Vue.extend({
       isLoading: false,
       errorMessage: ''
     }
+  },
+
+  async fetch() {
+    this.isLoading = true
+    this.items = await this.$services.label.list(this.projectId)
+    this.isLoading = false
   },
 
   computed: {
@@ -182,16 +192,6 @@ export default Vue.extend({
       this.editedItem = Object.assign({}, item)
       this.dialogCreate = true
     }
-  },
-
-  validate({ params, app }) {
-    if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id)
-      .then((res:ProjectDTO) => {
-        return res.canDefineLabel
-      })
-    }
-    return false
   }
 })
 </script>

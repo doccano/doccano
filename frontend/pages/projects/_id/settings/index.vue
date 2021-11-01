@@ -30,21 +30,21 @@ import FormUpdate from '@/components/project/FormUpdate.vue'
 import ConfigList from '@/components/configAutoLabeling/ConfigList.vue'
 
 export default Vue.extend({
-  layout: 'project',
 
   components: {
     ConfigList,
     FormUpdate
+  },
+  layout: 'project',
+
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   },
 
   data() {
     return {
       tab: null
     }
-  },
-
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
   }
 })
 </script>

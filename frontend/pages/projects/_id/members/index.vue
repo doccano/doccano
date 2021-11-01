@@ -49,23 +49,16 @@ import FormCreate from '~/components/member/FormCreate.vue'
 import { MemberDTO } from '~/services/application/member/memberData'
 
 export default Vue.extend({
-  layout: 'project',
 
   components: {
     MemberList,
     FormCreate,
     FormDelete
   },
+  layout: 'project',
 
-  async fetch() {
-    this.isLoading = true
-    try {
-      this.items = await this.$services.member.list(this.projectId)
-    } catch(e) {
-      this.$router.push(`/projects/${this.projectId}`)
-    } finally {
-      this.isLoading = false
-    }
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   },
 
   data() {
@@ -89,6 +82,17 @@ export default Vue.extend({
       selected: [] as MemberDTO[],
       isLoading: false,
       errorMessage: ''
+    }
+  },
+
+  async fetch() {
+    this.isLoading = true
+    try {
+      this.items = await this.$services.member.list(this.projectId)
+    } catch(e) {
+      this.$router.push(`/projects/${this.projectId}`)
+    } finally {
+      this.isLoading = false
     }
   },
 
@@ -151,10 +155,6 @@ export default Vue.extend({
       this.editedItem = Object.assign({}, item)
       this.dialogCreate = true
     }
-  },
-
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
   }
 })
 </script>

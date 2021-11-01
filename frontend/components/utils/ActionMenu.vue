@@ -3,7 +3,7 @@
     offset-y
     open-on-hover
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <v-btn
         color="primary text-capitalize"
         v-on="on"

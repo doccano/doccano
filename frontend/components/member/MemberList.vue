@@ -16,7 +16,7 @@
     show-select
     @input="$emit('input', $event)"
   >
-    <template v-slot:top>
+    <template #top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
@@ -26,10 +26,10 @@
         filled
       />
     </template>
-    <template v-slot:[`item.rolename`]="{ item }">
+    <template #[`item.rolename`]="{ item }">
       {{ $translateRole(item.rolename, $t('members.roles')) }}
     </template>
-    <template v-slot:[`item.actions`]="{ item }">
+    <template #[`item.actions`]="{ item }">
       <v-icon
         small
         @click="$emit('edit', item)"

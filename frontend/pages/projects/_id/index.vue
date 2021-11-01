@@ -54,6 +54,10 @@
 export default {
   layout: 'project',
 
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
+  },
+
   data() {
     return {
       e6: 1,
@@ -76,10 +80,6 @@ export default {
     prev() {
       this.e6 = Math.max(1, this.e6 - 1)
     }
-  },
-
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
   }
 }
 </script>

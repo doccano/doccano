@@ -74,11 +74,15 @@ import DoughnutChart from '@/components/statistics/ChartDoughnut'
 import BarChart from '@/components/statistics/ChartBar'
 
 export default {
-  layout: 'project',
 
   components: {
     DoughnutChart,
     BarChart
+  },
+  layout: 'project',
+
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   },
 
   data() {
@@ -100,10 +104,6 @@ export default {
       this.$t('statistics.userStats'),
       this.$t('statistics.progress')
     )
-  },
-
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
   }
 }
 </script>

@@ -8,7 +8,7 @@
     disable-pagination
     class="elevation-1"
   >
-    <template v-slot:item.value="{ item }">
+    <template #[`item.value`]="{ item }">
       <template v-if="item.key.indexOf('im_url') > -1">
         <a :href="item.value" target="_blank"><img :src="item.value" style="height: 250px" /></a>
       </template>

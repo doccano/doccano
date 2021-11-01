@@ -3,12 +3,12 @@
     :headers="headers"
     :items="value"
   >
-    <template v-slot:top>
+    <template #top>
       <v-dialog
         v-model="dialog"
         max-width="800px"
       >
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
           <v-btn
             color="primary"
             dark
@@ -84,7 +84,7 @@
         </v-card>
       </v-dialog>
     </template>
-    <template v-slot:[`item.actions`]="{ item }">
+    <template #[`item.actions`]="{ item }">
       <v-icon
         small
         class="mr-2"

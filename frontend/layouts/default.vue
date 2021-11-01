@@ -11,10 +11,10 @@ import TheFooter from '@/components/layout/TheFooter'
 import TheHeader from '@/components/layout/TheHeader'
 
 export default {
-  middleware: ['check-auth'],
   components: {
     TheFooter,
     TheHeader
-  }
+  },
+  middleware: ['check-auth']
 }
 </script>

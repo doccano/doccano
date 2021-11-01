@@ -19,7 +19,7 @@
     show-select
     @input="$emit('input', $event)"
   >
-    <template v-slot:top>
+    <template #top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
@@ -29,7 +29,7 @@
         filled
       />
     </template>
-    <template v-slot:[`item.url`]="{ item }">
+    <template #[`item.url`]="{ item }">
       <v-img
         :src="item.url"
         aspect-ratio="1"
@@ -39,13 +39,13 @@
         class="grey lighten-2"
       />
     </template>
-    <template v-slot:[`item.meta`]="{ item }">
+    <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
     </template>
-    <template v-slot:[`item.commentCount`]="{ item }">
+    <template #[`item.commentCount`]="{ item }">
       <span> {{ item.commentCount }} </span>
     </template>
-    <template v-slot:[`item.action`]="{ item }">
+    <template #[`item.action`]="{ item }">
       <v-btn
         small
         color="primary text-capitalize"

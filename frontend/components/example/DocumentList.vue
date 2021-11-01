@@ -19,7 +19,7 @@
     show-select
     @input="$emit('input', $event)"
   >
-    <template v-slot:top>
+    <template #top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
@@ -29,17 +29,17 @@
         filled
       />
     </template>
-    <template v-slot:[`item.text`]="{ item }">
+    <template #[`item.text`]="{ item }">
       <span class="d-flex d-sm-none">{{ item.text | truncate(50) }}</span>
       <span class="d-none d-sm-flex">{{ item.text | truncate(200) }}</span>
     </template>
-    <template v-slot:[`item.meta`]="{ item }">
+    <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
     </template>
-    <template v-slot:[`item.commentCount`]="{ item }">
+    <template #[`item.commentCount`]="{ item }">
       <span> {{ item.commentCount }} </span>
     </template>
-    <template v-slot:[`item.action`]="{ item }">
+    <template #[`item.action`]="{ item }">
       <v-btn
         small
         color="primary text-capitalize"

@@ -42,12 +42,12 @@ import TheSideBar from '~/components/layout/TheSideBar'
 import TheHeader from '~/components/layout/TheHeader'
 
 export default {
-  middleware: ['check-auth', 'auth', 'check-admin'],
 
   components: {
     TheSideBar,
     TheHeader
   },
+  middleware: ['check-auth', 'auth', 'check-admin'],
 
   data() {
     return {

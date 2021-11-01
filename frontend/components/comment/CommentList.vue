@@ -17,10 +17,10 @@
     show-select
     @input="$emit('input', $event)"
   >
-    <template v-slot:[`item.createdAt`]="{ item }">
+    <template #[`item.createdAt`]="{ item }">
       <span>{{ item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm') }}</span>
     </template>
-    <template v-slot:top>
+    <template #top>
       <v-text-field
         v-model="search"
         prepend-inner-icon="search"
@@ -30,7 +30,7 @@
         filled
       />
     </template>
-    <template v-slot:[`item.action`]="{ item }">
+    <template #[`item.action`]="{ item }">
       <v-btn
         small
         color="primary text-capitalize"
