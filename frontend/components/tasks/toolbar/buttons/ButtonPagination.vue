@@ -6,7 +6,7 @@
       @save="changePageNumber"
     >
       <span>{{ value }} of {{ total }}</span>
-      <template v-slot:input>
+      <template #input>
         <div class="mt-4 title">
           Move Page
         </div>

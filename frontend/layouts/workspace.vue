@@ -30,12 +30,12 @@ import TheHeader from '~/components/layout/TheHeader'
 import TheSideBar from '~/components/layout/TheSideBar'
 
 export default {
-  middleware: ['check-auth', 'auth', 'set-project'],
 
   components: {
     TheSideBar,
     TheHeader
   },
+  middleware: ['check-auth', 'auth', 'set-project'],
 
   data() {
     return {

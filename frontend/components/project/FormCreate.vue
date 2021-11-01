@@ -35,10 +35,10 @@
           required
           @input="updateValue('projectType', $event)"
         >
-          <template v-slot:item="props">
+          <template #item="props">
             {{ translateTypeName(props.item, $t('overview.projectTypes')) }}
           </template>
-          <template v-slot:selection="props">
+          <template #selection="props">
             {{ translateTypeName(props.item, $t('overview.projectTypes')) }}
           </template>
         </v-select>
@@ -66,11 +66,11 @@
           :value="graphemeMode"
           @change="updateValue('graphemeMode', $event === true)"
         >
-          <template v-slot:label>
+          <template #label>
             <div>
               Count
               <v-tooltip bottom>
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <a
                     target="_blank"
                     href="https://unicode.org/reports/tr29/"

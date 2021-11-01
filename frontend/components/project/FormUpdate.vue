@@ -154,10 +154,6 @@
 import { projectNameRules, descriptionRules } from '@/rules/index'
 
 export default {
-  async fetch() {
-    this.project = await this.$services.project.findById(this.projectId)
-    this.getTags()
-  },
 
   data() {
     return {
@@ -173,6 +169,10 @@ export default {
       descriptionRules,
       valid: false
     }
+  },
+  async fetch() {
+    this.project = await this.$services.project.findById(this.projectId)
+    this.getTags()
   },
 
   computed: {

@@ -10,7 +10,7 @@
     class="pt-0"
     @change="addOrRemove"
   >
-    <template v-slot:selection="{ attrs, item, select, selected }">
+    <template #selection="{ attrs, item, select, selected }">
       <v-chip
         v-if="item.backgroundColor"
         v-bind="attrs"
@@ -32,7 +32,7 @@
         {{ item.text }}
       </v-chip>
     </template>
-    <template v-slot:item="{ item }">
+    <template #item="{ item }">
       <v-chip
         :color="item.backgroundColor"
         :text-color="$contrastColor(item.backgroundColor)"

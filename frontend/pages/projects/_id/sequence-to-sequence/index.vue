@@ -1,6 +1,6 @@
 <template>
   <layout-text v-if="doc.id">
-    <template v-slot:header>
+    <template #header>
       <toolbar-laptop
         :doc-id="doc.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
@@ -16,7 +16,7 @@
         class="d-flex d-sm-none"
       />
     </template>
-    <template v-slot:content>
+    <template #content>
       <v-card class="mb-5">
         <v-card-text class="title text-pre-wrap" v-text="doc.text" />
       </v-card>
@@ -28,7 +28,7 @@
         @create:annotation="add"
       />
     </template>
-    <template v-slot:sidebar>
+    <template #sidebar>
       <list-metadata :metadata="doc.meta" />
     </template>
   </layout-text>
@@ -43,7 +43,6 @@ import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
-  layout: 'workspace',
 
   components: {
     LayoutText,
@@ -51,6 +50,20 @@ export default {
     Seq2seqBox,
     ToolbarLaptop,
     ToolbarMobile
+  },
+  layout: 'workspace',
+
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
+  },
+
+  data() {
+    return {
+      annotations: [],
+      docs: [],
+      project: {},
+      enableAutoLabeling: false
+    }
   },
 
   async fetch() {
@@ -65,15 +78,6 @@ export default {
       await this.autoLabel(doc.id)
     }
     await this.list(doc.id)
-  },
-
-  data() {
-    return {
-      annotations: [],
-      docs: [],
-      project: {},
-      enableAutoLabeling: false
-    }
   },
 
   computed: {
@@ -139,10 +143,6 @@ export default {
       await this.$services.example.confirm(this.projectId, this.doc.id)
       await this.$fetch()
     }
-  },
-
-  validate({ params, query }) {
-    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   }
 }
 </script>

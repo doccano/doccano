@@ -1,6 +1,6 @@
 <template>
   <layout-text v-if="image.id">
-    <template v-slot:header>
+    <template #header>
       <toolbar-laptop
         :doc-id="image.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
@@ -29,7 +29,7 @@
         class="d-flex d-sm-none"
       />
     </template>
-    <template v-slot:content>
+    <template #content>
       <v-card
         v-shortkey="shortKeys"
         @shortkey="addOrRemove"
@@ -61,7 +61,7 @@
         />
       </v-card>
     </template>
-    <template v-slot:sidebar>
+    <template #sidebar>
       <list-metadata :metadata="image.meta" />
     </template>
   </layout-text>
@@ -79,7 +79,6 @@ import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import { useLabelList } from '@/composables/useLabelList'
 
 export default {
-  layout: 'workspace',
 
   components: {
     LabelGroup,
@@ -89,6 +88,11 @@ export default {
     ToolbarLaptop,
     ToolbarMobile
   },
+  layout: 'workspace',
+
+  validate({ params, query }) {
+    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
+  },
 
   setup() {
     const { state, getLabelList, shortKeys } = useLabelList()
@@ -97,6 +101,20 @@ export default {
       ...toRefs(state),
       getLabelList,
       shortKeys,
+    }
+  },
+
+  data() {
+    return {
+      annotations: [],
+      images: [],
+      project: {},
+      enableAutoLabeling: false,
+      labelOption: 0,
+      imageSize: {
+        height: 0,
+        width: 0
+      }
     }
   },
 
@@ -113,20 +131,6 @@ export default {
       await this.autoLabel(image.id)
     }
     await this.list(image.id)
-  },
-
-  data() {
-    return {
-      annotations: [],
-      images: [],
-      project: {},
-      enableAutoLabeling: false,
-      labelOption: 0,
-      imageSize: {
-        height: 0,
-        width: 0
-      }
-    }
   },
 
   computed: {
@@ -208,10 +212,6 @@ export default {
       }
       img.src = val.url
     }
-  },
-
-  validate({ params, query }) {
-    return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   }
 }
 </script>

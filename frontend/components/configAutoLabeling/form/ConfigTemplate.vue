@@ -41,9 +41,10 @@
           If you want to know the Jinja2 notation, please refer to the site.
         </p>
         <v-textarea
-          v-model="value"
+          :value="value"
           outlined
           label="Mapping Template"
+          @change="$emit('input', $event)"
         />
         <v-alert
           v-for="(error, index) in errorMessages"
@@ -127,12 +128,6 @@ export default Vue.extend({
       type: Array,
       default: () => [],
       required: true
-    }
-  },
-
-  watch: {
-    value(val) {
-      this.$emit('input', val)
     }
   }
 })

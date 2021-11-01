@@ -10,7 +10,7 @@
       class="elevation-1"
       @input="update"
     >
-      <template v-slot:top>
+      <template #top>
         <v-text-field
           v-model="newText"
           prepend-inner-icon="mdi-pencil"
@@ -24,12 +24,12 @@
           @compositionend="compositionEnd"
         />
       </template>
-      <template v-slot:[`item.text`]="{ item }">
+      <template #[`item.text`]="{ item }">
         <v-edit-dialog>
           <span class="title" style="font-weight:400">
             {{ item.text }}
           </span>
-          <template v-slot:input>
+          <template #input>
             <v-textarea
               :value="item.text"
               :label="$t('generic.edit')"
@@ -39,7 +39,7 @@
           </template>
         </v-edit-dialog>
       </template>
-      <template v-slot:[`item.action`]="{ item }">
+      <template #[`item.action`]="{ item }">
         <v-icon
           small
           @click="remove(item.id)"

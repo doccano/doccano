@@ -32,7 +32,7 @@
             </h1>
             <div class="mt-4">
               <v-menu open-on-hover offset-y>
-                <template v-slot:activator="{ on }">
+                <template #activator="{ on }">
                   <v-btn
                     class="blue lighten-2"
                     dark

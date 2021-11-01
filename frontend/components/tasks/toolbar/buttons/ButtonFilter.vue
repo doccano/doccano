@@ -1,8 +1,8 @@
 <template>
   <v-menu>
-    <template v-slot:activator="{ on: menu }">
+    <template #activator="{ on: menu }">
       <v-tooltip bottom>
-        <template v-slot:activator="{ on: tooltip }">
+        <template #activator="{ on: tooltip }">
           <v-btn
             icon
             v-on="{ ...tooltip, ...menu }"

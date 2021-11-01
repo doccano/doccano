@@ -47,11 +47,11 @@
 import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 export default {
-  layout: 'demo',
   components: {
     EntityEditor,
     ListMetadata,
   },
+  layout: 'demo',
   data() {
     return {
       allowOverlapping: false,

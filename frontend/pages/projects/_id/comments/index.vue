@@ -36,20 +36,15 @@ import { ProjectDTO } from '~/services/application/project/projectData'
 import FormDelete from '~/components/comment/FormDelete.vue'
 
 export default Vue.extend({
-  layout: 'project',
 
   components: {
     CommentList,
     FormDelete
   },
+  layout: 'project',
 
-  async fetch() {
-    this.isLoading = true
-    this.project = await this.$services.project.findById(this.projectId)
-    this.items = await this.$services.comment.listProjectComment(this.projectId)
-    const example = await this.$services.example.fetchOne(this.projectId,'1','','') // to fetch the count of examples
-    this.examples = await this.$services.example.list(this.projectId, {limit: example.count.toString()})
-    this.isLoading = false
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
   },
 
   data() {
@@ -61,6 +56,15 @@ export default Vue.extend({
       examples: {} as ExampleListDTO,
       isLoading: false
     }
+  },
+
+  async fetch() {
+    this.isLoading = true
+    this.project = await this.$services.project.findById(this.projectId)
+    this.items = await this.$services.comment.listProjectComment(this.projectId)
+    const example = await this.$services.example.fetchOne(this.projectId,'1','','') // to fetch the count of examples
+    this.examples = await this.$services.example.list(this.projectId, {limit: example.count.toString()})
+    this.isLoading = false
   },
 
   computed: {
@@ -88,10 +92,6 @@ export default Vue.extend({
         query
       })
     }
-  },
-
-  validate({ params }) {
-    return /^\d+$/.test(params.id)
   }
 })
 </script>

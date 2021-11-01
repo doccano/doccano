@@ -86,7 +86,6 @@ import ActionMenu from '~/components/example/ActionMenu.vue'
 import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
-  layout: 'project',
 
   components: {
     ActionMenu,
@@ -98,10 +97,11 @@ export default Vue.extend({
     FormDownload,
   },
 
-  async fetch() {
-    this.isLoading = true
-    this.item = await this.$services.example.list(this.projectId, this.$route.query)
-    this.isLoading = false
+  layout: 'project',
+
+  validate({ params, query }) {
+    // @ts-ignore
+    return /^\d+$/.test(params.id) && /^\d+|$/.test(query.limit) && /^\d+|$/.test(query.offset)
   },
 
   data() {
@@ -115,6 +115,12 @@ export default Vue.extend({
       isLoading: false,
       isProjectAdmin: false
     }
+  },
+
+  async fetch() {
+    this.isLoading = true
+    this.item = await this.$services.example.list(this.projectId, this.$route.query)
+    this.isLoading = false
   },
 
   computed: {
@@ -177,11 +183,6 @@ export default Vue.extend({
         query
       })
     }
-  },
-
-  validate({ params, query }) {
-    // @ts-ignore
-    return /^\d+$/.test(params.id) && /^\d+|$/.test(query.limit) && /^\d+|$/.test(query.offset)
   }
 })
 </script>

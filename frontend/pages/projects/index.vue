@@ -48,21 +48,15 @@ import FormDelete from '~/components/project/FormDelete.vue'
 import FormCreate from '~/components/project/FormCreate.vue'
 
 export default Vue.extend({
-  layout: 'projects',
-
-  middleware: ['check-auth', 'auth'],
 
   components: {
     FormCreate,
     FormDelete,
     ProjectList,
   },
+  layout: 'projects',
 
-  async fetch() {
-    this.isLoading = true
-    this.items = await this.$services.project.list()
-    this.isLoading = false
-  },
+  middleware: ['check-auth', 'auth'],
 
   data() {
     return {
@@ -92,6 +86,12 @@ export default Vue.extend({
       selected: [] as ProjectDTO[],
       isLoading: false
     }
+  },
+
+  async fetch() {
+    this.isLoading = true
+    this.items = await this.$services.project.list()
+    this.isLoading = false
   },
 
   computed: {

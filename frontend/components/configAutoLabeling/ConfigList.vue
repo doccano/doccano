@@ -9,7 +9,7 @@
     :loading-text="$t('generic.loading')"
     show-select
   >
-    <template v-slot:top>
+    <template #top>
       <div class="ma-4">
         <v-btn
           class="primary text-capitalize"

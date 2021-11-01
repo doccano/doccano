@@ -4,7 +4,7 @@
       v-model="showMenu"
       offset-y
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
         <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
             v-if="!showMenu && sourceChunk.none" class="choose-link-type" @click.stop="showActiveLinks"></span><span
@@ -43,7 +43,7 @@
       v-model="showActiveLinksMenu"
       offset-y
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
         <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
             class="active-link-source" @click.stop="abortNewLink"></span></span><span
@@ -85,7 +85,7 @@
       v-model="showNewLinkMenu"
       offset-y
   >
-    <template v-slot:activator="{ on }">
+    <template #activator="{ on }">
       <span :id="'spn-' + spanid" :style="{ borderColor: color }" class="highlight bottom" v-on="on">
         <span class="highlight__content">{{ content }}<v-icon class="delete" @click.stop="remove">mdi-close-circle</v-icon><span
             class="active-link-source" @click.stop="abortNewLink"></span></span><span

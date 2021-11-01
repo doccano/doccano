@@ -11,7 +11,7 @@
     :search-input.sync="search"
     @change="search=''"
   >
-    <template v-slot:selection="{ attrs, item, select, selected }">
+    <template #selection="{ attrs, item, select, selected }">
       <v-chip
         v-bind="attrs"
         :input-value="selected"
@@ -32,7 +32,7 @@
         {{ item.text }}
       </v-chip>
     </template>
-    <template v-slot:item="{ item }">
+    <template #item="{ item }">
       <v-chip
         :color="item.backgroundColor"
         :text-color="$contrastColor(item.backgroundColor)"

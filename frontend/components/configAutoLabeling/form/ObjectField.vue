@@ -3,7 +3,7 @@
     :headers="headers"
     :items="value"
   >
-    <template v-slot:top>
+    <template #top>
       <v-toolbar
         class="toolbar-control"
         flat
@@ -16,7 +16,7 @@
           v-model="dialog"
           max-width="800px"
         >
-          <template v-slot:activator="{ on, attrs }">
+          <template #activator="{ on, attrs }">
             <v-btn
               color="primary"
               dark
@@ -90,7 +90,7 @@
         </v-dialog>
       </v-toolbar>
     </template>
-    <template v-slot:[`item.actions`]="{ item }">
+    <template #[`item.actions`]="{ item }">
       <v-icon
         small
         class="mr-2"

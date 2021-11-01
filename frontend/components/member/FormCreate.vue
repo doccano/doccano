@@ -32,10 +32,10 @@
           return-object
           prepend-icon="mdi-credit-card-outline"
         >
-          <template v-slot:item="props">
+          <template #item="props">
             {{ $translateRole(props.item.rolename, $t('members.roles')) }}
           </template>
-          <template v-slot:selection="props">
+          <template #selection="props">
             {{ $translateRole(props.item.rolename, $t('members.roles')) }}
           </template>
         </v-select>
@@ -78,12 +78,6 @@ export default Vue.extend({
     }
   },
 
-  async fetch() {
-    this.isLoading = true
-    this.users = await this.$services.user.list(this.username)
-    this.isLoading = false
-  },
-
   data() {
     return {
       isLoading: false,
@@ -96,6 +90,12 @@ export default Vue.extend({
         roleRequired: (v: RoleDTO) => !!v && !!v.rolename || 'Required'
       }
     }
+  },
+
+  async fetch() {
+    this.isLoading = true
+    this.users = await this.$services.user.list(this.username)
+    this.isLoading = false
   },
 
   computed: {

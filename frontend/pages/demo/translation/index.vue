@@ -31,12 +31,12 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
-  layout: 'demo',
 
   components: {
     Seq2seqBox,
     ListMetadata
   },
+  layout: 'demo',
 
   data() {
     return {

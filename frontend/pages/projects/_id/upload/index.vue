@@ -34,10 +34,10 @@
           :label="val.title"
           outlined
         >
-          <template v-slot:selection="{ item }">
+          <template #selection="{ item }">
             {{ toVisualize(item) }}
           </template>
-          <template v-slot:item="{ item }">
+          <template #item="{ item }">
             {{ toVisualize(item) }}
           </template>
         </v-select>
@@ -103,11 +103,11 @@ const FilePond = vueFilePond(
 )
 
 export default {
-  layout: 'project',
 
   components: {
     FilePond,
   },
+  layout: 'project',
   
   data() {
     return {
