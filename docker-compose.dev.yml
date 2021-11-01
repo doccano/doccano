@@ -53,7 +53,7 @@ services:
       - network-backend
 
   frontend:
-    image: node:16.5-alpine3.14
+    image: node:16.13.0
     command: ["/src/tools/dev-nuxt.sh"]
     working_dir: /src/frontend
     environment:
