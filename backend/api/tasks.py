@@ -1,4 +1,5 @@
 import itertools
+import uuid
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
@@ -60,12 +61,14 @@ class DataFactory:
         self.label_class.objects.bulk_create(labels)
 
     def create_data(self, examples, project):
+        uuids = sorted(uuid.uuid4() for _ in range(len(examples)))
         dataset = [
-            self.data_class(project=project, **example.data)
-            for example in examples
+            self.data_class(id=uid, project=project, **example.data)
+            for uid, example in zip(uuids, examples)
         ]
-        results = self.data_class.objects.bulk_create(dataset)
-        return results
+        data = self.data_class.objects.bulk_create(dataset)
+        data.sort(key=lambda example: example.id)
+        return data
 
     def create_annotation(self, examples, ids, user, project):
         mapping = {label.text: label.id for label in project.labels.all()}
