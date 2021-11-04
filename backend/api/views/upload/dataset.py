@@ -242,6 +242,12 @@ class CoNLLDataset(Dataset):
                     record = Record(data=data, label=labels)
                     yield record
                     words, tags = [], []
+            if words:
+                text = delimiter.join(words)
+                data = self.data_class.parse(filename=filename, text=text)
+                labels = self.get_label(words, tags, delimiter)
+                record = Record(data=data, label=labels)
+                yield record
 
     def get_scheme(self, scheme: str):
         mapping = {
