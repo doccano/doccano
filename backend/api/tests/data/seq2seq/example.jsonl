@@ -1,3 +1,4 @@
-{"text": "example", "label": ["example1", "example2"], "meta": {"wikiPageID": 1}}
-{"text": "example", "label": ["example"], "meta": {"wikiPageID": 2}}
-{"text": "example", "label": ["example"], "meta": {"wikiPageID": 3}}
+{"text": "exampleA", "label": ["label1"]}
+{"text": "exampleB", "label": []}
+{"label": ["label2"]}
+{}

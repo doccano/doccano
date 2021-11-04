@@ -1,5 +1,5 @@
-text,label,meta
-AAA,LabelA,
-BBB,LabelB,MetaB
-CCC,LabelC
-DDD,,MetaD
+text,label
+exampleA,label1
+exampleB,
+,label2
+,

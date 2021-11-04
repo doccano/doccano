@@ -3,7 +3,7 @@ import pathlib
 from django.test import TestCase
 
 from ..models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                      Category, Example, Label, Span, TextLabel)
+                      Category, Example)
 from ..tasks import injest_data
 from .api.utils import prepare_project
 
@@ -17,92 +17,171 @@ class TestIngestData(TestCase):
         self.user = self.project.users[0]
         self.data_path = pathlib.Path(__file__).parent / 'data'
 
-    def assert_count(self,
-                     filename,
-                     file_format,
-                     kwargs=None,
-                     expected_example=0,
-                     expected_label=0,
-                     expected_annotation=0):
+    def ingest_data(self, filename, file_format, kwargs=None):
         filenames = [str(self.data_path / filename)]
         kwargs = kwargs or {}
         injest_data(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
-        self.assertEqual(Example.objects.count(), expected_example)
-        self.assertEqual(Label.objects.count(), expected_label)
-        self.assertEqual(self.annotation_class.objects.count(), expected_annotation)
 
 
 class TestIngestClassificationData(TestIngestData):
     task = DOCUMENT_CLASSIFICATION
-    annotation_class = Category
+
+    def assert_examples(self, dataset):
+        for text, expected_labels in dataset:
+            example = Example.objects.get(text=text)
+            labels = set(cat.label.text for cat in example.categories.all())
+            self.assertEqual(labels, set(expected_labels))
 
     def test_jsonl(self):
         filename = 'text_classification/example.jsonl'
         file_format = 'JSONL'
         kwargs = {'column_label': 'labels'}
-        self.assert_count(filename, file_format, kwargs, expected_example=4, expected_label=3, expected_annotation=5)
+        dataset = [
+            ('exampleA', ['positive']),
+            ('exampleB', ['positive', 'negative']),
+            ('exampleC', [])
+        ]
+        self.ingest_data(filename, file_format, kwargs)
+        self.assert_examples(dataset)
 
     def test_csv(self):
         filename = 'text_classification/example.csv'
         file_format = 'CSV'
-        self.assert_count(filename, file_format, expected_example=4, expected_label=2, expected_annotation=2)
+        dataset = [
+            ('exampleA', ['positive']),
+            ('exampleB', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
+
+    def test_csv_out_of_order_columns(self):
+        filename = 'text_classification/example_out_of_order_columns.csv'
+        file_format = 'CSV'
+        dataset = [
+            ('exampleA', ['positive']),
+            ('exampleB', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
     def test_fasttext(self):
         filename = 'text_classification/example_fasttext.txt'
         file_format = 'fastText'
-        self.assert_count(filename, file_format, expected_example=4, expected_label=5, expected_annotation=5)
+        dataset = [
+            ('exampleA', ['positive']),
+            ('exampleB', ['positive', 'negative']),
+            ('exampleC', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
     def test_excel(self):
         filename = 'text_classification/example.xlsx'
         file_format = 'Excel'
-        self.assert_count(filename, file_format, expected_example=3, expected_label=2, expected_annotation=3)
+        dataset = [
+            ('exampleA', ['positive']),
+            ('exampleB', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
     def test_json(self):
         filename = 'text_classification/example.json'
         file_format = 'JSON'
-        self.assert_count(filename, file_format, expected_example=4, expected_label=3, expected_annotation=5)
+        dataset = [
+            ('exampleA', ['positive']),
+            ('exampleB', ['positive', 'negative']),
+            ('exampleC', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
     def test_textfile(self):
         filename = 'example.txt'
         file_format = 'TextFile'
-        self.assert_count(filename, file_format, expected_example=1, expected_label=0, expected_annotation=0)
+        dataset = [
+            ('exampleA\nexampleB\nexampleC\n', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
     def test_textline(self):
         filename = 'example.txt'
         file_format = 'TextLine'
-        self.assert_count(filename, file_format, expected_example=3, expected_label=0, expected_annotation=0)
+        dataset = [
+            ('exampleA', []),
+            ('exampleB', []),
+            ('exampleC', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
 
 class TestIngestSequenceLabelingData(TestIngestData):
     task = SEQUENCE_LABELING
-    annotation_class = Span
+
+    def assert_examples(self, dataset):
+        for text, expected_labels in dataset:
+            example = Example.objects.get(text=text)
+            labels = [[span.start_offset, span.end_offset, span.label.text] for span in example.spans.all()]
+            self.assertEqual(labels, expected_labels)
 
     def test_jsonl(self):
         filename = 'sequence_labeling/example.jsonl'
         file_format = 'JSONL'
-        self.assert_count(filename, file_format, expected_example=3, expected_label=3, expected_annotation=4)
+        dataset = [
+            ('exampleA', [[0, 1, 'LOC']]),
+            ('exampleB', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
     def test_conll(self):
         filename = 'sequence_labeling/example.conll'
         file_format = 'CoNLL'
-        self.assert_count(filename, file_format, expected_example=3, expected_label=2, expected_annotation=5)
+        dataset = [
+            ('JAPAN GET', [[0, 5, 'LOC']]),
+            ('Nadim Ladki', [[0, 11, 'PER']])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
 
 class TestIngestSeq2seqData(TestIngestData):
     task = SEQ2SEQ
-    annotation_class = TextLabel
+
+    def assert_examples(self, dataset):
+        for text, expected_labels in dataset:
+            example = Example.objects.get(text=text)
+            labels = set(text_label.text for text_label in example.texts.all())
+            self.assertEqual(labels, set(expected_labels))
 
     def test_jsonl(self):
         filename = 'seq2seq/example.jsonl'
         file_format = 'JSONL'
-        self.assert_count(filename, file_format, expected_example=3, expected_label=0, expected_annotation=4)
+        dataset = [
+            ('exampleA', ['label1']),
+            ('exampleB', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
     def test_json(self):
         filename = 'seq2seq/example.json'
         file_format = 'JSON'
-        self.assert_count(filename, file_format, expected_example=3, expected_label=0, expected_annotation=4)
+        dataset = [
+            ('exampleA', ['label1']),
+            ('exampleB', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
 
     def test_csv(self):
         filename = 'seq2seq/example.csv'
         file_format = 'CSV'
-        self.assert_count(filename, file_format, expected_example=4, expected_label=0, expected_annotation=3)
+        dataset = [
+            ('exampleA', ['label1']),
+            ('exampleB', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
