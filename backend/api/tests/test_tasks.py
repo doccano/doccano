@@ -29,28 +29,28 @@ class TestIngestClassificationData(TestCase):
         self.assertEqual(Category.objects.count(), expected_annotation)
 
     def test_jsonl(self):
-        filename = 'classification.jsonl'
+        filename = 'text_classification/example.jsonl'
         file_format = 'JSONL'
         kwargs = {'column_label': 'labels'}
         self.assert_count(filename, file_format, kwargs, expected_example=4, expected_label=3, expected_annotation=5)
 
     def test_csv(self):
-        filename = 'example.csv'
+        filename = 'text_classification/example.csv'
         file_format = 'CSV'
         self.assert_count(filename, file_format, expected_example=4, expected_label=2, expected_annotation=2)
 
     def test_fasttext(self):
-        filename = 'example_fasttext.txt'
+        filename = 'text_classification/example_fasttext.txt'
         file_format = 'fastText'
         self.assert_count(filename, file_format, expected_example=4, expected_label=5, expected_annotation=5)
 
     def test_excel(self):
-        filename = 'example.xlsx'
+        filename = 'text_classification/example.xlsx'
         file_format = 'Excel'
         self.assert_count(filename, file_format, expected_example=3, expected_label=2, expected_annotation=3)
 
     def test_json(self):
-        filename = 'example.json'
+        filename = 'text_classification/example.json'
         file_format = 'JSON'
         self.assert_count(filename, file_format, expected_example=4, expected_label=3, expected_annotation=5)
 
