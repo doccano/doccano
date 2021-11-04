@@ -1,0 +1,6 @@
+[
+  {"text": "example", "label": ["positive"]},
+  {"text": "example", "label": ["positive", "negative"]},
+  {"text": "example", "label": ["negative"]},
+  {"text": "example", "label": ["neutral"]}
+]
