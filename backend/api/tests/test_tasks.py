@@ -2,7 +2,7 @@ import pathlib
 
 from django.test import TestCase
 
-from ..models import Category, Example, Label
+from ..models import Category, Example, Label, Span
 from ..tasks import injest_data
 from .api.utils import prepare_project
 
@@ -63,3 +63,35 @@ class TestIngestClassificationData(TestCase):
         filename = 'example.txt'
         file_format = 'TextLine'
         self.assert_count(filename, file_format, expected_example=3, expected_label=0, expected_annotation=0)
+
+
+class TestIngestSequenceLabelingData(TestCase):
+
+    def setUp(self):
+        self.project = prepare_project(task='SequenceLabeling')
+        self.user = self.project.users[0]
+        self.data_path = pathlib.Path(__file__).parent / 'data'
+
+    def assert_count(self,
+                     filename,
+                     file_format,
+                     kwargs=None,
+                     expected_example=0,
+                     expected_label=0,
+                     expected_annotation=0):
+        filenames = [str(self.data_path / filename)]
+        kwargs = kwargs or {}
+        injest_data(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
+        self.assertEqual(Example.objects.count(), expected_example)
+        self.assertEqual(Label.objects.count(), expected_label)
+        self.assertEqual(Span.objects.count(), expected_annotation)
+
+    def test_jsonl(self):
+        filename = 'sequence_labeling/example.jsonl'
+        file_format = 'JSONL'
+        self.assert_count(filename, file_format, expected_example=3, expected_label=3, expected_annotation=4)
+
+    def test_conll(self):
+        filename = 'sequence_labeling/example.conll'
+        file_format = 'CoNLL'
+        self.assert_count(filename, file_format, expected_example=3, expected_label=2, expected_annotation=5)
