@@ -2,7 +2,8 @@ import pathlib
 
 from django.test import TestCase
 
-from ..models import Category, Example, Label, Span
+from ..models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
+                      Category, Example, Label, Span, TextLabel)
 from ..tasks import injest_data
 from .api.utils import prepare_project
 
@@ -32,7 +33,7 @@ class TestIngestData(TestCase):
 
 
 class TestIngestClassificationData(TestIngestData):
-    task = 'DocumentClassification'
+    task = DOCUMENT_CLASSIFICATION
     annotation_class = Category
 
     def test_jsonl(self):
@@ -73,7 +74,7 @@ class TestIngestClassificationData(TestIngestData):
 
 
 class TestIngestSequenceLabelingData(TestIngestData):
-    task = 'SequenceLabeling'
+    task = SEQUENCE_LABELING
     annotation_class = Span
 
     def test_jsonl(self):
@@ -85,3 +86,23 @@ class TestIngestSequenceLabelingData(TestIngestData):
         filename = 'sequence_labeling/example.conll'
         file_format = 'CoNLL'
         self.assert_count(filename, file_format, expected_example=3, expected_label=2, expected_annotation=5)
+
+
+class TestIngestSeq2seqData(TestIngestData):
+    task = SEQ2SEQ
+    annotation_class = TextLabel
+
+    def test_jsonl(self):
+        filename = 'seq2seq/example.jsonl'
+        file_format = 'JSONL'
+        self.assert_count(filename, file_format, expected_example=3, expected_label=0, expected_annotation=4)
+
+    def test_json(self):
+        filename = 'seq2seq/example.json'
+        file_format = 'JSON'
+        self.assert_count(filename, file_format, expected_example=3, expected_label=0, expected_annotation=4)
+
+    def test_csv(self):
+        filename = 'seq2seq/example.csv'
+        file_format = 'CSV'
+        self.assert_count(filename, file_format, expected_example=4, expected_label=0, expected_annotation=3)

@@ -92,10 +92,10 @@ class TextLabel(Label):
 
     @classmethod
     def parse(cls, obj: Any):
-        if isinstance(obj, str):
+        if isinstance(obj, str) and obj:
             return cls(text=obj)
         else:
-            raise TypeError(f'{obj} is not str.')
+            raise TypeError(f'{obj} is not str or empty.')
 
     def replace(self, mapping: Dict[str, str]) -> 'Label':
         return self

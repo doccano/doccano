@@ -1,0 +1,5 @@
+[
+  {"text": "example", "label": ["example1", "example2"]},
+  {"text": "example", "label": ["example"]},
+  {"text": "example", "label": ["example"]}
+]

@@ -112,7 +112,7 @@ class Dataset:
         label = [label] if isinstance(label, str) else label
         try:
             label = [self.label_class.parse(o) for o in label]
-        except pydantic.error_wrappers.ValidationError:
+        except (pydantic.error_wrappers.ValidationError, TypeError):
             label = []
         data = self.data_class.parse(text=text, filename=filename, meta=row)
         record = Record(data=data, label=label)
