@@ -104,7 +104,7 @@ export default Vue.extend({
 
   props: {
     docId: {
-      type: Number,
+      type: String,
       required: true
     },
     enableAutoLabeling: {

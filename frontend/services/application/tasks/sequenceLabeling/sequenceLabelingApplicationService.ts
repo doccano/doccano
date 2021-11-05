@@ -13,17 +13,17 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
         super(new APISequenceLabelingRepository())
     }
 
-    public async list(projectId: string, docId: number): Promise<SequenceLabelingDTO[]> {
+    public async list(projectId: string, docId: string): Promise<SequenceLabelingDTO[]> {
         const items = await this.repository.list(projectId, docId)
         return items.map(item => new SequenceLabelingDTO(item))
     }
 
-    public async create(projectId: string, docId: number, labelId: number, startOffset: number, endOffset: number): Promise<void> {
+    public async create(projectId: string, docId: string, labelId: number, startOffset: number, endOffset: number): Promise<void> {
         const item = new SequenceLabelingLabel(0, labelId, 0, startOffset, endOffset)
         await this.repository.create(projectId, docId, item)
     }
 
-    public async changeLabel(projectId: string, docId: number, annotationId: number, labelId: number): Promise<void> {
+    public async changeLabel(projectId: string, docId: string, annotationId: number, labelId: number): Promise<void> {
         await this.repository.update(projectId, docId, annotationId, labelId)
     }
 
