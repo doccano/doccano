@@ -134,6 +134,12 @@ class TestIngestClassificationData(TestIngestData):
         response = self.ingest_data(filename, file_format)
         self.assert_parse_error(response)
 
+    def test_wrong_excel(self):
+        filename = 'text_classification/example.jsonl'
+        file_format = 'Excel'
+        response = self.ingest_data(filename, file_format)
+        self.assert_parse_error(response)
+
 
 class TestIngestSequenceLabelingData(TestIngestData):
     task = SEQUENCE_LABELING

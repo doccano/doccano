@@ -7,6 +7,7 @@ from typing import Dict, Iterator, List, Optional, Type
 import chardet
 import pydantic.error_wrappers
 import pyexcel
+import pyexcel.exceptions
 from chardet.universaldetector import UniversalDetector
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
@@ -199,8 +200,12 @@ class ExcelDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
         records = pyexcel.iget_records(file_name=filename)
-        for line_num, row in enumerate(records, start=1):
-            yield self.from_row(filename, row, line_num)
+        try:
+            for line_num, row in enumerate(records, start=1):
+                yield self.from_row(filename, row, line_num)
+        except pyexcel.exceptions.FileTypeNotSupported:
+            message = 'This file type is not supported.'
+            raise FileParseException(filename, line_num=-1, message=message)
 
 
 class FastTextDataset(Dataset):
