@@ -172,9 +172,13 @@ class JSONDataset(Dataset):
     def load(self, filename: str) -> Iterator[Record]:
         encoding = self.detect_encoding(filename)
         with open(filename, encoding=encoding) as f:
-            dataset = json.load(f)
-            for line_num, row in enumerate(dataset, start=1):
-                yield self.from_row(filename, row, line_num)
+            try:
+                dataset = json.load(f)
+                for line_num, row in enumerate(dataset, start=1):
+                    yield self.from_row(filename, row, line_num)
+            except json.decoder.JSONDecodeError:
+                message = 'Failed to decode the json file.'
+                raise FileParseException(filename, line_num=-1, message=message)
 
 
 class JSONLDataset(Dataset):
@@ -187,7 +191,7 @@ class JSONLDataset(Dataset):
                     row = json.loads(line)
                     yield self.from_row(filename, row, line_num)
                 except json.decoder.JSONDecodeError:
-                    message = 'Failed to encode the line.'
+                    message = 'Failed to decode the line.'
                     raise FileParseException(filename, line_num, message)
 
 

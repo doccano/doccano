@@ -32,6 +32,12 @@ class TestIngestClassificationData(TestIngestData):
             labels = set(cat.label.text for cat in example.categories.all())
             self.assertEqual(labels, set(expected_labels))
 
+    def assert_parse_error(self, response):
+        self.assertGreaterEqual(len(response['error']), 1)
+        self.assertEqual(Example.objects.count(), 0)
+        self.assertEqual(Label.objects.count(), 0)
+        self.assertEqual(Category.objects.count(), 0)
+
     def test_jsonl(self):
         filename = 'text_classification/example.jsonl'
         file_format = 'JSONL'
@@ -116,14 +122,17 @@ class TestIngestClassificationData(TestIngestData):
         self.ingest_data(filename, file_format)
         self.assert_examples(dataset)
 
-    def test_wong_jsonl(self):
+    def test_wrong_jsonl(self):
         filename = 'text_classification/example.json'
         file_format = 'JSONL'
         response = self.ingest_data(filename, file_format)
-        self.assertGreaterEqual(len(response['error']), 1)
-        self.assertEqual(Example.objects.count(), 0)
-        self.assertEqual(Label.objects.count(), 0)
-        self.assertEqual(Category.objects.count(), 0)
+        self.assert_parse_error(response)
+
+    def test_wrong_json(self):
+        filename = 'text_classification/example.jsonl'
+        file_format = 'JSON'
+        response = self.ingest_data(filename, file_format)
+        self.assert_parse_error(response)
 
 
 class TestIngestSequenceLabelingData(TestIngestData):
