@@ -3,7 +3,7 @@ import pathlib
 from django.test import TestCase
 
 from ..models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                      Category, Example, Label)
+                      Category, Example, Label, Span)
 from ..tasks import injest_data
 from .api.utils import prepare_project
 
@@ -156,6 +156,12 @@ class TestIngestSequenceLabelingData(TestIngestData):
             labels = [[span.start_offset, span.end_offset, span.label.text] for span in example.spans.all()]
             self.assertEqual(labels, expected_labels)
 
+    def assert_parse_error(self, response):
+        self.assertGreaterEqual(len(response['error']), 1)
+        self.assertEqual(Example.objects.count(), 0)
+        self.assertEqual(Label.objects.count(), 0)
+        self.assertEqual(Span.objects.count(), 0)
+
     def test_jsonl(self):
         filename = 'sequence_labeling/example.jsonl'
         file_format = 'JSONL'
@@ -175,6 +181,12 @@ class TestIngestSequenceLabelingData(TestIngestData):
         ]
         self.ingest_data(filename, file_format)
         self.assert_examples(dataset)
+
+    def test_wrong_conll(self):
+        filename = 'sequence_labeling/example.jsonl'
+        file_format = 'CoNLL'
+        response = self.ingest_data(filename, file_format)
+        self.assert_parse_error(response)
 
 
 class TestIngestSeq2seqData(TestIngestData):
