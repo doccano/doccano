@@ -140,6 +140,12 @@ class TestIngestClassificationData(TestIngestData):
         response = self.ingest_data(filename, file_format)
         self.assert_parse_error(response)
 
+    def test_wrong_csv(self):
+        filename = 'text_classification/example.jsonl'
+        file_format = 'CSV'
+        response = self.ingest_data(filename, file_format)
+        self.assert_parse_error(response)
+
 
 class TestIngestSequenceLabelingData(TestIngestData):
     task = SEQUENCE_LABELING
