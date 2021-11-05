@@ -7,6 +7,7 @@ from typing import Dict, Iterator, List, Optional, Type
 import chardet
 import pydantic.error_wrappers
 import pyexcel
+import pyexcel.exceptions
 from chardet.universaldetector import UniversalDetector
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
@@ -112,7 +113,7 @@ class Dataset:
         label = [label] if isinstance(label, str) else label
         try:
             label = [self.label_class.parse(o) for o in label]
-        except pydantic.error_wrappers.ValidationError:
+        except (pydantic.error_wrappers.ValidationError, TypeError):
             label = []
         data = self.data_class.parse(text=text, filename=filename, meta=row)
         record = Record(data=data, label=label)
@@ -172,9 +173,13 @@ class JSONDataset(Dataset):
     def load(self, filename: str) -> Iterator[Record]:
         encoding = self.detect_encoding(filename)
         with open(filename, encoding=encoding) as f:
-            dataset = json.load(f)
-            for line_num, row in enumerate(dataset, start=1):
-                yield self.from_row(filename, row, line_num)
+            try:
+                dataset = json.load(f)
+                for line_num, row in enumerate(dataset, start=1):
+                    yield self.from_row(filename, row, line_num)
+            except json.decoder.JSONDecodeError:
+                message = 'Failed to decode the json file.'
+                raise FileParseException(filename, line_num=-1, message=message)
 
 
 class JSONLDataset(Dataset):
@@ -183,16 +188,24 @@ class JSONLDataset(Dataset):
         encoding = self.detect_encoding(filename)
         with open(filename, encoding=encoding) as f:
             for line_num, line in enumerate(f, start=1):
-                row = json.loads(line)
-                yield self.from_row(filename, row, line_num)
+                try:
+                    row = json.loads(line)
+                    yield self.from_row(filename, row, line_num)
+                except json.decoder.JSONDecodeError:
+                    message = 'Failed to decode the line.'
+                    raise FileParseException(filename, line_num, message)
 
 
 class ExcelDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
         records = pyexcel.iget_records(file_name=filename)
-        for line_num, row in enumerate(records, start=1):
-            yield self.from_row(filename, row, line_num)
+        try:
+            for line_num, row in enumerate(records, start=1):
+                yield self.from_row(filename, row, line_num)
+        except pyexcel.exceptions.FileTypeNotSupported:
+            message = 'This file type is not supported.'
+            raise FileParseException(filename, line_num=-1, message=message)
 
 
 class FastTextDataset(Dataset):
@@ -242,6 +255,12 @@ class CoNLLDataset(Dataset):
                     record = Record(data=data, label=labels)
                     yield record
                     words, tags = [], []
+            if words:
+                text = delimiter.join(words)
+                data = self.data_class.parse(filename=filename, text=text)
+                labels = self.get_label(words, tags, delimiter)
+                record = Record(data=data, label=labels)
+                yield record
 
     def get_scheme(self, scheme: str):
         mapping = {

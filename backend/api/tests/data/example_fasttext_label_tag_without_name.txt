@@ -1,1 +1,0 @@
-__label__ house cat dog

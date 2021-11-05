@@ -41,14 +41,14 @@ export class CommentItem {
     public id: number,
     public user: number,
     public username: string,
-    public example: number,
+    public example: string,
     public text: string,
     public createdAt: string
   ) {}
 
   static valueOf(
     { id, user, username, example, text, created_at }:
-    { id: number, user: number, username: string, example: number,
+    { id: number, user: number, username: string, example: string,
       text: string, created_at: string }
   ): CommentItem {
     return new CommentItem(id, user, username, example, text, created_at)

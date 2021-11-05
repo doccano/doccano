@@ -43,7 +43,7 @@ export class ExampleItemList {
 
 export class ExampleItem {
   constructor(
-    public id: number,
+    public id: string,
     public text: string,
     public meta: object,
     public annotationApprover: boolean | null,
@@ -55,7 +55,7 @@ export class ExampleItem {
   static valueOf(
     { id, text, meta, annotation_approver, comment_count, filename, is_confirmed }:
     {
-      id: number,
+      id: string,
       text: string,
       meta: object,
       annotation_approver: boolean | null,

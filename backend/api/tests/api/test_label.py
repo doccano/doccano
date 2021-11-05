@@ -127,17 +127,17 @@ class TestLabelUploadAPI(APITestCase):
         self.assertEqual(response.status_code, expected_status)
 
     def test_allows_project_admin_to_upload_label(self):
-        self.assert_upload_file('valid_labels.json', self.project.users[0], status.HTTP_201_CREATED)
+        self.assert_upload_file('label/valid_labels.json', self.project.users[0], status.HTTP_201_CREATED)
 
     def test_disallows_project_member_to_upload_label(self):
         for member in self.project.users[1:]:
-            self.assert_upload_file('valid_labels.json', member, status.HTTP_403_FORBIDDEN)
+            self.assert_upload_file('label/valid_labels.json', member, status.HTTP_403_FORBIDDEN)
 
     def test_disallows_non_project_member_to_upload_label(self):
-        self.assert_upload_file('valid_labels.json', self.non_member, status.HTTP_403_FORBIDDEN)
+        self.assert_upload_file('label/valid_labels.json', self.non_member, status.HTTP_403_FORBIDDEN)
 
     def test_disallows_unauthenticated_user_to_upload_label(self):
-        self.assert_upload_file('valid_labels.json', expected_status=status.HTTP_403_FORBIDDEN)
+        self.assert_upload_file('label/valid_labels.json', expected_status=status.HTTP_403_FORBIDDEN)
 
     def test_try_to_upload_invalid_file(self):
-        self.assert_upload_file('invalid_labels.json', self.project.users[0], status.HTTP_400_BAD_REQUEST)
+        self.assert_upload_file('label/invalid_labels.json', self.project.users[0], status.HTTP_400_BAD_REQUEST)

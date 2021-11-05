@@ -9,13 +9,13 @@ export interface ExampleRepository {
 
   update(projectId: string, item: ExampleItem): Promise<ExampleItem>
 
-  bulkDelete(projectId: string, ids: number[]): Promise<void>
+  bulkDelete(projectId: string, ids: string[]): Promise<void>
 
   deleteAll(projectId: string): Promise<void>
 
-  findById(projectId: string, exampleId: number): Promise<ExampleItem>
+  findById(projectId: string, exampleId: string): Promise<ExampleItem>
 
-  approve(projectId: string, docId: number, approved: boolean): Promise<void>
+  approve(projectId: string, docId: string, approved: boolean): Promise<void>
 
-  confirm(projectId: string, exampleId: number): Promise<void>
+  confirm(projectId: string, exampleId: string): Promise<void>
 }

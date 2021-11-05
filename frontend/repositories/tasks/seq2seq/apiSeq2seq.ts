@@ -7,13 +7,13 @@ export class APISeq2seqRepository extends AnnotationRepository<Seq2seqLabel> {
     super(Seq2seqLabel)
   }
 
-  public async update(projectId: string, docId: number, annotationId: number, text: string) {
+  public async update(projectId: string, docId: string, annotationId: number, text: string) {
     const url = this.baseUrl(projectId, docId) + `/${annotationId}`
     const payload = { text }
     await this.request.patch(url, payload)
   }
 
-  protected baseUrl(projectId: string, docId: number): string {
+  protected baseUrl(projectId: string, docId: string): string {
     return `/projects/${projectId}/docs/${docId}/annotations`
   }
 }

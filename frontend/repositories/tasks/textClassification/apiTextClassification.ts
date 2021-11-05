@@ -7,7 +7,7 @@ export class APITextClassificationRepository extends AnnotationRepository<TextCl
     super(TextClassificationItem)
   }
 
-  protected baseUrl(projectId: string, docId: number): string {
+  protected baseUrl(projectId: string, docId: string): string {
     return `/projects/${projectId}/docs/${docId}/annotations`
   }
 }

@@ -5,7 +5,7 @@ export class CommentReadDTO {
   id: number;
   user: number;
   username: string;
-  example: number;
+  example: string;
   text: string;
   createdAt: string;
 
