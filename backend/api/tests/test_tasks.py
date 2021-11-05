@@ -3,7 +3,7 @@ import pathlib
 from django.test import TestCase
 
 from ..models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                      Category, Example)
+                      Category, Example, Label)
 from ..tasks import injest_data
 from .api.utils import prepare_project
 
@@ -20,7 +20,7 @@ class TestIngestData(TestCase):
     def ingest_data(self, filename, file_format, kwargs=None):
         filenames = [str(self.data_path / filename)]
         kwargs = kwargs or {}
-        injest_data(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
+        return injest_data(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
 
 
 class TestIngestClassificationData(TestIngestData):
@@ -115,6 +115,15 @@ class TestIngestClassificationData(TestIngestData):
         ]
         self.ingest_data(filename, file_format)
         self.assert_examples(dataset)
+
+    def test_wong_jsonl(self):
+        filename = 'text_classification/example.json'
+        file_format = 'JSONL'
+        response = self.ingest_data(filename, file_format)
+        self.assertGreaterEqual(len(response['error']), 1)
+        self.assertEqual(Example.objects.count(), 0)
+        self.assertEqual(Label.objects.count(), 0)
+        self.assertEqual(Category.objects.count(), 0)
 
 
 class TestIngestSequenceLabelingData(TestIngestData):

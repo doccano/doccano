@@ -183,8 +183,12 @@ class JSONLDataset(Dataset):
         encoding = self.detect_encoding(filename)
         with open(filename, encoding=encoding) as f:
             for line_num, line in enumerate(f, start=1):
-                row = json.loads(line)
-                yield self.from_row(filename, row, line_num)
+                try:
+                    row = json.loads(line)
+                    yield self.from_row(filename, row, line_num)
+                except json.decoder.JSONDecodeError:
+                    message = 'Failed to encode the line.'
+                    raise FileParseException(filename, line_num, message)
 
 
 class ExcelDataset(Dataset):
