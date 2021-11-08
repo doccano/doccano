@@ -7,13 +7,13 @@ export class APISequenceLabelingRepository extends AnnotationRepository<Sequence
     super(SequenceLabelingLabel)
   }
 
-  public async update(projectId: string, docId: string, annotationId: number, labelId: number) {
+  public async update(projectId: string, docId: number, annotationId: number, labelId: number) {
     const url = this.baseUrl(projectId, docId) + `/${annotationId}`
     const payload = { label: labelId }
     await this.request.patch(url, payload)
   }
 
-  protected baseUrl(projectId: string, docId: string): string {
+  protected baseUrl(projectId: string, docId: number): string {
     return `/projects/${projectId}/docs/${docId}/annotations`
   }
 }

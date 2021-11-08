@@ -36,7 +36,7 @@ export default Vue.extend({
 
   props: {
     docId: {
-      type: String,
+      type: Number,
       required: true
     }
   },

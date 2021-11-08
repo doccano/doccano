@@ -7,15 +7,15 @@ export class AnnotationApplicationService<T extends AnnotationModel> {
     readonly repository: AnnotationRepository<T>
   ) {}
 
-  public async delete(projectId: string, docId: string, annotationId: number): Promise<void> {
+  public async delete(projectId: string, docId: number, annotationId: number): Promise<void> {
     await this.repository.delete(projectId, docId, annotationId)
   }
 
-  public async clear(projectId: string, docId: string): Promise<void> {
+  public async clear(projectId: string, docId: number): Promise<void> {
     await this.repository.clear(projectId, docId)
   }
 
-  public async autoLabel(projectId: string, docId: string): Promise<void> {
+  public async autoLabel(projectId: string, docId: number): Promise<void> {
     await this.repository.autoLabel(projectId, docId)
   }
 }

@@ -63,12 +63,12 @@ class DataFactory:
     def create_data(self, examples, project):
         uuids = sorted(uuid.uuid4() for _ in range(len(examples)))
         dataset = [
-            self.data_class(id=uid, project=project, **example.data)
+            self.data_class(uuid=uid, project=project, **example.data)
             for uid, example in zip(uuids, examples)
         ]
-        data = self.data_class.objects.bulk_create(dataset)
-        data.sort(key=lambda example: example.id)
-        return data
+        self.data_class.objects.bulk_create(dataset)
+        data = self.data_class.objects.in_bulk(uuids, field_name='uuid')
+        return [data[uid] for uid in uuids]
 
     def create_annotation(self, examples, ids, user, project):
         mapping = {label.text: label.id for label in project.labels.all()}

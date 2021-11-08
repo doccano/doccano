@@ -26,7 +26,7 @@ export class APIExampleRepository implements ExampleRepository {
     return ExampleItem.valueOf(response.data)
   }
 
-  async bulkDelete(projectId: string, ids: string[]): Promise<void> {
+  async bulkDelete(projectId: string, ids: number[]): Promise<void> {
     const url = `/projects/${projectId}/examples`
     await this.request.delete(url, { ids })
   }
@@ -36,18 +36,18 @@ export class APIExampleRepository implements ExampleRepository {
     await this.request.delete(url)
   }
 
-  async findById(projectId: string, exampleId: string): Promise<ExampleItem> {
+  async findById(projectId: string, exampleId: number): Promise<ExampleItem> {
     const url = `/projects/${projectId}/examples/${exampleId}`
     const response = await this.request.get(url)
     return ExampleItem.valueOf(response.data)
   }
 
-  async approve(projectId: string, exampleId: string, approved: boolean): Promise<void> {
+  async approve(projectId: string, exampleId: number, approved: boolean): Promise<void> {
     const url = `/projects/${projectId}/approval/${exampleId}`
     await this.request.post(url, { approved })
   }
 
-  async confirm(projectId: string, exampleId: string): Promise<void> {
+  async confirm(projectId: string, exampleId: number): Promise<void> {
     const url = `/projects/${projectId}/examples/${exampleId}/states`
     await this.request.post(url, {})
   }
