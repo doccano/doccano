@@ -4,7 +4,7 @@ export interface CommentItemResponse {
   id: number,
   user: number,
   username: string,
-  example: string,
+  example: number,
   text: string,
   created_at: string
 }
@@ -12,13 +12,13 @@ export interface CommentItemResponse {
 export interface CommentRepository {
   listAll(projectId: string, q: string): Promise<CommentItem[]>
 
-  list(projectId: string, docId: string): Promise<CommentItem[]>
+  list(projectId: string, docId: number): Promise<CommentItem[]>
 
-  create(projectId: string, docId: string, text: string): Promise<CommentItem>
+  create(projectId: string, docId: number, text: string): Promise<CommentItem>
 
-  update(projectId: string, docId: string, item: CommentItem): Promise<CommentItem>
+  update(projectId: string, docId: number, item: CommentItem): Promise<CommentItem>
 
-  delete(projectId: string, docId: string, commentId: number): Promise<void>
+  delete(projectId: string, docId: number, commentId: number): Promise<void>
 
   deleteBulk(projectId: string, items: number[]): Promise<void>
 }

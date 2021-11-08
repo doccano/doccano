@@ -82,7 +82,7 @@ class CsvWriter(BaseWriter):
 
     def create_line(self, record) -> Dict:
         return {
-            'id': str(record.id),
+            'id': record.id,
             'data': record.data,
             'label': '#'.join(record.label),
             **record.metadata
@@ -120,7 +120,7 @@ class JSONWriter(BaseWriter):
 
     def create_line(self, record) -> Dict:
         return {
-            'id': str(record.id),
+            'id': record.id,
             'data': record.data,
             'label': record.label,
             **record.metadata
@@ -132,7 +132,7 @@ class JSONLWriter(LineWriter):
 
     def create_line(self, record):
         return json.dumps({
-            'id': str(record.id),
+            'id': record.id,
             'data': record.data,
             'label': record.label,
             **record.metadata

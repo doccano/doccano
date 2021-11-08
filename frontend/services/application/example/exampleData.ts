@@ -2,7 +2,7 @@ import { ExampleItem, ExampleItemList } from '~/domain/models/example/example'
 
 
 export class ExampleDTO {
-  id: string;
+  id: number;
   text: string;
   meta: object;
   annotationApprover: boolean | null;

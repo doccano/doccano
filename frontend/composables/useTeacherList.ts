@@ -7,14 +7,14 @@ export const useTeacherList = (service: any) => {
 
   const getTeacherList = async(
     projectId: string,
-    exampleId: string
+    exampleId: number
   ) => {
     state.teacherList = await service.list(projectId, exampleId)
   }
 
   const removeTeacher = async(
     projectId: string,
-    exampleId: string,
+    exampleId: number,
     teacherId: number
   ) => {
     await service.delete(projectId, exampleId, teacherId)
@@ -23,7 +23,7 @@ export const useTeacherList = (service: any) => {
 
   const annotateLabel = async(
     projectId: string,
-    exampleId: string,
+    exampleId: number,
     labelId: number
   ) => {
     await service.create(projectId, exampleId, labelId)
@@ -32,7 +32,7 @@ export const useTeacherList = (service: any) => {
 
   const clearTeacherList = async(
     projectId: string,
-    exampleId: string
+    exampleId: number
   ) => {
     await service.clear(projectId, exampleId)
     await getTeacherList(projectId, exampleId)
@@ -40,7 +40,7 @@ export const useTeacherList = (service: any) => {
 
   const autoLabel = async(
     projectId: string,
-    exampleId: string
+    exampleId: number
   ) => {
     await service.autoLabel(projectId, exampleId)
     await getTeacherList(projectId, exampleId)
@@ -48,7 +48,7 @@ export const useTeacherList = (service: any) => {
 
   const annotateOrRemoveLabel = async(
     projectId: string,
-    exampleId: string,
+    exampleId: number,
     srcKey: string
   ) => {
     const labelId = parseInt(srcKey, 10)

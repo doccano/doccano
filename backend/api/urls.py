@@ -51,7 +51,7 @@ urlpatterns_project = [
         name='example_list'
     ),
     path(
-        route='examples/<uuid:example_id>',
+        route='examples/<int:example_id>',
         view=example.ExampleDetail.as_view(),
         name='example_detail'
     ),
@@ -92,23 +92,23 @@ urlpatterns_project = [
         name='doc_list'
     ),
     path(
-        route='docs/<uuid:doc_id>',
+        route='docs/<int:doc_id>',
         view=example.DocumentDetail.as_view(),
         name='doc_detail'
     ),
     path(
-        route='approval/<uuid:example_id>',
+        route='approval/<int:example_id>',
         view=annotation.ApprovalAPI.as_view(),
         name='approve_labels'
     ),
     # Todo: change.
     path(
-        route='docs/<uuid:doc_id>/annotations',
+        route='docs/<int:doc_id>/annotations',
         view=annotation.AnnotationList.as_view(),
         name='annotation_list'
     ),
     path(
-        route='docs/<uuid:doc_id>/annotations/<int:annotation_id>',
+        route='docs/<int:doc_id>/annotations/<int:annotation_id>',
         view=annotation.AnnotationDetail.as_view(),
         name='annotation_detail'
     ),
@@ -123,7 +123,7 @@ urlpatterns_project = [
         name='tag_detail'
     ),
     path(
-        route='examples/<uuid:example_id>/comments',
+        route='examples/<int:example_id>/comments',
         view=comment.CommentListDoc.as_view(),
         name='comment_list_doc'
     ),
@@ -133,12 +133,12 @@ urlpatterns_project = [
         name='comment_list_project'
     ),
     path(
-        route='examples/<uuid:example_id>/comments/<int:comment_id>',
+        route='examples/<int:example_id>/comments/<int:comment_id>',
         view=comment.CommentDetail.as_view(),
         name='comment_detail'
     ),
     path(
-      route='examples/<uuid:example_id>/states',
+      route='examples/<int:example_id>/states',
       view=example_state.ExampleStateList.as_view(),
       name='example_state_list'
     ),
@@ -178,7 +178,7 @@ urlpatterns_project = [
         name='auto_labeling_config_test'
     ),
     path(
-        route='examples/<uuid:example_id>/auto-labeling',
+        route='examples/<int:example_id>/auto-labeling',
         view=auto_labeling.AutoLabelingAnnotation.as_view(),
         name='auto_labeling_annotation'
     ),

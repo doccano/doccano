@@ -52,16 +52,16 @@ export class ExampleApplicationService {
     return this.repository.bulkDelete(projectId, ids)
   }
 
-  public async findById(projectId: string, exampleId: string): Promise<ExampleDTO> {
+  public async findById(projectId: string, exampleId: number): Promise<ExampleDTO> {
     const response = await this.repository.findById(projectId, exampleId)
     return new ExampleDTO(response)
   }
 
-  public async approve(projectId: string, docId: string, approved: boolean): Promise<void> {
+  public async approve(projectId: string, docId: number, approved: boolean): Promise<void> {
     await this.repository.approve(projectId, docId, approved)
   }
 
-  public async confirm(projectId: string, exampleId: string): Promise<void> {
+  public async confirm(projectId: string, exampleId: number): Promise<void> {
     await this.repository.confirm(projectId, exampleId)
   }
 
