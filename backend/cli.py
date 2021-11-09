@@ -17,6 +17,10 @@ def number_of_workers():
     return (multiprocessing.cpu_count() * 2) + 1
 
 
+def is_windows():
+    return platform.system() == 'Windows'
+
+
 def run_on_nix(args):
     import gunicorn.app.base
     import gunicorn.util
@@ -68,7 +72,7 @@ def command_user_create(args):
 
 def command_run_webserver(args):
     print(f'Starting server with port {args.port}.')
-    if platform.system() == 'Windows':
+    if is_windows():
         run_on_windows(args)
     else:
         run_on_nix(args)
@@ -76,15 +80,16 @@ def command_run_webserver(args):
 
 def command_run_task_queue(args):
     print('Starting task queue.')
-    app.worker_main(
-        argv=[
-            '--app=app',
-            '--workdir={}'.format(base),
-            'worker',
-            '--loglevel=info',
-            '--concurrency={}'.format(args.concurrency),
-        ]
-    )
+    argv = [
+        '--app=app',
+        '--workdir={}'.format(base),
+        'worker',
+        '--loglevel=info',
+        '--concurrency={}'.format(args.concurrency)
+    ]
+    if is_windows():
+        argv.append('--pool=solo')
+    app.worker_main(argv=argv)
 
 
 def command_help(args):
