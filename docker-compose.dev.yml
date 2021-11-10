@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile.dev
+    image: doccano_backend:dev
     volumes:
       - .:/src
       - venv:/root/.local/share
@@ -28,6 +29,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile.dev
+    image: doccano_celery:dev
     volumes:
       - .:/src
       - venv:/root/.local/share
