@@ -34,7 +34,7 @@ Three options to run doccano:
   - production
   - development
 
-For docker and docker compose, you need to install dependencies:
+For docker and docker compose, you need to install the following dependencies:
 
 - [Git](https://git-scm.com)
 - [Docker](https://www.docker.com)
@@ -48,25 +48,25 @@ To install doccano, simply run:
 pip install doccano
 ```
 
-After installation, simply run the following command:
+After installation, run the following commands:
 
 ```bash
 # Initialize database.
 doccano init
 # Create a super user.
 doccano createuser --username admin --password pass
-# Start the webserver.
+# Start a web server.
 doccano webserver --port 8000
 ```
 
-And in another terminal, run the following command:
+In another terminal, run the following command:
 
 ```bash
-# Start the task queue.
+# Start the task queue to handle file upload/download.
 doccano task
 ```
 
-Go to <http://0.0.0.0:8000/>.
+Go to <http://127.0.0.1:8000/>.
 
 ### Docker
 
@@ -107,72 +107,54 @@ _Note for Windows developers:_ Be sure to configure git to correctly handle line
 git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 ```
 
+Set the superuser account credentials in the `./config/env.example` file:
+
+```plain
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=password
+ADMIN_EMAIL=admin@example.com
+```
+
 #### Production
 
-Set the superuser account credentials in the `docker-compose.prod.yml` file:
-
-```yml
-ADMIN_USERNAME: "admin"
-ADMIN_PASSWORD: "password"
-```
-
-If you use Google Analytics, set the tracking:
-
-```yml
-GOOGLE_TRACKING_ID: "UA-12345678-1"
-```
-
-Run doccano:
+After running the following command, access <http://0.0.0.0/>.
 
 ```bash
-$ docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
+docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
 ```
-
-Go to <http://0.0.0.0/>.
 
 #### Development
 
-Set the superuser account credentials in the `docker-compose.dev.yml` file:
-
-```yml
-ADMIN_USERNAME: "admin"
-ADMIN_PASSWORD: "password"
-```
-
-Run Doccano:
+After running the following command, access <http://127.0.0.1:3000/>. If you want to use the admin site, please access <http://127.0.0.1:8000/admin/>.
 
 ```bash
-$ docker-compose -f docker-compose.dev.yml --env-file ./config/.env.example up
+docker-compose -f docker-compose.dev.yml --env-file ./config/.env.example up
 ```
 
-Go to <http://127.0.0.1:3000/>.
+You can run the the test codes for the backend with the following command:
 
-
-Run Backend API-Tests:
-
-You can run the API-Tests for the backend with the following command:
 ```bash
-docker exec doccano_backend_1 pipenv run app/manage.py test api
+docker exec doccano_backend_1 python backend/manage.py test api
 ```
 
-### Add annotators (optionally)
-
-If you want to add annotators/annotation approvers, see [Frequently Asked Questions](./docs/faq.md)
-
-## One-click Deployment
+### One-click Deployment
 
 | Service | Button |
 |---------|---|
 | AWS[^1]   | [![AWS CloudFormation Launch Stack SVG Button](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=doccano&templateURL=https://doccano.s3.amazonaws.com/public/cloudformation/template.aws.yaml)  |
-| GCP[^2] | [![GCP Cloud Run PNG Button](https://storage.googleapis.com/gweb-cloudblog-publish/images/run_on_google_cloud.max-300x300.png)](https://console.cloud.google.com/cloudshell/editor?shellonly=true&cloudshell_image=gcr.io/cloudrun/button&cloudshell_git_repo=https://github.com/doccano/doccano.git&cloudshell_git_branch=CloudRunButton)  |
 | Heroku  | [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://dashboard.heroku.com/new?template=https%3A%2F%2Fgithub.com%2Fdoccano%2Fdoccano)  |
+<!-- | GCP[^2] | [![GCP Cloud Run PNG Button](https://storage.googleapis.com/gweb-cloudblog-publish/images/run_on_google_cloud.max-300x300.png)](https://console.cloud.google.com/cloudshell/editor?shellonly=true&cloudshell_image=gcr.io/cloudrun/button&cloudshell_git_repo=https://github.com/doccano/doccano.git&cloudshell_git_branch=CloudRunButton)  | -->
 
 > [^1]: (1) EC2 KeyPair cannot be created automatically, so make sure you have an existing EC2 KeyPair in one region. Or [create one yourself](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair). (2) If you want to access doccano via HTTPS in AWS, here is an [instruction](https://github.com/doccano/doccano/wiki/HTTPS-setting-for-doccano-in-AWS).
-> [^2]: Although this is a very cheap option, it is only suitable for very small teams (up to 80 concurrent requests). Read more on [Cloud Run docs](https://cloud.google.com/run/docs/concepts).
+<!-- > [^2]: Although this is a very cheap option, it is only suitable for very small teams (up to 80 concurrent requests). Read more on [Cloud Run docs](https://cloud.google.com/run/docs/concepts). -->
 
-## Documentation
+## FAQ
 
-See [here](https://doccano.github.io/doccano/).
+- [How to create a user](https://doccano.github.io/doccano/faq/#how-to-create-a-user)
+- [How to add a user to your project](https://doccano.github.io/doccano/faq/#how-to-add-a-user-to-your-project)
+- [How to change the password](https://doccano.github.io/doccano/faq/#how-to-change-the-password)
+
+See the [documentation](https://doccano.github.io/doccano/) for details.
 
 ## Contribution
 
