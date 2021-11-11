@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, List
 
 
@@ -16,4 +17,10 @@ class Record:
         self.metadata = metadata
 
     def __str__(self):
-        return f'{self.data}\t{self.label}'
+        return json.dumps({
+            'id': self.id,
+            'data': self.data,
+            'label': self.label,
+            'user': self.user,
+            'metadata': self.metadata
+        })

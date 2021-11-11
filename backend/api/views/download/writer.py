@@ -90,7 +90,7 @@ class CsvWriter(BaseWriter):
 
     def create_header(self, records: List[Record]) -> Iterable[str]:
         header = ['id', 'data', 'label']
-        header += list(itertools.chain(*[r.metadata.keys() for r in records]))
+        header += sorted(set(itertools.chain(*[r.metadata.keys() for r in records])))
         return header
 
 
