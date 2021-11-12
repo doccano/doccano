@@ -84,7 +84,7 @@ class CsvWriter(BaseWriter):
         return {
             'id': record.id,
             'data': record.data,
-            'label': '#'.join(record.label),
+            'label': '#'.join(sorted(record.label)),
             **record.metadata
         }
 
@@ -144,6 +144,7 @@ class FastTextWriter(LineWriter):
 
     def create_line(self, record):
         line = [f'__label__{label}' for label in record.label]
+        line.sort()
         line.append(record.data)
         line = ' '.join(line)
         return line

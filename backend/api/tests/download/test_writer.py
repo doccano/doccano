@@ -32,6 +32,16 @@ class TestCSVWriter(unittest.TestCase):
         }
         self.assertEqual(line, expected)
 
+    def test_label_order(self):
+        writer = CsvWriter('.')
+        record1 = Record(id=0, data='', label=['labelA', 'labelB'], user='', metadata={})
+        record2 = Record(id=0, data='', label=['labelB', 'labelA'], user='', metadata={})
+        line1 = writer.create_line(record1)
+        line2 = writer.create_line(record2)
+        expected = 'labelA#labelB'
+        self.assertEqual(line1['label'], expected)
+        self.assertEqual(line2['label'], expected)
+
     @patch('os.remove')
     @patch('zipfile.ZipFile')
     @patch('csv.DictWriter.writerow')
