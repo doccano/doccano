@@ -3,7 +3,8 @@ from django.db.utils import IntegrityError
 from django.test import TestCase, override_settings
 from model_mommy import mommy
 
-from ..models import Category, Label, Span, TextLabel
+from ..models import (Category, Label, Span, TextLabel,
+                      generate_random_hex_color)
 
 
 @override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
@@ -141,3 +142,11 @@ class TestSeq2seqAnnotation(TestCase):
             TextLabel(example=a.example,
                       user=a.user,
                       text=a.text).save()
+
+
+class TestGeneratedColor(TestCase):
+
+    def test_length(self):
+        for i in range(100):
+            color = generate_random_hex_color()
+            self.assertEqual(len(color), 7)
