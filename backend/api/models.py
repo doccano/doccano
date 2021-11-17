@@ -1,3 +1,4 @@
+import random
 import string
 import uuid
 from typing import Literal
@@ -94,6 +95,10 @@ class ImageClassificationProject(Project):
         return task == 'image'
 
 
+def generate_random_hex_color():
+    return f'#{random.randint(0, 0xFFFFFF):06x}'
+
+
 class Label(models.Model):
     text = models.CharField(max_length=100, db_index=True)
     prefix_key = models.CharField(
@@ -119,7 +124,7 @@ class Label(models.Model):
         on_delete=models.CASCADE,
         related_name='labels'
     )
-    background_color = models.CharField(max_length=7, default='#209cee')
+    background_color = models.CharField(max_length=7, default=generate_random_hex_color)
     text_color = models.CharField(max_length=7, default='#ffffff')
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
