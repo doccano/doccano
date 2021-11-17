@@ -2,8 +2,10 @@
   <v-tooltip bottom>
     <template #activator="{ on }">
       <v-btn
+        v-shortkey.once="['enter']"
         icon
         v-on="on"
+        @shortkey="$emit('click:review')"
         @click="$emit('click:review')"
       >
         <v-icon v-if="isReviewd">
