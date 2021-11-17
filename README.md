@@ -68,6 +68,49 @@ doccano task
 
 Go to <http://127.0.0.1:8000/>.
 
+By default, sqlite3 is used for the default database. If you want to use PostgreSQL, install the additional dependency:
+
+```bash
+pip install 'doccano[postgresql]'
+```
+
+Create an .env file with variables in the following format, each on a new line:
+
+```bash
+POSTGRES_USER=doccano
+POSTGRES_PASSWORD=doccano
+POSTGRES_DB=doccano
+```
+
+Then, pass it to docker run with the --env-file flag:
+
+```bash
+docker run --rm -d \
+    -p 5432:5432 \
+    -v postgres-data:/var/lib/postgresql/data \
+    --env-file .env \
+    postgres:13.3-alpine
+```
+
+And set `DATABASE_URL` environment variable:
+
+```bash
+# Please replace each variable.
+DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}?sslmode=disable
+```
+
+Now run the command as before:
+
+```bash
+doccano init
+doccano createuser --username admin --password pass
+doccano webserver --port 8000
+
+# In another terminal.
+# Don't forget to set DATABASE_URL
+doccano task
+```
+
 ### Docker
 
 As a one-time setup, create a Docker container as follows:
