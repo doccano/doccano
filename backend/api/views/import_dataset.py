@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 from ..models import Project
 from ..permissions import IsProjectAdmin
-from ..tasks import injest_data
+from ..tasks import ingest_data
 from .upload.catalog import Options
 
 
@@ -41,7 +41,7 @@ class UploadAPI(APIView):
             for tu in tus
         ]
         filenames = [su.file.path for su in sus]
-        task = injest_data.delay(
+        task = ingest_data.delay(
             user_id=request.user.id,
             project_id=project_id,
             filenames=filenames,
