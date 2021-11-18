@@ -156,6 +156,10 @@ Set the superuser account credentials in the `./config/env.example` file:
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=password
 ADMIN_EMAIL=admin@example.com
+
+POSTGRES_USER=doccano
+POSTGRES_PASSWORD=doccano
+POSTGRES_DB=doccano
 ```
 
 #### Production
@@ -163,7 +167,7 @@ ADMIN_EMAIL=admin@example.com
 After running the following command, access <http://0.0.0.0/>.
 
 ```bash
-docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
+docker-compose -f docker-compose.prod.yml --env-file ./config/env.example up
 ```
 
 #### Development
@@ -171,7 +175,7 @@ docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
 After running the following command, access <http://127.0.0.1:3000/>. If you want to use the admin site, please access <http://127.0.0.1:8000/admin/>.
 
 ```bash
-docker-compose -f docker-compose.dev.yml --env-file ./config/.env.example up
+docker-compose -f docker-compose.dev.yml --env-file ./config/env.example up
 ```
 
 You can run the the test codes for the backend with the following command:
