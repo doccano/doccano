@@ -87,7 +87,7 @@
         :disabled="isDisabled"
         @click="injest"
       >
-        Injest
+        Ingest
       </v-btn>
     </v-card-actions>
   </v-card>

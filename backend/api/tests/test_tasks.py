@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from ..models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
                       Category, Example, Label, Span)
-from ..tasks import injest_data
+from ..tasks import ingest_data
 from .api.utils import prepare_project
 
 
@@ -20,7 +20,7 @@ class TestIngestData(TestCase):
     def ingest_data(self, filename, file_format, kwargs=None):
         filenames = [str(self.data_path / filename)]
         kwargs = kwargs or {}
-        return injest_data(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
+        return ingest_data(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
 
 
 class TestIngestClassificationData(TestIngestData):
