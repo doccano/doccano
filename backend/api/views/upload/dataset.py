@@ -5,10 +5,10 @@ import os
 from typing import Dict, Iterator, List, Optional, Type
 
 import chardet
-import pydantic.error_wrappers
 import pyexcel
 import pyexcel.exceptions
 from chardet.universaldetector import UniversalDetector
+from pydantic import ValidationError
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
 from .data import BaseData
@@ -67,7 +67,7 @@ class Dataset:
         for filename in self.filenames:
             try:
                 yield from self.load(filename)
-            except UnicodeDecodeError as err:
+            except (UnicodeDecodeError, ValidationError) as err:
                 message = str(err)
                 raise FileParseException(filename, line_num=-1, message=message)
 
@@ -113,9 +113,15 @@ class Dataset:
         label = [label] if isinstance(label, str) else label
         try:
             label = [self.label_class.parse(o) for o in label]
-        except (pydantic.error_wrappers.ValidationError, TypeError):
+        except (ValidationError, TypeError):
             label = []
-        data = self.data_class.parse(text=text, filename=filename, meta=row)
+
+        try:
+            data = self.data_class.parse(text=text, filename=filename, meta=row)
+        except ValidationError:
+            message = 'The empty text is not allowed.'
+            raise FileParseException(filename, line_num, message)
+
         record = Record(data=data, label=label)
         return record
 

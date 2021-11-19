@@ -27,6 +27,7 @@ class TestIngestClassificationData(TestIngestData):
     task = DOCUMENT_CLASSIFICATION
 
     def assert_examples(self, dataset):
+        self.assertEqual(Example.objects.count(), len(dataset))
         for text, expected_labels in dataset:
             example = Example.objects.get(text=text)
             labels = set(cat.label.text for cat in example.categories.all())
@@ -151,6 +152,7 @@ class TestIngestSequenceLabelingData(TestIngestData):
     task = SEQUENCE_LABELING
 
     def assert_examples(self, dataset):
+        self.assertEqual(Example.objects.count(), len(dataset))
         for text, expected_labels in dataset:
             example = Example.objects.get(text=text)
             labels = [[span.start_offset, span.end_offset, span.label.text] for span in example.spans.all()]
@@ -193,6 +195,7 @@ class TestIngestSeq2seqData(TestIngestData):
     task = SEQ2SEQ
 
     def assert_examples(self, dataset):
+        self.assertEqual(Example.objects.count(), len(dataset))
         for text, expected_labels in dataset:
             example = Example.objects.get(text=text)
             labels = set(text_label.text for text_label in example.texts.all())
