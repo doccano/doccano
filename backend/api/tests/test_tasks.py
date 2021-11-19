@@ -107,7 +107,7 @@ class TestIngestClassificationData(TestIngestData):
         filename = 'example.txt'
         file_format = 'TextFile'
         dataset = [
-            ('exampleA\nexampleB\nexampleC\n', [])
+            ('exampleA\nexampleB\n\nexampleC\n', [])
         ]
         self.ingest_data(filename, file_format)
         self.assert_examples(dataset)

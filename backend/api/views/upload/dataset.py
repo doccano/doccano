@@ -153,11 +153,18 @@ class TextLineDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
         encoding = self.detect_encoding(filename)
+        errors = []
         with open(filename, encoding=encoding) as f:
-            for line in f:
-                data = self.data_class.parse(filename=filename, text=line.rstrip())
-                record = Record(data=data)
-                yield record
+            for line_num, line in enumerate(f, start=1):
+                try:
+                    data = self.data_class.parse(filename=filename, text=line.rstrip())
+                    record = Record(data=data)
+                    yield record
+                except ValidationError:
+                    message = 'The empty text is not allowed.'
+                    errors.append(FileParseException(filename, line_num, message))
+        if errors:
+            raise FileParseExceptions(errors)
 
 
 class CsvDataset(Dataset):
