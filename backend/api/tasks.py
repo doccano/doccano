@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404
 from .models import Example, Label, Project
 from .views.download.factory import create_repository, create_writer
 from .views.download.service import ExportApplicationService
-from .views.upload.exception import FileParseException
+from .views.upload.exception import FileParseException, FileParseExceptions
 from .views.upload.factory import (get_data_class, get_dataset_class,
                                    get_label_class)
 from .views.upload.utils import append_field
@@ -116,6 +116,9 @@ def ingest_data(user_id, project_id, filenames, format: str, **kwargs):
             break
         except FileParseException as err:
             response['error'].append(err.dict())
+            continue
+        except FileParseExceptions as err:
+            response['error'].extend(list(err))
             continue
 
         buffer.add(example)

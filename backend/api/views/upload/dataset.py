@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
 from .data import BaseData
-from .exception import FileParseException
+from .exception import FileParseException, FileParseExceptions
 from .label import Label
 from .labels import Labels
 
@@ -64,12 +64,17 @@ class Dataset:
         self.kwargs = kwargs
 
     def __iter__(self) -> Iterator[Record]:
+        errors = []
         for filename in self.filenames:
             try:
                 yield from self.load(filename)
-            except (UnicodeDecodeError, ValidationError) as err:
+            except (UnicodeDecodeError, FileParseException) as err:
                 message = str(err)
                 raise FileParseException(filename, line_num=-1, message=message)
+            except FileParseExceptions as err:
+                errors.extend(err.exceptions)
+        if errors:
+            raise FileParseExceptions(errors)
 
     def load(self, filename: str) -> Iterator[Record]:
         """Loads a file content."""
@@ -159,6 +164,7 @@ class CsvDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
         encoding = self.detect_encoding(filename)
+        errors = []
         with open(filename, encoding=encoding) as f:
             delimiter = self.kwargs.get('delimiter', ',')
             reader = csv.reader(f, delimiter=delimiter)
@@ -171,7 +177,12 @@ class CsvDataset(Dataset):
 
             for line_num, row in enumerate(reader, start=2):
                 row = dict(zip(header, row))
-                yield self.from_row(filename, row, line_num)
+                try:
+                    yield self.from_row(filename, row, line_num)
+                except FileParseException as err:
+                    errors.append(err)
+        if errors:
+            raise FileParseExceptions(errors)
 
 
 class JSONDataset(Dataset):
@@ -192,6 +203,7 @@ class JSONLDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
         encoding = self.detect_encoding(filename)
+        errors = []
         with open(filename, encoding=encoding) as f:
             for line_num, line in enumerate(f, start=1):
                 try:
@@ -199,25 +211,34 @@ class JSONLDataset(Dataset):
                     yield self.from_row(filename, row, line_num)
                 except json.decoder.JSONDecodeError:
                     message = 'Failed to decode the line.'
-                    raise FileParseException(filename, line_num, message)
+                    errors.append(FileParseException(filename, line_num, message))
+        if errors:
+            raise FileParseExceptions(errors)
 
 
 class ExcelDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
         records = pyexcel.iget_records(file_name=filename)
+        errors = []
         try:
             for line_num, row in enumerate(records, start=1):
-                yield self.from_row(filename, row, line_num)
+                try:
+                    yield self.from_row(filename, row, line_num)
+                except FileParseException as err:
+                    errors.append(err)
         except pyexcel.exceptions.FileTypeNotSupported:
             message = 'This file type is not supported.'
             raise FileParseException(filename, line_num=-1, message=message)
+        if errors:
+            raise FileParseExceptions(errors)
 
 
 class FastTextDataset(Dataset):
 
     def load(self, filename: str) -> Iterator[Record]:
         encoding = self.detect_encoding(filename)
+        errors = []
         with open(filename, encoding=encoding) as f:
             for line_num, line in enumerate(f, start=1):
                 labels = []
@@ -226,15 +247,22 @@ class FastTextDataset(Dataset):
                     if token.startswith('__label__'):
                         if token == '__label__':
                             message = 'Label name is empty.'
-                            raise FileParseException(filename, line_num, message)
+                            errors.append(FileParseException(filename, line_num, message))
+                            break
                         label_name = token[len('__label__'):]
                         labels.append(self.label_class.parse(label_name))
                     else:
                         tokens.append(token)
                 text = ' '.join(tokens)
-                data = self.data_class.parse(filename=filename, text=text)
-                record = Record(data=data, label=labels)
-                yield record
+                try:
+                    data = self.data_class.parse(filename=filename, text=text)
+                    record = Record(data=data, label=labels)
+                    yield record
+                except ValidationError:
+                    message = 'The empty text is not allowed.'
+                    errors.append(FileParseException(filename, line_num, message))
+        if errors:
+            raise FileParseExceptions(errors)
 
 
 class CoNLLDataset(Dataset):

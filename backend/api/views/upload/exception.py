@@ -1,3 +1,6 @@
+from typing import List
+
+
 class FileParseException(Exception):
 
     def __init__(self, filename: str, line_num: int, message: str):
@@ -14,3 +17,16 @@ class FileParseException(Exception):
             'line': self.line_num,
             'message': self.message
         }
+
+
+class FileParseExceptions(Exception):
+
+    def __init__(self, exceptions: List[FileParseException]):
+        self.exceptions = exceptions
+
+    def __str__(self) -> str:
+        return f'ParseErrors: you failed to parse {len(self.exceptions)} lines.'
+
+    def __iter__(self) -> FileParseException:
+        for e in self.exceptions:
+            yield e.dict()
