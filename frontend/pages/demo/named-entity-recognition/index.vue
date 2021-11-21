@@ -170,6 +170,11 @@ export default {
   methods: {
     deleteEntity(annotationId) {
       this.currentDoc.annotations = this.currentDoc.annotations.filter(item => item.id !== annotationId)
+      this.relations.forEach((r) => {
+        if (r.fromId === annotationId || r.toId === annotationId) {
+          this.deleteRelation(r.id)
+        }
+      })
     },
     updateEntity(annotationId, labelId) {
       const index = this.currentDoc.annotations.findIndex(item => item.id === annotationId)
