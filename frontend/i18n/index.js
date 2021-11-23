@@ -23,6 +23,12 @@ export default {
       code: 'de',
       iso: 'de-DE',
       file: 'de'
+    },
+    {
+      name: 'Persian',
+      code: 'fa',
+      iso: 'fa-FA',
+      file: 'fa'
     }
   ],
   lazy: true,
