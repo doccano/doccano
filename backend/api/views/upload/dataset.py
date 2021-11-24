@@ -11,6 +11,7 @@ from chardet.universaldetector import UniversalDetector
 from pydantic import ValidationError
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
+from .cleaners import Cleaner
 from .data import BaseData
 from .exception import FileParseException, FileParseExceptions
 from .label import Label
@@ -29,6 +30,18 @@ class Record:
 
     def __str__(self):
         return f'{self._data}\t{self._label}'
+
+    def clean(self, cleaner: Cleaner):
+        label = cleaner.clean(self._label)
+        changed = len(label) != len(self.label)
+        self._label = label
+        if changed:
+            message = 'There are invalid labels. It\'s cleaned.'
+            raise FileParseException(
+                filename=self._data.filename,
+                line_num=-1,
+                message=message
+            )
 
     @property
     def data(self):

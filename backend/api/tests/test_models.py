@@ -119,19 +119,36 @@ class TestCategory(TestCase):
 
 class TestSequenceAnnotation(TestCase):
 
-    def test_uniqueness(self):
-        a = mommy.make('Span')
+    def test_start_offset_is_not_negative(self):
         with self.assertRaises(IntegrityError):
-            Span(example=a.example,
-                 user=a.user,
-                 label=a.label,
-                 start_offset=a.start_offset,
-                 end_offset=a.end_offset).save()
+            mommy.make('Span', start_offset=-1, end_offset=0)
 
-    def test_position_constraint(self):
+    def test_end_offset_is_not_negative(self):
+        with self.assertRaises(IntegrityError):
+            mommy.make('Span', start_offset=-2, end_offset=-1)
+
+    def test_start_offset_is_less_than_end_offset(self):
+        with self.assertRaises(IntegrityError):
+            mommy.make('Span', start_offset=0, end_offset=0)
+
+    def test_overlapping(self):
+        project = mommy.make('SequenceLabelingProject', allow_overlapping=False)
+        example = mommy.make('Example', project=project)
+        mommy.make('Span', example=example, start_offset=5, end_offset=10)
         with self.assertRaises(ValidationError):
-            mommy.make('Span',
-                       start_offset=1, end_offset=0).clean()
+            mommy.make('Span', example=example, start_offset=5, end_offset=10)
+        with self.assertRaises(ValidationError):
+            mommy.make('Span', example=example, start_offset=5, end_offset=11)
+        with self.assertRaises(ValidationError):
+            mommy.make('Span', example=example, start_offset=4, end_offset=10)
+        with self.assertRaises(ValidationError):
+            mommy.make('Span', example=example, start_offset=6, end_offset=9)
+        with self.assertRaises(ValidationError):
+            mommy.make('Span', example=example, start_offset=9, end_offset=15)
+        with self.assertRaises(ValidationError):
+            mommy.make('Span', example=example, start_offset=0, end_offset=6)
+        mommy.make('Span', example=example, start_offset=0, end_offset=5)
+        mommy.make('Span', example=example, start_offset=10, end_offset=15)
 
 
 class TestSeq2seqAnnotation(TestCase):

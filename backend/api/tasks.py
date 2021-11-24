@@ -11,8 +11,8 @@ from .models import Example, Label, Project
 from .views.download.factory import create_repository, create_writer
 from .views.download.service import ExportApplicationService
 from .views.upload.exception import FileParseException, FileParseExceptions
-from .views.upload.factory import (get_data_class, get_dataset_class,
-                                   get_label_class)
+from .views.upload.factory import (create_cleaner, get_data_class,
+                                   get_dataset_class, get_label_class)
 from .views.upload.utils import append_field
 
 logger = get_task_logger(__name__)
@@ -109,6 +109,7 @@ def ingest_data(user_id, project_id, filenames, format: str, **kwargs):
         label_class=Label,
         annotation_class=project.get_annotation_class()
     )
+    cleaner = create_cleaner(project)
     while True:
         try:
             example = next(it)
@@ -120,6 +121,10 @@ def ingest_data(user_id, project_id, filenames, format: str, **kwargs):
         except FileParseExceptions as err:
             response['error'].extend(list(err))
             continue
+        try:
+            example.clean(cleaner)
+        except FileParseException as err:
+            response['error'].append(err.dict())
 
         buffer.add(example)
         if buffer.is_full():

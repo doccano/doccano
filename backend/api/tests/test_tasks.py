@@ -190,6 +190,12 @@ class TestIngestSequenceLabelingData(TestIngestData):
         response = self.ingest_data(filename, file_format)
         self.assert_parse_error(response)
 
+    def test_jsonl_with_overlapping(self):
+        filename = 'sequence_labeling/example_overlapping.jsonl'
+        file_format = 'JSONL'
+        response = self.ingest_data(filename, file_format)
+        self.assertEqual(len(response['error']), 1)
+
 
 class TestIngestSeq2seqData(TestIngestData):
     task = SEQ2SEQ
