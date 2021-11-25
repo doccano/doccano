@@ -291,7 +291,6 @@ class CoNLLDataset(Dataset):
         encoding = self.detect_encoding(filename)
         with open(filename, encoding=encoding) as f:
             words, tags = [], []
-            delimiter = self.kwargs.get('delimiter', ' ')
             for line_num, line in enumerate(f, start=1):
                 line = line.rstrip()
                 if line:
@@ -303,18 +302,18 @@ class CoNLLDataset(Dataset):
                     words.append(word)
                     tags.append(tag)
                 else:
-                    text = delimiter.join(words)
-                    data = self.data_class.parse(filename=filename, text=text)
-                    labels = self.get_label(words, tags, delimiter)
-                    record = Record(data=data, label=labels)
-                    yield record
+                    yield self.create_record(filename, tags, words)
                     words, tags = [], []
             if words:
-                text = delimiter.join(words)
-                data = self.data_class.parse(filename=filename, text=text)
-                labels = self.get_label(words, tags, delimiter)
-                record = Record(data=data, label=labels)
-                yield record
+                yield self.create_record(filename, tags, words)
+
+    def create_record(self, filename, tags, words):
+        delimiter = self.kwargs.get('delimiter', ' ')
+        text = delimiter.join(words)
+        data = self.data_class.parse(filename=filename, text=text)
+        labels = self.get_label(words, tags, delimiter)
+        record = Record(data=data, label=labels)
+        return record
 
     def get_scheme(self, scheme: str):
         mapping = {
