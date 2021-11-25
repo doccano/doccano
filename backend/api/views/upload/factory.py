@@ -1,6 +1,6 @@
 from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
-from . import catalog, data, dataset, label
+from . import catalog, cleaners, data, dataset, label
 
 
 def get_data_class(project_type: str):
@@ -40,3 +40,15 @@ def get_label_class(project_type: str):
     if project_type not in mapping:
         ValueError(f'Invalid project type: {project_type}')
     return mapping[project_type]
+
+
+def create_cleaner(project):
+    mapping = {
+        DOCUMENT_CLASSIFICATION: cleaners.CategoryCleaner,
+        SEQUENCE_LABELING: cleaners.SpanCleaner,
+        IMAGE_CLASSIFICATION: cleaners.CategoryCleaner
+    }
+    if project.project_type not in mapping:
+        ValueError(f'Invalid project type: {project.project_type}')
+    cleaner_class = mapping.get(project.project_type, cleaners.Cleaner)
+    return cleaner_class(project)
