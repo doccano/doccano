@@ -12,6 +12,10 @@ class Cleaner:
     def clean(self, labels: List[Label]) -> List[Label]:
         return labels
 
+    @property
+    def message(self) -> str:
+        return ''
+
 
 class SpanCleaner(Cleaner):
 
@@ -32,6 +36,10 @@ class SpanCleaner(Cleaner):
                 new_labels.append(label)
         return new_labels
 
+    @property
+    def message(self) -> str:
+        return 'This project cannot allow label overlapping. It\'s cleaned.'
+
 
 class CategoryCleaner(Cleaner):
 
@@ -44,3 +52,7 @@ class CategoryCleaner(Cleaner):
             return labels[:1]
         else:
             return labels
+
+    @property
+    def message(self) -> str:
+        return 'This project only one label can apply but multiple label found. It\'s cleaned.'

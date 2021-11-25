@@ -38,11 +38,10 @@ class Record:
         changed = len(label) != len(self.label)
         self._label = label
         if changed:
-            message = 'There are invalid labels. It\'s cleaned.'
             raise FileParseException(
                 filename=self._data.filename,
                 line_num=self._line_num,
-                message=message
+                message=cleaner.message
             )
 
     @property
