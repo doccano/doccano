@@ -22,11 +22,13 @@ class Record:
 
     def __init__(self,
                  data: Type[BaseData],
-                 label: List[Label] = None):
+                 label: List[Label] = None,
+                 line_num: int = -1):
         if label is None:
             label = []
         self._data = data
         self._label = label
+        self._line_num = line_num
 
     def __str__(self):
         return f'{self._data}\t{self._label}'
@@ -39,7 +41,7 @@ class Record:
             message = 'There are invalid labels. It\'s cleaned.'
             raise FileParseException(
                 filename=self._data.filename,
-                line_num=-1,
+                line_num=self._line_num,
                 message=message
             )
 
@@ -140,7 +142,7 @@ class Dataset:
             message = 'The empty text is not allowed.'
             raise FileParseException(filename, line_num, message)
 
-        record = Record(data=data, label=label)
+        record = Record(data=data, label=label, line_num=line_num)
         return record
 
 
@@ -171,7 +173,7 @@ class TextLineDataset(Dataset):
             for line_num, line in enumerate(f, start=1):
                 try:
                     data = self.data_class.parse(filename=filename, text=line.rstrip())
-                    record = Record(data=data)
+                    record = Record(data=data, line_num=line_num)
                     yield record
                 except ValidationError:
                     message = 'The empty text is not allowed.'
@@ -276,7 +278,7 @@ class FastTextDataset(Dataset):
                 text = ' '.join(tokens)
                 try:
                     data = self.data_class.parse(filename=filename, text=text)
-                    record = Record(data=data, label=labels)
+                    record = Record(data=data, label=labels, line_num=line_num)
                     yield record
                 except ValidationError:
                     message = 'The empty text is not allowed.'
