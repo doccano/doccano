@@ -19,7 +19,7 @@
     <template #top>
       <v-text-field
         v-model="search"
-        prepend-inner-icon="search"
+        :prepend-inner-icon="mdiMagnify"
         :label="$t('generic.search')"
         single-line
         hide-details
@@ -34,7 +34,7 @@
         small
         @click="$emit('edit', item)"
       >
-        mdi-pencil
+        {{ mdiPencil }}
       </v-icon>
     </template>
   </v-data-table>
@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiMagnify, mdiPencil } from '@mdi/js'
 
 export default Vue.extend({
   props: {
@@ -63,7 +64,9 @@ export default Vue.extend({
   },
   data() {
     return {
-      search: ''
+      search: '',
+      mdiMagnify,
+      mdiPencil
     }
   },
 

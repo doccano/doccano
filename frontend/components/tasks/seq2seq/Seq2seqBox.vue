@@ -13,7 +13,7 @@
       <template #top>
         <v-text-field
           v-model="newText"
-          prepend-inner-icon="mdi-pencil"
+          :prepend-inner-icon="mdiPencil"
           :label="$t('annotation.newText')"
           autofocus
           single-line
@@ -44,7 +44,7 @@
           small
           @click="remove(item.id)"
         >
-          mdi-delete-outline
+          {{ mdiDeleteOutline }}
         </v-icon>
       </template>
     </v-data-table>
@@ -53,6 +53,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiPencil, mdiDeleteOutline } from '@mdi/js'
 
 export default Vue.extend({
   props: {
@@ -79,7 +80,9 @@ export default Vue.extend({
         }
       ],
       isComposing: false,
-      hasCompositionJustEnded: false
+      hasCompositionJustEnded: false,
+      mdiPencil,
+      mdiDeleteOutline
     }
   },
 

@@ -40,7 +40,7 @@
                     v-on="on"
                   >
                     {{ $t('home.demoDropDown') }}
-                    <v-icon>mdi-menu-down</v-icon>
+                    <v-icon>{{ mdiMenuDown }}</v-icon>
                   </v-btn>
                 </template>
                 <v-list>
@@ -63,6 +63,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiMenuDown } from '@mdi/js'
+
 export default Vue.extend({
   data() {
     return {
@@ -71,7 +73,8 @@ export default Vue.extend({
         { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
         { title: this.$t('home.demoTranslation'), link: 'translation' },
         { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' }
-      ]
+      ],
+      mdiMenuDown
     }
   }
 })

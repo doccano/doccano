@@ -24,7 +24,7 @@
       style="text-transform:none"
     >
       <v-icon small class="mr-1">
-        mdi-hexagon-multiple
+        {{ mdiHexagonMultiple }}
       </v-icon>
       <span> {{ currentProject.name }}</span>
     </v-btn>
@@ -50,7 +50,7 @@
           v-on="on"
         >
           {{ $t('home.demoDropDown') }}
-          <v-icon>mdi-menu-down</v-icon>
+          <v-icon>{{ mdiMenuDown }}</v-icon>
         </v-btn>
       </template>
       <v-list>
@@ -76,7 +76,7 @@
     >
       <template #activator="{ on }">
         <v-btn on icon v-on="on">
-          <v-icon>mdi-dots-vertical</v-icon>
+          <v-icon>{{ mdiDotsVertical }}</v-icon>
         </v-btn>
       </template>
       <v-list>
@@ -93,7 +93,7 @@
         </v-list-item>
         <v-list-item @click="signout">
           <v-list-item-icon>
-            <v-icon>mdi-logout</v-icon>
+            <v-icon>{{ mdiLogout }}</v-icon>
           </v-list-item-icon>
           <v-list-item-content>
             <v-list-item-title>
@@ -107,6 +107,7 @@
 </template>
 
 <script>
+import { mdiLogout, mdiDotsVertical, mdiMenuDown, mdiHexagonMultiple } from '@mdi/js'
 import { mapGetters, mapActions } from 'vuex'
 import TheColorModeSwitcher from './TheColorModeSwitcher'
 import LocaleMenu from './LocaleMenu'
@@ -127,6 +128,10 @@ export default {
         { title: 'Image Classification', link: 'image-classification' },
         { title: 'Speech to Text', link: 'speech-to-text' },
       ],
+      mdiLogout,
+      mdiDotsVertical,
+      mdiMenuDown,
+      mdiHexagonMultiple
     }
   },
 

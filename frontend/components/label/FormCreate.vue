@@ -13,7 +13,7 @@
           :value="text"
           :label="$t('labels.labelName')"
           :rules="[rules.required, rules.counter, rules.nameDuplicated]"
-          prepend-icon="label"
+          :prepend-icon="mdiLabel"
           single-line
           counter
           autofocus
@@ -24,7 +24,7 @@
           :items="shortkeys"
           :label="$t('labels.key')"
           :rules="[rules.keyDuplicated]"
-          prepend-icon="mdi-keyboard"
+          :prepend-icon="mdiKeyboard"
           @input="updateValue('suffixKey', $event)"
         />
         <v-color-picker
@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiLabel, mdiKeyboard } from '@mdi/js'
 import BaseCard from '@/components/utils/BaseCard.vue'
 
 export default Vue.extend({
@@ -87,7 +88,9 @@ export default Vue.extend({
         nameDuplicated: (v: string) => (!this.usedNames.includes(v)) || this.$t('rules.labelNameRules').duplicated,
         // @ts-ignore
         keyDuplicated: (v: string) => !this.usedKeys.includes(v) || this.$t('rules.keyNameRules').duplicated,
-      }
+      },
+      mdiLabel,
+      mdiKeyboard
     }
   },
 

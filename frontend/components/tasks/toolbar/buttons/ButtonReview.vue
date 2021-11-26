@@ -9,10 +9,10 @@
         @click="$emit('click:review')"
       >
         <v-icon v-if="isReviewd">
-          mdi-check
+          {{ mdiCheck }}
         </v-icon>
         <v-icon v-else>
-          mdi-close
+          {{ mdiClose }}
         </v-icon>
       </v-btn>
     </template>
@@ -23,6 +23,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiClose, mdiCheck } from '@mdi/js'
 
 export default Vue.extend({
   props: {
@@ -30,6 +31,13 @@ export default Vue.extend({
       type: Boolean,
       default: false,
       required: true
+    }
+  },
+
+  data() {
+    return {
+      mdiClose,
+      mdiCheck
     }
   }
 })

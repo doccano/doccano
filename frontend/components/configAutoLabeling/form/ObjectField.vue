@@ -96,13 +96,13 @@
         class="mr-2"
         @click="editItem(item)"
       >
-        mdi-pencil
+        {{ mdiPencil }}
       </v-icon>
       <v-icon
         small
         @click="deleteItem(item)"
       >
-        mdi-delete
+        {{ mdiDelete }}
       </v-icon>
     </template>
   </v-data-table>
@@ -110,6 +110,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiPencil, mdiDelete } from '@mdi/js'
 
 export default Vue.extend({
 
@@ -158,6 +159,8 @@ export default Vue.extend({
         'value': ''
       },
       items: [] as string[],
+      mdiPencil,
+      mdiDelete
     }
   },
 

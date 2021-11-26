@@ -4,19 +4,23 @@
     mandatory
   >
     <v-btn icon>
-      <v-icon>mdi-format-list-bulleted</v-icon>
+      <v-icon>{{ mdiFormatListBulleted }}</v-icon>
     </v-btn>
     <v-btn icon>
-      <v-icon>mdi-text</v-icon>
+      <v-icon>{{ mdiText }}</v-icon>
     </v-btn>
   </v-btn-toggle>
 </template>
 
 <script>
+import { mdiFormatListBulleted, mdiText } from '@mdi/js'
+
 export default {
   data() {
     return {
-      option: 0
+      option: 0,
+      mdiFormatListBulleted,
+      mdiText
     }
   },
 

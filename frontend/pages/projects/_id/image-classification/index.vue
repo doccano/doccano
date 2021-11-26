@@ -17,10 +17,10 @@
           class="ms-2"
         >
           <v-btn icon>
-            <v-icon>mdi-format-list-bulleted</v-icon>
+            <v-icon>{{ mdiFormatListBulleted }}</v-icon>
           </v-btn>
           <v-btn icon>
-            <v-icon>mdi-text</v-icon>
+            <v-icon>{{ mdiText }}</v-icon>
           </v-btn>
         </v-btn-toggle>
       </toolbar-laptop>
@@ -69,6 +69,7 @@
 
 <script>
 import _ from 'lodash'
+import { mdiText, mdiFormatListBulleted } from '@mdi/js'
 import { toRefs } from '@nuxtjs/composition-api'
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import LabelSelect from '@/components/tasks/textClassification/LabelSelect'
@@ -114,7 +115,9 @@ export default {
       imageSize: {
         height: 0,
         width: 0
-      }
+      },
+      mdiText,
+      mdiFormatListBulleted
     }
   },
 

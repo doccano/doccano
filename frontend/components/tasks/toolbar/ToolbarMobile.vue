@@ -9,7 +9,7 @@
       @click="updatePage(page - 1)"
     >
       <span>Prev</span>
-      <v-icon>mdi-chevron-left</v-icon>
+      <v-icon>{{ mdiChevronLeft }}</v-icon>
     </v-btn>
 
     <v-btn
@@ -17,19 +17,28 @@
       @click="updatePage(page + 1)"
     >
       <span>Next</span>
-      <v-icon>mdi-chevron-right</v-icon>
+      <v-icon>{{ mdiChevronRight }}</v-icon>
     </v-btn>
   </v-bottom-navigation>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiChevronLeft, mdiChevronRight } from '@mdi/js'
+
 export default Vue.extend({
   props: {
     total: {
       type: Number,
       default: 1,
       required: true
+    }
+  },
+
+  data() {
+    return {
+      mdiChevronLeft,
+      mdiChevronRight
     }
   },
 

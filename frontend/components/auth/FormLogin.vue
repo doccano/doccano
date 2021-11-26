@@ -20,7 +20,7 @@
           :rules="userNameRules($t('rules.userNameRules'))"
           :label="$t('user.username')"
           name="username"
-          prepend-icon="person"
+          :prepend-icon="mdiAccount"
           type="text"
           autofocus
           @keyup.enter="tryLogin"
@@ -31,7 +31,7 @@
           :rules="passwordRules($t('rules.passwordRules'))"
           :label="$t('user.password')"
           name="password"
-          prepend-icon="lock"
+          :prepend-icon="mdiLock"
           type="password"
           @keyup.enter="tryLogin"
         />
@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiAccount, mdiLock } from '@mdi/js'
 import { userNameRules, passwordRules } from '@/rules/index'
 import BaseCard from '@/components/utils/BaseCard.vue'
 
@@ -63,7 +64,9 @@ export default Vue.extend({
       password: '',
       userNameRules,
       passwordRules,
-      showError: false
+      showError: false,
+      mdiAccount,
+      mdiLock
     }
   },
 

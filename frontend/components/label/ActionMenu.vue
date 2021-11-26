@@ -10,6 +10,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiPencil, mdiUpload, mdiDownload } from '@mdi/js'
 import ActionMenu from '~/components/utils/ActionMenu.vue'
 
 export default Vue.extend({
@@ -22,17 +23,17 @@ export default Vue.extend({
         return [
         {
           title: this.$t('labels.createLabel'),
-          icon: 'mdi-pencil',
+          icon: mdiPencil,
           event: 'create'
         },
         {
           title: this.$t('labels.importLabels'),
-          icon: 'mdi-upload',
+          icon: mdiUpload,
           event: 'upload'
         },
         {
           title: this.$t('labels.exportLabels'),
-          icon: 'mdi-download',
+          icon: mdiDownload,
           event: 'download'
         }
       ]

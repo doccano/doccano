@@ -22,7 +22,7 @@
     <template #top>
       <v-text-field
         v-model="search"
-        prepend-inner-icon="search"
+        :prepend-inner-icon="mdiMagnify"
         :label="$t('generic.search')"
         single-line
         hide-details
@@ -53,6 +53,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
+import { mdiMagnify } from '@mdi/js'
 import { DataOptions } from 'vuetify/types'
 import { ExampleDTO } from '~/services/application/example/exampleData'
 
@@ -84,6 +85,7 @@ export default Vue.extend({
     return {
       search: this.$route.query.q,
       options: {} as DataOptions,
+      mdiMagnify
     }
   },
 

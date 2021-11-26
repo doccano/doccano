@@ -7,10 +7,22 @@
         @click="$emit('click:guideline')"
       >
         <v-icon>
-          mdi-book-open-outline
+          {{ mdiBookOpenOutline }}
         </v-icon>
       </v-btn>
     </template>
     <span>{{ $t('annotation.guidelineTooltip') }}</span>
   </v-tooltip>
 </template>
+
+<script>
+import { mdiBookOpenOutline } from '@mdi/js'
+
+export default {
+  data() {
+    return {
+      mdiBookOpenOutline
+    }
+  },
+}
+</script>
