@@ -19,11 +19,6 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      {
-        rel: 'stylesheet',
-        href:
-          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
-      }
     ]
   },
 
@@ -60,7 +55,6 @@ export default {
   */
   modules: [
     ['nuxt-i18n', i18n],
-    '@nuxtjs/vuetify',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module'
@@ -75,12 +69,26 @@ export default {
     [
       '@nuxtjs/vuetify',
       {
+        customVariables: ['~/assets/css/fonts.css'],
         treeShake: true,
         defaultAssets: {
-          icons: 'mdiSvg',
+          font: false,
+          icons: ['mdiSvg'],
         },
       },
     ],
+    [
+      '@nuxtjs/google-fonts',
+      {
+        families: {
+          Roboto: [100, 300, 400, 500, 700, 900]
+        },
+        display: 'swap',
+        download: true,
+        overwriting: true,
+        inject: true,
+      }
+    ]
   ],
   /*
   ** Axios module configuration
