@@ -65,7 +65,7 @@ export default {
       singleLabel: true,
       currentDoc: {
         id: 8,
-        filename: 'https://avatars.githubusercontent.com/u/6737785?v=4',
+        filename: '~/assets/6737785.png',
         annotations: [
           {
             id: 17,
