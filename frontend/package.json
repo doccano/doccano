@@ -24,7 +24,7 @@
     "@toast-ui/vue-editor": "^2.5.3",
     "@vuejs-community/vue-filter-date-format": "^1.6.3",
     "@vuejs-community/vue-filter-date-parse": "^1.1.6",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "chart.js": "^2.*",
     "codemirror": "^5.*",
     "consola": "^2.15.3",
