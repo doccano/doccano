@@ -9,7 +9,7 @@
         v-on="on"
       >
         {{ $i18n.locale }}
-        <v-icon>mdi-menu-down</v-icon>
+        <v-icon>{{ mdiMenuDown }}</v-icon>
       </v-btn>
     </template>
     <v-list
@@ -26,3 +26,16 @@
     </v-list>
   </v-menu>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+import { mdiMenuDown } from '@mdi/js'
+
+export default Vue.extend({
+  data() {
+    return {
+      mdiMenuDown
+    }
+  }
+})
+</script>

@@ -13,7 +13,7 @@
           :value="name"
           :rules="projectNameRules($t('rules.projectNameRules'))"
           :label="$t('overview.projectName')"
-          prepend-icon="mdi-account-multiple"
+          :prepend-icon="mdiAccountMultiple"
           required
           autofocus
           @input="updateValue('name', $event)"
@@ -22,7 +22,7 @@
           :value="description"
           :rules="descriptionRules($t('rules.descriptionRules'))"
           :label="$t('generic.description')"
-          prepend-icon="mdi-clipboard-text"
+          :prepend-icon="mdiClipboardText"
           required
           @input="updateValue('description', $event)"
         />
@@ -31,7 +31,7 @@
           :items="projectTypes"
           :rules="projectTypeRules($t('rules.projectTypeRules'))"
           :label="$t('overview.projectType')"
-          prepend-icon="mdi-keyboard"
+          :prepend-icon="mdiKeyboard"
           required
           @input="updateValue('projectType', $event)"
         >
@@ -103,6 +103,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiAccountMultiple, mdiClipboardText, mdiKeyboard } from '@mdi/js'
 import BaseCard from '@/components/utils/BaseCard.vue'
 import { projectNameRules, descriptionRules, projectTypeRules } from '@/rules/index'
 
@@ -157,7 +158,10 @@ export default Vue.extend({
       valid: false,
       projectNameRules,
       projectTypeRules,
-      descriptionRules
+      descriptionRules,
+      mdiAccountMultiple,
+      mdiClipboardText,
+      mdiKeyboard
     }
   },
 

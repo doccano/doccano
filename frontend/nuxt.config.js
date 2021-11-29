@@ -14,16 +14,8 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
-    script: [
-      { src: 'https://use.fontawesome.com/releases/v5.0.6/js/all.js' }
-    ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      {
-        rel: 'stylesheet',
-        href:
-          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
-      }
     ]
   },
 
@@ -60,7 +52,6 @@ export default {
   */
   modules: [
     ['nuxt-i18n', i18n],
-    '@nuxtjs/vuetify',
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/eslint-module'
@@ -71,7 +62,30 @@ export default {
     '@nuxtjs/composition-api/module',
     ['@nuxtjs/google-analytics', {
       id: process.env.GOOGLE_TRACKING_ID
-    }]
+    }],
+    [
+      '@nuxtjs/vuetify',
+      {
+        customVariables: ['~/assets/css/fonts.css'],
+        treeShake: true,
+        defaultAssets: {
+          font: false,
+          icons: ['mdiSvg'],
+        },
+      },
+    ],
+    [
+      '@nuxtjs/google-fonts',
+      {
+        families: {
+          Roboto: [100, 300, 400, 500, 700, 900]
+        },
+        display: 'swap',
+        download: true,
+        overwriting: true,
+        inject: true,
+      }
+    ]
   ],
   /*
   ** Axios module configuration

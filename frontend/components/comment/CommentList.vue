@@ -23,7 +23,7 @@
     <template #top>
       <v-text-field
         v-model="search"
-        prepend-inner-icon="search"
+        :prepend-inner-icon="mdiMagnify"
         :label="$t('generic.search')"
         single-line
         hide-details
@@ -44,6 +44,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
+import { mdiMagnify } from '@mdi/js'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
 import { CommentReadDTO } from '~/services/application/comment/commentData'
@@ -83,7 +84,8 @@ export default Vue.extend({
         { text: this.$t('user.username'), value: 'username' },
         { text: this.$t('comments.created_at'), value: 'createdAt' },
         { text: this.$t('dataset.action'), value: 'action' },
-      ]
+      ],
+      mdiMagnify
     }
   },
 

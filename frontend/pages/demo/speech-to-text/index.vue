@@ -5,7 +5,7 @@
         <v-col cols="12" md="9">
           <audio
             controls
-            src="~/assets/examples/speech_1.mp3"
+            :src="src"
             class="mt-2 mb-5"
             style="width:100%;"
           >
@@ -57,7 +57,8 @@ export default {
           url: 'https://github.com/doccano'
         },
         annotation_approver: null
-      }
+      },
+      src: require('~/assets/examples/speech_1.mp3').default
     }
   },
 

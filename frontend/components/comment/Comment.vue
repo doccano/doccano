@@ -4,7 +4,7 @@
       <v-list-item class="grow ps-0">
         <v-list-item-avatar>
           <v-icon large>
-            mdi-account-circle
+            {{ mdiAccountCircle }}
           </v-icon>
         </v-list-item-avatar>
 
@@ -30,7 +30,7 @@
                 v-bind="attrs"
                 v-on="on"
               >
-                <v-icon>mdi-dots-vertical</v-icon>
+                <v-icon>{{ mdiDotsVertical }}</v-icon>
               </v-btn>
             </template>
 
@@ -97,6 +97,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiAccountCircle, mdiDotsVertical } from '@mdi/js'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
 Vue.use(VueFilterDateFormat)
@@ -121,7 +122,9 @@ export default Vue.extend({
       commentRules: [
         (v: string) => !!v.trim() || 'Comment is required'
       ],
-      valid: false
+      valid: false,
+      mdiAccountCircle,
+      mdiDotsVertical
     }
   },
 

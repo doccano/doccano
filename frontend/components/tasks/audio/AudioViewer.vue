@@ -12,8 +12,8 @@
           min="0"
           max="500"
           step="10"
-          append-icon="mdi-magnify-plus-outline"
-          prepend-icon="mdi-magnify-minus-outline"
+          :append-icon="mdiMagnifyPlusOutline"
+          :prepend-icon="mdiMagnifyMinusOutline"
           hide-details
           @click:append="zoomIn"
           @click:prepend="zoomOut"
@@ -26,7 +26,7 @@
           min="0"
           max="1"
           step="0.1"
-          append-icon="mdi-volume-high"
+          :append-icon="mdiVolumeHigh"
           hide-details
           @change="onChangeVolume"
         />
@@ -52,13 +52,13 @@
         v-if="!isPlaying"
         left
       >
-        mdi-play-circle-outline
+        {{ mdiPlayCircleOutline }}
       </v-icon>
       <v-icon
         v-else
         left
       >
-        mdi-pause-circle-outline
+        {{ mdiPauseCircleOutline }}
       </v-icon>
       <span v-if="!isPlaying">Play</span>
       <span v-else>Pause</span>
@@ -69,7 +69,7 @@
 <script>
 import Vue from 'vue'
 import WaveSurfer from 'wavesurfer.js'
-
+import { mdiPlayCircleOutline, mdiPauseCircleOutline, mdiVolumeHigh, mdiMagnifyPlusOutline, mdiMagnifyMinusOutline } from '@mdi/js'
 
 export default Vue.extend({
   props: {
@@ -87,7 +87,12 @@ export default Vue.extend({
       zoom: 0,
       volume: 0.6,
       speed: 1,
-      speeds: [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0]
+      speeds: [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0],
+      mdiPlayCircleOutline,
+      mdiPauseCircleOutline,
+      mdiVolumeHigh,
+      mdiMagnifyPlusOutline,
+      mdiMagnifyMinusOutline
     }
   },
 

@@ -18,7 +18,7 @@
           item-text="username"
           :label="$t('members.userSearchAPIs')"
           :placeholder="$t('members.userSearchPrompt')"
-          prepend-icon="mdi-account"
+          :prepend-icon="mdiAccount"
           :rules="[rules.userRequired]"
           return-object
         />
@@ -30,7 +30,7 @@
           :label="$t('members.role')"
           :rules="[rules.roleRequired]"
           return-object
-          prepend-icon="mdi-credit-card-outline"
+          :prepend-icon="mdiCreditCardOutline"
         >
           <template #item="props">
             {{ $translateRole(props.item.rolename, $t('members.roles')) }}
@@ -57,6 +57,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
+import { mdiAccount, mdiCreditCardOutline } from '@mdi/js'
 import BaseCard from '@/components/utils/BaseCard.vue'
 import { UserDTO } from '~/services/application/user/userData'
 import { RoleDTO } from '~/services/application/role/roleData'
@@ -88,7 +89,9 @@ export default Vue.extend({
       rules: {
         userRequired: (v: UserDTO) => !!v && !!v.username || 'Required',
         roleRequired: (v: RoleDTO) => !!v && !!v.rolename || 'Required'
-      }
+      },
+      mdiAccount,
+      mdiCreditCardOutline
     }
   },
 

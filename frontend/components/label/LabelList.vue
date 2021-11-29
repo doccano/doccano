@@ -19,7 +19,7 @@
     <template #top>
       <v-text-field
         v-model="search"
-        prepend-inner-icon="search"
+        :prepend-inner-icon="mdiMagnify"
         :label="$t('generic.search')"
         single-line
         hide-details
@@ -39,7 +39,7 @@
         small
         @click="$emit('edit', item)"
       >
-        mdi-pencil
+        {{ mdiPencil }}
       </v-icon>
     </template>
   </v-data-table>
@@ -47,6 +47,7 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
+import { mdiPencil, mdiMagnify } from '@mdi/js'
 import { LabelDTO } from '~/services/application/label/labelData'
 
 export default Vue.extend({
@@ -70,7 +71,9 @@ export default Vue.extend({
 
   data() {
     return {
-      search: ''
+      search: '',
+      mdiPencil,
+      mdiMagnify
     }
   },
 

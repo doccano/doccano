@@ -29,7 +29,7 @@
       @shortkey="firstPage"
       @click="firstPage"
     >
-      <v-icon>mdi-page-first</v-icon>
+      <v-icon>{{ mdiPageFirst }}</v-icon>
     </v-btn>
     <v-btn
       v-shortkey.once="['arrowleft']"
@@ -40,7 +40,7 @@
       @shortkey="prevPage"
       @click="prevPage"
     >
-      <v-icon>mdi-chevron-left</v-icon>
+      <v-icon>{{ mdiChevronLeft }}</v-icon>
     </v-btn>
     <v-btn
       v-shortkey.once="['arrowright']"
@@ -51,7 +51,7 @@
       @shortkey="nextPage"
       @click="nextPage"
     >
-      <v-icon>mdi-chevron-right</v-icon>
+      <v-icon>{{ mdiChevronRight }}</v-icon>
     </v-btn>
     <v-btn
       v-shortkey.once="['shift', 'arrowright']"
@@ -62,13 +62,15 @@
       @shortkey="lastPage"
       @click="lastPage"
     >
-      <v-icon>mdi-page-last</v-icon>
+      <v-icon>{{ mdiPageLast }}</v-icon>
     </v-btn>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiPageFirst, mdiPageLast, mdiChevronLeft, mdiChevronRight } from '@mdi/js'
+
 export default Vue.extend({
   props: {
     value: {
@@ -88,7 +90,11 @@ export default Vue.extend({
       editedPage: '1',
       rules: [
         (v: string) => (v && parseInt(v, 10) > 0 && parseInt(v, 10) <= this.total) || 'Invalid page number!'
-      ]
+      ],
+      mdiPageFirst,
+      mdiPageLast,
+      mdiChevronLeft,
+      mdiChevronRight
     }
   },
 

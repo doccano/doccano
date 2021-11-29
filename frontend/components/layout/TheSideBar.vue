@@ -6,7 +6,7 @@
       @click="toLabeling"
     >
       <v-icon left>
-        mdi-play-circle-outline
+        {{ mdiPlayCircleOutline }}
       </v-icon>
       {{ $t('home.startAnnotation') }}
     </v-btn>
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import { mdiHome, mdiDatabase, mdiCog, mdiChartBar, mdiBookOpenOutline, mdiCommentAccountOutline, mdiLabel, mdiAccount, mdiPlayCircleOutline } from '@mdi/js'
+
 export default {
   props: {
     link: {
@@ -56,7 +58,8 @@ export default {
 
   data() {
     return {
-      selected: 0
+      selected: 0,
+      mdiPlayCircleOutline
     }
   },
 
@@ -64,55 +67,55 @@ export default {
     filteredItems() {
       const items = [
         {
-          icon: 'mdi-home',
+          icon: mdiHome,
           text: this.$t('projectHome.home'),
           link: '',
           isVisible: true
         },
         {
-          icon: 'mdi-database',
+          icon: mdiDatabase,
           text: this.$t('dataset.dataset'),
           link: 'dataset',
           isVisible: true
         },
         {
-          icon: 'label',
+          icon: mdiLabel,
           text: this.$t('labels.labels'),
           link: 'labels',
           isVisible: this.role.is_project_admin && this.project.canDefineLabel
         },
         {
-          icon: 'label',
+          icon: mdiLabel,
           text: 'Relations',
           link: 'links',
           isVisible: this.role.is_project_admin && this.project.canDefineRelation
         },
         {
-          icon: 'person',
+          icon: mdiAccount,
           text: this.$t('members.members'),
           link: 'members',
           isVisible: this.role.is_project_admin
         },
         {
-          icon: 'mdi-comment-account-outline',
+          icon: mdiCommentAccountOutline,
           text: 'Comments',
           link: 'comments',
           isVisible: this.role.is_project_admin
         },
         {
-          icon: 'mdi-book-open-outline',
+          icon: mdiBookOpenOutline,
           text: this.$t('guideline.guideline'),
           link: 'guideline',
           isVisible: this.role.is_project_admin
         },
         {
-          icon: 'mdi-chart-bar',
+          icon: mdiChartBar,
           text: this.$t('statistics.statistics'),
           link: 'statistics',
           isVisible: this.role.is_project_admin
         },
         {
-          icon: 'mdi-cog',
+          icon: mdiCog,
           text: this.$t('settings.title'),
           link: 'settings',
           isVisible: this.role.is_project_admin

@@ -9,7 +9,7 @@
         v-on="on"
       >
         {{ text }}
-        <v-icon>mdi-menu-down</v-icon>
+        <v-icon>{{ mdiMenuDown }}</v-icon>
       </v-btn>
     </template>
     <v-list>
@@ -31,6 +31,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiMenuDown } from '@mdi/js'
 
 export default Vue.extend({
   props: {
@@ -43,6 +44,12 @@ export default Vue.extend({
       default: () => [],
       required: true
     }
-  }
+  },
+
+  data() {
+    return {
+      mdiMenuDown
+    }
+  },
 })
 </script>

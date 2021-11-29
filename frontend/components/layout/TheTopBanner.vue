@@ -26,7 +26,7 @@
               href="https://github.com/doccano/doccano"
             >
               <v-icon left>
-                mdi-github
+                {{ mdiGithub }}
               </v-icon>
               GitHub
             </v-btn>
@@ -44,3 +44,16 @@
     </v-parallax>
   </section>
 </template>
+
+<script lang="ts">
+import Vue from 'vue'
+import { mdiGithub } from '@mdi/js'
+
+export default Vue.extend({
+  data() {
+    return {
+      mdiGithub
+    }
+  }
+})
+</script>

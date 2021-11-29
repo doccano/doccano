@@ -13,7 +13,7 @@
           :value="name"
           :label="$t('labels.linkName')"
           :rules="[rules.required, rules.counter, rules.nameDuplicated]"
-          prepend-icon="label"
+          :prepend-icon="mdiLabel"
           single-line
           counter
           autofocus
@@ -34,6 +34,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiLabel } from '@mdi/js'
 import BaseCard from '@/components/utils/BaseCard.vue'
 
 export default Vue.extend({
@@ -74,7 +75,8 @@ export default Vue.extend({
         nameDuplicated: (v: string) => (!this.usedNames.includes(v)) || this.$t('rules.labelNameRules').duplicated,
         // @ts-ignore
         keyDuplicated: (v: string) => !this.usedKeys.includes(v) || this.$t('rules.keyNameRules').duplicated,
-      }
+      },
+      mdiLabel
     }
   },
 

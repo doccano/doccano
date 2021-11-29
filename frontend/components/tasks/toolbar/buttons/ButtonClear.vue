@@ -7,10 +7,22 @@
         @click="$emit('click:clear')"
       >
         <v-icon>
-          mdi-delete-outline
+          {{ mdiDeleteOutline }}
         </v-icon>
       </v-btn>
     </template>
     <span>Clear labels</span>
   </v-tooltip>
 </template>
+
+<script>
+import { mdiDeleteOutline } from '@mdi/js'
+
+export default {
+  data() {
+    return {
+      mdiDeleteOutline
+    }
+  },
+}
+</script>

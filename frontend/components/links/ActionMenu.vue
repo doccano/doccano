@@ -10,6 +10,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mdiPencil } from '@mdi/js'
 import ActionMenu from '~/components/utils/ActionMenu.vue'
 
 export default Vue.extend({
@@ -22,7 +23,7 @@ export default Vue.extend({
         return [
         {
           title: this.$t('links.createLink'),
-          icon: 'mdi-pencil',
+          icon: mdiPencil,
           event: 'create'
         }
       ]
