@@ -14,9 +14,6 @@ export default {
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
     ],
-    script: [
-      { src: 'https://use.fontawesome.com/releases/v5.0.6/js/all.js' }
-    ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
     ]
