@@ -71,7 +71,16 @@ export default {
     '@nuxtjs/composition-api/module',
     ['@nuxtjs/google-analytics', {
       id: process.env.GOOGLE_TRACKING_ID
-    }]
+    }],
+    [
+      '@nuxtjs/vuetify',
+      {
+        treeShake: true,
+        defaultAssets: {
+          icons: 'mdiSvg',
+        },
+      },
+    ],
   ],
   /*
   ** Axios module configuration
