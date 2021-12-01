@@ -287,7 +287,7 @@ class Span(Annotation):
         if allow_overlapping:
             super().validate_unique(exclude=exclude)
         else:
-            if Span.objects.filter(example=self.example).filter(
+            if Span.objects.exclude(id=self.id).filter(example=self.example).filter(
                 models.Q(start_offset__gte=self.start_offset, start_offset__lt=self.end_offset) |
                 models.Q(end_offset__gt=self.start_offset, end_offset__lte=self.end_offset) |
                 models.Q(start_offset__lte=self.start_offset, end_offset__gte=self.end_offset)

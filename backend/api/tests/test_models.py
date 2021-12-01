@@ -150,6 +150,13 @@ class TestSequenceAnnotation(TestCase):
         mommy.make('Span', example=example, start_offset=0, end_offset=5)
         mommy.make('Span', example=example, start_offset=10, end_offset=15)
 
+    def test_update(self):
+        project = mommy.make('SequenceLabelingProject', allow_overlapping=False)
+        example = mommy.make('Example', project=project)
+        span = mommy.make('Span', example=example, start_offset=0, end_offset=5)
+        span.end_offset = 6
+        span.save()
+
 
 class TestSeq2seqAnnotation(TestCase):
 
