@@ -32,10 +32,10 @@
       >
         <v-list-item>
           <v-autocomplete
+            ref="autocomplete"
             :value="currentLabel"
             :items="entityLabels"
             autofocus
-            chips
             dense
             deletable-chips
             hide-details
@@ -44,19 +44,7 @@
             label="Label List"
             small-chips
             @input="addOrUpdateEntity"
-          >
-            <template #selection="data">
-              <v-chip
-                v-bind="data.attrs"
-                :input-value="data.selected"
-                close
-                @click="data.select"
-                @click:close="deleteEntity(entity)"
-              >
-                {{ data.item.text }}
-              </v-chip>
-            </template>
-          </v-autocomplete>
+          />
         </v-list-item>
         <v-list-item
           v-for="(label, i) in entityLabels"
@@ -147,7 +135,6 @@ export default Vue.extend({
       startOffset: 0,
       endOffset: 0,
       entity: null as any,
-      value: false
     };
   },
 
@@ -155,6 +142,7 @@ export default Vue.extend({
     hasAnySuffixKey(): boolean {
       return this.entityLabels.some((label: any) => label.suffixKey !== null)
     },
+
     currentLabel(): any {
       if (this.entity) {
         const label = this.entityLabels.find((label: any) => label.id === this.entity!.label)
@@ -196,10 +184,14 @@ export default Vue.extend({
     },
 
     addOrUpdateEntity(labelId: number) {
-      if (this.entity) {
-        this.updateEntity(labelId)
+      if (labelId) {
+        if (this.entity) {
+          this.updateEntity(labelId)
+        } else {
+          this.addEntity(labelId)
+        }
       } else {
-        this.addEntity(labelId)
+        this.deleteEntity(this.entity)
       }
       this.cleanUp()
     },
@@ -222,6 +214,10 @@ export default Vue.extend({
       this.entity = null
       this.startOffset = 0
       this.endOffset = 0
+      // Todo: a bit hacky. I want to fix this.
+      // https://github.com/vuetifyjs/vuetify/issues/10765
+      // @ts-ignore
+      this.$refs.autocomplete!.selectedItems = []
     },
 
     updateRelation() {
