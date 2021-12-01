@@ -22,6 +22,7 @@
       :position-y="y"
       absolute
       offset-y
+      @input="cleanUp"
     >
       <v-list
         dense
@@ -29,6 +30,22 @@
         max-height="400"
         class="overflow-y-auto"
       >
+        <v-list-item>
+          <v-autocomplete
+            ref="autocomplete"
+            :value="currentLabel"
+            :items="entityLabels"
+            autofocus
+            dense
+            deletable-chips
+            hide-details
+            item-text="text"
+            item-value="id"
+            label="Label List"
+            small-chips
+            @input="addOrUpdateEntity"
+          />
+        </v-list-item>
         <v-list-item
           v-for="(label, i) in entityLabels"
           :key="i"
@@ -117,13 +134,22 @@ export default Vue.extend({
       y: 0,
       startOffset: 0,
       endOffset: 0,
-      entityId: -1,
+      entity: null as any,
     };
   },
 
   computed: {
     hasAnySuffixKey(): boolean {
       return this.entityLabels.some((label: any) => label.suffixKey !== null)
+    },
+
+    currentLabel(): any {
+      if (this.entity) {
+        const label = this.entityLabels.find((label: any) => label.id === this.entity!.label)
+        return label
+      } else {
+        return null
+      }
     }
   },
 
@@ -134,7 +160,7 @@ export default Vue.extend({
     },
 
     setEntity(entityId: number) {
-      this.entityId = entityId
+      this.entity = this.entities.find((entity: any) => entity.id === entityId)
     },
 
     showEntityLabelMenu(e: any) {
@@ -158,15 +184,16 @@ export default Vue.extend({
     },
 
     addOrUpdateEntity(labelId: number) {
-      if (this.entityId !== -1) {
-        this.updateEntity(labelId)
+      if (labelId) {
+        if (this.entity) {
+          this.updateEntity(labelId)
+        } else {
+          this.addEntity(labelId)
+        }
       } else {
-        this.addEntity(labelId)
+        this.deleteEntity(this.entity)
       }
-      this.showMenu = false
-      this.startOffset = 0
-      this.endOffset = 0
-      this.entityId = -1
+      this.cleanUp()
     },
 
     addEntity(labelId: number) {
@@ -174,11 +201,25 @@ export default Vue.extend({
     },
 
     updateEntity(labelId: number) {
-      this.$emit('click:entity', this.entityId, labelId)
+      this.$emit('click:entity', this.entity!.id, labelId)
     },
 
     deleteEntity(entity: any) {
       this.$emit('contextmenu:entity', entity.id)
+      this.cleanUp()
+    },
+
+    cleanUp() {
+      this.showMenu = false
+      this.entity = null
+      this.startOffset = 0
+      this.endOffset = 0
+      // Todo: a bit hacky. I want to fix this problem.
+      // https://github.com/vuetifyjs/vuetify/issues/10765
+      this.$nextTick(() => {
+        // @ts-ignore
+        this.$refs.autocomplete!.selectedItems = []
+      })
     },
 
     updateRelation() {
