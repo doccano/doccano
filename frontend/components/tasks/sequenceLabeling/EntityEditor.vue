@@ -214,10 +214,12 @@ export default Vue.extend({
       this.entity = null
       this.startOffset = 0
       this.endOffset = 0
-      // Todo: a bit hacky. I want to fix this.
+      // Todo: a bit hacky. I want to fix this problem.
       // https://github.com/vuetifyjs/vuetify/issues/10765
-      // @ts-ignore
-      this.$refs.autocomplete!.selectedItems = []
+      this.$nextTick(() => {
+        // @ts-ignore
+        this.$refs.autocomplete!.selectedItems = []
+      })
     },
 
     updateRelation() {
