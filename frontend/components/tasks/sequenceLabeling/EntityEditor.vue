@@ -22,6 +22,7 @@
       :position-y="y"
       absolute
       offset-y
+      @input="cleanUp"
     >
       <v-list
         dense
@@ -200,10 +201,7 @@ export default Vue.extend({
       } else {
         this.addEntity(labelId)
       }
-      this.showMenu = false
-      this.startOffset = 0
-      this.endOffset = 0
-      this.entity = null
+      this.cleanUp()
     },
 
     addEntity(labelId: number) {
@@ -216,8 +214,14 @@ export default Vue.extend({
 
     deleteEntity(entity: any) {
       this.$emit('contextmenu:entity', entity.id)
-      this.entity = null
+      this.cleanUp()
+    },
+
+    cleanUp() {
       this.showMenu = false
+      this.entity = null
+      this.startOffset = 0
+      this.endOffset = 0
     },
 
     updateRelation() {
