@@ -109,14 +109,14 @@ def make_auto_labeling_config(project):
     return mommy.make('AutoLabelingConfig', project=project)
 
 
-def make_annotation(task, doc, user):
+def make_annotation(task, doc, user, **kwargs):
     annotation_model = {
         DOCUMENT_CLASSIFICATION: 'Category',
         SEQUENCE_LABELING: 'Span',
         SEQ2SEQ: 'TextLabel',
         SPEECH2TEXT: 'TextLabel'
     }.get(task)
-    return mommy.make(annotation_model, example=doc, user=user)
+    return mommy.make(annotation_model, example=doc, user=user, **kwargs)
 
 
 def prepare_project(task: str = 'Any', collaborative_annotation=False):

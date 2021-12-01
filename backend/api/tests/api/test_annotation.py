@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import DOCUMENT_CLASSIFICATION, Category
+from ...models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, Category
 from .utils import (CRUDMixin, make_annotation, make_doc, make_label,
                     make_user, prepare_project)
 
@@ -79,11 +79,17 @@ class TestAnnotationCreation(CRUDMixin):
 class TestAnnotationDetail(CRUDMixin):
 
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=SEQUENCE_LABELING)
         self.non_member = make_user()
         doc = make_doc(self.project.item)
         label = make_label(self.project.item)
-        annotation = make_annotation(task=DOCUMENT_CLASSIFICATION, doc=doc, user=self.project.users[0])
+        annotation = make_annotation(
+            task=SEQUENCE_LABELING,
+            doc=doc,
+            user=self.project.users[0],
+            start_offset=0,
+            end_offset=1
+        )
         self.data = {'label': label.id}
         self.url = reverse(viewname='annotation_detail', args=[self.project.item.id, doc.id, annotation.id])
 
