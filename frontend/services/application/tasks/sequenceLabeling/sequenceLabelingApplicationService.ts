@@ -28,7 +28,11 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
     }
 
     public async changeLabel(projectId: string, docId: number, annotationId: number, labelId: number): Promise<void> {
-        await this.repository.update(projectId, docId, annotationId, labelId)
+        try {
+            await this.repository.update(projectId, docId, annotationId, labelId)
+        } catch(e) {
+            console.log(e.response.data.detail)
+        }
     }
 
     public async listLinks(projectId: string): Promise<LinkItem[]> {

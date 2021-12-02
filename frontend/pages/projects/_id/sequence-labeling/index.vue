@@ -129,9 +129,19 @@ export default {
   },
 
   methods: {
+    async maybeFetchLabels(annotations) {
+      const labelIds = new Set(this.labels.map((label) => label.id));
+      if (annotations.some((item) => !labelIds.has(item.label))) {
+          this.labels = await this.$services.label.list(this.projectId);
+      }
+    },
+
     async list(docId) {
       const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId);
       const links = await this.$services.sequenceLabeling.listLinks(this.projectId);
+      // In colab mode, if someone add a new label and annotate data with the label during your work,
+      // it occurs exception because there is no corresponding label.
+      await this.maybeFetchLabels(annotations);
       this.annotations = annotations;
       this.links = links;
     },
