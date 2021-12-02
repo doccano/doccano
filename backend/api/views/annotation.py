@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -34,7 +35,11 @@ class AnnotationList(generics.ListCreateAPIView):
         if self.project.single_class_classification:
             self.get_queryset().delete()
         request.data['example'] = self.kwargs['doc_id']
-        return super().create(request, args, kwargs)
+        try:
+            response = super().create(request, args, kwargs)
+        except ValidationError as err:
+            response = Response({'detail': err.messages}, status=status.HTTP_400_BAD_REQUEST)
+        return response
 
     def perform_create(self, serializer):
         serializer.save(example_id=self.kwargs['doc_id'], user=self.request.user)
