@@ -217,8 +217,9 @@ export default Vue.extend({
       // Todo: a bit hacky. I want to fix this problem.
       // https://github.com/vuetifyjs/vuetify/issues/10765
       this.$nextTick(() => {
-        // @ts-ignore
-        this.$refs.autocomplete!.selectedItems = []
+        if (this.$refs.autocomplete) {
+          (this.$refs.autocomplete as any).selectedItems = []
+        }
       })
     },
 
