@@ -57,7 +57,7 @@ RUN chown -R doccano:doccano .
 VOLUME /data
 ENV DATABASE_URL="sqlite:////data/doccano.db"
 
-ENV DEBUG="True"
+ENV DEBUG="False"
 ENV SECRET_KEY="change-me-in-production"
 ENV PORT="8000"
 ENV WORKERS="2"
