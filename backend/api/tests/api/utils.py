@@ -48,7 +48,8 @@ def make_project(
         task: str,
         users: List[str],
         roles: List[str] = None,
-        collaborative_annotation=False):
+        collaborative_annotation=False,
+        **kwargs):
     create_default_roles()
 
     # create users.
@@ -68,7 +69,8 @@ def make_project(
         _model=project_model,
         project_type=task,
         users=users,
-        collaborative_annotation=collaborative_annotation
+        collaborative_annotation=collaborative_annotation,
+        **kwargs
     )
 
     # assign roles to the users.
@@ -119,7 +121,7 @@ def make_annotation(task, doc, user, **kwargs):
     return mommy.make(annotation_model, example=doc, user=user, **kwargs)
 
 
-def prepare_project(task: str = 'Any', collaborative_annotation=False):
+def prepare_project(task: str = 'Any', collaborative_annotation=False, **kwargs):
     return make_project(
         task=task,
         users=['admin', 'approver', 'annotator'],
@@ -128,7 +130,8 @@ def prepare_project(task: str = 'Any', collaborative_annotation=False):
             settings.ROLE_ANNOTATION_APPROVER,
             settings.ROLE_ANNOTATOR,
         ],
-        collaborative_annotation=collaborative_annotation
+        collaborative_annotation=collaborative_annotation,
+        **kwargs
     )
 
 
