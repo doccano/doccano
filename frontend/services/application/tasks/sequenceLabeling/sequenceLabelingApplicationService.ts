@@ -20,11 +20,19 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
 
     public async create(projectId: string, docId: number, labelId: number, startOffset: number, endOffset: number): Promise<void> {
         const item = new SequenceLabelingLabel(0, labelId, 0, startOffset, endOffset)
-        await this.repository.create(projectId, docId, item)
+        try {
+            await this.repository.create(projectId, docId, item)
+        } catch(e) {
+            console.log(e.response.data.detail)
+        }
     }
 
     public async changeLabel(projectId: string, docId: number, annotationId: number, labelId: number): Promise<void> {
-        await this.repository.update(projectId, docId, annotationId, labelId)
+        try {
+            await this.repository.update(projectId, docId, annotationId, labelId)
+        } catch(e) {
+            console.log(e.response.data.detail)
+        }
     }
 
     public async listLinks(projectId: string): Promise<LinkItem[]> {
