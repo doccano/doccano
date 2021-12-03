@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import Project
+from ..models import ExampleState, Project, RoleMapping
 from ..permissions import IsInProjectReadOnlyOrAdmin
 
 
@@ -71,8 +71,11 @@ class StatisticsAPI(APIView):
             settings.ROLE_ANNOTATION_APPROVER: 0,
             settings.ROLE_PROJECT_ADMIN: 0,
         }
-        for doc in project.examples.all():
-            role_names = list(set([state.confirmed_user_role.name for state in doc.states.all()]))
-            for role_name in role_names:
-                confirmed_count[role_name] += 1
+        # Todo: convert to one query
+        count_by_user = ExampleState.objects.filter(example__project=project)\
+            .values('confirmed_by')\
+            .annotate(total=Count('confirmed_by'))
+        for record in count_by_user:
+            mapping = RoleMapping.objects.get(project=project, user=record['confirmed_by'])
+            confirmed_count[mapping.role.name] += record['total']
         return confirmed_count
