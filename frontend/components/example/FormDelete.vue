@@ -1,9 +1,7 @@
 <template>
   <confirm-form
-    :items="selected"
     :title="$t('dataset.deleteDocumentsTitle')"
-    :message="$t('dataset.deleteDocumentsMessage')"
-    :item-key="itemKey"
+    :message="$t('dataset.deleteDocumentsMessage', { 'number': selected.length })"
     @ok="$emit('remove')"
     @cancel="$emit('cancel')"
   />
