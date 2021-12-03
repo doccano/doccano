@@ -26,7 +26,6 @@ class CommentListDoc(generics.ListCreateAPIView):
 
 
 class CommentListProject(generics.ListAPIView):
-    pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
     serializer_class = CommentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)

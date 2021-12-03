@@ -1,5 +1,5 @@
-import { CommentReadDTO } from './commentData'
-import { CommentRepository } from '~/domain/models/comment/commentRepository'
+import { CommentReadDTO, CommentListDTO } from './commentData'
+import { CommentRepository, SearchOption } from '~/domain/models/comment/commentRepository'
 import { CommentItem } from '~/domain/models/comment/comment'
 
 export class CommentApplicationService {
@@ -7,9 +7,9 @@ export class CommentApplicationService {
     private readonly repository: CommentRepository
   ) {}
 
-  public async listProjectComment(projectId: string, q: string = ''): Promise<CommentReadDTO[]> {
-    const items = await this.repository.listAll(projectId, q)
-    return items.map(item => new CommentReadDTO(item))
+  public async listProjectComment(projectId: string, options: SearchOption): Promise<CommentListDTO> {
+    const item = await this.repository.listAll(projectId, options)
+    return new CommentListDTO(item)
   }
 
   public async list(projectId: string, docId: number): Promise<CommentReadDTO[]> {

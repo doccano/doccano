@@ -1,17 +1,16 @@
 import ApiService from '@/services/api.service'
-import { CommentRepository, CommentItemResponse } from '@/domain/models/comment/commentRepository'
-import { CommentItem } from '~/domain/models/comment/comment'
+import { CommentRepository, CommentItemResponse, SearchOption } from '@/domain/models/comment/commentRepository'
+import { CommentItem, CommentItemList } from '~/domain/models/comment/comment'
 
 export class APICommentRepository implements CommentRepository {
   constructor(
     private readonly request = ApiService
   ) {}
 
-  async listAll(projectId: string, q: string): Promise<CommentItem[]> {
-    const url = `/projects/${projectId}/comments?q=${q}`
+  async listAll(projectId: string, { limit = '10', offset = '0', q = '' }: SearchOption): Promise<CommentItemList> {
+    const url = `/projects/${projectId}/comments?q=${q}&limit=${limit}&offset=${offset}`
     const response = await this.request.get(url)
-    const items: CommentItemResponse[] = response.data
-    return items.map(item => CommentItem.valueOf(item))
+    return CommentItemList.valueOf(response.data)
   }
 
   async list(projectId: string, exampleId: number): Promise<CommentItem[]> {
