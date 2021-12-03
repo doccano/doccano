@@ -50,7 +50,7 @@ class TestCommentListProjectAPI(CRUDMixin):
     def test_allows_project_member_to_list_comments(self):
         for member in self.project.users:
             response = self.assert_fetch(member, status.HTTP_200_OK)
-            self.assertEqual(len(response.data), 1)
+            self.assertEqual(response.data['count'], 1)
 
     def test_denies_non_project_member_to_list_comments(self):
         self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
@@ -70,7 +70,7 @@ class TestCommentListProjectAPI(CRUDMixin):
         for member in self.project.users:
             self.assert_bulk_delete(member, status.HTTP_204_NO_CONTENT)
             response = self.client.get(self.url)
-            self.assertEqual(len(response.data), 0)
+            self.assertEqual(response.data['count'], 0)
 
     def test_denies_non_project_member_to_delete_comments(self):
         self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)

@@ -1,38 +1,43 @@
 export class CommentItemList {
-  constructor(public commentItems: CommentItem[]) {}
+  constructor(
+    private _count: number,
+    private _next: string | null,
+    private _prev: string | null,
+    private _items: CommentItem[]
+  ) {}
 
-  static valueOf(items: CommentItem[]): CommentItemList {
-    return new CommentItemList(items)
+  static valueOf(
+    { count, next, previous, results }:
+    {
+      count   : number,
+      next    : string | null,
+      previous: string | null,
+      results : Array<any>
+  }
+  ): CommentItemList {
+    const items = results.map(item => CommentItem.valueOf(item))
+    return new CommentItemList(
+      count,
+      next,
+      previous,
+      items
+    )
   }
 
-  add(item: CommentItem) {
-    this.commentItems.push(item)
+  get count() {
+    return this._count
   }
 
-  update(item: CommentItem) {
-    const index = this.commentItems.findIndex(comment => comment.id === item.id)
-    this.commentItems.splice(index, 1, item)
+  get next() {
+    return this._next
   }
 
-  delete(item: CommentItem) {
-    this.commentItems = this.commentItems.filter(comment => comment.id !== item.id)
+  get prev() {
+    return this._prev
   }
 
-  deleteBulk(items: CommentItemList) {
-    const ids = items.ids()
-    this.commentItems = this.commentItems.filter(comment => !ids.includes(comment.id))
-  }
-
-  count(): Number {
-    return this.commentItems.length
-  }
-
-  ids(): Number[]{
-    return this.commentItems.map(item => item.id)
-  }
-
-  toArray(): Object[] {
-    return this.commentItems.map(item => item.toObject())
+  get items(): CommentItem[] {
+    return this._items
   }
 }
 
