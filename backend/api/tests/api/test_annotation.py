@@ -7,15 +7,17 @@ from .utils import (CRUDMixin, make_annotation, make_doc, make_label,
 
 
 class TestAnnotationList(CRUDMixin):
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'annotation_list'
 
     @classmethod
     def setUpTestData(cls):
-        cls.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        cls.project = prepare_project(task=cls.task)
         cls.non_member = make_user()
         doc = make_doc(cls.project.item)
         for member in cls.project.users:
-            make_annotation(task=DOCUMENT_CLASSIFICATION, doc=doc, user=member)
-        cls.url = reverse(viewname='annotation_list', args=[cls.project.item.id, doc.id])
+            make_annotation(task=cls.task, doc=doc, user=member)
+        cls.url = reverse(viewname=cls.view_name, args=[cls.project.item.id, doc.id])
 
     def test_allows_project_member_to_fetch_annotation(self):
         for member in self.project.users:
@@ -34,15 +36,21 @@ class TestAnnotationList(CRUDMixin):
         self.assertEqual(count, 2)  # delete only own annotation
 
 
+class TestCategoryList(TestAnnotationList):
+    view_name = 'category_list'
+
+
 class TestSharedAnnotationList(CRUDMixin):
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'annotation_list'
 
     @classmethod
     def setUpTestData(cls):
-        cls.project = prepare_project(task=DOCUMENT_CLASSIFICATION, collaborative_annotation=True)
+        cls.project = prepare_project(task=cls.task, collaborative_annotation=True)
         doc = make_doc(cls.project.item)
         for member in cls.project.users:
-            make_annotation(task=DOCUMENT_CLASSIFICATION, doc=doc, user=member)
-        cls.url = reverse(viewname='annotation_list', args=[cls.project.item.id, doc.id])
+            make_annotation(task=cls.task, doc=doc, user=member)
+        cls.url = reverse(viewname=cls.view_name, args=[cls.project.item.id, doc.id])
 
     def test_allows_project_member_to_fetch_all_annotation(self):
         for member in self.project.users:
@@ -55,15 +63,21 @@ class TestSharedAnnotationList(CRUDMixin):
         self.assertEqual(count, 0)  # delete all annotation in the doc
 
 
+class TestSharedCategoryList(TestSharedAnnotationList):
+    view_name = 'category_list'
+
+
 class TestAnnotationCreation(CRUDMixin):
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'annotation_list'
 
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=self.task)
         self.non_member = make_user()
         doc = make_doc(self.project.item)
         label = make_label(self.project.item)
         self.data = {'label': label.id}
-        self.url = reverse(viewname='annotation_list', args=[self.project.item.id, doc.id])
+        self.url = reverse(viewname=self.view_name, args=[self.project.item.id, doc.id])
 
     def test_allows_project_member_to_annotate(self):
         for member in self.project.users:
@@ -76,22 +90,31 @@ class TestAnnotationCreation(CRUDMixin):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
 
+class TestCategoryCreation(TestAnnotationCreation):
+    view_name = 'category_list'
+
+
 class TestAnnotationDetail(CRUDMixin):
+    task = SEQUENCE_LABELING
+    view_name = 'annotation_detail'
 
     def setUp(self):
-        self.project = prepare_project(task=SEQUENCE_LABELING)
+        self.project = prepare_project(task=self.task)
         self.non_member = make_user()
         doc = make_doc(self.project.item)
         label = make_label(self.project.item)
-        annotation = make_annotation(
-            task=SEQUENCE_LABELING,
+        annotation = self.create_annotation_data(doc=doc)
+        self.data = {'label': label.id}
+        self.url = reverse(viewname=self.view_name, args=[self.project.item.id, doc.id, annotation.id])
+
+    def create_annotation_data(self, doc):
+        return make_annotation(
+            task=self.task,
             doc=doc,
             user=self.project.users[0],
             start_offset=0,
             end_offset=1
         )
-        self.data = {'label': label.id}
-        self.url = reverse(viewname='annotation_detail', args=[self.project.item.id, doc.id, annotation.id])
 
     def test_allows_owner_to_get_annotation(self):
         self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
@@ -127,15 +150,25 @@ class TestAnnotationDetail(CRUDMixin):
         self.assert_delete(self.non_member, status.HTTP_403_FORBIDDEN)
 
 
+class TestCategoryDetail(TestAnnotationDetail):
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'category_detail'
+
+    def create_annotation_data(self, doc):
+        return make_annotation(task=self.task, doc=doc, user=self.project.users[0])
+
+
 class TestSharedAnnotationDetail(CRUDMixin):
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'annotation_detail'
 
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION, collaborative_annotation=True)
+        self.project = prepare_project(task=self.task, collaborative_annotation=True)
         doc = make_doc(self.project.item)
-        annotation = make_annotation(task=DOCUMENT_CLASSIFICATION, doc=doc, user=self.project.users[0])
+        annotation = make_annotation(task=self.task, doc=doc, user=self.project.users[0])
         label = make_label(self.project.item)
         self.data = {'label': label.id}
-        self.url = reverse(viewname='annotation_detail', args=[self.project.item.id, doc.id, annotation.id])
+        self.url = reverse(viewname=self.view_name, args=[self.project.item.id, doc.id, annotation.id])
 
     def test_allows_any_member_to_get_annotation(self):
         for member in self.project.users:
@@ -147,3 +180,7 @@ class TestSharedAnnotationDetail(CRUDMixin):
 
     def test_allows_any_member_to_delete_annotation(self):
         self.assert_delete(self.project.users[1], status.HTTP_204_NO_CONTENT)
+
+
+class TestSharedCategoryDetail(TestSharedAnnotationDetail):
+    view_name = 'category_detail'
