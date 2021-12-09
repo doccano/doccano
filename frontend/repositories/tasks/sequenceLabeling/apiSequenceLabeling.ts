@@ -14,6 +14,6 @@ export class APISequenceLabelingRepository extends AnnotationRepository<Sequence
   }
 
   protected baseUrl(projectId: string, docId: number): string {
-    return `/projects/${projectId}/docs/${docId}/annotations`
+    return `/projects/${projectId}/examples/${docId}/spans`
   }
 }

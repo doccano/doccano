@@ -1,21 +1,29 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, Category
+from ...models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
+                       Category, Span, TextLabel)
 from .utils import (CRUDMixin, make_annotation, make_doc, make_label,
                     make_user, prepare_project)
 
 
 class TestAnnotationList(CRUDMixin):
+    model = Category
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'annotation_list'
 
     @classmethod
     def setUpTestData(cls):
-        cls.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        cls.project = prepare_project(task=cls.task)
         cls.non_member = make_user()
         doc = make_doc(cls.project.item)
         for member in cls.project.users:
-            make_annotation(task=DOCUMENT_CLASSIFICATION, doc=doc, user=member)
-        cls.url = reverse(viewname='annotation_list', args=[cls.project.item.id, doc.id])
+            cls.make_annotation(doc, member)
+        cls.url = reverse(viewname=cls.view_name, args=[cls.project.item.id, doc.id])
+
+    @classmethod
+    def make_annotation(cls, doc, member):
+        make_annotation(cls.task, doc=doc, user=member)
 
     def test_allows_project_member_to_fetch_annotation(self):
         for member in self.project.users:
@@ -30,19 +38,48 @@ class TestAnnotationList(CRUDMixin):
 
     def test_allows_project_member_to_bulk_delete_annotation(self):
         self.assert_delete(self.project.users[0], status.HTTP_204_NO_CONTENT)
-        count = Category.objects.count()
+        count = self.model.objects.count()
         self.assertEqual(count, 2)  # delete only own annotation
 
 
+class TestCategoryList(TestAnnotationList):
+    model = Category
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'category_list'
+
+
+class TestSpanList(TestAnnotationList):
+    model = Span
+    task = SEQUENCE_LABELING
+    view_name = 'span_list'
+
+    @classmethod
+    def make_annotation(cls, doc, member):
+        make_annotation(cls.task, doc=doc, user=member, start_offset=0, end_offset=1)
+
+
+class TestTextList(TestAnnotationList):
+    model = TextLabel
+    task = SEQ2SEQ
+    view_name = 'text_list'
+
+
 class TestSharedAnnotationList(CRUDMixin):
+    model = Category
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'annotation_list'
 
     @classmethod
     def setUpTestData(cls):
-        cls.project = prepare_project(task=DOCUMENT_CLASSIFICATION, collaborative_annotation=True)
+        cls.project = prepare_project(task=cls.task, collaborative_annotation=True)
         doc = make_doc(cls.project.item)
         for member in cls.project.users:
-            make_annotation(task=DOCUMENT_CLASSIFICATION, doc=doc, user=member)
-        cls.url = reverse(viewname='annotation_list', args=[cls.project.item.id, doc.id])
+            cls.make_annotation(doc, member)
+        cls.url = reverse(viewname=cls.view_name, args=[cls.project.item.id, doc.id])
+
+    @classmethod
+    def make_annotation(cls, doc, member):
+        make_annotation(cls.task, doc=doc, user=member)
 
     def test_allows_project_member_to_fetch_all_annotation(self):
         for member in self.project.users:
@@ -51,19 +88,54 @@ class TestSharedAnnotationList(CRUDMixin):
 
     def test_allows_project_member_to_bulk_delete_annotation(self):
         self.assert_delete(self.project.users[0], status.HTTP_204_NO_CONTENT)
-        count = Category.objects.count()
+        count = self.model.objects.count()
         self.assertEqual(count, 0)  # delete all annotation in the doc
 
 
+class TestSharedCategoryList(TestSharedAnnotationList):
+    model = Category
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'category_list'
+
+
+class TestSharedSpanList(TestSharedAnnotationList):
+    model = Span
+    task = SEQUENCE_LABELING
+    view_name = 'span_list'
+    start_offset = 0
+
+    @classmethod
+    def make_annotation(cls, doc, member):
+        make_annotation(
+            cls.task,
+            doc=doc,
+            user=member,
+            start_offset=cls.start_offset,
+            end_offset=cls.start_offset + 1
+        )
+        cls.start_offset += 1
+
+
+class TestSharedTextList(TestSharedAnnotationList):
+    model = TextLabel
+    task = SEQ2SEQ
+    view_name = 'text_list'
+
+
 class TestAnnotationCreation(CRUDMixin):
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'annotation_list'
 
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=self.task)
         self.non_member = make_user()
         doc = make_doc(self.project.item)
+        self.data = self.create_data()
+        self.url = reverse(viewname=self.view_name, args=[self.project.item.id, doc.id])
+
+    def create_data(self):
         label = make_label(self.project.item)
-        self.data = {'label': label.id}
-        self.url = reverse(viewname='annotation_list', args=[self.project.item.id, doc.id])
+        return {'label': label.id}
 
     def test_allows_project_member_to_annotate(self):
         for member in self.project.users:
@@ -76,22 +148,48 @@ class TestAnnotationCreation(CRUDMixin):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
 
+class TestCategoryCreation(TestAnnotationCreation):
+    view_name = 'category_list'
+
+
+class TestSpanCreation(TestAnnotationCreation):
+    task = SEQUENCE_LABELING
+    view_name = 'span_list'
+
+    def create_data(self):
+        label = make_label(self.project.item)
+        return {'label': label.id, 'start_offset': 0, 'end_offset': 1}
+
+
+class TestTextLabelCreation(TestAnnotationCreation):
+    task = SEQ2SEQ
+    view_name = 'text_list'
+
+    def create_data(self):
+        return {'text': 'example'}
+
+
 class TestAnnotationDetail(CRUDMixin):
+    task = SEQUENCE_LABELING
+    view_name = 'annotation_detail'
 
     def setUp(self):
-        self.project = prepare_project(task=SEQUENCE_LABELING)
+        self.project = prepare_project(task=self.task)
         self.non_member = make_user()
         doc = make_doc(self.project.item)
         label = make_label(self.project.item)
-        annotation = make_annotation(
-            task=SEQUENCE_LABELING,
+        annotation = self.create_annotation_data(doc=doc)
+        self.data = {'label': label.id}
+        self.url = reverse(viewname=self.view_name, args=[self.project.item.id, doc.id, annotation.id])
+
+    def create_annotation_data(self, doc):
+        return make_annotation(
+            task=self.task,
             doc=doc,
             user=self.project.users[0],
             start_offset=0,
             end_offset=1
         )
-        self.data = {'label': label.id}
-        self.url = reverse(viewname='annotation_detail', args=[self.project.item.id, doc.id, annotation.id])
 
     def test_allows_owner_to_get_annotation(self):
         self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
@@ -127,15 +225,45 @@ class TestAnnotationDetail(CRUDMixin):
         self.assert_delete(self.non_member, status.HTTP_403_FORBIDDEN)
 
 
-class TestSharedAnnotationDetail(CRUDMixin):
+class TestCategoryDetail(TestAnnotationDetail):
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'category_detail'
+
+    def create_annotation_data(self, doc):
+        return make_annotation(task=self.task, doc=doc, user=self.project.users[0])
+
+
+class TestSpanDetail(TestAnnotationDetail):
+    task = SEQUENCE_LABELING
+    view_name = 'span_detail'
+
+
+class TestTextDetail(TestAnnotationDetail):
+    task = SEQ2SEQ
+    view_name = 'text_detail'
 
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION, collaborative_annotation=True)
+        super().setUp()
+        self.data = {'text': 'changed'}
+
+    def create_annotation_data(self, doc):
+        return make_annotation(task=self.task, doc=doc, user=self.project.users[0])
+
+
+class TestSharedAnnotationDetail(CRUDMixin):
+    task = DOCUMENT_CLASSIFICATION
+    view_name = 'annotation_detail'
+
+    def setUp(self):
+        self.project = prepare_project(task=self.task, collaborative_annotation=True)
         doc = make_doc(self.project.item)
-        annotation = make_annotation(task=DOCUMENT_CLASSIFICATION, doc=doc, user=self.project.users[0])
+        annotation = self.make_annotation(doc, self.project.users[0])
         label = make_label(self.project.item)
         self.data = {'label': label.id}
-        self.url = reverse(viewname='annotation_detail', args=[self.project.item.id, doc.id, annotation.id])
+        self.url = reverse(viewname=self.view_name, args=[self.project.item.id, doc.id, annotation.id])
+
+    def make_annotation(self, doc, member):
+        return make_annotation(self.task, doc=doc, user=member)
 
     def test_allows_any_member_to_get_annotation(self):
         for member in self.project.users:
@@ -147,3 +275,24 @@ class TestSharedAnnotationDetail(CRUDMixin):
 
     def test_allows_any_member_to_delete_annotation(self):
         self.assert_delete(self.project.users[1], status.HTTP_204_NO_CONTENT)
+
+
+class TestSharedCategoryDetail(TestSharedAnnotationDetail):
+    view_name = 'category_detail'
+
+
+class TestSharedSpanDetail(TestSharedAnnotationDetail):
+    task = SEQUENCE_LABELING
+    view_name = 'span_detail'
+
+    def make_annotation(self, doc, member):
+        return make_annotation(self.task, doc=doc, user=member, start_offset=0, end_offset=1)
+
+
+class TestSharedTextDetail(TestSharedAnnotationDetail):
+    task = SEQ2SEQ
+    view_name = 'text_detail'
+
+    def setUp(self):
+        super().setUp()
+        self.data = {'text': 'changed'}

@@ -14,6 +14,6 @@ export class APISeq2seqRepository extends AnnotationRepository<Seq2seqLabel> {
   }
 
   protected baseUrl(projectId: string, docId: number): string {
-    return `/projects/${projectId}/docs/${docId}/annotations`
+    return `/projects/${projectId}/examples/${docId}/texts`
   }
 }
