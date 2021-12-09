@@ -8,6 +8,6 @@ export class APITextClassificationRepository extends AnnotationRepository<TextCl
   }
 
   protected baseUrl(projectId: string, docId: number): string {
-    return `/projects/${projectId}/docs/${docId}/annotations`
+    return `/projects/${projectId}/examples/${docId}/categories`
   }
 }
