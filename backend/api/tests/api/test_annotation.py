@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import (DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, Category,
-                       Span)
+from ...models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
+                       Category, Span, TextLabel)
 from .utils import (CRUDMixin, make_annotation, make_doc, make_label,
                     make_user, prepare_project)
 
@@ -58,6 +58,12 @@ class TestSpanList(TestAnnotationList):
         make_annotation(cls.task, doc=doc, user=member, start_offset=0, end_offset=1)
 
 
+class TestTextList(TestAnnotationList):
+    model = TextLabel
+    task = SEQ2SEQ
+    view_name = 'text_list'
+
+
 class TestSharedAnnotationList(CRUDMixin):
     model = Category
     task = DOCUMENT_CLASSIFICATION
@@ -92,7 +98,7 @@ class TestSharedCategoryList(TestSharedAnnotationList):
     view_name = 'category_list'
 
 
-class TestSharedSpanList(TestSharedCategoryList):
+class TestSharedSpanList(TestSharedAnnotationList):
     model = Span
     task = SEQUENCE_LABELING
     view_name = 'span_list'
@@ -108,6 +114,12 @@ class TestSharedSpanList(TestSharedCategoryList):
             end_offset=cls.start_offset + 1
         )
         cls.start_offset += 1
+
+
+class TestSharedTextList(TestSharedAnnotationList):
+    model = TextLabel
+    task = SEQ2SEQ
+    view_name = 'text_list'
 
 
 class TestAnnotationCreation(CRUDMixin):
@@ -147,6 +159,14 @@ class TestSpanCreation(TestAnnotationCreation):
     def create_data(self):
         label = make_label(self.project.item)
         return {'label': label.id, 'start_offset': 0, 'end_offset': 1}
+
+
+class TestTextLabelCreation(TestAnnotationCreation):
+    task = SEQ2SEQ
+    view_name = 'text_list'
+
+    def create_data(self):
+        return {'text': 'example'}
 
 
 class TestAnnotationDetail(CRUDMixin):
@@ -218,6 +238,18 @@ class TestSpanDetail(TestAnnotationDetail):
     view_name = 'span_detail'
 
 
+class TestTextDetail(TestAnnotationDetail):
+    task = SEQ2SEQ
+    view_name = 'text_detail'
+
+    def setUp(self):
+        super().setUp()
+        self.data = {'text': 'changed'}
+
+    def create_annotation_data(self, doc):
+        return make_annotation(task=self.task, doc=doc, user=self.project.users[0])
+
+
 class TestSharedAnnotationDetail(CRUDMixin):
     task = DOCUMENT_CLASSIFICATION
     view_name = 'annotation_detail'
@@ -255,3 +287,12 @@ class TestSharedSpanDetail(TestSharedAnnotationDetail):
 
     def make_annotation(self, doc, member):
         return make_annotation(self.task, doc=doc, user=member, start_offset=0, end_offset=1)
+
+
+class TestSharedTextDetail(TestSharedAnnotationDetail):
+    task = SEQ2SEQ
+    view_name = 'text_detail'
+
+    def setUp(self):
+        super().setUp()
+        self.data = {'text': 'changed'}
