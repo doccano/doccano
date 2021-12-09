@@ -4,7 +4,7 @@ from .views import (annotation, annotation_relations, auto_labeling, comment,
                     example, example_state, export_dataset, health,
                     import_dataset, import_export, label, project,
                     relation_types, role, statistics, tag, task, user)
-from .views.tasks import category
+from .views.tasks import category, span
 
 urlpatterns_project = [
     path(
@@ -122,6 +122,16 @@ urlpatterns_project = [
         route='examples/<int:example_id>/categories/<int:annotation_id>',
         view=category.CategoryDetailAPI.as_view(),
         name='category_detail'
+    ),
+    path(
+        route='examples/<int:example_id>/spans',
+        view=span.SpanListAPI.as_view(),
+        name='span_list'
+    ),
+    path(
+        route='examples/<int:example_id>/spans/<int:annotation_id>',
+        view=span.SpanDetailAPI.as_view(),
+        name='span_detail'
     ),
     path(
         route='tags',
