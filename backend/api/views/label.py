@@ -3,6 +3,7 @@ import re
 
 from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import MultiPartParser
@@ -26,6 +27,8 @@ def camel_to_snake_dict(d):
 
 
 class LabelList(generics.ListCreateAPIView):
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['task_type']
     serializer_class = LabelSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]

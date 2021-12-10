@@ -39,6 +39,26 @@ class TestLabelList(CRUDMixin):
         self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
 
 
+class TestLabelSearch(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project()
+        make_label(self.project.item, task_type='Category')
+        make_label(self.project.item, task_type='Span')
+        self.url = reverse(viewname='label_list', args=[self.project.item.id])
+
+    def test_search(self):
+        for member in self.project.users:
+            response = self.assert_fetch(member, status.HTTP_200_OK)
+            self.assertEqual(len(response.data), 2)
+
+    def test_search_label_by_type(self):
+        self.url = f'{self.url}?task_type=Category'
+        for member in self.project.users:
+            response = self.assert_fetch(member, status.HTTP_200_OK)
+            self.assertEqual(len(response.data), 1)
+
+
 class TestLabelCreate(CRUDMixin):
 
     @classmethod

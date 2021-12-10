@@ -87,8 +87,8 @@ def make_tag(project):
     return mommy.make('Tag', project=project)
 
 
-def make_label(project):
-    return mommy.make('Label', project=project)
+def make_label(project, **kwargs):
+    return mommy.make('Label', project=project, **kwargs)
 
 
 def make_doc(project):
