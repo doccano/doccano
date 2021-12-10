@@ -157,9 +157,12 @@ class Label(models.Model):
         super().clean()
 
     class Meta:
-        unique_together = (
-            ('project', 'text'),
-        )
+        constraints = [
+            models.UniqueConstraint(
+                fields=['project', 'text', 'task_type'],
+                name='unique_label'
+            )
+        ]
         ordering = ['created_at']
 
 
