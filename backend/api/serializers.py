@@ -60,7 +60,15 @@ class LabelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Label
-        fields = ('id', 'text', 'prefix_key', 'suffix_key', 'background_color', 'text_color')
+        fields = (
+            'id',
+            'text',
+            'prefix_key',
+            'suffix_key',
+            'background_color',
+            'text_color',
+            'task_type',
+        )
 
 
 class CommentSerializer(serializers.ModelSerializer):
