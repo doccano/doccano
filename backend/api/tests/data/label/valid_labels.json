@@ -5,7 +5,8 @@
     "prefix_key": null,
     "suffix_key": "a",
     "background_color": "#FF0000",
-    "text_color": "#ffffff"
+    "text_color": "#ffffff",
+    "task_type": "Category"
   },
   {
     "id": 45,
@@ -13,6 +14,7 @@
     "prefix_key": null,
     "suffix_key": "c",
     "background_color": "#FF0000",
-    "text_color": "#ffffff"
+    "text_color": "#ffffff",
+    "task_type": "Span"
   }
 ]
