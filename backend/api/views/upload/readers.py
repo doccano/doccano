@@ -21,6 +21,19 @@ class Record:
     def __str__(self):
         return f'{self._data}\t{self._label}'
 
+    @property
+    def data(self):
+        return self._data.dict()
+
+    @property
+    def label(self):
+        return [
+            {
+                'text': label.name
+            } for label in self._label
+            if label.has_name() and label.name
+        ]
+
 
 class BaseReader(collections.abc.Iterable):
 
