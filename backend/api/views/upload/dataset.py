@@ -15,7 +15,6 @@ from .cleaners import Cleaner
 from .data import BaseData
 from .exception import FileParseException, FileParseExceptions
 from .label import Label
-from .labels import Labels
 
 
 class Record:
@@ -46,12 +45,16 @@ class Record:
 
     @property
     def data(self):
-        return self._data.dict()
+        return self._data
 
-    def annotation(self, mapping: Dict[str, int]):
-        labels = Labels(self._label)
-        labels = labels.replace_label(mapping)
-        return labels.dict()
+    def create_data(self, project):
+        return self._data.create(project)
+
+    def create_label(self, project):
+        return [label.create(project) for label in self._label]
+
+    def create_annotation(self, user, example, mapping):
+        return [label.create_annotation(user, example, mapping) for label in self._label]
 
     @property
     def label(self):

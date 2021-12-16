@@ -45,4 +45,4 @@ Blackburn\tI-PER
         it = dataset.load(self.test_file)
         record = next(it)
         expected = 'EU rejects German call to boycott British lamb .'
-        self.assertEqual(record.data['text'], expected)
+        self.assertEqual(record.data.text, expected)

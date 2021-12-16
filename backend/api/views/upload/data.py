@@ -1,7 +1,10 @@
 import abc
+import uuid
 from typing import Dict
 
 from pydantic import BaseModel, validator
+
+from ...models import Example, Project
 
 
 class BaseData(BaseModel, abc.ABC):
@@ -15,6 +18,10 @@ class BaseData(BaseModel, abc.ABC):
     def __hash__(self):
         return hash(tuple(self.dict()))
 
+    @abc.abstractmethod
+    def create(self, project: Project) -> Example:
+        raise NotImplementedError('Please implement this method in the subclass.')
+
 
 class TextData(BaseData):
     text: str
@@ -26,6 +33,22 @@ class TextData(BaseData):
         else:
             raise ValueError('is not empty.')
 
+    def create(self, project: Project) -> Example:
+        return Example(
+            uuid=uuid.uuid4(),
+            project=project,
+            filename=self.filename,
+            text=self.text,
+            meta=self.meta
+        )
+
 
 class FileData(BaseData):
-    pass
+
+    def create(self, project: Project) -> Example:
+        return Example(
+            uuid=uuid.uuid4(),
+            project=project,
+            filename=self.filename,
+            meta=self.meta
+        )

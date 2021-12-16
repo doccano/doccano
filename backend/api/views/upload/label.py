@@ -1,7 +1,12 @@
 import abc
-from typing import Any, Dict, Union
+from typing import Any, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
+
+from ...models import Category
+from ...models import Label as LabelModel
+from ...models import Project, Span
+from ...models import TextLabel as TL
 
 
 class Label(BaseModel, abc.ABC):
@@ -20,7 +25,11 @@ class Label(BaseModel, abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def replace(self, mapping: Dict[str, int]) -> 'Label':
+    def create(self, project: Project) -> Optional[LabelModel]:
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def create_annotation(self, user, example, mapping):
         raise NotImplementedError
 
     def __hash__(self):
@@ -28,7 +37,14 @@ class Label(BaseModel, abc.ABC):
 
 
 class CategoryLabel(Label):
-    label: Union[str, int]
+    label: str
+
+    @validator('label')
+    def label_is_not_empty(cls, value: str):
+        if value:
+            return value
+        else:
+            raise ValueError('is not empty.')
 
     def has_name(self) -> bool:
         return True
@@ -43,13 +59,19 @@ class CategoryLabel(Label):
             return cls(label=obj)
         raise TypeError(f'{obj} is not str.')
 
-    def replace(self, mapping: Dict[str, int]) -> 'Label':
-        label = mapping[self.label]
-        return CategoryLabel(label=label)
+    def create(self, project: Project) -> Optional[LabelModel]:
+        return LabelModel(text=self.label, project=project, task_type='Category')
+
+    def create_annotation(self, user, example, mapping):
+        return Category(
+            user=user,
+            example=example,
+            label=mapping[(self.label, 'Category')]
+        )
 
 
 class OffsetLabel(Label):
-    label: Union[str, int]
+    label: str
     start_offset: int
     end_offset: int
 
@@ -71,12 +93,16 @@ class OffsetLabel(Label):
         else:
             raise TypeError(f'{obj} is invalid type.')
 
-    def replace(self, mapping: Dict[str, int]) -> 'Label':
-        label = mapping[self.label]
-        return OffsetLabel(
-            label=label,
+    def create(self, project: Project) -> Optional[LabelModel]:
+        return LabelModel(text=self.label, project=project, task_type='Span')
+
+    def create_annotation(self, user, example, mapping):
+        return Span(
+            user=user,
+            example=example,
             start_offset=self.start_offset,
-            end_offset=self.end_offset
+            end_offset=self.end_offset,
+            label=mapping[(self.label, 'Span')]
         )
 
 
@@ -97,5 +123,12 @@ class TextLabel(Label):
         else:
             raise TypeError(f'{obj} is not str or empty.')
 
-    def replace(self, mapping: Dict[str, str]) -> 'Label':
-        return self
+    def create(self, project: Project) -> Optional[LabelModel]:
+        return None
+
+    def create_annotation(self, user, example, mapping):
+        return TL(
+            user=user,
+            example=example,
+            text=self.text
+        )

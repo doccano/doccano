@@ -26,7 +26,7 @@ class TestFastTextDataset(unittest.TestCase):
             label = [{'text': 'Label'}]
         self.create_file(content)
         record = next(dataset.load(self.test_file))
-        self.assertEqual(record.data['text'], data)
+        self.assertEqual(record.data.text, data)
         self.assertEqual(record.label, label)
 
     def test_can_load_default_column_names(self):
