@@ -80,11 +80,8 @@ class Examples:
         labels.save(project)
 
     def save_data(self, project: Project) -> List[Example]:
-        dataset = [example.create_data(project) for example in self.buffer]
-        Example.objects.bulk_create(dataset)
-        uuids = [data.uuid for data in dataset]
-        dataset = Example.objects.in_bulk(uuids, field_name='uuid')
-        return [dataset[uid] for uid in uuids]
+        examples = [example.create_data(project) for example in self.buffer]
+        return Example.objects.bulk_create(examples)
 
     def save_annotation(self, project, user, examples):
         mapping = {(label.text, label.task_type): label for label in project.labels.all()}

@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
-from .managers import (AnnotationManager, RoleMappingManager,
+from .managers import (AnnotationManager, ExampleManager, RoleMappingManager,
                        Seq2seqAnnotationManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
@@ -167,6 +167,8 @@ class Label(models.Model):
 
 
 class Example(models.Model):
+    objects = ExampleManager()
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True, unique=True)
     meta = models.JSONField(default=dict)
     filename = models.FileField(default='.', max_length=1024)

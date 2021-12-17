@@ -47,3 +47,12 @@ class RoleMappingManager(Manager):
             if mapping.id == mapping_id and rolename != settings.ROLE_PROJECT_ADMIN:
                 return False
             return True
+
+
+class ExampleManager(Manager):
+
+    def bulk_create(self, objs, batch_size=None, ignore_conflicts=False):
+        super().bulk_create(objs, batch_size=batch_size, ignore_conflicts=ignore_conflicts)
+        uuids = [data.uuid for data in objs]
+        examples = self.in_bulk(uuids, field_name='uuid')
+        return [examples[uid] for uid in uuids]
