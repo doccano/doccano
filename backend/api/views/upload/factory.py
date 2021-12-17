@@ -1,6 +1,6 @@
 from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
-from . import catalog, cleaners, data, dataset, label, parsers
+from . import builders, catalog, cleaners, data, dataset, label, parsers
 
 
 def get_data_class(project_type: str):
@@ -70,3 +70,21 @@ def create_cleaner(project):
         ValueError(f'Invalid project type: {project.project_type}')
     cleaner_class = mapping.get(project.project_type, cleaners.Cleaner)
     return cleaner_class(project)
+
+
+def create_bulder(project, **kwargs):
+    data_column = builders.DataColumn(
+        name=kwargs.get('column_data', 'text'),
+        value_class=get_data_class(project.project_type)
+    )
+    # Todo: If project is EntityClassification,
+    # column names are fixed: entities, cats
+    label_column = builders.DataColumn(
+        name=kwargs.get('column_label', 'label'),
+        value_class=get_data_class(project.project_type)
+    )
+    builder = builders.ColumnBuilder(
+        data_column=data_column,
+        label_columns=[label_column]
+    )
+    return builder
