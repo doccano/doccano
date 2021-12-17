@@ -1,11 +1,14 @@
-from typing import Any, Dict, Type
+import abc
+from typing import Any, Dict, List, Optional, Type, TypeVar
 
 from pydantic import ValidationError
 
 from .data import BaseData
 from .exception import FileParseException
 from .label import Label
-from .readers import DEFAULT_LABEL_COLUMN, DEFAULT_TEXT_COLUMN, Builder, Record
+from .readers import Builder, Record
+
+T = TypeVar('T')
 
 
 class PlainBuilder(Builder):
@@ -18,33 +21,63 @@ class PlainBuilder(Builder):
         yield Record(data=data)
 
 
+def build_label(row: Dict[Any, Any], name: str, label_class: Type[Label]) -> List[Label]:
+    labels = row[name]
+    labels = [labels] if isinstance(labels, str) else labels
+    return [label_class.parse(label) for label in labels]
+
+
+def build_data(row: Dict[Any, Any], name: str, data_class: Type[BaseData], filename: str) -> BaseData:
+    data = row[name]
+    return data_class.parse(text=data, filename=filename)
+
+
+class Column(abc.ABC):
+
+    def __init__(self, name: str, value_class: Type[T]):
+        self.name = name
+        self.value_class = value_class
+
+    @abc.abstractmethod
+    def __call__(self, row: Dict[Any, Any], filename: str):
+        raise NotImplementedError('')
+
+
+class DataColumn(Column):
+
+    def __call__(self, row: Dict[Any, Any], filename: str) -> BaseData:
+        return build_data(row, self.name, self.value_class, filename)
+
+
+class LabelColumn(Column):
+
+    def __call__(self, row: Dict[Any, Any], filename: str) -> List[Label]:
+        try:
+            return build_label(row, self.name, self.value_class)
+        except (KeyError, ValidationError, TypeError):
+            return []
+
+
 class ColumnBuilder(Builder):
 
-    def __init__(self,
-                 data_class: Type[BaseData],
-                 label_class: Type[Label],
-                 text_column: str = DEFAULT_TEXT_COLUMN,
-                 label_column: str = DEFAULT_LABEL_COLUMN):
-        self.data_class = data_class
-        self.label_class = label_class
-        self.text_column = text_column
-        self.label_column = label_column
+    def __init__(self, data_column: Column, label_columns: Optional[List[Column]] = None):
+        self.data_column = data_column
+        self.label_columns = label_columns or []
 
     def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:
-        if self.text_column not in row:
-            message = f'{self.text_column} does not exist.'
+        try:
+            data = self.data_column(row, filename)
+            row.pop(self.data_column.name)
+        except KeyError:
+            message = f'{self.data_column.name} field does not exist.'
             raise FileParseException(filename, line_num, message)
-        text = row.pop(self.text_column)
-        label = row.pop(self.label_column, [])
-        label = [label] if isinstance(label, str) else label
-        try:
-            label = [self.label_class.parse(o) for o in label]
-        except (ValidationError, TypeError):
-            label = []
-
-        try:
-            data = self.data_class.parse(text=text, filename=filename, meta=row)
-            return Record(data=data, label=label, line_num=line_num)
         except ValidationError:
             message = 'The empty text is not allowed.'
             raise FileParseException(filename, line_num, message)
+
+        labels = []
+        for column in self.label_columns:
+            labels.extend(column(row, filename))
+            row.pop(column.name)
+
+        return Record(data=data, label=labels, line_num=line_num, meta=row)

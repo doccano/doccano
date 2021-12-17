@@ -2,7 +2,7 @@ import csv
 import io
 import json
 import os
-from typing import Dict, Iterator, List, Optional, Type
+from typing import Any, Dict, Iterator, List, Optional, Type
 
 import chardet
 import pyexcel
@@ -22,11 +22,15 @@ class Record:
     def __init__(self,
                  data: Type[BaseData],
                  label: List[Label] = None,
+                 meta: Dict[Any, Any] = None,
                  line_num: int = -1):
         if label is None:
             label = []
+        if meta is None:
+            meta = {}
         self._data = data
         self._label = label
+        self._meta = meta
         self._line_num = line_num
 
     def __str__(self):
@@ -48,7 +52,7 @@ class Record:
         return self._data
 
     def create_data(self, project):
-        return self._data.create(project)
+        return self._data.create(project, self._meta)
 
     def create_label(self, project):
         return [label.create(project) for label in self._label]
@@ -139,12 +143,12 @@ class Dataset:
             label = []
 
         try:
-            data = self.data_class.parse(text=text, filename=filename, meta=row)
+            data = self.data_class.parse(text=text, filename=filename)
         except ValidationError:
             message = 'The empty text is not allowed.'
             raise FileParseException(filename, line_num, message)
 
-        record = Record(data=data, label=label, line_num=line_num)
+        record = Record(data=data, label=label, line_num=line_num, meta=row)
         return record
 
 

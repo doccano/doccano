@@ -11,11 +11,18 @@ DEFAULT_LABEL_COLUMN = 'labels'
 
 class Record:
 
-    def __init__(self, data: Type[BaseData], label: List[Label] = None, line_num: int = -1):
+    def __init__(self,
+                 data: Type[BaseData],
+                 label: List[Label] = None,
+                 meta: Dict[Any, Any] = None,
+                 line_num: int = -1):
         if label is None:
             label = []
+        if meta is None:
+            meta = {}
         self._data = data
         self._label = label
+        self._meta = meta
         self._line_num = line_num
 
     def __str__(self):
