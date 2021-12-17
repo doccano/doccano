@@ -1,6 +1,6 @@
 from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
-from . import catalog, cleaners, data, dataset, label
+from . import catalog, cleaners, data, dataset, label, parsers
 
 
 def get_data_class(project_type: str):
@@ -27,6 +27,24 @@ def get_dataset_class(format: str):
     if format not in mapping:
         ValueError(f'Invalid format: {format}')
     return mapping[format]
+
+
+def get_parser(file_format: str):
+    mapping = {
+        catalog.TextFile.name: parsers.TextFileParser,
+        catalog.TextLine.name: parsers.LineParser,
+        catalog.CSV.name: parsers.CSVParser,
+        catalog.JSONL.name: parsers.JSONLParser,
+        catalog.JSON.name: parsers.JSONParser,
+        catalog.FastText.name: parsers.FastTextParser,
+        catalog.Excel.name: parsers.ExcelParser,
+        catalog.CoNLL.name: parsers.CoNLLParser,
+        catalog.ImageFile.name: parsers.PlainParser,
+        catalog.AudioFile.name: parsers.PlainParser,
+    }
+    if file_format not in mapping:
+        raise ValueError(f'Invalid format: {file_format}')
+    return mapping[file_format]
 
 
 def get_label_class(project_type: str):
