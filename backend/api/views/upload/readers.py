@@ -57,12 +57,7 @@ class Record:
 
     @property
     def label(self):
-        return [
-            {
-                'text': label.name
-            } for label in self._label
-            if label.has_name() and label.name
-        ]
+        return [label.dict() for label in self._label if label.has_name() and label.name]
 
 
 class BaseReader(collections.abc.Iterable):
