@@ -7,7 +7,8 @@ from django.shortcuts import get_object_or_404
 from .models import Project
 from .views.download.factory import create_repository, create_writer
 from .views.download.service import ExportApplicationService
-from .views.upload.factories import create_bulder, create_cleaner, create_parser
+from .views.upload.factories import (create_bulder, create_cleaner,
+                                     create_parser)
 from .views.upload.readers import Reader
 from .views.upload.writers import BulkWriter
 

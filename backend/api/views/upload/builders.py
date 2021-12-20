@@ -1,4 +1,5 @@
 import abc
+from logging import getLogger
 from typing import Any, Dict, List, Optional, Type, TypeVar
 
 from pydantic import ValidationError
@@ -8,6 +9,7 @@ from .exception import FileParseException
 from .label import Label
 from .readers import Builder, Record
 
+logger = getLogger(__name__)
 T = TypeVar('T')
 
 
@@ -23,7 +25,7 @@ class PlainBuilder(Builder):
 
 def build_label(row: Dict[Any, Any], name: str, label_class: Type[Label]) -> List[Label]:
     labels = row[name]
-    labels = [labels] if isinstance(labels, str) else labels
+    labels = [labels] if isinstance(labels, (str, int)) else labels
     return [label_class.parse(label) for label in labels]
 
 
@@ -40,7 +42,7 @@ class Column(abc.ABC):
 
     @abc.abstractmethod
     def __call__(self, row: Dict[Any, Any], filename: str):
-        raise NotImplementedError('')
+        raise NotImplementedError('Please implement this method in the subclass.')
 
 
 class DataColumn(Column):
@@ -77,7 +79,7 @@ class ColumnBuilder(Builder):
             try:
                 labels.extend(column(row, filename))
                 row.pop(column.name)
-            except (KeyError, ValidationError, TypeError):
-                pass
+            except (KeyError, ValidationError, TypeError) as e:
+                logger.error('Filename: %s, Line: %s, Parsed Data: %s, Error: %s' % (filename, line_num, row, str(e)))
 
         return Record(data=data, label=labels, line_num=line_num, meta=row)

@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 from pydantic import BaseModel, validator
 
@@ -57,7 +57,10 @@ class CategoryLabel(Label):
     def parse(cls, obj: Any):
         if isinstance(obj, str):
             return cls(label=obj)
-        raise TypeError(f'{obj} is not str.')
+        elif isinstance(obj, int):
+            return cls(label=str(obj))
+        else:
+            raise TypeError(f'{obj} is not str.')
 
     def create(self, project: Project) -> Optional[LabelModel]:
         return LabelModel(text=self.label, project=project, task_type='Category')
@@ -71,7 +74,7 @@ class CategoryLabel(Label):
 
 
 class OffsetLabel(Label):
-    label: str
+    label: Union[str, int]
     start_offset: int
     end_offset: int
 
