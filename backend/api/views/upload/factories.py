@@ -56,13 +56,13 @@ def create_cleaner(project):
 
 def create_bulder(project, **kwargs):
     data_column = builders.DataColumn(
-        name=kwargs.get('column_data', readers.DEFAULT_TEXT_COLUMN),
+        name=kwargs.get('column_data') or readers.DEFAULT_TEXT_COLUMN,
         value_class=get_data_class(project.project_type)
     )
     # Todo: If project is EntityClassification,
     # column names are fixed: entities, cats
     label_column = builders.LabelColumn(
-        name=kwargs.get('column_label', readers.DEFAULT_LABEL_COLUMN),
+        name=kwargs.get('column_label') or readers.DEFAULT_LABEL_COLUMN,
         value_class=get_label_class(project.project_type)
     )
     builder = builders.ColumnBuilder(
