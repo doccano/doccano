@@ -12,6 +12,7 @@ DEFAULT_LABEL_COLUMN = 'label'
 
 
 class Record:
+    """Record represents a data."""
 
     def __init__(self,
                  data: Type[BaseData],
@@ -65,6 +66,7 @@ class Record:
 
 
 class BaseReader(collections.abc.Iterable):
+    """Reader has a role to parse files and return a Record iterator."""
 
     @abc.abstractmethod
     def __iter__(self) -> Iterator[Record]:
@@ -82,6 +84,7 @@ class BaseReader(collections.abc.Iterable):
 
 
 class Parser(abc.ABC):
+    """The abstract file parser."""
 
     @abc.abstractmethod
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
@@ -95,6 +98,7 @@ class Parser(abc.ABC):
 
 
 class Builder(abc.ABC):
+    """The abstract Record builder."""
 
     @abc.abstractmethod
     def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:

@@ -16,15 +16,15 @@ from .readers import DEFAULT_LABEL_COLUMN, DEFAULT_TEXT_COLUMN, Parser
 DEFAULT_ENCODING = 'Auto'
 
 
-def detect_encoding(filename: str, buffer_size=io.DEFAULT_BUFFER_SIZE):
+def detect_encoding(filename: str, buffer_size: int = io.DEFAULT_BUFFER_SIZE) -> str:
     """Detects character encoding automatically.
 
     If you want to know the supported encodings, please see the following document:
     https://chardet.readthedocs.io/en/latest/supported-encodings.html
 
     Args:
-        filename (str): the filename for detecting the encoding.
-        buffer_size (int): the buffer size to read file contents incrementally.
+        filename: the filename for detecting the encoding.
+        buffer_size: the buffer size to read file contents incrementally.
 
     Returns:
         The character encoding.
@@ -52,7 +52,19 @@ def detect_encoding(filename: str, buffer_size=io.DEFAULT_BUFFER_SIZE):
             return 'utf-8'
 
 
-def decide_encoding(filename: str, encoding: str):
+def decide_encoding(filename: str, encoding: str) -> str:
+    """Decide character encoding automatically.
+
+    If the encoding is DEFAULT_ENCODING, detects it automatically.
+    Otherwise, return it as is.
+
+    Args:
+         filename: The filename for decide the encoding.
+         encoding: The specified encoding.
+
+    Returns:
+        The character encoding.
+    """
     if encoding == DEFAULT_ENCODING:
         return detect_encoding(filename)
     else:
@@ -60,6 +72,12 @@ def decide_encoding(filename: str, encoding: str):
 
 
 class LineReader:
+    """LineReader is a helper class to read a file line by line.
+
+    Attributes:
+        filename: The filename to read.
+        encoding: The character encoding.
+    """
 
     def __init__(self, filename: str, encoding: str = DEFAULT_ENCODING):
         self.filename = filename
@@ -73,12 +91,21 @@ class LineReader:
 
 
 class PlainParser(Parser):
+    """PlainParser is a parser simply returns a dictionary.
+
+    This is for a task without any text.
+    """
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         yield {}
 
 
 class LineParser(Parser):
+    """LineParser is a parser to read a file line by line.
+
+    Attributes:
+        encoding: The character encoding.
+    """
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
@@ -90,6 +117,11 @@ class LineParser(Parser):
 
 
 class TextFileParser(Parser):
+    """TextFileParser is a parser to read an entire file content.
+
+    Attributes:
+        encoding: The character encoding.
+    """
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
@@ -101,6 +133,12 @@ class TextFileParser(Parser):
 
 
 class CSVParser(Parser):
+    """CSVParser is a parser to read a csv file and return its rows.
+
+    Attributes:
+        encoding: The character encoding.
+        delimiter: A one-character string used to separate fields. It defaults to ','.
+    """
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ',', **kwargs):
         self.encoding = encoding
@@ -115,6 +153,11 @@ class CSVParser(Parser):
 
 
 class JSONParser(Parser):
+    """JSONParser is a parser to read a json file and return its rows.
+
+    Attributes:
+        encoding: The character encoding.
+    """
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
@@ -137,6 +180,11 @@ class JSONParser(Parser):
 
 
 class JSONLParser(Parser):
+    """JSONLParser is a parser to read a JSONL file and return its rows.
+
+    Attributes:
+        encoding: The character encoding.
+    """
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
@@ -157,6 +205,7 @@ class JSONLParser(Parser):
 
 
 class ExcelParser(Parser):
+    """ExcelParser is a parser to read a excel file."""
 
     def __init__(self, **kwargs):
         self._errors = []
@@ -176,6 +225,17 @@ class ExcelParser(Parser):
 
 
 class FastTextParser(Parser):
+    """FastTextParser is a parser to read a fastText format and returns a text and labels.
+
+    The example format is as follows:
+        __label__positive I really enjoyed this restaurant.
+    This format expects the category first, with the prefix ‘__label__’ before each category,
+    and then the input text, like so,
+
+    Attributes:
+        encoding: The character encoding.
+        label: The label prefix. It defaults to `__label__`.
+    """
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, label: str = '__label__', **kwargs):
         self.encoding = encoding
@@ -197,6 +257,29 @@ class FastTextParser(Parser):
 
 
 class CoNLLParser(Parser):
+    """CoNLLParser is a parser to read conll like format and returns a text and labels.
+
+    The example format is as follows:
+        EU  B-ORG
+        rejects O
+        German  B-MISC
+        call  O
+        to  O
+        boycott O
+        British B-MISC
+        lamb  O
+        . O
+
+        Peter B-PER
+        Blackburn I-PER
+    This format expects a token in the first column, and a tag in the second column.
+    The each data is separated by a new line.
+
+    Attributes:
+        encoding: The character encoding.
+        delimiter: A one-character string used to separate fields. It defaults to ' '.
+        scheme: The tagging scheme. It supports `IOB2`, `IOE2`, `IOBES`, and `BILOU`.
+    """
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ' ', scheme: str = 'IOB2', **kwargs):
         self.encoding = encoding
