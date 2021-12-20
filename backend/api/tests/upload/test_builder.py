@@ -4,7 +4,7 @@ from typing import List
 from ...views.upload import builders
 from ...views.upload.data import TextData
 from ...views.upload.exception import FileParseException
-from ...views.upload.label import CategoryLabel, OffsetLabel
+from ...views.upload.label import CategoryLabel, SpanLabel
 
 
 class TestColumnBuilder(unittest.TestCase):
@@ -71,7 +71,7 @@ class TestColumnBuilder(unittest.TestCase):
         data_column = builders.DataColumn('text', TextData)
         label_columns = [
             builders.LabelColumn('cats', CategoryLabel),
-            builders.LabelColumn('entities', OffsetLabel)
+            builders.LabelColumn('entities', SpanLabel)
         ]
         actual = self.create_record(row, data_column, label_columns)
         expected = {

@@ -73,7 +73,7 @@ class CategoryLabel(Label):
         )
 
 
-class OffsetLabel(Label):
+class SpanLabel(Label):
     label: Union[str, int]
     start_offset: int
     end_offset: int

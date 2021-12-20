@@ -32,7 +32,7 @@ def create_parser(file_format: str, **kwargs):
 def get_label_class(project_type: str):
     mapping = {
         DOCUMENT_CLASSIFICATION: label.CategoryLabel,
-        SEQUENCE_LABELING: label.OffsetLabel,
+        SEQUENCE_LABELING: label.SpanLabel,
         SEQ2SEQ: label.TextLabel,
         IMAGE_CLASSIFICATION: label.CategoryLabel,
         SPEECH2TEXT: label.TextLabel,
