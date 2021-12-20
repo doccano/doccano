@@ -1,7 +1,7 @@
 import abc
 import itertools
 from collections import defaultdict
-from typing import List
+from typing import Any, Dict, List
 
 from django.conf import settings
 
@@ -15,6 +15,10 @@ class Writer(abc.ABC):
     @abc.abstractmethod
     def save(self, reader: BaseReader, project: Project, user, cleaner):
         """Save the read contents to DB."""
+        raise NotImplementedError('Please implement this method in the subclass.')
+
+    def errors(self) -> List[Dict[Any, Any]]:
+        """Return errors."""
         raise NotImplementedError('Please implement this method in the subclass.')
 
 
@@ -97,9 +101,9 @@ class BulkWriter(Writer):
         self._errors.extend(reader.errors)
 
     @property
-    def errors(self) -> List[FileParseException]:
+    def errors(self) -> List[Dict[Any, Any]]:
         self._errors.sort(key=lambda e: e.line_num)
-        return self._errors
+        return [error.dict() for error in self._errors]
 
     def create(self, project: Project, user):
         self.examples.save_label(project)
