@@ -67,7 +67,6 @@ class LabelSerializer(serializers.ModelSerializer):
             'suffix_key',
             'background_color',
             'text_color',
-            'task_type',
         )
 
 

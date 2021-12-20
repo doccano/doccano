@@ -58,14 +58,10 @@ class TestSpeech2textProject(TestCase):
 
 class TestLabel(TestCase):
 
-    def test_allow_creating_same_text_different_type(self):
-        label = mommy.make('Label', task_type='Category')
-        mommy.make('Label', project=label.project, text=label.text, task_type='Span')
-
-    def test_deny_creating_same_text_same_type(self):
-        label = mommy.make('Label', task_type='Category')
+    def test_deny_creating_same_text(self):
+        label = mommy.make('Label')
         with self.assertRaises(IntegrityError):
-            mommy.make('Label', project=label.project, text=label.text, task_type='Category')
+            mommy.make('Label', project=label.project, text=label.text)
 
     def test_keys_uniqueness(self):
         label = mommy.make('Label', prefix_key='ctrl', suffix_key='a')

@@ -64,7 +64,7 @@ class Examples:
         return Example.objects.bulk_create(examples)
 
     def save_annotation(self, project: Project, user, examples):
-        mapping = {(label.text, label.task_type): label for label in project.labels.all()}
+        mapping = {label.text: label for label in project.labels.all()}
         annotations = list(itertools.chain.from_iterable([
             data.create_annotation(user, example, mapping) for data, example in zip(self.buffer, examples)
         ]))

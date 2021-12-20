@@ -126,15 +126,6 @@ class Label(models.Model):
     )
     background_color = models.CharField(max_length=7, default=generate_random_hex_color)
     text_color = models.CharField(max_length=7, default='#ffffff')
-    task_type = models.CharField(
-        max_length=30,
-        choices=(
-            ('Category', 'Category'),
-            ('Span', 'Span'),
-            ('Relation', 'Relation')
-        ),
-        default='Category'
-    )
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -159,11 +150,19 @@ class Label(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['project', 'text', 'task_type'],
+                fields=['project', 'text'],
                 name='unique_label'
             )
         ]
         ordering = ['created_at']
+
+
+class DocType(Label):
+    pass
+
+
+class SpanType(Label):
+    pass
 
 
 class Example(models.Model):

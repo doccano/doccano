@@ -28,7 +28,6 @@ def camel_to_snake_dict(d):
 
 class LabelList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['task_type']
     serializer_class = LabelSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]

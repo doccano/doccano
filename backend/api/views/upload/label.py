@@ -1,11 +1,11 @@
 import abc
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from pydantic import BaseModel, validator
 
-from ...models import Category
+from ...models import Category, DocType
 from ...models import Label as LabelModel
-from ...models import Project, Span
+from ...models import Project, Span, SpanType
 from ...models import TextLabel as TL
 
 
@@ -63,13 +63,13 @@ class CategoryLabel(Label):
             raise TypeError(f'{obj} is not str.')
 
     def create(self, project: Project) -> Optional[LabelModel]:
-        return LabelModel(text=self.label, project=project, task_type='Category')
+        return DocType(text=self.label, project=project)
 
-    def create_annotation(self, user, example, mapping):
+    def create_annotation(self, user, example, mapping: Dict[str, LabelModel]):
         return Category(
             user=user,
             example=example,
-            label=mapping[(self.label, 'Category')]
+            label=mapping[self.label]
         )
 
 
@@ -97,15 +97,15 @@ class SpanLabel(Label):
             raise TypeError(f'{obj} is invalid type.')
 
     def create(self, project: Project) -> Optional[LabelModel]:
-        return LabelModel(text=self.label, project=project, task_type='Span')
+        return SpanType(text=self.label, project=project)
 
-    def create_annotation(self, user, example, mapping):
+    def create_annotation(self, user, example, mapping: Dict[str, LabelModel]):
         return Span(
             user=user,
             example=example,
             start_offset=self.start_offset,
             end_offset=self.end_offset,
-            label=mapping[(self.label, 'Span')]
+            label=mapping[self.label]
         )
 
 
