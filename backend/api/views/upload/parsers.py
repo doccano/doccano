@@ -6,6 +6,7 @@ from typing import Any, Dict, Iterator, List, Tuple
 
 import chardet
 import pyexcel
+import pyexcel.exceptions
 from chardet import UniversalDetector
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
