@@ -80,6 +80,6 @@ class ColumnBuilder(Builder):
                 labels.extend(column(row, filename))
                 row.pop(column.name)
             except (KeyError, ValidationError, TypeError) as e:
-                logger.error('Filename: %s, Line: %s, Parsed Data: %s, Error: %s' % (filename, line_num, row, str(e)))
+                logger.error('Filename: %s, Line: %s, Data: %s, Error: %s' % (filename, line_num, row, str(e)))
 
         return Record(data=data, label=labels, line_num=line_num, meta=row)

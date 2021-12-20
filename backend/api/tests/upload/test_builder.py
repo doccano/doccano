@@ -4,7 +4,7 @@ from typing import List
 from ...views.upload import builders
 from ...views.upload.data import TextData
 from ...views.upload.exception import FileParseException
-from ...views.upload.label import CategoryLabel
+from ...views.upload.label import CategoryLabel, OffsetLabel
 
 
 class TestColumnBuilder(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestColumnBuilder(unittest.TestCase):
         data_column = builders.DataColumn('text', TextData)
         label_columns = [builders.LabelColumn('label', CategoryLabel)]
         actual = self.create_record(row, data_column, label_columns)
-        expected = {'data': 'Text', 'label': [{'text': 'Label'}]}
+        expected = {'data': 'Text', 'label': [{'label': 'Label'}]}
         self.assert_record(actual, expected)
 
     def test_can_specify_any_column_names(self):
@@ -33,7 +33,7 @@ class TestColumnBuilder(unittest.TestCase):
         data_column = builders.DataColumn('body', TextData)
         label_columns = [builders.LabelColumn('star', CategoryLabel)]
         actual = self.create_record(row, data_column, label_columns)
-        expected = {'data': 'Text', 'label': [{'text': '5'}]}
+        expected = {'data': 'Text', 'label': [{'label': '5'}]}
         self.assert_record(actual, expected)
 
     def test_can_load_only_text_column(self):
@@ -63,5 +63,22 @@ class TestColumnBuilder(unittest.TestCase):
         data_column = builders.DataColumn('text', TextData)
         label_columns = [builders.LabelColumn('label', CategoryLabel)]
         actual = self.create_record(row, data_column, label_columns)
-        expected = {'data': '5', 'label': [{'text': 'Label'}]}
+        expected = {'data': '5', 'label': [{'label': 'Label'}]}
+        self.assert_record(actual, expected)
+
+    def test_can_build_multiple_labels(self):
+        row = {'text': 'Text', 'cats': ['Label'], 'entities': [(0, 1, 'LOC')]}
+        data_column = builders.DataColumn('text', TextData)
+        label_columns = [
+            builders.LabelColumn('cats', CategoryLabel),
+            builders.LabelColumn('entities', OffsetLabel)
+        ]
+        actual = self.create_record(row, data_column, label_columns)
+        expected = {
+            'data': 'Text',
+            'label': [
+                {'label': 'Label'},
+                {'label': 'LOC', 'start_offset': 0, 'end_offset': 1}
+            ]
+        }
         self.assert_record(actual, expected)
