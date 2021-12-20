@@ -79,7 +79,7 @@ class PlainParser(Parser):
 
 class LineParser(Parser):
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
@@ -90,7 +90,7 @@ class LineParser(Parser):
 
 class TextFileParser(Parser):
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
@@ -101,7 +101,7 @@ class TextFileParser(Parser):
 
 class CSVParser(Parser):
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ','):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ',', **kwargs):
         self.encoding = encoding
         self.delimiter = delimiter
 
@@ -115,39 +115,68 @@ class CSVParser(Parser):
 
 class JSONParser(Parser):
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
+        self._errors = []
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         encoding = decide_encoding(filename, self.encoding)
         with open(filename, encoding=encoding) as f:
-            rows = json.load(f)
-        for line_num, row in enumerate(rows, start=1):
-            yield row
+            try:
+                rows = json.load(f)
+                for line_num, row in enumerate(rows, start=1):
+                    yield row
+            except json.decoder.JSONDecodeError as e:
+                error = FileParseException(filename, line_num=1, message=str(e))
+                self._errors.append(error)
+
+    @property
+    def errors(self) -> List[FileParseException]:
+        return self._errors
 
 
 class JSONLParser(Parser):
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
+        self._errors = []
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         reader = LineReader(filename, self.encoding)
-        for line in reader:
-            yield json.loads(line)
+        for line_num, line in enumerate(reader, start=1):
+            try:
+                yield json.loads(line)
+            except json.decoder.JSONDecodeError as e:
+                error = FileParseException(filename, line_num, str(e))
+                self._errors.append(error)
+
+    @property
+    def errors(self) -> List[FileParseException]:
+        return self._errors
 
 
 class ExcelParser(Parser):
 
+    def __init__(self, **kwargs):
+        self._errors = []
+
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         rows = pyexcel.iget_records(file_name=filename)
-        for row in rows:
-            yield row
+        try:
+            for line_num, row in enumerate(rows, start=1):
+                yield row
+        except pyexcel.exceptions.FileTypeNotSupported as e:
+            error = FileParseException(filename, line_num=1, message=str(e))
+            self._errors.append(error)
+
+    @property
+    def errors(self) -> List[FileParseException]:
+        return self._errors
 
 
 class FastTextParser(Parser):
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING, label: str = '__label__'):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, label: str = '__label__', **kwargs):
         self.encoding = encoding
         self.label = label
 
@@ -168,7 +197,7 @@ class FastTextParser(Parser):
 
 class CoNLLParser(Parser):
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ' ', scheme: str = 'IOB2'):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ' ', scheme: str = 'IOB2', **kwargs):
         self.encoding = encoding
         self.delimiter = delimiter
         mapping = {
@@ -177,12 +206,23 @@ class CoNLLParser(Parser):
             'IOBES': IOBES,
             'BILOU': BILOU
         }
+        self._errors = []
         if scheme in mapping:
             self.scheme = mapping[scheme]
         else:
-            raise Exception('The scheme is not supported.')
+            self.scheme = None
+
+    @property
+    def errors(self) -> List[FileParseException]:
+        return self._errors
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
+        if not self.scheme:
+            message = 'The specified scheme is not supported.'
+            error = FileParseException(filename, line_num=1, message=message)
+            self._errors.append(error)
+            return
+
         reader = LineReader(filename, self.encoding)
         words, tags = [], []
         for line_num, line in enumerate(reader, start=1):
@@ -191,7 +231,8 @@ class CoNLLParser(Parser):
                 tokens = line.split('\t')
                 if len(tokens) != 2:
                     message = 'A line must be separated by tab and has two columns.'
-                    raise FileParseException(filename, line_num, message)
+                    self._errors.append(FileParseException(filename, line_num, message))
+                    return
                 word, tag = tokens
                 words.append(word)
                 tags.append(tag)

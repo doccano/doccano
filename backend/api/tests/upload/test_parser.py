@@ -105,7 +105,7 @@ class TestFastTextParser(TestParser):
     def test_read(self):
         content = '__label__sauce __label__cheese Text'
         parser = parsers.FastTextParser()
-        expected = [{'text': 'Text', 'labels': ['sauce', 'cheese']}]
+        expected = [{'text': 'Text', 'label': ['sauce', 'cheese']}]
         self.assert_record(content, parser, expected)
 
 
@@ -130,11 +130,11 @@ Blackburn\tI-PER
         expected = [
             {
                 'text': 'EU rejects German call to boycott British lamb .',
-                'labels': [(0, 2, 'ORG'), (11, 17, 'MISC'), (34, 41, 'MISC')]
+                'label': [(0, 2, 'ORG'), (11, 17, 'MISC'), (34, 41, 'MISC')]
             },
             {
                 'text': 'Peter Blackburn',
-                'labels': [(0, 15, 'PER')]
+                'label': [(0, 15, 'PER')]
             }
         ]
         self.assert_record(content, parser, expected)

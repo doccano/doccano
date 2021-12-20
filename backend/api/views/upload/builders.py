@@ -52,10 +52,7 @@ class DataColumn(Column):
 class LabelColumn(Column):
 
     def __call__(self, row: Dict[Any, Any], filename: str) -> List[Label]:
-        try:
-            return build_label(row, self.name, self.value_class)
-        except (KeyError, ValidationError, TypeError):
-            return []
+        return build_label(row, self.name, self.value_class)
 
 
 class ColumnBuilder(Builder):
@@ -77,7 +74,10 @@ class ColumnBuilder(Builder):
 
         labels = []
         for column in self.label_columns:
-            labels.extend(column(row, filename))
-            row.pop(column.name)
+            try:
+                labels.extend(column(row, filename))
+                row.pop(column.name)
+            except (KeyError, ValidationError, TypeError):
+                pass
 
         return Record(data=data, label=labels, line_num=line_num, meta=row)

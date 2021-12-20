@@ -8,7 +8,7 @@ from ...views.upload.label import CategoryLabel
 class TestColumnBuilder(unittest.TestCase):
 
     def assert_record(self, actual, expected):
-        self.assertEqual(actual.data['text'], expected['data'])
+        self.assertEqual(actual.data.text, expected['data'])
         self.assertEqual(actual.label, expected['label'])
 
     def test_can_load_default_column_names(self):

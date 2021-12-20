@@ -1,34 +1,24 @@
 import abc
 import itertools
+from collections import defaultdict
 from typing import List
 
 from django.conf import settings
 
 from ...models import Example, Label, Project
-from .exception import FileParseException, FileParseExceptions
+from .exception import FileParseException
 from .readers import BaseReader
 
 
 class Writer(abc.ABC):
 
     @abc.abstractmethod
-    def save(self, reader: BaseReader):
+    def save(self, reader: BaseReader, project: Project, user, cleaner):
         """Save the read contents to DB."""
         raise NotImplementedError('Please implement this method in the subclass.')
 
 
-class BulkWriterOld(Writer):
-
-    def __init__(self, batch_size: int):
-        self.batch_size = batch_size
-
-    def save(self, reader: BaseReader):
-        """Bulk save the read contents."""
-        pass
-
-
 def group_by_class(instances):
-    from collections import defaultdict
     groups = defaultdict(list)
     for instance in instances:
         groups[instance.__class__].append(instance)
@@ -79,28 +69,23 @@ class Examples:
             klass.objects.bulk_create(instances)
 
 
-class BulkWriter:
+class BulkWriter(Writer):
 
     def __init__(self, batch_size):
         self.examples = Examples(batch_size)
-        self.errors = []
+        self._errors = []
 
-    def save(self, dataset, project, user, cleaner):
+    def save(self, reader: BaseReader, project, user, cleaner):
+        it = iter(reader)
         while True:
             try:
-                example = next(dataset)
+                example = next(it)
             except StopIteration:
                 break
-            except FileParseException as err:
-                self.errors.append(err.dict())
-                continue
-            except FileParseExceptions as err:
-                self.errors.append(list(err))
-                continue
             try:
                 example.clean(cleaner)
             except FileParseException as err:
-                self.errors.append(err.dict())
+                self._errors.append(err)
 
             self.examples.add(example)
             if self.examples.is_full():
@@ -109,6 +94,12 @@ class BulkWriter:
         if not self.examples.is_empty():
             self.create(project, user)
             self.examples.clear()
+        self._errors.extend(reader.errors)
+
+    @property
+    def errors(self) -> List[FileParseException]:
+        self._errors.sort(key=lambda e: e.line_num)
+        return self._errors
 
     def create(self, project, user):
         self.examples.save_label(project)

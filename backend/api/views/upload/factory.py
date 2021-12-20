@@ -1,6 +1,6 @@
 from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
-from . import builders, catalog, cleaners, data, dataset, label, parsers
+from . import builders, catalog, cleaners, data, label, parsers, readers
 
 
 def get_data_class(project_type: str):
@@ -11,25 +11,7 @@ def get_data_class(project_type: str):
         return data.FileData
 
 
-def get_dataset_class(format: str):
-    mapping = {
-        catalog.TextFile.name: dataset.TextFileDataset,
-        catalog.TextLine.name: dataset.TextLineDataset,
-        catalog.CSV.name: dataset.CsvDataset,
-        catalog.JSONL.name: dataset.JSONLDataset,
-        catalog.JSON.name: dataset.JSONDataset,
-        catalog.FastText.name: dataset.FastTextDataset,
-        catalog.Excel.name: dataset.ExcelDataset,
-        catalog.CoNLL.name: dataset.CoNLLDataset,
-        catalog.ImageFile.name: dataset.FileBaseDataset,
-        catalog.AudioFile.name: dataset.FileBaseDataset,
-    }
-    if format not in mapping:
-        ValueError(f'Invalid format: {format}')
-    return mapping[format]
-
-
-def get_parser(file_format: str):
+def create_parser(file_format: str, **kwargs):
     mapping = {
         catalog.TextFile.name: parsers.TextFileParser,
         catalog.TextLine.name: parsers.LineParser,
@@ -44,7 +26,7 @@ def get_parser(file_format: str):
     }
     if file_format not in mapping:
         raise ValueError(f'Invalid format: {file_format}')
-    return mapping[file_format]
+    return mapping[file_format](**kwargs)
 
 
 def get_label_class(project_type: str):
@@ -74,14 +56,14 @@ def create_cleaner(project):
 
 def create_bulder(project, **kwargs):
     data_column = builders.DataColumn(
-        name=kwargs.get('column_data', 'text'),
+        name=kwargs.get('column_data', readers.DEFAULT_TEXT_COLUMN),
         value_class=get_data_class(project.project_type)
     )
     # Todo: If project is EntityClassification,
     # column names are fixed: entities, cats
-    label_column = builders.DataColumn(
-        name=kwargs.get('column_label', 'label'),
-        value_class=get_data_class(project.project_type)
+    label_column = builders.LabelColumn(
+        name=kwargs.get('column_label', readers.DEFAULT_LABEL_COLUMN),
+        value_class=get_label_class(project.project_type)
     )
     builder = builders.ColumnBuilder(
         data_column=data_column,
