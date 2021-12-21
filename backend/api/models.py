@@ -269,10 +269,7 @@ class Category(Annotation):
         on_delete=models.CASCADE,
         related_name='categories'
     )
-    label = models.ForeignKey(
-        to=Label,
-        on_delete=models.CASCADE
-    )
+    label = models.ForeignKey(to=DocType, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (
@@ -288,10 +285,7 @@ class Span(Annotation):
         on_delete=models.CASCADE,
         related_name='spans'
     )
-    label = models.ForeignKey(
-        to=Label,
-        on_delete=models.CASCADE
-    )
+    label = models.ForeignKey(to=SpanType, on_delete=models.CASCADE)
     start_offset = models.IntegerField()
     end_offset = models.IntegerField()
 
