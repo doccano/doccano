@@ -56,6 +56,25 @@ class TestExampleListAPI(CRUDMixin):
         response = self.assert_fetch(self.project.users[1], status.HTTP_200_OK)
         self.assertFalse(response.data['results'][0]['is_confirmed'])
 
+    def test_states(self):
+        example_state1 = make_example_state(self.example, self.project.users[0])
+        example_state2 = make_example_state(self.example, self.project.users[1])
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        states = response.data['results'][0]['states']
+        expected = [
+            {
+                'confirmed_by_id': example_state1.confirmed_by.id,
+                'confirmed_by_username': example_state1.confirmed_by.username,
+                'confirmed_at': example_state1.confirmed_at,
+            },
+            {
+                'confirmed_by_id': example_state2.confirmed_by.id,
+                'confirmed_by_username': example_state2.confirmed_by.username,
+                'confirmed_at': example_state2.confirmed_at,
+            },
+        ]
+        self.assertEqual(states, expected)
+
 
 class TestExampleListCollaborative(CRUDMixin):
     def setUp(self):
