@@ -83,6 +83,7 @@ class ExampleSerializer(serializers.ModelSerializer):
     annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
     is_confirmed = serializers.SerializerMethodField()
+    states = serializers.SerializerMethodField()
 
     def get_annotations(self, instance):
         request = self.context.get('request')
@@ -94,6 +95,13 @@ class ExampleSerializer(serializers.ModelSerializer):
             annotations = annotations.filter(user=request.user)
         serializer = serializer(annotations, many=True)
         return serializer.data
+
+    def get_states(self, instance):
+        return [{
+            'confirmed_by_id': state.confirmed_by.id,
+            'confirmed_by_username': state.confirmed_by.username,
+            'confirmed_at': state.confirmed_at,
+        } for state in instance.states.all()]
 
     @classmethod
     def get_annotation_approver(cls, instance):
@@ -120,7 +128,8 @@ class ExampleSerializer(serializers.ModelSerializer):
             'annotation_approver',
             'comment_count',
             'text',
-            'is_confirmed'
+            'is_confirmed',
+            'states',
         ]
         read_only_fields = ['filename', 'is_confirmed']
 
