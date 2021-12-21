@@ -1,3 +1,5 @@
+from functools import partial
+
 from django.core.exceptions import ValidationError
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
@@ -5,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from ...models import Project
-from ...permissions import IsInProjectOrAdmin, IsOwnAnnotation
+from ...permissions import CanEditAnnotation, IsInProjectOrAdmin
 
 
 class BaseListAPI(generics.ListCreateAPIView):
@@ -53,5 +55,7 @@ class BaseDetailAPI(generics.RetrieveUpdateDestroyAPIView):
         if self.project.collaborative_annotation:
             self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
         else:
-            self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin & IsOwnAnnotation]
+            self.permission_classes = [
+                IsAuthenticated & IsInProjectOrAdmin & partial(CanEditAnnotation, self.queryset)
+            ]
         return super().get_permissions()
