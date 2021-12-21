@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 
 from django.conf import settings
 
-from ...models import Example, Label, Project
+from ...models import DocType, Example, Project, SpanType
 from .exception import FileParseException
 from .readers import BaseReader
 
@@ -57,14 +57,21 @@ class Examples:
     def save_label(self, project: Project):
         labels = list(itertools.chain.from_iterable([example.create_label(project) for example in self.buffer]))
         labels = list(filter(None, labels))
-        Label.objects.bulk_create(labels, ignore_conflicts=True)
+        groups = group_by_class(labels)
+        for klass, instances in groups.items():
+            klass.objects.bulk_create(instances, ignore_conflicts=True)
 
     def save_data(self, project: Project) -> List[Example]:
         examples = [example.create_data(project) for example in self.buffer]
         return Example.objects.bulk_create(examples)
 
     def save_annotation(self, project: Project, user, examples):
-        mapping = {label.text: label for label in project.labels.all()}
+        # mapping = {label.text: label for label in project.labels.all()}
+        # Todo: move annotation class
+        mapping = {}
+        for model in [DocType, SpanType]:
+            for label in model.objects.all():
+                mapping[label.text] = label
         annotations = list(itertools.chain.from_iterable([
             data.create_annotation(user, example, mapping) for data, example in zip(self.buffer, examples)
         ]))

@@ -8,11 +8,12 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      SEQUENCE_LABELING, SPEECH2TEXT, AnnotationRelations,
-                     AutoLabelingConfig, Category, Comment, Example,
+                     AutoLabelingConfig, Category, Comment, DocType, Example,
                      ExampleState, ImageClassificationProject, Label, Project,
                      RelationTypes, Role, RoleMapping, Seq2seqProject,
-                     SequenceLabelingProject, Span, Speech2textProject, Tag,
-                     TextClassificationProject, TextLabel)
+                     SequenceLabelingProject, Span, SpanType,
+                     Speech2textProject, Tag, TextClassificationProject,
+                     TextLabel)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,6 +61,32 @@ class LabelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Label
+        fields = (
+            'id',
+            'text',
+            'prefix_key',
+            'suffix_key',
+            'background_color',
+            'text_color',
+        )
+
+
+class DocTypeSerializer(LabelSerializer):
+    class Meta:
+        model = DocType
+        fields = (
+            'id',
+            'text',
+            'prefix_key',
+            'suffix_key',
+            'background_color',
+            'text_color',
+        )
+
+
+class SpanTypeSerializer(LabelSerializer):
+    class Meta:
+        model = SpanType
         fields = (
             'id',
             'text',
@@ -231,7 +258,7 @@ class ProjectPolymorphicSerializer(PolymorphicSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = serializers.PrimaryKeyRelatedField(queryset=DocType.objects.all())
     example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
 
     class Meta:
@@ -249,7 +276,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class SpanSerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = serializers.PrimaryKeyRelatedField(queryset=SpanType.objects.all())
     example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
 
     class Meta:

@@ -3,7 +3,7 @@ import pathlib
 from django.test import TestCase
 
 from ..models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                      Category, Example, Label, Span)
+                      Category, DocType, Example, Span, SpanType)
 from ..tasks import ingest_data
 from .api.utils import prepare_project
 
@@ -36,7 +36,7 @@ class TestIngestClassificationData(TestIngestData):
     def assert_parse_error(self, response):
         self.assertGreaterEqual(len(response['error']), 1)
         self.assertEqual(Example.objects.count(), 0)
-        self.assertEqual(Label.objects.count(), 0)
+        self.assertEqual(DocType.objects.count(), 0)
         self.assertEqual(Category.objects.count(), 0)
 
     def test_jsonl(self):
@@ -161,7 +161,7 @@ class TestIngestSequenceLabelingData(TestIngestData):
     def assert_parse_error(self, response):
         self.assertGreaterEqual(len(response['error']), 1)
         self.assertEqual(Example.objects.count(), 0)
-        self.assertEqual(Label.objects.count(), 0)
+        self.assertEqual(SpanType.objects.count(), 0)
         self.assertEqual(Span.objects.count(), 0)
 
     def test_jsonl(self):

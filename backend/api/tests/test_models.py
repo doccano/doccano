@@ -3,7 +3,7 @@ from django.db.utils import IntegrityError
 from django.test import TestCase, override_settings
 from model_mommy import mommy
 
-from ..models import (SEQUENCE_LABELING, Category, Label, Span, TextLabel,
+from ..models import (SEQUENCE_LABELING, Category, DocType, Span, TextLabel,
                       generate_random_hex_color)
 from .api.utils import prepare_project
 
@@ -59,39 +59,37 @@ class TestSpeech2textProject(TestCase):
 class TestLabel(TestCase):
 
     def test_deny_creating_same_text(self):
-        label = mommy.make('Label')
+        label = mommy.make('DocType')
         with self.assertRaises(IntegrityError):
-            mommy.make('Label', project=label.project, text=label.text)
+            mommy.make('DocType', project=label.project, text=label.text)
 
     def test_keys_uniqueness(self):
-        label = mommy.make('Label', prefix_key='ctrl', suffix_key='a')
+        label = mommy.make('DocType', prefix_key='ctrl', suffix_key='a')
         with self.assertRaises(ValidationError):
-            Label(project=label.project,
-                  text='example',
-                  prefix_key=label.prefix_key,
-                  suffix_key=label.suffix_key).full_clean()
+            DocType(project=label.project,
+                    text='example',
+                    prefix_key=label.prefix_key,
+                    suffix_key=label.suffix_key).full_clean()
 
     def test_suffix_key_uniqueness(self):
-        label = mommy.make('Label', prefix_key=None, suffix_key='a')
+        label = mommy.make('DocType', prefix_key=None, suffix_key='a')
         with self.assertRaises(ValidationError):
-            Label(project=label.project,
-                  text='example',
-                  prefix_key=label.prefix_key,
-                  suffix_key=label.suffix_key).full_clean()
+            DocType(project=label.project,
+                    text='example',
+                    prefix_key=label.prefix_key,
+                    suffix_key=label.suffix_key).full_clean()
 
     def test_cannot_add_label_only_prefix_key(self):
         project = mommy.make('Project')
-        label = Label(project=project,
-                      text='example',
-                      prefix_key='ctrl')
+        label = DocType(project=project,
+                        text='example',
+                        prefix_key='ctrl')
         with self.assertRaises(ValidationError):
             label.clean()
 
     def test_can_add_label_only_suffix_key(self):
         project = mommy.make('Project')
-        label = Label(project=project,
-                      text='example',
-                      suffix_key='a')
+        label = DocType(project=project, text='example', suffix_key='a')
         try:
             label.full_clean()
         except ValidationError:
@@ -99,10 +97,10 @@ class TestLabel(TestCase):
 
     def test_can_add_label_suffix_key_with_prefix_key(self):
         project = mommy.make('Project')
-        label = Label(project=project,
-                      text='example',
-                      prefix_key='ctrl',
-                      suffix_key='a')
+        label = DocType(project=project,
+                        text='example',
+                        prefix_key='ctrl',
+                        suffix_key='a')
         try:
             label.full_clean()
         except ValidationError:

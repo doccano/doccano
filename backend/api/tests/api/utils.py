@@ -88,7 +88,10 @@ def make_tag(project):
 
 
 def make_label(project, **kwargs):
-    return mommy.make('Label', project=project, **kwargs)
+    if project.project_type.endswith('Classification'):
+        return mommy.make('DocType', project=project, **kwargs)
+    else:
+        return mommy.make('SpanType', project=project, **kwargs)
 
 
 def make_doc(project):

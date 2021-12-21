@@ -31,20 +31,50 @@ urlpatterns_project = [
         route='statistics',
         view=statistics.StatisticsAPI.as_view(),
         name='statistics'),
+    # path(
+    #     route='labels',
+    #     view=label.LabelList.as_view(),
+    #     name='label_list'
+    # ),
+    # path(
+    #     route='label-upload',
+    #     view=label.LabelUploadAPI.as_view(),
+    #     name='label_upload'
+    # ),
+    # path(
+    #     route='labels/<int:label_id>',
+    #     view=label.LabelDetail.as_view(),
+    #     name='label_detail'
+    # ),
     path(
-        route='labels',
-        view=label.LabelList.as_view(),
-        name='label_list'
+        route='doc-types',
+        view=label.DocTypeList.as_view(),
+        name='doc_types'
     ),
     path(
-        route='label-upload',
-        view=label.LabelUploadAPI.as_view(),
-        name='label_upload'
+        route='doc-types/<int:label_id>',
+        view=label.DocTypeDetail.as_view(),
+        name='doc_type'
     ),
     path(
-        route='labels/<int:label_id>',
-        view=label.LabelDetail.as_view(),
-        name='label_detail'
+        route='span-types',
+        view=label.SpanTypeList.as_view(),
+        name='span_types'
+    ),
+    path(
+        route='span-types/<int:label_id>',
+        view=label.SpanTypeDetail.as_view(),
+        name='span_type'
+    ),
+    path(
+        route='doc-type-upload',
+        view=label.DocTypeUploadAPI.as_view(),
+        name='doc_type_upload'
+    ),
+    path(
+        route='span-type-upload',
+        view=label.SpanTypeUploadAPI.as_view(),
+        name='span_type_upload'
     ),
     path(
         route='examples',
