@@ -1,59 +1,11 @@
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from model_mommy import mommy
 
-from ..models import (SEQUENCE_LABELING, Category, DocType, Span, TextLabel,
+from ..models import (SEQUENCE_LABELING, Category, DocType, TextLabel,
                       generate_random_hex_color)
 from .api.utils import prepare_project
-
-
-@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
-class TestTextClassificationProject(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.project = mommy.make('TextClassificationProject')
-
-    def test_get_annotation_class(self):
-        klass = self.project.get_annotation_class()
-        self.assertEqual(klass, Category)
-
-
-@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
-class TestSequenceLabelingProject(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.project = mommy.make('SequenceLabelingProject')
-
-    def test_get_annotation_class(self):
-        klass = self.project.get_annotation_class()
-        self.assertEqual(klass, Span)
-
-
-@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
-class TestSeq2seqProject(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.project = mommy.make('Seq2seqProject')
-
-    def test_get_annotation_class(self):
-        klass = self.project.get_annotation_class()
-        self.assertEqual(klass, TextLabel)
-
-
-@override_settings(STATICFILES_STORAGE='django.contrib.staticfiles.storage.StaticFilesStorage')
-class TestSpeech2textProject(TestCase):
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.project = mommy.make('Speech2textProject')
-
-    def test_get_annotation_class(self):
-        klass = self.project.get_annotation_class()
-        self.assertEqual(klass, TextLabel)
 
 
 class TestLabel(TestCase):

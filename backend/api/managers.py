@@ -6,6 +6,42 @@ from django.db.models import Count, Manager
 
 class AnnotationManager(Manager):
 
+    def calc_label_frequency(self, examples):
+        """Calculate label frequencies.
+
+        Args:
+            examples: example queryset.
+
+        Returns:
+            label frequency.
+
+        Examples:
+            >>> {'positive': 3, 'negative': 4}
+        """
+        freq = Counter()
+        annotations = self.filter(example_id__in=examples)
+        for d in annotations.values('label__text').annotate(Count('label')):
+            freq[d['label__text']] += d['label__count']
+        return freq
+
+    def calc_user_frequency(self, examples):
+        """Calculate user frequencies.
+
+        Args:
+            examples: example queryset.
+
+        Returns:
+            user frequency.
+
+        Examples:
+            >>> {'mary': 3, 'john': 4}
+        """
+        freq = Counter()
+        annotations = self.filter(example_id__in=examples)
+        for d in annotations.values('user__username').annotate(Count('user')):
+            freq[d['user__username']] += d['user__count']
+        return freq
+
     def get_label_per_data(self, project):
         label_count = Counter()
         user_count = Counter()
@@ -56,3 +92,18 @@ class ExampleManager(Manager):
         uuids = [data.uuid for data in objs]
         examples = self.in_bulk(uuids, field_name='uuid')
         return [examples[uid] for uid in uuids]
+
+
+class ExampleStateManager(Manager):
+
+    def count_done(self, examples):
+        return self.filter(example_id__in=examples).distinct().values('example').count()
+
+    def count_user(self, examples):
+        done_count = self.filter(example_id__in=examples)\
+            .values('confirmed_by__username')\
+            .annotate(total=Count('confirmed_by'))
+        return {
+            obj['confirmed_by__username']: obj['total']
+            for obj in done_count
+        }

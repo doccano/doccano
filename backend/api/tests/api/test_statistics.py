@@ -34,6 +34,7 @@ class TestStatisticsAPI(APITestCase, TestUtilsMixin):
         )
         doc1 = mommy.make('Example', project=cls.project)
         doc2 = mommy.make('Example', project=cls.project)
+        mommy.make('ExampleState', example=doc1, confirmed_by=super_user)
         mommy.make('Category', example=doc1, user=super_user)
         mommy.make('Category', example=doc2, user=other_user)
         cls.url = reverse(viewname='statistics', args=[cls.project.id])
@@ -52,15 +53,6 @@ class TestStatisticsAPI(APITestCase, TestUtilsMixin):
         response = self.client.get(self.url, format='json')
         self.assertEqual(response.data['total'], 2)
         self.assertEqual(response.data['remaining'], 1)
-
-    def test_returns_exact_progress_with_collaborative_annotation(self):
-        self._patch_project(self.project, 'collaborative_annotation', True)
-
-        self.client.login(username=self.other_user_name,
-                          password=self.other_user_pass)
-        response = self.client.get(self.url, format='json')
-        self.assertEqual(response.data['total'], 2)
-        self.assertEqual(response.data['remaining'], 0)
 
     def test_returns_user_count(self):
         self.client.login(username=self.super_user_name,

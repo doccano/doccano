@@ -9,8 +9,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
-from .managers import (AnnotationManager, ExampleManager, RoleMappingManager,
-                       Seq2seqAnnotationManager)
+from .managers import (AnnotationManager, ExampleManager, ExampleStateManager,
+                       RoleMappingManager, Seq2seqAnnotationManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -38,9 +38,6 @@ class Project(PolymorphicModel):
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)
 
-    def get_annotation_class(self):
-        raise NotImplementedError()
-
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         raise NotImplementedError()
 
@@ -50,9 +47,6 @@ class Project(PolymorphicModel):
 
 class TextClassificationProject(Project):
 
-    def get_annotation_class(self):
-        return Category
-
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'text'
 
@@ -61,17 +55,11 @@ class SequenceLabelingProject(Project):
     allow_overlapping = models.BooleanField(default=False)
     grapheme_mode = models.BooleanField(default=False)
 
-    def get_annotation_class(self):
-        return Span
-
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'text'
 
 
 class Seq2seqProject(Project):
-
-    def get_annotation_class(self):
-        return TextLabel
 
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'text'
@@ -79,17 +67,11 @@ class Seq2seqProject(Project):
 
 class Speech2textProject(Project):
 
-    def get_annotation_class(self):
-        return TextLabel
-
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'speech'
 
 
 class ImageClassificationProject(Project):
-
-    def get_annotation_class(self):
-        return Category
 
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'image'
@@ -97,64 +79,6 @@ class ImageClassificationProject(Project):
 
 def generate_random_hex_color():
     return f'#{random.randint(0, 0xFFFFFF):06x}'
-
-
-# class Label(models.Model):
-#     text = models.CharField(max_length=100, db_index=True)
-#     prefix_key = models.CharField(
-#         max_length=10,
-#         blank=True,
-#         null=True,
-#         choices=(
-#             ('ctrl', 'ctrl'),
-#             ('shift', 'shift'),
-#             ('ctrl shift', 'ctrl shift')
-#         )
-#     )
-#     suffix_key = models.CharField(
-#         max_length=1,
-#         blank=True,
-#         null=True,
-#         choices=tuple(
-#             (c, c) for c in string.digits + string.ascii_lowercase
-#         )
-#     )
-#     project = models.ForeignKey(
-#         to=Project,
-#         on_delete=models.CASCADE,
-#         related_name='labels'
-#     )
-#     background_color = models.CharField(max_length=7, default=generate_random_hex_color)
-#     text_color = models.CharField(max_length=7, default='#ffffff')
-#     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
-#     updated_at = models.DateTimeField(auto_now=True)
-#
-#     def __str__(self):
-#         return self.text
-#
-#     def clean(self):
-#         # Don't allow shortcut key not to have a suffix key.
-#         if self.prefix_key and not self.suffix_key:
-#             message = 'Shortcut key may not have a suffix key.'
-#             raise ValidationError(message)
-#
-#         # each shortcut (prefix key + suffix key) can only be assigned to one label
-#         if self.suffix_key or self.prefix_key:
-#             other_labels = self.project.labels.exclude(id=self.id)
-#             if other_labels.filter(suffix_key=self.suffix_key, prefix_key=self.prefix_key).exists():
-#                 message = 'A label with the shortcut already exists in the project.'
-#                 raise ValidationError(message)
-#
-#         super().clean()
-#
-#     class Meta:
-#         constraints = [
-#             models.UniqueConstraint(
-#                 fields=['project', 'text'],
-#                 name='%(app_label)s_%(class)s_is_unique'
-#             )
-#         ]
-#         ordering = ['created_at']
 
 
 class Label(models.Model):
@@ -259,11 +183,23 @@ class Example(models.Model):
     def comment_count(self):
         return Comment.objects.filter(example=self.id).count()
 
+    def is_labeled(self, is_collaborative, user):
+        if is_collaborative:
+            for model in Annotation.__subclasses__():
+                if model.objects.filter(example=self.id).exists():
+                    return True
+        else:
+            for model in Annotation.__subclasses__():
+                if model.objects.filter(example=self.id, user=user).exists():
+                    return True
+        return False
+
     class Meta:
         ordering = ['created_at']
 
 
 class ExampleState(models.Model):
+    objects = ExampleStateManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,

@@ -1,13 +1,14 @@
-import collections
+import abc
 
 from django.conf import settings
-from django.db.models import Count, Q
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import ExampleState, Project, RoleMapping
+from ..models import (Annotation, Category, ExampleState, Project, RoleMapping,
+                      Span)
 from ..permissions import IsInProjectReadOnlyOrAdmin
 
 
@@ -40,30 +41,18 @@ class StatisticsAPI(APIView):
 
         return Response(response)
 
-    @staticmethod
-    def _get_user_completion_data(annotation_class, annotation_filter):
-        all_annotation_objects = annotation_class.objects.filter(annotation_filter)
-        set_user_data = collections.defaultdict(set)
-        for ind_obj in all_annotation_objects.values('user__username', 'example__id'):
-            set_user_data[ind_obj['user__username']].add(ind_obj['example__id'])
-        return {i: len(set_user_data[i]) for i in set_user_data}
-
     def progress(self, project):
-        docs = project.examples
-        annotation_class = project.get_annotation_class()
-        total = docs.count()
-        annotation_filter = Q(example_id__in=docs.all())
-        user_data = self._get_user_completion_data(annotation_class, annotation_filter)
-        if not project.collaborative_annotation:
-            annotation_filter &= Q(user_id=self.request.user)
-        done = annotation_class.objects.filter(annotation_filter)\
-            .aggregate(Count('example', distinct=True))['example__count']
+        examples = project.examples.values('id')
+        total = examples.count()
+        done = ExampleState.objects.count_done(examples)
+        done_by_user = ExampleState.objects.count_user(examples)
         remaining = total - done
-        return {'total': total, 'remaining': remaining, 'user': user_data}
+        return {'total': total, 'remaining': remaining, 'user': done_by_user}
 
     def label_per_data(self, project):
-        annotation_class = project.get_annotation_class()
-        return annotation_class.objects.get_label_per_data(project=project)
+        # annotation_class = project.get_annotation_class()
+        # return annotation_class.objects.get_label_per_data(project=project)
+        return {}, {}
 
     def confirmed_count(self, project):
         confirmed_count = {
@@ -79,3 +68,24 @@ class StatisticsAPI(APIView):
             mapping = RoleMapping.objects.get(project=project, user=record['confirmed_by'])
             confirmed_count[mapping.role.name] += record['total']
         return confirmed_count
+
+
+class LabelFrequency(abc.ABC, APIView):
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    model = Annotation
+
+    def get(self, request, *args, **kwargs):
+        return self.calc_label_frequency()
+
+    def calc_label_frequency(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        examples = project.examples.values('id')
+        return self.model.objects.calc_label_frequency(examples)
+
+
+class DocTypeFrequency(LabelFrequency):
+    model = Category
+
+
+class SpanTypeFrequency(LabelFrequency):
+    model = Span

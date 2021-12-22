@@ -114,20 +114,8 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ExampleSerializer(serializers.ModelSerializer):
-    annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
     is_confirmed = serializers.SerializerMethodField()
-
-    def get_annotations(self, instance):
-        request = self.context.get('request')
-        project = instance.project
-        model = project.get_annotation_class()
-        serializer = get_annotation_serializer(task=project.project_type)
-        annotations = model.objects.filter(example=instance.id)
-        if request and not project.collaborative_annotation:
-            annotations = annotations.filter(user=request.user)
-        serializer = serializer(annotations, many=True)
-        return serializer.data
 
     @classmethod
     def get_annotation_approver(cls, instance):
@@ -149,7 +137,6 @@ class ExampleSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'filename',
-            'annotations',
             'meta',
             'annotation_approver',
             'comment_count',
