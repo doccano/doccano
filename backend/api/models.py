@@ -1,8 +1,12 @@
 import random
 import string
 import uuid
-from typing import Literal
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
+    
 from auto_labeling_pipeline.models import RequestModelFactory
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
