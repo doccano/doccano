@@ -17,10 +17,12 @@ SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
 SPEECH2TEXT = 'Speech2text'
 IMAGE_CLASSIFICATION = 'ImageClassification'
+INTENT_DETECTION_AND_SLOT_FILLING = 'IntentDetectionAndSlotFilling'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
+    (INTENT_DETECTION_AND_SLOT_FILLING, 'intent detection and slot filling'),
     (SPEECH2TEXT, 'speech to text'),
     (IMAGE_CLASSIFICATION, 'image classification')
 )
@@ -60,6 +62,12 @@ class SequenceLabelingProject(Project):
 
 
 class Seq2seqProject(Project):
+
+    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+        return task == 'text'
+
+
+class IntentDetectionAndSlotFillingProject(Project):
 
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'text'
