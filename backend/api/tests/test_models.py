@@ -3,8 +3,8 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from ..models import (SEQUENCE_LABELING, Category, DocType, TextLabel,
-                      generate_random_hex_color)
+from ..models import (SEQUENCE_LABELING, Category, DocType, ExampleState,
+                      TextLabel, generate_random_hex_color)
 from .api.utils import prepare_project
 
 
@@ -162,3 +162,43 @@ class TestGeneratedColor(TestCase):
         for i in range(100):
             color = generate_random_hex_color()
             self.assertEqual(len(color), 7)
+
+
+class TestExampleState(TestCase):
+
+    def setUp(self):
+        self.project = prepare_project(SEQUENCE_LABELING)
+        self.example = mommy.make('Example', project=self.project.item)
+        self.examples = self.project.item.examples.all()
+
+    def test_initial_done(self):
+        done = ExampleState.objects.count_done(self.examples)
+        self.assertEqual(done, 0)
+
+    def test_done_confirmed_by_user(self):
+        mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
+        done = ExampleState.objects.count_done(self.examples)
+        self.assertEqual(done, 1)
+
+    def test_done_confirmed_by_multiple_user(self):
+        mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
+        mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[1])
+        done = ExampleState.objects.count_done(self.examples)
+        self.assertEqual(done, 1)
+
+    def test_initial_user(self):
+        user_count = ExampleState.objects.count_user(self.examples)
+        self.assertEqual(user_count, {})
+
+    def test_user_count_after_confirmation(self):
+        mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
+        user_count = ExampleState.objects.count_user(self.examples)
+        self.assertEqual(user_count, {self.project.users[0].username: 1})
+
+    def test_user_count_after_multiple_user_confirmation(self):
+        user1 = self.project.users[0]
+        user2 = self.project.users[1]
+        mommy.make('ExampleState', example=self.example, confirmed_by=user1)
+        mommy.make('ExampleState', example=self.example, confirmed_by=user2)
+        user_count = ExampleState.objects.count_user(self.examples)
+        self.assertEqual(user_count, {user1.username: 1, user2.username: 1})
