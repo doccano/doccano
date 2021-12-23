@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import (Annotation, Category, ExampleState, Project, RoleMapping,
-                      Span)
+from ..models import (Annotation, Category, Example, ExampleState, Project,
+                      RoleMapping, Span)
 from ..permissions import IsInProjectReadOnlyOrAdmin
 
 
@@ -29,7 +29,7 @@ class StatisticsAPI(APIView):
             response['user_label'] = user_count
 
         if not include or 'total' in include or 'remaining' in include or 'user' in include:
-            progress = self.progress(project=p)
+            progress = self.progress()
             response.update(progress)
 
         if not include or 'confirmed_count' in include:
@@ -41,8 +41,8 @@ class StatisticsAPI(APIView):
 
         return Response(response)
 
-    def progress(self, project):
-        examples = project.examples.values('id')
+    def progress(self):
+        examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
         total = examples.count()
         done = ExampleState.objects.count_done(examples)
         done_by_user = ExampleState.objects.count_user(examples)
@@ -50,8 +50,6 @@ class StatisticsAPI(APIView):
         return {'total': total, 'remaining': remaining, 'user': done_by_user}
 
     def label_per_data(self, project):
-        # annotation_class = project.get_annotation_class()
-        # return annotation_class.objects.get_label_per_data(project=project)
         return {}, {}
 
     def confirmed_count(self, project):
@@ -70,16 +68,21 @@ class StatisticsAPI(APIView):
         return confirmed_count
 
 
+class ProgressAPI(APIView):
+
+    def get(self, request, *args, **kwargs):
+        examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
+        total = examples.count()
+        done = ExampleState.objects.count_done(examples)
+        return {'total': total, 'remaining': total - done}
+
+
 class LabelFrequency(abc.ABC, APIView):
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
     model = Annotation
 
     def get(self, request, *args, **kwargs):
-        return self.calc_label_frequency()
-
-    def calc_label_frequency(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        examples = project.examples.values('id')
+        examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
         return self.model.objects.calc_label_frequency(examples)
 
 

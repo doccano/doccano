@@ -1,10 +1,16 @@
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
+                       INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
 from . import builders, catalog, cleaners, data, label, parsers, readers
 
 
 def get_data_class(project_type: str):
-    text_projects = [DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ]
+    text_projects = [
+        DOCUMENT_CLASSIFICATION,
+        SEQUENCE_LABELING,
+        SEQ2SEQ,
+        INTENT_DETECTION_AND_SLOT_FILLING
+    ]
     if project_type in text_projects:
         return data.TextData
     else:
@@ -59,14 +65,28 @@ def create_bulder(project, **kwargs):
         name=kwargs.get('column_data') or readers.DEFAULT_TEXT_COLUMN,
         value_class=get_data_class(project.project_type)
     )
-    # Todo: If project is EntityClassification,
+    # If project is intent detection and slot filling,
     # column names are fixed: entities, cats
-    label_column = builders.LabelColumn(
-        name=kwargs.get('column_label') or readers.DEFAULT_LABEL_COLUMN,
-        value_class=get_label_class(project.project_type)
-    )
+    if project.project_type == INTENT_DETECTION_AND_SLOT_FILLING:
+        label_columns = [
+            builders.LabelColumn(
+                name='cats',
+                value_class=label.CategoryLabel
+            ),
+            builders.LabelColumn(
+                name='entities',
+                value_class=label.SpanLabel
+            )
+        ]
+    else:
+        label_columns = [
+            builders.LabelColumn(
+                name=kwargs.get('column_label') or readers.DEFAULT_LABEL_COLUMN,
+                value_class=get_label_class(project.project_type)
+            )
+        ]
     builder = builders.ColumnBuilder(
         data_column=data_column,
-        label_columns=[label_column]
+        label_columns=label_columns
     )
     return builder
