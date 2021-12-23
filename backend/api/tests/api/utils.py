@@ -8,7 +8,8 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
+                       INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT, Role, RoleMapping)
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
@@ -63,7 +64,8 @@ def make_project(
         SEQUENCE_LABELING: 'SequenceLabelingProject',
         SEQ2SEQ: 'Seq2seqProject',
         SPEECH2TEXT: 'Speech2TextProject',
-        IMAGE_CLASSIFICATION: 'ImageClassificationProject'
+        IMAGE_CLASSIFICATION: 'ImageClassificationProject',
+        INTENT_DETECTION_AND_SLOT_FILLING: 'IntentDetectionAndSlotFillingProject'
     }.get(task, 'Project')
     project = mommy.make(
         _model=project_model,

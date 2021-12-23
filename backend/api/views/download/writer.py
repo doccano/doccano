@@ -148,3 +148,16 @@ class FastTextWriter(LineWriter):
         line.append(record.data)
         line = ' '.join(line)
         return line
+
+
+class IntentAndSlotWriter(LineWriter):
+    extension = 'jsonl'
+
+    def create_line(self, record):
+        return json.dumps({
+            'id': record.id,
+            'text': record.data,
+            'cats': record.label.get('cats', []),
+            'entities': record.label.get('entities', []),
+            **record.metadata
+        }, ensure_ascii=False)

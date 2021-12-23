@@ -1,8 +1,9 @@
+import json
 import unittest
 from unittest.mock import call, patch
 
 from ...views.download.data import Record
-from ...views.download.writer import CsvWriter
+from ...views.download.writer import CsvWriter, IntentAndSlotWriter
 
 
 class TestCSVWriter(unittest.TestCase):
@@ -61,3 +62,26 @@ class TestCSVWriter(unittest.TestCase):
             call({'id': 2, 'data': 'exampleC', 'label': 'labelC', 'meta': 'secretC'})
         ]
         csv_io.assert_has_calls(calls)
+
+
+class TestIntentWriter(unittest.TestCase):
+
+    def setUp(self):
+        self.record = Record(
+            id=0,
+            data='exampleA',
+            label={'cats': ['positive'], 'entities': [(0, 1, 'LOC')]},
+            user='admin',
+            metadata={}
+        )
+
+    def test_create_line(self):
+        writer = IntentAndSlotWriter('.')
+        actual = writer.create_line(self.record)
+        expected = {
+            'id': self.record.id,
+            'text': self.record.data,
+            'cats': ['positive'],
+            'entities': [[0, 1, 'LOC']],
+        }
+        self.assertEqual(json.loads(actual), expected)
