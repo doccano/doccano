@@ -47,6 +47,15 @@ export class LabelItemList {
   }
 }
 
+interface LabelResponse {
+  id: number
+  text: string
+  prefix_key: string | null
+  suffix_key: string | null
+  background_color: string
+  text_color: string
+}
+
 export class LabelItem {
   constructor(
     public id: number,
@@ -57,18 +66,22 @@ export class LabelItem {
     public textColor: string = '#ffffff'
   ) {}
 
-  static valueOf(
-    { id, text, prefix_key, suffix_key, background_color, text_color }:
-    { id: number, text: string, prefix_key: string, suffix_key: string, background_color: string, text_color: string }
-  ): LabelItem {
-    return new LabelItem(id, text, prefix_key, suffix_key, background_color, text_color)
+  static valueOf(label: LabelResponse): LabelItem {
+    return new LabelItem(
+      label.id,
+      label.text,
+      label.prefix_key,
+      label.suffix_key,
+      label.background_color,
+      label.text_color
+    )
   }
 
   get name(): string {
     return this.text
   }
 
-  toObject(): Object {
+  toObject(): LabelResponse {
     return {
       id: this.id,
       text: this.text,
@@ -79,3 +92,6 @@ export class LabelItem {
     }
   }
 }
+
+export class DocTypeItem extends LabelItem {}
+export class SpanTypeItem extends LabelItem {}

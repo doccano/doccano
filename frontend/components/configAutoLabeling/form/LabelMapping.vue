@@ -155,8 +155,14 @@ export default Vue.extend({
   },
 
   async created() {
-    const labels = await this.$services.label.list(this.$route.params.id)
-    this.items = labels.map(item => item.text)
+    const project = await this.$services.project.findById(this.$route.params.id)
+    if (project.projectType.endsWith('Classification')) {
+      const labels = await this.$services.categoryType.list(this.$route.params.id)
+      this.items = labels.map(item => item.text)
+    } else {
+      const labels = await this.$services.spanType.list(this.$route.params.id)
+      this.items = labels.map(item => item.text)
+    }
   },
 
   methods: {

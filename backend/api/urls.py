@@ -47,12 +47,12 @@ urlpatterns_project = [
     #     name='label_detail'
     # ),
     path(
-        route='doc-types',
+        route='category-types',
         view=label.DocTypeList.as_view(),
         name='doc_types'
     ),
     path(
-        route='doc-types/<int:label_id>',
+        route='category-types/<int:label_id>',
         view=label.DocTypeDetail.as_view(),
         name='doc_type'
     ),
@@ -67,7 +67,7 @@ urlpatterns_project = [
         name='span_type'
     ),
     path(
-        route='doc-type-upload',
+        route='category-type-upload',
         view=label.DocTypeUploadAPI.as_view(),
         name='doc_type_upload'
     ),
