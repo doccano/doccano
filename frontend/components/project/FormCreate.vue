@@ -171,6 +171,7 @@ export default Vue.extend({
         'DocumentClassification',
         'SequenceLabeling',
         'Seq2seq',
+        'IntentDetectionAndSlotFilling',
         'ImageClassification',
         'Speech2text',
       ]

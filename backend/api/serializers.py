@@ -9,7 +9,8 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      SEQUENCE_LABELING, SPEECH2TEXT, AnnotationRelations,
                      AutoLabelingConfig, Category, Comment, DocType, Example,
-                     ExampleState, ImageClassificationProject, Label, Project,
+                     ExampleState, ImageClassificationProject,
+                     IntentDetectionAndSlotFillingProject, Label, Project,
                      RelationTypes, Role, RoleMapping, Seq2seqProject,
                      SequenceLabelingProject, Span, SpanType,
                      Speech2textProject, Tag, TextClassificationProject,
@@ -221,6 +222,12 @@ class Seq2seqProjectSerializer(ProjectSerializer):
 
     class Meta(ProjectSerializer.Meta):
         model = Seq2seqProject
+
+
+class IntentDetectionAndSlotFillingProjectSerializer(ProjectSerializer):
+
+    class Meta(ProjectSerializer.Meta):
+        model = IntentDetectionAndSlotFillingProject
 
 
 class Speech2textProjectSerializer(ProjectSerializer):
