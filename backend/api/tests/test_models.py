@@ -169,6 +169,7 @@ class TestExampleState(TestCase):
     def setUp(self):
         self.project = prepare_project(SEQUENCE_LABELING)
         self.example = mommy.make('Example', project=self.project.item)
+        self.other = mommy.make('Example', project=self.project.item)
         self.examples = self.project.item.examples.all()
 
     def test_initial_done(self):
@@ -184,6 +185,12 @@ class TestExampleState(TestCase):
         mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
         mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[1])
         done = ExampleState.objects.count_done(self.examples)
+        self.assertEqual(done, 1)
+
+    def test_done_confirmed_by_different_example(self):
+        mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
+        mommy.make('ExampleState', example=self.other, confirmed_by=self.project.users[1])
+        done = ExampleState.objects.count_done(self.examples, self.project.users[0])
         self.assertEqual(done, 1)
 
     def test_initial_user(self):

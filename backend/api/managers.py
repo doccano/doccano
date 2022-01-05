@@ -96,8 +96,12 @@ class ExampleManager(Manager):
 
 class ExampleStateManager(Manager):
 
-    def count_done(self, examples):
-        return self.filter(example_id__in=examples).distinct().values('example').count()
+    def count_done(self, examples, user=None):
+        if user:
+            queryset = self.filter(example_id__in=examples, confirmed_by=user)
+        else:
+            queryset = self.filter(example_id__in=examples)
+        return queryset.distinct().values('example').count()
 
     def count_user(self, examples):
         done_count = self.filter(example_id__in=examples)\
