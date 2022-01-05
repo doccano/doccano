@@ -103,11 +103,17 @@ class ExampleStateManager(Manager):
             queryset = self.filter(example_id__in=examples)
         return queryset.distinct().values('example').count()
 
-    def count_user(self, examples):
+    def measure_member_progress(self, examples, members):
         done_count = self.filter(example_id__in=examples)\
             .values('confirmed_by__username')\
             .annotate(total=Count('confirmed_by'))
-        return {
-            obj['confirmed_by__username']: obj['total']
-            for obj in done_count
+        response = {
+            'total': examples.count(),
+            'progress': {
+                obj['confirmed_by__username']: obj['total'] for obj in done_count
+            }
         }
+        for member in members:
+            if member.username not in response['progress']:
+                response['progress'][member.username] = 0
+        return response

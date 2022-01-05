@@ -194,18 +194,24 @@ class TestExampleState(TestCase):
         self.assertEqual(done, 1)
 
     def test_initial_user(self):
-        user_count = ExampleState.objects.count_user(self.examples)
-        self.assertEqual(user_count, {})
+        progress = ExampleState.objects.measure_member_progress(self.examples, self.project.users)
+        expected_progress = {user.username: 0 for user in self.project.users}
+        self.assertEqual(progress, {'total': 2, 'progress': expected_progress})
 
     def test_user_count_after_confirmation(self):
         mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
-        user_count = ExampleState.objects.count_user(self.examples)
-        self.assertEqual(user_count, {self.project.users[0].username: 1})
+        progress = ExampleState.objects.measure_member_progress(self.examples, self.project.users)
+        expected_progress = {user.username: 0 for user in self.project.users}
+        expected_progress[self.project.users[0].username] = 1
+        self.assertEqual(progress, {'total': 2, 'progress': expected_progress})
 
     def test_user_count_after_multiple_user_confirmation(self):
         user1 = self.project.users[0]
         user2 = self.project.users[1]
         mommy.make('ExampleState', example=self.example, confirmed_by=user1)
         mommy.make('ExampleState', example=self.example, confirmed_by=user2)
-        user_count = ExampleState.objects.count_user(self.examples)
-        self.assertEqual(user_count, {user1.username: 1, user2.username: 1})
+        progress = ExampleState.objects.measure_member_progress(self.examples, self.project.users)
+        expected_progress = {user.username: 0 for user in self.project.users}
+        expected_progress[user1.username] = 1
+        expected_progress[user2.username] = 1
+        self.assertEqual(progress, {'total': 2, 'progress': expected_progress})
