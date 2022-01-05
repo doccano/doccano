@@ -1,11 +1,13 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from model_mommy import mommy
+from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from ...models import DOCUMENT_CLASSIFICATION, Example
-from .utils import (TestUtilsMixin, assign_user_to_role, create_default_roles,
+from .utils import (CRUDMixin, TestUtilsMixin, assign_user_to_role,
+                    create_default_roles, make_doc, prepare_project,
                     remove_all_role_mappings)
 
 
@@ -73,3 +75,23 @@ class TestStatisticsAPI(APITestCase, TestUtilsMixin):
                           password=self.super_user_pass)
         response = self.client.get(f'{self.url}?include=user', format='json')
         self.assertEqual(list(response.data.keys()), ['user'])
+
+
+class TestMemberProgress(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        self.example = make_doc(self.project.item)
+        self.url = reverse(viewname='member_progress', args=[self.project.item.id])
+
+    def test_fetch_initial_progress(self):
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        expected_progress = {user.username: 0 for user in self.project.users}
+        self.assertEqual(response.data, {'total': 1, 'progress': expected_progress})
+
+    def test_fetch_progress(self):
+        mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        expected_progress = {user.username: 0 for user in self.project.users}
+        expected_progress[self.project.users[0].username] = 1
+        self.assertEqual(response.data, {'total': 1, 'progress': expected_progress})

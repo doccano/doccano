@@ -3,6 +3,7 @@ import abc
 from django.conf import settings
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -42,10 +43,11 @@ class StatisticsAPI(APIView):
         return Response(response)
 
     def progress(self):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
         total = examples.count()
         done = ExampleState.objects.count_done(examples)
-        done_by_user = ExampleState.objects.count_user(examples)
+        done_by_user = ExampleState.objects.measure_member_progress(examples, project.users.all())
         remaining = total - done
         return {'total': total, 'remaining': remaining, 'user': done_by_user}
 
@@ -69,12 +71,23 @@ class StatisticsAPI(APIView):
 
 
 class ProgressAPI(APIView):
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
     def get(self, request, *args, **kwargs):
         examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
         total = examples.count()
-        done = ExampleState.objects.count_done(examples)
+        done = ExampleState.objects.count_done(examples, user=self.request.user)
         return {'total': total, 'remaining': total - done}
+
+
+class MemberProgressAPI(APIView):
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+
+    def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
+        data = ExampleState.objects.measure_member_progress(examples, project.users.all())
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class LabelFrequency(abc.ABC, APIView):

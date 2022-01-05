@@ -30,22 +30,18 @@ urlpatterns_project = [
     path(
         route='statistics',
         view=statistics.StatisticsAPI.as_view(),
-        name='statistics'),
-    # path(
-    #     route='labels',
-    #     view=label.LabelList.as_view(),
-    #     name='label_list'
-    # ),
-    # path(
-    #     route='label-upload',
-    #     view=label.LabelUploadAPI.as_view(),
-    #     name='label_upload'
-    # ),
-    # path(
-    #     route='labels/<int:label_id>',
-    #     view=label.LabelDetail.as_view(),
-    #     name='label_detail'
-    # ),
+        name='statistics'
+    ),
+    path(
+        route='progress',
+        view=statistics.ProgressAPI.as_view(),
+        name='progress'
+    ),
+    path(
+        route='member-progress',
+        view=statistics.MemberProgressAPI.as_view(),
+        name='member_progress'
+    ),
     path(
         route='category-types',
         view=label.DocTypeList.as_view(),
