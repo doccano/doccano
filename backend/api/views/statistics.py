@@ -8,8 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import (Annotation, Category, Example, ExampleState, Project,
-                      RoleMapping, Span)
+from ..models import (Annotation, Category, DocType, Example, ExampleState,
+                      Label, Project, RoleMapping, Span, SpanType)
 from ..permissions import IsInProjectReadOnlyOrAdmin
 
 
@@ -90,18 +90,24 @@ class MemberProgressAPI(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class LabelFrequency(abc.ABC, APIView):
+class LabelDistribution(abc.ABC, APIView):
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
     model = Annotation
+    label_type = Label
 
     def get(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        labels = self.label_type.objects.filter(project=self.kwargs['project_id'])
         examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
-        return self.model.objects.calc_label_frequency(examples)
+        data = self.model.objects.calc_label_distribution(examples, project.users.all(), labels)
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
-class DocTypeFrequency(LabelFrequency):
+class DocTypeDistribution(LabelDistribution):
     model = Category
+    label_type = DocType
 
 
-class SpanTypeFrequency(LabelFrequency):
+class SpanTypeDistribution(LabelDistribution):
     model = Span
+    label_type = SpanType

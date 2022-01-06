@@ -7,8 +7,8 @@ from rest_framework.test import APITestCase
 
 from ...models import DOCUMENT_CLASSIFICATION, Example
 from .utils import (CRUDMixin, TestUtilsMixin, assign_user_to_role,
-                    create_default_roles, make_doc, prepare_project,
-                    remove_all_role_mappings)
+                    create_default_roles, make_doc, make_label,
+                    prepare_project, remove_all_role_mappings)
 
 
 class TestStatisticsAPI(APITestCase, TestUtilsMixin):
@@ -95,3 +95,21 @@ class TestMemberProgress(CRUDMixin):
         expected_progress = {user.username: 0 for user in self.project.users}
         expected_progress[self.project.users[0].username] = 1
         self.assertEqual(response.data, {'total': 1, 'progress': expected_progress})
+
+
+class TestCategoryDistribution(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        self.example = make_doc(self.project.item)
+        self.label = make_label(self.project.item, text='label')
+        mommy.make('Category', example=self.example, label=self.label, user=self.project.users[0])
+        self.url = reverse(viewname='category_distribution', args=[self.project.item.id])
+
+    def test_fetch_distribution(self):
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        expected = {
+            user.username: {self.label.text: 0} for user in self.project.users
+        }
+        expected[self.project.users[0].username][self.label.text] = 1
+        self.assertEqual(response.data, expected)

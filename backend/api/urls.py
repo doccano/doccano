@@ -43,6 +43,16 @@ urlpatterns_project = [
         name='member_progress'
     ),
     path(
+        route='category-distribution',
+        view=statistics.DocTypeDistribution.as_view(),
+        name='category_distribution'
+    ),
+    path(
+        route='span-distribution',
+        view=statistics.SpanTypeDistribution.as_view(),
+        name='span_distribution'
+    ),
+    path(
         route='category-types',
         view=label.DocTypeList.as_view(),
         name='doc_types'
