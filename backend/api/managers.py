@@ -1,73 +1,34 @@
-from collections import Counter
-
 from django.conf import settings
 from django.db.models import Count, Manager
 
 
 class AnnotationManager(Manager):
 
-    def calc_label_frequency(self, examples):
-        """Calculate label frequencies.
+    def calc_label_distribution(self, examples, users, labels):
+        """Calculate label distribution.
 
         Args:
             examples: example queryset.
+            users: user queryset.
+            labels: label queryset.
 
         Returns:
-            label frequency.
+            label distribution per user.
 
         Examples:
-            >>> {'positive': 3, 'negative': 4}
+            >>> self.calc_label_distribution(examples, users, labels)
+            {'admin': {'positive': 10, 'negative': 5}}
         """
-        freq = Counter()
-        annotations = self.filter(example_id__in=examples)
-        for d in annotations.values('label__text').annotate(Count('label')):
-            freq[d['label__text']] += d['label__count']
-        return freq
-
-    def calc_user_frequency(self, examples):
-        """Calculate user frequencies.
-
-        Args:
-            examples: example queryset.
-
-        Returns:
-            user frequency.
-
-        Examples:
-            >>> {'mary': 3, 'john': 4}
-        """
-        freq = Counter()
-        annotations = self.filter(example_id__in=examples)
-        for d in annotations.values('user__username').annotate(Count('user')):
-            freq[d['user__username']] += d['user__count']
-        return freq
-
-    def get_label_per_data(self, project):
-        label_count = Counter()
-        user_count = Counter()
-        docs = project.examples.all()
-        annotations = self.filter(example_id__in=docs.all())
-
-        for d in annotations.values('label__text', 'user__username').annotate(Count('label'), Count('user')):
-            label_count[d['label__text']] += d['label__count']
-            user_count[d['user__username']] += d['user__count']
-
-        return label_count, user_count
-
-
-class Seq2seqAnnotationManager(Manager):
-
-    def get_label_per_data(self, project):
-        label_count = Counter()
-        user_count = Counter()
-        docs = project.examples.all()
-        annotations = self.filter(example_id__in=docs.all())
-
-        for d in annotations.values('text', 'user__username').annotate(Count('text'), Count('user')):
-            label_count[d['text']] += d['text__count']
-            user_count[d['user__username']] += d['user__count']
-
-        return label_count, user_count
+        distribution = {user.username: {label.text: 0 for label in labels} for user in users}
+        items = self.filter(example_id__in=examples)\
+            .values('user__username', 'label__text')\
+            .annotate(count=Count('label__text'))
+        for item in items:
+            username = item['user__username']
+            label = item['label__text']
+            count = item['count']
+            distribution[username][label] = count
+        return distribution
 
 
 class RoleMappingManager(Manager):

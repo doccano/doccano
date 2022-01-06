@@ -10,7 +10,7 @@ from django.db import models
 from polymorphic.models import PolymorphicModel
 
 from .managers import (AnnotationManager, ExampleManager, ExampleStateManager,
-                       RoleMappingManager, Seq2seqAnnotationManager)
+                       RoleMappingManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -335,7 +335,6 @@ class Span(Annotation):
 
 
 class TextLabel(Annotation):
-    objects = Seq2seqAnnotationManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,

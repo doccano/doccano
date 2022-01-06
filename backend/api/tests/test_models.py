@@ -3,8 +3,8 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from ..models import (SEQUENCE_LABELING, Category, DocType, ExampleState,
-                      TextLabel, generate_random_hex_color)
+from ..models import (SEQUENCE_LABELING, Category, DocType, ExampleState, Span,
+                      SpanType, TextLabel, generate_random_hex_color)
 from .api.utils import prepare_project
 
 
@@ -215,3 +215,26 @@ class TestExampleState(TestCase):
         expected_progress[user1.username] = 1
         expected_progress[user2.username] = 1
         self.assertEqual(progress, {'total': 2, 'progress': expected_progress})
+
+
+class TestLabelDistribution(TestCase):
+
+    def setUp(self):
+        self.project = prepare_project(SEQUENCE_LABELING, allow_overlapping=False)
+        self.example = mommy.make('Example', project=self.project.item)
+        self.user = self.project.users[0]
+
+    def test_calc_label_distribution(self):
+        label_a = mommy.make('SpanType', text='labelA', project=self.project.item)
+        label_b = mommy.make('SpanType', text='labelB', project=self.project.item)
+        mommy.make('Span', example=self.example, start_offset=5, end_offset=10, user=self.user, label=label_a)
+        mommy.make('Span', example=self.example, start_offset=10, end_offset=15, user=self.user, label=label_b)
+        distribution = Span.objects.calc_label_distribution(
+            examples=self.project.item.examples.all(),
+            users=self.project.item.users.all(),
+            labels=SpanType.objects.all()
+        )
+        expected = {user.username: {label.text: 0 for label in SpanType.objects.all()} for user in self.project.users}
+        expected[self.user.username][label_a.text] = 1
+        expected[self.user.username][label_b.text] = 1
+        self.assertEqual(distribution, expected)
