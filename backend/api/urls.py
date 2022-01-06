@@ -28,11 +28,6 @@ urlpatterns_project = [
         name='download-dataset'
     ),
     path(
-        route='statistics',
-        view=statistics.StatisticsAPI.as_view(),
-        name='statistics'
-    ),
-    path(
         route='progress',
         view=statistics.ProgressAPI.as_view(),
         name='progress'
