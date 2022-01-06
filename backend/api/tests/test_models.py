@@ -195,14 +195,14 @@ class TestExampleState(TestCase):
 
     def test_initial_user(self):
         progress = ExampleState.objects.measure_member_progress(self.examples, self.project.users)
-        expected_progress = {user.username: 0 for user in self.project.users}
+        expected_progress = [{'user': user.username, 'done': 0} for user in self.project.users]
         self.assertEqual(progress, {'total': 2, 'progress': expected_progress})
 
     def test_user_count_after_confirmation(self):
         mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
         progress = ExampleState.objects.measure_member_progress(self.examples, self.project.users)
-        expected_progress = {user.username: 0 for user in self.project.users}
-        expected_progress[self.project.users[0].username] = 1
+        expected_progress = [{'user': user.username, 'done': 0} for user in self.project.users]
+        expected_progress[0]['done'] = 1
         self.assertEqual(progress, {'total': 2, 'progress': expected_progress})
 
     def test_user_count_after_multiple_user_confirmation(self):
@@ -211,9 +211,9 @@ class TestExampleState(TestCase):
         mommy.make('ExampleState', example=self.example, confirmed_by=user1)
         mommy.make('ExampleState', example=self.example, confirmed_by=user2)
         progress = ExampleState.objects.measure_member_progress(self.examples, self.project.users)
-        expected_progress = {user.username: 0 for user in self.project.users}
-        expected_progress[user1.username] = 1
-        expected_progress[user2.username] = 1
+        expected_progress = [{'user': user.username, 'done': 0} for user in self.project.users]
+        expected_progress[0]['done'] = 1
+        expected_progress[1]['done'] = 1
         self.assertEqual(progress, {'total': 2, 'progress': expected_progress})
 
 

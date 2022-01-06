@@ -70,11 +70,18 @@ class ExampleStateManager(Manager):
             .annotate(total=Count('confirmed_by'))
         response = {
             'total': examples.count(),
-            'progress': {
-                obj['confirmed_by__username']: obj['total'] for obj in done_count
-            }
+            'progress': [
+                {
+                    'user': obj['confirmed_by__username'],
+                    'done': obj['total']
+                } for obj in done_count
+            ]
         }
+        members_with_progress = {o['confirmed_by__username'] for o in done_count}
         for member in members:
-            if member.username not in response['progress']:
-                response['progress'][member.username] = 0
+            if member.username not in members_with_progress:
+                response['progress'].append({
+                    'user': member.username,
+                    'done': 0
+                })
         return response

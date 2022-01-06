@@ -86,14 +86,14 @@ class TestMemberProgress(CRUDMixin):
 
     def test_fetch_initial_progress(self):
         response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
-        expected_progress = {user.username: 0 for user in self.project.users}
+        expected_progress = [{'user': user.username, 'done': 0} for user in self.project.users]
         self.assertEqual(response.data, {'total': 1, 'progress': expected_progress})
 
     def test_fetch_progress(self):
         mommy.make('ExampleState', example=self.example, confirmed_by=self.project.users[0])
         response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
-        expected_progress = {user.username: 0 for user in self.project.users}
-        expected_progress[self.project.users[0].username] = 1
+        expected_progress = [{'user': user.username, 'done': 0} for user in self.project.users]
+        expected_progress[0]['done'] = 1
         self.assertEqual(response.data, {'total': 1, 'progress': expected_progress})
 
 
