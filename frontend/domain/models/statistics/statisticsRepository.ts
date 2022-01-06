@@ -1,6 +1,7 @@
-import { Statistics } from '~/domain/models/statistics/statistics'
+import { Distribution, Progress } from '~/domain/models/statistics/statistics'
 
 export interface StatisticsRepository {
-
-  fetch(projectId: string): Promise<Statistics>
+  fetchCategoryDistribution(projectId: string): Promise<Distribution>
+  fetchSpanDistribution(projectId: string): Promise<Distribution>
+  fetchMemberProgress(projectId: string): Promise<Progress>
 }
