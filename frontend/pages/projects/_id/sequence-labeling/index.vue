@@ -123,7 +123,7 @@ export default {
   },
 
   async created() {
-    this.labels = await this.$services.label.list(this.projectId)
+    this.labels = await this.$services.spanType.list(this.projectId)
     this.linkTypes = await this.$services.linkTypes.list(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
   },
@@ -132,7 +132,7 @@ export default {
     async maybeFetchLabels(annotations) {
       const labelIds = new Set(this.labels.map((label) => label.id));
       if (annotations.some((item) => !labelIds.has(item.label))) {
-          this.labels = await this.$services.label.list(this.projectId);
+          this.labels = await this.$services.spanType.list(this.projectId);
       }
     },
 

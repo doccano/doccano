@@ -1,7 +1,7 @@
 from typing import List
 
 from ...models import Project
-from .label import CategoryLabel, Label, OffsetLabel
+from .label import CategoryLabel, Label, SpanLabel
 
 
 class Cleaner:
@@ -23,7 +23,7 @@ class SpanCleaner(Cleaner):
         super().__init__(project)
         self.allow_overlapping = getattr(project, 'allow_overlapping', False)
 
-    def clean(self, labels: List[OffsetLabel]) -> List[OffsetLabel]:
+    def clean(self, labels: List[SpanLabel]) -> List[SpanLabel]:
         if self.allow_overlapping:
             return labels
 

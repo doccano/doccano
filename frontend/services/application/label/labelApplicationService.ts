@@ -1,4 +1,5 @@
 import { LabelDTO } from './labelData'
+import { CreateLabelCommand } from './labelCommand';
 import { LabelRepository } from '~/domain/models/label/labelRepository'
 import { LabelItem } from '~/domain/models/label/label'
 
@@ -13,7 +14,7 @@ export class LabelApplicationService {
     return items.map(item => new LabelDTO(item))
   }
 
-  public create(projectId: string, item: LabelDTO): void {
+  public create(projectId: string, item: CreateLabelCommand): void {
     const label = new LabelItem(0, item.text, item.prefixKey, item.suffixKey, item.backgroundColor, item.textColor)
     this.repository.create(projectId, label)
   }

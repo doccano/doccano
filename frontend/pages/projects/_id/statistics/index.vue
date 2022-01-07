@@ -1,84 +1,29 @@
 <template>
-  <v-row v-if="!isEmpty">
-    <v-col
-      cols="12"
-      lg="4"
-    >
-      <v-card>
-        <v-card-title>{{ $t('members.roles.annotator') }}</v-card-title>
-        <v-card-text>
-          <doughnut-chart
-            :chart-data="stats.annotatorProgress"
-          />
-        </v-card-text>
-      </v-card>
+  <v-row>
+    <v-col cols="12">
+      <member-progress />
     </v-col>
-    <v-col
-      cols="12"
-      lg="4"
-    >
-      <v-card>
-        <v-card-title>{{ $t('members.roles.annotationApprover') }}</v-card-title>
-        <v-card-text>
-          <doughnut-chart
-            :chart-data="stats.approverProgress"
-          />
-        </v-card-text>
-      </v-card>
+    <v-col v-if="!!project.hasCategory" cols="12">
+      <category-distribution />
     </v-col>
-    <v-col
-      cols="12"
-      lg="4"
-    >
-      <v-card>
-        <v-card-title>{{ $t('members.roles.projectAdmin') }}</v-card-title>
-        <v-card-text>
-          <doughnut-chart
-            :chart-data="stats.adminProgress"
-          />
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col
-      cols="12"
-      lg="4"
-    >
-      <v-card>
-        <v-card-title>Label Stats</v-card-title>
-        <v-card-text>
-          <bar-chart
-            :chart-data="stats.label"
-          />
-        </v-card-text>
-      </v-card>
-    </v-col>
-    <v-col
-      cols="12"
-      lg="4"
-    >
-      <v-card>
-        <v-card-title>User Stats</v-card-title>
-        <v-card-text>
-          <bar-chart
-            :chart-data="stats.user"
-          />
-        </v-card-text>
-      </v-card>
+    <v-col v-if="!!project.hasSpan" cols="12">
+      <span-distribution />
     </v-col>
   </v-row>
 </template>
 
 <script>
-import _ from 'lodash'
-import DoughnutChart from '@/components/statistics/ChartDoughnut'
-import BarChart from '@/components/statistics/ChartBar'
+import CategoryDistribution from '~/components/statistics/CategoryDistribution'
+import SpanDistribution from '~/components/statistics/SpanDistribution'
+import MemberProgress from '~/components/statistics/MemberProgress'
 
 export default {
-
   components: {
-    DoughnutChart,
-    BarChart
+    CategoryDistribution,
+    SpanDistribution,
+    MemberProgress
   },
+  
   layout: 'project',
 
   validate({ params }) {
@@ -87,23 +32,12 @@ export default {
 
   data() {
     return {
-      stats: {}
-    }
-  },
-
-  computed: {
-    isEmpty() {
-      return _.isEmpty(this.stats)
+      project: {},
     }
   },
 
   async created() {
-    this.stats = await this.$services.statistics.fetchStatistics(
-      this.$route.params.id,
-      this.$t('statistics.labelStats'),
-      this.$t('statistics.userStats'),
-      this.$t('statistics.progress')
-    )
+    this.project = await this.$services.project.findById(this.$route.params.id)
   }
 }
 </script>

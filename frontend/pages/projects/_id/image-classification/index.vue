@@ -70,7 +70,7 @@
 <script>
 import _ from 'lodash'
 import { mdiText, mdiFormatListBulleted } from '@mdi/js'
-import { toRefs } from '@nuxtjs/composition-api'
+import { toRefs, useContext } from '@nuxtjs/composition-api'
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import LabelSelect from '@/components/tasks/textClassification/LabelSelect'
 import LayoutText from '@/components/tasks/layout/LayoutText'
@@ -96,7 +96,8 @@ export default {
   },
 
   setup() {
-    const { state, getLabelList, shortKeys } = useLabelList()
+    const { app } = useContext()
+    const { state, getLabelList, shortKeys } = useLabelList(app.$services.categoryType)
 
     return {
       ...toRefs(state),

@@ -9,18 +9,20 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
-from .managers import (AnnotationManager, RoleMappingManager,
-                       Seq2seqAnnotationManager)
+from .managers import (AnnotationManager, ExampleManager, ExampleStateManager,
+                       RoleMappingManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
 SEQ2SEQ = 'Seq2seq'
 SPEECH2TEXT = 'Speech2text'
 IMAGE_CLASSIFICATION = 'ImageClassification'
+INTENT_DETECTION_AND_SLOT_FILLING = 'IntentDetectionAndSlotFilling'
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, 'document classification'),
     (SEQUENCE_LABELING, 'sequence labeling'),
     (SEQ2SEQ, 'sequence to sequence'),
+    (INTENT_DETECTION_AND_SLOT_FILLING, 'intent detection and slot filling'),
     (SPEECH2TEXT, 'speech to text'),
     (IMAGE_CLASSIFICATION, 'image classification')
 )
@@ -38,9 +40,6 @@ class Project(PolymorphicModel):
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)
 
-    def get_annotation_class(self):
-        raise NotImplementedError()
-
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         raise NotImplementedError()
 
@@ -50,9 +49,6 @@ class Project(PolymorphicModel):
 
 class TextClassificationProject(Project):
 
-    def get_annotation_class(self):
-        return Category
-
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'text'
 
@@ -61,17 +57,17 @@ class SequenceLabelingProject(Project):
     allow_overlapping = models.BooleanField(default=False)
     grapheme_mode = models.BooleanField(default=False)
 
-    def get_annotation_class(self):
-        return Span
-
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'text'
 
 
 class Seq2seqProject(Project):
 
-    def get_annotation_class(self):
-        return TextLabel
+    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+        return task == 'text'
+
+
+class IntentDetectionAndSlotFillingProject(Project):
 
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'text'
@@ -79,17 +75,11 @@ class Seq2seqProject(Project):
 
 class Speech2textProject(Project):
 
-    def get_annotation_class(self):
-        return TextLabel
-
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'speech'
 
 
 class ImageClassificationProject(Project):
-
-    def get_annotation_class(self):
-        return Category
 
     def is_task_of(self, task: Literal['text', 'image', 'speech']):
         return task == 'image'
@@ -122,7 +112,7 @@ class Label(models.Model):
     project = models.ForeignKey(
         to=Project,
         on_delete=models.CASCADE,
-        related_name='labels'
+        # related_name='labels'
     )
     background_color = models.CharField(max_length=7, default=generate_random_hex_color)
     text_color = models.CharField(max_length=7, default='#ffffff')
@@ -132,6 +122,10 @@ class Label(models.Model):
     def __str__(self):
         return self.text
 
+    @property
+    def labels(self):
+        raise NotImplementedError()
+
     def clean(self):
         # Don't allow shortcut key not to have a suffix key.
         if self.prefix_key and not self.suffix_key:
@@ -140,7 +134,7 @@ class Label(models.Model):
 
         # each shortcut (prefix key + suffix key) can only be assigned to one label
         if self.suffix_key or self.prefix_key:
-            other_labels = self.project.labels.exclude(id=self.id)
+            other_labels = self.labels.exclude(id=self.id)
             if other_labels.filter(suffix_key=self.suffix_key, prefix_key=self.prefix_key).exists():
                 message = 'A label with the shortcut already exists in the project.'
                 raise ValidationError(message)
@@ -148,13 +142,33 @@ class Label(models.Model):
         super().clean()
 
     class Meta:
-        unique_together = (
-            ('project', 'text'),
-        )
+        abstract = True
+        constraints = [
+            models.UniqueConstraint(
+                fields=['project', 'text'],
+                name='%(app_label)s_%(class)s_is_unique'
+            )
+        ]
         ordering = ['created_at']
 
 
+class CategoryType(Label):
+
+    @property
+    def labels(self):
+        return CategoryType.objects.filter(project=self.project)
+
+
+class SpanType(Label):
+
+    @property
+    def labels(self):
+        return SpanType.objects.filter(project=self.project)
+
+
 class Example(models.Model):
+    objects = ExampleManager()
+
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True, unique=True)
     meta = models.JSONField(default=dict)
     filename = models.FileField(default='.', max_length=1024)
@@ -177,11 +191,23 @@ class Example(models.Model):
     def comment_count(self):
         return Comment.objects.filter(example=self.id).count()
 
+    def is_labeled(self, is_collaborative, user):
+        if is_collaborative:
+            for model in Annotation.__subclasses__():
+                if model.objects.filter(example=self.id).exists():
+                    return True
+        else:
+            for model in Annotation.__subclasses__():
+                if model.objects.filter(example=self.id, user=user).exists():
+                    return True
+        return False
+
     class Meta:
         ordering = ['created_at']
 
 
 class ExampleState(models.Model):
+    objects = ExampleStateManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,
@@ -256,10 +282,7 @@ class Category(Annotation):
         on_delete=models.CASCADE,
         related_name='categories'
     )
-    label = models.ForeignKey(
-        to=Label,
-        on_delete=models.CASCADE
-    )
+    label = models.ForeignKey(to=CategoryType, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (
@@ -275,10 +298,7 @@ class Span(Annotation):
         on_delete=models.CASCADE,
         related_name='spans'
     )
-    label = models.ForeignKey(
-        to=Label,
-        on_delete=models.CASCADE
-    )
+    label = models.ForeignKey(to=SpanType, on_delete=models.CASCADE)
     start_offset = models.IntegerField()
     end_offset = models.IntegerField()
 
@@ -315,7 +335,6 @@ class Span(Annotation):
 
 
 class TextLabel(Annotation):
-    objects = Seq2seqAnnotationManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,

@@ -92,3 +92,8 @@ lamb  O
 Peter B-PER
 Blackburn I-PER
 """
+
+IDSF_JSONL = """
+{"text": "Find a flight from Memphis to Tacoma", "entities": [[0, 26, "City"], [30, 36, "City"]], "cats": ["flight"]}
+{"text": "I want to know what airports are in Los Angeles", "entities": [[36, 47, "City"]], "cats": ["airport"]}
+"""

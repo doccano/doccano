@@ -162,3 +162,30 @@ class Seq2seqRepository(TextRepository):
         for a in doc.texts.all():
             label_per_user[a.user.username].append(a.text)
         return label_per_user
+
+
+class IntentDetectionSlotFillingRepository(TextRepository):
+
+    @property
+    def docs(self):
+        return Example.objects.filter(project=self.project).prefetch_related(
+            'categories__user',
+            'categories__label',
+            'spans__user',
+            'spans__label'
+        )
+
+    def label_per_user(self, doc) -> Dict:
+        category_per_user = defaultdict(list)
+        span_per_user = defaultdict(list)
+        label_per_user = defaultdict(dict)
+        for a in doc.categories.all():
+            category_per_user[a.user.username].append(a.label.text)
+        for a in doc.spans.all():
+            label = (a.start_offset, a.end_offset, a.label.text)
+            span_per_user[a.user.username].append(label)
+        for user, label in category_per_user.items():
+            label_per_user[user]['cats'] = label
+        for user, label in span_per_user.items():
+            label_per_user[user]['entities'] = label
+        return label_per_user

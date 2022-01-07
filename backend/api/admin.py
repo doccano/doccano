@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models import (AutoLabelingConfig, Category, Comment, Example, Label,
-                     Project, Role, RoleMapping, Seq2seqProject,
-                     SequenceLabelingProject, Span, Tag,
+from .models import (AutoLabelingConfig, Category, CategoryType, Comment,
+                     Example, Project, Role, RoleMapping, Seq2seqProject,
+                     SequenceLabelingProject, Span, SpanType, Tag,
                      TextClassificationProject, TextLabel)
 
 
@@ -10,6 +10,14 @@ class LabelAdmin(admin.ModelAdmin):
     list_display = ('text', 'project', 'text_color', 'background_color')
     ordering = ('project',)
     search_fields = ('text',)
+
+
+class CategoryTypeAdmin(LabelAdmin):
+    pass
+
+
+class SpanTypeAdmin(LabelAdmin):
+    pass
 
 
 class ExampleAdmin(admin.ModelAdmin):
@@ -78,7 +86,9 @@ admin.site.register(AutoLabelingConfig, AutoLabelingConfigAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Span, SpanAdmin)
 admin.site.register(TextLabel, TextLabelAdmin)
-admin.site.register(Label, LabelAdmin)
+# admin.site.register(Label, LabelAdmin)
+admin.site.register(CategoryType, CategoryTypeAdmin)
+admin.site.register(SpanType, SpanTypeAdmin)
 admin.site.register(Example, ExampleAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(TextClassificationProject, ProjectAdmin)

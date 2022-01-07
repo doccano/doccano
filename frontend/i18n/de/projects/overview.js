@@ -15,6 +15,7 @@ export default {
     'Textklassifikation',
     'Sequenz-Labeling',
     'Sequenz zu Sequenz',
+    'Intent-Erkennung und Slot-Füllung',
     'Bildklassifikation',
     'Sprache zu Text',
   ]

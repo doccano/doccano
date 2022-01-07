@@ -13,44 +13,45 @@ export interface LabelItemResponse {
 
 export class APILabelRepository implements LabelRepository {
   constructor(
+    private readonly baseUrl = 'label',
     private readonly request = ApiService
   ) {}
 
   async list(projectId: string): Promise<LabelItem[]> {
-    const url = `/projects/${projectId}/labels`
+    const url = `/projects/${projectId}/${this.baseUrl}s`
     const response = await this.request.get(url)
     const responseItems: LabelItemResponse[] = response.data
     return responseItems.map(item => LabelItem.valueOf(item))
   }
 
   async create(projectId: string, item: LabelItem): Promise<LabelItem> {
-    const url = `/projects/${projectId}/labels`
+    const url = `/projects/${projectId}/${this.baseUrl}s`
     const response = await this.request.post(url, item.toObject())
     const responseItem: LabelItemResponse = response.data
     return LabelItem.valueOf(responseItem)
   }
 
   async update(projectId: string, item: LabelItem): Promise<LabelItem> {
-    const url = `/projects/${projectId}/labels/${item.id}`
+    const url = `/projects/${projectId}/${this.baseUrl}s/${item.id}`
     const response = await this.request.patch(url, item.toObject())
     const responseItem: LabelItemResponse = response.data
     return LabelItem.valueOf(responseItem)
   }
 
   async bulkDelete(projectId: string, labelIds: number[]): Promise<void> {
-    const url = `/projects/${projectId}/labels`
+    const url = `/projects/${projectId}/${this.baseUrl}s`
     await this.request.delete(url, { ids: labelIds })
   }
 
   async uploadFile(projectId: string, payload: FormData): Promise<void> {
-    const url = `/projects/${projectId}/label-upload`
+    const url = `/projects/${projectId}/${this.baseUrl}-upload`
     const config = {
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     }
     try {
-      await this.request.post(`/projects/${projectId}/label-upload`, payload, config)
+      await this.request.post(url, payload, config)
     } catch(e) {
       const data = e.response.data
       if ('detail' in data) {

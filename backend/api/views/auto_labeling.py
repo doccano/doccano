@@ -199,17 +199,13 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
         self.serializer_class = get_annotation_serializer(task=project.project_type)
         return self.serializer_class
 
-    def get_queryset(self):
+    def cannot_annotate(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        model = project.get_annotation_class()
-        queryset = model.objects.filter(example=self.kwargs['example_id'])
-        if not project.collaborative_annotation:
-            queryset = queryset.filter(user=self.request.user)
-        return queryset
+        example = get_object_or_404(Example, pk=self.kwargs['example_id'])
+        return example.is_labeled(project.collaborative_annotation, self.request.user)
 
     def create(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        if queryset.exists():
+        if self.cannot_annotate():
             raise AutoLabelingException()
         labels = self.extract()
         labels = self.transform(labels)

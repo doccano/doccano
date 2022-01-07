@@ -46,7 +46,8 @@ import {LinkTypesApplicationService} from "~/services/application/links/linkType
 import {ApiLinkTypesRepository} from "~/repositories/links/apiLinkTypesRepository";
 
 export interface Services {
-  label: LabelApplicationService,
+  categoryType: LabelApplicationService,
+  spanType: LabelApplicationService,
   linkTypes: LinkTypesApplicationService,
   member: MemberApplicationService,
   user: UserApplicationService,
@@ -77,7 +78,6 @@ declare module 'vue/types/vue' {
 }
 
 const plugin: Plugin = (context, inject) => {
-  const labelRepository      = new APILabelRepository()
   const linkTypesRepository = new ApiLinkTypesRepository()
   const memberRepository     = new APIMemberRepository()
   const userRepository       = new APIUserRepository()
@@ -101,7 +101,8 @@ const plugin: Plugin = (context, inject) => {
   const downloadFormatRepository = new APIDownloadFormatRepository()
   const downloadRepository = new APIDownloadRepository()
 
-  const label      = new LabelApplicationService(labelRepository)
+  const categoryType  = new LabelApplicationService(new APILabelRepository('category-type'))
+  const spanType      = new LabelApplicationService(new APILabelRepository('span-type'))
   const linkTypes = new LinkTypesApplicationService(linkTypesRepository)
   const member     = new MemberApplicationService(memberRepository)
   const user       = new UserApplicationService(userRepository)
@@ -125,7 +126,8 @@ const plugin: Plugin = (context, inject) => {
   const download = new DownloadApplicationService(downloadRepository)
   
   const services: Services = {
-    label,
+    categoryType,
+    spanType,
     linkTypes,
     member,
     user,

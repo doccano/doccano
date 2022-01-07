@@ -7,7 +7,7 @@ from .utils import (CRUDMixin, make_annotation, make_doc, make_label,
                     make_user, prepare_project)
 
 
-class TestAnnotationList(CRUDMixin):
+class TestAnnotationList:
     model = Category
     task = DOCUMENT_CLASSIFICATION
     view_name = 'annotation_list'
@@ -42,13 +42,13 @@ class TestAnnotationList(CRUDMixin):
         self.assertEqual(count, 2)  # delete only own annotation
 
 
-class TestCategoryList(TestAnnotationList):
+class TestCategoryList(TestAnnotationList, CRUDMixin):
     model = Category
     task = DOCUMENT_CLASSIFICATION
     view_name = 'category_list'
 
 
-class TestSpanList(TestAnnotationList):
+class TestSpanList(TestAnnotationList, CRUDMixin):
     model = Span
     task = SEQUENCE_LABELING
     view_name = 'span_list'
@@ -58,13 +58,13 @@ class TestSpanList(TestAnnotationList):
         make_annotation(cls.task, doc=doc, user=member, start_offset=0, end_offset=1)
 
 
-class TestTextList(TestAnnotationList):
+class TestTextList(TestAnnotationList, CRUDMixin):
     model = TextLabel
     task = SEQ2SEQ
     view_name = 'text_list'
 
 
-class TestSharedAnnotationList(CRUDMixin):
+class TestSharedAnnotationList:
     model = Category
     task = DOCUMENT_CLASSIFICATION
     view_name = 'annotation_list'
@@ -92,13 +92,13 @@ class TestSharedAnnotationList(CRUDMixin):
         self.assertEqual(count, 0)  # delete all annotation in the doc
 
 
-class TestSharedCategoryList(TestSharedAnnotationList):
+class TestSharedCategoryList(TestSharedAnnotationList, CRUDMixin):
     model = Category
     task = DOCUMENT_CLASSIFICATION
     view_name = 'category_list'
 
 
-class TestSharedSpanList(TestSharedAnnotationList):
+class TestSharedSpanList(TestSharedAnnotationList, CRUDMixin):
     model = Span
     task = SEQUENCE_LABELING
     view_name = 'span_list'
@@ -116,13 +116,13 @@ class TestSharedSpanList(TestSharedAnnotationList):
         cls.start_offset += 1
 
 
-class TestSharedTextList(TestSharedAnnotationList):
+class TestSharedTextList(TestSharedAnnotationList, CRUDMixin):
     model = TextLabel
     task = SEQ2SEQ
     view_name = 'text_list'
 
 
-class TestAnnotationCreation(CRUDMixin):
+class TestAnnotationCreation:
     task = DOCUMENT_CLASSIFICATION
     view_name = 'annotation_list'
 
@@ -148,11 +148,11 @@ class TestAnnotationCreation(CRUDMixin):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
 
-class TestCategoryCreation(TestAnnotationCreation):
+class TestCategoryCreation(TestAnnotationCreation, CRUDMixin):
     view_name = 'category_list'
 
 
-class TestSpanCreation(TestAnnotationCreation):
+class TestSpanCreation(TestAnnotationCreation, CRUDMixin):
     task = SEQUENCE_LABELING
     view_name = 'span_list'
 
@@ -161,7 +161,7 @@ class TestSpanCreation(TestAnnotationCreation):
         return {'label': label.id, 'start_offset': 0, 'end_offset': 1}
 
 
-class TestTextLabelCreation(TestAnnotationCreation):
+class TestTextLabelCreation(TestAnnotationCreation, CRUDMixin):
     task = SEQ2SEQ
     view_name = 'text_list'
 
@@ -169,7 +169,7 @@ class TestTextLabelCreation(TestAnnotationCreation):
         return {'text': 'example'}
 
 
-class TestAnnotationDetail(CRUDMixin):
+class TestAnnotationDetail:
     task = SEQUENCE_LABELING
     view_name = 'annotation_detail'
 
@@ -225,7 +225,7 @@ class TestAnnotationDetail(CRUDMixin):
         self.assert_delete(self.non_member, status.HTTP_403_FORBIDDEN)
 
 
-class TestCategoryDetail(TestAnnotationDetail):
+class TestCategoryDetail(TestAnnotationDetail, CRUDMixin):
     task = DOCUMENT_CLASSIFICATION
     view_name = 'category_detail'
 
@@ -233,12 +233,12 @@ class TestCategoryDetail(TestAnnotationDetail):
         return make_annotation(task=self.task, doc=doc, user=self.project.users[0])
 
 
-class TestSpanDetail(TestAnnotationDetail):
+class TestSpanDetail(TestAnnotationDetail, CRUDMixin):
     task = SEQUENCE_LABELING
     view_name = 'span_detail'
 
 
-class TestTextDetail(TestAnnotationDetail):
+class TestTextDetail(TestAnnotationDetail, CRUDMixin):
     task = SEQ2SEQ
     view_name = 'text_detail'
 
@@ -250,7 +250,7 @@ class TestTextDetail(TestAnnotationDetail):
         return make_annotation(task=self.task, doc=doc, user=self.project.users[0])
 
 
-class TestSharedAnnotationDetail(CRUDMixin):
+class TestSharedAnnotationDetail:
     task = DOCUMENT_CLASSIFICATION
     view_name = 'annotation_detail'
 
@@ -277,11 +277,11 @@ class TestSharedAnnotationDetail(CRUDMixin):
         self.assert_delete(self.project.users[1], status.HTTP_204_NO_CONTENT)
 
 
-class TestSharedCategoryDetail(TestSharedAnnotationDetail):
+class TestSharedCategoryDetail(TestSharedAnnotationDetail, CRUDMixin):
     view_name = 'category_detail'
 
 
-class TestSharedSpanDetail(TestSharedAnnotationDetail):
+class TestSharedSpanDetail(TestSharedAnnotationDetail, CRUDMixin):
     task = SEQUENCE_LABELING
     view_name = 'span_detail'
 
@@ -289,7 +289,7 @@ class TestSharedSpanDetail(TestSharedAnnotationDetail):
         return make_annotation(self.task, doc=doc, user=member, start_offset=0, end_offset=1)
 
 
-class TestSharedTextDetail(TestSharedAnnotationDetail):
+class TestSharedTextDetail(TestSharedAnnotationDetail, CRUDMixin):
     task = SEQ2SEQ
     view_name = 'text_detail'
 

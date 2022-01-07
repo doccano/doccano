@@ -96,7 +96,7 @@ export default {
       removeTeacher
     } = useTeacherList(app.$services.textClassification)
     const enableAutoLabeling = ref(false)
-    const { state: labelState, getLabelList, shortKeys } = useLabelList()
+    const { state: labelState, getLabelList, shortKeys } = useLabelList(app.$services.categoryType)
     const labelComponent = ref('label-group')
 
     getLabelList(projectId)

@@ -124,6 +124,7 @@ export default {
         { title: this.$t('home.demoNER'), link: 'named-entity-recognition' },
         { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
         { title: this.$t('home.demoTranslation'), link: 'translation' },
+        { title: 'Intent Detection and Slot Filling', link: 'intent-detection-and-slot-filling' },
         { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' },
         { title: 'Image Classification', link: 'image-classification' },
         { title: 'Speech to Text', link: 'speech-to-text' },

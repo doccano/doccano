@@ -18,6 +18,8 @@ export class ProjectDTO {
   isTextProject: boolean
   allowOverlapping: boolean
   graphemeMode: boolean
+  hasCategory: boolean
+  hasSpan: boolean
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -37,6 +39,8 @@ export class ProjectDTO {
     this.isTextProject = item.isTextProject
     this.allowOverlapping = item.allow_overlapping
     this.graphemeMode = item.grapheme_mode
+    this.hasCategory = item.hasCategory
+    this.hasSpan = item.hasSpan
   }
 }
 

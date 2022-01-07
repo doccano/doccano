@@ -4,7 +4,8 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
+                       INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
 from . import examples
 
@@ -243,6 +244,11 @@ Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
 Options.register(SEQ2SEQ, JSON, OptionColumn, examples.Text_JSON)
 Options.register(SEQ2SEQ, JSONL, OptionColumn, examples.Text_JSONL)
 Options.register(SEQ2SEQ, Excel, OptionColumn, examples.Text_CSV)
+
+# Intent detection and slof filling
+Options.register(INTENT_DETECTION_AND_SLOT_FILLING, TextFile, OptionEncoding, examples.Generic_TextFile)
+Options.register(INTENT_DETECTION_AND_SLOT_FILLING, TextLine, OptionEncoding, examples.Generic_TextLine)
+Options.register(INTENT_DETECTION_AND_SLOT_FILLING, JSONL, OptionNone, examples.IDSF_JSONL)
 
 # Image classification
 Options.register(IMAGE_CLASSIFICATION, ImageFile, OptionNone, examples.Generic_ImageFile)

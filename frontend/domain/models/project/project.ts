@@ -4,7 +4,7 @@ export interface CurrentUsersRole {
   is_annotation_approver: boolean;
 }
 
-export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'ImageClassification' | 'Speech2text'
+export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'IntentDetectionAndSlotFilling' | 'ImageClassification' | 'Speech2text'
 
 
 export class ProjectReadItem {
@@ -86,6 +86,7 @@ export class ProjectReadItem {
       DocumentClassification: 'text-classification',
       SequenceLabeling      : 'sequence-labeling',
       Seq2seq               : 'sequence-to-sequence',
+      IntentDetectionAndSlotFilling: 'intent-detection-and-slot-filling',
       ImageClassification   : 'image-classification',
       Speech2text           : 'speech-to-text',
     }
@@ -97,6 +98,7 @@ export class ProjectReadItem {
     const allowedProjectTypes = [
       'DocumentClassification',
       'SequenceLabeling',
+      'IntentDetectionAndSlotFilling',
       'ImageClassification'
     ]
     return allowedProjectTypes.includes(this.project_type)
@@ -113,7 +115,25 @@ export class ProjectReadItem {
     const allowedProjectTypes = [
       'DocumentClassification',
       'SequenceLabeling',
-      'Seq2seq'
+      'Seq2seq',
+      'IntentDetectionAndSlotFilling'
+    ]
+    return allowedProjectTypes.includes(this.project_type)
+  }
+
+  get hasCategory(): boolean {
+    const allowedProjectTypes = [
+      'DocumentClassification',
+      'IntentDetectionAndSlotFilling',
+      'ImageClassification'
+    ]
+    return allowedProjectTypes.includes(this.project_type)
+  }
+
+  get hasSpan(): boolean {
+    const allowedProjectTypes = [
+      'IntentDetectionAndSlotFilling',
+      'SequenceLabeling'
     ]
     return allowedProjectTypes.includes(this.project_type)
   }
@@ -198,6 +218,7 @@ export class ProjectWriteItem {
       DocumentClassification: 'TextClassificationProject',
       SequenceLabeling      : 'SequenceLabelingProject',
       Seq2seq               : 'Seq2seqProject',
+      IntentDetectionAndSlotFilling: 'IntentDetectionAndSlotFillingProject',
       ImageClassification   : 'ImageClassificationProject',
       Speech2text           : 'Speech2textProject',
     }

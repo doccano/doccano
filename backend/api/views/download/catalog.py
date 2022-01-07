@@ -4,7 +4,8 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
+from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
+                       INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
 from . import examples
 
@@ -36,6 +37,11 @@ class JSON(Format):
 
 class JSONL(Format):
     name = 'JSONL'
+    extension = 'jsonl'
+
+
+class IntentAndSlot(Format):
+    name = 'JSONL(intent and slot)'
     extension = 'jsonl'
 
 
@@ -83,6 +89,9 @@ Options.register(SEQUENCE_LABELING, JSONL, OptionNone, examples.Offset_JSONL)
 Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
 Options.register(SEQ2SEQ, JSON, OptionNone, examples.Text_JSON)
 Options.register(SEQ2SEQ, JSONL, OptionNone, examples.Text_JSONL)
+
+# Intent detection and slot filling
+Options.register(INTENT_DETECTION_AND_SLOT_FILLING, IntentAndSlot, OptionNone, examples.INTENT_JSONL)
 
 # Image Classification
 Options.register(IMAGE_CLASSIFICATION, JSONL, OptionNone, examples.CategoryImageClassification)

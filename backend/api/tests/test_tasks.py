@@ -2,8 +2,10 @@ import pathlib
 
 from django.test import TestCase
 
-from ..models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                      Category, Example, Label, Span)
+from ..models import (DOCUMENT_CLASSIFICATION,
+                      INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
+                      SEQUENCE_LABELING, Category, CategoryType, Example, Span,
+                      SpanType)
 from ..tasks import ingest_data
 from .api.utils import prepare_project
 
@@ -36,7 +38,7 @@ class TestIngestClassificationData(TestIngestData):
     def assert_parse_error(self, response):
         self.assertGreaterEqual(len(response['error']), 1)
         self.assertEqual(Example.objects.count(), 0)
-        self.assertEqual(Label.objects.count(), 0)
+        self.assertEqual(CategoryType.objects.count(), 0)
         self.assertEqual(Category.objects.count(), 0)
 
     def test_jsonl(self):
@@ -161,7 +163,7 @@ class TestIngestSequenceLabelingData(TestIngestData):
     def assert_parse_error(self, response):
         self.assertGreaterEqual(len(response['error']), 1)
         self.assertEqual(Example.objects.count(), 0)
-        self.assertEqual(Label.objects.count(), 0)
+        self.assertEqual(SpanType.objects.count(), 0)
         self.assertEqual(Span.objects.count(), 0)
 
     def test_jsonl(self):
@@ -233,6 +235,31 @@ class TestIngestSeq2seqData(TestIngestData):
         dataset = [
             ('exampleA', ['label1']),
             ('exampleB', [])
+        ]
+        self.ingest_data(filename, file_format)
+        self.assert_examples(dataset)
+
+
+class TextIngestIntentDetectionAndSlotFillingData(TestIngestData):
+    task = INTENT_DETECTION_AND_SLOT_FILLING
+
+    def assert_examples(self, dataset):
+        self.assertEqual(Example.objects.count(), len(dataset))
+        for text, expected_labels in dataset:
+            example = Example.objects.get(text=text)
+            cats = set(cat.label.text for cat in example.categories.all())
+            entities = [(span.start_offset, span.end_offset, span.label.text) for span in example.spans.all()]
+            self.assertEqual(cats, set(expected_labels['cats']))
+            self.assertEqual(entities, expected_labels['entities'])
+
+    def test_entities_and_cats(self):
+        filename = 'intent/example.jsonl'
+        file_format = 'JSONL'
+        dataset = [
+            ('exampleA', {'cats': ['positive'], 'entities': [(0, 1, 'LOC')]}),
+            ('exampleB', {'cats': ['positive'], 'entities': []}),
+            ('exampleC', {'cats': [], 'entities': [(0, 1, 'LOC')]}),
+            ('exampleD', {'cats': [], 'entities': []}),
         ]
         self.ingest_data(filename, file_format)
         self.assert_examples(dataset)

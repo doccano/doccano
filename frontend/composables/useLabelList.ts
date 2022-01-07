@@ -1,27 +1,26 @@
-import { computed, reactive, ref, useContext } from '@nuxtjs/composition-api'
+import { computed, reactive, useContext } from '@nuxtjs/composition-api'
 import { LabelDTO } from '@/services/application/label/labelData'
 import { CreateLabelCommand , UpdateLabelCommand } from '@/services/application/label/labelCommand'
+import { LabelApplicationService } from '@/services/application/label/labelApplicationService'
 
-
-export const useLabelList = () => {
+export const useLabelList = (service: LabelApplicationService) => {
   const state = reactive({
     labels: [] as LabelDTO[]
   })
 
   const { app } = useContext()
-  const $services = app.$services
 
   const getLabelList = async(
     projectId: string
   ) => {
-    state.labels = await $services.label.list(projectId)
+    state.labels = await service.list(projectId)
   }
 
   const createLabel = async(
     projectId: string,
     command: CreateLabelCommand
   ) => {
-    await $services.label.create(projectId, command)
+    await service.create(projectId, command)
     await getLabelList(projectId)
   }
 
@@ -29,14 +28,14 @@ export const useLabelList = () => {
     projectId: string,
     command: UpdateLabelCommand
   ) => {
-    await $services.label.update(projectId, command)
+    await service.update(projectId, command)
   }
 
   const deleteLabelList = async(
     projectId: string,
     items: LabelDTO[]
   ) => {
-    await $services.label.bulkDelete(projectId, items)
+    await service.bulkDelete(projectId, items)
     await getLabelList(projectId)
   }
 

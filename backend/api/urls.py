@@ -28,23 +28,54 @@ urlpatterns_project = [
         name='download-dataset'
     ),
     path(
-        route='statistics',
-        view=statistics.StatisticsAPI.as_view(),
-        name='statistics'),
-    path(
-        route='labels',
-        view=label.LabelList.as_view(),
-        name='label_list'
+        route='progress',
+        view=statistics.ProgressAPI.as_view(),
+        name='progress'
     ),
     path(
-        route='label-upload',
-        view=label.LabelUploadAPI.as_view(),
-        name='label_upload'
+        route='member-progress',
+        view=statistics.MemberProgressAPI.as_view(),
+        name='member_progress'
     ),
     path(
-        route='labels/<int:label_id>',
-        view=label.LabelDetail.as_view(),
-        name='label_detail'
+        route='category-distribution',
+        view=statistics.CategoryTypeDistribution.as_view(),
+        name='category_distribution'
+    ),
+    path(
+        route='span-distribution',
+        view=statistics.SpanTypeDistribution.as_view(),
+        name='span_distribution'
+    ),
+    path(
+        route='category-types',
+        view=label.CategoryTypeList.as_view(),
+        name='category_types'
+    ),
+    path(
+        route='category-types/<int:label_id>',
+        view=label.CategoryTypeDetail.as_view(),
+        name='category_type'
+    ),
+    path(
+        route='span-types',
+        view=label.SpanTypeList.as_view(),
+        name='span_types'
+    ),
+    path(
+        route='span-types/<int:label_id>',
+        view=label.SpanTypeDetail.as_view(),
+        name='span_type'
+    ),
+    path(
+        route='category-type-upload',
+        view=label.CategoryTypeUploadAPI.as_view(),
+        name='category_type_upload'
+    ),
+    path(
+        route='span-type-upload',
+        view=label.SpanTypeUploadAPI.as_view(),
+        name='span_type_upload'
     ),
     path(
         route='examples',

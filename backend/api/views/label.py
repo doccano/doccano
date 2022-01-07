@@ -3,6 +3,7 @@ import re
 
 from django.db import IntegrityError, transaction
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.exceptions import ParseError
 from rest_framework.parsers import MultiPartParser
@@ -11,9 +12,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..exceptions import LabelValidationError
-from ..models import Label, Project
+from ..models import CategoryType, Label, Project, SpanType
 from ..permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
-from ..serializers import LabelSerializer
+from ..serializers import (CategoryTypeSerializer, LabelSerializer,
+                           SpanTypeSerializer)
 
 
 def camel_to_snake(name):
@@ -26,13 +28,15 @@ def camel_to_snake_dict(d):
 
 
 class LabelList(generics.ListCreateAPIView):
+    model = Label
+    filter_backends = [DjangoFilterBackend]
     serializer_class = LabelSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return project.labels
+        return self.model.objects.filter(project=project)
 
     def perform_create(self, serializer):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -40,13 +44,37 @@ class LabelList(generics.ListCreateAPIView):
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
-        Label.objects.filter(pk__in=delete_ids).delete()
+        self.model.objects.filter(pk__in=delete_ids).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Label.objects.all()
-    serializer_class = LabelSerializer
+# class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Label.objects.all()
+#     serializer_class = LabelSerializer
+#     lookup_url_kwarg = 'label_id'
+#     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+
+
+class CategoryTypeList(LabelList):
+    model = CategoryType
+    serializer_class = CategoryTypeSerializer
+
+
+class CategoryTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CategoryType.objects.all()
+    serializer_class = CategoryTypeSerializer
+    lookup_url_kwarg = 'label_id'
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+
+
+class SpanTypeList(LabelList):
+    model = SpanType
+    serializer_class = SpanTypeSerializer
+
+
+class SpanTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = SpanType.objects.all()
+    serializer_class = SpanTypeSerializer
     lookup_url_kwarg = 'label_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
@@ -54,6 +82,7 @@ class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
 class LabelUploadAPI(APIView):
     parser_classes = (MultiPartParser,)
     permission_classes = [IsAuthenticated & IsProjectAdmin]
+    serializer_class = LabelSerializer
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
@@ -63,7 +92,7 @@ class LabelUploadAPI(APIView):
         try:
             labels = json.load(request.data['file'])
             labels = list(map(camel_to_snake_dict, labels))
-            serializer = LabelSerializer(data=labels, many=True)
+            serializer = self.serializer_class(data=labels, many=True)
             serializer.is_valid(raise_exception=True)
             serializer.save(project=project)
             return Response(status=status.HTTP_201_CREATED)
@@ -71,3 +100,11 @@ class LabelUploadAPI(APIView):
             raise ParseError('The file format is invalid.')
         except IntegrityError:
             raise LabelValidationError
+
+
+class CategoryTypeUploadAPI(LabelUploadAPI):
+    serializer_class = CategoryTypeSerializer
+
+
+class SpanTypeUploadAPI(LabelUploadAPI):
+    serializer_class = SpanTypeSerializer

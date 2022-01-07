@@ -8,11 +8,13 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      SEQUENCE_LABELING, SPEECH2TEXT, AnnotationRelations,
-                     AutoLabelingConfig, Category, Comment, Example,
-                     ExampleState, ImageClassificationProject, Label, Project,
+                     AutoLabelingConfig, Category, CategoryType, Comment,
+                     Example, ExampleState, ImageClassificationProject,
+                     IntentDetectionAndSlotFillingProject, Label, Project,
                      RelationTypes, Role, RoleMapping, Seq2seqProject,
-                     SequenceLabelingProject, Span, Speech2textProject, Tag,
-                     TextClassificationProject, TextLabel)
+                     SequenceLabelingProject, Span, SpanType,
+                     Speech2textProject, Tag, TextClassificationProject,
+                     TextLabel)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -60,7 +62,40 @@ class LabelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Label
-        fields = ('id', 'text', 'prefix_key', 'suffix_key', 'background_color', 'text_color')
+        fields = (
+            'id',
+            'text',
+            'prefix_key',
+            'suffix_key',
+            'background_color',
+            'text_color',
+        )
+
+
+class CategoryTypeSerializer(LabelSerializer):
+    class Meta:
+        model = CategoryType
+        fields = (
+            'id',
+            'text',
+            'prefix_key',
+            'suffix_key',
+            'background_color',
+            'text_color',
+        )
+
+
+class SpanTypeSerializer(LabelSerializer):
+    class Meta:
+        model = SpanType
+        fields = (
+            'id',
+            'text',
+            'prefix_key',
+            'suffix_key',
+            'background_color',
+            'text_color',
+        )
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -80,20 +115,8 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ExampleSerializer(serializers.ModelSerializer):
-    annotations = serializers.SerializerMethodField()
     annotation_approver = serializers.SerializerMethodField()
     is_confirmed = serializers.SerializerMethodField()
-
-    def get_annotations(self, instance):
-        request = self.context.get('request')
-        project = instance.project
-        model = project.get_annotation_class()
-        serializer = get_annotation_serializer(task=project.project_type)
-        annotations = model.objects.filter(example=instance.id)
-        if request and not project.collaborative_annotation:
-            annotations = annotations.filter(user=request.user)
-        serializer = serializer(annotations, many=True)
-        return serializer.data
 
     @classmethod
     def get_annotation_approver(cls, instance):
@@ -115,7 +138,6 @@ class ExampleSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'filename',
-            'annotations',
             'meta',
             'annotation_approver',
             'comment_count',
@@ -202,6 +224,12 @@ class Seq2seqProjectSerializer(ProjectSerializer):
         model = Seq2seqProject
 
 
+class IntentDetectionAndSlotFillingProjectSerializer(ProjectSerializer):
+
+    class Meta(ProjectSerializer.Meta):
+        model = IntentDetectionAndSlotFillingProject
+
+
 class Speech2textProjectSerializer(ProjectSerializer):
 
     class Meta(ProjectSerializer.Meta):
@@ -224,7 +252,7 @@ class ProjectPolymorphicSerializer(PolymorphicSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = serializers.PrimaryKeyRelatedField(queryset=CategoryType.objects.all())
     example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
 
     class Meta:
@@ -242,7 +270,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class SpanSerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=Label.objects.all())
+    label = serializers.PrimaryKeyRelatedField(queryset=SpanType.objects.all())
     example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
 
     class Meta:
