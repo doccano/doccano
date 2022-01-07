@@ -43,6 +43,10 @@ export default Vue.extend({
     distribution: {
       type: Object as PropType<Distribution>,
       required: true
+    },
+    colorMapping: {
+      type: Object,
+      default: () => {},
     }
   },
 
@@ -53,11 +57,12 @@ export default Vue.extend({
         const labels = Object.keys(this.distribution[user])
         labels.sort()
         const counts = labels.map((label) => this.distribution[user][label])
+        const colors = labels.map((label) => label in this.colorMapping ? this.colorMapping[label] : '#00d1b2')
         data[user] = {
           labels,
           datasets: [{
             title: this.title,
-            backgroundColor: '#00d1b2',
+            backgroundColor: colors,
             data: counts
           }]
         }
