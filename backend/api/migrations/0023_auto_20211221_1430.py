@@ -7,7 +7,7 @@ def copy_annotation(apps, schema_editor):
     for model in [Category, Span]:
         for annotation in model.objects.all():
             if model == Category:
-                LabelModel = apps.get_model('api', 'DocType')
+                LabelModel = apps.get_model('api', 'CategoryType')
             else:
                 LabelModel = apps.get_model('api', 'SpanType')
             label = LabelModel.objects.get(pk=annotation.label.id)

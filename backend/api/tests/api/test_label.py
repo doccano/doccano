@@ -17,7 +17,7 @@ class TestLabelList(CRUDMixin):
         cls.non_member = make_user()
         cls.project_a = prepare_project(DOCUMENT_CLASSIFICATION)
         cls.label = make_label(cls.project_a.item)
-        cls.url = reverse(viewname='doc_types', args=[cls.project_a.item.id])
+        cls.url = reverse(viewname='category_types', args=[cls.project_a.item.id])
 
         # Ensure that the API does not return the labels of the other project.
         cls.project_b = make_project(
@@ -45,7 +45,7 @@ class TestLabelSearch(CRUDMixin):
     def setUp(self):
         self.project = prepare_project(DOCUMENT_CLASSIFICATION)
         make_label(self.project.item)
-        self.url = reverse(viewname='doc_types', args=[self.project.item.id])
+        self.url = reverse(viewname='category_types', args=[self.project.item.id])
 
     def test_search(self):
         for member in self.project.users:
@@ -59,7 +59,7 @@ class TestLabelCreate(CRUDMixin):
     def setUpTestData(cls):
         cls.non_member = make_user(DOCUMENT_CLASSIFICATION)
         cls.project = prepare_project()
-        cls.url = reverse(viewname='doc_types', args=[cls.project.item.id])
+        cls.url = reverse(viewname='category_types', args=[cls.project.item.id])
         cls.data = {'text': 'example'}
 
     def test_allows_admin_to_create_label(self):
@@ -83,7 +83,7 @@ class TestLabelDetailAPI(CRUDMixin):
         cls.non_member = make_user()
         cls.project = prepare_project(DOCUMENT_CLASSIFICATION)
         cls.label = make_label(cls.project.item)
-        cls.url = reverse(viewname='doc_type', args=[cls.project.item.id, cls.label.id])
+        cls.url = reverse(viewname='category_type', args=[cls.project.item.id, cls.label.id])
         cls.data = {'text': 'example'}
 
     def test_returns_label_to_project_member(self):
@@ -131,7 +131,7 @@ class TestLabelUploadAPI(APITestCase):
     def setUpTestData(cls):
         cls.non_member = make_user()
         cls.project = prepare_project(DOCUMENT_CLASSIFICATION)
-        cls.url = reverse(viewname='doc_type_upload', args=[cls.project.item.id])
+        cls.url = reverse(viewname='category_type_upload', args=[cls.project.item.id])
 
     def assert_upload_file(self, filename, user=None, expected_status=status.HTTP_403_FORBIDDEN):
         if user:

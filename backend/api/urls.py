@@ -39,7 +39,7 @@ urlpatterns_project = [
     ),
     path(
         route='category-distribution',
-        view=statistics.DocTypeDistribution.as_view(),
+        view=statistics.CategoryTypeDistribution.as_view(),
         name='category_distribution'
     ),
     path(
@@ -49,13 +49,13 @@ urlpatterns_project = [
     ),
     path(
         route='category-types',
-        view=label.DocTypeList.as_view(),
-        name='doc_types'
+        view=label.CategoryTypeList.as_view(),
+        name='category_types'
     ),
     path(
         route='category-types/<int:label_id>',
-        view=label.DocTypeDetail.as_view(),
-        name='doc_type'
+        view=label.CategoryTypeDetail.as_view(),
+        name='category_type'
     ),
     path(
         route='span-types',
@@ -69,8 +69,8 @@ urlpatterns_project = [
     ),
     path(
         route='category-type-upload',
-        view=label.DocTypeUploadAPI.as_view(),
-        name='doc_type_upload'
+        view=label.CategoryTypeUploadAPI.as_view(),
+        name='category_type_upload'
     ),
     path(
         route='span-type-upload',

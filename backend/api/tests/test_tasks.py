@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from ..models import (DOCUMENT_CLASSIFICATION,
                       INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                      SEQUENCE_LABELING, Category, DocType, Example, Span,
+                      SEQUENCE_LABELING, Category, CategoryType, Example, Span,
                       SpanType)
 from ..tasks import ingest_data
 from .api.utils import prepare_project
@@ -38,7 +38,7 @@ class TestIngestClassificationData(TestIngestData):
     def assert_parse_error(self, response):
         self.assertGreaterEqual(len(response['error']), 1)
         self.assertEqual(Example.objects.count(), 0)
-        self.assertEqual(DocType.objects.count(), 0)
+        self.assertEqual(CategoryType.objects.count(), 0)
         self.assertEqual(Category.objects.count(), 0)
 
     def test_jsonl(self):

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import (AutoLabelingConfig, Category, Comment, DocType, Example,
-                     Project, Role, RoleMapping, Seq2seqProject,
+from .models import (AutoLabelingConfig, Category, CategoryType, Comment,
+                     Example, Project, Role, RoleMapping, Seq2seqProject,
                      SequenceLabelingProject, Span, SpanType, Tag,
                      TextClassificationProject, TextLabel)
 
@@ -12,7 +12,7 @@ class LabelAdmin(admin.ModelAdmin):
     search_fields = ('text',)
 
 
-class DocTypeAdmin(LabelAdmin):
+class CategoryTypeAdmin(LabelAdmin):
     pass
 
 
@@ -87,7 +87,7 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Span, SpanAdmin)
 admin.site.register(TextLabel, TextLabelAdmin)
 # admin.site.register(Label, LabelAdmin)
-admin.site.register(DocType, DocTypeAdmin)
+admin.site.register(CategoryType, CategoryTypeAdmin)
 admin.site.register(SpanType, SpanTypeAdmin)
 admin.site.register(Example, ExampleAdmin)
 admin.site.register(Project, ProjectAdmin)

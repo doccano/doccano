@@ -6,7 +6,7 @@ def copy_label_to_subclass(apps, schema_editor):
     for label in Label.objects.all():
         project_type = label.project.project_type
         if project_type.endswith('Classification'):
-            model = apps.get_model('api', 'DocType')
+            model = apps.get_model('api', 'CategoryType')
         else:
             model = apps.get_model('api', 'SpanType')
         model.objects.create(
@@ -23,10 +23,10 @@ def copy_label_to_subclass(apps, schema_editor):
 
 
 def delete_subclass_object(apps, schema_editor):
-    DocType = apps.get_model('api', 'DocType')
+    CategoryType = apps.get_model('api', 'CategoryType')
     SpanType = apps.get_model('api', 'SpanType')
     Label = apps.get_model('api', 'Label')
-    for model in [DocType, SpanType]:
+    for model in [CategoryType, SpanType]:
         for label in model.objects.all():
             old_label = Label(
                 id=label.id,

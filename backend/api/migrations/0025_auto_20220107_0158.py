@@ -4,10 +4,10 @@ from django.db import migrations
 
 
 def recover_label(apps, schema_editor):
-    DocType = apps.get_model('api', 'DocType')
+    CategoryType = apps.get_model('api', 'CategoryType')
     SpanType = apps.get_model('api', 'SpanType')
     Label = apps.get_model('api', 'Label')
-    for model in [DocType, SpanType]:
+    for model in [CategoryType, SpanType]:
         for label in model.objects.all():
             old_label = Label(
                 id=label.id,

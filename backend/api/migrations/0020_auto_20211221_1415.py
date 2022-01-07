@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='DocType',
+            name='CategoryType',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('text', models.CharField(db_index=True, max_length=100)),
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.project'),
         ),
         migrations.AddField(
-            model_name='doctype',
+            model_name='categorytype',
             name='project',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.project'),
         ),
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
             constraint=models.UniqueConstraint(fields=('project', 'text'), name='api_spantype_is_unique'),
         ),
         migrations.AddConstraint(
-            model_name='doctype',
-            constraint=models.UniqueConstraint(fields=('project', 'text'), name='api_doctype_is_unique'),
+            model_name='categorytype',
+            constraint=models.UniqueConstraint(fields=('project', 'text'), name='api_categorytype_is_unique'),
         ),
     ]

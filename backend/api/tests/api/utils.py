@@ -91,7 +91,7 @@ def make_tag(project):
 
 def make_label(project, **kwargs):
     if project.project_type.endswith('Classification'):
-        return mommy.make('DocType', project=project, **kwargs)
+        return mommy.make('CategoryType', project=project, **kwargs)
     else:
         return mommy.make('SpanType', project=project, **kwargs)
 

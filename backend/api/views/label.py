@@ -12,9 +12,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..exceptions import LabelValidationError
-from ..models import DocType, Label, Project, SpanType
+from ..models import CategoryType, Label, Project, SpanType
 from ..permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
-from ..serializers import (DocTypeSerializer, LabelSerializer,
+from ..serializers import (CategoryTypeSerializer, LabelSerializer,
                            SpanTypeSerializer)
 
 
@@ -55,14 +55,14 @@ class LabelList(generics.ListCreateAPIView):
 #     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
 
-class DocTypeList(LabelList):
-    model = DocType
-    serializer_class = DocTypeSerializer
+class CategoryTypeList(LabelList):
+    model = CategoryType
+    serializer_class = CategoryTypeSerializer
 
 
-class DocTypeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = DocType.objects.all()
-    serializer_class = DocTypeSerializer
+class CategoryTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = CategoryType.objects.all()
+    serializer_class = CategoryTypeSerializer
     lookup_url_kwarg = 'label_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
@@ -102,8 +102,8 @@ class LabelUploadAPI(APIView):
             raise LabelValidationError
 
 
-class DocTypeUploadAPI(LabelUploadAPI):
-    serializer_class = DocTypeSerializer
+class CategoryTypeUploadAPI(LabelUploadAPI):
+    serializer_class = CategoryTypeSerializer
 
 
 class SpanTypeUploadAPI(LabelUploadAPI):

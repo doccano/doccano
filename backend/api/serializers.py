@@ -8,8 +8,8 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      SEQUENCE_LABELING, SPEECH2TEXT, AnnotationRelations,
-                     AutoLabelingConfig, Category, Comment, DocType, Example,
-                     ExampleState, ImageClassificationProject,
+                     AutoLabelingConfig, Category, CategoryType, Comment,
+                     Example, ExampleState, ImageClassificationProject,
                      IntentDetectionAndSlotFillingProject, Label, Project,
                      RelationTypes, Role, RoleMapping, Seq2seqProject,
                      SequenceLabelingProject, Span, SpanType,
@@ -72,9 +72,9 @@ class LabelSerializer(serializers.ModelSerializer):
         )
 
 
-class DocTypeSerializer(LabelSerializer):
+class CategoryTypeSerializer(LabelSerializer):
     class Meta:
-        model = DocType
+        model = CategoryType
         fields = (
             'id',
             'text',
@@ -252,7 +252,7 @@ class ProjectPolymorphicSerializer(PolymorphicSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=DocType.objects.all())
+    label = serializers.PrimaryKeyRelatedField(queryset=CategoryType.objects.all())
     example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
 
     class Meta:

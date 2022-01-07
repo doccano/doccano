@@ -152,11 +152,11 @@ class Label(models.Model):
         ordering = ['created_at']
 
 
-class DocType(Label):
+class CategoryType(Label):
 
     @property
     def labels(self):
-        return DocType.objects.filter(project=self.project)
+        return CategoryType.objects.filter(project=self.project)
 
 
 class SpanType(Label):
@@ -282,7 +282,7 @@ class Category(Annotation):
         on_delete=models.CASCADE,
         related_name='categories'
     )
-    label = models.ForeignKey(to=DocType, on_delete=models.CASCADE)
+    label = models.ForeignKey(to=CategoryType, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = (

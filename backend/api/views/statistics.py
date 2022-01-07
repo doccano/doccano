@@ -6,8 +6,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import (Annotation, Category, DocType, Example, ExampleState,
-                      Label, Project, Span, SpanType)
+from ..models import (Annotation, Category, CategoryType, Example,
+                      ExampleState, Label, Project, Span, SpanType)
 from ..permissions import IsInProjectReadOnlyOrAdmin
 
 
@@ -44,9 +44,9 @@ class LabelDistribution(abc.ABC, APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
-class DocTypeDistribution(LabelDistribution):
+class CategoryTypeDistribution(LabelDistribution):
     model = Category
-    label_type = DocType
+    label_type = CategoryType
 
 
 class SpanTypeDistribution(LabelDistribution):

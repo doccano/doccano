@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='category',
             name='label',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.doctype'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.categorytype'),
         ),
         migrations.AlterField(
             model_name='span',

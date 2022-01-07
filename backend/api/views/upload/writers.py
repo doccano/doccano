@@ -5,7 +5,7 @@ from typing import Any, Dict, List
 
 from django.conf import settings
 
-from ...models import DocType, Example, Project, SpanType
+from ...models import CategoryType, Example, Project, SpanType
 from .exception import FileParseException
 from .readers import BaseReader
 
@@ -69,7 +69,7 @@ class Examples:
         # mapping = {label.text: label for label in project.labels.all()}
         # Todo: move annotation class
         mapping = {}
-        for model in [DocType, SpanType]:
+        for model in [CategoryType, SpanType]:
             for label in model.objects.all():
                 mapping[label.text] = label
         annotations = list(itertools.chain.from_iterable([

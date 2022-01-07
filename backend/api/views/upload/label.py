@@ -3,7 +3,7 @@ from typing import Any, Dict, Optional, Union
 
 from pydantic import BaseModel, validator
 
-from ...models import Category, DocType
+from ...models import Category, CategoryType
 from ...models import Label as LabelModel
 from ...models import Project, Span, SpanType
 from ...models import TextLabel as TL
@@ -63,7 +63,7 @@ class CategoryLabel(Label):
             raise TypeError(f'{obj} is not str.')
 
     def create(self, project: Project) -> Optional[LabelModel]:
-        return DocType(text=self.label, project=project)
+        return CategoryType(text=self.label, project=project)
 
     def create_annotation(self, user, example, mapping: Dict[str, LabelModel]):
         return Category(
