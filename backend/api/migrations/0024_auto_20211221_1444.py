@@ -28,8 +28,5 @@ class Migration(migrations.Migration):
             model_name='span',
             name='label',
             field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.spantype'),
-        ),
-        migrations.DeleteModel(
-            name='Label',
-        ),
+        )
     ]
