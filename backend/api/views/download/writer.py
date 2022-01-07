@@ -154,10 +154,19 @@ class IntentAndSlotWriter(LineWriter):
     extension = 'jsonl'
 
     def create_line(self, record):
-        return json.dumps({
-            'id': record.id,
-            'text': record.data,
-            'cats': record.label.get('cats', []),
-            'entities': record.label.get('entities', []),
-            **record.metadata
-        }, ensure_ascii=False)
+        if isinstance(record.label, dict):
+            return json.dumps({
+                'id': record.id,
+                'text': record.data,
+                'cats': record.label.get('cats', []),
+                'entities': record.label.get('entities', []),
+                **record.metadata
+            }, ensure_ascii=False)
+        else:
+            return json.dumps({
+                'id': record.id,
+                'text': record.data,
+                'cats': [],
+                'entities': [],
+                **record.metadata
+            }, ensure_ascii=False)
