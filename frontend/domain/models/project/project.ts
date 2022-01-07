@@ -121,6 +121,23 @@ export class ProjectReadItem {
     return allowedProjectTypes.includes(this.project_type)
   }
 
+  get hasCategory(): boolean {
+    const allowedProjectTypes = [
+      'DocumentClassification',
+      'IntentDetectionAndSlotFilling',
+      'ImageClassification'
+    ]
+    return allowedProjectTypes.includes(this.project_type)
+  }
+
+  get hasSpan(): boolean {
+    const allowedProjectTypes = [
+      'IntentDetectionAndSlotFilling',
+      'SequenceLabeling'
+    ]
+    return allowedProjectTypes.includes(this.project_type)
+  }
+
   toObject(): Object {
     return {
       id: this.id,

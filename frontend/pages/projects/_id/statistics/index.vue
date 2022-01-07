@@ -3,10 +3,10 @@
     <v-col cols="12">
       <member-progress />
     </v-col>
-    <v-col cols="12">
+    <v-col v-if="!!project.hasCategory" cols="12">
       <category-distribution />
     </v-col>
-    <v-col cols="12">
+    <v-col v-if="!!project.hasSpan" cols="12">
       <span-distribution />
     </v-col>
   </v-row>
@@ -28,6 +28,16 @@ export default {
 
   validate({ params }) {
     return /^\d+$/.test(params.id)
+  },
+
+  data() {
+    return {
+      project: {},
+    }
+  },
+
+  async created() {
+    this.project = await this.$services.project.findById(this.$route.params.id)
   }
 }
 </script>
