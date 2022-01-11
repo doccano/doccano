@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.db.models import Count, Manager
 
 
@@ -29,21 +28,6 @@ class AnnotationManager(Manager):
             count = item['count']
             distribution[username][label] = count
         return distribution
-
-
-class RoleMappingManager(Manager):
-
-    def can_update(self, project: int, mapping_id: int, rolename: str):
-        queryset = self.filter(
-            project=project, role__name=settings.ROLE_PROJECT_ADMIN
-        )
-        if queryset.count() > 1:
-            return True
-        else:
-            mapping = queryset.first()
-            if mapping.id == mapping_id and rolename != settings.ROLE_PROJECT_ADMIN:
-                return False
-            return True
 
 
 class ExampleManager(Manager):

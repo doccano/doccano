@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.models import Role, RoleMapping
+from .models import Role, RoleMapping
 from api.tests.api.utils import (CRUDMixin, create_default_roles, make_user,
                                  prepare_project)
 

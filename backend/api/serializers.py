@@ -1,7 +1,5 @@
 from auto_labeling_pipeline.models import RequestModelFactory
-from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
@@ -11,10 +9,9 @@ from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      AutoLabelingConfig, Category, CategoryType, Comment,
                      Example, ExampleState, ImageClassificationProject,
                      IntentDetectionAndSlotFillingProject, Label, Project,
-                     RelationTypes, RoleMapping, Seq2seqProject,
-                     SequenceLabelingProject, Span, SpanType,
-                     Speech2textProject, Tag, TextClassificationProject,
-                     TextLabel)
+                     RelationTypes, Seq2seqProject, SequenceLabelingProject,
+                     Span, SpanType, Speech2textProject, Tag,
+                     TextClassificationProject, TextLabel)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -161,23 +158,7 @@ class ApproverSerializer(ExampleSerializer):
 
 
 class ProjectSerializer(serializers.ModelSerializer):
-    current_users_role = serializers.SerializerMethodField()
     tags = TagSerializer(many=True, required=False)
-
-    def get_current_users_role(self, instance):
-        role_abstractor = {
-            "is_project_admin": settings.ROLE_PROJECT_ADMIN,
-            "is_annotator": settings.ROLE_ANNOTATOR,
-            "is_annotation_approver": settings.ROLE_ANNOTATION_APPROVER,
-        }
-        queryset = RoleMapping.objects.values("role_id__name")
-        if queryset:
-            users_role = get_object_or_404(
-                queryset, project=instance.id, user=self.context.get("request").user.id
-            )
-            for key, val in role_abstractor.items():
-                role_abstractor[key] = users_role["role_id__name"] == val
-        return role_abstractor
 
     class Meta:
         model = Project
@@ -187,7 +168,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             'description',
             'guideline',
             'users',
-            'current_users_role',
             'project_type',
             'updated_at',
             'random_order',
@@ -198,7 +178,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'updated_at',
             'users',
-            'current_users_role',
             'tags'
         )
 

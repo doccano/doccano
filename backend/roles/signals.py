@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import m2m_changed, post_save, pre_delete
 from django.dispatch import receiver
 
-from .models import Project, Role, RoleMapping
+from api.models import Project
+from .models import Role, RoleMapping
 
 
 @receiver(post_save, sender=RoleMapping)

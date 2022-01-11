@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.models import Role, RoleMapping
+from .models import Role, RoleMapping
 
 
 class RoleSerializer(serializers.ModelSerializer):

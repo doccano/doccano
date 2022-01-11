@@ -133,17 +133,6 @@ urlpatterns_project = [
         view=annotation.ApprovalAPI.as_view(),
         name='approve_labels'
     ),
-    # Todo: change.
-    path(
-        route='docs/<int:doc_id>/annotations',
-        view=annotation.AnnotationList.as_view(),
-        name='annotation_list'
-    ),
-    path(
-        route='docs/<int:doc_id>/annotations/<int:annotation_id>',
-        view=annotation.AnnotationDetail.as_view(),
-        name='annotation_detail'
-    ),
     path(
         route='examples/<int:example_id>/categories',
         view=category.CategoryListAPI.as_view(),

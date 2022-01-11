@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import Role, RoleMapping
+from .models import Role, RoleMapping
 
 
 class RoleAdmin(admin.ModelAdmin):
