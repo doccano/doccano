@@ -222,11 +222,6 @@ class ExampleState(models.Model):
     class Meta:
         unique_together = (('example', 'confirmed_by'),)
 
-    @property
-    def confirmed_user_role(self):
-        role_mapping = RoleMapping.objects.get(user=self.confirmed_by, project=self.example.project)
-        return role_mapping.role
-
 
 class Comment(models.Model):
     text = models.TextField()
