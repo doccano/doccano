@@ -11,7 +11,7 @@ from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      AutoLabelingConfig, Category, CategoryType, Comment,
                      Example, ExampleState, ImageClassificationProject,
                      IntentDetectionAndSlotFillingProject, Label, Project,
-                     RelationTypes, Role, RoleMapping, Seq2seqProject,
+                     RelationTypes, RoleMapping, Seq2seqProject,
                      SequenceLabelingProject, Span, SpanType,
                      Speech2textProject, Tag, TextClassificationProject,
                      TextLabel)
@@ -304,31 +304,6 @@ class TextLabelSerializer(serializers.ModelSerializer):
             'text',
         )
         read_only_fields = ('user',)
-
-
-class RoleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Role
-        fields = ('id', 'name')
-
-
-class RoleMappingSerializer(serializers.ModelSerializer):
-    username = serializers.SerializerMethodField()
-    rolename = serializers.SerializerMethodField()
-
-    @classmethod
-    def get_username(cls, instance):
-        user = instance.user
-        return user.username if user else None
-
-    @classmethod
-    def get_rolename(cls, instance):
-        role = instance.role
-        return role.name if role else None
-
-    class Meta:
-        model = RoleMapping
-        fields = ('id', 'user', 'role', 'username', 'rolename')
 
 
 class AutoLabelingConfigSerializer(serializers.ModelSerializer):

@@ -3,7 +3,7 @@ from django.urls import include, path
 from .views import (annotation, annotation_relations, auto_labeling, comment,
                     example, example_state, export_dataset, health,
                     import_dataset, import_export, label, project,
-                    relation_types, role, statistics, tag, task, user)
+                    relation_types, statistics, tag, task, user)
 from .views.tasks import category, span, text
 
 urlpatterns_project = [
@@ -205,16 +205,6 @@ urlpatterns_project = [
       name='example_state_list'
     ),
     path(
-        route='roles',
-        view=role.RoleMappingList.as_view(),
-        name='rolemapping_list'
-    ),
-    path(
-        route='roles/<int:rolemapping_id>',
-        view=role.RoleMappingDetail.as_view(),
-        name='rolemapping_detail'
-    ),
-    path(
         route='auto-labeling-templates',
         view=auto_labeling.AutoLabelingTemplateListAPI.as_view(),
         name='auto_labeling_templates'
@@ -288,11 +278,6 @@ urlpatterns = [
         route='users',
         view=user.Users.as_view(),
         name='user_list'
-    ),
-    path(
-        route='roles',
-        view=role.Roles.as_view(),
-        name='roles'
     ),
     path(
         route='tasks/status/<task_id>',
