@@ -62,11 +62,10 @@ class RoleMapping(models.Model):
     objects = RoleMappingManager()
 
     def clean(self):
-        other_rolemappings = self.project.role_mappings.exclude(id=self.id)
-
-        if other_rolemappings.filter(user=self.user, project=self.project).exists():
+        member_roles = self.objects.exclude(id=self.id)
+        if member_roles.filter(user=self.user, project=self.project).exists():
             message = 'This user is already assigned to a role in this project.'
             raise ValidationError(message)
 
     class Meta:
-        unique_together = ("user", "project")
+        unique_together = ('user', 'project')
