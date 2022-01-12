@@ -17,7 +17,7 @@ class Role(models.Model):
         return self.name
 
 
-class RoleMappingManager(Manager):
+class MemberManager(Manager):
 
     def can_update(self, project: int, mapping_id: int, new_role: str) -> bool:
         """The project needs at least 1 admin.
@@ -59,11 +59,11 @@ class RoleMapping(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    objects = RoleMappingManager()
+    objects = MemberManager()
 
     def clean(self):
-        member_roles = self.objects.exclude(id=self.id)
-        if member_roles.filter(user=self.user, project=self.project).exists():
+        members = self.objects.exclude(id=self.id)
+        if members.filter(user=self.user, project=self.project).exists():
             message = 'This user is already assigned to a role in this project.'
             raise ValidationError(message)
 
