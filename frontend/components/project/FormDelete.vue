@@ -15,16 +15,6 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-      <span v-show="hasNonDeletableProjects" class="font-weight-bold">
-        You don't have permission to delete the following projects. We try to delete the projects except for the following.
-      </span>
-      <v-list dense>
-        <v-list-item v-for="(item, i) in nonDeletableProjects" :key="i">
-          <v-list-item-content>
-            <v-list-item-title>{{ item.name }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
     </template>
   </base-card>
 </template>
@@ -43,15 +33,6 @@ export default Vue.extend({
     selected: {
       type: Array as PropType<ProjectDTO[]>,
       default: () => []
-    }
-  },
-
-  computed: {
-    nonDeletableProjects(): ProjectDTO[] {
-      return this.selected.filter(item => !item.current_users_role.is_project_admin)
-    },
-    hasNonDeletableProjects(): boolean {
-      return this.nonDeletableProjects.length > 0
     }
   }
 })

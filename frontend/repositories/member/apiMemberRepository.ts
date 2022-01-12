@@ -9,28 +9,28 @@ export class APIMemberRepository implements MemberRepository {
   ) {}
 
   async list(projectId: string): Promise<MemberItem[]> {
-    const url = `/projects/${projectId}/roles`
+    const url = `/projects/${projectId}/members`
     const response = await this.request.get(url)
     const responseItems: MemberItemResponse[] = response.data
     return responseItems.map(item => MemberItem.valueOf(item))
   }
 
   async create(projectId: string, item: MemberItem): Promise<MemberItem> {
-    const url = `/projects/${projectId}/roles`
+    const url = `/projects/${projectId}/members`
     const response = await this.request.post(url, item.toObject())
     const responseItem: MemberItemResponse = response.data
     return MemberItem.valueOf(responseItem)
   }
 
   async update(projectId: string, item: MemberItem): Promise<MemberItem> {
-    const url = `/projects/${projectId}/roles/${item.id}`
+    const url = `/projects/${projectId}/members/${item.id}`
     const response = await this.request.patch(url, item.toObject())
     const responseItem: MemberItemResponse = response.data
     return MemberItem.valueOf(responseItem)
   }
 
-  async bulkDelete(projectId: string, labelIds: number[]): Promise<void> {
-    const url = `/projects/${projectId}/roles`
-    await this.request.delete(url, { ids: labelIds })
+  async bulkDelete(projectId: string, memberIds: number[]): Promise<void> {
+    const url = `/projects/${projectId}/members`
+    await this.request.delete(url, { ids: memberIds })
   }
 }

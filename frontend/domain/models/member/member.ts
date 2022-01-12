@@ -14,6 +14,10 @@ export class MemberItem {
     return new MemberItem(id, user, role, username, rolename)
   }
 
+  get isProjectAdmin(): boolean {
+    return this.rolename === 'project_admin'
+  }
+
   toObject(): Object {
     return {
       id: this.id,

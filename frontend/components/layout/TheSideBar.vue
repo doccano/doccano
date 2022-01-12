@@ -44,9 +44,9 @@ export default {
       default: '',
       required: true
     },
-    role: {
-      type: Object,
-      default: () => {},
+    isProjectAdmin: {
+      type: Boolean,
+      default: false,
       required: true
     },
     project: {
@@ -82,43 +82,43 @@ export default {
           icon: mdiLabel,
           text: this.$t('labels.labels'),
           link: 'labels',
-          isVisible: this.role.is_project_admin && this.project.canDefineLabel
+          isVisible: this.isProjectAdmin && this.project.canDefineLabel
         },
         {
           icon: mdiLabel,
           text: 'Relations',
           link: 'links',
-          isVisible: this.role.is_project_admin && this.project.canDefineRelation
+          isVisible: this.isProjectAdmin && this.project.canDefineRelation
         },
         {
           icon: mdiAccount,
           text: this.$t('members.members'),
           link: 'members',
-          isVisible: this.role.is_project_admin
+          isVisible: this.isProjectAdmin
         },
         {
           icon: mdiCommentAccountOutline,
           text: 'Comments',
           link: 'comments',
-          isVisible: this.role.is_project_admin
+          isVisible: this.isProjectAdmin
         },
         {
           icon: mdiBookOpenOutline,
           text: this.$t('guideline.guideline'),
           link: 'guideline',
-          isVisible: this.role.is_project_admin
+          isVisible: this.isProjectAdmin
         },
         {
           icon: mdiChartBar,
           text: this.$t('statistics.statistics'),
           link: 'statistics',
-          isVisible: this.role.is_project_admin
+          isVisible: this.isProjectAdmin
         },
         {
           icon: mdiCog,
           text: this.$t('settings.title'),
           link: 'settings',
-          isVisible: this.role.is_project_admin
+          isVisible: this.isProjectAdmin
         }
       ]
       return items.filter(item => item.isVisible)
