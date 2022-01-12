@@ -42,7 +42,7 @@ class MemberManager(Manager):
             return True
 
 
-class RoleMapping(models.Model):
+class Member(models.Model):
     user = models.ForeignKey(
         to=User,
         on_delete=models.CASCADE,

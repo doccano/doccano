@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .permissions import IsProjectAdmin
-from .models import Role, RoleMapping
+from .models import Role, Member
 from .serializers import MemberSerializer, RoleSerializer
 from .exceptions import RoleAlreadyAssignedException, RoleConstraintException
 
@@ -20,7 +20,7 @@ class Roles(generics.ListAPIView):
 class MemberList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['user']
-    queryset = RoleMapping.objects.all()
+    queryset = Member.objects.all()
     serializer_class = MemberSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated & IsProjectAdmin]
@@ -38,14 +38,14 @@ class MemberList(generics.ListCreateAPIView):
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
         project_id = self.kwargs['project_id']
-        RoleMapping.objects.filter(project=project_id, pk__in=delete_ids)\
+        Member.objects.filter(project=project_id, pk__in=delete_ids)\
             .exclude(user=self.request.user)\
             .delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class MemberDetail(generics.RetrieveUpdateAPIView):
-    queryset = RoleMapping.objects.all()
+    queryset = Member.objects.all()
     serializer_class = MemberSerializer
     lookup_url_kwarg = 'member_id'
     permission_classes = [IsAuthenticated & IsProjectAdmin]
@@ -54,7 +54,7 @@ class MemberDetail(generics.RetrieveUpdateAPIView):
         project_id = self.kwargs['project_id']
         member_id = self.kwargs['member_id']
         role = serializer.validated_data['role']
-        if not RoleMapping.objects.can_update(project_id, member_id, role.name):
+        if not Member.objects.can_update(project_id, member_id, role.name):
             raise RoleConstraintException
         try:
             super().perform_update(serializer)

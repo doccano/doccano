@@ -2,7 +2,7 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from .models import Role, RoleMapping
+from .models import Role, Member
 from api.tests.api.utils import (CRUDMixin, create_default_roles, make_user,
                                  prepare_project)
 
@@ -86,7 +86,7 @@ class TestMemberRoleDetailAPI(CRUDMixin):
         self.project = prepare_project()
         self.non_member = make_user()
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
-        mapping = RoleMapping.objects.get(user=self.project.users[1])
+        mapping = Member.objects.get(user=self.project.users[1])
         self.url = reverse(viewname='member_detail', args=[self.project.item.id, mapping.id])
         self.data = {'role': admin_role.id}
 

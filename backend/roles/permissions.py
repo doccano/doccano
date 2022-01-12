@@ -3,7 +3,7 @@ from django.db.models import Subquery
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 from api.permissions import ProjectMixin
-from .models import RoleMapping, Role
+from .models import Member, Role
 
 
 class RolePermission(ProjectMixin, BasePermission):
@@ -49,7 +49,7 @@ class IsAnnotationApprover(RolePermission):
 
 
 def is_in_role(role_name, user_id, project_id):
-    return RoleMapping.objects.filter(
+    return Member.objects.filter(
         user_id=user_id,
         project_id=project_id,
         role_id=Subquery(Role.objects.filter(name=role_name).values('id')),

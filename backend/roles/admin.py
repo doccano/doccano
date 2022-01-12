@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Role, RoleMapping
+from .models import Role, Member
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -16,4 +16,4 @@ class RoleMappingAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Role, RoleAdmin)
-admin.site.register(RoleMapping, RoleMappingAdmin)
+admin.site.register(Member, RoleMappingAdmin)

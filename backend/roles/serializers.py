@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Role, RoleMapping
+from .models import Role, Member
 
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -24,5 +24,5 @@ class MemberSerializer(serializers.ModelSerializer):
         return role.name if role else None
 
     class Meta:
-        model = RoleMapping
+        model = Member
         fields = ('id', 'user', 'role', 'username', 'rolename')
