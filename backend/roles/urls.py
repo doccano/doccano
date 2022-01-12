@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import RoleMappingDetail, RoleMappingList, Roles
+from .views import MemberDetail, MemberList, Roles
 
 urlpatterns = [
     path(
@@ -9,13 +9,13 @@ urlpatterns = [
         name='roles'
     ),
     path(
-        route='projects/<int:project_id>/roles',
-        view=RoleMappingList.as_view(),
-        name='rolemapping_list'
+        route='projects/<int:project_id>/members',
+        view=MemberList.as_view(),
+        name='member_list'
     ),
     path(
-        route='projects/<int:project_id>/roles/<int:rolemapping_id>',
-        view=RoleMappingDetail.as_view(),
-        name='rolemapping_detail'
+        route='projects/<int:project_id>/members/<int:member_id>',
+        view=MemberDetail.as_view(),
+        name='member_detail'
     )
 ]

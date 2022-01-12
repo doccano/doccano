@@ -22,14 +22,14 @@ class TestRoleAPI(CRUDMixin):
         self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
 
 
-class TestRoleMappingListAPI(CRUDMixin):
+class TestMemberListAPI(CRUDMixin):
 
     def setUp(self):
         self.project = prepare_project()
         self.non_member = make_user()
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
         self.data = {'user': self.non_member.id, 'role': admin_role.id, 'project': self.project.item.id}
-        self.url = reverse(viewname='rolemapping_list', args=[self.project.item.id])
+        self.url = reverse(viewname='member_list', args=[self.project.item.id])
 
     def test_allows_project_admin_to_get_mappings(self):
         self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
@@ -80,14 +80,14 @@ class TestRoleMappingListAPI(CRUDMixin):
         self.assert_bulk_delete(expected=status.HTTP_403_FORBIDDEN)
 
 
-class TestRoleMappingDetailAPI(CRUDMixin):
+class TestMemberRoleDetailAPI(CRUDMixin):
 
     def setUp(self):
         self.project = prepare_project()
         self.non_member = make_user()
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
         mapping = RoleMapping.objects.get(user=self.project.users[1])
-        self.url = reverse(viewname='rolemapping_detail', args=[self.project.item.id, mapping.id])
+        self.url = reverse(viewname='member_detail', args=[self.project.item.id, mapping.id])
         self.data = {'role': admin_role.id}
 
     def test_allows_project_admin_to_get_mapping(self):
@@ -115,3 +115,15 @@ class TestRoleMappingDetailAPI(CRUDMixin):
 
     def test_denies_unauthenticated_user_to_update_mapping(self):
         self.assert_update(expected=status.HTTP_403_FORBIDDEN)
+
+
+class TestMemberRoleFilter(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project()
+        self.url = reverse(viewname='member_list', args=[self.project.item.id])
+        self.url += f'?user={self.project.users[0].id}'
+
+    def test_filter_role_by_user_id(self):
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)

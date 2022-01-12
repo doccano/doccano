@@ -1,13 +1,12 @@
 from django.db import IntegrityError
-from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.models import Project
 from .permissions import IsProjectAdmin
 from .models import Role, RoleMapping
-from .serializers import RoleMappingSerializer, RoleSerializer
+from .serializers import MemberSerializer, RoleSerializer
 from .exceptions import RoleAlreadyAssignedException, RoleConstraintException
 
 
@@ -18,43 +17,44 @@ class Roles(generics.ListAPIView):
     queryset = Role.objects.all()
 
 
-class RoleMappingList(generics.ListCreateAPIView):
-    serializer_class = RoleMappingSerializer
+class MemberList(generics.ListCreateAPIView):
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['user']
+    queryset = RoleMapping.objects.all()
+    serializer_class = MemberSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
-    @property
-    def project(self):
-        return get_object_or_404(Project, pk=self.kwargs['project_id'])
-
-    def get_queryset(self):
-        return self.project.role_mappings
+    def filter_queryset(self, queryset):
+        queryset = queryset.filter(project=self.kwargs['project_id'])
+        return super().filter_queryset(queryset)
 
     def perform_create(self, serializer):
         try:
-            serializer.save(project=self.project)
+            serializer.save(project_id=self.kwargs['project_id'])
         except IntegrityError:
             raise RoleAlreadyAssignedException
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
-        RoleMapping.objects.filter(project=self.project, pk__in=delete_ids)\
+        project_id = self.kwargs['project_id']
+        RoleMapping.objects.filter(project=project_id, pk__in=delete_ids)\
             .exclude(user=self.request.user)\
             .delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RoleMappingDetail(generics.RetrieveUpdateAPIView):
+class MemberDetail(generics.RetrieveUpdateAPIView):
     queryset = RoleMapping.objects.all()
-    serializer_class = RoleMappingSerializer
-    lookup_url_kwarg = 'rolemapping_id'
+    serializer_class = MemberSerializer
+    lookup_url_kwarg = 'member_id'
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def perform_update(self, serializer):
         project_id = self.kwargs['project_id']
-        id = self.kwargs['rolemapping_id']
+        member_id = self.kwargs['member_id']
         role = serializer.validated_data['role']
-        if not RoleMapping.objects.can_update(project_id, id, role.name):
+        if not RoleMapping.objects.can_update(project_id, member_id, role.name):
             raise RoleConstraintException
         try:
             super().perform_update(serializer)
