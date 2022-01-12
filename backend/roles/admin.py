@@ -9,11 +9,11 @@ class RoleAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-class RoleMappingAdmin(admin.ModelAdmin):
+class MemberAdmin(admin.ModelAdmin):
     list_display = ('user', 'role', 'project', )
     ordering = ('user',)
     search_fields = ('user__username',)
 
 
 admin.site.register(Role, RoleAdmin)
-admin.site.register(Member, RoleMappingAdmin)
+admin.site.register(Member, MemberAdmin)
