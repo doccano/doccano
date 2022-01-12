@@ -9,7 +9,7 @@ class RoleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-class RoleMappingSerializer(serializers.ModelSerializer):
+class MemberSerializer(serializers.ModelSerializer):
     username = serializers.SerializerMethodField()
     rolename = serializers.SerializerMethodField()
 
