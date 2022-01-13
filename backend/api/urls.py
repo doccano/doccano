@@ -1,10 +1,10 @@
 from django.urls import include, path
 
-from .views import (annotation, annotation_relations, auto_labeling, comment,
-                    example, example_state, export_dataset, health,
-                    import_dataset, import_export, label, project,
-                    relation_types, statistics, tag, task, user)
-from .views.tasks import category, span, text
+from .views import (annotation, auto_labeling, comment, example, example_state,
+                    export_dataset, health, import_dataset, import_export,
+                    label, project, relation_types, statistics, tag, task,
+                    user)
+from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
     path(
@@ -104,17 +104,17 @@ urlpatterns_project = [
     ),
     path(
         route='annotation_relations',
-        view=annotation_relations.AnnotationRelationsList.as_view(),
+        view=relation.RelationList.as_view(),
         name='relation_types_list'
     ),
     path(
         route='annotation_relation-upload',
-        view=annotation_relations.AnnotationRelationsUploadAPI.as_view(),
+        view=relation.RelationUploadAPI.as_view(),
         name='annotation_relation-upload'
     ),
     path(
         route='annotation_relations/<int:annotation_relation_id>',
-        view=annotation_relations.AnnotationRelationsDetail.as_view(),
+        view=relation.RelationDetail.as_view(),
         name='annotation_relation_detail'
     ),
     # Todo: remove.
