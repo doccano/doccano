@@ -8,7 +8,8 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from roles.models import Member, Role
+from members.models import Member
+from roles.models import Role
 
 from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
                        INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,

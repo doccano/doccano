@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from roles.permissions import IsInProjectReadOnlyOrAdmin
+from members.permissions import IsInProjectReadOnlyOrAdmin
 
 from ..models import Project
 from ..permissions import IsStaff

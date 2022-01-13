@@ -4,7 +4,8 @@ from django.db.models.signals import m2m_changed, post_save, pre_delete
 from django.dispatch import receiver
 
 from api.models import Project
-from .models import Role, Member
+from roles.models import Role
+from .models import Member
 
 
 @receiver(post_save, sender=Member)

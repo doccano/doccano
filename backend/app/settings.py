@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'roles.apps.RolesConfig',
+    'members.apps.MembersConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',

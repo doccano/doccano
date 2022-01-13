@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from roles.permissions import IsInProjectReadOnlyOrAdmin
+from members.permissions import IsInProjectReadOnlyOrAdmin
 
 from ..models import (Annotation, Category, CategoryType, Example,
                       ExampleState, Label, Project, Span, SpanType)

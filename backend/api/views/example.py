@@ -7,7 +7,7 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from roles.permissions import IsInProjectReadOnlyOrAdmin
+from members.permissions import IsInProjectReadOnlyOrAdmin
 
 from ..filters import DocumentFilter, ExampleFilter
 from ..models import Example, Project

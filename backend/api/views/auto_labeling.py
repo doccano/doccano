@@ -16,7 +16,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from roles.permissions import IsInProjectOrAdmin, IsProjectAdmin
+from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
 
 from ..exceptions import (AutoLabelingException, AutoLabelingPermissionDenied,
                           AWSTokenError, SampleDataException,

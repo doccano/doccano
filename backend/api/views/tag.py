@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from roles.permissions import IsInProjectReadOnlyOrAdmin
+from members.permissions import IsInProjectReadOnlyOrAdmin
 
 from ..models import Project, Tag
 from ..serializers import TagSerializer

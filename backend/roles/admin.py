@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Role, Member
+from .models import Role
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -9,11 +9,4 @@ class RoleAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-class MemberAdmin(admin.ModelAdmin):
-    list_display = ('user', 'role', 'project', )
-    ordering = ('user',)
-    search_fields = ('user__username',)
-
-
 admin.site.register(Role, RoleAdmin)
-admin.site.register(Member, MemberAdmin)
