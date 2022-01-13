@@ -7,9 +7,10 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from members.permissions import IsInProjectReadOnlyOrAdmin
+
 from ..filters import DocumentFilter, ExampleFilter
 from ..models import Example, Project
-from ..permissions import IsInProjectReadOnlyOrAdmin
 from ..serializers import ExampleSerializer
 
 

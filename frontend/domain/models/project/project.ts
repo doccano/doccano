@@ -1,9 +1,3 @@
-export interface CurrentUsersRole {
-  is_project_admin:       boolean;
-  is_annotator:           boolean;
-  is_annotation_approver: boolean;
-}
-
 export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'IntentDetectionAndSlotFilling' | 'ImageClassification' | 'Speech2text'
 
 
@@ -14,7 +8,6 @@ export class ProjectReadItem {
     public description:                 string,
     public guideline:                   string,
     public users:                       number[],
-    public current_users_role:          CurrentUsersRole,
     public project_type:                ProjectType,
     public updated_at:                  string,
     public random_order:                boolean,
@@ -33,7 +26,6 @@ export class ProjectReadItem {
       description,
       guideline,
       users,
-      current_users_role,
       project_type,
       updated_at,
       random_order,
@@ -50,7 +42,6 @@ export class ProjectReadItem {
       description:                 string,
       guideline:                   string,
       users:                       number[],
-      current_users_role:          CurrentUsersRole,
       project_type:                ProjectType,
       updated_at:                  string,
       random_order:                boolean,
@@ -68,7 +59,6 @@ export class ProjectReadItem {
       description,
       guideline,
       users,
-      current_users_role,
       project_type,
       updated_at,
       random_order,
@@ -145,7 +135,6 @@ export class ProjectReadItem {
       description: this.description,
       guideline: this.guideline,
       users: this.users,
-      current_users_role: this.current_users_role,
       project_type: this.project_type,
       updated_at: this.updated_at,
       random_order: this.random_order,

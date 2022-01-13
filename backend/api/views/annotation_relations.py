@@ -9,9 +9,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from members.permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
+
 from ..exceptions import AnnotationRelationValidationError
 from ..models import AnnotationRelations, Project
-from ..permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
 from ..serializers import AnnotationRelationsSerializer
 
 

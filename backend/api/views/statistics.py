@@ -6,9 +6,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from members.permissions import IsInProjectReadOnlyOrAdmin
+
 from ..models import (Annotation, Category, CategoryType, Example,
                       ExampleState, Label, Project, Span, SpanType)
-from ..permissions import IsInProjectReadOnlyOrAdmin
 
 
 class ProgressAPI(APIView):

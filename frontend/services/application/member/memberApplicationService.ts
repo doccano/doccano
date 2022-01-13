@@ -11,7 +11,7 @@ export class MemberApplicationService {
     try {
       const items = await this.repository.list(id)
       return items.map(item => new MemberDTO(item))
-    } catch(e) {
+    } catch(e: any) {
       throw new Error(e.response.data.detail)
     }
   }
@@ -20,7 +20,7 @@ export class MemberApplicationService {
     try {
       const member = new MemberItem(0, item.user, item.role, item.username, item.rolename)
       await this.repository.create(projectId, member)
-    } catch(e) {
+    } catch(e: any) {
       throw new Error(e.response.data.detail)
     }
   }
@@ -29,7 +29,7 @@ export class MemberApplicationService {
     try {
       const member = new MemberItem(item.id, item.user, item.role, item.username, item.rolename)
       await this.repository.update(projectId, member)
-    } catch(e) {
+    } catch(e: any) {
       throw new Error(e.response.data.detail)
     }
   }
@@ -37,5 +37,10 @@ export class MemberApplicationService {
   public bulkDelete(projectId: string, items: MemberDTO[]): Promise<void> {
     const ids = items.map(item => item.id)
     return this.repository.bulkDelete(projectId, ids)
+  }
+
+  public async isProjectAdmin(projectId: string, userId: number): Promise<boolean> {
+    const items = await this.repository.list(projectId)
+    return items.some((item) => item.user === userId && item.isProjectAdmin)
   }
 }

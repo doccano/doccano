@@ -6,8 +6,10 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
+from members.permissions import IsInProjectOrAdmin
+
 from ...models import Project
-from ...permissions import CanEditAnnotation, IsInProjectOrAdmin
+from ...permissions import CanEditAnnotation
 
 
 class BaseListAPI(generics.ListCreateAPIView):

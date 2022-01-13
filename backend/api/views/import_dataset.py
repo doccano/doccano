@@ -8,8 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from members.permissions import IsProjectAdmin
+
 from ..models import Project
-from ..permissions import IsProjectAdmin
 from ..tasks import ingest_data
 from .upload.catalog import Options
 

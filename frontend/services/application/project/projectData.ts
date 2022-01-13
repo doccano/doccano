@@ -1,11 +1,10 @@
-import { ProjectReadItem, CurrentUsersRole, ProjectType } from '~/domain/models/project/project'
+import { ProjectReadItem, ProjectType } from '~/domain/models/project/project'
 
 export class ProjectDTO {
   id: number
   name: string
   description: string
   guideline: string
-  current_users_role: CurrentUsersRole
   projectType: ProjectType
   updatedAt: string
   enableRandomOrder: boolean
@@ -26,7 +25,6 @@ export class ProjectDTO {
     this.name = item.name
     this.description = item.description
     this.guideline = item.guideline
-    this.current_users_role = item.current_users_role
     this.projectType = item.project_type
     this.updatedAt = item.updated_at
     this.enableRandomOrder = item.random_order

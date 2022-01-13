@@ -74,6 +74,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import DocumentList from '@/components/example/DocumentList.vue'
 import FormDelete from '@/components/example/FormDelete.vue'
@@ -142,7 +143,8 @@ export default Vue.extend({
       } else {
         return 'text'
       }
-    }
+    },
+    ...mapGetters('auth', ['getUserId'])
   },
 
   watch: {
@@ -155,7 +157,7 @@ export default Vue.extend({
 
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
-    this.isProjectAdmin = this.project.current_users_role.is_project_admin
+    this.isProjectAdmin = await this.$services.member.isProjectAdmin(this.projectId, this.getUserId)
   },
 
   methods: {

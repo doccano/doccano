@@ -2,33 +2,19 @@ from django.conf import settings
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import Role, RoleMapping
-from .utils import CRUDMixin, create_default_roles, make_user, prepare_project
+from roles.models import Role
+from .models import Member
+from api.tests.api.utils import (CRUDMixin, prepare_project, make_user)
 
 
-class TestRoleAPI(CRUDMixin):
-
-    @classmethod
-    def setUpTestData(cls):
-        create_default_roles()
-        cls.user = make_user()
-        cls.url = reverse(viewname='roles')
-
-    def test_allows_authenticated_user_to_get_roles(self):
-        self.assert_fetch(self.user, status.HTTP_200_OK)
-
-    def test_disallows_unauthenticated_user_to_get_roles(self):
-        self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
-
-
-class TestRoleMappingListAPI(CRUDMixin):
+class TestMemberListAPI(CRUDMixin):
 
     def setUp(self):
         self.project = prepare_project()
         self.non_member = make_user()
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
         self.data = {'user': self.non_member.id, 'role': admin_role.id, 'project': self.project.item.id}
-        self.url = reverse(viewname='rolemapping_list', args=[self.project.item.id])
+        self.url = reverse(viewname='member_list', args=[self.project.item.id])
 
     def test_allows_project_admin_to_get_mappings(self):
         self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
@@ -79,14 +65,14 @@ class TestRoleMappingListAPI(CRUDMixin):
         self.assert_bulk_delete(expected=status.HTTP_403_FORBIDDEN)
 
 
-class TestRoleMappingDetailAPI(CRUDMixin):
+class TestMemberRoleDetailAPI(CRUDMixin):
 
     def setUp(self):
         self.project = prepare_project()
         self.non_member = make_user()
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
-        mapping = RoleMapping.objects.get(user=self.project.users[1])
-        self.url = reverse(viewname='rolemapping_detail', args=[self.project.item.id, mapping.id])
+        mapping = Member.objects.get(user=self.project.users[1])
+        self.url = reverse(viewname='member_detail', args=[self.project.item.id, mapping.id])
         self.data = {'role': admin_role.id}
 
     def test_allows_project_admin_to_get_mapping(self):
@@ -114,3 +100,32 @@ class TestRoleMappingDetailAPI(CRUDMixin):
 
     def test_denies_unauthenticated_user_to_update_mapping(self):
         self.assert_update(expected=status.HTTP_403_FORBIDDEN)
+
+
+class TestMemberFilter(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project()
+        self.url = reverse(viewname='member_list', args=[self.project.item.id])
+        self.url += f'?user={self.project.users[0].id}'
+
+    def test_filter_role_by_user_id(self):
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+
+
+class TestMemberManager(CRUDMixin):
+
+    def setUp(self):
+        pass
+
+    def test_has_role(self):
+        project = prepare_project()
+        admin = project.users[0]
+        expected = [
+            (settings.ROLE_PROJECT_ADMIN, True),
+            (settings.ROLE_ANNOTATION_APPROVER, False),
+            (settings.ROLE_ANNOTATOR, False)
+        ]
+        for role, expect in expected:
+            self.assertEqual(Member.objects.has_role(project.item, admin, role), expect)

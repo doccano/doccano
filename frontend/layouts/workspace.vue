@@ -13,7 +13,7 @@
     >
       <the-side-bar
         :link="getLink"
-        :role="getCurrentUserRole"
+        :is-project-admin="isProjectAdmin"
         :project="currentProject"
       />
     </v-navigation-drawer>
@@ -39,18 +39,24 @@ export default {
 
   data() {
     return {
-      drawerLeft: null
+      drawerLeft: null,
+      isProjectAdmin: false
     }
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink', 'getCurrentUserRole', 'currentProject'])
+    ...mapGetters('projects', ['getLink', 'currentProject']),
+    ...mapGetters('auth', ['getUserId'])
   },
   
   watch: {
     '$route.query'() {
       this.$services.option.save(this.$route.params.id, this.$route.query)
     }
+  },
+
+  async created() {
+    this.isProjectAdmin = await this.$services.member.isProjectAdmin(this.$route.params.id, this.getUserId)
   }
 }
 </script>
