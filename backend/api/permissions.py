@@ -1,13 +1,7 @@
 from rest_framework.permissions import BasePermission
 
 
-class ProjectMixin:
-    @classmethod
-    def get_project_id(cls, request, view):
-        return view.kwargs.get('project_id') or request.query_params.get('project_id')
-
-
-class CanEditAnnotation(ProjectMixin, BasePermission):
+class CanEditAnnotation(BasePermission):
 
     def __init__(self, queryset):
         super().__init__()
@@ -21,7 +15,7 @@ class CanEditAnnotation(ProjectMixin, BasePermission):
         return self.queryset.filter(id=annotation_id, user=request.user).exists()
 
 
-class IsOwnComment(ProjectMixin, BasePermission):
+class IsOwnComment(BasePermission):
     @classmethod
     def has_object_permission(cls, request, view, obj):
         if request.user.is_superuser:

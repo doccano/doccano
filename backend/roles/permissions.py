@@ -2,14 +2,17 @@ from django.conf import settings
 from django.db.models import Subquery
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
-from api.permissions import ProjectMixin
 from .models import Member, Role
 
 
-class RolePermission(ProjectMixin, BasePermission):
+class RolePermission(BasePermission):
     UNSAFE_METHODS = ('POST', 'PATCH', 'DELETE')
     unsafe_methods_check = True
     role_name = ''
+
+    @classmethod
+    def get_project_id(cls, request, view):
+        return view.kwargs.get('project_id') or request.query_params.get('project_id')
 
     def has_permission(self, request, view):
         if request.user.is_superuser:
