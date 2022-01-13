@@ -14,9 +14,9 @@ from rest_framework.views import APIView
 from members.permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
 
 from ..exceptions import LabelValidationError
-from ..models import CategoryType, Label, Project, SpanType
+from ..models import CategoryType, Label, Project, RelationTypes, SpanType
 from ..serializers import (CategoryTypeSerializer, LabelSerializer,
-                           SpanTypeSerializer)
+                           RelationTypesSerializer, SpanTypeSerializer)
 
 
 def camel_to_snake(name):
@@ -49,13 +49,6 @@ class LabelList(generics.ListCreateAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-# class LabelDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Label.objects.all()
-#     serializer_class = LabelSerializer
-#     lookup_url_kwarg = 'label_id'
-#     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
-
-
 class CategoryTypeList(LabelList):
     model = CategoryType
     serializer_class = CategoryTypeSerializer
@@ -77,6 +70,18 @@ class SpanTypeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SpanType.objects.all()
     serializer_class = SpanTypeSerializer
     lookup_url_kwarg = 'label_id'
+    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+
+
+class RelationTypeList(LabelList):
+    model = RelationTypes
+    serializer_class = RelationTypesSerializer
+
+
+class RelationTypeDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = RelationTypes.objects.all()
+    serializer_class = RelationTypesSerializer
+    lookup_url_kwarg = 'relation_type_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
 
@@ -109,3 +114,7 @@ class CategoryTypeUploadAPI(LabelUploadAPI):
 
 class SpanTypeUploadAPI(LabelUploadAPI):
     serializer_class = SpanTypeSerializer
+
+
+class RelationTypeUploadAPI(LabelUploadAPI):
+    serializer_class = RelationTypesSerializer

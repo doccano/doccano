@@ -11,12 +11,12 @@ from rest_framework.views import APIView
 
 from members.permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
 
-from ..exceptions import AnnotationRelationValidationError
-from ..models import AnnotationRelations, Project
-from ..serializers import AnnotationRelationsSerializer
+from ...exceptions import AnnotationRelationValidationError
+from ...models import AnnotationRelations, Project
+from ...serializers import AnnotationRelationsSerializer
 
 
-class AnnotationRelationsList(generics.ListCreateAPIView):
+class RelationList(generics.ListCreateAPIView):
     serializer_class = AnnotationRelationsSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
@@ -35,14 +35,14 @@ class AnnotationRelationsList(generics.ListCreateAPIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class AnnotationRelationsDetail(generics.RetrieveUpdateDestroyAPIView):
+class RelationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AnnotationRelations.objects.all()
     serializer_class = AnnotationRelationsSerializer
     lookup_url_kwarg = 'annotation_relation_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
 
-class AnnotationRelationsUploadAPI(APIView):
+class RelationUploadAPI(APIView):
     parser_classes = (MultiPartParser,)
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
