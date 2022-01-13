@@ -2,8 +2,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
 
 from api.models import Project
-from ...models import Role
-from backend.members.models import Member
+from roles.models import Role
+from ...models import Member
 
 
 class Command(BaseCommand):
