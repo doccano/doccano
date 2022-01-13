@@ -2,8 +2,7 @@ from django.urls import include, path
 
 from .views import (annotation, auto_labeling, comment, example, example_state,
                     export_dataset, health, import_dataset, import_export,
-                    label, project, relation_types, statistics, tag, task,
-                    user)
+                    label, project, statistics, tag, task, user)
 from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
@@ -89,17 +88,17 @@ urlpatterns_project = [
     ),
     path(
         route='relation_types',
-        view=relation_types.RelationTypesList.as_view(),
+        view=label.RelationTypeList.as_view(),
         name='relation_types_list'
     ),
     path(
         route='relation_type-upload',
-        view=relation_types.RelationTypesUploadAPI.as_view(),
+        view=label.RelationTypeUploadAPI.as_view(),
         name='relation_type-upload'
     ),
     path(
         route='relation_types/<int:relation_type_id>',
-        view=relation_types.RelationTypesDetail.as_view(),
+        view=label.RelationTypeDetail.as_view(),
         name='relation_type_detail'
     ),
     path(
