@@ -11,12 +11,12 @@ from roles.models import Role
 
 class MemberManager(Manager):
 
-    def can_update(self, project: int, mapping_id: int, new_role: str) -> bool:
+    def can_update(self, project: int, member_id: int, new_role: str) -> bool:
         """The project needs at least 1 admin.
 
         Args:
             project: The project id.
-            mapping_id: The mapping id.
+            member_id: The member id.
             new_role: The new role name.
 
         Returns:
@@ -28,10 +28,9 @@ class MemberManager(Manager):
         if queryset.count() > 1:
             return True
         else:
-            mapping = queryset.first()
-            if mapping.id == mapping_id and new_role != settings.ROLE_PROJECT_ADMIN:
-                return False
-            return True
+            admin = queryset.first()
+            # we can change the role except for the only admin.
+            return admin.id != member_id or new_role == settings.ROLE_PROJECT_ADMIN
 
     def has_role(self, project_id: int, user: User, role_name: str):
         return self.filter(project=project_id, user=user, role__name=role_name).exists()
