@@ -41,6 +41,9 @@ class MemberManager(Manager):
                 return False
             return True
 
+    def has_role(self, project_id: int, user: User, role_name: str):
+        return self.filter(project=project_id, user=user, role__name=role_name).exists()
+
 
 class Member(models.Model):
     user = models.ForeignKey(

@@ -127,3 +127,20 @@ class TestMemberRoleFilter(CRUDMixin):
     def test_filter_role_by_user_id(self):
         response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
+
+
+class TestMemberManager(CRUDMixin):
+
+    def setUp(self):
+        pass
+
+    def test_has_role(self):
+        project = prepare_project()
+        admin = project.users[0]
+        expected = [
+            (settings.ROLE_PROJECT_ADMIN, True),
+            (settings.ROLE_ANNOTATION_APPROVER, False),
+            (settings.ROLE_ANNOTATOR, False)
+        ]
+        for role, expect in expected:
+            self.assertEqual(Member.objects.has_role(project.item, admin, role), expect)
