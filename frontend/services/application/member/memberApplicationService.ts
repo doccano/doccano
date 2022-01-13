@@ -41,6 +41,6 @@ export class MemberApplicationService {
 
   public async isProjectAdmin(projectId: string, userId: number): Promise<boolean> {
     const items = await this.repository.list(projectId)
-    return items.some((item) => item.id === userId && item.isProjectAdmin)
+    return items.some((item) => item.user === userId && item.isProjectAdmin)
   }
 }
