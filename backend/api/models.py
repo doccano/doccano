@@ -2,7 +2,6 @@ import abc
 import random
 import string
 import uuid
-from typing import Literal
 
 from auto_labeling_pipeline.models import RequestModelFactory
 from django.contrib.auth.models import User
@@ -46,8 +45,23 @@ class Project(PolymorphicModel):
         return False
 
     @property
-    @abc.abstractmethod
     def can_define_label(self) -> bool:
+        """Whether or not the project can define label(ignoring the type of label)"""
+        return False
+
+    @property
+    def can_define_relation(self) -> bool:
+        """Whether or not the project can define relation."""
+        return False
+
+    @property
+    def can_define_category(self) -> bool:
+        """Whether or not the project can define category."""
+        return False
+
+    @property
+    def can_define_span(self) -> bool:
+        """Whether or not the project can define span."""
         return False
 
     def __str__(self):
@@ -64,6 +78,10 @@ class TextClassificationProject(Project):
     def can_define_label(self) -> bool:
         return True
 
+    @property
+    def can_define_category(self) -> bool:
+        return True
+
 
 class SequenceLabelingProject(Project):
     allow_overlapping = models.BooleanField(default=False)
@@ -77,16 +95,16 @@ class SequenceLabelingProject(Project):
     def can_define_label(self) -> bool:
         return True
 
+    @property
+    def can_define_span(self) -> bool:
+        return True
+
 
 class Seq2seqProject(Project):
 
     @property
     def is_text_project(self) -> bool:
         return True
-
-    @property
-    def can_define_label(self) -> bool:
-        return False
 
 
 class IntentDetectionAndSlotFillingProject(Project):
@@ -99,15 +117,19 @@ class IntentDetectionAndSlotFillingProject(Project):
     def can_define_label(self) -> bool:
         return True
 
+    @property
+    def can_define_category(self) -> bool:
+        return True
+
+    @property
+    def can_define_span(self) -> bool:
+        return True
+
 
 class Speech2textProject(Project):
 
     @property
     def is_text_project(self) -> bool:
-        return False
-
-    @property
-    def can_define_label(self) -> bool:
         return False
 
 
@@ -119,6 +141,10 @@ class ImageClassificationProject(Project):
 
     @property
     def can_define_label(self) -> bool:
+        return True
+
+    @property
+    def can_define_category(self) -> bool:
         return True
 
 
