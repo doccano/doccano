@@ -1,3 +1,4 @@
+import abc
 import random
 import string
 import uuid
@@ -39,7 +40,9 @@ class Project(PolymorphicModel):
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
+    @property
+    @abc.abstractmethod
+    def is_text_project(self) -> bool:
         raise NotImplementedError()
 
     def __str__(self):
@@ -48,40 +51,46 @@ class Project(PolymorphicModel):
 
 class TextClassificationProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'text'
+    @property
+    def is_text_project(self) -> bool:
+        return True
 
 
 class SequenceLabelingProject(Project):
     allow_overlapping = models.BooleanField(default=False)
     grapheme_mode = models.BooleanField(default=False)
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'text'
+    @property
+    def is_text_project(self) -> bool:
+        return True
 
 
 class Seq2seqProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'text'
+    @property
+    def is_text_project(self) -> bool:
+        return True
 
 
 class IntentDetectionAndSlotFillingProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'text'
+    @property
+    def is_text_project(self) -> bool:
+        return True
 
 
 class Speech2textProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'speech'
+    @property
+    def is_text_project(self) -> bool:
+        return False
 
 
 class ImageClassificationProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'image'
+    @property
+    def is_text_project(self) -> bool:
+        return False
 
 
 def generate_random_hex_color():

@@ -142,7 +142,7 @@ class AutoLabelingConfigParameterTest(APIView):
 
     def prepare_example(self):
         text = self.request.data['text']
-        if self.project.is_task_of('text'):
+        if self.project.is_text_project:
             return text
         else:
             tu = TemporaryUpload.objects.get(upload_id=text)
@@ -221,7 +221,7 @@ class AutoLabelingAnnotation(generics.CreateAPIView):
 
     def get_example(self, project):
         example = get_object_or_404(Example, pk=self.kwargs['example_id'])
-        if project.is_task_of('text'):
+        if project.is_text_project:
             return example.text
         else:
             return str(example.filename)
