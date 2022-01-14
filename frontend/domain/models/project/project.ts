@@ -17,6 +17,11 @@ export class ProjectReadItem {
     public allow_overlapping:           boolean,
     public grapheme_mode:               boolean,
     public tags:                        Object[],
+    public is_text_project:             boolean,
+    public can_define_label:            boolean,
+    public can_define_relation:         boolean,
+    public can_define_span:             boolean,
+    public can_define_category:         boolean,
   ) {}
 
   static valueOf(
@@ -34,7 +39,12 @@ export class ProjectReadItem {
       resourcetype,
       allow_overlapping,
       grapheme_mode,
-      tags
+      tags,
+      is_text_project,
+      can_define_label,
+      can_define_relation,
+      can_define_span,
+      can_define_category,
     }:
     {
       id:                          number,
@@ -50,7 +60,12 @@ export class ProjectReadItem {
       resourcetype:                string,
       allow_overlapping:           boolean,
       grapheme_mode:               boolean,
-      tags:                        Object[]
+      tags:                        Object[],
+      is_text_project:             boolean,
+      can_define_label:            boolean,
+      can_define_relation:         boolean,
+      can_define_span:             boolean,
+      can_define_category:         boolean
     }
   ): ProjectReadItem {
     return new ProjectReadItem(
@@ -67,7 +82,12 @@ export class ProjectReadItem {
       resourcetype,
       allow_overlapping,
       grapheme_mode,
-      tags
+      tags,
+      is_text_project,
+      can_define_label,
+      can_define_relation,
+      can_define_span,
+      can_define_category
     )
   }
 
@@ -85,66 +105,23 @@ export class ProjectReadItem {
   }
 
   get canDefineLabel() {
-    const allowedProjectTypes = [
-      'DocumentClassification',
-      'SequenceLabeling',
-      'IntentDetectionAndSlotFilling',
-      'ImageClassification'
-    ]
-    return allowedProjectTypes.includes(this.project_type)
+    return this.can_define_label
   }
 
   get canDefineRelation() {
-    const allowedProjectTypes = [
-      'SequenceLabeling'
-    ]
-    return allowedProjectTypes.includes(this.project_type)
+    return this.can_define_relation
   }
 
   get isTextProject() {
-    const allowedProjectTypes = [
-      'DocumentClassification',
-      'SequenceLabeling',
-      'Seq2seq',
-      'IntentDetectionAndSlotFilling'
-    ]
-    return allowedProjectTypes.includes(this.project_type)
+    return this.is_text_project
   }
 
   get hasCategory(): boolean {
-    const allowedProjectTypes = [
-      'DocumentClassification',
-      'IntentDetectionAndSlotFilling',
-      'ImageClassification'
-    ]
-    return allowedProjectTypes.includes(this.project_type)
+    return this.can_define_category
   }
 
   get hasSpan(): boolean {
-    const allowedProjectTypes = [
-      'IntentDetectionAndSlotFilling',
-      'SequenceLabeling'
-    ]
-    return allowedProjectTypes.includes(this.project_type)
-  }
-
-  toObject(): Object {
-    return {
-      id: this.id,
-      name: this.name,
-      description: this.description,
-      guideline: this.guideline,
-      users: this.users,
-      project_type: this.project_type,
-      updated_at: this.updated_at,
-      random_order: this.random_order,
-      collaborative_annotation: this.collaborative_annotation,
-      single_class_classification: this.single_class_classification,
-      resourcetype: this.resourcetype,
-      allow_overlapping: this.allow_overlapping,
-      grapheme_mode: this.grapheme_mode,
-      tags: this.tags
-    }
+    return this.can_define_span
   }
 }
 

@@ -1,7 +1,7 @@
+import abc
 import random
 import string
 import uuid
-from typing import Literal
 
 from auto_labeling_pipeline.models import RequestModelFactory
 from django.contrib.auth.models import User
@@ -39,8 +39,30 @@ class Project(PolymorphicModel):
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        raise NotImplementedError()
+    @property
+    @abc.abstractmethod
+    def is_text_project(self) -> bool:
+        return False
+
+    @property
+    def can_define_label(self) -> bool:
+        """Whether or not the project can define label(ignoring the type of label)"""
+        return False
+
+    @property
+    def can_define_relation(self) -> bool:
+        """Whether or not the project can define relation."""
+        return False
+
+    @property
+    def can_define_category(self) -> bool:
+        """Whether or not the project can define category."""
+        return False
+
+    @property
+    def can_define_span(self) -> bool:
+        """Whether or not the project can define span."""
+        return False
 
     def __str__(self):
         return self.name
@@ -48,40 +70,82 @@ class Project(PolymorphicModel):
 
 class TextClassificationProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'text'
+    @property
+    def is_text_project(self) -> bool:
+        return True
+
+    @property
+    def can_define_label(self) -> bool:
+        return True
+
+    @property
+    def can_define_category(self) -> bool:
+        return True
 
 
 class SequenceLabelingProject(Project):
     allow_overlapping = models.BooleanField(default=False)
     grapheme_mode = models.BooleanField(default=False)
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'text'
+    @property
+    def is_text_project(self) -> bool:
+        return True
+
+    @property
+    def can_define_label(self) -> bool:
+        return True
+
+    @property
+    def can_define_span(self) -> bool:
+        return True
 
 
 class Seq2seqProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'text'
+    @property
+    def is_text_project(self) -> bool:
+        return True
 
 
 class IntentDetectionAndSlotFillingProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'text'
+    @property
+    def is_text_project(self) -> bool:
+        return True
+
+    @property
+    def can_define_label(self) -> bool:
+        return True
+
+    @property
+    def can_define_category(self) -> bool:
+        return True
+
+    @property
+    def can_define_span(self) -> bool:
+        return True
 
 
 class Speech2textProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'speech'
+    @property
+    def is_text_project(self) -> bool:
+        return False
 
 
 class ImageClassificationProject(Project):
 
-    def is_task_of(self, task: Literal['text', 'image', 'speech']):
-        return task == 'image'
+    @property
+    def is_text_project(self) -> bool:
+        return False
+
+    @property
+    def can_define_label(self) -> bool:
+        return True
+
+    @property
+    def can_define_category(self) -> bool:
+        return True
 
 
 def generate_random_hex_color():
