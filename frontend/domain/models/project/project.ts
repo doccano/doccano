@@ -18,6 +18,7 @@ export class ProjectReadItem {
     public grapheme_mode:               boolean,
     public tags:                        Object[],
     public is_text_project:             boolean,
+    public can_define_label:            boolean,
   ) {}
 
   static valueOf(
@@ -36,7 +37,8 @@ export class ProjectReadItem {
       allow_overlapping,
       grapheme_mode,
       tags,
-      is_text_project
+      is_text_project,
+      can_define_label,
     }:
     {
       id:                          number,
@@ -53,7 +55,8 @@ export class ProjectReadItem {
       allow_overlapping:           boolean,
       grapheme_mode:               boolean,
       tags:                        Object[],
-      is_text_project:             boolean
+      is_text_project:             boolean,
+      can_define_label:            boolean
     }
   ): ProjectReadItem {
     return new ProjectReadItem(
@@ -71,7 +74,8 @@ export class ProjectReadItem {
       allow_overlapping,
       grapheme_mode,
       tags,
-      is_text_project
+      is_text_project,
+      can_define_label
     )
   }
 
@@ -89,13 +93,7 @@ export class ProjectReadItem {
   }
 
   get canDefineLabel() {
-    const allowedProjectTypes = [
-      'DocumentClassification',
-      'SequenceLabeling',
-      'IntentDetectionAndSlotFilling',
-      'ImageClassification'
-    ]
-    return allowedProjectTypes.includes(this.project_type)
+    return this.can_define_label
   }
 
   get canDefineRelation() {
@@ -142,7 +140,8 @@ export class ProjectReadItem {
       allow_overlapping: this.allow_overlapping,
       grapheme_mode: this.grapheme_mode,
       tags: this.tags,
-      is_text_project: this.is_text_project
+      is_text_project: this.is_text_project,
+      can_define_label: this.can_define_label
     }
   }
 }

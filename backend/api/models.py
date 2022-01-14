@@ -45,6 +45,11 @@ class Project(PolymorphicModel):
     def is_text_project(self) -> bool:
         return False
 
+    @property
+    @abc.abstractmethod
+    def can_define_label(self) -> bool:
+        return False
+
     def __str__(self):
         return self.name
 
@@ -53,6 +58,10 @@ class TextClassificationProject(Project):
 
     @property
     def is_text_project(self) -> bool:
+        return True
+
+    @property
+    def can_define_label(self) -> bool:
         return True
 
 
@@ -64,6 +73,10 @@ class SequenceLabelingProject(Project):
     def is_text_project(self) -> bool:
         return True
 
+    @property
+    def can_define_label(self) -> bool:
+        return True
+
 
 class Seq2seqProject(Project):
 
@@ -71,11 +84,19 @@ class Seq2seqProject(Project):
     def is_text_project(self) -> bool:
         return True
 
+    @property
+    def can_define_label(self) -> bool:
+        return False
+
 
 class IntentDetectionAndSlotFillingProject(Project):
 
     @property
     def is_text_project(self) -> bool:
+        return True
+
+    @property
+    def can_define_label(self) -> bool:
         return True
 
 
@@ -85,12 +106,20 @@ class Speech2textProject(Project):
     def is_text_project(self) -> bool:
         return False
 
+    @property
+    def can_define_label(self) -> bool:
+        return False
+
 
 class ImageClassificationProject(Project):
 
     @property
     def is_text_project(self) -> bool:
         return False
+
+    @property
+    def can_define_label(self) -> bool:
+        return True
 
 
 def generate_random_hex_color():
