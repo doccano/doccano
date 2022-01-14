@@ -17,6 +17,7 @@ export class ProjectReadItem {
     public allow_overlapping:           boolean,
     public grapheme_mode:               boolean,
     public tags:                        Object[],
+    public is_text_project:             boolean,
   ) {}
 
   static valueOf(
@@ -34,7 +35,8 @@ export class ProjectReadItem {
       resourcetype,
       allow_overlapping,
       grapheme_mode,
-      tags
+      tags,
+      is_text_project
     }:
     {
       id:                          number,
@@ -50,7 +52,8 @@ export class ProjectReadItem {
       resourcetype:                string,
       allow_overlapping:           boolean,
       grapheme_mode:               boolean,
-      tags:                        Object[]
+      tags:                        Object[],
+      is_text_project:             boolean
     }
   ): ProjectReadItem {
     return new ProjectReadItem(
@@ -67,7 +70,8 @@ export class ProjectReadItem {
       resourcetype,
       allow_overlapping,
       grapheme_mode,
-      tags
+      tags,
+      is_text_project
     )
   }
 
@@ -102,13 +106,7 @@ export class ProjectReadItem {
   }
 
   get isTextProject() {
-    const allowedProjectTypes = [
-      'DocumentClassification',
-      'SequenceLabeling',
-      'Seq2seq',
-      'IntentDetectionAndSlotFilling'
-    ]
-    return allowedProjectTypes.includes(this.project_type)
+    return this.is_text_project
   }
 
   get hasCategory(): boolean {
@@ -143,7 +141,8 @@ export class ProjectReadItem {
       resourcetype: this.resourcetype,
       allow_overlapping: this.allow_overlapping,
       grapheme_mode: this.grapheme_mode,
-      tags: this.tags
+      tags: this.tags,
+      is_text_project: this.is_text_project
     }
   }
 }

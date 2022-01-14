@@ -173,11 +173,13 @@ class ProjectSerializer(serializers.ModelSerializer):
             'random_order',
             'collaborative_annotation',
             'single_class_classification',
+            'is_text_project',
             'tags'
         )
         read_only_fields = (
             'updated_at',
             'users',
+            'is_text_project',
             'tags'
         )
 

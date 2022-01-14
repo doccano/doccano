@@ -43,7 +43,7 @@ class Project(PolymorphicModel):
     @property
     @abc.abstractmethod
     def is_text_project(self) -> bool:
-        raise NotImplementedError()
+        return False
 
     def __str__(self):
         return self.name
