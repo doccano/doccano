@@ -65,7 +65,7 @@ export default {
       singleLabel: true,
       currentDoc: {
         id: 8,
-        filename: '~/assets/6737785.png',
+        filename: require('~/assets/6737785.png'),
         annotations: [
           {
             id: 17,

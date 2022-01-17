@@ -1,5 +1,4 @@
 from auto_labeling_pipeline.models import RequestModelFactory
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
@@ -12,13 +11,6 @@ from .models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQ2SEQ,
                      RelationTypes, Seq2seqProject, SequenceLabelingProject,
                      Span, SpanType, Speech2textProject, Tag,
                      TextClassificationProject, TextLabel)
-
-
-class UserSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = get_user_model()
-        fields = ('id', 'username', 'is_superuser', 'is_staff')
 
 
 class LabelSerializer(serializers.ModelSerializer):
