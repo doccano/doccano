@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 
 from members.permissions import IsProjectAdmin
 
+from ..celery_tasks import export_dataset
 from ..models import Project
-from ..tasks import export_dataset
 from .download.catalog import Options
 
 
