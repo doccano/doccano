@@ -1,71 +1,22 @@
-export class ExampleItemList {
-  constructor(
-    private _count: number,
-    private _next: string | null,
-    private _prev: string | null,
-    private _items: ExampleItem[]
-  ) {}
-
-  static valueOf(
-    { count, next, previous, results }:
-    {
-      count   : number,
-      next    : string | null,
-      previous: string | null,
-      results : Array<any>
-  }
-  ): ExampleItemList {
-    const items = results.map(item => ExampleItem.valueOf(item))
-    return new ExampleItemList(
-      count,
-      next,
-      previous,
-      items
-    )
-  }
-
-  get count() {
-    return this._count
-  }
-
-  get next() {
-    return this._next
-  }
-
-  get prev() {
-    return this._prev
-  }
-
-  get items(): ExampleItem[] {
-    return this._items
-  }
-}
+import "reflect-metadata"
+import { Expose, Type } from 'class-transformer'
 
 export class ExampleItem {
-  constructor(
-    public id: number,
-    public text: string,
-    public meta: object,
-    public annotationApprover: boolean | null,
-    public commentCount: number,
-    public fileUrl: string,
-    public isConfirmed: boolean
-  ) {}
+  id: number;
+  text: string;
+  meta: object;
 
-  static valueOf(
-    { id, text, meta, annotation_approver, comment_count, filename, is_confirmed }:
-    {
-      id: number,
-      text: string,
-      meta: object,
-      annotation_approver: boolean | null,
-      comment_count: number,
-      filename: string,
-      is_confirmed: boolean
-  }
-  ): ExampleItem {
-    return new ExampleItem(id, text, meta, annotation_approver, comment_count, filename, is_confirmed)
-  }
+  @Expose({ name: 'annotation_approver' })
+  annotationApprover: boolean | null;
+
+  @Expose({ name: 'comment_count' })
+  commentCount: number;
+
+  @Expose({ name: 'filename' })
+  fileUrl: string;
+
+  @Expose({ name: 'is_confirmed' })
+  isConfirmed: boolean;
 
   get url() {
     const l = this.fileUrl.indexOf('media/')
@@ -87,4 +38,14 @@ export class ExampleItem {
       comment_count: this.commentCount
     }
   }
+}
+
+export class ExampleItemList {
+  count: number;
+  next: string | null;
+  prev: string | null;
+
+  @Type(() => ExampleItem)
+  @Expose({ name: 'results' })
+  items: ExampleItem[];
 }

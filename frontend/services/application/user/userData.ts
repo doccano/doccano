@@ -9,6 +9,6 @@ export class UserDTO {
   constructor(item: UserItem) {
     this.id = item.id;
     this.username = item.username;
-    this.isStaff = item.is_staff;
+    this.isStaff = item.isStaff;
   }
 }

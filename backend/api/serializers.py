@@ -43,7 +43,7 @@ class LabelSerializer(serializers.ModelSerializer):
         except (AttributeError, KeyError):
             pass  # unit tests don't always have the correct context set up
         else:
-            conflicting_labels = Label.objects.filter(
+            conflicting_labels = self.Meta.model.objects.filter(
                 suffix_key=suffix_key,
                 prefix_key=prefix_key,
                 project=project_id,

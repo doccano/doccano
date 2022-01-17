@@ -1,3 +1,4 @@
+import { plainToInstance } from 'class-transformer'
 import { MemberDTO } from './memberData'
 import { MemberRepository } from '~/domain/models/member/memberRepository'
 import { MemberItem } from '~/domain/models/member/member'
@@ -18,7 +19,7 @@ export class MemberApplicationService {
 
   public async create(projectId: string, item: MemberDTO): Promise<void> {
     try {
-      const member = new MemberItem(0, item.user, item.role, item.username, item.rolename)
+      const member = plainToInstance(MemberItem, item)
       await this.repository.create(projectId, member)
     } catch(e: any) {
       throw new Error(e.response.data.detail)
@@ -27,7 +28,7 @@ export class MemberApplicationService {
 
   public async update(projectId: string, item: MemberDTO): Promise<void> {
     try {
-      const member = new MemberItem(item.id, item.user, item.role, item.username, item.rolename)
+      const member = plainToInstance(MemberItem, item)
       await this.repository.update(projectId, member)
     } catch(e: any) {
       throw new Error(e.response.data.detail)

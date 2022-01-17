@@ -1,7 +1,7 @@
+import { plainToInstance } from 'class-transformer'
 import ApiService from '@/services/api.service'
-import { MemberRepository, MemberItemResponse } from '@/domain/models/member/memberRepository'
+import { MemberRepository } from '@/domain/models/member/memberRepository'
 import { MemberItem } from '~/domain/models/member/member'
-
 
 export class APIMemberRepository implements MemberRepository {
   constructor(
@@ -11,22 +11,19 @@ export class APIMemberRepository implements MemberRepository {
   async list(projectId: string): Promise<MemberItem[]> {
     const url = `/projects/${projectId}/members`
     const response = await this.request.get(url)
-    const responseItems: MemberItemResponse[] = response.data
-    return responseItems.map(item => MemberItem.valueOf(item))
+    return response.data.map((item: any) => plainToInstance(MemberItem, item))
   }
 
   async create(projectId: string, item: MemberItem): Promise<MemberItem> {
     const url = `/projects/${projectId}/members`
     const response = await this.request.post(url, item.toObject())
-    const responseItem: MemberItemResponse = response.data
-    return MemberItem.valueOf(responseItem)
+    return plainToInstance(MemberItem, response.data)
   }
 
   async update(projectId: string, item: MemberItem): Promise<MemberItem> {
     const url = `/projects/${projectId}/members/${item.id}`
     const response = await this.request.patch(url, item.toObject())
-    const responseItem: MemberItemResponse = response.data
-    return MemberItem.valueOf(responseItem)
+    return plainToInstance(MemberItem, response.data)
   }
 
   async bulkDelete(projectId: string, memberIds: number[]): Promise<void> {

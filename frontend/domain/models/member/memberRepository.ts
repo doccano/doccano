@@ -1,13 +1,5 @@
 import { MemberItem } from '~/domain/models/member/member'
 
-export interface MemberItemResponse {
-  id: number,
-  user: number,
-  role: number,
-  username: string,
-  rolename: string
-}
-
 export interface MemberRepository {
   list(projectId: string): Promise<MemberItem[]>
 

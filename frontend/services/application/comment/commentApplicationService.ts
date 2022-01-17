@@ -1,3 +1,4 @@
+import { plainToInstance } from 'class-transformer'
 import { CommentReadDTO, CommentListDTO } from './commentData'
 import { CommentRepository, SearchOption } from '~/domain/models/comment/commentRepository'
 import { CommentItem } from '~/domain/models/comment/comment'
@@ -22,9 +23,7 @@ export class CommentApplicationService {
   }
 
   public update(projectId: string, docId: number, item: CommentReadDTO): Promise<CommentItem> {
-    const comment = new CommentItem(
-      item.id, item.user, item.username, docId, item.text, item.createdAt
-    )
+    const comment = plainToInstance(CommentItem, item)
     return this.repository.update(projectId, docId, comment)
   }
 

@@ -12,14 +12,13 @@ export class ProjectApplicationService {
     try {
       const items = await this.repository.list()
       return items.map(item => new ProjectDTO(item))
-    } catch(e) {
+    } catch(e: any) {
       throw new Error(e.response.data.detail)
     }
   }
 
   public async findById(id: string): Promise<ProjectDTO> {
     const item = await this.repository.findById(id)
-    const response = new ProjectDTO(item)
     return new ProjectDTO(item)
   }
 
@@ -28,7 +27,7 @@ export class ProjectApplicationService {
       const project = this.toWriteModel(item)
       const response = await this.repository.create(project)
       return new ProjectDTO(response)
-    } catch(e) {
+    } catch(e: any) {
       throw new Error(e.response.data.detail)
     }
   }
@@ -37,7 +36,7 @@ export class ProjectApplicationService {
     try {
       const project = this.toWriteModel(item)
       await this.repository.update(project)
-    } catch(e) {
+    } catch(e: any) {
       throw new Error(e.response.data.detail)
     }
   }

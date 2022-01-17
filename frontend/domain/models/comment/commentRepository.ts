@@ -1,14 +1,5 @@
 import { CommentItem, CommentItemList } from '~/domain/models/comment/comment'
 
-export interface CommentItemResponse {
-  id: number,
-  user: number,
-  username: string,
-  example: number,
-  text: string,
-  created_at: string
-}
-
 export type SearchOption = {[key: string]: string | (string | null)[]}
 
 export interface CommentRepository {

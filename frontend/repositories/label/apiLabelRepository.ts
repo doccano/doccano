@@ -1,3 +1,4 @@
+import { plainToInstance } from 'class-transformer'
 import ApiService from '@/services/api.service'
 import { LabelRepository } from '~/domain/models/label/labelRepository'
 import { LabelItem } from '~/domain/models/label/label'
@@ -20,22 +21,19 @@ export class APILabelRepository implements LabelRepository {
   async list(projectId: string): Promise<LabelItem[]> {
     const url = `/projects/${projectId}/${this.baseUrl}s`
     const response = await this.request.get(url)
-    const responseItems: LabelItemResponse[] = response.data
-    return responseItems.map(item => LabelItem.valueOf(item))
+    return response.data.map((item: any) => plainToInstance(LabelItem, item))
   }
 
   async create(projectId: string, item: LabelItem): Promise<LabelItem> {
     const url = `/projects/${projectId}/${this.baseUrl}s`
     const response = await this.request.post(url, item.toObject())
-    const responseItem: LabelItemResponse = response.data
-    return LabelItem.valueOf(responseItem)
+    return plainToInstance(LabelItem, response.data)
   }
 
   async update(projectId: string, item: LabelItem): Promise<LabelItem> {
     const url = `/projects/${projectId}/${this.baseUrl}s/${item.id}`
     const response = await this.request.patch(url, item.toObject())
-    const responseItem: LabelItemResponse = response.data
-    return LabelItem.valueOf(responseItem)
+    return plainToInstance(LabelItem, response.data)
   }
 
   async bulkDelete(projectId: string, labelIds: number[]): Promise<void> {
@@ -52,7 +50,7 @@ export class APILabelRepository implements LabelRepository {
     }
     try {
       await this.request.post(url, payload, config)
-    } catch(e) {
+    } catch(e: any) {
       const data = e.response.data
       if ('detail' in data) {
         throw new Error(data.detail)

@@ -190,13 +190,13 @@ export default Vue.extend({
       await this.service.update(this.projectId, this.editedItem)
     },
 
-    save() {
+    async save() {
       if (this.editedIndex > -1) {
-        this.update()
+        await this.update()
       } else {
-        this.create()
+        await this.create()
       }
-      this.list()
+      await this.list()
       this.close()
     },
 

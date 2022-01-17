@@ -25,20 +25,20 @@ export class ProjectDTO {
     this.name = item.name
     this.description = item.description
     this.guideline = item.guideline
-    this.projectType = item.project_type
-    this.updatedAt = item.updated_at
-    this.enableRandomOrder = item.random_order
+    this.projectType = item.projectType
+    this.updatedAt = item.updatedAt
+    this.enableRandomOrder = item.randomOrder
     this.enableShareAnnotation = item.collaborative_annotation
-    this.singleClassClassification = item.single_class_classification
+    this.singleClassClassification = item.exclusiveCategories
     this.pageLink = item.annotationPageLink
     this.tags = item.tags
     this.canDefineLabel = item.canDefineLabel
     this.canDefineRelation = item.canDefineRelation
     this.isTextProject = item.isTextProject
-    this.allowOverlapping = item.allow_overlapping
-    this.graphemeMode = item.grapheme_mode
-    this.hasCategory = item.hasCategory
-    this.hasSpan = item.hasSpan
+    this.allowOverlapping = item.allowOverlapping
+    this.graphemeMode = item.graphemeMode
+    this.hasCategory = item.canDefineCategory
+    this.hasSpan = item.canDefineSpan
   }
 }
 
