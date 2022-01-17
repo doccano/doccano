@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'roles.apps.RolesConfig',
     'members.apps.MembersConfig',
+    'metrics.apps.MetricsConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
