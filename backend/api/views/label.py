@@ -2,7 +2,6 @@ import json
 import re
 
 from django.db import IntegrityError, transaction
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.exceptions import ParseError
@@ -14,7 +13,7 @@ from rest_framework.views import APIView
 from members.permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
 
 from ..exceptions import LabelValidationError
-from ..models import CategoryType, Label, Project, RelationTypes, SpanType
+from ..models import CategoryType, Label, RelationTypes, SpanType
 from ..serializers import (CategoryTypeSerializer, LabelSerializer,
                            RelationTypesSerializer, SpanTypeSerializer)
 
@@ -36,12 +35,10 @@ class LabelList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
     def get_queryset(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return self.model.objects.filter(project=project)
+        return self.model.objects.filter(project=self.kwargs['project_id'])
 
     def perform_create(self, serializer):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        serializer.save(project=project)
+        serializer.save(project_id=self.kwargs['project_id'])
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
@@ -94,13 +91,12 @@ class LabelUploadAPI(APIView):
     def post(self, request, *args, **kwargs):
         if 'file' not in request.data:
             raise ParseError('Empty content')
-        project = get_object_or_404(Project, pk=kwargs['project_id'])
         try:
             labels = json.load(request.data['file'])
             labels = list(map(camel_to_snake_dict, labels))
             serializer = self.serializer_class(data=labels, many=True)
             serializer.is_valid(raise_exception=True)
-            serializer.save(project=project)
+            serializer.save(project_id=kwargs['project_id'])
             return Response(status=status.HTTP_201_CREATED)
         except json.decoder.JSONDecodeError:
             raise ParseError('The file format is invalid.')
