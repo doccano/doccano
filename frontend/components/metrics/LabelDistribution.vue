@@ -26,8 +26,8 @@
 
 <script lang="ts">
 import Vue, { PropType } from 'vue'
-import BarChart from '@/components/statistics/ChartBar.vue'
-import { Distribution } from '~/domain/models/statistics/statistics'
+import BarChart from '@/components/metrics/ChartBar.vue'
+import { Distribution } from '~/domain/models/metrics/metrics'
 
 export default Vue.extend({
   components: {

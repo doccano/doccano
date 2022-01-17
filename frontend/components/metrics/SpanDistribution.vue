@@ -1,6 +1,6 @@
 <template>
   <label-distribution
-    title="Category Distribution"
+    title="Span Distribution"
     :distribution="distribution"
     :color-mapping="colorMapping"
   />
@@ -23,8 +23,8 @@ export default Vue.extend({
   },
 
   async created() {
-    this.distribution = await this.$services.statistics.fetchCategoryDistribution(this.$route.params.id)
-    const labels = await this.$services.categoryType.list(this.$route.params.id)
+    this.distribution = await this.$services.metrics.fetchSpanDistribution(this.$route.params.id)
+    const labels = await this.$services.spanType.list(this.$route.params.id)
     this.colorMapping = Object.fromEntries(labels.map((label) => [label.text, label.backgroundColor]))
   }
 })

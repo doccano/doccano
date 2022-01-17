@@ -26,7 +26,7 @@ export default Vue.extend({
   },
 
   async created() {
-    this.stats = await this.$services.statistics.fetchMemberProgress(this.$route.params.id)
+    this.stats = await this.$services.metrics.fetchMemberProgress(this.$route.params.id)
   },
 
   methods: {

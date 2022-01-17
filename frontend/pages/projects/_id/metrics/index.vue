@@ -13,9 +13,9 @@
 </template>
 
 <script>
-import CategoryDistribution from '~/components/statistics/CategoryDistribution'
-import SpanDistribution from '~/components/statistics/SpanDistribution'
-import MemberProgress from '~/components/statistics/MemberProgress'
+import CategoryDistribution from '~/components/metrics/CategoryDistribution'
+import SpanDistribution from '~/components/metrics/SpanDistribution'
+import MemberProgress from '~/components/metrics/MemberProgress'
 
 export default {
   components: {
