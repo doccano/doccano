@@ -96,17 +96,6 @@ urlpatterns_project = [
         view=relation.RelationDetail.as_view(),
         name='annotation_relation_detail'
     ),
-    # Todo: remove.
-    path(
-        route='docs',
-        view=example.DocumentList.as_view(),
-        name='doc_list'
-    ),
-    path(
-        route='docs/<int:doc_id>',
-        view=example.DocumentDetail.as_view(),
-        name='doc_detail'
-    ),
     path(
         route='approval/<int:example_id>',
         view=annotation.ApprovalAPI.as_view(),

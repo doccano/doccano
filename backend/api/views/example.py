@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from members.permissions import IsInProjectReadOnlyOrAdmin
 
-from ..filters import DocumentFilter, ExampleFilter
+from ..filters import ExampleFilter
 from ..models import Example, Project
 from ..serializers import ExampleSerializer
 
@@ -55,16 +55,4 @@ class ExampleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Example.objects.all()
     serializer_class = ExampleSerializer
     lookup_url_kwarg = 'example_id'
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
-
-
-class DocumentList(ExampleList):
-    search_fields = ('text',)
-    filter_class = DocumentFilter
-
-
-class DocumentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Example.objects.all()
-    serializer_class = ExampleSerializer
-    lookup_url_kwarg = 'doc_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
