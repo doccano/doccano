@@ -1,95 +1,54 @@
+import { Expose } from 'class-transformer'
+
 export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'IntentDetectionAndSlotFilling' | 'ImageClassification' | 'Speech2text'
 
 
 export class ProjectReadItem {
-  constructor(
-    public id:                          number,
-    public name:                        string,
-    public description:                 string,
-    public guideline:                   string,
-    public users:                       number[],
-    public project_type:                ProjectType,
-    public updated_at:                  string,
-    public random_order:                boolean,
-    public collaborative_annotation:    boolean,
-    public single_class_classification: boolean,
-    public resourcetype:                string,
-    public allow_overlapping:           boolean,
-    public grapheme_mode:               boolean,
-    public tags:                        Object[],
-    public is_text_project:             boolean,
-    public can_define_label:            boolean,
-    public can_define_relation:         boolean,
-    public can_define_span:             boolean,
-    public can_define_category:         boolean,
-  ) {}
+  id:                          number;
+  name:                        string;
+  description:                 string;
+  guideline:                   string;
+  users:                       number[];
+  tags:                        Object[];
 
-  static valueOf(
-    {
-      id,
-      name,
-      description,
-      guideline,
-      users,
-      project_type,
-      updated_at,
-      random_order,
-      collaborative_annotation,
-      single_class_classification,
-      resourcetype,
-      allow_overlapping,
-      grapheme_mode,
-      tags,
-      is_text_project,
-      can_define_label,
-      can_define_relation,
-      can_define_span,
-      can_define_category,
-    }:
-    {
-      id:                          number,
-      name:                        string,
-      description:                 string,
-      guideline:                   string,
-      users:                       number[],
-      project_type:                ProjectType,
-      updated_at:                  string,
-      random_order:                boolean,
-      collaborative_annotation:    boolean,
-      single_class_classification: boolean,
-      resourcetype:                string,
-      allow_overlapping:           boolean,
-      grapheme_mode:               boolean,
-      tags:                        Object[],
-      is_text_project:             boolean,
-      can_define_label:            boolean,
-      can_define_relation:         boolean,
-      can_define_span:             boolean,
-      can_define_category:         boolean
-    }
-  ): ProjectReadItem {
-    return new ProjectReadItem(
-      id,
-      name,
-      description,
-      guideline,
-      users,
-      project_type,
-      updated_at,
-      random_order,
-      collaborative_annotation,
-      single_class_classification,
-      resourcetype,
-      allow_overlapping,
-      grapheme_mode,
-      tags,
-      is_text_project,
-      can_define_label,
-      can_define_relation,
-      can_define_span,
-      can_define_category
-    )
-  }
+  @Expose({ name: 'project_type' })
+  projectType: ProjectType;
+
+  @Expose({ name: 'updated_at' })
+  updatedAt: string;
+
+  @Expose({ name: 'random_order' })
+  randomOrder: boolean;
+
+  @Expose({ name: 'collaborative_annotation' })
+  collaborative_annotation: boolean;
+
+  @Expose({ name: 'single_class_classification' })
+  exclusiveCategories: boolean;
+
+  @Expose({ name: 'resourcetype' })
+  resourceType: string;
+
+  @Expose({ name: 'allow_overlapping' })
+  allowOverlapping: boolean;
+
+  @Expose({ name: 'grapheme_mode' })
+  graphemeMode: boolean;
+
+  @Expose({ name: 'is_text_project'})
+  isTextProject: boolean;
+
+  @Expose({ name: 'can_define_label' })
+  canDefineLabel: boolean;
+
+  @Expose({ name: 'can_define_relation' })
+  canDefineRelation: boolean;
+
+  @Expose({ name: 'can_define_span'})
+  canDefineSpan: boolean;
+
+  @Expose({ name: 'can_define_category' })
+  canDefineCategory: boolean;
 
   get annotationPageLink(): string {
     const mapping = {
@@ -100,28 +59,8 @@ export class ProjectReadItem {
       ImageClassification   : 'image-classification',
       Speech2text           : 'speech-to-text',
     }
-    const url = `/projects/${this.id}/${mapping[this.project_type]}`
+    const url = `/projects/${this.id}/${mapping[this.projectType]}`
     return url
-  }
-
-  get canDefineLabel() {
-    return this.can_define_label
-  }
-
-  get canDefineRelation() {
-    return this.can_define_relation
-  }
-
-  get isTextProject() {
-    return this.is_text_project
-  }
-
-  get hasCategory(): boolean {
-    return this.can_define_category
-  }
-
-  get hasSpan(): boolean {
-    return this.can_define_span
   }
 }
 
@@ -138,46 +77,6 @@ export class ProjectWriteItem {
     public allow_overlapping:           boolean,
     public grapheme_mode:               boolean
   ) {}
-
-  static valueOf(
-    {
-      id,
-      name,
-      description,
-      guideline,
-      project_type,
-      random_order,
-      collaborative_annotation,
-      single_class_classification,
-      allow_overlapping,
-      grapheme_mode
-    }:
-    {
-      id:                          number,
-      name:                        string,
-      description:                 string,
-      guideline:                   string,
-      project_type:                ProjectType,
-      random_order:                boolean,
-      collaborative_annotation:    boolean,
-      single_class_classification: boolean,
-      allow_overlapping:           boolean,
-      grapheme_mode:               boolean
-    }
-  ): ProjectWriteItem {
-    return new ProjectWriteItem(
-      id,
-      name,
-      description,
-      guideline,
-      project_type,
-      random_order,
-      collaborative_annotation,
-      single_class_classification,
-      allow_overlapping,
-      grapheme_mode
-    )
-  }
 
   get resourceType(): string {
     const mapping = {

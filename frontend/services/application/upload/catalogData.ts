@@ -10,7 +10,7 @@ export class CatalogDTO {
   constructor(item: Catalog) {
     this.name = item.name
     this.example = item.example
-    this.acceptTypes = item.accept_types
+    this.acceptTypes = item.acceptTypes
     this.properties = item.properties
   }
 }
