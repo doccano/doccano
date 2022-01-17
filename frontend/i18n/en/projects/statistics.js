@@ -1,5 +1,5 @@
 export default {
-  statistics: 'Statistics',
+  statistics: 'Metrics',
   progress: [
     'Completed',
     'Incomplete'

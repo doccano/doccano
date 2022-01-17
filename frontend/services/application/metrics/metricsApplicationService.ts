@@ -1,9 +1,9 @@
-import { StatisticsRepository } from '~/domain/models/statistics/statisticsRepository'
-import { Progress, Distribution } from '~/domain/models/statistics/statistics'
+import { MetricsRepository } from '~/domain/models/metrics/metricsRepository'
+import { Progress, Distribution } from '~/domain/models/metrics/metrics'
 
-export class StatisticsApplicationService {
+export class MetricsApplicationService {
   constructor(
-    private readonly repository: StatisticsRepository
+    private readonly repository: MetricsRepository
   ) {}
 
   public async fetchMemberProgress(projectId: string): Promise<Progress> {

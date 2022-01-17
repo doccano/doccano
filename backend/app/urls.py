@@ -43,6 +43,7 @@ urlpatterns += [
     path('v1/', include('api.urls')),
     path('v1/', include('roles.urls')),
     path('v1/projects/<int:project_id>/', include('members.urls')),
+    path('v1/projects/<int:project_id>/metrics/', include('metrics.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path('', TemplateView.as_view(template_name='index.html')),
 ]

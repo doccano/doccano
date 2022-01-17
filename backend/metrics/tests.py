@@ -2,8 +2,8 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import DOCUMENT_CLASSIFICATION
-from .utils import CRUDMixin, make_doc, make_label, prepare_project
+from api.tests.api.utils import CRUDMixin, prepare_project, make_doc, make_label
+from api.models import DOCUMENT_CLASSIFICATION
 
 
 class TestMemberProgress(CRUDMixin):

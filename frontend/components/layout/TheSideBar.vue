@@ -111,7 +111,7 @@ export default {
         {
           icon: mdiChartBar,
           text: this.$t('statistics.statistics'),
-          link: 'statistics',
+          link: 'metrics',
           isVisible: this.isProjectAdmin
         },
         {

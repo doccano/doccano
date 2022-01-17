@@ -2,7 +2,7 @@ from django.urls import include, path
 
 from .views import (annotation, auto_labeling, comment, example, example_state,
                     export_dataset, health, import_dataset, import_export,
-                    label, project, statistics, tag, task, user)
+                    label, project, tag, task, user)
 from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
@@ -25,26 +25,6 @@ urlpatterns_project = [
         route='download',
         view=export_dataset.DownloadAPI.as_view(),
         name='download-dataset'
-    ),
-    path(
-        route='progress',
-        view=statistics.ProgressAPI.as_view(),
-        name='progress'
-    ),
-    path(
-        route='member-progress',
-        view=statistics.MemberProgressAPI.as_view(),
-        name='member_progress'
-    ),
-    path(
-        route='category-distribution',
-        view=statistics.CategoryTypeDistribution.as_view(),
-        name='category_distribution'
-    ),
-    path(
-        route='span-distribution',
-        view=statistics.SpanTypeDistribution.as_view(),
-        name='span_distribution'
     ),
     path(
         route='category-types',
