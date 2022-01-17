@@ -10,8 +10,8 @@ from rest_framework.views import APIView
 
 from members.permissions import IsProjectAdmin
 
+from ..celery_tasks import ingest_data
 from ..models import Project
-from ..tasks import ingest_data
 from .upload.catalog import Options
 
 
