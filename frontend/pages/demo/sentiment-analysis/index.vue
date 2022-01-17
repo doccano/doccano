@@ -8,7 +8,7 @@
               <label-group
                 :labels="items"
                 :annotations="currentDoc.annotations"
-                single-label="true"
+                :single-label="singleLabel"
                 @add="addLabel"
                 @remove="removeLabel"
               />
@@ -41,6 +41,7 @@ export default {
 
   data() {
     return {
+      singleLabel: true,
       items: [
         {
           id: 4,

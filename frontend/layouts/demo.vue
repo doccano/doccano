@@ -12,6 +12,5 @@ export default {
   components: {
     TheHeader
   },
-  middleware: ['check-auth']
 }
 </script>
