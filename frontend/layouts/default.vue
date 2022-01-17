@@ -15,6 +15,5 @@ export default {
     TheFooter,
     TheHeader
   },
-  middleware: ['check-auth']
 }
 </script>
