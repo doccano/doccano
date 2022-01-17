@@ -2,7 +2,7 @@ from django.urls import include, path
 
 from .views import (annotation, auto_labeling, comment, example, example_state,
                     export_dataset, health, import_dataset, import_export,
-                    label, project, tag, task, user)
+                    label, project, tag, task)
 from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
@@ -225,13 +225,7 @@ urlpatterns = [
         view=health.Health.as_view(),
         name='health'
     ),
-    path('auth/', include('dj_rest_auth.urls')),
     path('fp/', include('django_drf_filepond.urls')),
-    path(
-        route='me',
-        view=user.Me.as_view(),
-        name='me'
-    ),
     path(
         route='features',
         view=import_export.Features.as_view(),
@@ -241,11 +235,6 @@ urlpatterns = [
         route='projects',
         view=project.ProjectList.as_view(),
         name='project_list'
-    ),
-    path(
-        route='users',
-        view=user.Users.as_view(),
-        name='user_list'
     ),
     path(
         route='tasks/status/<task_id>',

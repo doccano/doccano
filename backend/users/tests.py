@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from .utils import make_user
+from api.tests.api.utils import make_user
 
 
 class TestUserAPI(APITestCase):
