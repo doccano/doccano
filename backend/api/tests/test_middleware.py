@@ -1,7 +1,7 @@
-from django.test import TestCase, override_settings
 from django.contrib.auth.models import User
+from django.test import TestCase, override_settings
 
-from ..middleware import HeaderAuthMiddleware
+from api.middleware import HeaderAuthMiddleware
 
 
 @override_settings(HEADER_AUTH_USER_GROUPS='X-AuthProxy-Groups')
