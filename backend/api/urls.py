@@ -1,20 +1,10 @@
 from django.urls import include, path
 
 from .views import (annotation, auto_labeling, comment, example, example_state,
-                    export_dataset, health, label, project, tag, task)
+                    health, label, project, tag, task)
 from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
-    path(
-        route='download-format',
-        view=export_dataset.DownloadDatasetCatalog.as_view(),
-        name='download-format'
-    ),
-    path(
-        route='download',
-        view=export_dataset.DownloadAPI.as_view(),
-        name='download-dataset'
-    ),
     path(
         route='category-types',
         view=label.CategoryTypeList.as_view(),

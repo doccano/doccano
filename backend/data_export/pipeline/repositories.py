@@ -3,7 +3,7 @@ import itertools
 from collections import defaultdict
 from typing import Dict, Iterator, List
 
-from ...models import Example, Project
+from api.models import Example, Project
 from .data import Record
 
 

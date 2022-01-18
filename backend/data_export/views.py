@@ -6,14 +6,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.models import Project
 from members.permissions import IsProjectAdmin
-
-from ..celery_tasks import export_dataset
-from ..models import Project
-from .download.catalog import Options
+from .celery_tasks import export_dataset
+from .pipeline.catalog import Options
 
 
-class DownloadDatasetCatalog(APIView):
+class DatasetCatalog(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):
@@ -23,7 +22,7 @@ class DownloadDatasetCatalog(APIView):
         return Response(data=options, status=status.HTTP_200_OK)
 
 
-class DownloadAPI(APIView):
+class DatasetExportAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):
@@ -37,11 +36,11 @@ class DownloadAPI(APIView):
 
     def post(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
-        format = request.data.pop('format')
+        file_format = request.data.pop('format')
         export_approved = request.data.pop('exportApproved', False)
         task = export_dataset.delay(
             project_id=project_id,
-            format=format,
+            file_format=file_format,
             export_approved=export_approved,
             **request.data
         )

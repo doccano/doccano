@@ -2,9 +2,9 @@ import unittest
 
 from model_mommy import mommy
 
-from ...models import INTENT_DETECTION_AND_SLOT_FILLING
-from ...views.download.repositories import IntentDetectionSlotFillingRepository
-from ..api.utils import prepare_project
+from api.models import INTENT_DETECTION_AND_SLOT_FILLING
+from api.tests.api.utils import prepare_project
+from ..pipeline.repositories import IntentDetectionSlotFillingRepository
 
 
 class TestCSVWriter(unittest.TestCase):
