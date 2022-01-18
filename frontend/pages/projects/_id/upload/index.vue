@@ -4,7 +4,7 @@
       {{ $t('dataset.importDataTitle') }}
     </v-card-title>
     <v-card-text>
-      <v-overlay :value="taskId">
+      <v-overlay :value="isImporting">
         <v-progress-circular
           indeterminate
           size="64"
@@ -143,6 +143,7 @@ export default {
       },
       uploadedFiles: [],
       valid: false,
+      isImporting: false,
     }
   },
 
@@ -233,6 +234,7 @@ export default {
       }
     },
     async importDataset() {
+      this.isImporting = true
       this.taskId = await this.$services.parse.analyze(
         this.$route.params.id,
         this.selected,
@@ -249,6 +251,7 @@ export default {
             this.errors = res.result.error
             this.myFiles = []
             this.uploadedFiles = []
+            this.isImporting = false
           }
         }
   		}, 3000)
