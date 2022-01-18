@@ -1,12 +1,12 @@
 from django.urls import include, path
 
-from .views import UploadAPI, DatasetCatalog
+from .views import DatasetImportAPI, DatasetCatalog
 
 urlpatterns = [
     path('fp/', include('django_drf_filepond.urls')),
     path(
         route='projects/<int:project_id>/upload',
-        view=UploadAPI.as_view(),
+        view=DatasetImportAPI.as_view(),
         name='upload'
     ),
     path(

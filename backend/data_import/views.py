@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from api.models import Project
 from members.permissions import IsProjectAdmin
-from .celery_tasks import ingest_data
+from .celery_tasks import import_dataset
 from .pipeline.catalog import Options
 
 
@@ -25,7 +25,7 @@ class DatasetCatalog(APIView):
         return Response(data=options, status=status.HTTP_200_OK)
 
 
-class UploadAPI(APIView):
+class DatasetImportAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def post(self, request, *args, **kwargs):
@@ -42,7 +42,7 @@ class UploadAPI(APIView):
             for tu in tus
         ]
         filenames = [su.file.path for su in sus]
-        task = ingest_data.delay(
+        task = import_dataset.delay(
             user_id=request.user.id,
             project_id=project_id,
             filenames=filenames,

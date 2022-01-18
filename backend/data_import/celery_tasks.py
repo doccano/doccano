@@ -10,7 +10,7 @@ from .pipeline.writers import BulkWriter
 
 
 @shared_task
-def ingest_data(user_id, project_id, filenames, file_format: str, **kwargs):
+def import_dataset(user_id, project_id, filenames, file_format: str, **kwargs):
     project = get_object_or_404(Project, pk=project_id)
     user = get_object_or_404(get_user_model(), pk=user_id)
 
