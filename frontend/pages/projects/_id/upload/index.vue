@@ -85,9 +85,9 @@
       <v-btn
         class='text-capitalize me-2 primary'
         :disabled="isDisabled"
-        @click="injest"
+        @click="importDataset"
       >
-        Ingest
+        Import
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -232,7 +232,7 @@ export default {
           this.$nextTick()
       }
     },
-    async injest() {
+    async importDataset() {
       this.taskId = await this.$services.parse.analyze(
         this.$route.params.id,
         this.selected,
