@@ -1,8 +1,7 @@
 from django.urls import include, path
 
 from .views import (annotation, auto_labeling, comment, example, example_state,
-                    export_dataset, health, import_export, label, project, tag,
-                    task)
+                    export_dataset, health, label, project, tag, task)
 from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
@@ -203,11 +202,6 @@ urlpatterns = [
         route='health',
         view=health.Health.as_view(),
         name='health'
-    ),
-    path(
-        route='features',
-        view=import_export.Features.as_view(),
-        name='features'
     ),
     path(
         route='projects',
