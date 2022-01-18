@@ -1,5 +1,5 @@
 from .repositories import BaseRepository
-from .writer import BaseWriter
+from .writers import BaseWriter
 
 
 class ExportApplicationService:

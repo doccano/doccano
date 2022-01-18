@@ -1,9 +1,9 @@
 from typing import Type
 
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
-                       INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                       SEQUENCE_LABELING, SPEECH2TEXT)
-from . import catalog, repositories, writer
+from api.models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
+                        INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
+                        SEQUENCE_LABELING, SPEECH2TEXT)
+from . import catalog, repositories, writers
 
 
 def create_repository(project) -> repositories.BaseRepository:
@@ -21,14 +21,14 @@ def create_repository(project) -> repositories.BaseRepository:
     return repository
 
 
-def create_writer(format: str) -> Type[writer.BaseWriter]:
+def create_writer(file_format: str) -> Type[writers.BaseWriter]:
     mapping = {
-        catalog.CSV.name: writer.CsvWriter,
-        catalog.JSON.name: writer.JSONWriter,
-        catalog.JSONL.name: writer.JSONLWriter,
-        catalog.FastText.name: writer.FastTextWriter,
-        catalog.IntentAndSlot.name: writer.IntentAndSlotWriter
+        catalog.CSV.name: writers.CsvWriter,
+        catalog.JSON.name: writers.JSONWriter,
+        catalog.JSONL.name: writers.JSONLWriter,
+        catalog.FastText.name: writers.FastTextWriter,
+        catalog.IntentAndSlot.name: writers.IntentAndSlotWriter
     }
-    if format not in mapping:
-        ValueError(f'Invalid format: {format}')
-    return mapping[format]
+    if file_format not in mapping:
+        ValueError(f'Invalid format: {file_format}')
+    return mapping[file_format]

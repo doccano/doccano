@@ -2,8 +2,8 @@ import json
 import unittest
 from unittest.mock import call, patch
 
-from ...views.download.data import Record
-from ...views.download.writer import CsvWriter, IntentAndSlotWriter
+from ..pipeline.data import Record
+from ..pipeline.writers import CsvWriter, IntentAndSlotWriter
 
 
 class TestCSVWriter(unittest.TestCase):

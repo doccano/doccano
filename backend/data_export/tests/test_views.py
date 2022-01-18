@@ -1,8 +1,8 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import DOCUMENT_CLASSIFICATION
-from .utils import CRUDMixin, prepare_project
+from api.models import DOCUMENT_CLASSIFICATION
+from api.tests.api.utils import CRUDMixin, prepare_project
 
 
 class TestDownloadCatalog(CRUDMixin):
