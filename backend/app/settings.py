@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'members.apps.MembersConfig',
     'metrics.apps.MetricsConfig',
     'users.apps.UsersConfig',
+    'data_import.apps.DataImportConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',

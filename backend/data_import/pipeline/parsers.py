@@ -10,7 +10,7 @@ import pyexcel.exceptions
 from chardet import UniversalDetector
 from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 
-from .exception import FileParseException
+from .exceptions import FileParseException
 from .readers import DEFAULT_LABEL_COLUMN, DEFAULT_TEXT_COLUMN, Parser
 
 DEFAULT_ENCODING = 'Auto'

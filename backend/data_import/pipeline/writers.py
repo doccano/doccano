@@ -5,8 +5,8 @@ from typing import Any, Dict, List
 
 from django.conf import settings
 
-from ...models import CategoryType, Example, Project, SpanType
-from .exception import FileParseException
+from api.models import CategoryType, Example, Project, SpanType
+from .exceptions import FileParseException
 from .readers import BaseReader
 
 

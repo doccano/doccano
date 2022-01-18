@@ -2,12 +2,12 @@ import pathlib
 
 from django.test import TestCase
 
-from ..celery_tasks import ingest_data
-from ..models import (DOCUMENT_CLASSIFICATION,
-                      INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                      SEQUENCE_LABELING, Category, CategoryType, Example, Span,
-                      SpanType)
-from .api.utils import prepare_project
+from data_import.celery_tasks import ingest_data
+from api.models import (DOCUMENT_CLASSIFICATION,
+                        INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
+                        SEQUENCE_LABELING, Category, CategoryType, Example, Span,
+                        SpanType)
+from api.tests.api.utils import prepare_project
 
 
 class TestIngestData(TestCase):

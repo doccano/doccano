@@ -1,7 +1,7 @@
 from typing import List
 
-from ...models import Project
-from .label import CategoryLabel, Label, SpanLabel
+from api.models import Project
+from .labels import CategoryLabel, Label, SpanLabel
 
 
 class Cleaner:

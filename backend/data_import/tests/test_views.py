@@ -2,8 +2,8 @@ from django.test import override_settings
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import DOCUMENT_CLASSIFICATION
-from .utils import CRUDMixin, create_default_roles, make_user, prepare_project
+from api.models import DOCUMENT_CLASSIFICATION
+from api.tests.api.utils import CRUDMixin, create_default_roles, make_user, prepare_project
 
 
 class TestFeatures(CRUDMixin):

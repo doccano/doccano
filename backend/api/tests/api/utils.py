@@ -15,7 +15,7 @@ from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
                        INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
                        SEQUENCE_LABELING, SPEECH2TEXT)
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), '../data')
+DATA_DIR = os.path.join(os.path.dirname(__file__), '../../../data_import/tests/data')
 
 
 ProjectData = namedtuple('ProjectData', ['item', 'users'])

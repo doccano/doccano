@@ -8,11 +8,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.permissions import IsProjectAdmin
 
-from ..celery_tasks import ingest_data
-from ..models import Project
-from .upload.catalog import Options
+from api.models import Project
+from members.permissions import IsProjectAdmin
+from .celery_tasks import ingest_data
+from .pipeline.catalog import Options
 
 
 class DatasetCatalog(APIView):
