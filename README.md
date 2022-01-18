@@ -28,7 +28,7 @@ You can try the [annotation demo](http://doccano.herokuapp.com).
 
 Three options to run doccano:
 
-- pip(experimental)
+- pip(Python 3.8+)
 - Docker
 - Docker Compose
   - production
