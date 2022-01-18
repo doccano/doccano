@@ -1,7 +1,7 @@
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
-                       INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                       SEQUENCE_LABELING, SPEECH2TEXT)
-from . import builders, catalog, cleaners, data, label, parsers, readers
+from api.models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
+                        INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
+                        SEQUENCE_LABELING, SPEECH2TEXT)
+from . import builders, catalog, cleaners, data, labels, parsers, readers
 
 
 def get_data_class(project_type: str):
@@ -37,11 +37,11 @@ def create_parser(file_format: str, **kwargs):
 
 def get_label_class(project_type: str):
     mapping = {
-        DOCUMENT_CLASSIFICATION: label.CategoryLabel,
-        SEQUENCE_LABELING: label.SpanLabel,
-        SEQ2SEQ: label.TextLabel,
-        IMAGE_CLASSIFICATION: label.CategoryLabel,
-        SPEECH2TEXT: label.TextLabel,
+        DOCUMENT_CLASSIFICATION: labels.CategoryLabel,
+        SEQUENCE_LABELING: labels.SpanLabel,
+        SEQ2SEQ: labels.TextLabel,
+        IMAGE_CLASSIFICATION: labels.CategoryLabel,
+        SPEECH2TEXT: labels.TextLabel,
     }
     if project_type not in mapping:
         ValueError(f'Invalid project type: {project_type}')
@@ -71,11 +71,11 @@ def create_bulder(project, **kwargs):
         label_columns = [
             builders.LabelColumn(
                 name='cats',
-                value_class=label.CategoryLabel
+                value_class=labels.CategoryLabel
             ),
             builders.LabelColumn(
                 name='entities',
-                value_class=label.SpanLabel
+                value_class=labels.SpanLabel
             )
         ]
     else:

@@ -4,9 +4,9 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from ...models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
-                       INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                       SEQUENCE_LABELING, SPEECH2TEXT)
+from api.models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
+                        INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
+                        SEQUENCE_LABELING, SPEECH2TEXT)
 from . import examples
 
 encodings = Literal[

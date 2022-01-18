@@ -1,10 +1,10 @@
 import unittest
 from typing import List
 
-from ...views.upload import builders
-from ...views.upload.data import TextData
-from ...views.upload.exception import FileParseException
-from ...views.upload.label import CategoryLabel, SpanLabel
+from data_import.pipeline import builders
+from data_import.pipeline.data import TextData
+from data_import.pipeline.exceptions import FileParseException
+from data_import.pipeline.labels import CategoryLabel, SpanLabel
 
 
 class TestColumnBuilder(unittest.TestCase):

@@ -4,7 +4,7 @@ import shutil
 import tempfile
 import unittest
 
-from ...views.upload import parsers
+from data_import.pipeline import parsers
 
 
 class TestParser(unittest.TestCase):

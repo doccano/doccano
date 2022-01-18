@@ -1,21 +1,10 @@
 from django.urls import include, path
 
 from .views import (annotation, auto_labeling, comment, example, example_state,
-                    export_dataset, health, import_dataset, import_export,
-                    label, project, tag, task)
+                    export_dataset, health, label, project, tag, task)
 from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
-    path(
-        route='upload',
-        view=import_dataset.UploadAPI.as_view(),
-        name='upload'
-    ),
-    path(
-        route='catalog',
-        view=import_dataset.DatasetCatalog.as_view(),
-        name='catalog'
-    ),
     path(
         route='download-format',
         view=export_dataset.DownloadDatasetCatalog.as_view(),
@@ -213,12 +202,6 @@ urlpatterns = [
         route='health',
         view=health.Health.as_view(),
         name='health'
-    ),
-    path('fp/', include('django_drf_filepond.urls')),
-    path(
-        route='features',
-        view=import_export.Features.as_view(),
-        name='features'
     ),
     path(
         route='projects',

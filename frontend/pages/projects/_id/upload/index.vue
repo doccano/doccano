@@ -4,7 +4,7 @@
       {{ $t('dataset.importDataTitle') }}
     </v-card-title>
     <v-card-text>
-      <v-overlay :value="taskId">
+      <v-overlay :value="isImporting">
         <v-progress-circular
           indeterminate
           size="64"
@@ -85,9 +85,9 @@
       <v-btn
         class='text-capitalize me-2 primary'
         :disabled="isDisabled"
-        @click="injest"
+        @click="importDataset"
       >
-        Ingest
+        Import
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -143,6 +143,7 @@ export default {
       },
       uploadedFiles: [],
       valid: false,
+      isImporting: false,
     }
   },
 
@@ -232,7 +233,8 @@ export default {
           this.$nextTick()
       }
     },
-    async injest() {
+    async importDataset() {
+      this.isImporting = true
       this.taskId = await this.$services.parse.analyze(
         this.$route.params.id,
         this.selected,
@@ -249,6 +251,7 @@ export default {
             this.errors = res.result.error
             this.myFiles = []
             this.uploadedFiles = []
+            this.isImporting = false
           }
         }
   		}, 3000)

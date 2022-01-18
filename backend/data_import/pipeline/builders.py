@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Optional, Type, TypeVar
 from pydantic import ValidationError
 
 from .data import BaseData
-from .exception import FileParseException
-from .label import Label
+from .exceptions import FileParseException
+from .labels import Label
 from .readers import Builder, Record
 
 logger = getLogger(__name__)

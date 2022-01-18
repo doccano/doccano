@@ -2,15 +2,15 @@ import pathlib
 
 from django.test import TestCase
 
-from ..celery_tasks import ingest_data
-from ..models import (DOCUMENT_CLASSIFICATION,
-                      INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                      SEQUENCE_LABELING, Category, CategoryType, Example, Span,
-                      SpanType)
-from .api.utils import prepare_project
+from data_import.celery_tasks import import_dataset
+from api.models import (DOCUMENT_CLASSIFICATION,
+                        INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
+                        SEQUENCE_LABELING, Category, CategoryType, Example, Span,
+                        SpanType)
+from api.tests.api.utils import prepare_project
 
 
-class TestIngestData(TestCase):
+class TestImportData(TestCase):
     task = 'Any'
     annotation_class = Category
 
@@ -19,13 +19,13 @@ class TestIngestData(TestCase):
         self.user = self.project.users[0]
         self.data_path = pathlib.Path(__file__).parent / 'data'
 
-    def ingest_data(self, filename, file_format, kwargs=None):
+    def import_dataset(self, filename, file_format, kwargs=None):
         filenames = [str(self.data_path / filename)]
         kwargs = kwargs or {}
-        return ingest_data(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
+        return import_dataset(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
 
 
-class TestIngestClassificationData(TestIngestData):
+class TestImportClassificationData(TestImportData):
     task = DOCUMENT_CLASSIFICATION
 
     def assert_examples(self, dataset):
@@ -50,7 +50,7 @@ class TestIngestClassificationData(TestIngestData):
             ('exampleB', ['positive', 'negative']),
             ('exampleC', [])
         ]
-        self.ingest_data(filename, file_format, kwargs)
+        self.import_dataset(filename, file_format, kwargs)
         self.assert_examples(dataset)
 
     def test_csv(self):
@@ -60,7 +60,7 @@ class TestIngestClassificationData(TestIngestData):
             ('exampleA', ['positive']),
             ('exampleB', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_csv_out_of_order_columns(self):
@@ -70,7 +70,7 @@ class TestIngestClassificationData(TestIngestData):
             ('exampleA', ['positive']),
             ('exampleB', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_fasttext(self):
@@ -81,7 +81,7 @@ class TestIngestClassificationData(TestIngestData):
             ('exampleB', ['positive', 'negative']),
             ('exampleC', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_excel(self):
@@ -91,7 +91,7 @@ class TestIngestClassificationData(TestIngestData):
             ('exampleA', ['positive']),
             ('exampleB', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_json(self):
@@ -102,7 +102,7 @@ class TestIngestClassificationData(TestIngestData):
             ('exampleB', ['positive', 'negative']),
             ('exampleC', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_textfile(self):
@@ -111,7 +111,7 @@ class TestIngestClassificationData(TestIngestData):
         dataset = [
             ('exampleA\nexampleB\n\nexampleC\n', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_textline(self):
@@ -122,35 +122,35 @@ class TestIngestClassificationData(TestIngestData):
             ('exampleB', []),
             ('exampleC', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_wrong_jsonl(self):
         filename = 'text_classification/example.json'
         file_format = 'JSONL'
-        response = self.ingest_data(filename, file_format)
+        response = self.import_dataset(filename, file_format)
         self.assert_parse_error(response)
 
     def test_wrong_json(self):
         filename = 'text_classification/example.jsonl'
         file_format = 'JSON'
-        response = self.ingest_data(filename, file_format)
+        response = self.import_dataset(filename, file_format)
         self.assert_parse_error(response)
 
     def test_wrong_excel(self):
         filename = 'text_classification/example.jsonl'
         file_format = 'Excel'
-        response = self.ingest_data(filename, file_format)
+        response = self.import_dataset(filename, file_format)
         self.assert_parse_error(response)
 
     def test_wrong_csv(self):
         filename = 'text_classification/example.jsonl'
         file_format = 'CSV'
-        response = self.ingest_data(filename, file_format)
+        response = self.import_dataset(filename, file_format)
         self.assert_parse_error(response)
 
 
-class TestIngestSequenceLabelingData(TestIngestData):
+class TestImportSequenceLabelingData(TestImportData):
     task = SEQUENCE_LABELING
 
     def assert_examples(self, dataset):
@@ -173,7 +173,7 @@ class TestIngestSequenceLabelingData(TestIngestData):
             ('exampleA', [[0, 1, 'LOC']]),
             ('exampleB', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_conll(self):
@@ -183,23 +183,23 @@ class TestIngestSequenceLabelingData(TestIngestData):
             ('JAPAN GET', [[0, 5, 'LOC']]),
             ('Nadim Ladki', [[0, 11, 'PER']])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_wrong_conll(self):
         filename = 'sequence_labeling/example.jsonl'
         file_format = 'CoNLL'
-        response = self.ingest_data(filename, file_format)
+        response = self.import_dataset(filename, file_format)
         self.assert_parse_error(response)
 
     def test_jsonl_with_overlapping(self):
         filename = 'sequence_labeling/example_overlapping.jsonl'
         file_format = 'JSONL'
-        response = self.ingest_data(filename, file_format)
+        response = self.import_dataset(filename, file_format)
         self.assertEqual(len(response['error']), 1)
 
 
-class TestIngestSeq2seqData(TestIngestData):
+class TestImportSeq2seqData(TestImportData):
     task = SEQ2SEQ
 
     def assert_examples(self, dataset):
@@ -216,7 +216,7 @@ class TestIngestSeq2seqData(TestIngestData):
             ('exampleA', ['label1']),
             ('exampleB', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_json(self):
@@ -226,7 +226,7 @@ class TestIngestSeq2seqData(TestIngestData):
             ('exampleA', ['label1']),
             ('exampleB', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
     def test_csv(self):
@@ -236,11 +236,11 @@ class TestIngestSeq2seqData(TestIngestData):
             ('exampleA', ['label1']),
             ('exampleB', [])
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
 
 
-class TextIngestIntentDetectionAndSlotFillingData(TestIngestData):
+class TextImportIntentDetectionAndSlotFillingData(TestImportData):
     task = INTENT_DETECTION_AND_SLOT_FILLING
 
     def assert_examples(self, dataset):
@@ -261,5 +261,5 @@ class TextIngestIntentDetectionAndSlotFillingData(TestIngestData):
             ('exampleC', {'cats': [], 'entities': [(0, 1, 'LOC')]}),
             ('exampleD', {'cats': [], 'entities': []}),
         ]
-        self.ingest_data(filename, file_format)
+        self.import_dataset(filename, file_format)
         self.assert_examples(dataset)

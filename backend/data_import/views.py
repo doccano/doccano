@@ -8,11 +8,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.permissions import IsProjectAdmin
 
-from ..celery_tasks import ingest_data
-from ..models import Project
-from .upload.catalog import Options
+from api.models import Project
+from members.permissions import IsProjectAdmin
+from .celery_tasks import import_dataset
+from .pipeline.catalog import Options
 
 
 class DatasetCatalog(APIView):
@@ -25,13 +25,13 @@ class DatasetCatalog(APIView):
         return Response(data=options, status=status.HTTP_200_OK)
 
 
-class UploadAPI(APIView):
+class DatasetImportAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def post(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
         upload_ids = request.data.pop('uploadIds')
-        format = request.data.pop('format')
+        file_format = request.data.pop('format')
 
         tus = [TemporaryUpload.objects.get(upload_id=upload_id) for upload_id in upload_ids]
         sus = [
@@ -42,11 +42,11 @@ class UploadAPI(APIView):
             for tu in tus
         ]
         filenames = [su.file.path for su in sus]
-        task = ingest_data.delay(
+        task = import_dataset.delay(
             user_id=request.user.id,
             project_id=project_id,
             filenames=filenames,
-            format=format,
+            file_format=file_format,
             **request.data
         )
         return Response({'task_id': task.task_id})

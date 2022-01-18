@@ -4,8 +4,8 @@ from typing import Any, Dict, Iterator, List, Type
 
 from .cleaners import Cleaner
 from .data import BaseData
-from .exception import FileParseException
-from .label import Label
+from .exceptions import FileParseException
+from .labels import Label
 
 DEFAULT_TEXT_COLUMN = 'text'
 DEFAULT_LABEL_COLUMN = 'label'
