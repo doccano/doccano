@@ -61,5 +61,9 @@ class Member(models.Model):
             message = 'This user is already assigned to a role in this project.'
             raise ValidationError(message)
 
+    @property
+    def username(self):
+        return self.user.username
+
     class Meta:
         unique_together = ('user', 'project')
