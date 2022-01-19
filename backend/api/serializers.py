@@ -159,10 +159,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'guideline',
-            'users',
             'project_type',
             'updated_at',
             'random_order',
+            'created_by',
             'collaborative_annotation',
             'single_class_classification',
             'is_text_project',
@@ -174,7 +174,6 @@ class ProjectSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'updated_at',
-            'users',
             'is_text_project',
             'can_define_label',
             'can_define_relation',

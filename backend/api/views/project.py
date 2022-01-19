@@ -22,10 +22,10 @@ class ProjectList(generics.ListCreateAPIView):
         return super().get_permissions()
 
     def get_queryset(self):
-        return self.request.user.projects
+        return Project.objects.filter(role_mappings__user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(users=[self.request.user])
+        serializer.save(created_by=self.request.user)
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']

@@ -73,8 +73,8 @@ def make_project(
     project = mommy.make(
         _model=project_model,
         project_type=task,
-        users=users,
         collaborative_annotation=collaborative_annotation,
+        created_by=users[0],
         **kwargs
     )
 
