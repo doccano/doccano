@@ -1,9 +1,10 @@
 from auto_labeling_pipeline.models import RequestModelFactory
 from rest_framework import serializers
 
-from api.models import AutoLabelingConfig, DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT, \
+from api.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT, \
     IMAGE_CLASSIFICATION
 from api.serializers import CategorySerializer, SpanSerializer, TextLabelSerializer
+from .models import AutoLabelingConfig
 
 
 class AutoLabelingConfigSerializer(serializers.ModelSerializer):

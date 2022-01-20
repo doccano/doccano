@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import AutoLabelingConfig
+from .models import AutoLabelingConfig
 
 
 class AutoLabelingConfigAdmin(admin.ModelAdmin):
