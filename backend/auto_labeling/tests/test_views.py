@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 from auto_labeling_pipeline.mappings import AmazonComprehendSentimentTemplate
 from auto_labeling_pipeline.models import RequestModelFactory
+from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 
@@ -107,7 +108,13 @@ class TestConfigCreation(CRUDMixin):
         self.url = reverse(viewname='auto_labeling_configs', args=[self.project.item.id])
 
     def test_create_config(self):
-        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        response = self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assertEqual(response.data['model_name'], self.data['model_name'])
+
+    def test_list_config(self):
+        mommy.make('AutoLabelingConfig', project=self.project.item)
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
 
 class TestAutoLabelingText(CRUDMixin):

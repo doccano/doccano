@@ -39,8 +39,7 @@ class AutoLabelingTemplateDetailAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):
-        option_name = self.kwargs['option_name']
-        option = Options.find(option_name=option_name)
+        option = Options.find(option_name=self.kwargs['option_name'])
         return Response(option.to_dict(), status=status.HTTP_200_OK)
 
 
@@ -50,12 +49,10 @@ class AutoLabelingConfigList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get_queryset(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return project.auto_labeling_config
+        return AutoLabelingConfig.objects.filter(project=self.kwargs['project_id'])
 
     def perform_create(self, serializer):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        serializer.save(project=project)
+        serializer.save(project_id=self.kwargs['project_id'])
 
 
 class AutoLabelingConfigDetail(generics.RetrieveUpdateDestroyAPIView):
