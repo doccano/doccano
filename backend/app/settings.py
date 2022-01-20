@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'data_import.apps.DataImportConfig',
     'data_export.apps.DataExportConfig',
+    'auto_labeling.apps.AutoLabelingConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',

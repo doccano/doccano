@@ -2,8 +2,9 @@ from unittest.mock import MagicMock
 
 from django.test import TestCase
 
-from ..filters import ExampleFilter
-from ..models import Example
+from api.filters import ExampleFilter
+from api.models import Example
+
 from .api.utils import make_doc, make_example_state, prepare_project
 
 

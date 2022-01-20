@@ -6,9 +6,9 @@ from auto_labeling_pipeline.models import RequestModelFactory
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION
-from .utils import (CRUDMixin, make_auto_labeling_config, make_doc, make_image,
-                    prepare_project)
+from api.models import DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION
+from api.tests.api.utils import (CRUDMixin, make_auto_labeling_config, make_doc, make_image,
+                                 prepare_project)
 
 data_dir = pathlib.Path(__file__).parent / 'data'
 
@@ -24,20 +24,20 @@ class TestConfigParameter(CRUDMixin):
         }
         self.url = reverse(viewname='auto_labeling_parameter_testing', args=[self.project.item.id])
 
-    @patch('api.views.auto_labeling.AutoLabelingConfigParameterTest.send_request', return_value={})
+    @patch('auto_labeling.views.AutoLabelingConfigParameterTest.send_request', return_value={})
     def test_called_with_proper_model(self, mock):
         self.assert_create(self.project.users[0], status.HTTP_200_OK)
         _, kwargs = mock.call_args
         expected = RequestModelFactory.create(self.data['model_name'], self.data['model_attrs'])
         self.assertEqual(kwargs['model'], expected)
 
-    @patch('api.views.auto_labeling.AutoLabelingConfigParameterTest.send_request', return_value={})
+    @patch('auto_labeling.views.AutoLabelingConfigParameterTest.send_request', return_value={})
     def test_called_with_text(self, mock):
         self.assert_create(self.project.users[0], status.HTTP_200_OK)
         _, kwargs = mock.call_args
         self.assertEqual(kwargs['example'], self.data['text'])
 
-    @patch('api.views.auto_labeling.AutoLabelingConfigParameterTest.send_request', return_value={})
+    @patch('auto_labeling.views.AutoLabelingConfigParameterTest.send_request', return_value={})
     def test_called_with_image(self, mock):
         self.data['text'] = str(data_dir / 'images/1500x500.jpeg')
         self.assert_create(self.project.users[0], status.HTTP_200_OK)
@@ -118,7 +118,7 @@ class TestAutoLabelingText(CRUDMixin):
         self.example = make_doc(self.project.item)
         self.url = reverse(viewname='auto_labeling_annotation', args=[self.project.item.id, self.example.id])
 
-    @patch('api.views.auto_labeling.execute_pipeline', return_value=[])
+    @patch('auto_labeling.views.execute_pipeline', return_value=[])
     def test_text_task(self, mock):
         self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
         _, kwargs = mock.call_args
@@ -134,7 +134,7 @@ class TestAutoLabelingImage(CRUDMixin):
         self.example = make_image(self.project.item, str(filepath))
         self.url = reverse(viewname='auto_labeling_annotation', args=[self.project.item.id, self.example.id])
 
-    @patch('api.views.auto_labeling.execute_pipeline', return_value=[])
+    @patch('auto_labeling.views.execute_pipeline', return_value=[])
     def test_text_task(self, mock):
         self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
         _, kwargs = mock.call_args

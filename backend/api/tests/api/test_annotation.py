@@ -1,8 +1,9 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from ...models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
-                       Category, Span, TextLabel)
+from api.models import (DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING,
+                        Category, Span, TextLabel)
+
 from .utils import (CRUDMixin, make_annotation, make_doc, make_label,
                     make_user, prepare_project)
 

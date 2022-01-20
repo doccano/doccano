@@ -16,14 +16,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.models import Example, Project
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
-
-from ..exceptions import (AutoLabelingException, AutoLabelingPermissionDenied,
-                          AWSTokenError, SampleDataException,
-                          TemplateMappingError, URLConnectionError)
-from ..models import AutoLabelingConfig, Example, Project
-from ..serializers import (AutoLabelingConfigSerializer,
-                           get_annotation_serializer)
+from .exceptions import (AutoLabelingException, AutoLabelingPermissionDenied,
+                         AWSTokenError, SampleDataException,
+                         TemplateMappingError, URLConnectionError)
+from .models import AutoLabelingConfig
+from .serializers import (AutoLabelingConfigSerializer, get_annotation_serializer)
 
 
 class AutoLabelingTemplateListAPI(APIView):
