@@ -3,8 +3,10 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from ..models import (SEQUENCE_LABELING, Category, CategoryType, ExampleState,
-                      Span, SpanType, TextLabel, generate_random_hex_color)
+from api.models import (SEQUENCE_LABELING, Category, CategoryType,
+                        ExampleState, Span, SpanType, TextLabel,
+                        generate_random_hex_color)
+
 from .api.utils import prepare_project
 
 

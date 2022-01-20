@@ -1,7 +1,7 @@
 from django.urls import include, path
 
-from .views import (annotation, auto_labeling, comment, example, example_state,
-                    health, label, project, tag, task)
+from .views import (annotation, comment, example, example_state, health, label,
+                    project, tag, task)
 from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
@@ -140,51 +140,6 @@ urlpatterns_project = [
       view=example_state.ExampleStateList.as_view(),
       name='example_state_list'
     ),
-    path(
-        route='auto-labeling-templates',
-        view=auto_labeling.AutoLabelingTemplateListAPI.as_view(),
-        name='auto_labeling_templates'
-    ),
-    path(
-        route='auto-labeling-templates/<str:option_name>',
-        view=auto_labeling.AutoLabelingTemplateDetailAPI.as_view(),
-        name='auto_labeling_template'
-    ),
-    path(
-        route='auto-labeling-configs',
-        view=auto_labeling.AutoLabelingConfigList.as_view(),
-        name='auto_labeling_configs'
-    ),
-    path(
-        route='auto-labeling-configs/<int:config_id>',
-        view=auto_labeling.AutoLabelingConfigDetail.as_view(),
-        name='auto_labeling_config'
-    ),
-    path(
-        route='auto-labeling-config-testing',
-        view=auto_labeling.AutoLabelingConfigTest.as_view(),
-        name='auto_labeling_config_test'
-    ),
-    path(
-        route='examples/<int:example_id>/auto-labeling',
-        view=auto_labeling.AutoLabelingAnnotation.as_view(),
-        name='auto_labeling_annotation'
-    ),
-    path(
-        route='auto-labeling-parameter-testing',
-        view=auto_labeling.AutoLabelingConfigParameterTest.as_view(),
-        name='auto_labeling_parameter_testing'
-    ),
-    path(
-        route='auto-labeling-template-testing',
-        view=auto_labeling.AutoLabelingTemplateTest.as_view(),
-        name='auto_labeling_template_test'
-    ),
-    path(
-        route='auto-labeling-mapping-testing',
-        view=auto_labeling.AutoLabelingMappingTest.as_view(),
-        name='auto_labeling_mapping_test'
-    )
 ]
 
 urlpatterns = [

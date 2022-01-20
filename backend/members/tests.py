@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from roles.models import Role
-from .models import Member
+from members.models import Member
 from api.tests.api.utils import (CRUDMixin, prepare_project, make_user)
 
 
