@@ -3,22 +3,22 @@ from django.db.models import Count, Manager
 
 class AnnotationManager(Manager):
 
-    def calc_label_distribution(self, examples, users, labels):
+    def calc_label_distribution(self, examples, members, labels):
         """Calculate label distribution.
 
         Args:
             examples: example queryset.
-            users: user queryset.
+            members: user queryset.
             labels: label queryset.
 
         Returns:
             label distribution per user.
 
         Examples:
-            >>> self.calc_label_distribution(examples, users, labels)
+            >>> self.calc_label_distribution(examples, members, labels)
             {'admin': {'positive': 10, 'negative': 5}}
         """
-        distribution = {user.username: {label.text: 0 for label in labels} for user in users}
+        distribution = {member.username: {label.text: 0 for label in labels} for member in members}
         items = self.filter(example_id__in=examples)\
             .values('user__username', 'label__text')\
             .annotate(count=Count('label__text'))

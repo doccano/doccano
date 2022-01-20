@@ -1,12 +1,12 @@
 import abc
 
-from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Example, ExampleState, Project, Annotation, Label, Category, CategoryType, Span, SpanType
+from api.models import Example, ExampleState, Annotation, Label, Category, CategoryType, Span, SpanType
+from members.models import Member
 from members.permissions import IsInProjectReadOnlyOrAdmin
 
 
@@ -24,9 +24,9 @@ class MemberProgressAPI(APIView):
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
     def get(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
-        data = ExampleState.objects.measure_member_progress(examples, project.users.all())
+        members = Member.objects.filter(project=self.kwargs['project_id'])
+        data = ExampleState.objects.measure_member_progress(examples, members)
         return Response(data=data, status=status.HTTP_200_OK)
 
 
@@ -36,10 +36,10 @@ class LabelDistribution(abc.ABC, APIView):
     label_type = Label
 
     def get(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         labels = self.label_type.objects.filter(project=self.kwargs['project_id'])
         examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
-        data = self.model.objects.calc_label_distribution(examples, project.users.all(), labels)
+        members = Member.objects.filter(project=self.kwargs['project_id'])
+        data = self.model.objects.calc_label_distribution(examples, members, labels)
         return Response(data=data, status=status.HTTP_200_OK)
 
 

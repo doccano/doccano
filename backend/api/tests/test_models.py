@@ -231,7 +231,7 @@ class TestLabelDistribution(TestCase):
         mommy.make('Span', example=self.example, start_offset=10, end_offset=15, user=self.user, label=label_b)
         distribution = Span.objects.calc_label_distribution(
             examples=self.project.item.examples.all(),
-            users=self.project.item.users.all(),
+            members=self.project.users,
             labels=SpanType.objects.all()
         )
         expected = {user.username: {label.text: 0 for label in SpanType.objects.all()} for user in self.project.users}

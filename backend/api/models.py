@@ -33,7 +33,11 @@ class Project(PolymorphicModel):
     guideline = models.TextField(default='', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    users = models.ManyToManyField(User, related_name='projects')
+    created_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
     random_order = models.BooleanField(default=False)
     collaborative_annotation = models.BooleanField(default=False)
