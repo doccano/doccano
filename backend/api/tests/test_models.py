@@ -3,8 +3,8 @@ from django.db.utils import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from api.models import (SEQUENCE_LABELING, Category, CategoryType,
-                        ExampleState, Span, SpanType, TextLabel,
+from api.models import (IMAGE_CLASSIFICATION, SEQUENCE_LABELING, Category,
+                        CategoryType, ExampleState, Span, SpanType, TextLabel,
                         generate_random_hex_color)
 
 from .api.utils import prepare_project
@@ -240,3 +240,16 @@ class TestLabelDistribution(TestCase):
         expected[self.user.username][label_a.text] = 1
         expected[self.user.username][label_b.text] = 1
         self.assertEqual(distribution, expected)
+
+
+class TestExample(TestCase):
+
+    def test_text_project_returns_text_as_data_property(self):
+        project = prepare_project(SEQUENCE_LABELING)
+        example = mommy.make('Example', project=project.item)
+        self.assertEqual(example.text, example.data)
+
+    def test_image_project_returns_filename_as_data_property(self):
+        project = prepare_project(IMAGE_CLASSIFICATION)
+        example = mommy.make('Example', project=project.item)
+        self.assertEqual(str(example.filename), example.data)

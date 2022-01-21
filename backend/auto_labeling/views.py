@@ -215,21 +215,14 @@ class AutomatedDataLabeling(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-    def get_example(self, project):
-        example = get_object_or_404(Example, pk=self.kwargs['example_id'])
-        if project.is_text_project:
-            return example.text
-        else:
-            return str(example.filename)
-
     def extract(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        example = self.get_example(project)
+        example = get_object_or_404(Example, pk=self.kwargs['example_id'])
         config = project.auto_labeling_config.first()
         if not config:
             raise AutoLabelingPermissionDenied()
         return execute_pipeline(
-            text=example,
+            text=example.data,
             project_type=project.project_type,
             model_name=config.model_name,
             model_attrs=config.model_attrs,

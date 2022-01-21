@@ -257,6 +257,13 @@ class Example(models.Model):
     def comment_count(self):
         return Comment.objects.filter(example=self.id).count()
 
+    @property
+    def data(self):
+        if self.project.is_text_project:
+            return self.text
+        else:
+            return str(self.filename)
+
     def is_labeled(self, is_collaborative, user):
         if is_collaborative:
             for model in Annotation.__subclasses__():
