@@ -19,6 +19,7 @@ export class ProjectDTO {
   graphemeMode: boolean
   hasCategory: boolean
   hasSpan: boolean
+  taskNames: string[]
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -39,6 +40,7 @@ export class ProjectDTO {
     this.graphemeMode = item.graphemeMode
     this.hasCategory = item.canDefineCategory
     this.hasSpan = item.canDefineSpan
+    this.taskNames = item.taskNames
   }
 }
 

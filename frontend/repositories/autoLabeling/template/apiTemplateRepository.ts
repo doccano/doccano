@@ -7,8 +7,8 @@ export class APITemplateRepository implements TemplateRepository {
     private readonly request = ApiService
   ) {}
 
-  async list(projectId: string): Promise<string[]> {
-    const url = `/projects/${projectId}/auto-labeling-templates`
+  async list(projectId: string, taskName: string): Promise<string[]> {
+    const url = `/projects/${projectId}/auto-labeling-templates?task_name=${taskName}`
     const response = await this.request.get(url)
     const responseItems: string[] = response.data
     return responseItems
