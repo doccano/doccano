@@ -14,6 +14,35 @@ from api.tests.api.utils import (CRUDMixin, make_auto_labeling_config, make_doc,
 data_dir = pathlib.Path(__file__).parent / 'data'
 
 
+class TestTemplateList(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.url = reverse(viewname='auto_labeling_templates', args=[self.project.item.id])
+
+    def test_allow_admin_to_fetch_template_list(self):
+        self.url += '?task_name=DocumentClassification'
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertIn('Custom REST Request', response.data)
+        self.assertGreaterEqual(len(response.data), 1)
+
+    def test_deny_non_admin_to_fetch_template_list(self):
+        self.url += '?task_name=DocumentClassification'
+        for user in self.project.users[1:]:
+            self.assert_fetch(user, status.HTTP_403_FORBIDDEN)
+
+    def test_return_only_default_template_with_empty_task_name(self):
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertIn('Custom REST Request', response.data)
+
+    def test_return_only_default_template_with_wrong_task_name(self):
+        self.url += '?task_name=foobar'
+        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertIn('Custom REST Request', response.data)
+
+
 class TestConfigParameter(CRUDMixin):
 
     def setUp(self):

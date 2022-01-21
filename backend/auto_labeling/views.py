@@ -13,6 +13,7 @@ from django_drf_filepond.models import TemporaryUpload
 from rest_framework import generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -28,9 +29,9 @@ from .serializers import (AutoLabelingConfigSerializer, get_annotation_serialize
 class TemplateListAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
-    def get(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        options = Options.filter_by_task(task_name=project.project_type)
+    def get(self, request: Request, *args, **kwargs):
+        task_name = request.query_params.get('task_name')
+        options = Options.filter_by_task(task_name=task_name)
         option_names = [o.name for o in options]
         return Response(option_names, status=status.HTTP_200_OK)
 
@@ -127,8 +128,7 @@ class RestAPIRequestTesting(APIView):
 
     def send_request(self, model, example):
         try:
-            response = model.send(example)
-            return response
+            return model.send(example)
         except requests.exceptions.ConnectionError:
             raise URLConnectionError
         except botocore.exceptions.ClientError:
