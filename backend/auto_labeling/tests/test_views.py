@@ -25,20 +25,20 @@ class TestConfigParameter(CRUDMixin):
         }
         self.url = reverse(viewname='auto_labeling_parameter_testing', args=[self.project.item.id])
 
-    @patch('auto_labeling.views.AutoLabelingConfigParameterTest.send_request', return_value={})
+    @patch('auto_labeling.views.RestAPIRequestTesting.send_request', return_value={})
     def test_called_with_proper_model(self, mock):
         self.assert_create(self.project.users[0], status.HTTP_200_OK)
         _, kwargs = mock.call_args
         expected = RequestModelFactory.create(self.data['model_name'], self.data['model_attrs'])
         self.assertEqual(kwargs['model'], expected)
 
-    @patch('auto_labeling.views.AutoLabelingConfigParameterTest.send_request', return_value={})
+    @patch('auto_labeling.views.RestAPIRequestTesting.send_request', return_value={})
     def test_called_with_text(self, mock):
         self.assert_create(self.project.users[0], status.HTTP_200_OK)
         _, kwargs = mock.call_args
         self.assertEqual(kwargs['example'], self.data['text'])
 
-    @patch('auto_labeling.views.AutoLabelingConfigParameterTest.send_request', return_value={})
+    @patch('auto_labeling.views.RestAPIRequestTesting.send_request', return_value={})
     def test_called_with_image(self, mock):
         self.data['text'] = str(data_dir / 'images/1500x500.jpeg')
         self.assert_create(self.project.users[0], status.HTTP_200_OK)

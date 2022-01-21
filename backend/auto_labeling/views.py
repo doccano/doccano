@@ -25,7 +25,7 @@ from .models import AutoLabelingConfig
 from .serializers import (AutoLabelingConfigSerializer, get_annotation_serializer)
 
 
-class AutoLabelingTemplateListAPI(APIView):
+class TemplateListAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):
@@ -35,7 +35,7 @@ class AutoLabelingTemplateListAPI(APIView):
         return Response(option_names, status=status.HTTP_200_OK)
 
 
-class AutoLabelingTemplateDetailAPI(APIView):
+class TemplateDetailAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):
@@ -43,7 +43,7 @@ class AutoLabelingTemplateDetailAPI(APIView):
         return Response(option.to_dict(), status=status.HTTP_200_OK)
 
 
-class AutoLabelingConfigList(generics.ListCreateAPIView):
+class ConfigList(generics.ListCreateAPIView):
     serializer_class = AutoLabelingConfigSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated & IsProjectAdmin]
@@ -55,14 +55,14 @@ class AutoLabelingConfigList(generics.ListCreateAPIView):
         serializer.save(project_id=self.kwargs['project_id'])
 
 
-class AutoLabelingConfigDetail(generics.RetrieveUpdateDestroyAPIView):
+class ConfigDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AutoLabelingConfig.objects.all()
     serializer_class = AutoLabelingConfigSerializer
     lookup_url_kwarg = 'config_id'
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
 
-class AutoLabelingConfigTest(APIView):
+class FullPipelineTesting(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def post(self, *args, **kwargs):
@@ -103,7 +103,7 @@ class AutoLabelingConfigTest(APIView):
         )
 
 
-class AutoLabelingConfigParameterTest(APIView):
+class RestAPIRequestTesting(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     @property
@@ -151,7 +151,7 @@ class AutoLabelingConfigParameterTest(APIView):
         return Response(response, status=status.HTTP_200_OK)
 
 
-class AutoLabelingTemplateTest(APIView):
+class LabelExtractorTesting(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def post(self, *args, **kwargs):
@@ -172,7 +172,7 @@ class AutoLabelingTemplateTest(APIView):
         return Response(labels.dict(), status=status.HTTP_200_OK)
 
 
-class AutoLabelingMappingTest(APIView):
+class LabelMapperTesting(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def post(self, *args, **kwargs):
@@ -186,7 +186,7 @@ class AutoLabelingMappingTest(APIView):
         return Response(labels.dict(), status=status.HTTP_200_OK)
 
 
-class AutoLabelingAnnotation(generics.CreateAPIView):
+class AutomatedDataLabeling(generics.CreateAPIView):
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
     swagger_schema = None
