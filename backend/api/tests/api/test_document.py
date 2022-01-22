@@ -168,24 +168,3 @@ class TestExampleDetail(CRUDMixin):
 
     def test_denies_non_project_member_to_delete_doc(self):
         self.assert_delete(self.non_member, status.HTTP_403_FORBIDDEN)
-
-
-class TestApproveLabelsAPI(CRUDMixin):
-
-    def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
-        self.non_member = make_user()
-        doc = make_doc(self.project.item)
-        self.url = reverse(viewname='approve_labels', args=[self.project.item.id, doc.id])
-
-    def test_allow_project_admin_and_approver_to_approve_and_disapprove(self):
-        for member in self.project.users[:2]:
-            self.data = {'approved': True}
-            response = self.assert_create(member, status.HTTP_200_OK)
-            self.assertEqual(response.data['annotation_approver'], member.username)
-            self.data = {'approved': False}
-            response = self.assert_create(member, status.HTTP_200_OK)
-            self.assertIsNone(response.data['annotation_approver'])
-
-    def test_denies_annotator_to_approve_and_disapprove(self):
-        self.assert_create(self.project.users[2], status.HTTP_403_FORBIDDEN)

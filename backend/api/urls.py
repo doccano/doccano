@@ -1,7 +1,7 @@
 from django.urls import include, path
 
-from .views import (annotation, comment, example, example_state, health, label,
-                    project, tag, task)
+from .views import (comment, example, example_state, health, label, project,
+                    tag, task)
 from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
@@ -74,11 +74,6 @@ urlpatterns_project = [
         route='annotation_relations/<int:annotation_relation_id>',
         view=relation.RelationDetail.as_view(),
         name='annotation_relation_detail'
-    ),
-    path(
-        route='approval/<int:example_id>',
-        view=annotation.ApprovalAPI.as_view(),
-        name='approve_labels'
     ),
     path(
         route='examples/<int:example_id>/categories',
