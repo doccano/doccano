@@ -42,11 +42,6 @@ export class APIExampleRepository implements ExampleRepository {
     return plainToInstance(ExampleItem, response.data)
   }
 
-  async approve(projectId: string, exampleId: number, approved: boolean): Promise<void> {
-    const url = `/projects/${projectId}/approval/${exampleId}`
-    await this.request.post(url, { approved })
-  }
-
   async confirm(projectId: string, exampleId: number): Promise<void> {
     const url = `/projects/${projectId}/examples/${exampleId}/states`
     await this.request.post(url, {})

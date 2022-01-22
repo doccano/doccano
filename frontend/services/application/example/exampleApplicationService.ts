@@ -57,10 +57,6 @@ export class ExampleApplicationService {
     return new ExampleDTO(response)
   }
 
-  public async approve(projectId: string, docId: number, approved: boolean): Promise<void> {
-    await this.repository.approve(projectId, docId, approved)
-  }
-
   public async confirm(projectId: string, exampleId: number): Promise<void> {
     await this.repository.confirm(projectId, exampleId)
   }
