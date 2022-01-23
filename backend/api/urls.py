@@ -122,7 +122,7 @@ urlpatterns_project = [
     ),
     path(
         route='comments',
-        view=comment.CommentListProject.as_view(),
+        view=comment.CommentList.as_view(),
         name='comment_list'
     ),
     path(
