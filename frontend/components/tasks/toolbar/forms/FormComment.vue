@@ -73,11 +73,11 @@ export default Vue.extend({
       this.list()
     },
     async remove(item: CommentReadDTO) {
-      await this.$services.comment.delete(this.$route.params.id, this.docId, item)
+      await this.$services.comment.delete(this.$route.params.id, item)
       this.list()
     },
     async maybeUpdate(item: CommentReadDTO) {
-      await this.$services.comment.update(this.$route.params.id, this.docId, item)
+      await this.$services.comment.update(this.$route.params.id, item)
       this.list()
     }
   }

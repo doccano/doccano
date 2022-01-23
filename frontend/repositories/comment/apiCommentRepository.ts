@@ -27,13 +27,13 @@ export class APICommentRepository implements CommentRepository {
     return plainToInstance(CommentItem, response.data)
   }
 
-  async update(projectId: string, exampleId: number, item: CommentItem): Promise<CommentItem> {
+  async update(projectId: string, item: CommentItem): Promise<CommentItem> {
     const url = `/projects/${projectId}/comments/${item.id}`
     const response = await this.request.put(url, item.toObject())
     return plainToInstance(CommentItem, response.data)
   }
 
-  async delete(projectId: string, exampleId: number, commentId: number): Promise<void> {
+  async delete(projectId: string, commentId: number): Promise<void> {
     const url = `/projects/${projectId}/comments/${commentId}`
     const response = await this.request.delete(url)
   }
