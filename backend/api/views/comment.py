@@ -10,23 +10,6 @@ from ..permissions import IsOwnComment
 from ..serializers import CommentSerializer
 
 
-class CommentListDoc(generics.ListCreateAPIView):
-    pagination_class = None
-    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
-    serializer_class = CommentSerializer
-    model = Comment
-
-    def get_queryset(self):
-        queryset = self.model.objects.filter(
-            example__project_id=self.kwargs['project_id'],
-            example=self.kwargs['example_id']
-        )
-        return queryset
-
-    def perform_create(self, serializer):
-        serializer.save(example_id=self.kwargs['example_id'], user=self.request.user)
-
-
 class CommentList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
     serializer_class = CommentSerializer

@@ -116,11 +116,6 @@ urlpatterns_project = [
         name='tag_detail'
     ),
     path(
-        route='examples/<int:example_id>/comments',
-        view=comment.CommentListDoc.as_view(),
-        name='comment_list_doc'
-    ),
-    path(
         route='comments',
         view=comment.CommentList.as_view(),
         name='comment_list'
