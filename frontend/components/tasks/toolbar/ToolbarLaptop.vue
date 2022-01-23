@@ -31,7 +31,7 @@
         />
         <v-dialog v-model="dialogComment">
           <form-comment
-            :doc-id="docId"
+            :example-id="docId"
             @click:cancel="dialogComment=false"
           />
         </v-dialog>
