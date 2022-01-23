@@ -45,7 +45,7 @@ class TestCommentListProjectAPI(CRUDMixin):
         self.non_member = make_user()
         self.doc = make_doc(self.project.item)
         make_comment(self.doc, self.project.users[0])
-        self.url = reverse(viewname='comment_list_project', args=[self.project.item.id])
+        self.url = reverse(viewname='comment_list', args=[self.project.item.id])
 
     def test_allows_project_member_to_list_comments(self):
         for member in self.project.users:
