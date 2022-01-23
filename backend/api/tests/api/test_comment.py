@@ -87,7 +87,7 @@ class TestCommentDetailAPI(CRUDMixin):
         doc = make_doc(self.project.item)
         comment = make_comment(doc, self.project.users[0])
         self.data = {'text': 'example'}
-        self.url = reverse(viewname='comment_detail', args=[self.project.item.id, doc.id, comment.id])
+        self.url = reverse(viewname='comment_detail', args=[self.project.item.id, comment.id])
 
     def test_allows_comment_owner_to_get_comment(self):
         # Todo: Allows project member to get comment.

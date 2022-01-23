@@ -126,7 +126,7 @@ urlpatterns_project = [
         name='comment_list_project'
     ),
     path(
-        route='examples/<int:example_id>/comments/<int:comment_id>',
+        route='comments/<int:comment_id>',
         view=comment.CommentDetail.as_view(),
         name='comment_detail'
     ),
