@@ -29,17 +29,20 @@ class AnnotationManager(Manager):
             distribution[username][label] = count
         return distribution
 
-    def can_annotate(self, label, project) -> bool:
-        raise NotImplementedError('Please implement this method in the subclass')
-
-
-class CategoryManager(AnnotationManager):
-
     def get_labels(self, label, project):
         if project.collaborative_annotation:
             return self.filter(example=label.example)
         else:
             return self.filter(example=label.example, user=label.user)
+
+    def can_annotate(self, label, project) -> bool:
+        raise NotImplementedError('Please implement this method in the subclass')
+
+    def filter_annotatable_labels(self, labels, project):
+        return [label for label in labels if self.can_annotate(label, project)]
+
+
+class CategoryManager(AnnotationManager):
 
     def can_annotate(self, label, project) -> bool:
         is_exclusive = project.single_class_classification
