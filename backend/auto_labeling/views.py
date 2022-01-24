@@ -19,7 +19,7 @@ from rest_framework.views import APIView
 
 from api.models import Example, Project
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
-from .exceptions import (AutoLabelingException, AutoLabelingPermissionDenied,
+from .exceptions import (AutoLabelingPermissionDenied,
                          AWSTokenError, SampleDataException,
                          TemplateMappingError, URLConnectionError)
 from .models import AutoLabelingConfig
@@ -196,14 +196,7 @@ class AutomatedDataLabeling(generics.CreateAPIView):
         self.serializer_class = get_annotation_serializer(task=project.project_type)
         return self.serializer_class
 
-    def cannot_annotate(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        example = get_object_or_404(Example, pk=self.kwargs['example_id'])
-        return example.is_labeled(project.collaborative_annotation, self.request.user)
-
     def create(self, request, *args, **kwargs):
-        if self.cannot_annotate():
-            raise AutoLabelingException()
         labels = self.extract()
         labels = self.transform(labels)
         serializer = self.get_serializer(data=labels, many=True)

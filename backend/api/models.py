@@ -264,17 +264,6 @@ class Example(models.Model):
         else:
             return str(self.filename)
 
-    def is_labeled(self, is_collaborative, user):
-        if is_collaborative:
-            for model in Annotation.__subclasses__():
-                if model.objects.filter(example=self.id).exists():
-                    return True
-        else:
-            for model in Annotation.__subclasses__():
-                if model.objects.filter(example=self.id, user=user).exists():
-                    return True
-        return False
-
     class Meta:
         ordering = ['created_at']
 
