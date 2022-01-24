@@ -11,15 +11,18 @@ class TestCommentListDocAPI(CRUDMixin):
     def setUpTestData(cls):
         cls.project = prepare_project()
         cls.non_member = make_user()
-        doc = make_doc(cls.project.item)
-        make_comment(doc, cls.project.users[0])
+        doc1 = make_doc(cls.project.item)
+        doc2 = make_doc(cls.project.item)
+        make_comment(doc1, cls.project.users[0])
+        make_comment(doc2, cls.project.users[0])
         cls.data = {'text': 'example'}
-        cls.url = reverse(viewname='comment_list_doc', args=[cls.project.item.id, doc.id])
+        cls.url = reverse(viewname='comment_list', args=[cls.project.item.id])
+        cls.url += f'?example={doc1.id}'
 
     def test_allows_project_member_to_list_comments(self):
         for member in self.project.users:
             response = self.assert_fetch(member, status.HTTP_200_OK)
-            self.assertEqual(len(response.data), 1)
+            self.assertEqual(response.data['count'], 1)
 
     def test_denies_non_project_member_to_list_comments(self):
         self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
@@ -45,7 +48,7 @@ class TestCommentListProjectAPI(CRUDMixin):
         self.non_member = make_user()
         self.doc = make_doc(self.project.item)
         make_comment(self.doc, self.project.users[0])
-        self.url = reverse(viewname='comment_list_project', args=[self.project.item.id])
+        self.url = reverse(viewname='comment_list', args=[self.project.item.id])
 
     def test_allows_project_member_to_list_comments(self):
         for member in self.project.users:
@@ -87,7 +90,7 @@ class TestCommentDetailAPI(CRUDMixin):
         doc = make_doc(self.project.item)
         comment = make_comment(doc, self.project.users[0])
         self.data = {'text': 'example'}
-        self.url = reverse(viewname='comment_detail', args=[self.project.item.id, doc.id, comment.id])
+        self.url = reverse(viewname='comment_detail', args=[self.project.item.id, comment.id])
 
     def test_allows_comment_owner_to_get_comment(self):
         # Todo: Allows project member to get comment.

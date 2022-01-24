@@ -22,13 +22,13 @@ export class CommentApplicationService {
     return this.repository.create(projectId, docId, text)
   }
 
-  public update(projectId: string, docId: number, item: CommentReadDTO): Promise<CommentItem> {
+  public update(projectId: string, item: CommentReadDTO): Promise<CommentItem> {
     const comment = plainToInstance(CommentItem, item)
-    return this.repository.update(projectId, docId, comment)
+    return this.repository.update(projectId, comment)
   }
 
-  public delete(projectId: string, docId: number, item: CommentReadDTO): Promise<void> {
-    return this.repository.delete(projectId, docId, item.id)
+  public delete(projectId: string, item: CommentReadDTO): Promise<void> {
+    return this.repository.delete(projectId, item.id)
   }
 
   public deleteBulk(projectId: string, items: CommentReadDTO[]): Promise<void> {

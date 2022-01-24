@@ -4,7 +4,7 @@
     :cancel-text="$t('generic.close')"
     @cancel="$emit('click:cancel')"
   >
-    <template #content>
+    <template v-if="user.id" #content>
       <form-create
         @add-comment="add"
       />
@@ -35,7 +35,7 @@ export default Vue.extend({
   },
 
   props: {
-    docId: {
+    exampleId: {
       type: Number,
       required: true
     }
@@ -48,12 +48,8 @@ export default Vue.extend({
     }
   },
 
-  async fetch() {
-    this.user = await this.$services.user.getMyProfile()
-  },
-
   watch: {
-    currentDoc: {
+    exampleId: {
       handler(val) {
         if (val !== undefined) {
           this.list()
@@ -64,20 +60,24 @@ export default Vue.extend({
     }
   },
 
+  async created() {
+    this.user = await this.$services.user.getMyProfile()
+  },
+
   methods: {
     async list() {
-      this.comments = await this.$services.comment.list(this.$route.params.id, this.docId)
+      this.comments = await this.$services.comment.list(this.$route.params.id, this.exampleId)
     },
     async add(message: string) {
-      await this.$services.comment.create(this.$route.params.id, this.docId, message)
+      await this.$services.comment.create(this.$route.params.id, this.exampleId, message)
       this.list()
     },
     async remove(item: CommentReadDTO) {
-      await this.$services.comment.delete(this.$route.params.id, this.docId, item)
+      await this.$services.comment.delete(this.$route.params.id, item)
       this.list()
     },
     async maybeUpdate(item: CommentReadDTO) {
-      await this.$services.comment.update(this.$route.params.id, this.docId, item)
+      await this.$services.comment.update(this.$route.params.id, item)
       this.list()
     }
   }
