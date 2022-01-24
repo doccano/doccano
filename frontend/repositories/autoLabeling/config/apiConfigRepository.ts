@@ -7,7 +7,8 @@ export interface ConfigItemResponse {
   model_name: string,
   model_attrs: object,
   template: string,
-  label_mapping: object
+  label_mapping: object,
+  task_type: string,
 }
 
 export class APIConfigRepository implements ConfigRepository {
@@ -26,12 +27,7 @@ export class APIConfigRepository implements ConfigRepository {
 
   async create(projectId: string, item: ConfigItem): Promise<ConfigItem> {
     const url = `/projects/${projectId}/auto-labeling-configs`
-    const response = await this.request.post(url, {
-      model_name: item.modelName,
-      model_attrs: item.modelAttrs,
-      template: item.template,
-      label_mapping: item.labelMapping
-    })
+    const response = await this.request.post(url, item.toAPI())
     const responseItem: ConfigItemResponse = response.data
     return ConfigItem.valueOf(responseItem)
   }

@@ -68,7 +68,9 @@ export default Vue.extend({
     async templateName(val) {
       if (val) {
         const response = await this.$services.template.find(this.projectId, val)
-        this.$emit('input', response.toObject())
+        const field = response.toObject()
+        field.taskType = this.selectedTask
+        this.$emit('input', field)
       }
     },
 
