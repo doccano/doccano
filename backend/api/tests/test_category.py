@@ -35,7 +35,25 @@ class TestCategoryAnnotation(abc.ABC, TestCase):
         self.assertTrue(can_annotate)
 
 
-class TestExclusiveCategoryAnnotation(TestCategoryAnnotation):
+class NonCollaborativeMixin:
+
+    def test_cannot_annotate_same_category_to_annotated_data(self):
+        mommy.make('Category', example=self.example, label=self.label_type, user=self.user)
+        can_annotate = Category.objects.can_annotate(self.category, self.project.item)
+        self.assertFalse(can_annotate)
+
+    def test_allow_another_user_to_annotate_same_category(self):
+        mommy.make(
+            'Category',
+            example=self.example,
+            label=self.label_type,
+            user=self.another_user
+        )
+        can_annotate = Category.objects.can_annotate(self.category, self.project.item)
+        self.assertTrue(can_annotate)
+
+
+class TestExclusiveCategoryAnnotation(TestCategoryAnnotation, NonCollaborativeMixin):
     exclusive = True
     collaborative = False
 
@@ -44,23 +62,8 @@ class TestExclusiveCategoryAnnotation(TestCategoryAnnotation):
         can_annotate = Category.objects.can_annotate(self.category, self.project.item)
         self.assertFalse(can_annotate)
 
-    def test_cannot_annotate_same_category_to_annotated_data(self):
-        mommy.make('Category', example=self.example, label=self.label_type, user=self.user)
-        can_annotate = Category.objects.can_annotate(self.category, self.project.item)
-        self.assertFalse(can_annotate)
 
-    def test_allow_another_user_to_annotate_same_category(self):
-        mommy.make(
-            'Category',
-            example=self.example,
-            label=self.label_type,
-            user=self.another_user
-        )
-        can_annotate = Category.objects.can_annotate(self.category, self.project.item)
-        self.assertTrue(can_annotate)
-
-
-class TestNonExclusiveCategoryAnnotation(TestCategoryAnnotation):
+class TestNonExclusiveCategoryAnnotation(TestCategoryAnnotation, NonCollaborativeMixin):
     exclusive = False
     collaborative = False
 
@@ -69,25 +72,8 @@ class TestNonExclusiveCategoryAnnotation(TestCategoryAnnotation):
         can_annotate = Category.objects.can_annotate(self.category, self.project.item)
         self.assertTrue(can_annotate)
 
-    def test_cannot_annotate_same_category_to_annotated_data(self):
-        mommy.make('Category', example=self.example, label=self.label_type, user=self.user)
-        can_annotate = Category.objects.can_annotate(self.category, self.project.item)
-        self.assertFalse(can_annotate)
 
-    def test_allow_another_user_to_annotate_same_category(self):
-        mommy.make(
-            'Category',
-            example=self.example,
-            label=self.label_type,
-            user=self.another_user
-        )
-        can_annotate = Category.objects.can_annotate(self.category, self.project.item)
-        self.assertTrue(can_annotate)
-
-
-class TestCollaborativeExclusiveCategoryAnnotation(TestCategoryAnnotation):
-    exclusive = True
-    collaborative = True
+class CollaborativeMixin:
 
     def test_deny_another_user_to_annotate_same_category(self):
         mommy.make(
@@ -98,6 +84,11 @@ class TestCollaborativeExclusiveCategoryAnnotation(TestCategoryAnnotation):
         )
         can_annotate = Category.objects.can_annotate(self.category, self.project.item)
         self.assertFalse(can_annotate)
+
+
+class TestCollaborativeExclusiveCategoryAnnotation(TestCategoryAnnotation, CollaborativeMixin):
+    exclusive = True
+    collaborative = True
 
     def test_deny_another_user_to_annotate_different_category(self):
         mommy.make(
@@ -109,19 +100,9 @@ class TestCollaborativeExclusiveCategoryAnnotation(TestCategoryAnnotation):
         self.assertFalse(can_annotate)
 
 
-class TestCollaborativeNonExclusiveCategoryAnnotation(TestCategoryAnnotation):
+class TestCollaborativeNonExclusiveCategoryAnnotation(TestCategoryAnnotation, CollaborativeMixin):
     exclusive = False
     collaborative = True
-
-    def test_deny_another_user_to_annotate_same_category(self):
-        mommy.make(
-            'Category',
-            example=self.example,
-            label=self.label_type,
-            user=self.another_user
-        )
-        can_annotate = Category.objects.can_annotate(self.category, self.project.item)
-        self.assertFalse(can_annotate)
 
     def test_allow_another_user_to_annotate_different_category(self):
         mommy.make(
