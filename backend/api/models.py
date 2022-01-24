@@ -8,7 +8,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
-from .managers import AnnotationManager, ExampleManager, ExampleStateManager
+from .managers import (AnnotationManager, CategoryManager, ExampleManager,
+                       ExampleStateManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -334,6 +335,7 @@ class Annotation(models.Model):
 
 
 class Category(Annotation):
+    objects = CategoryManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,
