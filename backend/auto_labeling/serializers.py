@@ -11,7 +11,7 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AutoLabelingConfig
-        fields = ('id', 'model_name', 'model_attrs', 'template', 'label_mapping', 'default')
+        fields = ('id', 'model_name', 'model_attrs', 'template', 'label_mapping', 'default', 'task_type')
         read_only_fields = ('created_at', 'updated_at')
 
     def validate_model_name(self, value):
