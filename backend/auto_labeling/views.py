@@ -19,11 +19,9 @@ from rest_framework.views import APIView
 from api.models import Example, Project
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
 from .pipeline.execution import execute_pipeline
-from .exceptions import (AutoLabelingPermissionDenied,
-                         AWSTokenError, SampleDataException,
-                         TemplateMappingError, URLConnectionError)
+from .exceptions import AWSTokenError, SampleDataException, TemplateMappingError, URLConnectionError
 from .models import AutoLabelingConfig
-from .serializers import (AutoLabelingConfigSerializer, get_annotation_serializer)
+from .serializers import AutoLabelingConfigSerializer
 
 
 class TemplateListAPI(APIView):

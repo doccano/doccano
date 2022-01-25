@@ -1,9 +1,6 @@
 from auto_labeling_pipeline.models import RequestModelFactory
 from rest_framework import serializers
 
-from api.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT, \
-    IMAGE_CLASSIFICATION
-from api.serializers import CategorySerializer, SpanSerializer, TextLabelSerializer
 from .models import AutoLabelingConfig
 
 
@@ -39,17 +36,3 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
                 'You need to correctly specify the required fields: {}'.format(required_fields)
             )
         return data
-
-
-def get_annotation_serializer(task: str):
-    mapping = {
-        DOCUMENT_CLASSIFICATION: CategorySerializer,
-        SEQUENCE_LABELING: SpanSerializer,
-        SEQ2SEQ: TextLabelSerializer,
-        SPEECH2TEXT: TextLabelSerializer,
-        IMAGE_CLASSIFICATION: CategorySerializer,
-    }
-    try:
-        return mapping[task]
-    except KeyError:
-        raise ValueError(f'{task} is not implemented.')
