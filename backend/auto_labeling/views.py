@@ -18,7 +18,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Example, Project, Category, CategoryType, Annotation
+from api.models import Example, Project, Category, CategoryType, Annotation, Span, SpanType
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
 from .pipeline.execution import execute_pipeline
 from .exceptions import (AutoLabelingPermissionDenied,
@@ -237,6 +237,7 @@ class AutomatedLabeling(abc.ABC, generics.CreateAPIView):
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
     swagger_schema = None
     model = None
+    label_type = None
     task_type = None
 
     def create(self, request, *args, **kwargs):
@@ -257,25 +258,28 @@ class AutomatedLabeling(abc.ABC, generics.CreateAPIView):
             self.model.objects.bulk_create(labels)
         return Response({'ok': True}, status=status.HTTP_201_CREATED)
 
-    @abc.abstractmethod
     def transform(self, labels, example: Example, project: Project) -> List[Annotation]:
-        raise NotImplementedError('Please implement this method in the subclass')
-
-
-class AutomatedCategoryLabeling(AutomatedLabeling):
-    model = Category
-    task_type = 'Category'
-
-    def transform(self, labels, example: Example, project: Project) -> List[Category]:
         mapping = {
-            c.text: c for c in CategoryType.objects.filter(project=project)
+            c.text: c for c in self.label_type.objects.filter(project=project)
         }
-        categories = []
+        annotations = []
         for label in labels:
             if label['label'] not in mapping:
                 continue
             label['example'] = example
             label['label'] = mapping[label['label']]
             label['user'] = self.request.user
-            categories.append(Category(**label))
-        return categories
+            annotations.append(self.model(**label))
+        return annotations
+
+
+class AutomatedCategoryLabeling(AutomatedLabeling):
+    model = Category
+    label_type = CategoryType
+    task_type = 'Category'
+
+
+class AutomatedSpanLabeling(AutomatedLabeling):
+    model = Span
+    label_type = SpanType
+    task_type = 'Span'

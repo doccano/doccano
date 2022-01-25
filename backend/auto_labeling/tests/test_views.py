@@ -7,8 +7,8 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.models import DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION
-from api.models import Category
+from api.models import DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION, SEQUENCE_LABELING
+from api.models import Category, Span
 from api.tests.api.utils import (CRUDMixin, make_auto_labeling_config, make_doc, make_image,
                                  prepare_project)
 
@@ -215,3 +215,53 @@ class TestAutomatedCategoryLabeling(CRUDMixin):
         mommy.make('AutoLabelingConfig', task_type='Category')
         self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
         self.assertEqual(Category.objects.count(), 1)
+
+
+class TestAutomatedSpanLabeling(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(task=SEQUENCE_LABELING)
+        self.example = make_doc(self.project.item)
+        self.loc = mommy.make('SpanType', project=self.project.item, text='LOC')
+        self.url = reverse(viewname='automated_span_labeling', args=[self.project.item.id, self.example.id])
+
+    @patch('auto_labeling.views.execute_pipeline', return_value=[{'label': 'LOC', 'start_offset': 0, 'end_offset': 5}])
+    def test_span_labeling(self, mock):
+        mommy.make('AutoLabelingConfig', task_type='Span')
+        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assertEqual(Span.objects.count(), 1)
+        self.assertEqual(Span.objects.first().label, self.loc)
+
+    @patch(
+        'auto_labeling.views.execute_pipeline',
+        side_effect=[
+            [{'label': 'LOC', 'start_offset': 0, 'end_offset': 5}],
+            [{'label': 'LOC', 'start_offset': 5, 'end_offset': 10}]
+        ]
+    )
+    def test_multiple_configs(self, mock):
+        mommy.make('AutoLabelingConfig', task_type='Span')
+        mommy.make('AutoLabelingConfig', task_type='Span')
+        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        expected_spans = [
+           {'label': 'LOC', 'start_offset': 0, 'end_offset': 5},
+           {'label': 'LOC', 'start_offset': 5, 'end_offset': 10}
+        ]
+        self.assertEqual(Span.objects.count(), len(expected_spans))
+        for actual, expected in zip(Span.objects.all(), expected_spans):
+            self.assertEqual(actual.label, self.loc)
+            self.assertEqual(actual.start_offset, expected['start_offset'])
+            self.assertEqual(actual.end_offset, expected['end_offset'])
+
+    @patch(
+        'auto_labeling.views.execute_pipeline',
+        side_effect=[
+            [{'label': 'LOC', 'start_offset': 0, 'end_offset': 5}],
+            [{'label': 'LOC', 'start_offset': 4, 'end_offset': 10}]
+        ]
+    )
+    def test_cannot_label_overlapping_span(self, mock):
+        mommy.make('AutoLabelingConfig', task_type='Span')
+        mommy.make('AutoLabelingConfig', task_type='Span')
+        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assertEqual(Span.objects.count(), 1)
