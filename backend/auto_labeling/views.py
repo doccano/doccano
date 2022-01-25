@@ -1,6 +1,4 @@
-import abc
 import json
-from typing import List
 
 import botocore.exceptions
 import requests
@@ -18,7 +16,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Example, Project, Category, CategoryType, Annotation, Span, SpanType, TextLabel
+from api.models import Example, Project
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
 from .pipeline.execution import execute_pipeline
 from .exceptions import (AutoLabelingPermissionDenied,
@@ -187,63 +185,14 @@ class LabelMapperTesting(APIView):
         return Response(labels.dict(), status=status.HTTP_200_OK)
 
 
-class AutomatedDataLabeling(generics.CreateAPIView):
-    pagination_class = None
+class AutomatedLabeling(generics.CreateAPIView):
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
     swagger_schema = None
-
-    def get_serializer_class(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        self.serializer_class = get_annotation_serializer(task=project.project_type)
-        return self.serializer_class
-
-    def create(self, request, *args, **kwargs):
-        labels = self.extract()
-        labels = self.transform(labels)
-        serializer = self.get_serializer(data=labels, many=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-    def extract(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        example = get_object_or_404(Example, pk=self.kwargs['example_id'])
-        config = project.auto_labeling_config.first()
-        if not config:
-            raise AutoLabelingPermissionDenied()
-        return execute_pipeline(
-            text=example.data,
-            task_type=project.project_type,
-            model_name=config.model_name,
-            model_attrs=config.model_attrs,
-            template=config.template,
-            label_mapping=config.label_mapping
-        )
-
-    def transform(self, labels):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        for label in labels:
-            label['example'] = self.kwargs['example_id']
-            if 'label' in label:
-                label['label'] = project.labels.get(text=label.pop('label')).id
-        return labels
-
-
-class AutomatedLabeling(abc.ABC, generics.CreateAPIView):
-    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
-    swagger_schema = None
-    model = None
-    label_type = None
-    task_type = None
 
     def create(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         example = get_object_or_404(Example, pk=self.kwargs['example_id'])
-        configs = AutoLabelingConfig.objects.filter(task_type=self.task_type)
+        configs = AutoLabelingConfig.objects.filter(project=project)
         for config in configs:
             labels = execute_pipeline(
                 text=example.data,
@@ -253,46 +202,5 @@ class AutomatedLabeling(abc.ABC, generics.CreateAPIView):
                 template=config.template,
                 label_mapping=config.label_mapping
             )
-            labels = self.transform(labels, example, project)
-            labels = self.model.objects.filter_annotatable_labels(labels, project)
-            self.model.objects.bulk_create(labels)
+            labels.save(project, example, self.request.user)
         return Response({'ok': True}, status=status.HTTP_201_CREATED)
-
-    def transform(self, labels, example: Example, project: Project) -> List[Annotation]:
-        mapping = {
-            c.text: c for c in self.label_type.objects.filter(project=project)
-        }
-        annotations = []
-        for label in labels:
-            if label['label'] not in mapping:
-                continue
-            label['example'] = example
-            label['label'] = mapping[label['label']]
-            label['user'] = self.request.user
-            annotations.append(self.model(**label))
-        return annotations
-
-
-class AutomatedCategoryLabeling(AutomatedLabeling):
-    model = Category
-    label_type = CategoryType
-    task_type = 'Category'
-
-
-class AutomatedSpanLabeling(AutomatedLabeling):
-    model = Span
-    label_type = SpanType
-    task_type = 'Span'
-
-
-class AutomatedTextLabeling(AutomatedLabeling):
-    model = TextLabel
-    task_type = 'Text'
-
-    def transform(self, labels, example: Example, project: Project) -> List[Annotation]:
-        annotations = []
-        for label in labels:
-            label['example'] = example
-            label['user'] = self.request.user
-            annotations.append(self.model(**label))
-        return annotations

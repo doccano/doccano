@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import (ConfigDetail, FullPipelineTesting, AutomatedDataLabeling, AutomatedCategoryLabeling,
-                    AutomatedSpanLabeling, AutomatedTextLabeling, LabelMapperTesting, TemplateListAPI,
+from .views import (ConfigDetail, FullPipelineTesting, AutomatedLabeling,
+                    LabelMapperTesting, TemplateListAPI,
                     TemplateDetailAPI, ConfigList, RestAPIRequestTesting, LabelExtractorTesting)
 
 urlpatterns = [
@@ -31,11 +31,6 @@ urlpatterns = [
         name='auto_labeling_config_test'
     ),
     path(
-        route='examples/<int:example_id>/auto-labeling',
-        view=AutomatedDataLabeling.as_view(),
-        name='auto_labeling_annotation'
-    ),
-    path(
         route='auto-labeling-parameter-testing',
         view=RestAPIRequestTesting.as_view(),
         name='auto_labeling_parameter_testing'
@@ -51,18 +46,8 @@ urlpatterns = [
         name='auto_labeling_mapping_test'
     ),
     path(
-        route='examples/<int:example_id>/auto-labeling/categories',
-        view=AutomatedCategoryLabeling.as_view(),
-        name='automated_category_labeling'
+        route='examples/<int:example_id>/auto-labeling',
+        view=AutomatedLabeling.as_view(),
+        name='automated_labeling'
     ),
-    path(
-        route='examples/<int:example_id>/auto-labeling/spans',
-        view=AutomatedSpanLabeling.as_view(),
-        name='automated_span_labeling'
-    ),
-    path(
-        route='examples/<int:example_id>/auto-labeling/texts',
-        view=AutomatedTextLabeling.as_view(),
-        name='automated_text_labeling'
-    )
 ]
