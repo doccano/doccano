@@ -66,6 +66,16 @@ class SpanManager(AnnotationManager):
         return True
 
 
+class TextLabelManager(AnnotationManager):
+
+    def can_annotate(self, label, project) -> bool:
+        texts = self.get_labels(label, project)
+        for text in texts:
+            if text.is_same_text(label):
+                return False
+        return True
+
+
 class ExampleManager(Manager):
 
     def bulk_create(self, objs, batch_size=None, ignore_conflicts=False):

@@ -9,7 +9,7 @@ from django.db import models
 from polymorphic.models import PolymorphicModel
 
 from .managers import (AnnotationManager, CategoryManager, ExampleManager,
-                       ExampleStateManager, SpanManager)
+                       ExampleStateManager, SpanManager, TextLabelManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -400,12 +400,16 @@ class Span(Annotation):
 
 
 class TextLabel(Annotation):
+    objects = TextLabelManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,
         related_name='texts'
     )
     text = models.TextField()
+
+    def is_same_text(self, other: 'TextLabel'):
+        return self.text == other.text
 
     class Meta:
         unique_together = (
