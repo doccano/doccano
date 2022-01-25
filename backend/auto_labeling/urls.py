@@ -1,8 +1,8 @@
 from django.urls import path
 
 from .views import (ConfigDetail, FullPipelineTesting, AutomatedDataLabeling, AutomatedCategoryLabeling,
-                    AutomatedSpanLabeling, LabelMapperTesting, TemplateListAPI, TemplateDetailAPI, ConfigList,
-                    RestAPIRequestTesting, LabelExtractorTesting)
+                    AutomatedSpanLabeling, AutomatedTextLabeling, LabelMapperTesting, TemplateListAPI,
+                    TemplateDetailAPI, ConfigList, RestAPIRequestTesting, LabelExtractorTesting)
 
 urlpatterns = [
     path(
@@ -59,5 +59,10 @@ urlpatterns = [
         route='examples/<int:example_id>/auto-labeling/spans',
         view=AutomatedSpanLabeling.as_view(),
         name='automated_span_labeling'
+    ),
+    path(
+        route='examples/<int:example_id>/auto-labeling/texts',
+        view=AutomatedTextLabeling.as_view(),
+        name='automated_text_labeling'
     )
 ]

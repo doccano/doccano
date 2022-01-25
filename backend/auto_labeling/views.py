@@ -18,7 +18,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Example, Project, Category, CategoryType, Annotation, Span, SpanType
+from api.models import Example, Project, Category, CategoryType, Annotation, Span, SpanType, TextLabel
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
 from .pipeline.execution import execute_pipeline
 from .exceptions import (AutoLabelingPermissionDenied,
@@ -283,3 +283,16 @@ class AutomatedSpanLabeling(AutomatedLabeling):
     model = Span
     label_type = SpanType
     task_type = 'Span'
+
+
+class AutomatedTextLabeling(AutomatedLabeling):
+    model = TextLabel
+    task_type = 'Text'
+
+    def transform(self, labels, example: Example, project: Project) -> List[Annotation]:
+        annotations = []
+        for label in labels:
+            label['example'] = example
+            label['user'] = self.request.user
+            annotations.append(self.model(**label))
+        return annotations
