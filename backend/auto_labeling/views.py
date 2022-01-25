@@ -91,14 +91,9 @@ class FullPipelineTesting(APIView):
 
     def pass_pipeline_call(self, serializer):
         test_input = self.request.data['input']
-        return execute_pipeline(
-            text=test_input,
-            task_type=serializer.data.get('task_type'),
-            model_name=serializer.data.get('model_name'),
-            model_attrs=serializer.data.get('model_attrs'),
-            template=serializer.data.get('template'),
-            label_mapping=serializer.data.get('label_mapping')
-        )
+        config = AutoLabelingConfig(**serializer.data)
+        labels = execute_pipeline(test_input, config=config)
+        return labels.labels
 
 
 class RestAPIRequestTesting(APIView):
@@ -192,13 +187,6 @@ class AutomatedLabeling(generics.CreateAPIView):
         example = get_object_or_404(Example, pk=self.kwargs['example_id'])
         configs = AutoLabelingConfig.objects.filter(project=project)
         for config in configs:
-            labels = execute_pipeline(
-                text=example.data,
-                task_type=config.task_type,
-                model_name=config.model_name,
-                model_attrs=config.model_attrs,
-                template=config.template,
-                label_mapping=config.label_mapping
-            )
+            labels = execute_pipeline(example.data, config=config)
             labels.save(project, example, self.request.user)
         return Response({'ok': True}, status=status.HTTP_201_CREATED)
