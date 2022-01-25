@@ -53,6 +53,19 @@ class CategoryManager(AnnotationManager):
             return not categories.filter(label=label.label).exists()
 
 
+class SpanManager(AnnotationManager):
+
+    def can_annotate(self, label, project) -> bool:
+        overlapping = getattr(project, 'allow_overlapping', False)
+        spans = self.get_labels(label, project)
+        if overlapping:
+            return True
+        for span in spans:
+            if span.is_overlapping(label):
+                return False
+        return True
+
+
 class ExampleManager(Manager):
 
     def bulk_create(self, objs, batch_size=None, ignore_conflicts=False):

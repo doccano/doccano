@@ -9,7 +9,7 @@ from django.db import models
 from polymorphic.models import PolymorphicModel
 
 from .managers import (AnnotationManager, CategoryManager, ExampleManager,
-                       ExampleStateManager)
+                       ExampleStateManager, SpanManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -352,6 +352,7 @@ class Category(Annotation):
 
 
 class Span(Annotation):
+    objects = SpanManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,
@@ -384,6 +385,11 @@ class Span(Annotation):
              update_fields=None):
         self.full_clean()
         super().save(force_insert, force_update, using, update_fields)
+
+    def is_overlapping(self, other: 'Span'):
+        return (other.start_offset <= self.start_offset < other.end_offset) or\
+               (other.start_offset < self.end_offset <= other.end_offset) or\
+               (self.start_offset < other.start_offset and other.end_offset < self.end_offset)
 
     class Meta:
         constraints = [
