@@ -61,7 +61,17 @@ export default Vue.extend({
 
     taskNames(): string[] {
       return this.project.taskNames
-    }
+    },
+
+    taskType(): string {
+      return {
+        DocumentClassification: 'Category',
+        SequenceLabeling      : 'Span',
+        Seq2seq               : 'Text',
+        ImageClassification   : 'Category',
+        Speech2text           : 'Text',
+      }[this.selectedTask]!
+  }
   },
 
   watch: {
@@ -69,7 +79,7 @@ export default Vue.extend({
       if (val) {
         const response = await this.$services.template.find(this.projectId, val)
         const field = response.toObject()
-        field.taskType = this.selectedTask
+        field.taskType = this.taskType
         this.$emit('input', field)
       }
     },
