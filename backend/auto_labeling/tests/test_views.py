@@ -132,7 +132,8 @@ class TestConfigCreation(CRUDMixin):
                 'language_code': 'en'
             },
             'template': AmazonComprehendSentimentTemplate().load(),
-            'label_mapping': {'NEGATIVE': 'Negative'}
+            'label_mapping': {'NEGATIVE': 'Negative'},
+            'task_type': 'Category'
         }
         self.url = reverse(viewname='auto_labeling_configs', args=[self.project.item.id])
 
