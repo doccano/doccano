@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from api.models import DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION
+from api.models import Category
 from api.tests.api.utils import (CRUDMixin, make_auto_labeling_config, make_doc, make_image,
                                  prepare_project)
 
@@ -177,3 +178,40 @@ class TestAutoLabelingImage(CRUDMixin):
         _, kwargs = mock.call_args
         expected = str(self.example.filename)
         self.assertEqual(kwargs['text'], expected)
+
+
+class TestAutomatedCategoryLabeling(CRUDMixin):
+
+    def setUp(self):
+        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION, single_class_classification=False)
+        self.example = make_doc(self.project.item)
+        self.category_pos = mommy.make(
+            'CategoryType', project=self.project.item, text='POS'
+        )
+        self.category_neg = mommy.make(
+            'CategoryType', project=self.project.item, text='NEG'
+        )
+        self.url = reverse(viewname='automated_category_labeling', args=[self.project.item.id, self.example.id])
+
+    @patch('auto_labeling.views.execute_pipeline', return_value=[{'label': 'POS'}])
+    def test_category_labeling(self, mock):
+        mommy.make('AutoLabelingConfig', task_type='Category')
+        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assertEqual(Category.objects.count(), 1)
+        self.assertEqual(Category.objects.first().label, self.category_pos)
+
+    @patch('auto_labeling.views.execute_pipeline', side_effect=[[{'label': 'POS'}], [{'label': 'NEG'}]])
+    def test_multiple_configs(self, mock):
+        mommy.make('AutoLabelingConfig', task_type='Category')
+        mommy.make('AutoLabelingConfig', task_type='Category')
+        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assertEqual(Category.objects.count(), 2)
+        self.assertEqual(Category.objects.first().label, self.category_pos)
+        self.assertEqual(Category.objects.last().label, self.category_neg)
+
+    @patch('auto_labeling.views.execute_pipeline', side_effect=[[{'label': 'POS'}], [{'label': 'POS'}]])
+    def test_cannot_label_same_category_type(self, mock):
+        mommy.make('AutoLabelingConfig', task_type='Category')
+        mommy.make('AutoLabelingConfig', task_type='Category')
+        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assertEqual(Category.objects.count(), 1)

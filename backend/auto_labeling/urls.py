@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import (ConfigDetail, FullPipelineTesting, AutomatedDataLabeling, LabelMapperTesting,
-                    TemplateListAPI, TemplateDetailAPI, ConfigList,
+from .views import (ConfigDetail, FullPipelineTesting, AutomatedDataLabeling, AutomatedCategoryLabeling,
+                    LabelMapperTesting, TemplateListAPI, TemplateDetailAPI, ConfigList,
                     RestAPIRequestTesting, LabelExtractorTesting)
 
 urlpatterns = [
@@ -49,5 +49,10 @@ urlpatterns = [
         route='auto-labeling-mapping-testing',
         view=LabelMapperTesting.as_view(),
         name='auto_labeling_mapping_test'
+    ),
+    path(
+        route='examples/<int:example_id>/auto-labeling/categories',
+        view=AutomatedCategoryLabeling.as_view(),
+        name='automated_category_labeling'
     )
 ]

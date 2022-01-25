@@ -1,11 +1,11 @@
 import json
+from typing import List
 
 import botocore.exceptions
 import requests
 from auto_labeling_pipeline.mappings import MappingTemplate
 from auto_labeling_pipeline.menu import Options
 from auto_labeling_pipeline.models import RequestModelFactory
-from auto_labeling_pipeline.pipeline import pipeline
 from auto_labeling_pipeline.postprocessing import PostProcessor
 from auto_labeling_pipeline.task import TaskFactory
 from django.shortcuts import get_object_or_404
@@ -17,8 +17,9 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Example, Project
+from api.models import Example, Project, Category, CategoryType
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
+from .pipeline.execution import execute_pipeline
 from .exceptions import (AutoLabelingPermissionDenied,
                          AWSTokenError, SampleDataException,
                          TemplateMappingError, URLConnectionError)
@@ -93,10 +94,9 @@ class FullPipelineTesting(APIView):
 
     def pass_pipeline_call(self, serializer):
         test_input = self.request.data['input']
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return execute_pipeline(
             text=test_input,
-            project_type=project.project_type,
+            task_type=serializer.data.get('task_type'),
             model_name=serializer.data.get('model_name'),
             model_attrs=serializer.data.get('model_attrs'),
             template=serializer.data.get('template'),
@@ -216,7 +216,7 @@ class AutomatedDataLabeling(generics.CreateAPIView):
             raise AutoLabelingPermissionDenied()
         return execute_pipeline(
             text=example.data,
-            project_type=project.project_type,
+            task_type=project.project_type,
             model_name=config.model_name,
             model_attrs=config.model_attrs,
             template=config.template,
@@ -232,26 +232,39 @@ class AutomatedDataLabeling(generics.CreateAPIView):
         return labels
 
 
-def execute_pipeline(text: str,
-                     project_type: str,
-                     model_name: str,
-                     model_attrs: dict,
-                     template: str,
-                     label_mapping: dict):
-    task = TaskFactory.create(project_type)
-    model = RequestModelFactory.create(
-        model_name=model_name,
-        attributes=model_attrs
-    )
-    template = MappingTemplate(
-        label_collection=task.label_collection,
-        template=template
-    )
-    post_processor = PostProcessor(label_mapping)
-    labels = pipeline(
-        text=text,
-        request_model=model,
-        mapping_template=template,
-        post_processing=post_processor
-    )
-    return labels.dict()
+class AutomatedCategoryLabeling(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    swagger_schema = None
+    model = Category
+
+    def create(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        example = get_object_or_404(Example, pk=self.kwargs['example_id'])
+        configs = AutoLabelingConfig.objects.filter(task_type='Category')
+        for config in configs:
+            labels = execute_pipeline(
+                text=example.data,
+                task_type=config.task_type,
+                model_name=config.model_name,
+                model_attrs=config.model_attrs,
+                template=config.template,
+                label_mapping=config.label_mapping
+            )
+            labels = self.transform(labels, example, project)
+            labels = self.model.objects.filter_annotatable_labels(labels, project)
+            self.model.objects.bulk_create(labels)
+        return Response({'ok': True}, status=status.HTTP_201_CREATED)
+
+    def transform(self, labels, example: Example, project: Project) -> List[Category]:
+        mapping = {
+            c.text: c for c in CategoryType.objects.filter(project=project)
+        }
+        categories = []
+        for label in labels:
+            if label['label'] not in mapping:
+                continue
+            label['example'] = example
+            label['label'] = mapping[label['label']]
+            label['user'] = self.request.user
+            categories.append(Category(**label))
+        return categories
