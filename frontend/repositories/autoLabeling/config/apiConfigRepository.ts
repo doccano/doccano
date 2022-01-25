@@ -50,13 +50,6 @@ export class APIConfigRepository implements ConfigRepository {
     await this.request.delete(url)
   }
 
-  async testConfig(projectId: string, item: ConfigItem, text: string): Promise<ConfigTestResponse> {
-    const url = `/projects/${projectId}/auto-labeling-config-testing`
-    const response = await this.request.post(url, {config: {...item.toAPI()}, input: text})
-    const responseItem: ConfigTestResponse = response.data
-    return responseItem
-  }
-
   async testParameters(projectId: string, item: ConfigItem, text: string) {
     const url = `/projects/${projectId}/auto-labeling-parameter-testing`
     const response = await this.request.post(url, {...item.toAPI(), text})

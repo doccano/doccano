@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import (ConfigDetail, FullPipelineTesting, AutomatedLabeling,
+from .views import (ConfigDetail, AutomatedLabeling,
                     LabelMapperTesting, TemplateListAPI,
                     TemplateDetailAPI, ConfigList, RestAPIRequestTesting, LabelExtractorTesting)
 
@@ -24,11 +24,6 @@ urlpatterns = [
         route='auto-labeling-configs/<int:config_id>',
         view=ConfigDetail.as_view(),
         name='auto_labeling_config'
-    ),
-    path(
-        route='auto-labeling-config-testing',
-        view=FullPipelineTesting.as_view(),
-        name='auto_labeling_config_test'
     ),
     path(
         route='auto-labeling-parameter-testing',

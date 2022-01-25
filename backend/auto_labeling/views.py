@@ -61,41 +61,6 @@ class ConfigDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
 
-class FullPipelineTesting(APIView):
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-
-    def post(self, *args, **kwargs):
-        try:
-            output = self.pass_config_validation()
-            output = self.pass_pipeline_call(output)
-            if not output:
-                raise SampleDataException()
-            return Response(
-                data={'valid': True, 'labels': output},
-                status=status.HTTP_200_OK
-            )
-        except requests.exceptions.ConnectionError:
-            raise URLConnectionError()
-        except botocore.exceptions.ClientError:
-            raise AWSTokenError()
-        except ValidationError as e:
-            raise e
-        except Exception as e:
-            raise e
-
-    def pass_config_validation(self):
-        config = self.request.data['config']
-        serializer = AutoLabelingConfigSerializer(data=config)
-        serializer.is_valid(raise_exception=True)
-        return serializer
-
-    def pass_pipeline_call(self, serializer):
-        test_input = self.request.data['input']
-        config = AutoLabelingConfig(**serializer.data)
-        labels = execute_pipeline(test_input, config=config)
-        return labels.labels
-
-
 class RestAPIRequestTesting(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
@@ -186,6 +151,7 @@ class AutomatedLabeling(generics.CreateAPIView):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         example = get_object_or_404(Example, pk=self.kwargs['example_id'])
         configs = AutoLabelingConfig.objects.filter(project=project)
+        # Todo: make async calls or celery tasks to reduce waiting time.
         for config in configs:
             labels = execute_pipeline(example.data, config=config)
             labels.save(project, example, self.request.user)
