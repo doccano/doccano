@@ -62,6 +62,16 @@ export class ProjectReadItem {
     const url = `/projects/${this.id}/${mapping[this.projectType]}`
     return url
   }
+
+  get taskNames(): string[] {
+    if (this.projectType === 'IntentDetectionAndSlotFilling') {
+      return [
+        'DocumentClassification',
+        'SequenceLabeling',
+      ]
+    }
+    return [this.projectType]
+  }
 }
 
 export class ProjectWriteItem {

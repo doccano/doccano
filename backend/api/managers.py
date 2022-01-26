@@ -29,6 +29,52 @@ class AnnotationManager(Manager):
             distribution[username][label] = count
         return distribution
 
+    def get_labels(self, label, project):
+        if project.collaborative_annotation:
+            return self.filter(example=label.example)
+        else:
+            return self.filter(example=label.example, user=label.user)
+
+    def can_annotate(self, label, project) -> bool:
+        raise NotImplementedError('Please implement this method in the subclass')
+
+    def filter_annotatable_labels(self, labels, project):
+        return [label for label in labels if self.can_annotate(label, project)]
+
+
+class CategoryManager(AnnotationManager):
+
+    def can_annotate(self, label, project) -> bool:
+        is_exclusive = project.single_class_classification
+        categories = self.get_labels(label, project)
+        if is_exclusive:
+            return not categories.exists()
+        else:
+            return not categories.filter(label=label.label).exists()
+
+
+class SpanManager(AnnotationManager):
+
+    def can_annotate(self, label, project) -> bool:
+        overlapping = getattr(project, 'allow_overlapping', False)
+        spans = self.get_labels(label, project)
+        if overlapping:
+            return True
+        for span in spans:
+            if span.is_overlapping(label):
+                return False
+        return True
+
+
+class TextLabelManager(AnnotationManager):
+
+    def can_annotate(self, label, project) -> bool:
+        texts = self.get_labels(label, project)
+        for text in texts:
+            if text.is_same_text(label):
+                return False
+        return True
+
 
 class ExampleManager(Manager):
 

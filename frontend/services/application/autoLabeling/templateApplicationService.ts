@@ -6,8 +6,8 @@ export class TemplateApplicationService {
     private readonly repository: TemplateRepository
   ) {}
 
-  public list(id: string): Promise<string[]> {
-    return this.repository.list(id)
+  public list(id: string, taskName: string): Promise<string[]> {
+    return this.repository.list(id, taskName)
   }
 
   public find(projectId: string, optionName: string): Promise<ConfigTemplateItem> {

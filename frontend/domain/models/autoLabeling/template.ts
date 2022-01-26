@@ -63,7 +63,8 @@ export class ConfigTemplateItem {
       modelName: this.modelName,
       template: this.template,
       modelAttrs: this.fields,
-      labelMapping: []
+      labelMapping: [],
+      taskType: ''
     }
   }
 }

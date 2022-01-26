@@ -1,10 +1,4 @@
-from rest_framework import status
-from rest_framework.exceptions import APIException, PermissionDenied, ValidationError
-
-
-class AutoLabelingException(APIException):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = 'Auto labeling not allowed for the document with labels.'
+from rest_framework.exceptions import PermissionDenied, ValidationError
 
 
 class AutoLabelingPermissionDenied(PermissionDenied):

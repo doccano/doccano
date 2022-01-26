@@ -31,7 +31,7 @@ export abstract class AnnotationRepository<T extends AnnotationModel> {
     }
   
     public async autoLabel(projectId: string, docId: number): Promise<void> {
-      const url = `/projects/${projectId}/examples/${docId}/auto-labeling`
+      const url = `/projects/${projectId}/auto-labeling?example=${docId}`
       await this.request.post(url, {})
     }
 

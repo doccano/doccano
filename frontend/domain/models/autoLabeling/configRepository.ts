@@ -14,8 +14,6 @@ export interface ConfigRepository {
 
   update(projectId: string, item: ConfigItem): Promise<ConfigItem>
 
-  testConfig(projectId: string, item: ConfigItem, text: string): Promise<ConfigTestResponse>
-
   testParameters(projectId: string, item: ConfigItem, text: string): Promise<ConfigTestResponse>
 
   testTemplate(projectId: string, response: any, item: ConfigItem): Promise<ConfigTestResponse>

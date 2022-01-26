@@ -8,7 +8,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
-from .managers import AnnotationManager, ExampleManager, ExampleStateManager
+from .managers import (AnnotationManager, CategoryManager, ExampleManager,
+                       ExampleStateManager, SpanManager, TextLabelManager)
 
 DOCUMENT_CLASSIFICATION = 'DocumentClassification'
 SEQUENCE_LABELING = 'SequenceLabeling'
@@ -257,16 +258,12 @@ class Example(models.Model):
     def comment_count(self):
         return Comment.objects.filter(example=self.id).count()
 
-    def is_labeled(self, is_collaborative, user):
-        if is_collaborative:
-            for model in Annotation.__subclasses__():
-                if model.objects.filter(example=self.id).exists():
-                    return True
+    @property
+    def data(self):
+        if self.project.is_text_project:
+            return self.text
         else:
-            for model in Annotation.__subclasses__():
-                if model.objects.filter(example=self.id, user=user).exists():
-                    return True
-        return False
+            return str(self.filename)
 
     class Meta:
         ordering = ['created_at']
@@ -338,6 +335,7 @@ class Annotation(models.Model):
 
 
 class Category(Annotation):
+    objects = CategoryManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,
@@ -354,6 +352,7 @@ class Category(Annotation):
 
 
 class Span(Annotation):
+    objects = SpanManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,
@@ -387,6 +386,11 @@ class Span(Annotation):
         self.full_clean()
         super().save(force_insert, force_update, using, update_fields)
 
+    def is_overlapping(self, other: 'Span'):
+        return (other.start_offset <= self.start_offset < other.end_offset) or\
+               (other.start_offset < self.end_offset <= other.end_offset) or\
+               (self.start_offset < other.start_offset and other.end_offset < self.end_offset)
+
     class Meta:
         constraints = [
             models.CheckConstraint(check=models.Q(start_offset__gte=0), name='startOffset >= 0'),
@@ -396,12 +400,16 @@ class Span(Annotation):
 
 
 class TextLabel(Annotation):
+    objects = TextLabelManager()
     example = models.ForeignKey(
         to=Example,
         on_delete=models.CASCADE,
         related_name='texts'
     )
     text = models.TextField()
+
+    def is_same_text(self, other: 'TextLabel'):
+        return self.text == other.text
 
     class Meta:
         unique_together = (

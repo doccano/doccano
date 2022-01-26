@@ -6,6 +6,12 @@ from api.models import Project
 
 
 class AutoLabelingConfig(models.Model):
+    TASK_CHOICES = (
+        ('Category', 'category'),
+        ('Span', 'span'),
+        ('Text', 'text'),
+        ('Relation', 'relation')
+    )
     model_name = models.CharField(max_length=100)
     model_attrs = models.JSONField(default=dict)
     template = models.TextField(default='')
@@ -15,6 +21,7 @@ class AutoLabelingConfig(models.Model):
         on_delete=models.CASCADE,
         related_name='auto_labeling_config'
     )
+    task_type = models.CharField(max_length=100, choices=TASK_CHOICES)
     default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

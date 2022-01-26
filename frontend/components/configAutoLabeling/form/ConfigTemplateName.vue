@@ -2,11 +2,17 @@
   <v-stepper-content step="1">
     <v-card>
       <v-card-text class="pa-0">
-        <v-form v-model="valid">
+        <v-form ref="form" v-model="valid">
           <h4 class="text-h6">Select a config template</h4>
           <p class="font-weight-regular body-1">
-            You can select the template to create the auto-labeling configuration.
+            You can select the template to create the auto-labeling configuration.{{ valid }}
           </p>
+          <v-select
+            v-model="selectedTask"
+            :items="taskNames"
+            label="Select a task name"
+            outlined
+          />
           <v-select
             v-model="templateName"
             :items="templateNames"
@@ -34,10 +40,13 @@
 <script lang="ts">
 import Vue from 'vue'
 import { templateNameRules } from '@/rules/index'
+import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   data() {
     return {
+      project: {} as ProjectDTO,
+      selectedTask: '',
       templateName: null,
       templateNames: [] as string[],
       templateNameRules,
@@ -48,18 +57,51 @@ export default Vue.extend({
   computed: {
     projectId() {
       return this.$route.params.id
-    }
+    },
+
+    taskNames(): string[] {
+      return this.project.taskNames
+    },
+
+    taskType(): string {
+      return {
+        DocumentClassification: 'Category',
+        SequenceLabeling      : 'Span',
+        Seq2seq               : 'Text',
+        ImageClassification   : 'Category',
+        Speech2text           : 'Text',
+      }[this.selectedTask]!
+  }
   },
 
   watch: {
     async templateName(val) {
-      const response = await this.$services.template.find(this.projectId, val)
-      this.$emit('input', response.toObject())
+      if (val) {
+        const response = await this.$services.template.find(this.projectId, val)
+        const field = response.toObject()
+        field.taskType = this.taskType
+        this.$emit('input', field)
+      }
     },
+
+    async selectedTask() {
+      this.templateName = null
+      await this.fetchTemplateNames()
+      // @ts-ignore
+      this.$refs.form.resetValidation()
+    }
   },
 
   async created() {
-    this.templateNames = await this.$services.template.list(this.projectId)
+    this.project = await this.$services.project.findById(this.projectId)
+    this.selectedTask = this.taskNames[0]
+    await this.fetchTemplateNames()
+  },
+
+  methods: {
+    async fetchTemplateNames() {
+      this.templateNames = await this.$services.template.list(this.projectId, this.selectedTask)
+    }
   }
 })
 </script>
