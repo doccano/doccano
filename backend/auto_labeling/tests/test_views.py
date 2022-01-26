@@ -150,7 +150,7 @@ class TestConfigCreation(CRUDMixin):
         self.assertEqual(len(response.data), 1)
 
 
-class TestAutomatedCategoryLabeling(CRUDMixin):
+class TestAutomatedLabeling(CRUDMixin):
 
     def setUp(self):
         self.project = prepare_project(task=DOCUMENT_CLASSIFICATION, single_class_classification=False)
@@ -162,7 +162,8 @@ class TestAutomatedCategoryLabeling(CRUDMixin):
             'CategoryType', project=self.project.item, text='NEG'
         )
         self.loc = mommy.make('SpanType', project=self.project.item, text='LOC')
-        self.url = reverse(viewname='automated_labeling', args=[self.project.item.id, self.example.id])
+        self.url = reverse(viewname='auto_labeling', args=[self.project.item.id])
+        self.url += f'?example={self.example.id}'
 
     @patch('auto_labeling.views.execute_pipeline', return_value=Categories([{'label': 'POS'}]))
     def test_category_labeling(self, mock):
@@ -226,7 +227,8 @@ class TestAutomatedSpanLabeling(CRUDMixin):
         self.project = prepare_project(task=SEQUENCE_LABELING)
         self.example = make_doc(self.project.item)
         self.loc = mommy.make('SpanType', project=self.project.item, text='LOC')
-        self.url = reverse(viewname='automated_labeling', args=[self.project.item.id, self.example.id])
+        self.url = reverse(viewname='auto_labeling', args=[self.project.item.id])
+        self.url += f'?example={self.example.id}'
 
     @patch(
         'auto_labeling.views.execute_pipeline',
@@ -247,7 +249,8 @@ class TestAutomatedTextLabeling(CRUDMixin):
     def setUp(self):
         self.project = prepare_project(task=SEQ2SEQ)
         self.example = make_doc(self.project.item)
-        self.url = reverse(viewname='automated_labeling', args=[self.project.item.id, self.example.id])
+        self.url = reverse(viewname='auto_labeling', args=[self.project.item.id])
+        self.url += f'?example={self.example.id}'
 
     @patch(
         'auto_labeling.views.execute_pipeline',

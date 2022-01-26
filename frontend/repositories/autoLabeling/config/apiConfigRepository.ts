@@ -17,7 +17,7 @@ export class APIConfigRepository implements ConfigRepository {
   ) {}
 
   async list(projectId: string): Promise<ConfigItemList> {
-    const url = `/projects/${projectId}/auto-labeling-configs`
+    const url = `/projects/${projectId}/auto-labeling/configs`
     const response = await this.request.get(url)
     const responseItems: ConfigItemResponse[] = response.data
     return ConfigItemList.valueOf(
@@ -26,14 +26,14 @@ export class APIConfigRepository implements ConfigRepository {
   }
 
   async create(projectId: string, item: ConfigItem): Promise<ConfigItem> {
-    const url = `/projects/${projectId}/auto-labeling-configs`
+    const url = `/projects/${projectId}/auto-labeling/configs`
     const response = await this.request.post(url, item.toAPI())
     const responseItem: ConfigItemResponse = response.data
     return ConfigItem.valueOf(responseItem)
   }
 
   async update(projectId: string, item: ConfigItem): Promise<ConfigItem> {
-    const url = `/projects/${projectId}/auto-labeling-configs/${item.id}`
+    const url = `/projects/${projectId}/auto-labeling/configs/${item.id}`
     const response = await this.request.put(url, {
       id: item.id,
       model_name: item.modelName,
@@ -46,12 +46,12 @@ export class APIConfigRepository implements ConfigRepository {
   }
 
   async delete(projectId: string, itemId: number): Promise<void> {
-    const url = `/projects/${projectId}/auto-labeling-configs/${itemId}`
+    const url = `/projects/${projectId}/auto-labeling/configs/${itemId}`
     await this.request.delete(url)
   }
 
   async testParameters(projectId: string, item: ConfigItem, text: string) {
-    const url = `/projects/${projectId}/auto-labeling-parameter-testing`
+    const url = `/projects/${projectId}/auto-labeling/request-testing`
     const response = await this.request.post(url, {...item.toAPI(), text})
     const responseItem: ConfigTestResponse = response.data
     return responseItem
@@ -59,14 +59,14 @@ export class APIConfigRepository implements ConfigRepository {
 
   async testTemplate(projectId: string, response: any, item: ConfigItem): Promise<ConfigTestResponse> {
     console.log(projectId)
-    const url = `/projects/${projectId}/auto-labeling-template-testing`
+    const url = `/projects/${projectId}/auto-labeling/label-extractor-testing`
     const _response = await this.request.post(url, { response, ...item.toAPI() })
     const responseItem: ConfigTestResponse = _response.data
     return responseItem
   }
 
   async testMapping(projectId: string, item: ConfigItem, response: any): Promise<ConfigTestResponse> {
-    const url = `/projects/${projectId}/auto-labeling-mapping-testing`
+    const url = `/projects/${projectId}/auto-labeling/label-mapper-testing`
     const _response = await this.request.post(url, {...item.toAPI(), response})
     const responseItem: ConfigTestResponse = _response.data
     return responseItem
