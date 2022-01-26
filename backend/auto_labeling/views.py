@@ -15,7 +15,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Example, Project
+from api.models import Project
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
 from .pipeline.execution import execute_pipeline, get_label_collection
 from .exceptions import AWSTokenError, SampleDataException, TemplateMappingError, URLConnectionError
