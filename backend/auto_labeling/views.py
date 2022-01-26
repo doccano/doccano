@@ -6,7 +6,6 @@ from auto_labeling_pipeline.mappings import MappingTemplate
 from auto_labeling_pipeline.menu import Options
 from auto_labeling_pipeline.models import RequestModelFactory
 from auto_labeling_pipeline.postprocessing import PostProcessor
-from auto_labeling_pipeline.task import TaskFactory
 from django.shortcuts import get_object_or_404
 from django_drf_filepond.models import TemporaryUpload
 from rest_framework import generics, status
@@ -18,7 +17,7 @@ from rest_framework.views import APIView
 
 from api.models import Example, Project
 from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
-from .pipeline.execution import execute_pipeline
+from .pipeline.execution import execute_pipeline, get_label_collection
 from .exceptions import AWSTokenError, SampleDataException, TemplateMappingError, URLConnectionError
 from .models import AutoLabelingConfig
 from .serializers import AutoLabelingConfigSerializer
@@ -114,10 +113,10 @@ class LabelExtractorTesting(APIView):
     def post(self, *args, **kwargs):
         response = self.request.data['response']
         template = self.request.data['template']
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        task = TaskFactory.create(project.project_type)
+        task_type = self.request.data['task_type']
+        label_collection = get_label_collection(task_type)
         template = MappingTemplate(
-            label_collection=task.label_collection,
+            label_collection=label_collection,
             template=template
         )
         try:
@@ -134,10 +133,10 @@ class LabelMapperTesting(APIView):
 
     def post(self, *args, **kwargs):
         response = self.request.data['response']
+        task_type = self.request.data['task_type']
         label_mapping = self.request.data['label_mapping']
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        task = TaskFactory.create(project.project_type)
-        labels = task.label_collection(response)
+        label_collection = get_label_collection(task_type)
+        labels = label_collection(response)
         post_processor = PostProcessor(label_mapping)
         labels = post_processor.transform(labels)
         return Response(labels.dict(), status=status.HTTP_200_OK)

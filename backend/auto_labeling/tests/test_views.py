@@ -90,7 +90,8 @@ class TestTemplateMapping(CRUDMixin):
                     'Mixed': 5.80838445785048e-7
                 }
             },
-            'template': AmazonComprehendSentimentTemplate().load()
+            'template': AmazonComprehendSentimentTemplate().load(),
+            'task_type': 'Category'
         }
         self.url = reverse(viewname='auto_labeling_template_test', args=[self.project.item.id])
 
@@ -110,7 +111,8 @@ class TestLabelMapping(CRUDMixin):
         self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
         self.data = {
             'response': [{'label': 'NEGATIVE'}],
-            'label_mapping': {'NEGATIVE': 'Negative'}
+            'label_mapping': {'NEGATIVE': 'Negative'},
+            'task_type': 'Category'
         }
         self.url = reverse(viewname='auto_labeling_mapping_test', args=[self.project.item.id])
 
