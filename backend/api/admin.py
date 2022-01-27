@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models import (Category, CategoryType, Comment, Example, Project,
-                     Seq2seqProject, SequenceLabelingProject, Span, SpanType,
-                     Tag, TextClassificationProject, TextLabel)
+from .models import (CategoryType, Comment, Example, Project, Seq2seqProject,
+                     SequenceLabelingProject, SpanType, Tag,
+                     TextClassificationProject)
 
 
 class LabelAdmin(admin.ModelAdmin):
@@ -31,21 +31,6 @@ class ProjectAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-class SpanAdmin(admin.ModelAdmin):
-    list_display = ('example', 'label', 'start_offset', 'user')
-    ordering = ('example',)
-
-
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('example', 'label', 'user')
-    ordering = ('example',)
-
-
-class TextLabelAdmin(admin.ModelAdmin):
-    list_display = ('example', 'text', 'user')
-    ordering = ('example',)
-
-
 class TagAdmin(admin.ModelAdmin):
     list_display = ('project', 'text', )
     ordering = ('project', 'text', )
@@ -58,9 +43,6 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('user',)
 
 
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Span, SpanAdmin)
-admin.site.register(TextLabel, TextLabelAdmin)
 admin.site.register(CategoryType, CategoryTypeAdmin)
 admin.site.register(SpanType, SpanTypeAdmin)
 admin.site.register(Example, ExampleAdmin)

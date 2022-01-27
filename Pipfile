@@ -58,7 +58,7 @@ python_version = "3.8"
 
 [scripts]
 isort = "isort api -c --skip migrations"
-flake8 = "flake8 --filename \"*.py\" --extend-exclude \"api/migrations\""
+flake8 = "flake8 --filename \"*.py\" --extend-exclude \"*/migrations\""
 wait_for_db = "python manage.py wait_for_db"
 test = "python manage.py test --pattern=\"test*.py\""
 migrate = "python manage.py migrate"

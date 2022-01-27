@@ -2,12 +2,12 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from .models import (AnnotationRelations, Category, CategoryType, Comment,
-                     Example, ExampleState, ImageClassificationProject,
+from .models import (CategoryType, Comment, Example, ExampleState,
+                     ImageClassificationProject,
                      IntentDetectionAndSlotFillingProject, Label, Project,
                      RelationTypes, Seq2seqProject, SequenceLabelingProject,
-                     Span, SpanType, Speech2textProject, Tag,
-                     TextClassificationProject, TextLabel)
+                     SpanType, Speech2textProject, Tag,
+                     TextClassificationProject)
 
 
 class LabelSerializer(serializers.ModelSerializer):
@@ -226,61 +226,6 @@ class ProjectPolymorphicSerializer(PolymorphicSerializer):
     }
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=CategoryType.objects.all())
-    example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
-
-    class Meta:
-        model = Category
-        fields = (
-            'id',
-            'prob',
-            'user',
-            'example',
-            'created_at',
-            'updated_at',
-            'label',
-        )
-        read_only_fields = ('user',)
-
-
-class SpanSerializer(serializers.ModelSerializer):
-    label = serializers.PrimaryKeyRelatedField(queryset=SpanType.objects.all())
-    example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
-
-    class Meta:
-        model = Span
-        fields = (
-            'id',
-            'prob',
-            'user',
-            'example',
-            'created_at',
-            'updated_at',
-            'label',
-            'start_offset',
-            'end_offset',
-        )
-        read_only_fields = ('user',)
-
-
-class TextLabelSerializer(serializers.ModelSerializer):
-    example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
-
-    class Meta:
-        model = TextLabel
-        fields = (
-            'id',
-            'prob',
-            'user',
-            'example',
-            'created_at',
-            'updated_at',
-            'text',
-        )
-        read_only_fields = ('user',)
-
-
 class RelationTypesSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
@@ -289,13 +234,3 @@ class RelationTypesSerializer(serializers.ModelSerializer):
     class Meta:
         model = RelationTypes
         fields = ('id', 'color', 'name')
-
-
-class AnnotationRelationsSerializer(serializers.ModelSerializer):
-
-    def validate(self, attrs):
-        return super().validate(attrs)
-
-    class Meta:
-        model = AnnotationRelations
-        fields = ('id', 'annotation_id_1', 'annotation_id_2', 'type', 'user', 'timestamp')

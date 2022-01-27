@@ -2,7 +2,6 @@ from django.urls import include, path
 
 from .views import (comment, example, example_state, health, label, project,
                     tag, task)
-from .views.tasks import category, relation, span, text
 
 urlpatterns_project = [
     path(
@@ -59,51 +58,6 @@ urlpatterns_project = [
         route='relation_types/<int:relation_type_id>',
         view=label.RelationTypeDetail.as_view(),
         name='relation_type_detail'
-    ),
-    path(
-        route='annotation_relations',
-        view=relation.RelationList.as_view(),
-        name='relation_types_list'
-    ),
-    path(
-        route='annotation_relation-upload',
-        view=relation.RelationUploadAPI.as_view(),
-        name='annotation_relation-upload'
-    ),
-    path(
-        route='annotation_relations/<int:annotation_relation_id>',
-        view=relation.RelationDetail.as_view(),
-        name='annotation_relation_detail'
-    ),
-    path(
-        route='examples/<int:example_id>/categories',
-        view=category.CategoryListAPI.as_view(),
-        name='category_list'
-    ),
-    path(
-        route='examples/<int:example_id>/categories/<int:annotation_id>',
-        view=category.CategoryDetailAPI.as_view(),
-        name='category_detail'
-    ),
-    path(
-        route='examples/<int:example_id>/spans',
-        view=span.SpanListAPI.as_view(),
-        name='span_list'
-    ),
-    path(
-        route='examples/<int:example_id>/spans/<int:annotation_id>',
-        view=span.SpanDetailAPI.as_view(),
-        name='span_detail'
-    ),
-    path(
-        route='examples/<int:example_id>/texts',
-        view=text.TextLabelListAPI.as_view(),
-        name='text_list'
-    ),
-    path(
-        route='examples/<int:example_id>/texts/<int:annotation_id>',
-        view=text.TextLabelDetailAPI.as_view(),
-        name='text_detail'
     ),
     path(
         route='tags',

@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Example, ExampleState, Annotation, Label, Category, CategoryType, Span, SpanType
+from api.models import Example, ExampleState, CategoryType, SpanType, Label as LabelType
+from labels.models import Label, Category, Span
 from members.models import Member
 from members.permissions import IsInProjectReadOnlyOrAdmin
 
@@ -32,8 +33,8 @@ class MemberProgressAPI(APIView):
 
 class LabelDistribution(abc.ABC, APIView):
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
-    model = Annotation
-    label_type = Label
+    model = Label
+    label_type = LabelType
 
     def get(self, request, *args, **kwargs):
         labels = self.label_type.objects.filter(project=self.kwargs['project_id'])

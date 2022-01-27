@@ -1,14 +1,15 @@
 import abc
 
+from django.db import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from api.models import DOCUMENT_CLASSIFICATION, Category
+from api.models import DOCUMENT_CLASSIFICATION
+from labels.models import Category
+from api.tests.api.utils import prepare_project
 
-from .api.utils import prepare_project
 
-
-class TestCategoryAnnotation(abc.ABC, TestCase):
+class TestCategoryLabeling(abc.ABC, TestCase):
     exclusive = True
     collaborative = False
 
@@ -53,7 +54,7 @@ class NonCollaborativeMixin:
         self.assertTrue(can_annotate)
 
 
-class TestExclusiveCategoryAnnotation(TestCategoryAnnotation, NonCollaborativeMixin):
+class TestExclusiveCategoryLabeling(TestCategoryLabeling, NonCollaborativeMixin):
     exclusive = True
     collaborative = False
 
@@ -63,7 +64,7 @@ class TestExclusiveCategoryAnnotation(TestCategoryAnnotation, NonCollaborativeMi
         self.assertFalse(can_annotate)
 
 
-class TestNonExclusiveCategoryAnnotation(TestCategoryAnnotation, NonCollaborativeMixin):
+class TestNonExclusiveCategoryLabeling(TestCategoryLabeling, NonCollaborativeMixin):
     exclusive = False
     collaborative = False
 
@@ -86,7 +87,7 @@ class CollaborativeMixin:
         self.assertFalse(can_annotate)
 
 
-class TestCollaborativeExclusiveCategoryAnnotation(TestCategoryAnnotation, CollaborativeMixin):
+class TestCollaborativeExclusiveCategoryLabeling(TestCategoryLabeling, CollaborativeMixin):
     exclusive = True
     collaborative = True
 
@@ -100,7 +101,7 @@ class TestCollaborativeExclusiveCategoryAnnotation(TestCategoryAnnotation, Colla
         self.assertFalse(can_annotate)
 
 
-class TestCollaborativeNonExclusiveCategoryAnnotation(TestCategoryAnnotation, CollaborativeMixin):
+class TestCollaborativeNonExclusiveCategoryLabeling(TestCategoryLabeling, CollaborativeMixin):
     exclusive = False
     collaborative = True
 
@@ -112,3 +113,11 @@ class TestCollaborativeNonExclusiveCategoryAnnotation(TestCategoryAnnotation, Co
         )
         can_annotate = Category.objects.can_annotate(self.category, self.project.item)
         self.assertTrue(can_annotate)
+
+
+class TestCategory(TestCase):
+
+    def test_uniqueness(self):
+        a = mommy.make('Category')
+        with self.assertRaises(IntegrityError):
+            Category(example=a.example, user=a.user, label=a.label).save()

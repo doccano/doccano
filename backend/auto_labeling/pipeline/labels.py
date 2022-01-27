@@ -4,7 +4,8 @@ from typing import List
 from auto_labeling_pipeline.labels import Labels
 from django.contrib.auth.models import User
 
-from api.models import Project, Example, Annotation, CategoryType, Category, SpanType, Span, TextLabel
+from api.models import Project, Example, CategoryType, SpanType
+from labels.models import Label, Category, Span, TextLabel
 
 
 class LabelCollection(abc.ABC):
@@ -14,7 +15,7 @@ class LabelCollection(abc.ABC):
     def __init__(self, labels):
         self.labels = labels
 
-    def transform(self, project: Project, example: Example, user: User) -> List[Annotation]:
+    def transform(self, project: Project, example: Example, user: User) -> List[Label]:
         mapping = {
             c.text: c for c in self.label_type.objects.filter(project=project)
         }
@@ -47,7 +48,7 @@ class Spans(LabelCollection):
 class Texts(LabelCollection):
     model = TextLabel
 
-    def transform(self, project: Project, example: Example, user: User) -> List[Annotation]:
+    def transform(self, project: Project, example: Example, user: User) -> List[Label]:
         annotations = []
         for label in self.labels:
             label['example'] = example
