@@ -11,11 +11,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from members.permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
-
-from ..exceptions import LabelValidationError
-from ..models import CategoryType, Label, RelationTypes, SpanType
-from ..serializers import (CategoryTypeSerializer, LabelSerializer,
-                           RelationTypesSerializer, SpanTypeSerializer)
+from .models import LabelType, CategoryType, SpanType, RelationType
+from .exceptions import LabelValidationError
+from .serializers import (CategoryTypeSerializer, LabelSerializer,
+                          RelationTypesSerializer, SpanTypeSerializer)
 
 
 def camel_to_snake(name):
@@ -28,7 +27,7 @@ def camel_to_snake_dict(d):
 
 
 class LabelList(generics.ListCreateAPIView):
-    model = Label
+    model = LabelType
     filter_backends = [DjangoFilterBackend]
     serializer_class = LabelSerializer
     pagination_class = None
@@ -71,12 +70,12 @@ class SpanTypeDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class RelationTypeList(LabelList):
-    model = RelationTypes
+    model = RelationType
     serializer_class = RelationTypesSerializer
 
 
 class RelationTypeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = RelationTypes.objects.all()
+    queryset = RelationType.objects.all()
     serializer_class = RelationTypesSerializer
     lookup_url_kwarg = 'relation_type_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]

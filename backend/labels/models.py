@@ -3,7 +3,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from .managers import LabelManager, CategoryManager, SpanManager, TextLabelManager
-from api.models import Example, CategoryType, SpanType, RelationTypes, Project
+from api.models import Example, Project
+from label_types.models import CategoryType, SpanType, RelationType
 
 
 class Label(models.Model):
@@ -107,7 +108,7 @@ class TextLabel(Label):
 class Relation(models.Model):
     annotation_id_1 = models.IntegerField()
     annotation_id_2 = models.IntegerField()
-    type = models.ForeignKey(RelationTypes, related_name='annotation_relations', on_delete=models.CASCADE)
+    type = models.ForeignKey(RelationType, related_name='annotation_relations', on_delete=models.CASCADE)
     timestamp = models.DateTimeField()
     user = models.ForeignKey(User, related_name='annotation_relations', on_delete=models.CASCADE)
     project = models.ForeignKey(Project, related_name='annotation_relations', on_delete=models.CASCADE)

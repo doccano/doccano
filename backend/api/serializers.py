@@ -1,87 +1,11 @@
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 from rest_polymorphic.serializers import PolymorphicSerializer
 
-from .models import (CategoryType, Comment, Example, ExampleState,
+from .models import (Comment, Example, ExampleState,
                      ImageClassificationProject,
-                     IntentDetectionAndSlotFillingProject, Label, Project,
-                     RelationTypes, Seq2seqProject, SequenceLabelingProject,
-                     SpanType, Speech2textProject, Tag,
-                     TextClassificationProject)
-
-
-class LabelSerializer(serializers.ModelSerializer):
-
-    def validate(self, attrs):
-        prefix_key = attrs.get('prefix_key')
-        suffix_key = attrs.get('suffix_key')
-
-        # In the case of user don't set any shortcut key.
-        if prefix_key is None and suffix_key is None:
-            return super().validate(attrs)
-
-        # Don't allow shortcut key not to have a suffix key.
-        if prefix_key and not suffix_key:
-            raise ValidationError('Shortcut key may not have a suffix key.')
-
-        # Don't allow to save same shortcut key when prefix_key is null.
-        try:
-            context = self.context['request'].parser_context
-            project_id = context['kwargs']['project_id']
-            label_id = context['kwargs'].get('label_id')
-        except (AttributeError, KeyError):
-            pass  # unit tests don't always have the correct context set up
-        else:
-            conflicting_labels = self.Meta.model.objects.filter(
-                suffix_key=suffix_key,
-                prefix_key=prefix_key,
-                project=project_id,
-            )
-
-            if label_id is not None:
-                conflicting_labels = conflicting_labels.exclude(id=label_id)
-
-            if conflicting_labels.exists():
-                raise ValidationError('Duplicate shortcut key.')
-
-        return super().validate(attrs)
-
-    class Meta:
-        model = Label
-        fields = (
-            'id',
-            'text',
-            'prefix_key',
-            'suffix_key',
-            'background_color',
-            'text_color',
-        )
-
-
-class CategoryTypeSerializer(LabelSerializer):
-    class Meta:
-        model = CategoryType
-        fields = (
-            'id',
-            'text',
-            'prefix_key',
-            'suffix_key',
-            'background_color',
-            'text_color',
-        )
-
-
-class SpanTypeSerializer(LabelSerializer):
-    class Meta:
-        model = SpanType
-        fields = (
-            'id',
-            'text',
-            'prefix_key',
-            'suffix_key',
-            'background_color',
-            'text_color',
-        )
+                     IntentDetectionAndSlotFillingProject, Project,
+                     Seq2seqProject, SequenceLabelingProject,
+                     Speech2textProject, Tag, TextClassificationProject)
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -137,13 +61,6 @@ class ExampleStateSerializer(serializers.ModelSerializer):
         model = ExampleState
         fields = ('id', 'example', 'confirmed_by')
         read_only_fields = ('id', 'example', 'confirmed_by')
-
-
-class ApproverSerializer(ExampleSerializer):
-
-    class Meta:
-        model = Example
-        fields = ('id', 'annotation_approver')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -224,13 +141,3 @@ class ProjectPolymorphicSerializer(PolymorphicSerializer):
             cls.Meta.model: cls for cls in ProjectSerializer.__subclasses__()
         }
     }
-
-
-class RelationTypesSerializer(serializers.ModelSerializer):
-
-    def validate(self, attrs):
-        return super().validate(attrs)
-
-    class Meta:
-        model = RelationTypes
-        fields = ('id', 'color', 'name')
