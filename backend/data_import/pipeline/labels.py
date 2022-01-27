@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional, Union
 from pydantic import BaseModel, validator
 
 from api.models import Project
-from label_types.models import Label as LabelModel, CategoryType, SpanType
+from label_types.models import LabelType, CategoryType, SpanType
 from labels.models import Category, Span, TextLabel as TL
 
 
@@ -24,7 +24,7 @@ class Label(BaseModel, abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def create(self, project: Project) -> Optional[LabelModel]:
+    def create(self, project: Project) -> Optional[LabelType]:
         raise NotImplementedError()
 
     @abc.abstractmethod
@@ -61,10 +61,10 @@ class CategoryLabel(Label):
         else:
             raise TypeError(f'{obj} is not str.')
 
-    def create(self, project: Project) -> Optional[LabelModel]:
+    def create(self, project: Project) -> Optional[LabelType]:
         return CategoryType(text=self.label, project=project)
 
-    def create_annotation(self, user, example, mapping: Dict[str, LabelModel]):
+    def create_annotation(self, user, example, mapping: Dict[str, LabelType]):
         return Category(
             user=user,
             example=example,
@@ -95,10 +95,10 @@ class SpanLabel(Label):
         else:
             raise TypeError(f'{obj} is invalid type.')
 
-    def create(self, project: Project) -> Optional[LabelModel]:
+    def create(self, project: Project) -> Optional[LabelType]:
         return SpanType(text=self.label, project=project)
 
-    def create_annotation(self, user, example, mapping: Dict[str, LabelModel]):
+    def create_annotation(self, user, example, mapping: Dict[str, LabelType]):
         return Span(
             user=user,
             example=example,
@@ -125,7 +125,7 @@ class TextLabel(Label):
         else:
             raise TypeError(f'{obj} is not str or empty.')
 
-    def create(self, project: Project) -> Optional[LabelModel]:
+    def create(self, project: Project) -> Optional[LabelType]:
         return None
 
     def create_annotation(self, user, example, mapping):

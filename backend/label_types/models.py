@@ -11,7 +11,7 @@ def generate_random_hex_color():
     return f'#{random.randint(0, 0xFFFFFF):06x}'
 
 
-class Label(models.Model):
+class LabelType(models.Model):
     text = models.CharField(max_length=100, db_index=True)
     prefix_key = models.CharField(
         max_length=10,
@@ -74,14 +74,14 @@ class Label(models.Model):
         ordering = ['created_at']
 
 
-class CategoryType(Label):
+class CategoryType(LabelType):
 
     @property
     def labels(self):
         return CategoryType.objects.filter(project=self.project)
 
 
-class SpanType(Label):
+class SpanType(LabelType):
 
     @property
     def labels(self):

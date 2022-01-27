@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from members.permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
-from .models import Label, CategoryType, SpanType, RelationTypes
+from .models import LabelType, CategoryType, SpanType, RelationTypes
 from .exceptions import LabelValidationError
 from .serializers import (CategoryTypeSerializer, LabelSerializer,
                           RelationTypesSerializer, SpanTypeSerializer)
@@ -27,7 +27,7 @@ def camel_to_snake_dict(d):
 
 
 class LabelList(generics.ListCreateAPIView):
-    model = Label
+    model = LabelType
     filter_backends = [DjangoFilterBackend]
     serializer_class = LabelSerializer
     pagination_class = None
