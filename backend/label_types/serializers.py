@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from api.models import Label, CategoryType, SpanType, RelationTypes
+from .models import Label, CategoryType, SpanType, RelationTypes
 
 
 class LabelSerializer(serializers.ModelSerializer):

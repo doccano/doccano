@@ -3,7 +3,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 from .managers import LabelManager, CategoryManager, SpanManager, TextLabelManager
-from api.models import Example, CategoryType, SpanType, RelationTypes, Project
+from api.models import Example, Project
+from label_types.models import CategoryType, SpanType, RelationTypes
 
 
 class Label(models.Model):

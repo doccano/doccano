@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from api.models import CategoryType, SpanType
+from .models import CategoryType, SpanType
 
 
 class LabelAdmin(admin.ModelAdmin):

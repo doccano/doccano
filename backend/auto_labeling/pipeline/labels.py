@@ -4,7 +4,8 @@ from typing import List
 from auto_labeling_pipeline.labels import Labels
 from django.contrib.auth.models import User
 
-from api.models import Project, Example, CategoryType, SpanType
+from api.models import Project, Example
+from label_types.models import CategoryType, SpanType
 from labels.models import Label, Category, Span, TextLabel
 
 

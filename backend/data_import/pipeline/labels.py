@@ -3,9 +3,8 @@ from typing import Any, Dict, Optional, Union
 
 from pydantic import BaseModel, validator
 
-from api.models import CategoryType
-from api.models import Label as LabelModel
-from api.models import Project, SpanType
+from api.models import Project
+from label_types.models import Label as LabelModel, CategoryType, SpanType
 from labels.models import Category, Span, TextLabel as TL
 
 
