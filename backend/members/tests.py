@@ -1,6 +1,9 @@
 from django.conf import settings
+from django.test import TestCase
+from django.core.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.reverse import reverse
+from model_mommy import mommy
 
 from roles.models import Role
 from members.models import Member
@@ -116,9 +119,6 @@ class TestMemberFilter(CRUDMixin):
 
 class TestMemberManager(CRUDMixin):
 
-    def setUp(self):
-        pass
-
     def test_has_role(self):
         project = prepare_project()
         admin = project.users[0]
@@ -129,3 +129,12 @@ class TestMemberManager(CRUDMixin):
         ]
         for role, expect in expected:
             self.assertEqual(Member.objects.has_role(project.item, admin, role), expect)
+
+
+class TestMember(TestCase):
+
+    def test_clean(self):
+        member = mommy.make('Member')
+        same_user = Member(project=member.project, user=member.user, role=member.role)
+        with self.assertRaises(ValidationError):
+            same_user.clean()

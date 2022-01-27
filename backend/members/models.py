@@ -56,7 +56,7 @@ class Member(models.Model):
     objects = MemberManager()
 
     def clean(self):
-        members = self.objects.exclude(id=self.id)
+        members = self.__class__.objects.exclude(id=self.id)
         if members.filter(user=self.user, project=self.project).exists():
             message = 'This user is already assigned to a role in this project.'
             raise ValidationError(message)
