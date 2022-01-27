@@ -1,10 +1,9 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 from members.permissions import IsInProjectReadOnlyOrAdmin
 
-from ..models import Project, Tag
+from ..models import Tag
 from ..serializers import TagSerializer
 
 
@@ -14,12 +13,10 @@ class TagList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
     def get_queryset(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        return project.tags
+        return Tag.objects.filter(project=self.kwargs['project_id'])
 
     def perform_create(self, serializer):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        serializer.save(project=project)
+        serializer.save(project_id=self.kwargs['project_id'])
 
 
 class TagDetail(generics.DestroyAPIView):
