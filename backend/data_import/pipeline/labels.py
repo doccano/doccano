@@ -3,10 +3,10 @@ from typing import Any, Dict, Optional, Union
 
 from pydantic import BaseModel, validator
 
-from api.models import Category, CategoryType
+from api.models import CategoryType
 from api.models import Label as LabelModel
-from api.models import Project, Span, SpanType
-from api.models import TextLabel as TL
+from api.models import Project, SpanType
+from labels.models import Category, Span, TextLabel as TL
 
 
 class Label(BaseModel, abc.ABC):

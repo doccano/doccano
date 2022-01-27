@@ -1,11 +1,12 @@
 import abc
 
+from django.db import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from api.models import DOCUMENT_CLASSIFICATION, Category
-
-from .api.utils import prepare_project
+from api.models import DOCUMENT_CLASSIFICATION
+from labels.models import Category
+from api.tests.api.utils import prepare_project
 
 
 class TestCategoryAnnotation(abc.ABC, TestCase):
@@ -112,3 +113,11 @@ class TestCollaborativeNonExclusiveCategoryAnnotation(TestCategoryAnnotation, Co
         )
         can_annotate = Category.objects.can_annotate(self.category, self.project.item)
         self.assertTrue(can_annotate)
+
+
+class TestCategory(TestCase):
+
+    def test_uniqueness(self):
+        a = mommy.make('Category')
+        with self.assertRaises(IntegrityError):
+            Category(example=a.example, user=a.user, label=a.label).save()

@@ -1,11 +1,12 @@
 import abc
 
+from django.db import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from api.models import SEQ2SEQ, TextLabel
-
-from .api.utils import prepare_project
+from api.models import SEQ2SEQ
+from labels.models import TextLabel
+from api.tests.api.utils import prepare_project
 
 
 class TestTextLabelAnnotation(abc.ABC, TestCase):
@@ -82,3 +83,13 @@ class TestCollaborativeTextLabelAnnotation(TestTextLabelAnnotation):
         )
         can_annotate = TextLabel.objects.can_annotate(self.text_label, self.project.item)
         self.assertTrue(can_annotate)
+
+
+class TestSeq2seqAnnotation(TestCase):
+
+    def test_uniqueness(self):
+        a = mommy.make('TextLabel')
+        with self.assertRaises(IntegrityError):
+            TextLabel(example=a.example,
+                      user=a.user,
+                      text=a.text).save()

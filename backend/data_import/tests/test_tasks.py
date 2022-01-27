@@ -5,8 +5,8 @@ from django.test import TestCase
 from data_import.celery_tasks import import_dataset
 from api.models import (DOCUMENT_CLASSIFICATION,
                         INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                        SEQUENCE_LABELING, Category, CategoryType, Example, Span,
-                        SpanType)
+                        SEQUENCE_LABELING, CategoryType, Example, SpanType)
+from labels.models import Category, Span
 from api.tests.api.utils import prepare_project
 
 
