@@ -104,7 +104,7 @@ class TextLabel(Annotation):
         )
 
 
-class AnnotationRelations(models.Model):
+class Relation(models.Model):
     annotation_id_1 = models.IntegerField()
     annotation_id_2 = models.IntegerField()
     type = models.ForeignKey(RelationTypes, related_name='annotation_relations', on_delete=models.CASCADE)

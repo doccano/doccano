@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from api.models import CategoryType, Example, SpanType
-from .models import Category, Span, TextLabel, AnnotationRelations
+from .models import Category, Span, TextLabel, Relation
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -65,5 +65,5 @@ class RelationSerializer(serializers.ModelSerializer):
         return super().validate(attrs)
 
     class Meta:
-        model = AnnotationRelations
+        model = Relation
         fields = ('id', 'annotation_id_1', 'annotation_id_2', 'type', 'user', 'timestamp')

@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from api.models import Project
-from labels.models import Category, Span, TextLabel, AnnotationRelations
+from labels.models import Category, Span, TextLabel, Relation
 from members.permissions import IsInProjectOrAdmin, IsInProjectReadOnlyOrAdmin
 from .permissions import CanEditAnnotation
 from .serializers import CategorySerializer, SpanSerializer, TextLabelSerializer, RelationSerializer
@@ -114,12 +114,12 @@ class RelationList(generics.ListCreateAPIView):
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
-        AnnotationRelations.objects.filter(pk__in=delete_ids).delete()
+        Relation.objects.filter(pk__in=delete_ids).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class RelationDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = AnnotationRelations.objects.all()
+    queryset = Relation.objects.all()
     serializer_class = RelationSerializer
     lookup_url_kwarg = 'annotation_relation_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
