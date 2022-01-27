@@ -10,7 +10,7 @@ from api.models import Project
 from labels.models import Category, Span, TextLabel, AnnotationRelations
 from members.permissions import IsInProjectOrAdmin, IsInProjectReadOnlyOrAdmin
 from .permissions import CanEditAnnotation
-from .serializers import CategorySerializer, SpanSerializer, TextLabelSerializer, AnnotationRelationsSerializer
+from .serializers import CategorySerializer, SpanSerializer, TextLabelSerializer, RelationSerializer
 
 
 class BaseListAPI(generics.ListCreateAPIView):
@@ -100,7 +100,7 @@ class TextLabelDetailAPI(BaseDetailAPI):
 
 
 class RelationList(generics.ListCreateAPIView):
-    serializer_class = AnnotationRelationsSerializer
+    serializer_class = RelationSerializer
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
 
@@ -120,6 +120,6 @@ class RelationList(generics.ListCreateAPIView):
 
 class RelationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AnnotationRelations.objects.all()
-    serializer_class = AnnotationRelationsSerializer
+    serializer_class = RelationSerializer
     lookup_url_kwarg = 'annotation_relation_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]

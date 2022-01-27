@@ -59,7 +59,7 @@ class TextLabelSerializer(serializers.ModelSerializer):
         read_only_fields = ('user',)
 
 
-class AnnotationRelationsSerializer(serializers.ModelSerializer):
+class RelationSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         return super().validate(attrs)
