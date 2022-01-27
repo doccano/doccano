@@ -10,12 +10,12 @@ urlpatterns = [
     path(
         route='annotation_relations',
         view=RelationList.as_view(),
-        name='relation_types_list'
+        name='relation_list'
     ),
     path(
-        route='annotation_relations/<int:annotation_relation_id>',
+        route='annotation_relations/<int:annotation_id>',
         view=RelationDetail.as_view(),
-        name='annotation_relation_detail'
+        name='relation_detail'
     ),
     path(
         route='examples/<int:example_id>/categories',

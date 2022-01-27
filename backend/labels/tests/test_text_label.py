@@ -9,7 +9,7 @@ from labels.models import TextLabel
 from api.tests.api.utils import prepare_project
 
 
-class TestTextLabelAnnotation(abc.ABC, TestCase):
+class TestTextLabeling(abc.ABC, TestCase):
     collaborative = False
 
     @classmethod
@@ -32,8 +32,15 @@ class TestTextLabelAnnotation(abc.ABC, TestCase):
         can_annotate = TextLabel.objects.can_annotate(self.text_label, self.project.item)
         self.assertTrue(can_annotate)
 
+    def test_uniqueness(self):
+        a = mommy.make('TextLabel')
+        with self.assertRaises(IntegrityError):
+            TextLabel(example=a.example,
+                      user=a.user,
+                      text=a.text).save()
 
-class TestNonCollaborativeTextLabelAnnotation(TestTextLabelAnnotation):
+
+class TestNonCollaborativeTextLabeling(TestTextLabeling):
     collaborative = False
 
     def test_cannot_annotate_same_text_to_annotated_data(self):
@@ -62,7 +69,7 @@ class TestNonCollaborativeTextLabelAnnotation(TestTextLabelAnnotation):
         self.assertTrue(can_annotate)
 
 
-class TestCollaborativeTextLabelAnnotation(TestTextLabelAnnotation):
+class TestCollaborativeTextLabeling(TestTextLabeling):
     collaborative = True
 
     def test_deny_another_user_to_annotate_same_text(self):
@@ -83,13 +90,3 @@ class TestCollaborativeTextLabelAnnotation(TestTextLabelAnnotation):
         )
         can_annotate = TextLabel.objects.can_annotate(self.text_label, self.project.item)
         self.assertTrue(can_annotate)
-
-
-class TestSeq2seqAnnotation(TestCase):
-
-    def test_uniqueness(self):
-        a = mommy.make('TextLabel')
-        with self.assertRaises(IntegrityError):
-            TextLabel(example=a.example,
-                      user=a.user,
-                      text=a.text).save()

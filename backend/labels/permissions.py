@@ -1,7 +1,7 @@
 from rest_framework.permissions import BasePermission
 
 
-class CanEditAnnotation(BasePermission):
+class CanEditLabel(BasePermission):
 
     def __init__(self, queryset):
         super().__init__()

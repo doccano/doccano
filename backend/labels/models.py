@@ -2,12 +2,12 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from .managers import AnnotationManager, CategoryManager, SpanManager, TextLabelManager
+from .managers import LabelManager, CategoryManager, SpanManager, TextLabelManager
 from api.models import Example, CategoryType, SpanType, RelationTypes, Project
 
 
-class Annotation(models.Model):
-    objects = AnnotationManager()
+class Label(models.Model):
+    objects = LabelManager()
 
     prob = models.FloatField(default=0.0)
     manual = models.BooleanField(default=False)
@@ -19,7 +19,7 @@ class Annotation(models.Model):
         abstract = True
 
 
-class Category(Annotation):
+class Category(Label):
     objects = CategoryManager()
     example = models.ForeignKey(
         to=Example,
@@ -36,7 +36,7 @@ class Category(Annotation):
         )
 
 
-class Span(Annotation):
+class Span(Label):
     objects = SpanManager()
     example = models.ForeignKey(
         to=Example,
@@ -84,7 +84,7 @@ class Span(Annotation):
         ]
 
 
-class TextLabel(Annotation):
+class TextLabel(Label):
     objects = TextLabelManager()
     example = models.ForeignKey(
         to=Example,

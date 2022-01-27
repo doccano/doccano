@@ -9,7 +9,7 @@ from labels.models import Category
 from api.tests.api.utils import prepare_project
 
 
-class TestCategoryAnnotation(abc.ABC, TestCase):
+class TestCategoryLabeling(abc.ABC, TestCase):
     exclusive = True
     collaborative = False
 
@@ -54,7 +54,7 @@ class NonCollaborativeMixin:
         self.assertTrue(can_annotate)
 
 
-class TestExclusiveCategoryAnnotation(TestCategoryAnnotation, NonCollaborativeMixin):
+class TestExclusiveCategoryLabeling(TestCategoryLabeling, NonCollaborativeMixin):
     exclusive = True
     collaborative = False
 
@@ -64,7 +64,7 @@ class TestExclusiveCategoryAnnotation(TestCategoryAnnotation, NonCollaborativeMi
         self.assertFalse(can_annotate)
 
 
-class TestNonExclusiveCategoryAnnotation(TestCategoryAnnotation, NonCollaborativeMixin):
+class TestNonExclusiveCategoryLabeling(TestCategoryLabeling, NonCollaborativeMixin):
     exclusive = False
     collaborative = False
 
@@ -87,7 +87,7 @@ class CollaborativeMixin:
         self.assertFalse(can_annotate)
 
 
-class TestCollaborativeExclusiveCategoryAnnotation(TestCategoryAnnotation, CollaborativeMixin):
+class TestCollaborativeExclusiveCategoryLabeling(TestCategoryLabeling, CollaborativeMixin):
     exclusive = True
     collaborative = True
 
@@ -101,7 +101,7 @@ class TestCollaborativeExclusiveCategoryAnnotation(TestCategoryAnnotation, Colla
         self.assertFalse(can_annotate)
 
 
-class TestCollaborativeNonExclusiveCategoryAnnotation(TestCategoryAnnotation, CollaborativeMixin):
+class TestCollaborativeNonExclusiveCategoryLabeling(TestCategoryLabeling, CollaborativeMixin):
     exclusive = False
     collaborative = True
 

@@ -10,7 +10,7 @@ from labels.models import Span
 from api.tests.api.utils import prepare_project
 
 
-class TestSpanAnnotation(abc.ABC, TestCase):
+class TestSpanLabeling(abc.ABC, TestCase):
     overlapping = False
     collaborative = False
 
@@ -54,7 +54,7 @@ class NonCollaborativeMixin:
         self.assertTrue(can_annotate)
 
 
-class TestNonOverlappingSpanAnnotation(TestSpanAnnotation, NonCollaborativeMixin):
+class TestNonOverlappingSpanLabeling(TestSpanLabeling, NonCollaborativeMixin):
     overlapping = False
     collaborative = False
 
@@ -82,7 +82,7 @@ class TestNonOverlappingSpanAnnotation(TestSpanAnnotation, NonCollaborativeMixin
         self.assertFalse(can_annotate)
 
 
-class TestOverlappingSpanAnnotation(TestSpanAnnotation, NonCollaborativeMixin):
+class TestOverlappingSpanLabeling(TestSpanLabeling, NonCollaborativeMixin):
     overlapping = True
     collaborative = False
 
@@ -99,7 +99,7 @@ class TestOverlappingSpanAnnotation(TestSpanAnnotation, NonCollaborativeMixin):
         self.assertTrue(can_annotate)
 
 
-class TestCollaborativeNonOverlappingSpanAnnotation(TestSpanAnnotation):
+class TestCollaborativeNonOverlappingSpanLabeling(TestSpanLabeling):
     overlapping = False
     collaborative = True
 
@@ -127,7 +127,7 @@ class TestCollaborativeNonOverlappingSpanAnnotation(TestSpanAnnotation):
         self.assertFalse(can_annotate)
 
 
-class TestCollaborativeOverlappingSpanAnnotation(TestSpanAnnotation):
+class TestCollaborativeOverlappingSpanLabeling(TestSpanLabeling):
     overlapping = True
     collaborative = True
 

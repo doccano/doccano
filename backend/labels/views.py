@@ -9,12 +9,12 @@ from rest_framework.response import Response
 from api.models import Project
 from labels.models import Category, Span, TextLabel, Relation
 from members.permissions import IsInProjectOrAdmin, IsInProjectReadOnlyOrAdmin
-from .permissions import CanEditAnnotation
+from .permissions import CanEditLabel
 from .serializers import CategorySerializer, SpanSerializer, TextLabelSerializer, RelationSerializer
 
 
 class BaseListAPI(generics.ListCreateAPIView):
-    annotation_class = None
+    label_class = None
     pagination_class = None
     permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
     swagger_schema = None
@@ -24,7 +24,7 @@ class BaseListAPI(generics.ListCreateAPIView):
         return get_object_or_404(Project, pk=self.kwargs['project_id'])
 
     def get_queryset(self):
-        queryset = self.annotation_class.objects.filter(example=self.kwargs['example_id'])
+        queryset = self.label_class.objects.filter(example=self.kwargs['example_id'])
         if not self.project.collaborative_annotation:
             queryset = queryset.filter(user=self.request.user)
         return queryset
@@ -59,13 +59,13 @@ class BaseDetailAPI(generics.RetrieveUpdateDestroyAPIView):
             self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
         else:
             self.permission_classes = [
-                IsAuthenticated & IsInProjectOrAdmin & partial(CanEditAnnotation, self.queryset)
+                IsAuthenticated & IsInProjectOrAdmin & partial(CanEditLabel, self.queryset)
             ]
         return super().get_permissions()
 
 
 class CategoryListAPI(BaseListAPI):
-    annotation_class = Category
+    label_class = Category
     serializer_class = CategorySerializer
 
     def create(self, request, *args, **kwargs):
@@ -80,7 +80,7 @@ class CategoryDetailAPI(BaseDetailAPI):
 
 
 class SpanListAPI(BaseListAPI):
-    annotation_class = Span
+    label_class = Span
     serializer_class = SpanSerializer
 
 
@@ -90,7 +90,7 @@ class SpanDetailAPI(BaseDetailAPI):
 
 
 class TextLabelListAPI(BaseListAPI):
-    annotation_class = TextLabel
+    label_class = TextLabel
     serializer_class = TextLabelSerializer
 
 
@@ -121,5 +121,5 @@ class RelationList(generics.ListCreateAPIView):
 class RelationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Relation.objects.all()
     serializer_class = RelationSerializer
-    lookup_url_kwarg = 'annotation_relation_id'
+    lookup_url_kwarg = 'annotation_id'
     permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]

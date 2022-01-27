@@ -1,7 +1,7 @@
 from django.db.models import Manager, Count
 
 
-class AnnotationManager(Manager):
+class LabelManager(Manager):
 
     def calc_label_distribution(self, examples, members, labels):
         """Calculate label distribution.
@@ -42,7 +42,7 @@ class AnnotationManager(Manager):
         return [label for label in labels if self.can_annotate(label, project)]
 
 
-class CategoryManager(AnnotationManager):
+class CategoryManager(LabelManager):
 
     def can_annotate(self, label, project) -> bool:
         is_exclusive = project.single_class_classification
@@ -53,7 +53,7 @@ class CategoryManager(AnnotationManager):
             return not categories.filter(label=label.label).exists()
 
 
-class SpanManager(AnnotationManager):
+class SpanManager(LabelManager):
 
     def can_annotate(self, label, project) -> bool:
         overlapping = getattr(project, 'allow_overlapping', False)
@@ -66,7 +66,7 @@ class SpanManager(AnnotationManager):
         return True
 
 
-class TextLabelManager(AnnotationManager):
+class TextLabelManager(LabelManager):
 
     def can_annotate(self, label, project) -> bool:
         texts = self.get_labels(label, project)
