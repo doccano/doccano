@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'data_export.apps.DataExportConfig',
     'auto_labeling.apps.AutoLabelingConfig',
     'labels.apps.LabelsConfig',
+    'label_types.apps.LabelTypesConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',

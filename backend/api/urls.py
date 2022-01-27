@@ -1,39 +1,8 @@
 from django.urls import include, path
 
-from .views import (comment, example, example_state, health, label, project,
-                    tag, task)
+from .views import comment, example, example_state, health, project, tag, task
 
 urlpatterns_project = [
-    path(
-        route='category-types',
-        view=label.CategoryTypeList.as_view(),
-        name='category_types'
-    ),
-    path(
-        route='category-types/<int:label_id>',
-        view=label.CategoryTypeDetail.as_view(),
-        name='category_type'
-    ),
-    path(
-        route='span-types',
-        view=label.SpanTypeList.as_view(),
-        name='span_types'
-    ),
-    path(
-        route='span-types/<int:label_id>',
-        view=label.SpanTypeDetail.as_view(),
-        name='span_type'
-    ),
-    path(
-        route='category-type-upload',
-        view=label.CategoryTypeUploadAPI.as_view(),
-        name='category_type_upload'
-    ),
-    path(
-        route='span-type-upload',
-        view=label.SpanTypeUploadAPI.as_view(),
-        name='span_type_upload'
-    ),
     path(
         route='examples',
         view=example.ExampleList.as_view(),
@@ -43,21 +12,6 @@ urlpatterns_project = [
         route='examples/<int:example_id>',
         view=example.ExampleDetail.as_view(),
         name='example_detail'
-    ),
-    path(
-        route='relation_types',
-        view=label.RelationTypeList.as_view(),
-        name='relation_types_list'
-    ),
-    path(
-        route='relation_type-upload',
-        view=label.RelationTypeUploadAPI.as_view(),
-        name='relation_type-upload'
-    ),
-    path(
-        route='relation_types/<int:relation_type_id>',
-        view=label.RelationTypeDetail.as_view(),
-        name='relation_type_detail'
     ),
     path(
         route='tags',
