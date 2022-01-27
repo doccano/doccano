@@ -63,13 +63,6 @@ class ExampleStateSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'example', 'confirmed_by')
 
 
-class ApproverSerializer(ExampleSerializer):
-
-    class Meta:
-        model = Example
-        fields = ('id', 'annotation_approver')
-
-
 class ProjectSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, required=False)
 
