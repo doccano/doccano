@@ -88,7 +88,7 @@ class SpanType(LabelType):
         return SpanType.objects.filter(project=self.project)
 
 
-class RelationTypes(models.Model):
+class RelationType(models.Model):
     color = models.TextField()
     name = models.TextField()
     project = models.ForeignKey(Project, related_name='relation_types', on_delete=models.CASCADE)
