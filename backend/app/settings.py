@@ -61,6 +61,7 @@ INSTALLED_APPS = [
     'auto_labeling.apps.AutoLabelingConfig',
     'labels.apps.LabelsConfig',
     'label_types.apps.LabelTypesConfig',
+    'examples.apps.ExamplesConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',

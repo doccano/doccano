@@ -1,7 +1,7 @@
 from django.db.models import Count, Q
 from django_filters.rest_framework import BooleanFilter, FilterSet
 
-from .models import Example
+from api.models import Example
 
 
 class ExampleFilter(FilterSet):
