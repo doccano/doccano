@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Example, ExampleState
+from examples.models import Example, ExampleState
 from label_types.models import LabelType, CategoryType, SpanType
 from labels.models import Label, Category, Span
 from members.models import Member

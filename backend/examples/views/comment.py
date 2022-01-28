@@ -3,8 +3,8 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.models import Comment
 from members.permissions import IsInProjectOrAdmin
+from examples.models import Comment
 from examples.permissions import IsOwnComment
 from examples.serializers import CommentSerializer
 

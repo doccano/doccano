@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from api.models import Example
+from examples.models import Example
 from label_types.models import CategoryType, SpanType
 from .models import Category, Span, TextLabel, Relation
 
