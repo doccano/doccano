@@ -71,7 +71,12 @@ INSTALLED_APPS = [
     'drf_yasg',
     'dj_rest_auth',
     'django_celery_results',
-    'django_drf_filepond'
+    'django_drf_filepond',
+    'health_check',
+    'health_check.cache',
+    'health_check.storage',
+    'health_check.contrib.migrations',
+    'health_check.contrib.celery',
 ]
 
 CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env('CLOUD_BROWSER_LIBCLOUD_PROVIDER', None)
