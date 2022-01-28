@@ -4,9 +4,8 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from api.models import DOCUMENT_CLASSIFICATION
-
-from .utils import (CRUDMixin, assign_user_to_role, make_doc,
-                    make_example_state, make_user, prepare_project)
+from api.tests.api.utils import (CRUDMixin, assign_user_to_role, make_doc,
+                                 make_example_state, make_user, prepare_project)
 
 
 class TestExampleListAPI(CRUDMixin):

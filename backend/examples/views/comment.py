@@ -4,10 +4,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from members.permissions import IsInProjectOrAdmin
-
-from ..models import Comment
-from ..permissions import IsOwnComment
-from ..serializers import CommentSerializer
+from examples.models import Comment
+from examples.permissions import IsOwnComment
+from examples.serializers import CommentSerializer
 
 
 class CommentList(generics.ListCreateAPIView):
