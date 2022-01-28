@@ -40,6 +40,7 @@ urlpatterns += [
     path('admin/', admin.site.urls),
     path('social/', include('social_django.urls')),
     path('api-auth/', include('rest_framework.urls')),
+    path('v1/health/', include('health_check.urls')),
     path('v1/', include('api.urls')),
     path('v1/', include('roles.urls')),
     path('v1/', include('users.urls')),

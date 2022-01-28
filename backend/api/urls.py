@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .views import health, project, tag, task
+from .views import project, tag, task
 
 urlpatterns_project = [
     path(
@@ -16,11 +16,6 @@ urlpatterns_project = [
 ]
 
 urlpatterns = [
-    path(
-        route='health',
-        view=health.Health.as_view(),
-        name='health'
-    ),
     path(
         route='projects',
         view=project.ProjectList.as_view(),

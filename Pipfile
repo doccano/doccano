@@ -52,6 +52,7 @@ celery = "~=5.2"
 django-celery-results = "*"
 sqlalchemy = "*"
 waitress = "*"
+django-health-check = "*"
 
 [requires]
 python_version = "3.8"
