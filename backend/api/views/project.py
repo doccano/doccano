@@ -1,12 +1,11 @@
 from django.conf import settings
 from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from members.permissions import IsInProjectReadOnlyOrAdmin
 
 from ..models import Project
-from ..permissions import IsStaff
 from ..serializers import ProjectPolymorphicSerializer
 
 
@@ -18,7 +17,7 @@ class ProjectList(generics.ListCreateAPIView):
         if self.request.method == 'GET':
             self.permission_classes = [IsAuthenticated, ]
         else:
-            self.permission_classes = [IsAuthenticated & IsStaff]
+            self.permission_classes = [IsAuthenticated & IsAdminUser]
         return super().get_permissions()
 
     def get_queryset(self):
