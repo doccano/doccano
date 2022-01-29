@@ -142,19 +142,6 @@ def prepare_project(task: str = 'Any', collaborative_annotation=False, **kwargs)
     )
 
 
-class TestUtilsMixin:
-    def _patch_project(self, project, attribute, value):
-        old_value = getattr(project, attribute, None)
-        setattr(project, attribute, value)
-        project.save()
-
-        def cleanup_project():
-            setattr(project, attribute, old_value)
-            project.save()
-
-        self.addCleanup(cleanup_project)
-
-
 class CRUDMixin(APITestCase):
     url = ''
     data = {}
