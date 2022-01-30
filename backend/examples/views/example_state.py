@@ -5,12 +5,12 @@ from rest_framework.permissions import IsAuthenticated
 from api.models import Project
 from examples.models import Example, ExampleState
 from examples.serializers import ExampleStateSerializer
-from members.permissions import IsInProjectOrAdmin
+from members.permissions import IsProjectMember
 
 
 class ExampleStateList(generics.ListCreateAPIView):
     serializer_class = ExampleStateSerializer
-    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    permission_classes = [IsAuthenticated & IsProjectMember]
 
     @property
     def can_confirm_per_user(self):

@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from members.permissions import IsInProjectReadOnlyOrAdmin
+from members.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 from ..models import Project
 from ..serializers import ProjectPolymorphicSerializer
@@ -45,4 +45,4 @@ class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectPolymorphicSerializer
     lookup_url_kwarg = 'project_id'
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]

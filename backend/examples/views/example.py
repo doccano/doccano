@@ -11,12 +11,12 @@ from api.models import Project
 from examples.filters import ExampleFilter
 from examples.models import Example
 from examples.serializers import ExampleSerializer
-from members.permissions import IsInProjectReadOnlyOrAdmin
+from members.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 
 class ExampleList(generics.ListCreateAPIView):
     serializer_class = ExampleSerializer
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     ordering_fields = ('created_at', 'updated_at')
     search_fields = ('text', 'filename')
@@ -55,4 +55,4 @@ class ExampleDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Example.objects.all()
     serializer_class = ExampleSerializer
     lookup_url_kwarg = 'example_id'
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]

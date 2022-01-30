@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.models import Project
-from members.permissions import IsInProjectOrAdmin, IsProjectAdmin
+from members.permissions import IsProjectMember, IsProjectAdmin
 from .pipeline.execution import execute_pipeline, get_label_collection
 from .exceptions import AWSTokenError, SampleDataException, TemplateMappingError, URLConnectionError
 from .models import AutoLabelingConfig
@@ -143,7 +143,7 @@ class LabelMapperTesting(APIView):
 
 
 class AutomatedLabeling(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    permission_classes = [IsAuthenticated & IsProjectMember]
     swagger_schema = None
 
     def create(self, request, *args, **kwargs):
