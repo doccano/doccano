@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from api.models import Project
 from labels.models import Category, Span, TextLabel, Relation
-from members.permissions import IsInProjectOrAdmin, IsInProjectReadOnlyOrAdmin
+from members.permissions import IsProjectMember
 from .permissions import CanEditLabel
 from .serializers import CategorySerializer, SpanSerializer, TextLabelSerializer, RelationSerializer
 
@@ -16,7 +16,7 @@ from .serializers import CategorySerializer, SpanSerializer, TextLabelSerializer
 class BaseListAPI(generics.ListCreateAPIView):
     label_class = None
     pagination_class = None
-    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    permission_classes = [IsAuthenticated & IsProjectMember]
     swagger_schema = None
 
     @property
@@ -56,10 +56,10 @@ class BaseDetailAPI(generics.RetrieveUpdateDestroyAPIView):
 
     def get_permissions(self):
         if self.project.collaborative_annotation:
-            self.permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+            self.permission_classes = [IsAuthenticated & IsProjectMember]
         else:
             self.permission_classes = [
-                IsAuthenticated & IsInProjectOrAdmin & partial(CanEditLabel, self.queryset)
+                IsAuthenticated & IsProjectMember & partial(CanEditLabel, self.queryset)
             ]
         return super().get_permissions()
 
@@ -102,7 +102,7 @@ class TextLabelDetailAPI(BaseDetailAPI):
 class RelationList(generics.ListCreateAPIView):
     serializer_class = RelationSerializer
     pagination_class = None
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & IsProjectMember]
 
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
@@ -122,4 +122,4 @@ class RelationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Relation.objects.all()
     serializer_class = RelationSerializer
     lookup_url_kwarg = 'annotation_id'
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & IsProjectMember]

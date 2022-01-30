@@ -9,11 +9,11 @@ from examples.models import Example, ExampleState
 from label_types.models import LabelType, CategoryType, SpanType
 from labels.models import Label, Category, Span
 from members.models import Member
-from members.permissions import IsInProjectReadOnlyOrAdmin
+from members.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 
 class ProgressAPI(APIView):
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
 
     def get(self, request, *args, **kwargs):
         examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
@@ -23,7 +23,7 @@ class ProgressAPI(APIView):
 
 
 class MemberProgressAPI(APIView):
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
 
     def get(self, request, *args, **kwargs):
         examples = Example.objects.filter(project=self.kwargs['project_id']).values('id')
@@ -33,7 +33,7 @@ class MemberProgressAPI(APIView):
 
 
 class LabelDistribution(abc.ABC, APIView):
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
     model = Label
     label_type = LabelType
 

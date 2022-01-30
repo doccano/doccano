@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.permissions import IsInProjectReadOnlyOrAdmin, IsProjectAdmin
+from members.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 from .models import LabelType, CategoryType, SpanType, RelationType
 from .exceptions import LabelValidationError
 from .serializers import (CategoryTypeSerializer, LabelSerializer,
@@ -31,7 +31,7 @@ class LabelList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     serializer_class = LabelSerializer
     pagination_class = None
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
 
     def get_queryset(self):
         return self.model.objects.filter(project=self.kwargs['project_id'])
@@ -54,7 +54,7 @@ class CategoryTypeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = CategoryType.objects.all()
     serializer_class = CategoryTypeSerializer
     lookup_url_kwarg = 'label_id'
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
 
 
 class SpanTypeList(LabelList):
@@ -66,7 +66,7 @@ class SpanTypeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SpanType.objects.all()
     serializer_class = SpanTypeSerializer
     lookup_url_kwarg = 'label_id'
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
 
 
 class RelationTypeList(LabelList):
@@ -78,7 +78,7 @@ class RelationTypeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = RelationType.objects.all()
     serializer_class = RelationTypesSerializer
     lookup_url_kwarg = 'relation_type_id'
-    permission_classes = [IsAuthenticated & IsInProjectReadOnlyOrAdmin]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
 
 
 class LabelUploadAPI(APIView):

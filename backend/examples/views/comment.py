@@ -3,14 +3,14 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from members.permissions import IsInProjectOrAdmin
+from members.permissions import IsProjectMember
 from examples.models import Comment
 from examples.permissions import IsOwnComment
 from examples.serializers import CommentSerializer
 
 
 class CommentList(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated & IsInProjectOrAdmin]
+    permission_classes = [IsAuthenticated & IsProjectMember]
     serializer_class = CommentSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filterset_fields = ['example']
@@ -38,4 +38,4 @@ class CommentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     lookup_url_kwarg = 'comment_id'
-    permission_classes = [IsAuthenticated & IsInProjectOrAdmin & IsOwnComment]
+    permission_classes = [IsAuthenticated & IsProjectMember & IsOwnComment]
