@@ -19,9 +19,8 @@ class TestTextLabeling(abc.ABC, TestCase):
             collaborative_annotation=cls.collaborative
         )
         cls.example = mommy.make('Example', project=cls.project.item)
-        users = cls.project.users
-        cls.user = users[0]
-        cls.another_user = users[1]
+        cls.user = cls.project.admin
+        cls.another_user = cls.project.approver
         cls.text_label = TextLabel(
             example=cls.example,
             user=cls.user,

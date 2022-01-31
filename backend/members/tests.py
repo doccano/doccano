@@ -20,10 +20,10 @@ class TestMemberListAPI(CRUDMixin):
         self.url = reverse(viewname='member_list', args=[self.project.item.id])
 
     def test_allows_project_admin_to_know_members(self):
-        self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assert_fetch(self.project.admin, status.HTTP_200_OK)
 
-    def test_denies_non_project_admin_to_know_members(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_know_members(self):
+        for member in self.project.staffs:
             self.assert_fetch(member, status.HTTP_403_FORBIDDEN)
 
     def test_denies_non_project_member_to_know_members(self):
@@ -33,10 +33,10 @@ class TestMemberListAPI(CRUDMixin):
         self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
 
     def test_allows_project_admin_to_add_member(self):
-        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assert_create(self.project.admin, status.HTTP_201_CREATED)
 
-    def test_denies_non_project_admin_to_add_member(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_add_member(self):
+        for member in self.project.staffs:
             self.assert_create(member, status.HTTP_403_FORBIDDEN)
 
     def test_denies_non_project_member_to_add_member(self):
@@ -53,12 +53,12 @@ class TestMemberListAPI(CRUDMixin):
         self.assertEqual(response.status_code, expected)
 
     def test_allows_project_admin_to_remove_members(self):
-        self.assert_bulk_delete(self.project.users[0], status.HTTP_204_NO_CONTENT)
+        self.assert_bulk_delete(self.project.admin, status.HTTP_204_NO_CONTENT)
         response = self.client.get(self.url)
         self.assertEqual(len(response.data), 1)
 
-    def test_denies_non_project_admin_to_remove_members(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_remove_members(self):
+        for member in self.project.staffs:
             self.assert_bulk_delete(member, status.HTTP_403_FORBIDDEN)
 
     def test_denies_non_project_member_to_remove_members(self):
@@ -74,15 +74,15 @@ class TestMemberRoleDetailAPI(CRUDMixin):
         self.project = prepare_project()
         self.non_member = make_user()
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
-        member = Member.objects.get(user=self.project.users[1])
+        member = Member.objects.get(user=self.project.approver)
         self.url = reverse(viewname='member_detail', args=[self.project.item.id, member.id])
         self.data = {'role': admin_role.id}
 
     def test_allows_project_admin_to_known_member(self):
-        self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        self.assert_fetch(self.project.admin, status.HTTP_200_OK)
 
-    def test_denies_non_project_admin_to_know_member(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_know_member(self):
+        for member in self.project.staffs:
             self.assert_fetch(member, status.HTTP_403_FORBIDDEN)
 
     def test_denies_non_project_member_to_know_member(self):
@@ -92,10 +92,10 @@ class TestMemberRoleDetailAPI(CRUDMixin):
         self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
 
     def test_allows_project_admin_to_change_member_role(self):
-        self.assert_update(self.project.users[0], status.HTTP_200_OK)
+        self.assert_update(self.project.admin, status.HTTP_200_OK)
 
-    def test_denies_non_project_admin_to_change_member_role(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_change_member_role(self):
+        for member in self.project.staffs:
             self.assert_update(member, status.HTTP_403_FORBIDDEN)
 
     def test_denies_non_project_member_to_change_member_role(self):
@@ -110,10 +110,10 @@ class TestMemberFilter(CRUDMixin):
     def setUp(self):
         self.project = prepare_project()
         self.url = reverse(viewname='member_list', args=[self.project.item.id])
-        self.url += f'?user={self.project.users[0].id}'
+        self.url += f'?user={self.project.admin.id}'
 
     def test_filter_role_by_user_id(self):
-        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        response = self.assert_fetch(self.project.admin, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
 
 
@@ -121,7 +121,7 @@ class TestMemberManager(CRUDMixin):
 
     def test_has_role(self):
         project = prepare_project()
-        admin = project.users[0]
+        admin = project.admin
         expected = [
             (settings.ROLE_PROJECT_ADMIN, True),
             (settings.ROLE_ANNOTATION_APPROVER, False),

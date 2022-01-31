@@ -24,9 +24,8 @@ class TestSpanLabeling(abc.ABC, TestCase):
         )
         cls.example = mommy.make('Example', project=cls.project.item)
         cls.label_type = mommy.make('SpanType', project=cls.project.item)
-        users = cls.project.users
-        cls.user = users[0]
-        cls.another_user = users[1]
+        cls.user = cls.project.admin
+        cls.another_user = cls.project.approver
         cls.span = Span(
             example=cls.example,
             label=cls.label_type,
@@ -150,7 +149,7 @@ class TestSpan(TestCase):
     def setUp(self):
         self.project = prepare_project(SEQUENCE_LABELING, allow_overlapping=False)
         self.example = mommy.make('Example', project=self.project.item)
-        self.user = self.project.users[0]
+        self.user = self.project.admin
 
     def test_start_offset_is_not_negative(self):
         with self.assertRaises(IntegrityError):
@@ -185,7 +184,7 @@ class TestSpan(TestCase):
     def test_unique_constraint_if_overlapping_is_allowed(self):
         project = prepare_project(SEQUENCE_LABELING, allow_overlapping=True)
         example = mommy.make('Example', project=project.item)
-        user = project.users[0]
+        user = project.admin
         mommy.make('Span', example=example, start_offset=5, end_offset=10, user=user)
         spans = [(5, 10), (5, 11), (4, 10), (6, 9), (9, 15), (0, 6)]
         for start_offset, end_offset in spans:
@@ -204,8 +203,8 @@ class TestSpanWithoutCollaborativeMode(TestCase):
         self.example = mommy.make('Example', project=self.project.item)
 
     def test_allow_users_to_create_same_spans(self):
-        mommy.make('Span', example=self.example, start_offset=5, end_offset=10, user=self.project.users[0])
-        mommy.make('Span', example=self.example, start_offset=5, end_offset=10, user=self.project.users[1])
+        mommy.make('Span', example=self.example, start_offset=5, end_offset=10, user=self.project.admin)
+        mommy.make('Span', example=self.example, start_offset=5, end_offset=10, user=self.project.approver)
 
 
 class TestSpanWithCollaborativeMode(TestCase):
@@ -213,15 +212,15 @@ class TestSpanWithCollaborativeMode(TestCase):
     def test_deny_users_to_create_same_spans(self):
         project = prepare_project(SEQUENCE_LABELING, True, allow_overlapping=False)
         example = mommy.make('Example', project=project.item)
-        mommy.make('Span', example=example, start_offset=5, end_offset=10, user=project.users[0])
+        mommy.make('Span', example=example, start_offset=5, end_offset=10, user=project.admin)
         with self.assertRaises(ValidationError):
-            mommy.make('Span', example=example, start_offset=5, end_offset=10, user=project.users[1])
+            mommy.make('Span', example=example, start_offset=5, end_offset=10, user=project.approver)
 
     def test_allow_users_to_create_same_spans_if_overlapping_is_allowed(self):
         project = prepare_project(SEQUENCE_LABELING, True, allow_overlapping=True)
         example = mommy.make('Example', project=project.item)
-        mommy.make('Span', example=example, start_offset=5, end_offset=10, user=project.users[0])
-        mommy.make('Span', example=example, start_offset=5, end_offset=10, user=project.users[1])
+        mommy.make('Span', example=example, start_offset=5, end_offset=10, user=project.admin)
+        mommy.make('Span', example=example, start_offset=5, end_offset=10, user=project.approver)
 
 
 class TestLabelDistribution(TestCase):
@@ -229,7 +228,7 @@ class TestLabelDistribution(TestCase):
     def setUp(self):
         self.project = prepare_project(SEQUENCE_LABELING, allow_overlapping=False)
         self.example = mommy.make('Example', project=self.project.item)
-        self.user = self.project.users[0]
+        self.user = self.project.admin
 
     def test_calc_label_distribution(self):
         label_a = mommy.make('SpanType', text='labelA', project=self.project.item)
@@ -238,10 +237,10 @@ class TestLabelDistribution(TestCase):
         mommy.make('Span', example=self.example, start_offset=10, end_offset=15, user=self.user, label=label_b)
         distribution = Span.objects.calc_label_distribution(
             examples=self.project.item.examples.all(),
-            members=self.project.users,
+            members=self.project.members,
             labels=SpanType.objects.all()
         )
-        expected = {user.username: {label.text: 0 for label in SpanType.objects.all()} for user in self.project.users}
+        expected = {user.username: {label.text: 0 for label in SpanType.objects.all()} for user in self.project.members}
         expected[self.user.username][label_a.text] = 1
         expected[self.user.username][label_b.text] = 1
         self.assertEqual(distribution, expected)

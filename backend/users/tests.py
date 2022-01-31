@@ -12,14 +12,14 @@ class TestUserAPI(APITestCase):
         cls.user = make_user(username='bob')
         cls.url = reverse(viewname='user_list')
 
-    def test_allow_authenticated_user_to_get_users(self):
+    def test_allows_authenticated_user_to_get_users(self):
         self.client.force_login(self.user)
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data[0]['username'], self.user.username)
 
-    def test_disallow_unauthenticated_user_to_get_users(self):
+    def test_denies_unauthenticated_user_to_get_users(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 

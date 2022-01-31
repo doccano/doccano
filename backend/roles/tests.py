@@ -15,5 +15,5 @@ class TestRoleAPI(CRUDMixin):
     def test_allows_authenticated_user_to_get_roles(self):
         self.assert_fetch(self.user, status.HTTP_200_OK)
 
-    def test_disallows_unauthenticated_user_to_get_roles(self):
+    def test_denies_unauthenticated_user_to_get_roles(self):
         self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)

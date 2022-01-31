@@ -22,9 +22,8 @@ class TestCategoryLabeling(abc.ABC, TestCase):
         )
         cls.example = mommy.make('Example', project=cls.project.item)
         cls.label_type = mommy.make('CategoryType', project=cls.project.item)
-        users = cls.project.users
-        cls.user = users[0]
-        cls.another_user = users[1]
+        cls.user = cls.project.admin
+        cls.another_user = cls.project.approver
         cls.category = Category(
             example=cls.example,
             label=cls.label_type,
