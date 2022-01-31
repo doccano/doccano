@@ -11,12 +11,12 @@ class TestExampleStateList(CRUDMixin):
         cls.non_member = make_user()
         cls.project = prepare_project()
         cls.example = make_doc(cls.project.item)
-        for user in cls.project.users:
-            make_example_state(cls.example, user)
+        for member in cls.project.members:
+            make_example_state(cls.example, member)
         cls.url = reverse(viewname='example_state_list', args=[cls.project.item.id, cls.example.id])
 
     def test_returns_example_state_to_project_member(self):
-        for member in self.project.users:
+        for member in self.project.members:
             response = self.assert_fetch(member, status.HTTP_200_OK)
             self.assertEqual(response.data['count'], 1)
 
@@ -35,7 +35,7 @@ class TestExampleStateConfirm(CRUDMixin):
         self.url = reverse(viewname='example_state_list', args=[self.project.item.id, self.example.id])
 
     def test_allows_member_to_confirm_example(self):
-        for member in self.project.users:
+        for member in self.project.members:
             response = self.assert_fetch(member, status.HTTP_200_OK)
             self.assertEqual(response.data['count'], 0)
             self.assert_create(member, status.HTTP_201_CREATED)  # confirm
@@ -54,13 +54,13 @@ class TestExampleStateConfirmCollaborative(CRUDMixin):
         self.url = reverse(viewname='example_state_list', args=[self.project.item.id, self.example.id])
 
     def test_initial_state(self):
-        for user in self.project.users:
-            response = self.assert_fetch(user, status.HTTP_200_OK)
+        for member in self.project.members:
+            response = self.assert_fetch(member, status.HTTP_200_OK)
             self.assertEqual(response.data['count'], 0)
 
     def test_can_approve_state(self):
-        admin = self.project.users[0]
+        admin = self.project.admin
         self.assert_create(admin, status.HTTP_201_CREATED)
-        for user in self.project.users:
-            response = self.assert_fetch(user, status.HTTP_200_OK)
+        for member in self.project.members:
+            response = self.assert_fetch(member, status.HTTP_200_OK)
             self.assertEqual(response.data['count'], 1)

@@ -27,7 +27,7 @@ class TestLabelList(CRUDMixin):
         make_label(cls.project_b.item)
 
     def test_returns_labels_to_project_member(self):
-        for member in self.project_a.users:
+        for member in self.project_a.members:
             response = self.assert_fetch(member, status.HTTP_200_OK)
             self.assertEqual(len(response.data), 1)
             self.assertEqual(response.data[0]['id'], self.label.id)
@@ -47,7 +47,7 @@ class TestLabelSearch(CRUDMixin):
         self.url = reverse(viewname='category_types', args=[self.project.item.id])
 
     def test_search(self):
-        for member in self.project.users:
+        for member in self.project.members:
             response = self.assert_fetch(member, status.HTTP_200_OK)
             self.assertEqual(len(response.data), 1)
 
@@ -62,16 +62,16 @@ class TestLabelCreate(CRUDMixin):
         cls.data = {'text': 'example'}
 
     def test_allows_admin_to_create_label(self):
-        self.assert_create(self.project.users[0], status.HTTP_201_CREATED)
+        self.assert_create(self.project.admin, status.HTTP_201_CREATED)
 
-    def test_disallows_non_admin_to_create_label(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_create_label(self):
+        for member in self.project.staffs:
             self.assert_create(member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_non_project_member_to_create_label(self):
+    def test_denies_non_project_member_to_create_label(self):
         self.assert_create(self.non_member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_unauthenticated_user_to_create_label(self):
+    def test_denies_unauthenticated_user_to_create_label(self):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
 
@@ -86,7 +86,7 @@ class TestLabelDetailAPI(CRUDMixin):
         cls.data = {'text': 'example'}
 
     def test_returns_label_to_project_member(self):
-        for member in self.project.users:
+        for member in self.project.members:
             response = self.assert_fetch(member, status.HTTP_200_OK)
             self.assertEqual(response.data['id'], self.label.id)
 
@@ -97,30 +97,30 @@ class TestLabelDetailAPI(CRUDMixin):
         self.assert_fetch(expected=status.HTTP_403_FORBIDDEN)
 
     def test_allows_admin_to_update_label(self):
-        response = self.assert_update(self.project.users[0], status.HTTP_200_OK)
+        response = self.assert_update(self.project.admin, status.HTTP_200_OK)
         self.assertEqual(response.data['text'], self.data['text'])
 
-    def test_disallows_non_admin_to_update_label(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_update_label(self):
+        for member in self.project.staffs:
             self.assert_update(member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_non_project_member_to_update_label(self):
+    def test_denies_non_project_member_to_update_label(self):
         self.assert_update(self.non_member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_unauthenticated_user_to_update_label(self):
+    def test_denies_unauthenticated_user_to_update_label(self):
         self.assert_update(expected=status.HTTP_403_FORBIDDEN)
 
     def test_allows_admin_to_delete_label(self):
-        self.assert_delete(self.project.users[0], status.HTTP_204_NO_CONTENT)
+        self.assert_delete(self.project.admin, status.HTTP_204_NO_CONTENT)
 
-    def test_disallows_non_admin_to_delete_label(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_delete_label(self):
+        for member in self.project.staffs:
             self.assert_delete(member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_non_project_member_to_delete_label(self):
+    def test_denies_non_project_member_to_delete_label(self):
         self.assert_delete(self.non_member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_unauthenticated_user_to_delete_label(self):
+    def test_denies_unauthenticated_user_to_delete_label(self):
         self.assert_delete(expected=status.HTTP_403_FORBIDDEN)
 
 
@@ -140,17 +140,17 @@ class TestLabelUploadAPI(APITestCase):
         self.assertEqual(response.status_code, expected_status)
 
     def test_allows_project_admin_to_upload_label(self):
-        self.assert_upload_file('label/valid_labels.json', self.project.users[0], status.HTTP_201_CREATED)
+        self.assert_upload_file('label/valid_labels.json', self.project.admin, status.HTTP_201_CREATED)
 
-    def test_disallows_project_member_to_upload_label(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_member_to_upload_label(self):
+        for member in self.project.staffs:
             self.assert_upload_file('label/valid_labels.json', member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_non_project_member_to_upload_label(self):
+    def test_denies_non_project_member_to_upload_label(self):
         self.assert_upload_file('label/valid_labels.json', self.non_member, status.HTTP_403_FORBIDDEN)
 
-    def test_disallows_unauthenticated_user_to_upload_label(self):
+    def test_denies_unauthenticated_user_to_upload_label(self):
         self.assert_upload_file('label/valid_labels.json', expected_status=status.HTTP_403_FORBIDDEN)
 
     def test_try_to_upload_invalid_file(self):
-        self.assert_upload_file('label/invalid_labels.json', self.project.users[0], status.HTTP_400_BAD_REQUEST)
+        self.assert_upload_file('label/invalid_labels.json', self.project.admin, status.HTTP_400_BAD_REQUEST)

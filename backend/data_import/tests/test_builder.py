@@ -44,14 +44,14 @@ class TestColumnBuilder(unittest.TestCase):
         expected = {'data': 'Text', 'label': []}
         self.assert_record(actual, expected)
 
-    def test_disallow_no_data_column(self):
+    def test_denies_no_data_column(self):
         row = {'label': 'Label'}
         data_column = builders.DataColumn('text', TextData)
         label_columns = [builders.LabelColumn('label', CategoryLabel)]
         with self.assertRaises(FileParseException):
             self.create_record(row, data_column, label_columns)
 
-    def test_disallow_empty_text(self):
+    def test_denies_empty_text(self):
         row = {'text': '', 'label': 'Label'}
         data_column = builders.DataColumn('text', TextData)
         label_columns = [builders.LabelColumn('label', CategoryLabel)]

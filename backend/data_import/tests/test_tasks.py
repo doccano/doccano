@@ -18,7 +18,7 @@ class TestImportData(TestCase):
 
     def setUp(self):
         self.project = prepare_project(self.task)
-        self.user = self.project.users[0]
+        self.user = self.project.admin
         self.data_path = pathlib.Path(__file__).parent / 'data'
 
     def import_dataset(self, filename, file_format, kwargs=None):

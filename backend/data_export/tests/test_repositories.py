@@ -14,8 +14,8 @@ class TestCSVWriter(unittest.TestCase):
 
     def test_list(self):
         example = mommy.make('Example', project=self.project.item, text='example')
-        category = mommy.make('Category', example=example, user=self.project.users[0])
-        span = mommy.make('Span', example=example, user=self.project.users[0], start_offset=0, end_offset=1)
+        category = mommy.make('Category', example=example, user=self.project.admin)
+        span = mommy.make('Span', example=example, user=self.project.admin, start_offset=0, end_offset=1)
         repository = IntentDetectionSlotFillingRepository(self.project.item)
         expected = [
             {

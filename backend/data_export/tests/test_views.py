@@ -12,10 +12,10 @@ class TestDownloadCatalog(CRUDMixin):
         self.url = reverse(viewname='download-format', args=[self.project.item.id])
 
     def test_allows_project_admin_to_list_catalog(self):
-        response = self.assert_fetch(self.project.users[0], status.HTTP_200_OK)
+        response = self.assert_fetch(self.project.admin, status.HTTP_200_OK)
         for item in response.data:
             self.assertIn('name', item)
 
-    def test_denies_non_project_admin_to_list_catalog(self):
-        for member in self.project.users[1:]:
+    def test_denies_project_staff_to_list_catalog(self):
+        for member in self.project.staffs:
             self.assert_fetch(member, status.HTTP_403_FORBIDDEN)

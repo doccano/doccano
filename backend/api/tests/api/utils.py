@@ -1,5 +1,4 @@
 import os
-from collections import namedtuple
 from typing import List
 
 from django.conf import settings
@@ -17,7 +16,27 @@ from roles.models import Role
 DATA_DIR = os.path.join(os.path.dirname(__file__), '../../../data_import/tests/data')
 
 
-ProjectData = namedtuple('ProjectData', ['item', 'users'])
+class ProjectData:
+
+    def __init__(self, item, members):
+        self.item = item
+        self.members = members
+
+    @property
+    def admin(self):
+        return self.members[0]
+
+    @property
+    def approver(self):
+        return self.members[1]
+
+    @property
+    def annotator(self):
+        return self.members[2]
+
+    @property
+    def staffs(self):
+        return [self.approver, self.annotator]
 
 
 def create_default_roles():
@@ -83,7 +102,7 @@ def make_project(
 
     return ProjectData(
         item=project,
-        users=users,
+        members=users
     )
 
 
