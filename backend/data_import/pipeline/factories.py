@@ -55,12 +55,15 @@ def create_cleaner(project):
         IMAGE_CLASSIFICATION: cleaners.CategoryCleaner
     }
     if project.project_type not in mapping:
-        ValueError(f'Invalid project type: {project.project_type}')
+        return cleaners.Cleaner(project)
     cleaner_class = mapping.get(project.project_type, cleaners.Cleaner)
     return cleaner_class(project)
 
 
-def create_bulder(project, **kwargs):
+def create_builder(project, **kwargs):
+    if not project.is_text_project:
+        return builders.PlainBuilder(data_class=get_data_class(project.project_type))
+
     data_column = builders.DataColumn(
         name=kwargs.get('column_data') or readers.DEFAULT_TEXT_COLUMN,
         value_class=get_data_class(project.project_type)
