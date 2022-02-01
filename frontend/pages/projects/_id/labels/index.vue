@@ -112,15 +112,6 @@ export default Vue.extend({
     }
   },
 
-  // async fetch() {
-  //   this.items = []
-  //   this.isLoading = true
-  //   console.log('start fetch')
-  //   this.items = await this.service.list(this.projectId)
-  //   console.log('end fetch')
-  //   this.isLoading = false
-  // },
-
   computed: {
     canDelete(): boolean {
       return this.selected.length > 0
@@ -171,23 +162,22 @@ export default Vue.extend({
 
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
-    this.list()
+    await this.list()
   },
 
   methods: {
     async list() {
-      this.items = []
       this.isLoading = true
       this.items = await this.service.list(this.projectId)
       this.isLoading = false
     },
 
-    async create() {
-      await this.service.create(this.projectId, this.editedItem)
+    create(): any {
+      return this.service.create(this.projectId, this.editedItem)
     },
 
-    async update() {
-      await this.service.update(this.projectId, this.editedItem)
+    update(): any {
+      return this.service.update(this.projectId, this.editedItem)
     },
 
     async save() {
