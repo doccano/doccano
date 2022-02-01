@@ -96,6 +96,9 @@ class PlainParser(Parser):
     This is for a task without any text.
     """
 
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         yield {}
 

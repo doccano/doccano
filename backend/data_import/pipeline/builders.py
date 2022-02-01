@@ -16,11 +16,12 @@ T = TypeVar('T')
 class PlainBuilder(Builder):
 
     def __init__(self, data_class: Type[BaseData]):
+        print(data_class)
         self.data_class = data_class
 
     def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:
         data = self.data_class.parse(filename=filename)
-        yield Record(data=data)
+        return Record(data=data)
 
 
 def build_label(row: Dict[Any, Any], name: str, label_class: Type[Label]) -> List[Label]:

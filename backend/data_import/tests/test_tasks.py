@@ -5,7 +5,7 @@ from django.test import TestCase
 from data_import.celery_tasks import import_dataset
 from api.models import (DOCUMENT_CLASSIFICATION,
                         INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                        SEQUENCE_LABELING)
+                        SEQUENCE_LABELING, IMAGE_CLASSIFICATION)
 from examples.models import Example
 from label_types.models import CategoryType, SpanType
 from labels.models import Category, Span
@@ -242,7 +242,7 @@ class TestImportSeq2seqData(TestImportData):
         self.assert_examples(dataset)
 
 
-class TextImportIntentDetectionAndSlotFillingData(TestImportData):
+class TestImportIntentDetectionAndSlotFillingData(TestImportData):
     task = INTENT_DETECTION_AND_SLOT_FILLING
 
     def assert_examples(self, dataset):
@@ -265,3 +265,13 @@ class TextImportIntentDetectionAndSlotFillingData(TestImportData):
         ]
         self.import_dataset(filename, file_format)
         self.assert_examples(dataset)
+
+
+class TestImportImageClassificationData(TestImportData):
+    task = IMAGE_CLASSIFICATION
+
+    def test_example(self):
+        filename = 'images/1500x500.jpeg'
+        file_format = 'ImageFile'
+        self.import_dataset(filename, file_format)
+        self.assertEqual(Example.objects.count(), 1)
