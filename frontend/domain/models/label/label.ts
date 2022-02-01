@@ -7,7 +7,7 @@ export class LabelItem {
   @Expose({ name: 'prefix_key' })
   prefixKey: string | null;
 
-  @Expose({ name: 'suffixKey' })
+  @Expose({ name: 'suffix_key' })
   suffixKey: string | null;
 
   @Expose({ name: 'background_color' })
