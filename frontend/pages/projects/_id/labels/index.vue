@@ -172,19 +172,11 @@ export default Vue.extend({
       this.isLoading = false
     },
 
-    create(): any {
-      return this.service.create(this.projectId, this.editedItem)
-    },
-
-    update(): any {
-      return this.service.update(this.projectId, this.editedItem)
-    },
-
     async save() {
       if (this.editedIndex > -1) {
-        await this.update()
+        await this.service.update(this.projectId, this.editedItem)
       } else {
-        await this.create()
+        await this.service.create(this.projectId, this.editedItem)
       }
       await this.list()
       this.close()

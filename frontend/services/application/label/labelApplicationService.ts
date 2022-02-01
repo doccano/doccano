@@ -14,7 +14,7 @@ export class LabelApplicationService {
     return items.map(item => new LabelDTO(item))
   }
 
-  public create(projectId: string, item: CreateLabelCommand): void {
+  public async create(projectId: string, item: CreateLabelCommand): Promise<LabelDTO> {
     // Todo: use auto mapping.
     const label = new LabelItem()
     label.text = item.text
@@ -22,10 +22,11 @@ export class LabelApplicationService {
     label.suffixKey = item.suffixKey
     label.backgroundColor = item.backgroundColor
     label.textColor = item.textColor
-    this.repository.create(projectId, label)
+    const created = await this.repository.create(projectId, label)
+    return new LabelDTO(created)
   }
 
-  public update(projectId: string, item: LabelDTO): void {
+  public async update(projectId: string, item: LabelDTO): Promise<LabelDTO> {
     // Todo: use auto mapping.
     const label = new LabelItem()
     label.id = item.id
@@ -34,7 +35,8 @@ export class LabelApplicationService {
     label.suffixKey = item.suffixKey
     label.backgroundColor = item.backgroundColor
     label.textColor = item.textColor
-    this.repository.update(projectId, label)
+    const updated = await this.repository.update(projectId, label)
+    return new LabelDTO(updated)
   }
 
   public bulkDelete(projectId: string, items: LabelDTO[]): Promise<void> {
