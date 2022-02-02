@@ -44,7 +44,8 @@ required = [
     'gunicorn>=20.1.0',
     'waitress>=2.0.0',
     'pydantic>=1.8.2',
-    'chardet>=4.0.0'
+    'chardet>=4.0.0',
+    'django-health-check'
 ]
 
 setup(

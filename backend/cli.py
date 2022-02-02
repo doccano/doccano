@@ -7,6 +7,7 @@ import sys
 
 from .app.celery import app
 os.environ['DEBUG'] = 'False'
+os.environ['STANDALONE'] = 'True'
 base = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(base)
 manage_path = os.path.join(base, 'manage.py')

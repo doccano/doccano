@@ -16,7 +16,6 @@ T = TypeVar('T')
 class PlainBuilder(Builder):
 
     def __init__(self, data_class: Type[BaseData]):
-        print(data_class)
         self.data_class = data_class
 
     def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:
