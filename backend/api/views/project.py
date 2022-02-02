@@ -1,5 +1,6 @@
 from django.conf import settings
-from rest_framework import generics, status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
@@ -11,7 +12,8 @@ from ..serializers import ProjectPolymorphicSerializer
 
 class ProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectPolymorphicSerializer
-    pagination_class = None
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ('name', 'description')
 
     def get_permissions(self):
         if self.request.method == 'GET':

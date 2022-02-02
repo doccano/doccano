@@ -33,17 +33,20 @@
     </v-card-title>
     <project-list
       v-model="selected"
-      :items="items"
+      :items="projects.items"
       :is-loading="isLoading"
-      />
+      :total="projects.count"
+      @update:query="updateQuery"
+    />
   </v-card>
 </template>
 
 <script lang="ts">
+import _ from 'lodash'
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import ProjectList from '@/components/project/ProjectList.vue'
-import { ProjectDTO, ProjectWriteDTO } from '~/services/application/project/projectData'
+import { ProjectDTO, ProjectWriteDTO, ProjectListDTO } from '~/services/application/project/projectData'
 import FormDelete from '~/components/project/FormDelete.vue'
 import FormCreate from '~/components/project/FormCreate.vue'
 
@@ -82,7 +85,7 @@ export default Vue.extend({
         allowOverlapping: false,
         graphemeMode: false
       } as ProjectWriteDTO,
-      items: [] as ProjectDTO[],
+      projects: {} as ProjectListDTO,
       selected: [] as ProjectDTO[],
       isLoading: false
     }
@@ -90,7 +93,7 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.items = await this.$services.project.list()
+    this.projects = await this.$services.project.list(this.$route.query)
     this.isLoading = false
   },
 
@@ -99,6 +102,14 @@ export default Vue.extend({
     canDelete(): boolean {
       return this.selected.length > 0
     },
+  },
+
+  watch: {
+    '$route.query': _.debounce(function() {
+        // @ts-ignore
+        this.$fetch()
+      }, 1000
+    ),
   },
 
   methods: {
@@ -114,12 +125,17 @@ export default Vue.extend({
         this.editedItem = Object.assign({}, this.defaultItem)
       })
     },
+
     async remove() {
       await this.$services.project.bulkDelete(this.selected)
       this.$fetch()
       this.dialogDelete = false
       this.selected = []
     },
+
+    updateQuery(query: object) {
+      this.$router.push(query)
+    }
   }
 })
 </script>

@@ -3,12 +3,15 @@
     :value="value"
     :headers="headers"
     :items="items"
+    :options.sync="options"
+    :server-items-length="total"
     :search="search"
     :loading="isLoading"
     :loading-text="$t('generic.loading')"
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
       'showFirstLastPage': true,
+      'items-per-page-options': [10, 50, 100],
       'items-per-page-text': $t('vuetify.itemsPerPageText'),
       'page-text': $t('dataset.pageText')
     }"
@@ -36,19 +39,21 @@
     </template>
     <template #[`item.tags`]="{ item }">
       <v-chip
-      v-for="tag in item.tags"
-      :key="tag.id"
-      outlined>{{tag.text}}
-      </v-chip>
+        v-for="tag in item.tags"
+        :key="tag.id"
+        outlined v-text="tag.text"
+      />
     </template>
   </v-data-table>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue, { PropType } from 'vue'
 import { mdiMagnify } from '@mdi/js'
+import { DataOptions } from 'vuetify/types'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
+import { ProjectDTO } from '~/services/application/project/projectData'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
@@ -60,19 +65,26 @@ export default Vue.extend({
       required: true
     },
     items: {
-      type: Array,
+      type: Array as PropType<ProjectDTO[]>,
       default: () => [],
       required: true
     },
     value: {
-      type: Array,
+      type: Array as PropType<ProjectDTO[]>,
       default: () => [],
+      required: true
+    },
+    total: {
+      type: Number,
+      default: 0,
       required: true
     }
   },
+
   data() {
     return {
-      search: '',
+      search: this.$route.query.q,
+      options: {} as DataOptions,
       mdiMagnify
     }
   },
@@ -86,6 +98,39 @@ export default Vue.extend({
         { text: 'Updated', value: 'updatedAt' },
         { text: 'Tags', value: 'tags'}
       ]
+    }
+  },
+
+  watch: {
+    options: {
+      handler() {
+        const self: any = this
+        self.updateQuery({
+          query: {
+            limit: self.options.itemsPerPage.toString(),
+            offset: ((self.options.page - 1) * self.options.itemsPerPage).toString(),
+            q: self.search
+          }
+        })
+      },
+      deep: true
+    },
+    search() {
+      const self: any = this
+      self.updateQuery({
+        query: {
+          limit: self.options.itemsPerPage.toString(),
+          offset: '0',
+          q: self.search
+        }
+      })
+      self.options.page = 1
+    }
+  },
+
+  methods: {
+    updateQuery(payload: any) {
+      this.$emit('update:query', payload)
     }
   }
 })
