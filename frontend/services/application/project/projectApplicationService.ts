@@ -1,5 +1,5 @@
-import { ProjectDTO, ProjectWriteDTO } from './projectData'
-import { ProjectRepository } from '~/domain/models/project/projectRepository'
+import { ProjectDTO, ProjectWriteDTO, ProjectListDTO } from './projectData'
+import { ProjectRepository, SearchOption } from '~/domain/models/project/projectRepository'
 import { ProjectWriteItem } from '~/domain/models/project/project'
 
 
@@ -8,10 +8,10 @@ export class ProjectApplicationService {
     private readonly repository: ProjectRepository
   ) {}
 
-  public async list(): Promise<ProjectDTO[]> {
+  public async list(options: SearchOption): Promise<ProjectListDTO> {
     try {
-      const items = await this.repository.list()
-      return items.map(item => new ProjectDTO(item))
+      const items = await this.repository.list(options)
+      return new ProjectListDTO(items)
     } catch(e: any) {
       throw new Error(e.response.data.detail)
     }

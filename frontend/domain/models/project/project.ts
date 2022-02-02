@@ -1,4 +1,5 @@
-import { Expose } from 'class-transformer'
+import "reflect-metadata"
+import { Expose, Type } from 'class-transformer'
 
 export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'IntentDetectionAndSlotFilling' | 'ImageClassification' | 'Speech2text'
 
@@ -72,6 +73,16 @@ export class ProjectReadItem {
     }
     return [this.projectType]
   }
+}
+
+export class ProjectItemList {
+  count: number;
+  next: string | null;
+  prev: string | null;
+
+  @Type(() => ProjectReadItem)
+  @Expose({ name: 'results' })
+  items: ProjectReadItem[];
 }
 
 export class ProjectWriteItem {

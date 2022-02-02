@@ -1,8 +1,9 @@
-import { ProjectReadItem, ProjectWriteItem } from '~/domain/models/project/project'
+import { ProjectReadItem, ProjectWriteItem, ProjectItemList } from '~/domain/models/project/project'
 
+export type SearchOption = {[key: string]: string | (string | null)[]}
 
 export interface ProjectRepository {
-  list(): Promise<ProjectReadItem[]>
+  list({ limit, offset, q }: SearchOption): Promise<ProjectItemList>
 
   findById(id: string): Promise<ProjectReadItem>
 
