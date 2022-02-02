@@ -15,13 +15,13 @@ class TestProjectList(CRUDMixin):
     def test_return_projects_to_member(self):
         for member in self.project.members:
             response = self.assert_fetch(member, status.HTTP_200_OK)
-            project = response.data[0]
-            self.assertEqual(len(response.data), 1)
+            project = response.data['results'][0]
+            self.assertEqual(response.data['count'], 1)
             self.assertEqual(project['id'], self.project.item.id)
 
     def test_does_not_return_project_to_non_member(self):
         response = self.assert_fetch(self.non_member, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(response.data['count'], 0)
 
 
 class TestProjectCreate(CRUDMixin):

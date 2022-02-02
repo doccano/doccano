@@ -11,7 +11,6 @@ from ..serializers import ProjectPolymorphicSerializer
 
 class ProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectPolymorphicSerializer
-    pagination_class = None
 
     def get_permissions(self):
         if self.request.method == 'GET':
