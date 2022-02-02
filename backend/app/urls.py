@@ -13,15 +13,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+import os
+import re
+
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.views import TemplateView
 from django.urls import include, path, re_path
+from django.views.static import serve
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 
-# TODO: adds AnnotationList and AnnotationDetail endpoint.
 schema_view = get_schema_view(
    openapi.Info(
       title="doccano API",
@@ -33,8 +35,15 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = []
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG or os.environ.get('STANDALONE', False):
+    # For showing images and audios in the case of pip and Docker.
+    urlpatterns.append(
+        re_path(
+            r'^%s(?P<path>.*)$' % re.escape(settings.MEDIA_URL.lstrip('/')),
+            serve,
+            {'document_root': settings.MEDIA_ROOT}
+        )
+    )
 
 urlpatterns += [
     path('admin/', admin.site.urls),
