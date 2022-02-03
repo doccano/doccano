@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ),
                 migrations.AlterModelTable(
                     name='SpanType',
-                    table='label_types_spanType'
+                    table='label_types_spantype'
                 )
             ]
         )
