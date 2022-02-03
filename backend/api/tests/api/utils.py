@@ -10,7 +10,7 @@ from rest_framework.test import APITestCase
 from api.models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
                         INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
                         SEQUENCE_LABELING, SPEECH2TEXT)
-from members.models import Member
+from projects.models import Member
 from roles.models import Role
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), '../../../data_import/tests/data')

@@ -4,7 +4,7 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from members.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
+from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 from ..models import Project
 from ..serializers import ProjectPolymorphicSerializer

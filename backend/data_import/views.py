@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 
 
 from api.models import Project
-from members.permissions import IsProjectAdmin
+from projects.permissions import IsProjectAdmin
 from .celery_tasks import import_dataset
 from .pipeline.catalog import Options
 

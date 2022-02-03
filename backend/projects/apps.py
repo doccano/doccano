@@ -4,12 +4,12 @@ from django.apps import AppConfig
 from django.db.models.signals import post_save
 
 
-class MembersConfig(AppConfig):
+class ProjectsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'members'
+    name = 'projects'
 
     def ready(self):
-        importlib.import_module('members.signals')
+        importlib.import_module('projects.signals')
         from api.models import Project
         from .signals import add_administrator_on_project_creation
 

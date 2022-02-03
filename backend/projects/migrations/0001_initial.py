@@ -39,5 +39,17 @@ class Migration(migrations.Migration):
                 ),
             ],
             database_operations=[]
+        ),
+        migrations.RunSQL(
+            sql="ALTER TABLE members_member RENAME TO projects_member",
+            reverse_sql="ALTER TABLE projects_member RENAME TO members_member"
+        ),
+        migrations.RunSQL(
+            sql="UPDATE django_content_type SET app_label='projects' WHERE app_label='members'",
+            reverse_sql="UPDATE django_content_type SET app_label='members' WHERE app_label='projects'"
+        ),
+        migrations.RunSQL(
+            sql="UPDATE django_migrations SET app='projects' WHERE app='members'",
+            reverse_sql="UPDATE django_migrations SET app='members' WHERE app='projects'"
         )
     ]

@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from members.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
+from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 from .models import LabelType, CategoryType, SpanType, RelationType
 from .exceptions import LabelValidationError
 from .serializers import (CategoryTypeSerializer, LabelSerializer,

@@ -6,7 +6,7 @@ from rest_framework.reverse import reverse
 from model_mommy import mommy
 
 from roles.models import Role
-from members.models import Member
+from projects.models import Member
 from api.tests.api.utils import (CRUDMixin, prepare_project, make_user)
 
 
