@@ -10,6 +10,7 @@ from projects.models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
                              INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
                              SEQUENCE_LABELING, SPEECH2TEXT, Member)
 from roles.models import Role
+from roles.tests.utils import create_default_roles
 
 
 class ProjectData:
@@ -33,12 +34,6 @@ class ProjectData:
     @property
     def staffs(self):
         return [self.approver, self.annotator]
-
-
-def create_default_roles():
-    Role.objects.get_or_create(name=settings.ROLE_PROJECT_ADMIN)
-    Role.objects.get_or_create(name=settings.ROLE_ANNOTATOR)
-    Role.objects.get_or_create(name=settings.ROLE_ANNOTATION_APPROVER)
 
 
 def assign_user_to_role(project_member, project, role_name):
