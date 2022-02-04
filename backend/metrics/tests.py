@@ -2,7 +2,8 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.tests.api.utils import CRUDMixin, prepare_project, make_doc, make_label
+from api.tests.api.utils import CRUDMixin, prepare_project, make_label
+from examples.tests.utils import make_doc
 from projects.models import DOCUMENT_CLASSIFICATION
 
 

@@ -9,7 +9,8 @@ from rest_framework.reverse import reverse
 
 from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 from labels.models import Category, Span, TextLabel
-from api.tests.api.utils import CRUDMixin, make_doc, prepare_project
+from api.tests.api.utils import CRUDMixin, prepare_project
+from examples.tests.utils import make_doc
 from auto_labeling.pipeline.labels import Categories, Spans, Texts
 
 data_dir = pathlib.Path(__file__).parent / 'data'

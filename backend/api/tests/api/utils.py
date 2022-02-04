@@ -109,22 +109,6 @@ def make_label(project, **kwargs):
         return mommy.make('SpanType', project=project, **kwargs)
 
 
-def make_doc(project):
-    return mommy.make('Example', text='example', project=project)
-
-
-def make_image(project, filepath):
-    return mommy.make('Example', filename=filepath, project=project)
-
-
-def make_comment(doc, user):
-    return mommy.make('Comment', example=doc, user=user)
-
-
-def make_example_state(example, user):
-    return mommy.make('ExampleState', example=example, confirmed_by=user)
-
-
 def make_auto_labeling_config(project):
     return mommy.make('AutoLabelingConfig', project=project)
 
