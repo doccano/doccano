@@ -3,7 +3,7 @@ import unittest
 from model_mommy import mommy
 
 from projects.models import INTENT_DETECTION_AND_SLOT_FILLING
-from api.tests.api.utils import prepare_project
+from projects.tests.utils import prepare_project
 from ..pipeline.repositories import IntentDetectionSlotFillingRepository
 
 

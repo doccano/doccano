@@ -5,9 +5,10 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from model_mommy import mommy
 
-from roles.models import Role
+from api.tests.api.utils import CRUDMixin
 from projects.models import Member
-from api.tests.api.utils import (CRUDMixin, prepare_project)
+from projects.tests.utils import prepare_project
+from roles.models import Role
 from users.tests.utils import make_user
 
 

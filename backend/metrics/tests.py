@@ -2,10 +2,11 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.tests.api.utils import CRUDMixin, prepare_project
+from api.tests.api.utils import CRUDMixin
 from examples.tests.utils import make_doc
 from label_types.tests.utils import make_label
 from projects.models import DOCUMENT_CLASSIFICATION
+from projects.tests.utils import prepare_project
 
 
 class TestMemberProgress(CRUDMixin):
