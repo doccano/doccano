@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 from django.conf import settings
@@ -11,8 +10,6 @@ from projects.models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
                              INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
                              SEQUENCE_LABELING, SPEECH2TEXT, Member)
 from roles.models import Role
-
-DATA_DIR = os.path.join(os.path.dirname(__file__), '../../../data_import/tests/data')
 
 
 class ProjectData:
@@ -53,10 +50,6 @@ def assign_user_to_role(project_member, project, role_name):
     else:
         mapping = Member.objects.get_or_create(role_id=role.id, user_id=project_member.id, project_id=project.id)
     return mapping
-
-
-def remove_all_members():
-    Member.objects.all().delete()
 
 
 def make_user(username: str = 'bob'):
@@ -134,16 +127,6 @@ def make_example_state(example, user):
 
 def make_auto_labeling_config(project):
     return mommy.make('AutoLabelingConfig', project=project)
-
-
-def make_annotation(task, doc, user, **kwargs):
-    annotation_model = {
-        DOCUMENT_CLASSIFICATION: 'Category',
-        SEQUENCE_LABELING: 'Span',
-        SEQ2SEQ: 'TextLabel',
-        SPEECH2TEXT: 'TextLabel'
-    }.get(task)
-    return mommy.make(annotation_model, example=doc, user=user, **kwargs)
 
 
 def prepare_project(task: str = 'Any', collaborative_annotation=False, **kwargs):
