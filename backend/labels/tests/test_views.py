@@ -3,9 +3,10 @@ from rest_framework.reverse import reverse
 
 from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 from labels.models import Category, Span, TextLabel
-from api.tests.api.utils import (CRUDMixin, make_user, prepare_project)
+from api.tests.api.utils import (CRUDMixin, prepare_project)
 from examples.tests.utils import make_doc
 from label_types.tests.utils import make_label
+from users.tests.utils import make_user
 from .utils import make_annotation
 
 

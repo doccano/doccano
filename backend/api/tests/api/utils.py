@@ -1,7 +1,6 @@
 from typing import List
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from model_mommy import mommy
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -11,6 +10,7 @@ from projects.models import (DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION,
                              SEQUENCE_LABELING, SPEECH2TEXT, Member)
 from roles.models import Role
 from roles.tests.utils import create_default_roles
+from users.tests.utils import make_user
 
 
 class ProjectData:
@@ -45,12 +45,6 @@ def assign_user_to_role(project_member, project, role_name):
     else:
         mapping = Member.objects.get_or_create(role_id=role.id, user_id=project_member.id, project_id=project.id)
     return mapping
-
-
-def make_user(username: str = 'bob'):
-    user_model = get_user_model()
-    user, _ = user_model.objects.get_or_create(username=username, password='pass')
-    return user
 
 
 def make_project(

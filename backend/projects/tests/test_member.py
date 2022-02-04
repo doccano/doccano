@@ -7,7 +7,8 @@ from model_mommy import mommy
 
 from roles.models import Role
 from projects.models import Member
-from api.tests.api.utils import (CRUDMixin, prepare_project, make_user)
+from api.tests.api.utils import (CRUDMixin, prepare_project)
+from users.tests.utils import make_user
 
 
 class TestMemberListAPI(CRUDMixin):

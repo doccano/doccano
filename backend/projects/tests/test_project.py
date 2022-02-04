@@ -1,8 +1,9 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.tests.api.utils import CRUDMixin, make_user, prepare_project
+from api.tests.api.utils import CRUDMixin, prepare_project
 from roles.tests.utils import create_default_roles
+from users.tests.utils import make_user
 
 
 class TestProjectList(CRUDMixin):

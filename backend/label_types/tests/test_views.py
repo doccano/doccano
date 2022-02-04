@@ -6,7 +6,8 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from projects.models import DOCUMENT_CLASSIFICATION
-from api.tests.api.utils import (CRUDMixin, make_project, make_user, prepare_project)
+from api.tests.api.utils import (CRUDMixin, make_project, prepare_project)
+from users.tests.utils import make_user
 from .utils import make_label
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')

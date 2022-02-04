@@ -1,7 +1,8 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.tests.api.utils import (CRUDMixin, make_user, prepare_project)
+from api.tests.api.utils import (CRUDMixin, prepare_project)
+from users.tests.utils import make_user
 from .utils import make_doc, make_example_state
 
 
