@@ -41,6 +41,14 @@ class Project(PolymorphicModel):
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)
 
+    def add_admin(self):
+        admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
+        Member.objects.create(
+            project=self,
+            user=self.created_by,
+            role=admin_role,
+        )
+
     @property
     @abc.abstractmethod
     def is_text_project(self) -> bool:

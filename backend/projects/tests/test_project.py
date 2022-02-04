@@ -1,7 +1,9 @@
+from django.conf import settings
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from api.tests.utils import CRUDMixin
+from projects.models import Member
 from projects.tests.utils import prepare_project
 from roles.tests.utils import create_default_roles
 from users.tests.utils import make_user
@@ -47,6 +49,15 @@ class TestProjectCreate(CRUDMixin):
         self.user.save()
         response = self.assert_create(self.user, status.HTTP_201_CREATED)
         self.assertEqual(response.data['name'], self.data['name'])
+
+    def test_exists_project_administrator(self):
+        self.user.is_staff = True
+        self.user.save()
+        response = self.assert_create(self.user, status.HTTP_201_CREATED)
+        members = Member.objects.filter(project=response.data['id'])
+        self.assertEqual(members.count(), 1)
+        member = members.first()
+        self.assertEqual(member.role.name, settings.ROLE_PROJECT_ADMIN)
 
     def test_denies_non_staff_user_to_create_project(self):
         self.assert_create(self.user, status.HTTP_403_FORBIDDEN)

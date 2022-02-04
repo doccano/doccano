@@ -26,7 +26,8 @@ class ProjectList(generics.ListCreateAPIView):
         return Project.objects.filter(role_mappings__user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        project = serializer.save(created_by=self.request.user)
+        project.add_admin()
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data['ids']
