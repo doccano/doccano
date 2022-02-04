@@ -10,7 +10,7 @@ class ProjectsConfig(AppConfig):
 
     def ready(self):
         importlib.import_module('projects.signals')
-        from api.models import Project
+        from projects.models import Project
         from .signals import add_administrator_on_project_creation
 
         # Registering signals with the subclasses of project.

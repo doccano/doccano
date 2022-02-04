@@ -3,8 +3,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
-from ..models import Tag
-from ..serializers import TagSerializer
+from projects.models import Tag
+from projects.serializers import TagSerializer
 
 
 class TagList(generics.ListCreateAPIView):

@@ -3,7 +3,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from api.tests.api.utils import CRUDMixin, prepare_project, make_doc, make_label
-from api.models import DOCUMENT_CLASSIFICATION
+from projects.models import DOCUMENT_CLASSIFICATION
 
 
 class TestMemberProgress(CRUDMixin):

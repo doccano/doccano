@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 
-from api.models import Project
+from projects.models import Project
 from .pipeline.factories import create_parser, create_builder, create_cleaner
 from .pipeline.readers import Reader
 from .pipeline.writers import BulkWriter

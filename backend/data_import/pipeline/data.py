@@ -4,7 +4,7 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, validator
 
-from api.models import Project
+from projects.models import Project
 from examples.models import Example
 
 

@@ -5,7 +5,7 @@ from django.db import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from api.models import SEQUENCE_LABELING
+from projects.models import SEQUENCE_LABELING
 from label_types.models import SpanType
 from labels.models import Span
 from api.tests.api.utils import prepare_project

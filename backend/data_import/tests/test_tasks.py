@@ -3,9 +3,8 @@ import pathlib
 from django.test import TestCase
 
 from data_import.celery_tasks import import_dataset
-from api.models import (DOCUMENT_CLASSIFICATION,
-                        INTENT_DETECTION_AND_SLOT_FILLING, SEQ2SEQ,
-                        SEQUENCE_LABELING, IMAGE_CLASSIFICATION)
+from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, IMAGE_CLASSIFICATION, \
+    INTENT_DETECTION_AND_SLOT_FILLING
 from examples.models import Example
 from label_types.models import CategoryType, SpanType
 from labels.models import Category, Span

@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from api.models import Project
+from projects.models import Project
 from roles.models import Role
 from .models import Member
 

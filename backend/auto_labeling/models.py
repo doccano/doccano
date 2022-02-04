@@ -2,7 +2,7 @@ from auto_labeling_pipeline.models import RequestModelFactory
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from api.models import Project
+from projects.models import Project
 
 
 class AutoLabelingConfig(models.Model):

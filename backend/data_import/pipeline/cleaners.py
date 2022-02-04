@@ -1,6 +1,6 @@
 from typing import List
 
-from api.models import Project
+from projects.models import Project
 from .labels import CategoryLabel, Label, SpanLabel
 
 

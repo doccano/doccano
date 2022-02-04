@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from api.models import DOCUMENT_CLASSIFICATION
+from projects.models import DOCUMENT_CLASSIFICATION
 from api.tests.api.utils import (DATA_DIR, CRUDMixin, make_label, make_project, make_user, prepare_project)
 
 

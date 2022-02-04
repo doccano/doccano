@@ -7,7 +7,7 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
+from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 from labels.models import Category, Span, TextLabel
 from api.tests.api.utils import CRUDMixin, make_doc, prepare_project
 from auto_labeling.pipeline.labels import Categories, Spans, Texts

@@ -1,7 +1,7 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.models import DOCUMENT_CLASSIFICATION
+from projects.models import DOCUMENT_CLASSIFICATION
 from api.tests.api.utils import CRUDMixin, prepare_project
 
 

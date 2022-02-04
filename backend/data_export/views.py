@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.models import Project
+from projects.models import Project
 from projects.permissions import IsProjectAdmin
 from .celery_tasks import export_dataset
 from .pipeline.catalog import Options

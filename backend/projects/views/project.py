@@ -6,8 +6,8 @@ from rest_framework.response import Response
 
 from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
-from ..models import Project
-from ..serializers import ProjectPolymorphicSerializer
+from projects.models import Project
+from projects.serializers import ProjectPolymorphicSerializer
 
 
 class ProjectList(generics.ListCreateAPIView):
