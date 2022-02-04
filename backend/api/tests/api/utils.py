@@ -102,17 +102,6 @@ def make_tag(project):
     return mommy.make('Tag', project=project)
 
 
-def make_label(project, **kwargs):
-    if project.project_type.endswith('Classification'):
-        return mommy.make('CategoryType', project=project, **kwargs)
-    else:
-        return mommy.make('SpanType', project=project, **kwargs)
-
-
-def make_auto_labeling_config(project):
-    return mommy.make('AutoLabelingConfig', project=project)
-
-
 def prepare_project(task: str = 'Any', collaborative_annotation=False, **kwargs):
     return make_project(
         task=task,
