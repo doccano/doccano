@@ -1,11 +1,11 @@
 from django.urls import path
 
-from .views import task
+from .views import TaskStatus
 
 urlpatterns = [
     path(
         route='tasks/status/<task_id>',
-        view=task.TaskStatus.as_view(),
+        view=TaskStatus.as_view(),
         name='task_status'
     ),
 ]
