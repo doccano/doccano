@@ -1,8 +1,8 @@
 from django.test import TestCase
 from model_mommy import mommy
 
-from api.models import IMAGE_CLASSIFICATION, SEQUENCE_LABELING
-from api.tests.api.utils import prepare_project
+from projects.models import SEQUENCE_LABELING, IMAGE_CLASSIFICATION
+from projects.tests.utils import prepare_project
 from examples.models import ExampleState
 
 

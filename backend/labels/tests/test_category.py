@@ -4,9 +4,9 @@ from django.db import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
-from api.models import DOCUMENT_CLASSIFICATION
 from labels.models import Category
-from api.tests.api.utils import prepare_project
+from projects.models import DOCUMENT_CLASSIFICATION
+from projects.tests.utils import prepare_project
 
 
 class TestCategoryLabeling(abc.ABC, TestCase):

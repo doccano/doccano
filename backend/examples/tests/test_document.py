@@ -3,9 +3,11 @@ from django.utils.http import urlencode
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-from api.models import DOCUMENT_CLASSIFICATION
-from api.tests.api.utils import (CRUDMixin, assign_user_to_role, make_doc,
-                                 make_example_state, make_user, prepare_project)
+from api.tests.utils import CRUDMixin
+from users.tests.utils import make_user
+from projects.models import DOCUMENT_CLASSIFICATION
+from projects.tests.utils import assign_user_to_role, prepare_project
+from .utils import make_doc, make_example_state
 
 
 class TestExampleListAPI(CRUDMixin):

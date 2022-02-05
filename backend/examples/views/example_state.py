@@ -2,10 +2,10 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from api.models import Project
+from projects.models import Project
 from examples.models import Example, ExampleState
 from examples.serializers import ExampleStateSerializer
-from members.permissions import IsProjectMember
+from projects.permissions import IsProjectMember
 
 
 class ExampleStateList(generics.ListCreateAPIView):

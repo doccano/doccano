@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 from examples.models import Example, ExampleState
 from label_types.models import LabelType, CategoryType, SpanType
 from labels.models import Label, Category, Span
-from members.models import Member
-from members.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
+from projects.models import Member
+from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 
 class ProgressAPI(APIView):

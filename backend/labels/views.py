@@ -6,9 +6,9 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from api.models import Project
+from projects.models import Project
 from labels.models import Category, Span, TextLabel, Relation
-from members.permissions import IsProjectMember
+from projects.permissions import IsProjectMember
 from .permissions import CanEditLabel
 from .serializers import CategorySerializer, SpanSerializer, TextLabelSerializer, RelationSerializer
 

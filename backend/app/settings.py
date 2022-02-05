@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api.apps.ApiConfig',
     'roles.apps.RolesConfig',
-    'members.apps.MembersConfig',
+    'projects.apps.ProjectsConfig',
     'metrics.apps.MetricsConfig',
     'users.apps.UsersConfig',
     'data_import.apps.DataImportConfig',

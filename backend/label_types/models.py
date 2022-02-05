@@ -4,7 +4,7 @@ import string
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from api.models import Project
+from projects.models import Project
 
 
 def generate_random_hex_color():
