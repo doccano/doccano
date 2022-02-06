@@ -8,12 +8,14 @@ class TaskStatus(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        task = AsyncResult(kwargs['task_id'])
+        task = AsyncResult(kwargs["task_id"])
         ready = task.ready()
         error = ready and not task.successful()
 
-        return Response({
-            'ready': ready,
-            'result': task.result if ready and not error else None,
-            'error': {'text': str(task.result)} if error else None,
-        })
+        return Response(
+            {
+                "ready": ready,
+                "result": task.result if ready and not error else None,
+                "error": {"text": str(task.result)} if error else None,
+            }
+        )

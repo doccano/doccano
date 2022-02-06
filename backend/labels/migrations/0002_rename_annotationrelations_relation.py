@@ -7,14 +7,14 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0031_auto_20220127_0032'),
+        ("api", "0031_auto_20220127_0032"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('labels', '0001_initial'),
+        ("labels", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='AnnotationRelations',
-            new_name='Relation',
+            old_name="AnnotationRelations",
+            new_name="Relation",
         ),
     ]

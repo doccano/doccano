@@ -11,44 +11,61 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0028_auto_20220111_0655'),
+        ("api", "0028_auto_20220111_0655"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.CreateModel(
-                    name='Role',
+                    name="Role",
                     fields=[
-                        ('id',
-                         models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('name', models.CharField(max_length=100, unique=True)),
-                        ('description', models.TextField(default='')),
-                        ('created_at', models.DateTimeField(auto_now_add=True)),
-                        ('updated_at', models.DateTimeField(auto_now=True)),
+                        (
+                            "id",
+                            models.BigAutoField(
+                                auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                            ),
+                        ),
+                        ("name", models.CharField(max_length=100, unique=True)),
+                        ("description", models.TextField(default="")),
+                        ("created_at", models.DateTimeField(auto_now_add=True)),
+                        ("updated_at", models.DateTimeField(auto_now=True)),
                     ],
                 ),
                 migrations.CreateModel(
-                    name='RoleMapping',
+                    name="RoleMapping",
                     fields=[
-                        ('id',
-                         models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                        ('created_at', models.DateTimeField(auto_now_add=True)),
-                        ('updated_at', models.DateTimeField(auto_now=True)),
-                        ('project',
-                         models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='role_mappings',
-                                           to='api.project')),
-                        ('role', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='roles.role')),
-                        ('user',
-                         models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='role_mappings',
-                                           to=settings.AUTH_USER_MODEL)),
+                        (
+                            "id",
+                            models.BigAutoField(
+                                auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                            ),
+                        ),
+                        ("created_at", models.DateTimeField(auto_now_add=True)),
+                        ("updated_at", models.DateTimeField(auto_now=True)),
+                        (
+                            "project",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.CASCADE,
+                                related_name="role_mappings",
+                                to="api.project",
+                            ),
+                        ),
+                        ("role", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="roles.role")),
+                        (
+                            "user",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.CASCADE,
+                                related_name="role_mappings",
+                                to=settings.AUTH_USER_MODEL,
+                            ),
+                        ),
                     ],
                     options={
-                        'unique_together': {('user', 'project')},
+                        "unique_together": {("user", "project")},
                     },
                 ),
             ],
-            database_operations=[]
+            database_operations=[],
         )
-
     ]

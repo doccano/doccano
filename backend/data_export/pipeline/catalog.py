@@ -4,48 +4,54 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT, IMAGE_CLASSIFICATION, \
-    INTENT_DETECTION_AND_SLOT_FILLING
+from projects.models import (
+    DOCUMENT_CLASSIFICATION,
+    SEQUENCE_LABELING,
+    SEQ2SEQ,
+    SPEECH2TEXT,
+    IMAGE_CLASSIFICATION,
+    INTENT_DETECTION_AND_SLOT_FILLING,
+)
 from . import examples
 
 
 class Format:
-    name = ''
+    name = ""
 
     @classmethod
     def dict(cls):
         return {
-            'name': cls.name,
+            "name": cls.name,
         }
 
 
 class CSV(Format):
-    name = 'CSV'
-    extension = 'csv'
+    name = "CSV"
+    extension = "csv"
 
 
 class FastText(Format):
-    name = 'fastText'
-    extension = 'txt'
+    name = "fastText"
+    extension = "txt"
 
 
 class JSON(Format):
-    name = 'JSON'
-    extension = 'json'
+    name = "JSON"
+    extension = "json"
 
 
 class JSONL(Format):
-    name = 'JSONL'
-    extension = 'jsonl'
+    name = "JSONL"
+    extension = "jsonl"
 
 
 class IntentAndSlot(Format):
-    name = 'JSONL(intent and slot)'
-    extension = 'jsonl'
+    name = "JSONL(intent and slot)"
+    extension = "jsonl"
 
 
 class OptionDelimiter(BaseModel):
-    delimiter: Literal[',', '\t', ';', '|', ' '] = ','
+    delimiter: Literal[",", "\t", ";", "|", " "] = ","
 
 
 class OptionNone(BaseModel):
@@ -58,20 +64,10 @@ class Options:
     @classmethod
     def filter_by_task(cls, task_name: str):
         options = cls.options[task_name]
-        return [
-            {
-                **format.dict(),
-                **option.schema(),
-                'example': example
-            } for format, option, example in options
-        ]
+        return [{**format.dict(), **option.schema(), "example": example} for format, option, example in options]
 
     @classmethod
-    def register(cls,
-                 task: str,
-                 format: Type[Format],
-                 option: Type[BaseModel],
-                 example: str):
+    def register(cls, task: str, format: Type[Format], option: Type[BaseModel], example: str):
         cls.options[task].append((format, option, example))
 
 

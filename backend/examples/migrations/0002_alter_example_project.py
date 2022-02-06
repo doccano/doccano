@@ -7,23 +7,21 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0002_auto_20220204_0201'),
-        ('examples', '0001_initial'),
+        ("projects", "0002_auto_20220204_0201"),
+        ("examples", "0001_initial"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.AlterField(
-                    model_name='example',
-                    name='project',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='examples',
-                                            to='projects.project'),
+                    model_name="example",
+                    name="project",
+                    field=models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="examples", to="projects.project"
+                    ),
                 ),
             ],
-            database_operations=[
-
-            ]
+            database_operations=[],
         )
-
     ]

@@ -7,13 +7,12 @@ from users.tests.utils import make_user
 
 
 class TestTagList(CRUDMixin):
-
     @classmethod
     def setUpTestData(cls):
         cls.project = prepare_project()
         cls.non_member = make_user()
         make_tag(project=cls.project.item)
-        cls.url = reverse(viewname='tag_list', args=[cls.project.item.id])
+        cls.url = reverse(viewname="tag_list", args=[cls.project.item.id])
 
     def test_return_tags_to_member(self):
         for member in self.project.members:
@@ -28,17 +27,16 @@ class TestTagList(CRUDMixin):
 
 
 class TestTagCreate(CRUDMixin):
-
     @classmethod
     def setUpTestData(cls):
         cls.project = prepare_project()
         cls.non_member = make_user()
-        cls.url = reverse(viewname='tag_list', args=[cls.project.item.id])
-        cls.data = {'text': 'example'}
+        cls.url = reverse(viewname="tag_list", args=[cls.project.item.id])
+        cls.data = {"text": "example"}
 
     def test_allows_admin_to_create_tag(self):
         response = self.assert_create(self.project.admin, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['text'], self.data['text'])
+        self.assertEqual(response.data["text"], self.data["text"])
 
     def test_denies_project_staff_to_create_tag(self):
         for member in self.project.staffs:
@@ -49,7 +47,6 @@ class TestTagCreate(CRUDMixin):
 
 
 class TestTagDelete(CRUDMixin):
-
     @classmethod
     def setUpTestData(cls):
         cls.project = prepare_project()
@@ -57,7 +54,7 @@ class TestTagDelete(CRUDMixin):
 
     def setUp(self):
         tag = make_tag(project=self.project.item)
-        self.url = reverse(viewname='tag_detail', args=[self.project.item.id, tag.id])
+        self.url = reverse(viewname="tag_detail", args=[self.project.item.id, tag.id])
 
     def test_allows_admin_to_delete_tag(self):
         self.assert_delete(self.project.admin, status.HTTP_204_NO_CONTENT)

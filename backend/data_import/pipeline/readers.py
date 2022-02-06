@@ -7,18 +7,16 @@ from .data import BaseData
 from .exceptions import FileParseException
 from .labels import Label
 
-DEFAULT_TEXT_COLUMN = 'text'
-DEFAULT_LABEL_COLUMN = 'label'
+DEFAULT_TEXT_COLUMN = "text"
+DEFAULT_LABEL_COLUMN = "label"
 
 
 class Record:
     """Record represents a data."""
 
-    def __init__(self,
-                 data: Type[BaseData],
-                 label: List[Label] = None,
-                 meta: Dict[Any, Any] = None,
-                 line_num: int = -1):
+    def __init__(
+        self, data: Type[BaseData], label: List[Label] = None, meta: Dict[Any, Any] = None, line_num: int = -1
+    ):
         if label is None:
             label = []
         if meta is None:
@@ -29,18 +27,14 @@ class Record:
         self._line_num = line_num
 
     def __str__(self):
-        return f'{self._data}\t{self._label}'
+        return f"{self._data}\t{self._label}"
 
     def clean(self, cleaner: Cleaner):
         label = cleaner.clean(self._label)
         changed = len(label) != len(self.label)
         self._label = label
         if changed:
-            raise FileParseException(
-                filename=self._data.filename,
-                line_num=self._line_num,
-                message=cleaner.message
-            )
+            raise FileParseException(filename=self._data.filename, line_num=self._line_num, message=cleaner.message)
 
     @property
     def data(self):
@@ -70,12 +64,12 @@ class BaseReader(collections.abc.Iterable):
         Returns:
             A `Record` for the elements of this dataset.
         """
-        raise NotImplementedError('Please implement this method in the subclass.')
+        raise NotImplementedError("Please implement this method in the subclass.")
 
     @property
     @abc.abstractmethod
     def errors(self):
-        raise NotImplementedError('Please implement this method in the subclass.')
+        raise NotImplementedError("Please implement this method in the subclass.")
 
 
 class Parser(abc.ABC):
@@ -84,7 +78,7 @@ class Parser(abc.ABC):
     @abc.abstractmethod
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         """Parses the file and returns the dictionary."""
-        raise NotImplementedError('Please implement this method in the subclass.')
+        raise NotImplementedError("Please implement this method in the subclass.")
 
     @property
     def errors(self) -> List[FileParseException]:
@@ -98,11 +92,10 @@ class Builder(abc.ABC):
     @abc.abstractmethod
     def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:
         """Builds the record from the dictionary."""
-        raise NotImplementedError('Please implement this method in the subclass.')
+        raise NotImplementedError("Please implement this method in the subclass.")
 
 
 class Reader(BaseReader):
-
     def __init__(self, filenames: List[str], parser: Parser, builder: Builder):
         self.filenames = filenames
         self.parser = parser

@@ -6,76 +6,57 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('examples', '0002_alter_example_project'),
-        ('labels', '0005_alter_relation_project'),
-        ('projects', '0002_auto_20220204_0201'),
-        ('auto_labeling', '0004_alter_autolabelingconfig_project'),
-        ('api', '0036_auto_20220204_0201'),
-        ('label_types', '0003_auto_20220204_0201'),
+        ("examples", "0002_alter_example_project"),
+        ("labels", "0005_alter_relation_project"),
+        ("projects", "0002_auto_20220204_0201"),
+        ("auto_labeling", "0004_alter_autolabelingconfig_project"),
+        ("api", "0036_auto_20220204_0201"),
+        ("label_types", "0003_auto_20220204_0201"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.DeleteModel(
-                    name='ImageClassificationProject',
+                    name="ImageClassificationProject",
                 ),
                 migrations.DeleteModel(
-                    name='IntentDetectionAndSlotFillingProject',
+                    name="IntentDetectionAndSlotFillingProject",
                 ),
                 migrations.DeleteModel(
-                    name='Project',
+                    name="Project",
                 ),
                 migrations.DeleteModel(
-                    name='Seq2seqProject',
+                    name="Seq2seqProject",
                 ),
                 migrations.DeleteModel(
-                    name='SequenceLabelingProject',
+                    name="SequenceLabelingProject",
                 ),
                 migrations.DeleteModel(
-                    name='Speech2textProject',
+                    name="Speech2textProject",
                 ),
                 migrations.DeleteModel(
-                    name='Tag',
+                    name="Tag",
                 ),
                 migrations.DeleteModel(
-                    name='TextClassificationProject',
+                    name="TextClassificationProject",
                 ),
             ],
             database_operations=[
                 migrations.AlterModelTable(
-                    name='ImageClassificationProject',
-                    table='projects_imageclassificationproject'
+                    name="ImageClassificationProject", table="projects_imageclassificationproject"
                 ),
                 migrations.AlterModelTable(
-                    name='IntentDetectionAndSlotFillingProject',
-                    table='projects_intentdetectionandslotfillingproject'
+                    name="IntentDetectionAndSlotFillingProject", table="projects_intentdetectionandslotfillingproject"
                 ),
+                migrations.AlterModelTable(name="Project", table="projects_project"),
+                migrations.AlterModelTable(name="Seq2seqProject", table="projects_seq2seqproject"),
+                migrations.AlterModelTable(name="SequenceLabelingProject", table="projects_sequencelabelingproject"),
+                migrations.AlterModelTable(name="Speech2textProject", table="projects_speech2textproject"),
+                migrations.AlterModelTable(name="Tag", table="projects_tag"),
                 migrations.AlterModelTable(
-                    name='Project',
-                    table='projects_project'
+                    name="TextClassificationProject", table="projects_textclassificationproject"
                 ),
-                migrations.AlterModelTable(
-                    name='Seq2seqProject',
-                    table='projects_seq2seqproject'
-                ),
-                migrations.AlterModelTable(
-                    name='SequenceLabelingProject',
-                    table='projects_sequencelabelingproject'
-                ),
-                migrations.AlterModelTable(
-                    name='Speech2textProject',
-                    table='projects_speech2textproject'
-                ),
-                migrations.AlterModelTable(
-                    name='Tag',
-                    table='projects_tag'
-                ),
-                migrations.AlterModelTable(
-                    name='TextClassificationProject',
-                    table='projects_textclassificationproject'
-                ),
-            ]
+            ],
         )
-
     ]

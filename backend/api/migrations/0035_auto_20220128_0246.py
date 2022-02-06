@@ -6,29 +6,23 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0034_auto_20220128_0246'),
-        ('labels', '0004_auto_20220128_0246'),
+        ("api", "0034_auto_20220128_0246"),
+        ("labels", "0004_auto_20220128_0246"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.DeleteModel(
-                    name='Example',
+                    name="Example",
                 ),
                 migrations.DeleteModel(
-                    name='ExampleState',
+                    name="ExampleState",
                 ),
             ],
             database_operations=[
-                migrations.AlterModelTable(
-                    name='Example',
-                    table='examples_example'
-                ),
-                migrations.AlterModelTable(
-                    name='ExampleState',
-                    table='examples_examplestate'
-                )
-            ]
+                migrations.AlterModelTable(name="Example", table="examples_example"),
+                migrations.AlterModelTable(name="ExampleState", table="examples_examplestate"),
+            ],
         )
     ]

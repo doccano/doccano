@@ -18,16 +18,14 @@ class LabelCollection(abc.ABC):
         self.labels = labels
 
     def transform(self, project: Project, example: Example, user: User) -> List[Label]:
-        mapping = {
-            c.text: c for c in self.label_type.objects.filter(project=project)
-        }
+        mapping = {c.text: c for c in self.label_type.objects.filter(project=project)}
         annotations = []
         for label in self.labels:
-            if label['label'] not in mapping:
+            if label["label"] not in mapping:
                 continue
-            label['example'] = example
-            label['label'] = mapping[label['label']]
-            label['user'] = user
+            label["example"] = example
+            label["label"] = mapping[label["label"]]
+            label["user"] = user
             annotations.append(self.model(**label))
         return annotations
 
@@ -53,15 +51,11 @@ class Texts(LabelCollection):
     def transform(self, project: Project, example: Example, user: User) -> List[Label]:
         annotations = []
         for label in self.labels:
-            label['example'] = example
-            label['user'] = user
+            label["example"] = example
+            label["user"] = user
             annotations.append(self.model(**label))
         return annotations
 
 
 def create_labels(task_type: str, labels: Labels) -> LabelCollection:
-    return {
-        'Category': Categories,
-        'Span': Spans,
-        'Text': Texts
-    }[task_type](labels.dict())
+    return {"Category": Categories, "Span": Spans, "Text": Texts}[task_type](labels.dict())

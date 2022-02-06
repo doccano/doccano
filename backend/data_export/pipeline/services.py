@@ -3,7 +3,6 @@ from .writers import BaseWriter
 
 
 class ExportApplicationService:
-
     def __init__(self, repository: BaseRepository, writer: BaseWriter):
         self.repository = repository
         self.writer = writer

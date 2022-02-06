@@ -5,7 +5,6 @@ from .labels import CategoryLabel, Label, SpanLabel
 
 
 class Cleaner:
-
     def __init__(self, project: Project):
         pass
 
@@ -14,14 +13,13 @@ class Cleaner:
 
     @property
     def message(self) -> str:
-        return ''
+        return ""
 
 
 class SpanCleaner(Cleaner):
-
     def __init__(self, project: Project):
         super().__init__(project)
-        self.allow_overlapping = getattr(project, 'allow_overlapping', False)
+        self.allow_overlapping = getattr(project, "allow_overlapping", False)
 
     def clean(self, labels: List[SpanLabel]) -> List[SpanLabel]:
         if self.allow_overlapping:
@@ -38,14 +36,13 @@ class SpanCleaner(Cleaner):
 
     @property
     def message(self) -> str:
-        return 'This project cannot allow label overlapping. It\'s cleaned.'
+        return "This project cannot allow label overlapping. It's cleaned."
 
 
 class CategoryCleaner(Cleaner):
-
     def __init__(self, project: Project):
         super().__init__(project)
-        self.exclusive = getattr(project, 'single_class_classification', False)
+        self.exclusive = getattr(project, "single_class_classification", False)
 
     def clean(self, labels: List[CategoryLabel]) -> List[CategoryLabel]:
         if self.exclusive:
@@ -55,4 +52,4 @@ class CategoryCleaner(Cleaner):
 
     @property
     def message(self) -> str:
-        return 'This project only one label can apply but multiple label found. It\'s cleaned.'
+        return "This project only one label can apply but multiple label found. It's cleaned."

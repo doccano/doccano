@@ -7,15 +7,14 @@ from projects.tests.utils import prepare_project
 
 
 class TestDownloadCatalog(CRUDMixin):
-
     def setUp(self):
         self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
-        self.url = reverse(viewname='download-format', args=[self.project.item.id])
+        self.url = reverse(viewname="download-format", args=[self.project.item.id])
 
     def test_allows_project_admin_to_list_catalog(self):
         response = self.assert_fetch(self.project.admin, status.HTTP_200_OK)
         for item in response.data:
-            self.assertIn('name', item)
+            self.assertIn("name", item)
 
     def test_denies_project_staff_to_list_catalog(self):
         for member in self.project.staffs:

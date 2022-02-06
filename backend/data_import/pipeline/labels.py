@@ -9,7 +9,6 @@ from labels.models import Category, Span, TextLabel as TL
 
 
 class Label(BaseModel, abc.ABC):
-
     @abc.abstractmethod
     def has_name(self) -> bool:
         raise NotImplementedError()
@@ -38,12 +37,12 @@ class Label(BaseModel, abc.ABC):
 class CategoryLabel(Label):
     label: str
 
-    @validator('label')
+    @validator("label")
     def label_is_not_empty(cls, value: str):
         if value:
             return value
         else:
-            raise ValueError('is not empty.')
+            raise ValueError("is not empty.")
 
     def has_name(self) -> bool:
         return True
@@ -59,17 +58,13 @@ class CategoryLabel(Label):
         elif isinstance(obj, int):
             return cls(label=str(obj))
         else:
-            raise TypeError(f'{obj} is not str.')
+            raise TypeError(f"{obj} is not str.")
 
     def create(self, project: Project) -> Optional[LabelType]:
         return CategoryType(text=self.label, project=project)
 
     def create_annotation(self, user, example, mapping: Dict[str, LabelType]):
-        return Category(
-            user=user,
-            example=example,
-            label=mapping[self.label]
-        )
+        return Category(user=user, example=example, label=mapping[self.label])
 
 
 class SpanLabel(Label):
@@ -87,13 +82,13 @@ class SpanLabel(Label):
     @classmethod
     def parse(cls, obj: Any):
         if isinstance(obj, list) or isinstance(obj, tuple):
-            columns = ['start_offset', 'end_offset', 'label']
+            columns = ["start_offset", "end_offset", "label"]
             obj = zip(columns, obj)
             return cls.parse_obj(obj)
         elif isinstance(obj, dict):
             return cls.parse_obj(obj)
         else:
-            raise TypeError(f'{obj} is invalid type.')
+            raise TypeError(f"{obj} is invalid type.")
 
     def create(self, project: Project) -> Optional[LabelType]:
         return SpanType(text=self.label, project=project)
@@ -104,7 +99,7 @@ class SpanLabel(Label):
             example=example,
             start_offset=self.start_offset,
             end_offset=self.end_offset,
-            label=mapping[self.label]
+            label=mapping[self.label],
         )
 
 
@@ -123,14 +118,10 @@ class TextLabel(Label):
         if isinstance(obj, str) and obj:
             return cls(text=obj)
         else:
-            raise TypeError(f'{obj} is not str or empty.')
+            raise TypeError(f"{obj} is not str or empty.")
 
     def create(self, project: Project) -> Optional[LabelType]:
         return None
 
     def create_annotation(self, user, example, mapping):
-        return TL(
-            user=user,
-            example=example,
-            text=self.text
-        )
+        return TL(user=user, example=example, text=self.text)

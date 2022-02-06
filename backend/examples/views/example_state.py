@@ -14,11 +14,11 @@ class ExampleStateList(generics.ListCreateAPIView):
 
     @property
     def can_confirm_per_user(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
         return not project.collaborative_annotation
 
     def get_queryset(self):
-        queryset = ExampleState.objects.filter(example=self.kwargs['example_id'])
+        queryset = ExampleState.objects.filter(example=self.kwargs["example_id"])
         if self.can_confirm_per_user:
             queryset = queryset.filter(confirmed_by=self.request.user)
         return queryset
@@ -28,5 +28,5 @@ class ExampleStateList(generics.ListCreateAPIView):
         if queryset.exists():
             queryset.delete()
         else:
-            example = get_object_or_404(Example, pk=self.kwargs['example_id'])
+            example = get_object_or_404(Example, pk=self.kwargs["example_id"])
             serializer.save(example=example, confirmed_by=self.request.user)

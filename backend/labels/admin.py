@@ -4,18 +4,18 @@ from .models import Category, Span, TextLabel
 
 
 class SpanAdmin(admin.ModelAdmin):
-    list_display = ('example', 'label', 'start_offset', 'user')
-    ordering = ('example',)
+    list_display = ("example", "label", "start_offset", "user")
+    ordering = ("example",)
 
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('example', 'label', 'user')
-    ordering = ('example',)
+    list_display = ("example", "label", "user")
+    ordering = ("example",)
 
 
 class TextLabelAdmin(admin.ModelAdmin):
-    list_display = ('example', 'text', 'user')
-    ordering = ('example',)
+    list_display = ("example", "text", "user")
+    ordering = ("example",)
 
 
 admin.site.register(Category, CategoryAdmin)

@@ -1,7 +1,13 @@
 from typing import Type
 
-from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT, IMAGE_CLASSIFICATION, \
-    INTENT_DETECTION_AND_SLOT_FILLING
+from projects.models import (
+    DOCUMENT_CLASSIFICATION,
+    SEQUENCE_LABELING,
+    SEQ2SEQ,
+    SPEECH2TEXT,
+    IMAGE_CLASSIFICATION,
+    INTENT_DETECTION_AND_SLOT_FILLING,
+)
 from . import catalog, repositories, writers
 
 
@@ -15,7 +21,7 @@ def create_repository(project) -> repositories.BaseRepository:
         INTENT_DETECTION_AND_SLOT_FILLING: repositories.IntentDetectionSlotFillingRepository,
     }
     if project.project_type not in mapping:
-        ValueError(f'Invalid project type: {project.project_type}')
+        ValueError(f"Invalid project type: {project.project_type}")
     repository = mapping.get(project.project_type)(project)
     return repository
 
@@ -26,8 +32,8 @@ def create_writer(file_format: str) -> Type[writers.BaseWriter]:
         catalog.JSON.name: writers.JSONWriter,
         catalog.JSONL.name: writers.JSONLWriter,
         catalog.FastText.name: writers.FastTextWriter,
-        catalog.IntentAndSlot.name: writers.IntentAndSlotWriter
+        catalog.IntentAndSlot.name: writers.IntentAndSlotWriter,
     }
     if file_format not in mapping:
-        ValueError(f'Invalid format: {file_format}')
+        ValueError(f"Invalid format: {file_format}")
     return mapping[file_format]

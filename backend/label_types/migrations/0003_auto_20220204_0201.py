@@ -7,30 +7,33 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0002_auto_20220204_0201'),
-        ('label_types', '0002_rename_relationtypes_relationtype'),
+        ("projects", "0002_auto_20220204_0201"),
+        ("label_types", "0002_rename_relationtypes_relationtype"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.AlterField(
-                    model_name='categorytype',
-                    name='project',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='projects.project'),
+                    model_name="categorytype",
+                    name="project",
+                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="projects.project"),
                 ),
                 migrations.AlterField(
-                    model_name='relationtype',
-                    name='project',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='relation_types',
-                                            to='projects.project'),
+                    model_name="relationtype",
+                    name="project",
+                    field=models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="relation_types",
+                        to="projects.project",
+                    ),
                 ),
                 migrations.AlterField(
-                    model_name='spantype',
-                    name='project',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='projects.project'),
+                    model_name="spantype",
+                    name="project",
+                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="projects.project"),
                 ),
             ],
-            database_operations=[]
+            database_operations=[],
         )
     ]

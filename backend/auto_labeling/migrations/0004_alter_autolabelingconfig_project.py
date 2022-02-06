@@ -7,20 +7,23 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0002_auto_20220204_0201'),
-        ('auto_labeling', '0003_fill_task_type'),
+        ("projects", "0002_auto_20220204_0201"),
+        ("auto_labeling", "0003_fill_task_type"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.AlterField(
-                    model_name='autolabelingconfig',
-                    name='project',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                            related_name='auto_labeling_config', to='projects.project'),
+                    model_name="autolabelingconfig",
+                    name="project",
+                    field=models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="auto_labeling_config",
+                        to="projects.project",
+                    ),
                 ),
             ],
-            database_operations=[]
+            database_operations=[],
         )
     ]

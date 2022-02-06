@@ -13,14 +13,14 @@ class TagList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
 
     def get_queryset(self):
-        return Tag.objects.filter(project=self.kwargs['project_id'])
+        return Tag.objects.filter(project=self.kwargs["project_id"])
 
     def perform_create(self, serializer):
-        serializer.save(project_id=self.kwargs['project_id'])
+        serializer.save(project_id=self.kwargs["project_id"])
 
 
 class TagDetail(generics.DestroyAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    lookup_url_kwarg = 'tag_id'
+    lookup_url_kwarg = "tag_id"
     permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]

@@ -21,24 +21,24 @@ class BaseListAPI(generics.ListCreateAPIView):
 
     @property
     def project(self):
-        return get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return get_object_or_404(Project, pk=self.kwargs["project_id"])
 
     def get_queryset(self):
-        queryset = self.label_class.objects.filter(example=self.kwargs['example_id'])
+        queryset = self.label_class.objects.filter(example=self.kwargs["example_id"])
         if not self.project.collaborative_annotation:
             queryset = queryset.filter(user=self.request.user)
         return queryset
 
     def create(self, request, *args, **kwargs):
-        request.data['example'] = self.kwargs['example_id']
+        request.data["example"] = self.kwargs["example_id"]
         try:
             response = super().create(request, args, kwargs)
         except ValidationError as err:
-            response = Response({'detail': err.messages}, status=status.HTTP_400_BAD_REQUEST)
+            response = Response({"detail": err.messages}, status=status.HTTP_400_BAD_REQUEST)
         return response
 
     def perform_create(self, serializer):
-        serializer.save(example_id=self.kwargs['example_id'], user=self.request.user)
+        serializer.save(example_id=self.kwargs["example_id"], user=self.request.user)
 
     def delete(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -47,20 +47,18 @@ class BaseListAPI(generics.ListCreateAPIView):
 
 
 class BaseDetailAPI(generics.RetrieveUpdateDestroyAPIView):
-    lookup_url_kwarg = 'annotation_id'
+    lookup_url_kwarg = "annotation_id"
     swagger_schema = None
 
     @property
     def project(self):
-        return get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return get_object_or_404(Project, pk=self.kwargs["project_id"])
 
     def get_permissions(self):
         if self.project.collaborative_annotation:
             self.permission_classes = [IsAuthenticated & IsProjectMember]
         else:
-            self.permission_classes = [
-                IsAuthenticated & IsProjectMember & partial(CanEditLabel, self.queryset)
-            ]
+            self.permission_classes = [IsAuthenticated & IsProjectMember & partial(CanEditLabel, self.queryset)]
         return super().get_permissions()
 
 
@@ -105,15 +103,15 @@ class RelationList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsProjectMember]
 
     def get_queryset(self):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
         return project.annotation_relations
 
     def perform_create(self, serializer):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
+        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
         serializer.save(project=project)
 
     def delete(self, request, *args, **kwargs):
-        delete_ids = request.data['ids']
+        delete_ids = request.data["ids"]
         Relation.objects.filter(pk__in=delete_ids).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -121,5 +119,5 @@ class RelationList(generics.ListCreateAPIView):
 class RelationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Relation.objects.all()
     serializer_class = RelationSerializer
-    lookup_url_kwarg = 'annotation_id'
+    lookup_url_kwarg = "annotation_id"
     permission_classes = [IsAuthenticated & IsProjectMember]

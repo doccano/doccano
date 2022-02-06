@@ -6,9 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0002_speech2text'),
-        ('api', '0002_project_single_class_classification'),
+        ("api", "0002_speech2text"),
+        ("api", "0002_project_single_class_classification"),
     ]
 
-    operations = [
-    ]
+    operations = []

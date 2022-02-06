@@ -27,7 +27,7 @@ class TemplateListAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request: Request, *args, **kwargs):
-        task_name = request.query_params.get('task_name')
+        task_name = request.query_params.get("task_name")
         options = Options.filter_by_task(task_name=task_name)
         option_names = [o.name for o in options]
         return Response(option_names, status=status.HTTP_200_OK)
@@ -37,7 +37,7 @@ class TemplateDetailAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get(self, request, *args, **kwargs):
-        option = Options.find(option_name=self.kwargs['option_name'])
+        option = Options.find(option_name=self.kwargs["option_name"])
         return Response(option.to_dict(), status=status.HTTP_200_OK)
 
 
@@ -47,16 +47,16 @@ class ConfigList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def get_queryset(self):
-        return AutoLabelingConfig.objects.filter(project=self.kwargs['project_id'])
+        return AutoLabelingConfig.objects.filter(project=self.kwargs["project_id"])
 
     def perform_create(self, serializer):
-        serializer.save(project_id=self.kwargs['project_id'])
+        serializer.save(project_id=self.kwargs["project_id"])
 
 
 class ConfigDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = AutoLabelingConfig.objects.all()
     serializer_class = AutoLabelingConfigSerializer
-    lookup_url_kwarg = 'config_id'
+    lookup_url_kwarg = "config_id"
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
 
@@ -65,21 +65,21 @@ class RestAPIRequestTesting(APIView):
 
     @property
     def project(self):
-        return get_object_or_404(Project, pk=self.kwargs['project_id'])
+        return get_object_or_404(Project, pk=self.kwargs["project_id"])
 
     def create_model(self):
-        model_name = self.request.data['model_name']
-        model_attrs = self.request.data['model_attrs']
+        model_name = self.request.data["model_name"]
+        model_attrs = self.request.data["model_attrs"]
         try:
             model = RequestModelFactory.create(model_name, model_attrs)
             return model
         except Exception:
             model = RequestModelFactory.find(model_name)
             schema = model.schema()
-            required_fields = ', '.join(schema['required']) if 'required' in schema else ''
+            required_fields = ", ".join(schema["required"]) if "required" in schema else ""
             raise ValidationError(
-                'The attributes does not match the model.'
-                'You need to correctly specify the required fields: {}'.format(required_fields)
+                "The attributes does not match the model."
+                "You need to correctly specify the required fields: {}".format(required_fields)
             )
 
     def send_request(self, model, example):
@@ -93,7 +93,7 @@ class RestAPIRequestTesting(APIView):
             raise e
 
     def prepare_example(self):
-        text = self.request.data['text']
+        text = self.request.data["text"]
         if self.project.is_text_project:
             return text
         else:
@@ -111,14 +111,11 @@ class LabelExtractorTesting(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def post(self, *args, **kwargs):
-        response = self.request.data['response']
-        template = self.request.data['template']
-        task_type = self.request.data['task_type']
+        response = self.request.data["response"]
+        template = self.request.data["template"]
+        task_type = self.request.data["task_type"]
         label_collection = get_label_collection(task_type)
-        template = MappingTemplate(
-            label_collection=label_collection,
-            template=template
-        )
+        template = MappingTemplate(label_collection=label_collection, template=template)
         try:
             labels = template.render(response)
         except json.decoder.JSONDecodeError:
@@ -132,9 +129,9 @@ class LabelMapperTesting(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def post(self, *args, **kwargs):
-        response = self.request.data['response']
-        task_type = self.request.data['task_type']
-        label_mapping = self.request.data['label_mapping']
+        response = self.request.data["response"]
+        task_type = self.request.data["task_type"]
+        label_mapping = self.request.data["label_mapping"]
         label_collection = get_label_collection(task_type)
         labels = label_collection(response)
         post_processor = PostProcessor(label_mapping)
@@ -147,11 +144,11 @@ class AutomatedLabeling(generics.CreateAPIView):
     swagger_schema = None
 
     def create(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        example = project.examples.get(pk=self.request.query_params['example'])
+        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
+        example = project.examples.get(pk=self.request.query_params["example"])
         configs = AutoLabelingConfig.objects.filter(project=project)
         # Todo: make async calls or celery tasks to reduce waiting time.
         for config in configs:
             labels = execute_pipeline(example.data, config=config)
             labels.save(project, example, self.request.user)
-        return Response({'ok': True}, status=status.HTTP_201_CREATED)
+        return Response({"ok": True}, status=status.HTTP_201_CREATED)

@@ -6,14 +6,14 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('labels', '0003_auto_20220127_0654'),
-        ('api', '0033_auto_20220127_0654'),
-        ('label_types', '0001_initial'),
+        ("labels", "0003_auto_20220127_0654"),
+        ("api", "0033_auto_20220127_0654"),
+        ("label_types", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='RelationTypes',
-            new_name='RelationType',
+            old_name="RelationTypes",
+            new_name="RelationType",
         ),
     ]

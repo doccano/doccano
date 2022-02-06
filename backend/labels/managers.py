@@ -2,7 +2,6 @@ from django.db.models import Manager, Count
 
 
 class LabelManager(Manager):
-
     def calc_label_distribution(self, examples, members, labels):
         """Calculate label distribution.
 
@@ -19,13 +18,15 @@ class LabelManager(Manager):
             {'admin': {'positive': 10, 'negative': 5}}
         """
         distribution = {member.username: {label.text: 0 for label in labels} for member in members}
-        items = self.filter(example_id__in=examples)\
-            .values('user__username', 'label__text')\
-            .annotate(count=Count('label__text'))
+        items = (
+            self.filter(example_id__in=examples)
+            .values("user__username", "label__text")
+            .annotate(count=Count("label__text"))
+        )
         for item in items:
-            username = item['user__username']
-            label = item['label__text']
-            count = item['count']
+            username = item["user__username"]
+            label = item["label__text"]
+            count = item["count"]
             distribution[username][label] = count
         return distribution
 
@@ -36,14 +37,13 @@ class LabelManager(Manager):
             return self.filter(example=label.example, user=label.user)
 
     def can_annotate(self, label, project) -> bool:
-        raise NotImplementedError('Please implement this method in the subclass')
+        raise NotImplementedError("Please implement this method in the subclass")
 
     def filter_annotatable_labels(self, labels, project):
         return [label for label in labels if self.can_annotate(label, project)]
 
 
 class CategoryManager(LabelManager):
-
     def can_annotate(self, label, project) -> bool:
         is_exclusive = project.single_class_classification
         categories = self.get_labels(label, project)
@@ -54,9 +54,8 @@ class CategoryManager(LabelManager):
 
 
 class SpanManager(LabelManager):
-
     def can_annotate(self, label, project) -> bool:
-        overlapping = getattr(project, 'allow_overlapping', False)
+        overlapping = getattr(project, "allow_overlapping", False)
         spans = self.get_labels(label, project)
         if overlapping:
             return True
@@ -67,7 +66,6 @@ class SpanManager(LabelManager):
 
 
 class TextLabelManager(LabelManager):
-
     def can_annotate(self, label, project) -> bool:
         texts = self.get_labels(label, project)
         for text in texts:

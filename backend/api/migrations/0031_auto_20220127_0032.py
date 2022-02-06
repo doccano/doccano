@@ -6,83 +6,70 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0030_delete_autolabelingconfig'),
+        ("api", "0030_delete_autolabelingconfig"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.AlterUniqueTogether(
-                    name='category',
+                    name="category",
                     unique_together=None,
                 ),
                 migrations.RemoveField(
-                    model_name='category',
-                    name='example',
+                    model_name="category",
+                    name="example",
                 ),
                 migrations.RemoveField(
-                    model_name='category',
-                    name='label',
+                    model_name="category",
+                    name="label",
                 ),
                 migrations.RemoveField(
-                    model_name='category',
-                    name='user',
+                    model_name="category",
+                    name="user",
                 ),
                 migrations.RemoveField(
-                    model_name='span',
-                    name='example',
+                    model_name="span",
+                    name="example",
                 ),
                 migrations.RemoveField(
-                    model_name='span',
-                    name='label',
+                    model_name="span",
+                    name="label",
                 ),
                 migrations.RemoveField(
-                    model_name='span',
-                    name='user',
+                    model_name="span",
+                    name="user",
                 ),
                 migrations.AlterUniqueTogether(
-                    name='textlabel',
+                    name="textlabel",
                     unique_together=None,
                 ),
                 migrations.RemoveField(
-                    model_name='textlabel',
-                    name='example',
+                    model_name="textlabel",
+                    name="example",
                 ),
                 migrations.RemoveField(
-                    model_name='textlabel',
-                    name='user',
+                    model_name="textlabel",
+                    name="user",
                 ),
                 migrations.DeleteModel(
-                    name='AnnotationRelations',
+                    name="AnnotationRelations",
                 ),
                 migrations.DeleteModel(
-                    name='Category',
+                    name="Category",
                 ),
                 migrations.DeleteModel(
-                    name='Span',
+                    name="Span",
                 ),
                 migrations.DeleteModel(
-                    name='TextLabel',
+                    name="TextLabel",
                 ),
             ],
             database_operations=[
-                migrations.AlterModelTable(
-                    name='Span',
-                    table='labels_span'
-                ),
-                migrations.AlterModelTable(
-                    name='Category',
-                    table='labels_category'
-                ),
-                migrations.AlterModelTable(
-                    name='TextLabel',
-                    table='labels_textlabel'
-                ),
-                migrations.AlterModelTable(
-                    name='AnnotationRelations',
-                    table='labels_annotationrelations'
-                )
-            ]
+                migrations.AlterModelTable(name="Span", table="labels_span"),
+                migrations.AlterModelTable(name="Category", table="labels_category"),
+                migrations.AlterModelTable(name="TextLabel", table="labels_textlabel"),
+                migrations.AlterModelTable(name="AnnotationRelations", table="labels_annotationrelations"),
+            ],
         )
-
     ]

@@ -6,27 +6,27 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0027_auto_20211222_0454'),
+        ("api", "0027_auto_20211222_0454"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.AlterUniqueTogether(
-                    name='rolemapping',
+                    name="rolemapping",
                     unique_together=None,
                 ),
                 migrations.RemoveField(
-                    model_name='rolemapping',
-                    name='project',
+                    model_name="rolemapping",
+                    name="project",
                 ),
                 migrations.RemoveField(
-                    model_name='rolemapping',
-                    name='role',
+                    model_name="rolemapping",
+                    name="role",
                 ),
                 migrations.RemoveField(
-                    model_name='rolemapping',
-                    name='user',
+                    model_name="rolemapping",
+                    name="user",
                 ),
             ],
             database_operations=[],
@@ -34,21 +34,15 @@ class Migration(migrations.Migration):
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.DeleteModel(
-                    name='Role',
+                    name="Role",
                 ),
                 migrations.DeleteModel(
-                    name='RoleMapping',
+                    name="RoleMapping",
                 ),
             ],
             database_operations=[
-                migrations.AlterModelTable(
-                    name='Role',
-                    table='roles_role'
-                ),
-                migrations.AlterModelTable(
-                    name='RoleMapping',
-                    table='roles_rolemapping'
-                )
-            ]
-        )
+                migrations.AlterModelTable(name="Role", table="roles_role"),
+                migrations.AlterModelTable(name="RoleMapping", table="roles_rolemapping"),
+            ],
+        ),
     ]
