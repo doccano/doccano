@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0002_auto_20220204_0201'),
+        ("projects", "0002_auto_20220204_0201"),
     ]
 
     operations = [
@@ -44,6 +44,6 @@ class Migration(migrations.Migration):
                   AND t1.model LIKE '%project' 
                   AND t2.id = projects_project.polymorphic_ctype_id
               );
-            """
+            """,
         )
     ]

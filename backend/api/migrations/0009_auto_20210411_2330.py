@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0008_auto_20210302_1013'),
+        ("api", "0008_auto_20210302_1013"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='document',
-            name='meta',
+            model_name="document",
+            name="meta",
             field=models.JSONField(default=dict),
         ),
     ]

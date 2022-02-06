@@ -4,15 +4,23 @@ from .models import Example, Comment
 
 
 class ExampleAdmin(admin.ModelAdmin):
-    list_display = ('text', 'project', 'meta')
-    ordering = ('project',)
-    search_fields = ('text',)
+    list_display = ("text", "project", "meta")
+    ordering = ("project",)
+    search_fields = ("text",)
 
 
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('user', 'example', 'text', 'created_at', )
-    ordering = ('user', 'created_at', )
-    search_fields = ('user',)
+    list_display = (
+        "user",
+        "example",
+        "text",
+        "created_at",
+    )
+    ordering = (
+        "user",
+        "created_at",
+    )
+    search_fields = ("user",)
 
 
 admin.site.register(Example, ExampleAdmin)

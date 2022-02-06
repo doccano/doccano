@@ -13,13 +13,12 @@ from users.tests.utils import make_user
 
 
 class TestMemberListAPI(CRUDMixin):
-
     def setUp(self):
         self.project = prepare_project()
         self.non_member = make_user()
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
-        self.data = {'user': self.non_member.id, 'role': admin_role.id, 'project': self.project.item.id}
-        self.url = reverse(viewname='member_list', args=[self.project.item.id])
+        self.data = {"user": self.non_member.id, "role": admin_role.id, "project": self.project.item.id}
+        self.url = reverse(viewname="member_list", args=[self.project.item.id])
 
     def test_allows_project_admin_to_know_members(self):
         self.assert_fetch(self.project.admin, status.HTTP_200_OK)
@@ -51,7 +50,7 @@ class TestMemberListAPI(CRUDMixin):
         if user:
             self.client.force_login(user)
         ids = [item.id for item in self.project.item.role_mappings.all()]
-        response = self.client.delete(self.url, data={'ids': ids}, format='json')
+        response = self.client.delete(self.url, data={"ids": ids}, format="json")
         self.assertEqual(response.status_code, expected)
 
     def test_allows_project_admin_to_remove_members(self):
@@ -71,14 +70,13 @@ class TestMemberListAPI(CRUDMixin):
 
 
 class TestMemberRoleDetailAPI(CRUDMixin):
-
     def setUp(self):
         self.project = prepare_project()
         self.non_member = make_user()
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
         member = Member.objects.get(user=self.project.approver)
-        self.url = reverse(viewname='member_detail', args=[self.project.item.id, member.id])
-        self.data = {'role': admin_role.id}
+        self.url = reverse(viewname="member_detail", args=[self.project.item.id, member.id])
+        self.data = {"role": admin_role.id}
 
     def test_allows_project_admin_to_known_member(self):
         self.assert_fetch(self.project.admin, status.HTTP_200_OK)
@@ -108,11 +106,10 @@ class TestMemberRoleDetailAPI(CRUDMixin):
 
 
 class TestMemberFilter(CRUDMixin):
-
     def setUp(self):
         self.project = prepare_project()
-        self.url = reverse(viewname='member_list', args=[self.project.item.id])
-        self.url += f'?user={self.project.admin.id}'
+        self.url = reverse(viewname="member_list", args=[self.project.item.id])
+        self.url += f"?user={self.project.admin.id}"
 
     def test_filter_role_by_user_id(self):
         response = self.assert_fetch(self.project.admin, status.HTTP_200_OK)
@@ -120,23 +117,21 @@ class TestMemberFilter(CRUDMixin):
 
 
 class TestMemberManager(CRUDMixin):
-
     def test_has_role(self):
         project = prepare_project()
         admin = project.admin
         expected = [
             (settings.ROLE_PROJECT_ADMIN, True),
             (settings.ROLE_ANNOTATION_APPROVER, False),
-            (settings.ROLE_ANNOTATOR, False)
+            (settings.ROLE_ANNOTATOR, False),
         ]
         for role, expect in expected:
             self.assertEqual(Member.objects.has_role(project.item, admin, role), expect)
 
 
 class TestMember(TestCase):
-
     def test_clean(self):
-        member = mommy.make('Member')
+        member = mommy.make("Member")
         same_user = Member(project=member.project, user=member.user, role=member.role)
         with self.assertRaises(ValidationError):
             same_user.clean()

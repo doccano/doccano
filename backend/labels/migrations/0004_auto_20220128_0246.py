@@ -7,32 +7,35 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('examples', '0001_initial'),
-        ('labels', '0003_auto_20220127_0654'),
+        ("examples", "0001_initial"),
+        ("labels", "0003_auto_20220127_0654"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.AlterField(
-                    model_name='category',
-                    name='example',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='categories',
-                                            to='examples.example'),
+                    model_name="category",
+                    name="example",
+                    field=models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="categories", to="examples.example"
+                    ),
                 ),
                 migrations.AlterField(
-                    model_name='span',
-                    name='example',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='spans',
-                                            to='examples.example'),
+                    model_name="span",
+                    name="example",
+                    field=models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="spans", to="examples.example"
+                    ),
                 ),
                 migrations.AlterField(
-                    model_name='textlabel',
-                    name='example',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='texts',
-                                            to='examples.example'),
+                    model_name="textlabel",
+                    name="example",
+                    field=models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name="texts", to="examples.example"
+                    ),
                 ),
             ],
-            database_operations=[]
+            database_operations=[],
         )
     ]

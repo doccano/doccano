@@ -9,26 +9,26 @@ from polymorphic.models import PolymorphicModel
 
 from roles.models import Role
 
-DOCUMENT_CLASSIFICATION = 'DocumentClassification'
-SEQUENCE_LABELING = 'SequenceLabeling'
-SEQ2SEQ = 'Seq2seq'
-SPEECH2TEXT = 'Speech2text'
-IMAGE_CLASSIFICATION = 'ImageClassification'
-INTENT_DETECTION_AND_SLOT_FILLING = 'IntentDetectionAndSlotFilling'
+DOCUMENT_CLASSIFICATION = "DocumentClassification"
+SEQUENCE_LABELING = "SequenceLabeling"
+SEQ2SEQ = "Seq2seq"
+SPEECH2TEXT = "Speech2text"
+IMAGE_CLASSIFICATION = "ImageClassification"
+INTENT_DETECTION_AND_SLOT_FILLING = "IntentDetectionAndSlotFilling"
 PROJECT_CHOICES = (
-    (DOCUMENT_CLASSIFICATION, 'document classification'),
-    (SEQUENCE_LABELING, 'sequence labeling'),
-    (SEQ2SEQ, 'sequence to sequence'),
-    (INTENT_DETECTION_AND_SLOT_FILLING, 'intent detection and slot filling'),
-    (SPEECH2TEXT, 'speech to text'),
-    (IMAGE_CLASSIFICATION, 'image classification')
+    (DOCUMENT_CLASSIFICATION, "document classification"),
+    (SEQUENCE_LABELING, "sequence labeling"),
+    (SEQ2SEQ, "sequence to sequence"),
+    (INTENT_DETECTION_AND_SLOT_FILLING, "intent detection and slot filling"),
+    (SPEECH2TEXT, "speech to text"),
+    (IMAGE_CLASSIFICATION, "image classification"),
 )
 
 
 class Project(PolymorphicModel):
     name = models.CharField(max_length=100)
-    description = models.TextField(default='')
-    guideline = models.TextField(default='', blank=True)
+    description = models.TextField(default="")
+    guideline = models.TextField(default="", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(
@@ -79,7 +79,6 @@ class Project(PolymorphicModel):
 
 
 class TextClassificationProject(Project):
-
     @property
     def is_text_project(self) -> bool:
         return True
@@ -111,14 +110,12 @@ class SequenceLabelingProject(Project):
 
 
 class Seq2seqProject(Project):
-
     @property
     def is_text_project(self) -> bool:
         return True
 
 
 class IntentDetectionAndSlotFillingProject(Project):
-
     @property
     def is_text_project(self) -> bool:
         return True
@@ -137,14 +134,12 @@ class IntentDetectionAndSlotFillingProject(Project):
 
 
 class Speech2textProject(Project):
-
     @property
     def is_text_project(self) -> bool:
         return False
 
 
 class ImageClassificationProject(Project):
-
     @property
     def is_text_project(self) -> bool:
         return False
@@ -160,18 +155,13 @@ class ImageClassificationProject(Project):
 
 class Tag(models.Model):
     text = models.TextField()
-    project = models.ForeignKey(
-        to=Project,
-        on_delete=models.CASCADE,
-        related_name='tags'
-    )
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name="tags")
 
     def __str__(self):
         return self.text
 
 
 class MemberManager(Manager):
-
     def can_update(self, project: int, member_id: int, new_role: str) -> bool:
         """The project needs at least 1 admin.
 
@@ -183,9 +173,7 @@ class MemberManager(Manager):
         Returns:
             Whether the mapping can be updated or not.
         """
-        queryset = self.filter(
-            project=project, role__name=settings.ROLE_PROJECT_ADMIN
-        )
+        queryset = self.filter(project=project, role__name=settings.ROLE_PROJECT_ADMIN)
         if queryset.count() > 1:
             return True
         else:
@@ -198,20 +186,9 @@ class MemberManager(Manager):
 
 
 class Member(models.Model):
-    user = models.ForeignKey(
-        to=User,
-        on_delete=models.CASCADE,
-        related_name='role_mappings'
-    )
-    project = models.ForeignKey(
-        to=Project,
-        on_delete=models.CASCADE,
-        related_name='role_mappings'
-    )
-    role = models.ForeignKey(
-        to=Role,
-        on_delete=models.CASCADE
-    )
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="role_mappings")
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name="role_mappings")
+    role = models.ForeignKey(to=Role, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     objects = MemberManager()
@@ -219,7 +196,7 @@ class Member(models.Model):
     def clean(self):
         members = self.__class__.objects.exclude(id=self.id)
         if members.filter(user=self.user, project=self.project).exists():
-            message = 'This user is already assigned to a role in this project.'
+            message = "This user is already assigned to a role in this project."
             raise ValidationError(message)
 
     @property
@@ -227,4 +204,4 @@ class Member(models.Model):
         return self.user.username
 
     class Meta:
-        unique_together = ('user', 'project')
+        unique_together = ("user", "project")

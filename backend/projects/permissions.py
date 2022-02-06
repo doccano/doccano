@@ -5,13 +5,13 @@ from .models import Member
 
 
 class RolePermission(BasePermission):
-    UNSAFE_METHODS = ('POST', 'PATCH', 'DELETE')
+    UNSAFE_METHODS = ("POST", "PATCH", "DELETE")
     unsafe_methods_check = True
-    role_name = ''
+    role_name = ""
 
     @classmethod
     def get_project_id(cls, request, view):
-        return view.kwargs.get('project_id') or request.query_params.get('project_id')
+        return view.kwargs.get("project_id") or request.query_params.get("project_id")
 
     def has_permission(self, request, view):
         if request.user.is_superuser:
@@ -50,5 +50,5 @@ class IsAnnotationApprover(RolePermission):
     role_name = settings.ROLE_ANNOTATION_APPROVER
 
 
-IsProjectMember = (IsAnnotator | IsAnnotationApprover | IsProjectAdmin)
-IsProjectStaffAndReadOnly = (IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly)
+IsProjectMember = IsAnnotator | IsAnnotationApprover | IsProjectAdmin
+IsProjectStaffAndReadOnly = IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly

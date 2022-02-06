@@ -6,7 +6,7 @@ from ...models import Role
 
 
 class Command(BaseCommand):
-    help = 'Non-interactively create default roles'
+    help = "Non-interactively create default roles"
 
     def handle(self, *args, **options):
         try:

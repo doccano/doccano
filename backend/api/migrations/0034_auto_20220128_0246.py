@@ -6,41 +6,36 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0033_auto_20220127_0654'),
+        ("api", "0033_auto_20220127_0654"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.RemoveField(
-                    model_name='example',
-                    name='annotations_approved_by',
+                    model_name="example",
+                    name="annotations_approved_by",
                 ),
                 migrations.RemoveField(
-                    model_name='example',
-                    name='project',
+                    model_name="example",
+                    name="project",
                 ),
                 migrations.AlterUniqueTogether(
-                    name='examplestate',
+                    name="examplestate",
                     unique_together=None,
                 ),
                 migrations.RemoveField(
-                    model_name='examplestate',
-                    name='confirmed_by',
+                    model_name="examplestate",
+                    name="confirmed_by",
                 ),
                 migrations.RemoveField(
-                    model_name='examplestate',
-                    name='example',
+                    model_name="examplestate",
+                    name="example",
                 ),
                 migrations.DeleteModel(
-                    name='Comment',
+                    name="Comment",
                 ),
             ],
-            database_operations=[
-                migrations.AlterModelTable(
-                    name='Comment',
-                    table='examples_comment'
-                )
-            ]
+            database_operations=[migrations.AlterModelTable(name="Comment", table="examples_comment")],
         )
     ]

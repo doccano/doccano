@@ -13,7 +13,7 @@ class Me(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
-        serializer = UserSerializer(request.user, context={'request': request})
+        serializer = UserSerializer(request.user, context={"request": request})
         return Response(serializer.data)
 
 
@@ -23,4 +23,4 @@ class Users(generics.ListAPIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
     pagination_class = None
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    search_fields = ('username',)
+    search_fields = ("username",)

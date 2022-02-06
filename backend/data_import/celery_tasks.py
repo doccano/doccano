@@ -20,4 +20,4 @@ def import_dataset(user_id, project_id, filenames, file_format: str, **kwargs):
     cleaner = create_cleaner(project)
     writer = BulkWriter(batch_size=settings.IMPORT_BATCH_SIZE)
     writer.save(reader, project, user, cleaner)
-    return {'error': writer.errors}
+    return {"error": writer.errors}

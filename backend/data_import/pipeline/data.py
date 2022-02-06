@@ -20,35 +20,23 @@ class BaseData(BaseModel, abc.ABC):
 
     @abc.abstractmethod
     def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
-        raise NotImplementedError('Please implement this method in the subclass.')
+        raise NotImplementedError("Please implement this method in the subclass.")
 
 
 class TextData(BaseData):
     text: str
 
-    @validator('text')
+    @validator("text")
     def text_is_not_empty(cls, value: str):
         if value:
             return value
         else:
-            raise ValueError('is not empty.')
+            raise ValueError("is not empty.")
 
     def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
-        return Example(
-            uuid=uuid.uuid4(),
-            project=project,
-            filename=self.filename,
-            text=self.text,
-            meta=meta
-        )
+        return Example(uuid=uuid.uuid4(), project=project, filename=self.filename, text=self.text, meta=meta)
 
 
 class FileData(BaseData):
-
     def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
-        return Example(
-            uuid=uuid.uuid4(),
-            project=project,
-            filename=self.filename,
-            meta=meta
-        )
+        return Example(uuid=uuid.uuid4(), project=project, filename=self.filename, meta=meta)

@@ -13,7 +13,7 @@ from seqeval.scheme import BILOU, IOB2, IOBES, IOE2, Tokens
 from .exceptions import FileParseException
 from .readers import DEFAULT_LABEL_COLUMN, DEFAULT_TEXT_COLUMN, Parser
 
-DEFAULT_ENCODING = 'Auto'
+DEFAULT_ENCODING = "Auto"
 
 
 def detect_encoding(filename: str, buffer_size: int = io.DEFAULT_BUFFER_SIZE) -> str:
@@ -31,25 +31,25 @@ def detect_encoding(filename: str, buffer_size: int = io.DEFAULT_BUFFER_SIZE) ->
     """
     # For a small file.
     if os.path.getsize(filename) < buffer_size:
-        detected = chardet.detect(open(filename, 'rb').read())
-        return detected.get('encoding', 'utf-8')
+        detected = chardet.detect(open(filename, "rb").read())
+        return detected.get("encoding", "utf-8")
 
     # For a large file, call the Universal Encoding Detector incrementally.
     # It will stop as soon as it is confident enough to report its results.
     # See: https://chardet.readthedocs.io/en/latest/usage.html
-    with open(filename, 'rb') as f:
+    with open(filename, "rb") as f:
         detector = UniversalDetector()
         while True:
             binary = f.read(buffer_size)
             detector.feed(binary)
-            if binary == b'':
+            if binary == b"":
                 break
             if detector.done:
                 break
         if detector.done:
-            return detector.result['encoding']
+            return detector.result["encoding"]
         else:
-            return 'utf-8'
+            return "utf-8"
 
 
 def decide_encoding(filename: str, encoding: str) -> str:
@@ -143,7 +143,7 @@ class CSVParser(Parser):
         delimiter: A one-character string used to separate fields. It defaults to ','.
     """
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ',', **kwargs):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ",", **kwargs):
         self.encoding = encoding
         self.delimiter = delimiter
 
@@ -240,7 +240,7 @@ class FastTextParser(Parser):
         label: The label prefix. It defaults to `__label__`.
     """
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING, label: str = '__label__', **kwargs):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, label: str = "__label__", **kwargs):
         self.encoding = encoding
         self.label = label
 
@@ -249,13 +249,13 @@ class FastTextParser(Parser):
         for line_num, line in enumerate(reader, start=1):
             labels = []
             tokens = []
-            for token in line.rstrip().split(' '):
+            for token in line.rstrip().split(" "):
                 if token.startswith(self.label):
-                    label_name = token[len(self.label):]
+                    label_name = token[len(self.label) :]
                     labels.append(label_name)
                 else:
                     tokens.append(token)
-            text = ' '.join(tokens)
+            text = " ".join(tokens)
             yield {DEFAULT_TEXT_COLUMN: text, DEFAULT_LABEL_COLUMN: labels}
 
 
@@ -284,15 +284,10 @@ class CoNLLParser(Parser):
         scheme: The tagging scheme. It supports `IOB2`, `IOE2`, `IOBES`, and `BILOU`.
     """
 
-    def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = ' ', scheme: str = 'IOB2', **kwargs):
+    def __init__(self, encoding: str = DEFAULT_ENCODING, delimiter: str = " ", scheme: str = "IOB2", **kwargs):
         self.encoding = encoding
         self.delimiter = delimiter
-        mapping = {
-            'IOB2': IOB2,
-            'IOE2': IOE2,
-            'IOBES': IOBES,
-            'BILOU': BILOU
-        }
+        mapping = {"IOB2": IOB2, "IOE2": IOE2, "IOBES": IOBES, "BILOU": BILOU}
         self._errors = []
         if scheme in mapping:
             self.scheme = mapping[scheme]
@@ -305,7 +300,7 @@ class CoNLLParser(Parser):
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         if not self.scheme:
-            message = 'The specified scheme is not supported.'
+            message = "The specified scheme is not supported."
             error = FileParseException(filename, line_num=1, message=message)
             self._errors.append(error)
             return
@@ -315,9 +310,9 @@ class CoNLLParser(Parser):
         for line_num, line in enumerate(reader, start=1):
             line = line.rstrip()
             if line:
-                tokens = line.split('\t')
+                tokens = line.split("\t")
                 if len(tokens) != 2:
-                    message = 'A line must be separated by tab and has two columns.'
+                    message = "A line must be separated by tab and has two columns."
                     self._errors.append(FileParseException(filename, line_num, message))
                     return
                 word, tag = tokens
@@ -338,9 +333,9 @@ class CoNLLParser(Parser):
         tokens = Tokens(tags, self.scheme)
         labels = []
         for entity in tokens.entities:
-            text = self.delimiter.join(words[:entity.start])
+            text = self.delimiter.join(words[: entity.start])
             start = len(text) + len(self.delimiter) if text else len(text)
-            chunk = words[entity.start: entity.end]
+            chunk = words[entity.start : entity.end]
             text = self.delimiter.join(chunk)
             end = start + len(text)
             labels.append((start, end, entity.tag))

@@ -1,48 +1,37 @@
 from django.urls import path
 
-from .views import (ConfigDetail, AutomatedLabeling,
-                    LabelMapperTesting, TemplateListAPI,
-                    TemplateDetailAPI, ConfigList, RestAPIRequestTesting, LabelExtractorTesting)
+from .views import (
+    ConfigDetail,
+    AutomatedLabeling,
+    LabelMapperTesting,
+    TemplateListAPI,
+    TemplateDetailAPI,
+    ConfigList,
+    RestAPIRequestTesting,
+    LabelExtractorTesting,
+)
 
 urlpatterns = [
+    path(route="auto-labeling/templates", view=TemplateListAPI.as_view(), name="auto_labeling_templates"),
     path(
-        route='auto-labeling/templates',
-        view=TemplateListAPI.as_view(),
-        name='auto_labeling_templates'
-    ),
-    path(
-        route='auto-labeling/templates/<str:option_name>',
+        route="auto-labeling/templates/<str:option_name>",
         view=TemplateDetailAPI.as_view(),
-        name='auto_labeling_template'
+        name="auto_labeling_template",
     ),
+    path(route="auto-labeling/configs", view=ConfigList.as_view(), name="auto_labeling_configs"),
+    path(route="auto-labeling/configs/<int:config_id>", view=ConfigDetail.as_view(), name="auto_labeling_config"),
     path(
-        route='auto-labeling/configs',
-        view=ConfigList.as_view(),
-        name='auto_labeling_configs'
-    ),
-    path(
-        route='auto-labeling/configs/<int:config_id>',
-        view=ConfigDetail.as_view(),
-        name='auto_labeling_config'
-    ),
-    path(
-        route='auto-labeling/request-testing',
+        route="auto-labeling/request-testing",
         view=RestAPIRequestTesting.as_view(),
-        name='auto_labeling_parameter_testing'
+        name="auto_labeling_parameter_testing",
     ),
     path(
-        route='auto-labeling/label-extractor-testing',
+        route="auto-labeling/label-extractor-testing",
         view=LabelExtractorTesting.as_view(),
-        name='auto_labeling_template_test'
+        name="auto_labeling_template_test",
     ),
     path(
-        route='auto-labeling/label-mapper-testing',
-        view=LabelMapperTesting.as_view(),
-        name='auto_labeling_mapping_test'
+        route="auto-labeling/label-mapper-testing", view=LabelMapperTesting.as_view(), name="auto_labeling_mapping_test"
     ),
-    path(
-        route='auto-labeling',
-        view=AutomatedLabeling.as_view(),
-        name='auto_labeling'
-    ),
+    path(route="auto-labeling", view=AutomatedLabeling.as_view(), name="auto_labeling"),
 ]

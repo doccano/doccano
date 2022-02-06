@@ -6,21 +6,21 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('roles', '0002_rename_rolemapping_member'),
+        ("roles", "0002_rename_rolemapping_member"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.DeleteModel(
-                    name='Member',
+                    name="Member",
                 ),
             ],
             database_operations=[
                 migrations.AlterModelTable(
-                    name='Member',
-                    table='members_member',
+                    name="Member",
+                    table="members_member",
                 ),
-            ]
+            ],
         )
     ]

@@ -8,13 +8,13 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0028_auto_20220111_0655'),
-        ('roles', '0001_initial'),
+        ("api", "0028_auto_20220111_0655"),
+        ("roles", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='RoleMapping',
-            new_name='Member',
+            old_name="RoleMapping",
+            new_name="Member",
         ),
     ]

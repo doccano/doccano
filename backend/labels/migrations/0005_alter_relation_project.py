@@ -7,20 +7,23 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('projects', '0002_auto_20220204_0201'),
-        ('labels', '0004_auto_20220128_0246'),
+        ("projects", "0002_auto_20220204_0201"),
+        ("labels", "0004_auto_20220128_0246"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.AlterField(
-                    model_name='relation',
-                    name='project',
-                    field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
-                                            related_name='annotation_relations', to='projects.project'),
+                    model_name="relation",
+                    name="project",
+                    field=models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="annotation_relations",
+                        to="projects.project",
+                    ),
                 ),
             ],
-            database_operations=[]
+            database_operations=[],
         )
     ]

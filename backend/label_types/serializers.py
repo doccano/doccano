@@ -5,10 +5,9 @@ from .models import LabelType, CategoryType, SpanType, RelationType
 
 
 class LabelSerializer(serializers.ModelSerializer):
-
     def validate(self, attrs):
-        prefix_key = attrs.get('prefix_key')
-        suffix_key = attrs.get('suffix_key')
+        prefix_key = attrs.get("prefix_key")
+        suffix_key = attrs.get("suffix_key")
 
         # In the case of user don't set any shortcut key.
         if prefix_key is None and suffix_key is None:
@@ -16,13 +15,13 @@ class LabelSerializer(serializers.ModelSerializer):
 
         # Don't allow shortcut key not to have a suffix key.
         if prefix_key and not suffix_key:
-            raise ValidationError('Shortcut key may not have a suffix key.')
+            raise ValidationError("Shortcut key may not have a suffix key.")
 
         # Don't allow to save same shortcut key when prefix_key is null.
         try:
-            context = self.context['request'].parser_context
-            project_id = context['kwargs']['project_id']
-            label_id = context['kwargs'].get('label_id')
+            context = self.context["request"].parser_context
+            project_id = context["kwargs"]["project_id"]
+            label_id = context["kwargs"].get("label_id")
         except (AttributeError, KeyError):
             pass  # unit tests don't always have the correct context set up
         else:
@@ -36,19 +35,19 @@ class LabelSerializer(serializers.ModelSerializer):
                 conflicting_labels = conflicting_labels.exclude(id=label_id)
 
             if conflicting_labels.exists():
-                raise ValidationError('Duplicate shortcut key.')
+                raise ValidationError("Duplicate shortcut key.")
 
         return super().validate(attrs)
 
     class Meta:
         model = LabelType
         fields = (
-            'id',
-            'text',
-            'prefix_key',
-            'suffix_key',
-            'background_color',
-            'text_color',
+            "id",
+            "text",
+            "prefix_key",
+            "suffix_key",
+            "background_color",
+            "text_color",
         )
 
 
@@ -56,12 +55,12 @@ class CategoryTypeSerializer(LabelSerializer):
     class Meta:
         model = CategoryType
         fields = (
-            'id',
-            'text',
-            'prefix_key',
-            'suffix_key',
-            'background_color',
-            'text_color',
+            "id",
+            "text",
+            "prefix_key",
+            "suffix_key",
+            "background_color",
+            "text_color",
         )
 
 
@@ -69,20 +68,19 @@ class SpanTypeSerializer(LabelSerializer):
     class Meta:
         model = SpanType
         fields = (
-            'id',
-            'text',
-            'prefix_key',
-            'suffix_key',
-            'background_color',
-            'text_color',
+            "id",
+            "text",
+            "prefix_key",
+            "suffix_key",
+            "background_color",
+            "text_color",
         )
 
 
 class RelationTypesSerializer(serializers.ModelSerializer):
-
     def validate(self, attrs):
         return super().validate(attrs)
 
     class Meta:
         model = RelationType
-        fields = ('id', 'color', 'name')
+        fields = ("id", "color", "name")

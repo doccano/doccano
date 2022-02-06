@@ -12,7 +12,6 @@ from .data import Record
 
 
 class BaseWriter:
-
     def __init__(self, tmpdir: str):
         self.tmpdir = tmpdir
 
@@ -21,26 +20,26 @@ class BaseWriter:
         raise NotImplementedError()
 
     def write_zip(self, filenames: Iterable):
-        save_file = '{}.zip'.format(os.path.join(self.tmpdir, str(uuid.uuid4())))
-        with zipfile.ZipFile(save_file, 'w', compression=zipfile.ZIP_DEFLATED) as zf:
+        save_file = "{}.zip".format(os.path.join(self.tmpdir, str(uuid.uuid4())))
+        with zipfile.ZipFile(save_file, "w", compression=zipfile.ZIP_DEFLATED) as zf:
             for file in filenames:
                 zf.write(filename=file, arcname=os.path.basename(file))
         return save_file
 
 
 class LineWriter(BaseWriter):
-    extension = 'txt'
+    extension = "txt"
 
     def write(self, records: Iterator[Record]) -> str:
         files = {}
         for record in records:
-            filename = os.path.join(self.tmpdir, f'{record.user}.{self.extension}')
+            filename = os.path.join(self.tmpdir, f"{record.user}.{self.extension}")
             if filename not in files:
-                f = open(filename, mode='a')
+                f = open(filename, mode="a")
                 files[filename] = f
             f = files[filename]
             line = self.create_line(record)
-            f.write(f'{line}\n')
+            f.write(f"{line}\n")
         for f in files.values():
             f.close()
         save_file = self.write_zip(files)
@@ -54,7 +53,7 @@ class LineWriter(BaseWriter):
 
 
 class CsvWriter(BaseWriter):
-    extension = 'csv'
+    extension = "csv"
 
     def write(self, records: Iterator[Record]) -> str:
         writers = {}
@@ -62,9 +61,9 @@ class CsvWriter(BaseWriter):
         records = list(records)
         header = self.create_header(records)
         for record in records:
-            filename = os.path.join(self.tmpdir, f'{record.user}.{self.extension}')
+            filename = os.path.join(self.tmpdir, f"{record.user}.{self.extension}")
             if filename not in writers:
-                f = open(filename, mode='a', encoding='utf-8')
+                f = open(filename, mode="a", encoding="utf-8")
                 writer = csv.DictWriter(f, header)
                 writer.writeheader()
                 writers[filename] = writer
@@ -81,29 +80,24 @@ class CsvWriter(BaseWriter):
         return save_file
 
     def create_line(self, record) -> Dict:
-        return {
-            'id': record.id,
-            'data': record.data,
-            'label': '#'.join(sorted(record.label)),
-            **record.metadata
-        }
+        return {"id": record.id, "data": record.data, "label": "#".join(sorted(record.label)), **record.metadata}
 
     def create_header(self, records: List[Record]) -> Iterable[str]:
-        header = ['id', 'data', 'label']
+        header = ["id", "data", "label"]
         header += sorted(set(itertools.chain(*[r.metadata.keys() for r in records])))
         return header
 
 
 class JSONWriter(BaseWriter):
-    extension = 'json'
+    extension = "json"
 
     def write(self, records: Iterator[Record]) -> str:
         writers = {}
         contents = defaultdict(list)
         for record in records:
-            filename = os.path.join(self.tmpdir, f'{record.user}.{self.extension}')
+            filename = os.path.join(self.tmpdir, f"{record.user}.{self.extension}")
             if filename not in writers:
-                f = open(filename, mode='a', encoding='utf-8')
+                f = open(filename, mode="a", encoding="utf-8")
                 writers[filename] = f
             line = self.create_line(record)
             contents[filename].append(line)
@@ -119,54 +113,46 @@ class JSONWriter(BaseWriter):
         return save_file
 
     def create_line(self, record) -> Dict:
-        return {
-            'id': record.id,
-            'data': record.data,
-            'label': record.label,
-            **record.metadata
-        }
+        return {"id": record.id, "data": record.data, "label": record.label, **record.metadata}
 
 
 class JSONLWriter(LineWriter):
-    extension = 'jsonl'
+    extension = "jsonl"
 
     def create_line(self, record):
-        return json.dumps({
-            'id': record.id,
-            'data': record.data,
-            'label': record.label,
-            **record.metadata
-        }, ensure_ascii=False)
+        return json.dumps(
+            {"id": record.id, "data": record.data, "label": record.label, **record.metadata}, ensure_ascii=False
+        )
 
 
 class FastTextWriter(LineWriter):
-    extension = 'txt'
+    extension = "txt"
 
     def create_line(self, record):
-        line = [f'__label__{label}' for label in record.label]
+        line = [f"__label__{label}" for label in record.label]
         line.sort()
         line.append(record.data)
-        line = ' '.join(line)
+        line = " ".join(line)
         return line
 
 
 class IntentAndSlotWriter(LineWriter):
-    extension = 'jsonl'
+    extension = "jsonl"
 
     def create_line(self, record):
         if isinstance(record.label, dict):
-            return json.dumps({
-                'id': record.id,
-                'text': record.data,
-                'cats': record.label.get('cats', []),
-                'entities': record.label.get('entities', []),
-                **record.metadata
-            }, ensure_ascii=False)
+            return json.dumps(
+                {
+                    "id": record.id,
+                    "text": record.data,
+                    "cats": record.label.get("cats", []),
+                    "entities": record.label.get("entities", []),
+                    **record.metadata,
+                },
+                ensure_ascii=False,
+            )
         else:
-            return json.dumps({
-                'id': record.id,
-                'text': record.data,
-                'cats': [],
-                'entities': [],
-                **record.metadata
-            }, ensure_ascii=False)
+            return json.dumps(
+                {"id": record.id, "text": record.data, "cats": [], "entities": [], **record.metadata},
+                ensure_ascii=False,
+            )

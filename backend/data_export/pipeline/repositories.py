@@ -9,7 +9,6 @@ from .data import Record
 
 
 class BaseRepository(abc.ABC):
-
     def __init__(self, project: Project):
         self.project = project
 
@@ -19,7 +18,6 @@ class BaseRepository(abc.ABC):
 
 
 class FileRepository(BaseRepository):
-
     def list(self, export_approved=False) -> Iterator[Record]:
         examples = self.project.examples.all()
         if export_approved:
@@ -32,10 +30,10 @@ class FileRepository(BaseRepository):
             for user, label in label_per_user.items():
                 yield Record(
                     id=example.id,
-                    data=str(example.filename).split('/')[-1],
+                    data=str(example.filename).split("/")[-1],
                     label=label,
                     user=user,
-                    metadata=example.meta
+                    metadata=example.meta,
                 )
             # todo:
             # If there is no label, export the doc with `unknown` user.
@@ -45,11 +43,7 @@ class FileRepository(BaseRepository):
             # This means I will allow each user to be able to approve the doc.
             if len(label_per_user) == 0:
                 yield Record(
-                    id=example.id,
-                    data=str(example.filename).split('/')[-1],
-                    label=[],
-                    user='unknown',
-                    metadata={}
+                    id=example.id, data=str(example.filename).split("/")[-1], label=[], user="unknown", metadata={}
                 )
 
     def label_per_user(self, example) -> Dict:
@@ -60,11 +54,10 @@ class FileRepository(BaseRepository):
 
     def reduce_user(self, label_per_user: Dict[str, List]):
         value = list(itertools.chain(*label_per_user.values()))
-        return {'all': value}
+        return {"all": value}
 
 
 class Speech2TextRepository(FileRepository):
-
     def label_per_user(self, example) -> Dict:
         label_per_user = defaultdict(list)
         for a in example.texts.all():
@@ -73,7 +66,6 @@ class Speech2TextRepository(FileRepository):
 
 
 class TextRepository(BaseRepository):
-
     @property
     def docs(self):
         return Example.objects.filter(project=self.project)
@@ -88,13 +80,7 @@ class TextRepository(BaseRepository):
             if self.project.collaborative_annotation:
                 label_per_user = self.reduce_user(label_per_user)
             for user, label in label_per_user.items():
-                yield Record(
-                    id=doc.id,
-                    data=doc.text,
-                    label=label,
-                    user=user,
-                    metadata=doc.meta
-                )
+                yield Record(id=doc.id, data=doc.text, label=label, user=user, metadata=doc.meta)
             # todo:
             # If there is no label, export the doc with `unknown` user.
             # This is a quick solution.
@@ -102,13 +88,7 @@ class TextRepository(BaseRepository):
             # with the user who approved the doc.
             # This means I will allow each user to be able to approve the doc.
             if len(label_per_user) == 0:
-                yield Record(
-                    id=doc.id,
-                    data=doc.text,
-                    label=[],
-                    user='unknown',
-                    metadata={}
-                )
+                yield Record(id=doc.id, data=doc.text, label=[], user="unknown", metadata={})
 
     @abc.abstractmethod
     def label_per_user(self, doc) -> Dict:
@@ -116,16 +96,13 @@ class TextRepository(BaseRepository):
 
     def reduce_user(self, label_per_user: Dict[str, List]):
         value = list(itertools.chain(*label_per_user.values()))
-        return {'all': value}
+        return {"all": value}
 
 
 class TextClassificationRepository(TextRepository):
-
     @property
     def docs(self):
-        return Example.objects.filter(project=self.project).prefetch_related(
-            'categories__user', 'categories__label'
-        )
+        return Example.objects.filter(project=self.project).prefetch_related("categories__user", "categories__label")
 
     def label_per_user(self, doc) -> Dict:
         label_per_user = defaultdict(list)
@@ -135,12 +112,9 @@ class TextClassificationRepository(TextRepository):
 
 
 class SequenceLabelingRepository(TextRepository):
-
     @property
     def docs(self):
-        return Example.objects.filter(project=self.project).prefetch_related(
-            'spans__user', 'spans__label'
-        )
+        return Example.objects.filter(project=self.project).prefetch_related("spans__user", "spans__label")
 
     def label_per_user(self, doc) -> Dict:
         label_per_user = defaultdict(list)
@@ -151,12 +125,9 @@ class SequenceLabelingRepository(TextRepository):
 
 
 class Seq2seqRepository(TextRepository):
-
     @property
     def docs(self):
-        return Example.objects.filter(project=self.project).prefetch_related(
-            'texts__user'
-        )
+        return Example.objects.filter(project=self.project).prefetch_related("texts__user")
 
     def label_per_user(self, doc) -> Dict:
         label_per_user = defaultdict(list)
@@ -166,14 +137,10 @@ class Seq2seqRepository(TextRepository):
 
 
 class IntentDetectionSlotFillingRepository(TextRepository):
-
     @property
     def docs(self):
         return Example.objects.filter(project=self.project).prefetch_related(
-            'categories__user',
-            'categories__label',
-            'spans__user',
-            'spans__label'
+            "categories__user", "categories__label", "spans__user", "spans__label"
         )
 
     def label_per_user(self, doc) -> Dict:
@@ -186,7 +153,7 @@ class IntentDetectionSlotFillingRepository(TextRepository):
             label = (a.start_offset, a.end_offset, a.label.text)
             span_per_user[a.user.username].append(label)
         for user, label in category_per_user.items():
-            label_per_user[user]['cats'] = label
+            label_per_user[user]["cats"] = label
         for user, label in span_per_user.items():
-            label_per_user[user]['entities'] = label
+            label_per_user[user]["entities"] = label
         return label_per_user

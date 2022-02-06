@@ -13,15 +13,14 @@ from .readers import BaseReader
 
 
 class Writer(abc.ABC):
-
     @abc.abstractmethod
     def save(self, reader: BaseReader, project: Project, user, cleaner):
         """Save the read contents to DB."""
-        raise NotImplementedError('Please implement this method in the subclass.')
+        raise NotImplementedError("Please implement this method in the subclass.")
 
     def errors(self) -> List[Dict[Any, Any]]:
         """Return errors."""
-        raise NotImplementedError('Please implement this method in the subclass.')
+        raise NotImplementedError("Please implement this method in the subclass.")
 
 
 def group_by_class(instances):
@@ -32,7 +31,6 @@ def group_by_class(instances):
 
 
 class Examples:
-
     def __init__(self, buffer_size: int = settings.IMPORT_BATCH_SIZE):
         self.buffer_size = buffer_size
         self.buffer = []
@@ -74,16 +72,17 @@ class Examples:
         for model in [CategoryType, SpanType]:
             for label in model.objects.all():
                 mapping[label.text] = label
-        annotations = list(itertools.chain.from_iterable([
-            data.create_annotation(user, example, mapping) for data, example in zip(self.buffer, examples)
-        ]))
+        annotations = list(
+            itertools.chain.from_iterable(
+                [data.create_annotation(user, example, mapping) for data, example in zip(self.buffer, examples)]
+            )
+        )
         groups = group_by_class(annotations)
         for klass, instances in groups.items():
             klass.objects.bulk_create(instances)
 
 
 class BulkWriter(Writer):
-
     def __init__(self, batch_size: int):
         self.examples = Examples(batch_size)
         self._errors = []

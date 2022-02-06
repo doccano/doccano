@@ -5,14 +5,14 @@ from .models import Example
 
 
 class ExampleFilter(FilterSet):
-    confirmed = BooleanFilter(field_name='states', method='filter_by_state')
+    confirmed = BooleanFilter(field_name="states", method="filter_by_state")
 
     def filter_by_state(self, queryset, field_name, is_confirmed: bool):
         queryset = queryset.annotate(
             num_confirm=Count(
                 expression=field_name,
-                filter=Q(**{f'{field_name}__confirmed_by': self.request.user}) |
-                Q(project__collaborative_annotation=True)
+                filter=Q(**{f"{field_name}__confirmed_by": self.request.user})
+                | Q(project__collaborative_annotation=True),
             )
         )
         if is_confirmed:
@@ -23,4 +23,4 @@ class ExampleFilter(FilterSet):
 
     class Meta:
         model = Example
-        fields = ('project', 'text', 'created_at', 'updated_at')
+        fields = ("project", "text", "created_at", "updated_at")

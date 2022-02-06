@@ -6,36 +6,27 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('labels', '0003_auto_20220127_0654'),
-        ('api', '0032_auto_20220127_0654'),
+        ("labels", "0003_auto_20220127_0654"),
+        ("api", "0032_auto_20220127_0654"),
     ]
 
     operations = [
         migrations.SeparateDatabaseAndState(
             state_operations=[
                 migrations.DeleteModel(
-                    name='CategoryType',
+                    name="CategoryType",
                 ),
                 migrations.DeleteModel(
-                    name='RelationTypes',
+                    name="RelationTypes",
                 ),
                 migrations.DeleteModel(
-                    name='SpanType',
+                    name="SpanType",
                 ),
             ],
             database_operations=[
-                migrations.AlterModelTable(
-                    name='CategoryType',
-                    table='label_types_categorytype'
-                ),
-                migrations.AlterModelTable(
-                    name='RelationTypes',
-                    table='label_types_relationtypes'
-                ),
-                migrations.AlterModelTable(
-                    name='SpanType',
-                    table='label_types_spantype'
-                )
-            ]
+                migrations.AlterModelTable(name="CategoryType", table="label_types_categorytype"),
+                migrations.AlterModelTable(name="RelationTypes", table="label_types_relationtypes"),
+                migrations.AlterModelTable(name="SpanType", table="label_types_spantype"),
+            ],
         )
     ]

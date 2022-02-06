@@ -6,21 +6,12 @@ from projects.models import Project
 
 
 class AutoLabelingConfig(models.Model):
-    TASK_CHOICES = (
-        ('Category', 'category'),
-        ('Span', 'span'),
-        ('Text', 'text'),
-        ('Relation', 'relation')
-    )
+    TASK_CHOICES = (("Category", "category"), ("Span", "span"), ("Text", "text"), ("Relation", "relation"))
     model_name = models.CharField(max_length=100)
     model_attrs = models.JSONField(default=dict)
-    template = models.TextField(default='')
+    template = models.TextField(default="")
     label_mapping = models.JSONField(default=dict, blank=True)
-    project = models.ForeignKey(
-        to=Project,
-        on_delete=models.CASCADE,
-        related_name='auto_labeling_config'
-    )
+    project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name="auto_labeling_config")
     task_type = models.CharField(max_length=100, choices=TASK_CHOICES)
     default = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -34,8 +25,8 @@ class AutoLabelingConfig(models.Model):
         try:
             RequestModelFactory.find(self.model_name)
         except NameError:
-            message = f'The specified model name {self.model_name} does not exist.'
+            message = f"The specified model name {self.model_name} does not exist."
             raise ValidationError(message)
         except Exception:
-            message = 'The attributes does not match the model.'
+            message = "The attributes does not match the model."
             raise ValidationError(message)

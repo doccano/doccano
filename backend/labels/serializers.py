@@ -12,15 +12,15 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = (
-            'id',
-            'prob',
-            'user',
-            'example',
-            'created_at',
-            'updated_at',
-            'label',
+            "id",
+            "prob",
+            "user",
+            "example",
+            "created_at",
+            "updated_at",
+            "label",
         )
-        read_only_fields = ('user',)
+        read_only_fields = ("user",)
 
 
 class SpanSerializer(serializers.ModelSerializer):
@@ -30,17 +30,17 @@ class SpanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Span
         fields = (
-            'id',
-            'prob',
-            'user',
-            'example',
-            'created_at',
-            'updated_at',
-            'label',
-            'start_offset',
-            'end_offset',
+            "id",
+            "prob",
+            "user",
+            "example",
+            "created_at",
+            "updated_at",
+            "label",
+            "start_offset",
+            "end_offset",
         )
-        read_only_fields = ('user',)
+        read_only_fields = ("user",)
 
 
 class TextLabelSerializer(serializers.ModelSerializer):
@@ -49,22 +49,21 @@ class TextLabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = TextLabel
         fields = (
-            'id',
-            'prob',
-            'user',
-            'example',
-            'created_at',
-            'updated_at',
-            'text',
+            "id",
+            "prob",
+            "user",
+            "example",
+            "created_at",
+            "updated_at",
+            "text",
         )
-        read_only_fields = ('user',)
+        read_only_fields = ("user",)
 
 
 class RelationSerializer(serializers.ModelSerializer):
-
     def validate(self, attrs):
         return super().validate(attrs)
 
     class Meta:
         model = Relation
-        fields = ('id', 'annotation_id_1', 'annotation_id_2', 'type', 'user', 'timestamp')
+        fields = ("id", "annotation_id_1", "annotation_id_2", "type", "user", "timestamp")

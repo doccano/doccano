@@ -8,12 +8,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('api', '0006_merge_20210221_1258'),
+        ("api", "0006_merge_20210221_1258"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='rolemapping',
-            unique_together={('user', 'project')},
+            name="rolemapping",
+            unique_together={("user", "project")},
         ),
     ]

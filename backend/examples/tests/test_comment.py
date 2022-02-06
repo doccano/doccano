@@ -8,7 +8,6 @@ from .utils import make_comment, make_doc
 
 
 class TestCommentListDocAPI(CRUDMixin):
-
     @classmethod
     def setUpTestData(cls):
         cls.project = prepare_project()
@@ -17,14 +16,14 @@ class TestCommentListDocAPI(CRUDMixin):
         doc2 = make_doc(cls.project.item)
         make_comment(doc1, cls.project.admin)
         make_comment(doc2, cls.project.admin)
-        cls.data = {'text': 'example'}
-        cls.url = reverse(viewname='comment_list', args=[cls.project.item.id])
-        cls.url += f'?example={doc1.id}'
+        cls.data = {"text": "example"}
+        cls.url = reverse(viewname="comment_list", args=[cls.project.item.id])
+        cls.url += f"?example={doc1.id}"
 
     def test_allows_project_member_to_list_comments(self):
         for member in self.project.members:
             response = self.assert_fetch(member, status.HTTP_200_OK)
-            self.assertEqual(response.data['count'], 1)
+            self.assertEqual(response.data["count"], 1)
 
     def test_denies_non_project_member_to_list_comments(self):
         self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
@@ -44,18 +43,17 @@ class TestCommentListDocAPI(CRUDMixin):
 
 
 class TestCommentListProjectAPI(CRUDMixin):
-
     def setUp(self):
         self.project = prepare_project()
         self.non_member = make_user()
         self.doc = make_doc(self.project.item)
         make_comment(self.doc, self.project.admin)
-        self.url = reverse(viewname='comment_list', args=[self.project.item.id])
+        self.url = reverse(viewname="comment_list", args=[self.project.item.id])
 
     def test_allows_project_member_to_list_comments(self):
         for member in self.project.members:
             response = self.assert_fetch(member, status.HTTP_200_OK)
-            self.assertEqual(response.data['count'], 1)
+            self.assertEqual(response.data["count"], 1)
 
     def test_denies_non_project_member_to_list_comments(self):
         self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
@@ -67,7 +65,7 @@ class TestCommentListProjectAPI(CRUDMixin):
         ids = [item.id for item in self.doc.comments.all()]
         if user:
             self.client.force_login(user)
-        response = self.client.delete(self.url, data={'ids': ids}, format='json')
+        response = self.client.delete(self.url, data={"ids": ids}, format="json")
         self.assertEqual(response.status_code, expected)
 
     def test_allows_project_member_to_delete_comments(self):
@@ -75,7 +73,7 @@ class TestCommentListProjectAPI(CRUDMixin):
         for member in self.project.members:
             self.assert_bulk_delete(member, status.HTTP_204_NO_CONTENT)
             response = self.client.get(self.url)
-            self.assertEqual(response.data['count'], 0)
+            self.assertEqual(response.data["count"], 0)
 
     def test_denies_non_project_member_to_delete_comments(self):
         self.assert_fetch(self.non_member, status.HTTP_403_FORBIDDEN)
@@ -85,14 +83,13 @@ class TestCommentListProjectAPI(CRUDMixin):
 
 
 class TestCommentDetailAPI(CRUDMixin):
-
     def setUp(self):
         self.project = prepare_project()
         self.non_member = make_user()
         doc = make_doc(self.project.item)
         comment = make_comment(doc, self.project.admin)
-        self.data = {'text': 'example'}
-        self.url = reverse(viewname='comment_detail', args=[self.project.item.id, comment.id])
+        self.data = {"text": "example"}
+        self.url = reverse(viewname="comment_detail", args=[self.project.item.id, comment.id])
 
     def test_allows_comment_owner_to_get_comment(self):
         # Todo: Allows project member to get comment.
@@ -110,7 +107,7 @@ class TestCommentDetailAPI(CRUDMixin):
 
     def test_allows_comment_owner_to_update_comment(self):
         response = self.assert_update(self.project.admin, status.HTTP_200_OK)
-        self.assertEqual(response.data['text'], self.data['text'])
+        self.assertEqual(response.data["text"], self.data["text"])
 
     def test_denies_non_comment_owner_to_update_comment(self):
         for member in self.project.staffs:

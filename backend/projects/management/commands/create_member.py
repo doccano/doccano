@@ -7,24 +7,21 @@ from ...models import Member
 
 
 class Command(BaseCommand):
-    help = 'Non-interactively create a member'
+    help = "Non-interactively create a member"
 
     @classmethod
     def add_arguments(self, parser):
-        parser.add_argument('--rolename', default=None,
-                            help='The name of the role.')
-        parser.add_argument('--username', default=None,
-                            help='The name of the user.')
-        parser.add_argument('--projectname', default=None,
-                            help='The name of the project.')
+        parser.add_argument("--rolename", default=None, help="The name of the role.")
+        parser.add_argument("--username", default=None, help="The name of the user.")
+        parser.add_argument("--projectname", default=None, help="The name of the project.")
 
     def handle(self, *args, **options):
-        rolename = options.get('rolename')
-        username = options.get('username')
-        projectname = options.get('projectname')
+        rolename = options.get("rolename")
+        username = options.get("username")
+        projectname = options.get("projectname")
 
         if not rolename or not username or not projectname:
-            raise CommandError('--rolename  --projectname  --username are required for the member')
+            raise CommandError("--rolename  --projectname  --username are required for the member")
 
         if rolename and projectname and username:
             try:
