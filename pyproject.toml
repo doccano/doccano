@@ -1,0 +1,15 @@
+[tool.black]
+line-length = 120
+target-version = ['py37', 'py38']
+include = '\.pyi?$'
+
+[tool.isort]
+profile = "black"
+include_trailing_comma = true
+multi_line_output = 3
+
+[tool.flake8]
+max-line-length = 120
+max-complexity = 18
+ignore = "E203,E266,W503,"
+filename = "backend/*"
