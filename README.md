@@ -28,24 +28,26 @@ You can try the [annotation demo](http://doccano.herokuapp.com).
 
 Three options to run doccano:
 
-- pip(Python 3.8+)
+- pip (Python 3.8+)
 - Docker
 - Docker Compose
-  - production
-  - development
 
-For docker and docker compose, you need to install the following dependencies:
-
-- [Git](https://git-scm.com)
-- [Docker](https://www.docker.com)
-- [Docker Compose](https://docs.docker.com/compose)
-
-### pip installation
+### pip
 
 To install doccano, simply run:
 
 ```bash
 pip install doccano
+```
+
+By default, SQLite 3 is used for the default database. If you want to use PostgreSQL, install the additional dependencies:
+
+```bash
+pip install 'doccano[postgresql]'
+```
+and set `DATABASE_URL` environment variable according to your PostgreSQL credentials:
+```bash
+DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
 ```
 
 After installation, run the following commands:
@@ -68,49 +70,6 @@ doccano task
 
 Go to <http://127.0.0.1:8000/>.
 
-By default, sqlite3 is used for the default database. If you want to use PostgreSQL, install the additional dependency:
-
-```bash
-pip install 'doccano[postgresql]'
-```
-
-Create an .env file with variables in the following format, each on a new line:
-
-```bash
-POSTGRES_USER=doccano
-POSTGRES_PASSWORD=doccano
-POSTGRES_DB=doccano
-```
-
-Then, pass it to docker run with the --env-file flag:
-
-```bash
-docker run --rm -d \
-    -p 5432:5432 \
-    -v postgres-data:/var/lib/postgresql/data \
-    --env-file .env \
-    postgres:13.3-alpine
-```
-
-And set `DATABASE_URL` environment variable:
-
-```bash
-# Please replace each variable.
-DATABASE_URL=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}?sslmode=disable
-```
-
-Now run the command as before:
-
-```bash
-doccano init
-doccano createuser --username admin --password pass
-doccano webserver --port 8000
-
-# In another terminal.
-# Don't forget to set DATABASE_URL
-doccano task
-```
-
 ### Docker
 
 As a one-time setup, create a Docker container as follows:
@@ -130,14 +89,14 @@ Next, start doccano by running the container:
 docker container start doccano
 ```
 
+Go to <http://127.0.0.1:8000/>.
+
 To stop the container, run `docker container stop doccano -t 5`.
 All data created in the container will persist across restarts.
 
-Go to <http://127.0.0.1:8000/>.
-
 ### Docker Compose
 
-You need to clone the repository:
+You need to install Git and to clone the repository:
 
 ```bash
 git clone https://github.com/doccano/doccano.git
@@ -150,7 +109,7 @@ _Note for Windows developers:_ Be sure to configure git to correctly handle line
 git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 ```
 
-Then, create an `.env` file with variables in the following format(see [./config/.env.example](https://github.com/doccano/doccano/blob/master/config/.env.example)):
+Then, create an `.env` file with variables in the following format (see [./config/.env.example](https://github.com/doccano/doccano/blob/master/config/.env.example)):
 
 ```plain
 # platform settings
@@ -170,7 +129,7 @@ POSTGRES_DB=doccano
 
 #### Production
 
-After running the following command, access <http://0.0.0.0/>.
+After running the following command, access <http://127.0.0.1/>.
 
 ```bash
 docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
@@ -178,7 +137,7 @@ docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
 
 #### Development
 
-After running the following command, access <http://127.0.0.1:3000/>. If you want to use the admin site, please access <http://127.0.0.1:8000/admin/>.
+After running the following command, access <http://127.0.0.1:8000/>. If you want to use the admin site, please access <http://127.0.0.1:8000/admin/>.
 
 ```bash
 docker-compose -f docker-compose.dev.yml --env-file ./config/.env.example up
