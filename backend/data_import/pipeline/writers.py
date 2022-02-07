@@ -9,7 +9,7 @@ from projects.models import Project
 from examples.models import Example
 from label_types.models import CategoryType, SpanType
 from .exceptions import FileParseException
-from .readers import BaseReader
+from .readers import BaseReader, Record
 
 
 class Writer(abc.ABC):
@@ -33,7 +33,7 @@ def group_by_class(instances):
 class Examples:
     def __init__(self, buffer_size: int = settings.IMPORT_BATCH_SIZE):
         self.buffer_size = buffer_size
-        self.buffer = []
+        self.buffer: List[Record] = []
 
     def __len__(self):
         return len(self.buffer)
@@ -85,7 +85,7 @@ class Examples:
 class BulkWriter(Writer):
     def __init__(self, batch_size: int):
         self.examples = Examples(batch_size)
-        self._errors = []
+        self._errors: List[FileParseException] = []
 
     def save(self, reader: BaseReader, project: Project, user, cleaner):
         it = iter(reader)

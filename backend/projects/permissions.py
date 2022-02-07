@@ -50,5 +50,5 @@ class IsAnnotationApprover(RolePermission):
     role_name = settings.ROLE_ANNOTATION_APPROVER
 
 
-IsProjectMember = IsAnnotator | IsAnnotationApprover | IsProjectAdmin
-IsProjectStaffAndReadOnly = IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly
+IsProjectMember = IsAnnotator | IsAnnotationApprover | IsProjectAdmin  # type: ignore
+IsProjectStaffAndReadOnly = IsAnnotatorAndReadOnly | IsAnnotationApproverAndReadOnly  # type: ignore

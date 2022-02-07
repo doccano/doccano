@@ -49,7 +49,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = (
+        fields = [
             "id",
             "name",
             "description",
@@ -66,7 +66,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "can_define_category",
             "can_define_span",
             "tags",
-        )
+        ]
         read_only_fields = (
             "updated_at",
             "is_text_project",
@@ -86,7 +86,7 @@ class TextClassificationProjectSerializer(ProjectSerializer):
 class SequenceLabelingProjectSerializer(ProjectSerializer):
     class Meta(ProjectSerializer.Meta):
         model = SequenceLabelingProject
-        fields = ProjectSerializer.Meta.fields + ("allow_overlapping", "grapheme_mode")
+        fields = ProjectSerializer.Meta.fields + ["allow_overlapping", "grapheme_mode"]
 
 
 class Seq2seqProjectSerializer(ProjectSerializer):

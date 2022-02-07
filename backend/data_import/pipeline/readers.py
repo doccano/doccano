@@ -100,7 +100,7 @@ class Reader(BaseReader):
         self.filenames = filenames
         self.parser = parser
         self.builder = builder
-        self._errors = []
+        self._errors: List[FileParseException] = []
 
     def __iter__(self) -> Iterator[Record]:
         for filename in self.filenames:

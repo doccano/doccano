@@ -47,7 +47,7 @@ def detect_encoding(filename: str, buffer_size: int = io.DEFAULT_BUFFER_SIZE) ->
             if detector.done:
                 break
         if detector.done:
-            return detector.result["encoding"]
+            return detector.result["encoding"] or "utf-8"
         else:
             return "utf-8"
 
@@ -164,7 +164,7 @@ class JSONParser(Parser):
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
-        self._errors = []
+        self._errors: List[FileParseException] = []
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         encoding = decide_encoding(filename, self.encoding)
@@ -191,7 +191,7 @@ class JSONLParser(Parser):
 
     def __init__(self, encoding: str = DEFAULT_ENCODING, **kwargs):
         self.encoding = encoding
-        self._errors = []
+        self._errors: List[FileParseException] = []
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         reader = LineReader(filename, self.encoding)
@@ -288,7 +288,7 @@ class CoNLLParser(Parser):
         self.encoding = encoding
         self.delimiter = delimiter
         mapping = {"IOB2": IOB2, "IOE2": IOE2, "IOBES": IOBES, "BILOU": BILOU}
-        self._errors = []
+        self._errors: List[FileParseException] = []
         if scheme in mapping:
             self.scheme = mapping[scheme]
         else:

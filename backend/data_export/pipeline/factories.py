@@ -11,7 +11,7 @@ from projects.models import (
 from . import catalog, repositories, writers
 
 
-def create_repository(project) -> repositories.BaseRepository:
+def create_repository(project):
     mapping = {
         DOCUMENT_CLASSIFICATION: repositories.TextClassificationRepository,
         SEQUENCE_LABELING: repositories.SequenceLabelingRepository,
@@ -22,7 +22,7 @@ def create_repository(project) -> repositories.BaseRepository:
     }
     if project.project_type not in mapping:
         ValueError(f"Invalid project type: {project.project_type}")
-    repository = mapping.get(project.project_type)(project)
+    repository = mapping[project.project_type](project)
     return repository
 
 

@@ -1,10 +1,12 @@
+from typing import Any, Dict
+
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 
 class CRUDMixin(APITestCase):
     url = ""
-    data = {}
+    data: Dict[str, Any] = {}
 
     def assert_fetch(self, user=None, expected=status.HTTP_403_FORBIDDEN):
         if user:
