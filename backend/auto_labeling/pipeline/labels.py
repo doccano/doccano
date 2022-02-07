@@ -6,13 +6,13 @@ from django.contrib.auth.models import User
 
 from projects.models import Project
 from examples.models import Example
-from label_types.models import CategoryType, SpanType
+from label_types.models import CategoryType, LabelType, SpanType
 from labels.models import Label, Category, Span, TextLabel
 
 
 class LabelCollection(abc.ABC):
-    label_type = None
-    model = None
+    label_type: LabelType = None
+    model: Label = None
 
     def __init__(self, labels):
         self.labels = labels

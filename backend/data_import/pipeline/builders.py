@@ -1,6 +1,6 @@
 import abc
 from logging import getLogger
-from typing import Any, Dict, List, Optional, Type, TypeVar
+from typing import Any, Dict, List, Optional, Type
 
 from pydantic import ValidationError
 
@@ -10,7 +10,6 @@ from .labels import Label
 from .readers import Builder, Record
 
 logger = getLogger(__name__)
-T = TypeVar("T")
 
 
 class PlainBuilder(Builder):
@@ -34,7 +33,8 @@ def build_data(row: Dict[Any, Any], name: str, data_class: Type[BaseData], filen
 
 
 class Column(abc.ABC):
-    def __init__(self, name: str, value_class: Type[T]):
+    # Todo: need to redesign.
+    def __init__(self, name: str, value_class: Any):
         self.name = name
         self.value_class = value_class
 

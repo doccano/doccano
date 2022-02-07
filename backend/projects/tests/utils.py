@@ -49,7 +49,7 @@ def assign_user_to_role(project_member, project, role_name):
     return mapping
 
 
-def make_project(task: str, users: List[str], roles: List[str] = None, collaborative_annotation=False, **kwargs):
+def make_project(task: str, users: List[str], roles: List[str], collaborative_annotation=False, **kwargs):
     create_default_roles()
 
     # create users.

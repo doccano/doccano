@@ -58,9 +58,9 @@ class CsvWriter(BaseWriter):
     def write(self, records: Iterator[Record]) -> str:
         writers = {}
         file_handlers = set()
-        records = list(records)
-        header = self.create_header(records)
-        for record in records:
+        record_list = list(records)
+        header = self.create_header(record_list)
+        for record in record_list:
             filename = os.path.join(self.tmpdir, f"{record.user}.{self.extension}")
             if filename not in writers:
                 f = open(filename, mode="a", encoding="utf-8")
@@ -82,7 +82,7 @@ class CsvWriter(BaseWriter):
     def create_line(self, record) -> Dict:
         return {"id": record.id, "data": record.data, "label": "#".join(sorted(record.label)), **record.metadata}
 
-    def create_header(self, records: List[Record]) -> Iterable[str]:
+    def create_header(self, records: List[Record]) -> List[str]:
         header = ["id", "data", "label"]
         header += sorted(set(itertools.chain(*[r.metadata.keys() for r in records])))
         return header

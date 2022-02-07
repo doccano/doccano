@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, validator
 
@@ -68,7 +68,7 @@ class CategoryLabel(Label):
 
 
 class SpanLabel(Label):
-    label: Union[str, int]
+    label: str
     start_offset: int
     end_offset: int
 

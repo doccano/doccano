@@ -13,3 +13,9 @@ max-line-length = 120
 max-complexity = 18
 ignore = "E203,E266,W503,"
 filename = "backend/*"
+
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true
+show_error_codes = true
+exclude = "(migrations)|(app/settings.py)"

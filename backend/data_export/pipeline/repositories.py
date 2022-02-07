@@ -1,11 +1,13 @@
 import abc
 import itertools
 from collections import defaultdict
-from typing import Dict, Iterator, List
+from typing import Dict, Iterator, List, Tuple, Union
 
 from projects.models import Project
 from examples.models import Example
 from .data import Record
+
+SpanType = Tuple[int, int, str]
 
 
 class BaseRepository(abc.ABC):
@@ -144,16 +146,15 @@ class IntentDetectionSlotFillingRepository(TextRepository):
         )
 
     def label_per_user(self, doc) -> Dict:
-        category_per_user = defaultdict(list)
-        span_per_user = defaultdict(list)
-        label_per_user = defaultdict(dict)
+        category_per_user: Dict[str, List[str]] = defaultdict(list)
+        span_per_user: Dict[str, List[SpanType]] = defaultdict(list)
+        label_per_user: Dict[str, Dict[str, Union[List[str], List[SpanType]]]] = defaultdict(dict)
         for a in doc.categories.all():
             category_per_user[a.user.username].append(a.label.text)
         for a in doc.spans.all():
-            label = (a.start_offset, a.end_offset, a.label.text)
-            span_per_user[a.user.username].append(label)
-        for user, label in category_per_user.items():
-            label_per_user[user]["cats"] = label
-        for user, label in span_per_user.items():
-            label_per_user[user]["entities"] = label
+            span_per_user[a.user.username].append((a.start_offset, a.end_offset, a.label.text))
+        for user, cats in category_per_user.items():
+            label_per_user[user]["cats"] = cats
+        for user, span in span_per_user.items():
+            label_per_user[user]["entities"] = span
         return label_per_user
