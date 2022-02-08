@@ -1,5 +1,5 @@
 import { MetricsRepository } from '~/domain/models/metrics/metricsRepository'
-import { Progress, Distribution } from '~/domain/models/metrics/metrics'
+import { Progress, Distribution, MyProgress } from '~/domain/models/metrics/metrics'
 
 export class MetricsApplicationService {
   constructor(
@@ -16,5 +16,9 @@ export class MetricsApplicationService {
 
   public async fetchSpanDistribution(projectId: string): Promise<Distribution> {
     return await this.repository.fetchSpanDistribution(projectId)
+  }
+
+  public async fetchMyProgress(projectId: string): Promise<MyProgress> {
+    return await this.repository.fetchMyProgress(projectId)
   }
 }

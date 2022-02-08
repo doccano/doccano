@@ -6,3 +6,9 @@ export interface Progress {
   total: number
   progress: {user: string, done: number}[]
 }
+
+export interface MyProgress {
+  total: number
+  complete: number
+  remaining: number
+}
