@@ -49,8 +49,6 @@
         <v-list-item
           v-for="(label, i) in entityLabels"
           :key="i"
-          v-shortkey="[label.suffixKey]"
-          @shortkey="addOrUpdateEntity(label.id)"
           @click="addOrUpdateEntity(label.id)"
         >
           <v-list-item-action
@@ -125,6 +123,11 @@ export default Vue.extend({
       type: Boolean,
       default: false,
     },
+    selectedLabel: {
+      type: Object,
+      default: null,
+      required: false,
+    },
   },
 
   data() {
@@ -175,7 +178,11 @@ export default Vue.extend({
 
     handleAddEvent(e: any, startOffset: number, endOffset: number) {
       this.setOffset(startOffset, endOffset)
-      this.showEntityLabelMenu(e)
+      if (this.selectedLabel) {
+        this.addOrUpdateEntity(this.selectedLabel.id)
+      } else {
+        this.showEntityLabelMenu(e)
+      }
     },
 
     handleEntityClickEvent(e: any, entityId: number) {

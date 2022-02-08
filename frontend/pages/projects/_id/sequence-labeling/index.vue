@@ -1,5 +1,5 @@
 <template>
-  <layout-text v-if="doc.id">
+  <layout-text v-if="doc.id" v-shortkey="shortKeys" @shortkey="changeSelectedLabel">
     <template #header>
       <toolbar-laptop
         :doc-id="doc.id"
@@ -29,6 +29,7 @@
             :relation-labels="linkTypes"
             :allow-overlapping="project.allowOverlapping"
             :grapheme-mode="project.graphemeMode"
+            :selected-label="selectedLabel"
             @addEntity="addEntity"
             @click:entity="updateEntity"
             @contextmenu:entity="deleteEntity"
@@ -38,6 +39,35 @@
     </template>
     <template #sidebar>
       <list-metadata :metadata="doc.meta" />
+      <v-card class="mt-4">
+        <v-card-title>Label Types</v-card-title>
+        <v-card-text>
+          <v-chip-group
+            v-model="selectedLabelIndex"
+            column
+          >
+            <v-chip
+              v-for="(item, index) in labels"
+              :key="item.id"
+              v-shortkey="[item.suffixKey]"
+              :color="item.backgroundColor"
+              filter
+              :text-color="$contrastColor(item.backgroundColor)"
+              @shortkey="selectedLabelIndex = index"
+            >
+              {{ item.text }}
+              <v-avatar
+                v-if="item.suffixKey"
+                right
+                color="white"
+                class="black--text font-weight-bold"
+              >
+                {{ item.suffixKey }}
+              </v-avatar>
+            </v-chip>
+          </v-chip-group>
+        </v-card-text>
+      </v-card>
     </template>
   </layout-text>
 </template>
@@ -77,6 +107,7 @@ export default {
       project: {},
       enableAutoLabeling: false,
       rtl: false,
+      selectedLabelIndex: null,
     }
   },
 
@@ -101,14 +132,24 @@ export default {
     shortKeys() {
       return Object.fromEntries(this.labels.map(item => [item.id, [item.suffixKey]]))
     },
+
     projectId() {
       return this.$route.params.id
     },
+
     doc() {
       if (_.isEmpty(this.docs) || this.docs.items.length === 0) {
         return {}
       } else {
         return this.docs.items[0]
+      }
+    },
+
+    selectedLabel() {
+      if (Number.isInteger(this.selectedLabelIndex)) {
+        return this.labels[this.selectedLabelIndex]
+      } else {
+        return null
       }
     }
   },
@@ -178,6 +219,10 @@ export default {
       await this.$services.example.confirm(this.projectId, this.doc.id)
       await this.$fetch()
     },
+
+    changeSelectedLabel(event) {
+      this.selectedLabelIndex = this.labels.findIndex((item) => item.suffixKey === event.srcKey)
+    }
   }
 }
 </script>
