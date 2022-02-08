@@ -38,7 +38,8 @@
       </v-card>
     </template>
     <template #sidebar>
-      <list-metadata :metadata="doc.meta" />
+      <annotation-progress :progress="progress" />
+      <list-metadata :metadata="doc.meta" class="mt-4" />
       <v-card class="mt-4">
         <v-card-title>Label Types</v-card-title>
         <v-card-text>
@@ -80,10 +81,12 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 
 export default {
 
   components: {
+    AnnotationProgress,
     EntityEditor,
     LayoutText,
     ListMetadata,
@@ -108,6 +111,7 @@ export default {
       enableAutoLabeling: false,
       rtl: false,
       selectedLabelIndex: null,
+      progress: {},
     }
   },
 
@@ -167,6 +171,7 @@ export default {
     this.labels = await this.$services.spanType.list(this.projectId)
     this.linkTypes = await this.$services.linkTypes.list(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
+    this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
@@ -215,9 +220,14 @@ export default {
       }
     },
 
+    async updateProgress() {
+      this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+    },
+
     async confirm() {
       await this.$services.example.confirm(this.projectId, this.doc.id)
       await this.$fetch()
+      this.updateProgress()
     },
 
     changeSelectedLabel(event) {

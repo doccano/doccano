@@ -29,7 +29,8 @@
       />
     </template>
     <template #sidebar>
-      <list-metadata :metadata="doc.meta" />
+      <annotation-progress :progress="progress" />
+      <list-metadata :metadata="doc.meta" class="mt-4" />
     </template>
   </layout-text>
 </template>
@@ -40,11 +41,13 @@ import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
 
   components: {
+    AnnotationProgress,
     LayoutText,
     ListMetadata,
     Seq2seqBox,
@@ -62,7 +65,8 @@ export default {
       annotations: [],
       docs: [],
       project: {},
-      enableAutoLabeling: false
+      enableAutoLabeling: false,
+      progress: {}
     }
   },
 
@@ -104,6 +108,7 @@ export default {
 
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
+    this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
@@ -139,9 +144,14 @@ export default {
       }
     },
 
+    async updateProgress() {
+      this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+    },
+
     async confirm() {
       await this.$services.example.confirm(this.projectId, this.doc.id)
       await this.$fetch()
+      this.updateProgress()
     }
   }
 }
