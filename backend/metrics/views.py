@@ -18,8 +18,9 @@ class ProgressAPI(APIView):
     def get(self, request, *args, **kwargs):
         examples = Example.objects.filter(project=self.kwargs["project_id"]).values("id")
         total = examples.count()
-        done = ExampleState.objects.count_done(examples, user=self.request.user)
-        return {"total": total, "remaining": total - done}
+        complete = ExampleState.objects.count_done(examples, user=self.request.user)
+        data = {"total": total, "remaining": total - complete, "complete": complete}
+        return Response(data=data, status=status.HTTP_200_OK)
 
 
 class MemberProgressAPI(APIView):
