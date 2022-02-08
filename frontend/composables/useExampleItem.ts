@@ -5,7 +5,8 @@ import { ExampleDTO } from '@/services/application/example/exampleData'
 export const useExampleItem = () => {
   const state = reactive({
     example: {} as ExampleDTO,
-    totalExample: 0
+    totalExample: 0,
+    progress: {}
   })
 
   const { app } = useContext()
@@ -28,16 +29,22 @@ export const useExampleItem = () => {
     state.example = await exampleService.findById(projectId, state.example.id)
   }
 
+  const updateProgress = async(projectId: string) => {
+    state.progress = await app.$services.metrics.fetchMyProgress(projectId)
+  }
+
   const confirm = async(
     projectId: string,
   ) => {
     await exampleService.confirm(projectId, state.example.id)
     await getExampleById(projectId)
+    updateProgress(projectId)
   }
 
   return {
     state,
     confirm,
     getExample,
+    updateProgress
   }
 }

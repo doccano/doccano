@@ -44,7 +44,8 @@
       </v-card>
     </template>
     <template #sidebar>
-      <list-metadata :metadata="doc.meta" />
+      <annotation-progress :progress="progress" />
+      <list-metadata :metadata="doc.meta" class="mt-4" />
     </template>
   </layout-text>
 </template>
@@ -56,9 +57,11 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 
 export default {
   components: {
+    AnnotationProgress,
     EntityEditor,
     LayoutText,
     ListMetadata,
@@ -83,6 +86,7 @@ export default {
       project: {},
       exclusive: false,
       enableAutoLabeling: false,
+      progress: {}
     }
   },
 
@@ -123,6 +127,7 @@ export default {
     this.spanTypes = await this.$services.spanType.list(this.projectId)
     this.categoryTypes = await this.$services.categoryType.list(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
+    this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
@@ -165,9 +170,14 @@ export default {
       await this.listSpan(this.doc.id)
     },
 
+    async updateProgress() {
+      this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+    },
+
     async confirm() {
       await this.$services.example.confirm(this.projectId, this.doc.id)
       await this.$fetch()
+      this.updateProgress()
     }
   }
 }
