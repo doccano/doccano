@@ -14,6 +14,11 @@ export class LabelApplicationService {
     return items.map(item => new LabelDTO(item))
   }
 
+  public async findById(projectId: string, labelId: number): Promise<LabelDTO> {
+    const item = await this.repository.findById(projectId, labelId)
+    return new LabelDTO(item)
+  }
+
   public async create(projectId: string, item: CreateLabelCommand): Promise<LabelDTO> {
     // Todo: use auto mapping.
     const label = new LabelItem()

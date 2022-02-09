@@ -6,7 +6,7 @@
     </v-tabs>
     <v-card-title>
       <action-menu
-        @create="dialogCreate=true"
+        @create="$router.push('labels/add?type=' + labelType)"
         @upload="dialogUpload=true"
         @download="download"
       />
@@ -18,15 +18,6 @@
       >
         {{ $t('generic.delete') }}
       </v-btn>
-      <v-dialog v-model="dialogCreate">
-        <form-create
-          v-bind.sync="editedItem"
-          :used-keys="usedKeys"
-          :used-names="usedNames"
-          @cancel="close"
-          @save="save"
-        />
-      </v-dialog>
       <v-dialog v-model="dialogUpload">
         <form-upload
           :error-message="errorMessage"
@@ -55,7 +46,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import ActionMenu from '@/components/label/ActionMenu.vue'
-import FormCreate from '@/components/label/FormCreate.vue'
 import FormDelete from '@/components/label/FormDelete.vue'
 import FormUpload from '@/components/label/FormUpload.vue'
 import LabelList from '@/components/label/LabelList.vue'
@@ -66,7 +56,6 @@ export default Vue.extend({
 
   components: {
     ActionMenu,
-    FormCreate,
     FormDelete,
     FormUpload,
     LabelList
@@ -85,24 +74,8 @@ export default Vue.extend({
 
   data() {
     return {
-      dialogCreate: false,
       dialogDelete: false,
       dialogUpload: false,
-      editedIndex: -1,
-      editedItem: {
-        text: '',
-        prefixKey: null,
-        suffixKey: null,
-        backgroundColor: '#2196F3',
-        textColor: '#ffffff'
-      } as LabelDTO,
-      defaultItem: {
-        text: '',
-        prefixKey: null,
-        suffixKey: null,
-        backgroundColor: '#2196F3',
-        textColor: '#ffffff'
-      } as LabelDTO,
       items: [] as LabelDTO[],
       selected: [] as LabelDTO[],
       isLoading: false,
@@ -116,23 +89,30 @@ export default Vue.extend({
     canDelete(): boolean {
       return this.selected.length > 0
     },
+
     projectId(): string {
       return this.$route.params.id
     },
-    usedNames(): string[] {
-      const item = this.items[this.editedIndex] // to remove myself
-      return this.items.filter(_ => _ !== item).map(item => item.text)
-    },
-    usedKeys(): string[] {
-      const item = this.items[this.editedIndex] // to remove myself
-      return this.items.filter(_ => _ !== item).map(item => item.suffixKey)
-                       .filter(item => item !==null) as string[]
-    },
+
     hasMultiType(): boolean {
       if ('projectType' in this.project) {
         return this.project.projectType === 'IntentDetectionAndSlotFilling'
       } else {
         return false
+      }
+    },
+
+    labelType(): string {
+      if (this.hasMultiType) {
+        if (this.tab === 0) {
+          return 'category'
+        } else {
+          return 'span'
+        }
+      } else if (this.project.projectType.endsWith('Classification')) {
+        return 'category'
+      } else {
+        return 'span'
       }
     },
 
@@ -171,25 +151,7 @@ export default Vue.extend({
       this.items = await this.service.list(this.projectId)
       this.isLoading = false
     },
-
-    async save() {
-      if (this.editedIndex > -1) {
-        await this.service.update(this.projectId, this.editedItem)
-      } else {
-        await this.service.create(this.projectId, this.editedItem)
-      }
-      await this.list()
-      this.close()
-    },
-
-    close() {
-      this.dialogCreate = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-
+  
     async remove() {
       await this.service.bulkDelete(this.projectId, this.selected)
       this.list()
@@ -221,9 +183,7 @@ export default Vue.extend({
     },
 
     editItem(item: LabelDTO) {
-      this.editedIndex = this.items.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogCreate = true
+      this.$router.push(`labels/${item.id}/edit?type=${this.labelType}`)
     }
   }
 })

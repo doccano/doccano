@@ -1,108 +1,204 @@
 <template>
-  <base-card
-    :disabled="!valid"
-    :title="$t('labels.createLabel')"
-    :agree-text="$t('generic.save')"
-    :cancel-text="$t('generic.cancel')"
-    @agree="$emit('save')"
-    @cancel="$emit('cancel')"
-  >
-    <template #content>
-      <v-form v-model="valid">
-        <v-text-field
-          :value="text"
-          :label="$t('labels.labelName')"
-          :rules="[rules.required, rules.counter, rules.nameDuplicated]"
-          :prepend-icon="mdiLabel"
-          single-line
-          counter
-          autofocus
-          @input="updateValue('text', $event)"
-        />
-        <v-select
-          :value="suffixKey"
-          :items="shortkeys"
-          :label="$t('labels.key')"
-          :rules="[rules.keyDuplicated]"
-          :prepend-icon="mdiKeyboard"
-          @input="updateValue('suffixKey', $event)"
-        />
-        <v-color-picker
-          :value="backgroundColor"
-          :rules="[rules.required]"
-          show-swatches
-          hide-mode-switch
-          width="800"
-          @input="updateValue('backgroundColor', $event)"
-        />
+  <v-card>
+    <v-card-title>Create a Label Type</v-card-title>
+    <v-card-text>
+      <v-form
+        ref="form"
+        v-model="valid"
+      >
+        <v-row>
+          <v-col cols="12" sm="6">
+            <v-text-field
+              :value="text"
+              :counter="100"
+              :label="$t('labels.labelName')"
+              :rules="[rules.required, rules.counter, rules.nameDuplicated]"
+              outlined
+              required
+              @input="$emit('update:text', $event)"
+            />
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-select
+              :value="suffixKey"
+              :items="availableSuffixKeys"
+              :label="$t('labels.key')"
+              :rules="[rules.keyDuplicated]"
+              outlined
+              @input="$emit('update:suffixKey', $event)"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col cols="12" sm="12">
+            <v-text-field
+              :value="backgroundColor"
+              :rules="[rules.validColor]"
+              label="Color"
+              hide-details="auto"
+              outlined
+              required
+              @input="$emit('update:backgroundColor', $event)"
+            />
+            <v-chip-group
+              v-model="selectedColorIndex"
+              column
+              mandatory
+            >
+              <v-chip
+                v-for="color in predefinedColors"
+                :key="color"
+                :color="color"
+                filter
+                label
+                style="height: 32px; width: 32px;"
+              />
+              <v-tooltip bottom>
+                <template #activator="{ on, attrs }">
+                  <v-chip
+                    label
+                    v-bind="attrs"
+                    v-on="on"
+                    @click="setRandomColor"
+                  >
+                    <v-icon>{{ mdiReload }}</v-icon>
+                  </v-chip>
+                </template>
+                <span>Random color</span>
+              </v-tooltip>
+            </v-chip-group>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col>
+            <div class="title black--text mb-2">Preview</div>
+            <v-chip
+              :color="backgroundColor"
+              :text-color="textColor"
+            >
+              {{ text }}
+              <v-avatar
+                v-if="suffixKey"
+                right
+                color="white"
+                class="black--text font-weight-bold"
+              >
+                {{ suffixKey }}
+              </v-avatar>
+            </v-chip>
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col cols="12" sm="12">
+            <slot :valid="valid" />
+          </v-col>
+        </v-row>
       </v-form>
-    </template>
-  </base-card>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import { mdiLabel, mdiKeyboard } from '@mdi/js'
-import BaseCard from '@/components/utils/BaseCard.vue'
+import Vue, { PropType } from 'vue'
+import { mdiReload } from '@mdi/js';
+import { LabelDTO } from '~/services/application/label/labelData'
 
 export default Vue.extend({
-  components: {
-    BaseCard
-  },
-
   props: {
-    text: {
-      type: String,
-      default: '',
+    items: {
+      type: Array as PropType<LabelDTO[]>,
+      default: () => [],
       required: true
     },
-    suffixKey: {
+    id: {
+      type: Number as () => number | undefined,
+      default: undefined
+    },
+    text: {
       type: String,
-      default: null,
+      required: true,
     },
     backgroundColor: {
       type: String,
-      default: '#ffffff',
-      required: true
+      required: true,
     },
-    usedNames: {
-      type: Array,
-      default: () => [],
-      required: true
-    },
-    usedKeys: {
-      type: Array,
-      default: () => [],
-      required: true
+    suffixKey: {
+      type: String as () => string | null,
+      default: null
     }
   },
 
   data() {
     return {
+      selectedColorIndex: 0,
       valid: false,
       rules: {
         required: (v: string) => !!v || 'Required',
         // @ts-ignore
         counter: (v: string) => (v && v.length <= 100) || this.$t('rules.labelNameRules').labelLessThan100Chars,
         // @ts-ignore
-        nameDuplicated: (v: string) => (!this.usedNames.includes(v)) || this.$t('rules.labelNameRules').duplicated,
+        nameDuplicated: (v: string) => (!this.isUsedName(v)) || this.$t('rules.labelNameRules').duplicated,
         // @ts-ignore
-        keyDuplicated: (v: string) => !this.usedKeys.includes(v) || this.$t('rules.keyNameRules').duplicated,
+        keyDuplicated: (v: string) => (!this.isUsedSuffixKey(v)) || this.$t('rules.keyNameRules').duplicated,
+        validColor: (v: string) => (/^#[0-9A-F]{6}$/i.test(v)) || 'This string is NOT a valid hex color.'
       },
-      mdiLabel,
-      mdiKeyboard
+      mdiReload
     }
   },
 
   computed: {
-    shortkeys() {
-      return '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
+    availableSuffixKeys(): string[] {
+      const usedSuffixKeys = this.items.map(item => item.suffixKey).filter(item => item !== this.suffixKey)
+      const allSuffixKeys = '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
+      return allSuffixKeys.filter(item => !usedSuffixKeys.includes(item))
+    },
+
+    predefinedColors(): string[] {
+      return [
+        '#73D8FF', '#009CE0', '#0062B1',
+        '#AEA1FF', '#7B64FF', '#653294',
+        '#FDA1FF', '#FA28FF', '#AB149E',
+        '#68CCCA', '#16A5A5', '#0C797D',
+        '#A4DD00', '#68BC00', '#194D33',
+        '#FCDC00', '#FCC400', '#FB9E00',
+        '#F44E3B', '#D33115', '#9F0500'
+      ]
+    },
+
+    textColor(): string {
+      return this.$contrastColor(this.backgroundColor)
+    }
+  },
+
+  watch: {
+    selectedColorIndex(value) {
+      if (value < this.predefinedColors.length) {
+        this.$emit('update:backgroundColor', this.predefinedColors[this.selectedColorIndex])
+      }
     }
   },
 
   methods: {
-    updateValue(key: string, value: string) {
-      this.$emit(`update:${key}`, value);
+    isUsedName(text: string): boolean {
+      return this.items.filter(item => item.id !== this.id && item.text === text).length > 0
+    },
+
+    isUsedSuffixKey(key: string) {
+      if (key === null) {
+        return false
+      }
+      return this.items.filter(item => item.id !== this.id && item.suffixKey === key).length > 0
+    },
+
+    setRandomColor() {
+      const maxVal = 0xFFFFFF
+      const randomNumber = Math.floor(Math.random() * maxVal)
+      const randomString = randomNumber.toString(16)
+      const randColor = randomString.padStart(6, '0')
+      this.$emit('update:backgroundColor', `#${randColor.toUpperCase()}`)
     }
   }
 })
