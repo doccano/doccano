@@ -151,7 +151,7 @@ export default Vue.extend({
 
   computed: {
     availableSuffixKeys(): string[] {
-      const usedSuffixKeys = this.items.map(item => item.suffixKey)
+      const usedSuffixKeys = this.items.map(item => item.suffixKey).filter(item => item !== this.suffixKey)
       const allSuffixKeys = '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
       return allSuffixKeys.filter(item => !usedSuffixKeys.includes(item))
     },
