@@ -1,5 +1,5 @@
 <template>
-  <form-creation
+  <form-create
     v-slot="slotProps"
     v-bind.sync="editedItem"
     :items="items"
@@ -22,18 +22,18 @@
     >
       Save and add another
     </v-btn>
-  </form-creation>
+  </form-create>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { LabelDTO } from '~/services/application/label/labelData'
 import { ProjectDTO } from '~/services/application/project/projectData'
-import FormCreation from '~/components/label/FormCreation.vue';
+import FormCreate from '~/components/label/FormCreate.vue'
 
 export default Vue.extend({
   components: {
-    FormCreation,
+    FormCreate,
   },
 
   layout: 'project',
@@ -54,14 +54,14 @@ export default Vue.extend({
         text: '',
         prefixKey: null,
         suffixKey: null,
-        backgroundColor: '#2196F3',
+        backgroundColor: '#73D8FF',
         textColor: '#ffffff'
       } as LabelDTO,
       defaultItem: {
         text: '',
         prefixKey: null,
         suffixKey: null,
-        backgroundColor: '#2196F3',
+        backgroundColor: '#73D8FF',
         textColor: '#ffffff'
       } as LabelDTO,
       items: [] as LabelDTO[]
