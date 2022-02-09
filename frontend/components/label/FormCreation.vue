@@ -21,7 +21,7 @@
           <v-col cols="12" sm="6">
             <v-select
               :value="suffixKey"
-              :items="shortkeys"
+              :items="availableSuffixKeys"
               :label="$t('labels.key')"
               :rules="[rules.keyDuplicated]"
               outlined
@@ -113,6 +113,10 @@ export default Vue.extend({
       default: () => [],
       required: true
     },
+    id: {
+      type: Number as () => number | undefined,
+      default: undefined
+    },
     text: {
       type: String,
       required: true,
@@ -136,9 +140,9 @@ export default Vue.extend({
         // @ts-ignore
         counter: (v: string) => (v && v.length <= 100) || this.$t('rules.labelNameRules').labelLessThan100Chars,
         // @ts-ignore
-        nameDuplicated: (v: string) => (!this.usedNames.includes(v)) || this.$t('rules.labelNameRules').duplicated,
+        nameDuplicated: (v: string) => (!this.isUsedName(v)) || this.$t('rules.labelNameRules').duplicated,
         // @ts-ignore
-        keyDuplicated: (v: string) => !this.usedKeys.includes(v) || this.$t('rules.keyNameRules').duplicated,
+        keyDuplicated: (v: string) => (!this.isUsedSuffixKey(v)) || this.$t('rules.keyNameRules').duplicated,
         validColor: (v: string) => (/^#[0-9A-F]{6}$/i.test(v)) || 'This string is NOT a valid hex color.'
       },
       mdiReload
@@ -146,18 +150,10 @@ export default Vue.extend({
   },
 
   computed: {
-    usedNames(): string[] {
-      return this.items.map(item => item.text).filter(text => text !== this.text)
-    },
-
-    usedKeys(): string[] {
-      return this.items.map(item => item.suffixKey)
-                       .filter(suffixKey => suffixKey !== this.suffixKey)
-                       .filter(item => item !==null) as string[]
-    },
-
-    shortkeys() {
-      return '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
+    availableSuffixKeys(): string[] {
+      const usedSuffixKeys = this.items.map(item => item.suffixKey)
+      const allSuffixKeys = '0123456789abcdefghijklmnopqrstuvwxyz'.split('')
+      return allSuffixKeys.filter(item => !usedSuffixKeys.includes(item))
     },
 
     predefinedColors(): string[] {
@@ -186,17 +182,23 @@ export default Vue.extend({
   },
 
   methods: {
-    setRandomColor() {
-      const color = this.generateRandomColor()
-      this.$emit('update:backgroundColor', color)
+    isUsedName(text: string): boolean {
+      return this.items.filter(item => item.id !== this.id && item.text === text).length > 0
     },
 
-    generateRandomColor(){
+    isUsedSuffixKey(key: string) {
+      if (key === null) {
+        return false
+      }
+      return this.items.filter(item => item.id !== this.id && item.suffixKey === key).length > 0
+    },
+
+    setRandomColor() {
       const maxVal = 0xFFFFFF
       const randomNumber = Math.floor(Math.random() * maxVal)
       const randomString = randomNumber.toString(16)
       const randColor = randomString.padStart(6, '0')
-      return `#${randColor.toUpperCase()}`
+      this.$emit('update:backgroundColor', `#${randColor.toUpperCase()}`)
     }
   }
 })
