@@ -6,7 +6,7 @@
     </v-tabs>
     <v-card-title>
       <action-menu
-        @create="dialogCreate=true"
+        @create="$router.push('labels/add?type=' + labelType)"
         @upload="dialogUpload=true"
         @download="download"
       />
@@ -133,6 +133,20 @@ export default Vue.extend({
         return this.project.projectType === 'IntentDetectionAndSlotFilling'
       } else {
         return false
+      }
+    },
+
+    labelType(): string {
+      if (this.hasMultiType) {
+        if (this.tab === 0) {
+          return 'category'
+        } else {
+          return 'span'
+        }
+      } else if (this.project.projectType.endsWith('Classification')) {
+        return 'category'
+      } else {
+        return 'span'
       }
     },
 
