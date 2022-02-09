@@ -38,7 +38,10 @@ export default Vue.extend({
 
   layout: 'project',
 
-  validate({ params, app }) {
+  validate({ params, query, app }) {
+    if (!['category', 'span'].includes((query.type as string))) {
+      return false
+    }
     if (/^\d+$/.test(params.id)) {
       return app.$services.project.findById(params.id)
       .then((res:ProjectDTO) => {
