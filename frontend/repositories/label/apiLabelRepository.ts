@@ -24,6 +24,12 @@ export class APILabelRepository implements LabelRepository {
     return response.data.map((item: any) => plainToInstance(LabelItem, item))
   }
 
+  async findById(projectId: string, labelId: number): Promise<LabelItem> {
+    const url = `/projects/${projectId}/${this.baseUrl}s/${labelId}`
+    const response = await this.request.get(url)
+    return plainToInstance(LabelItem, response.data)
+  }
+
   async create(projectId: string, item: LabelItem): Promise<LabelItem> {
     const url = `/projects/${projectId}/${this.baseUrl}s`
     const response = await this.request.post(url, item.toObject())
