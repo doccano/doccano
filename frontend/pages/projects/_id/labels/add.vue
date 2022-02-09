@@ -99,6 +99,7 @@ export default Vue.extend({
     async saveAndAnother() {
       await this.service.create(this.projectId, this.editedItem)
       this.editedItem = Object.assign({}, this.defaultItem)
+      this.items = await this.service.list(this.projectId)
     }
   }
 })
