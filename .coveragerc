@@ -1,6 +1,6 @@
 [report]
 omit =
-  backend/app/wsgi.py
+  backend/config/wsgi.py
   backend/classifier/*
   backend/server/migrations/*
   backend/server/templatetags/*
