@@ -8,5 +8,5 @@ cd "/src/backend"
   python manage.py wait_for_db
 
   echo "Starting celery"
-  "watchmedo" auto-restart --directory="." --pattern="*.py" --recursive -- "celery" --app=app worker --loglevel=info --pool=solo
+  "watchmedo" auto-restart --directory="." --pattern="*.py" --recursive -- "celery" --app=config worker --loglevel=info --pool=solo
 )

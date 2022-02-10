@@ -65,7 +65,7 @@ In another terminal, you need to run Celery to use import/export dataset feature
 
 ```bash
 cd doccano/backend
-celery --app=app worker --loglevel=INFO --concurrency=1
+celery --app=config worker --loglevel=INFO --concurrency=1
 ```
 
 ### Node.js

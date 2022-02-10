@@ -104,7 +104,7 @@ MIDDLEWARE = [
 if DEBUG:
     MIDDLEWARE.append("api.middleware.RangesMiddleware")
 
-ROOT_URLCONF = "app.urls"
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
@@ -136,7 +136,7 @@ STATICFILES_DIRS = [
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-WSGI_APPLICATION = "app.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 AUTHENTICATION_BACKENDS = [
     "social_core.backends.github.GithubOAuth2",
