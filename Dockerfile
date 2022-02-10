@@ -37,6 +37,13 @@ RUN pip install --upgrade pip \
 
 FROM python:${PYTHON_VERSION} AS runtime
 
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    unixodbc-dev=2.* \
+    libssl-dev=1.* \
+ && apt-get clean
+
 RUN useradd -ms /bin/sh doccano
 
 RUN mkdir /data \
