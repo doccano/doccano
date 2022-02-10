@@ -50,21 +50,20 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "api.apps.ApiConfig",
-    "roles.apps.RolesConfig",
-    "projects.apps.ProjectsConfig",
-    "metrics.apps.MetricsConfig",
-    "users.apps.UsersConfig",
-    "data_import.apps.DataImportConfig",
-    "data_export.apps.DataExportConfig",
-    "auto_labeling.apps.AutoLabelingConfig",
-    "labels.apps.LabelsConfig",
-    "label_types.apps.LabelTypesConfig",
-    "examples.apps.ExamplesConfig",
+    "api",
+    "roles",
+    "projects",
+    "metrics",
+    "users",
+    "data_import",
+    "data_export",
+    "auto_labeling",
+    "labels",
+    "label_types",
+    "examples",
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
-    "social_django",
     "polymorphic",
     "corsheaders",
     "drf_yasg",
@@ -78,14 +77,6 @@ INSTALLED_APPS = [
     "health_check.contrib.celery",
 ]
 
-CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER = env("CLOUD_BROWSER_LIBCLOUD_PROVIDER", None)
-CLOUD_BROWSER_APACHE_LIBCLOUD_ACCOUNT = env("CLOUD_BROWSER_LIBCLOUD_ACCOUNT", None)
-CLOUD_BROWSER_APACHE_LIBCLOUD_SECRET_KEY = env("CLOUD_BROWSER_LIBCLOUD_KEY", None)
-
-if CLOUD_BROWSER_APACHE_LIBCLOUD_PROVIDER:
-    CLOUD_BROWSER_DATASTORE = "ApacheLibcloud"
-    CLOUD_BROWSER_OBJECT_REDIRECT_URL = "/v1/cloud-upload"
-    INSTALLED_APPS.append("cloud_browser")
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -96,8 +87,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "social_django.middleware.SocialAuthExceptionMiddleware",
-    # 'applicationinsights.django.ApplicationInsightsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
 ]
 
@@ -117,8 +106,6 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "social_django.context_processors.backends",
-                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -139,10 +126,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 WSGI_APPLICATION = "config.wsgi.application"
 
 AUTHENTICATION_BACKENDS = [
-    "social_core.backends.github.GithubOAuth2",
-    "social_core.backends.azuread_tenant.AzureADTenantOAuth2",
-    "social_core.backends.okta.OktaOAuth2",
-    "social_core.backends.okta_openidconnect.OktaOpenIdConnect",
     "django.contrib.auth.backends.ModelBackend",
 ]
 
@@ -154,51 +137,6 @@ HEADER_AUTH_GROUPS_SEPERATOR = env("HEADER_AUTH_GROUPS_SEPERATOR", default=",")
 if HEADER_AUTH_USER_NAME and HEADER_AUTH_USER_GROUPS and HEADER_AUTH_ADMIN_GROUP_NAME:
     MIDDLEWARE.append("api.middleware.HeaderAuthMiddleware")
     AUTHENTICATION_BACKENDS.append("django.contrib.auth.backends.RemoteUserBackend")
-
-SOCIAL_AUTH_GITHUB_KEY = env("OAUTH_GITHUB_KEY", None)
-SOCIAL_AUTH_GITHUB_SECRET = env("OAUTH_GITHUB_SECRET", None)
-GITHUB_ADMIN_ORG_NAME = env("GITHUB_ADMIN_ORG_NAME", None)
-GITHUB_ADMIN_TEAM_NAME = env("GITHUB_ADMIN_TEAM_NAME", None)
-
-if GITHUB_ADMIN_ORG_NAME and GITHUB_ADMIN_TEAM_NAME:
-    SOCIAL_AUTH_GITHUB_SCOPE = ["read:org"]
-
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_KEY = env("OAUTH_AAD_KEY", None)
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SECRET = env("OAUTH_AAD_SECRET", None)
-SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_TENANT_ID = env("OAUTH_AAD_TENANT", None)
-AZUREAD_ADMIN_GROUP_ID = env("AZUREAD_ADMIN_GROUP_ID", None)
-
-if AZUREAD_ADMIN_GROUP_ID:
-    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_RESOURCE = "https://graph.microsoft.com/"
-    SOCIAL_AUTH_AZUREAD_TENANT_OAUTH2_SCOPE = ["Directory.Read.All"]
-
-SOCIAL_AUTH_OKTA_OAUTH2_KEY = env("OAUTH_OKTA_OAUTH2_KEY", None)
-SOCIAL_AUTH_OKTA_OAUTH2_SECRET = env("OAUTH_OKTA_OAUTH2_SECRET", None)
-SOCIAL_AUTH_OKTA_OAUTH2_API_URL = env("OAUTH_OKTA_OAUTH2_API_URL", None)
-OKTA_OAUTH2_ADMIN_GROUP_NAME = env("OKTA_OAUTH2_ADMIN_GROUP_NAME", None)
-
-if SOCIAL_AUTH_OKTA_OAUTH2_API_URL:
-    SOCIAL_AUTH_OKTA_OAUTH2_SCOPE = ["groups"]
-
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_KEY = env("OAUTH_OKTA_OPENIDCONNECT_KEY", None)
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_SECRET = env("OAUTH_OKTA_OPENIDCONNECT_SECRET", None)
-SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL = env("OAUTH_OKTA_OPENIDCONNECT_API_URL", None)
-OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME = env("OKTA_OPENIDCONNECT_ADMIN_GROUP_NAME", None)
-
-if SOCIAL_AUTH_OKTA_OPENIDCONNECT_API_URL:
-    SOCIAL_AUTH_OKTA_OPENIDCONNECT_SCOPE = ["groups"]
-
-SOCIAL_AUTH_PIPELINE = [
-    "social_core.pipeline.social_auth.social_details",
-    "social_core.pipeline.social_auth.social_uid",
-    "social_core.pipeline.social_auth.auth_allowed",
-    "social_core.pipeline.social_auth.social_user",
-    "social_core.pipeline.user.get_username",
-    "social_core.pipeline.user.create_user",
-    "social_core.pipeline.social_auth.associate_user",
-    "social_core.pipeline.social_auth.load_extra_data",
-    "social_core.pipeline.user.user_details",
-]
 
 ROLE_PROJECT_ADMIN = env("ROLE_PROJECT_ADMIN", "project_admin")
 ROLE_ANNOTATOR = env("ROLE_ANNOTATOR", "annotator")
@@ -319,14 +257,6 @@ ALLOWED_HOSTS = ["*"]
 # Size of the batch for creating documents
 # on the import phase
 IMPORT_BATCH_SIZE = env.int("IMPORT_BATCH_SIZE", 1000)
-
-GOOGLE_TRACKING_ID = env("GOOGLE_TRACKING_ID", "UA-125643874-2").strip()
-
-AZURE_APPINSIGHTS_IKEY = env("AZURE_APPINSIGHTS_IKEY", None)
-APPLICATION_INSIGHTS = {
-    "ikey": AZURE_APPINSIGHTS_IKEY if AZURE_APPINSIGHTS_IKEY else None,
-    "endpoint": env("AZURE_APPINSIGHTS_ENDPOINT", None),
-}
 
 # necessary for email verification of new accounts
 EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", False)
