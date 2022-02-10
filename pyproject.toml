@@ -18,4 +18,4 @@ filename = "backend/*"
 python_version = "3.8"
 ignore_missing_imports = true
 show_error_codes = true
-exclude = "(migrations)|(app/settings.py)"
+exclude = "(migrations)|(config/settings.py)"

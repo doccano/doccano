@@ -5,7 +5,7 @@ import platform
 import subprocess
 import sys
 
-from .app.celery import app
+from .config.celery import app
 
 os.environ["DEBUG"] = "False"
 os.environ["STANDALONE"] = "True"
@@ -40,7 +40,7 @@ def run_on_nix(args):
                 self.cfg.set(key.lower(), value)
 
         def load(self):
-            return gunicorn.util.import_app("app.wsgi")
+            return gunicorn.util.import_app("config.wsgi")
 
     options = {"bind": "%s:%s" % ("0.0.0.0", args.port), "workers": number_of_workers(), "chdir": base}
     StandaloneApplication(options).run()
@@ -48,7 +48,7 @@ def run_on_nix(args):
 
 def run_on_windows(args):
     from waitress import serve
-    from app.wsgi import application
+    from config.wsgi import application
 
     serve(application, port=args.port)
 
@@ -90,7 +90,7 @@ def command_run_webserver(args):
 def command_run_task_queue(args):
     print("Starting task queue.")
     argv = [
-        "--app=app",
+        "--app=config",
         "--workdir={}".format(base),
         "worker",
         "--loglevel=info",
