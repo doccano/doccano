@@ -10,8 +10,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
-import importlib.util
-import sys
 from os import path
 
 import dj_database_url
@@ -19,7 +17,7 @@ from environs import Env, EnvError
 from furl import furl
 
 # Build paths inside the project like this: path.join(BASE_DIR, ...)
-BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
+BASE_DIR = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
 env = Env()
 env.read_env(path.join(BASE_DIR, ".env"), recurse=False)
@@ -80,8 +78,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
 ]
-if DEBUG:
-    MIDDLEWARE.append("api.middleware.RangesMiddleware")
+
 
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
@@ -184,16 +181,6 @@ LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/projects/"
 LOGOUT_REDIRECT_URL = "/"
 
-# dynamic import to avoid installing psycopg2 on pip installation.
-name = "django_heroku"
-spec = importlib.util.find_spec(name)
-if spec is not None:
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[name] = module
-    spec.loader.exec_module(module)
-    module.settings(locals(), test_runner=False)
-
-
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 DATABASES = {
@@ -249,9 +236,6 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "webmaster@localhost")
 if not EMAIL_HOST:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
-
-if DEBUG:
-    CORS_ORIGIN_WHITELIST = ("http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000")
 
 # User media files
 MEDIA_ROOT = path.join(BASE_DIR, "media")

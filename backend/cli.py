@@ -7,8 +7,8 @@ import sys
 
 from .config.celery import app
 
-os.environ["DEBUG"] = "False"
 os.environ["STANDALONE"] = "True"
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 base = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(base)
 manage_path = os.path.join(base, "manage.py")
