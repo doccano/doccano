@@ -25,15 +25,10 @@
             "required": false,
             "value": ""
         },
-        "DEBUG": {
-            "description": "Debug mode or not.",
-            "required": false,
-            "value": "False"
-        },
-        "ALLOW_SIGNUP": {
-            "description": "Allow users to signup themselves or not",
-            "required": false,
-            "value": "True"
+        "DJANGO_SETTINGS_MODULE": {
+            "description": "Django Settings Module. You don't have to change this.",
+            "required": true,
+            "value": "config.settings.heroku"
         }
     },
     "stack": "container",

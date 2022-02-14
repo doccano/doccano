@@ -17,6 +17,7 @@ services:
       DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
       ALLOW_SIGNUP: "False"
       DEBUG: "True"
+      DJANGO_SETTINGS_MODULE: "config.settings.development"
     ports:
       - 8000:8000
     depends_on:
@@ -38,6 +39,7 @@ services:
       PYTHONUNBUFFERED: "1"
       CELERY_BROKER_URL: "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq"
       DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+      DJANGO_SETTINGS_MODULE: "config.settings.development"
     depends_on:
       - postgres
       - rabbitmq
