@@ -28,7 +28,7 @@
         "DJANGO_SETTINGS_MODULE": {
             "description": "Django Settings Module. You don't have to change this.",
             "required": true,
-            "value": "config.settings.production"
+            "value": "config.settings.heroku"
         }
     },
     "stack": "container",
