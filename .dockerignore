@@ -10,18 +10,13 @@
 !Pipfile.lock
 !Pipfile
 
-backend/**/bundle/
-backend/**/node_modules/
-backend/**/webpack-stats.json
-
-backend/**/*.sqlite3
-backend/**/.env
-backend/**/junitxml/
+backend/*.sqlite3*
+backend/junitxml
 backend/media
 backend/filepond-temp-uploads
 backend/stored_uploads
-backend/**/staticfiles/
-backend/**/venv/
+backend/staticfiles
+backend/venv
 backend/**/__pycache__/
 tests/**/__pycache__/
 
