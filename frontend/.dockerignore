@@ -1,6 +1,0 @@
-**/bundle/
-**/node_modules/
-**/webpack-stats.json
-
-**/.env
-**/coverage/

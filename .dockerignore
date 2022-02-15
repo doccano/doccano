@@ -2,11 +2,16 @@
 !backend/
 !frontend/
 !docker/nginx/
-!tests/
 !tools/
 !Dockerfile
 !Pipfile.lock
 !Pipfile
+
+junitxml
+.idea
+.mypy_cache
+.pytest_cache
+.vscode
 
 backend/*.sqlite3*
 backend/junitxml
@@ -16,7 +21,6 @@ backend/stored_uploads
 backend/staticfiles
 backend/venv
 backend/**/__pycache__/
-tests/**/__pycache__/
 
 frontend/.nuxt/
 frontend/coverage/
