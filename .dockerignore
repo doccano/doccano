@@ -1,11 +1,9 @@
 *
 !backend/
 !frontend/
-!nginx/
+!docker/nginx/
 !tests/
 !tools/
-!.coveragerc
-!.flake8
 !Dockerfile
 !Pipfile.lock
 !Pipfile

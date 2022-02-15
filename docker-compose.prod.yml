@@ -56,7 +56,7 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: nginx/Dockerfile
+      dockerfile: docker/Dockerfile.nginx
     environment:
       API_URL: "http://backend:8000"
       GOOGLE_TRACKING_ID: ""
