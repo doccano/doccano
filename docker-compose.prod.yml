@@ -4,7 +4,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile.prod
+      dockerfile: docker/Dockerfile.prod
     image: doccano_backend:prod
     volumes:
       - static_volume:/backend/staticfiles
@@ -27,7 +27,7 @@ services:
   celery:
     build:
       context: .
-      dockerfile: backend/Dockerfile.prod
+      dockerfile: docker/Dockerfile.prod
     image: doccano_celery:prod
     volumes:
       - media:/backend/media

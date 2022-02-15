@@ -1,13 +1,14 @@
-ARG NODE_VERSION="16.5-alpine3.14"
+ARG NODE_VERSION="16.14-buster-slim"
 FROM node:${NODE_VERSION} AS frontend-builder
 
 COPY frontend/ /app/
 WORKDIR /app
 
-RUN apk add -U --no-cache git python3 make g++ \
-  && yarn install \
-  && yarn build \
-  && apk del --no-cache git make g++
+RUN apt-get update \
+ && apt-get install -y git python3 make g++ \
+ && yarn install \
+ && yarn build \
+ && apt-get clean
 
 FROM nginx:1.21.1-alpine AS runtime
 
