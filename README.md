@@ -109,7 +109,7 @@ _Note for Windows developers:_ Be sure to configure git to correctly handle line
 git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
 ```
 
-Then, create an `.env` file with variables in the following format (see [./config/.env.example](https://github.com/doccano/doccano/blob/master/config/.env.example)):
+Then, create an `.env` file with variables in the following format (see [./docker/.env.example](https://github.com/doccano/doccano/blob/master/docker/.env.example)):
 
 ```plain
 # platform settings
@@ -132,7 +132,7 @@ POSTGRES_DB=doccano
 After running the following command, access <http://127.0.0.1/>.
 
 ```bash
-docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
+docker-compose -f docker-compose.prod.yml --env-file ./docker/.env.example up
 ```
 
 #### Development
@@ -140,7 +140,7 @@ docker-compose -f docker-compose.prod.yml --env-file ./config/.env.example up
 After running the following command, access <http://127.0.0.1:3000/>. If you want to use the admin site, please access <http://127.0.0.1:8000/admin/>.
 
 ```bash
-docker-compose -f docker-compose.dev.yml --env-file ./config/.env.example up
+docker-compose -f docker-compose.dev.yml --env-file ./docker/.env.example up
 ```
 
 You can run the the test codes for the backend with the following command:
