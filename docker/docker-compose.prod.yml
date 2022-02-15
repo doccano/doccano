@@ -3,7 +3,7 @@ services:
 
   backend:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.prod
     image: doccano_backend:prod
     volumes:
@@ -26,7 +26,7 @@ services:
 
   celery:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.prod
     image: doccano_celery:prod
     volumes:
@@ -55,7 +55,7 @@ services:
 
   nginx:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.nginx
     environment:
       API_URL: "http://backend:8000"

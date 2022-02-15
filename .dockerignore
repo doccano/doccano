@@ -1,12 +1,3 @@
-*
-!backend/
-!frontend/
-!docker/nginx/
-!tools/
-!Dockerfile
-!Pipfile.lock
-!Pipfile
-
 junitxml
 .idea
 .mypy_cache
