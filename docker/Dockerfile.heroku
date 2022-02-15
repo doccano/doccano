@@ -1,0 +1,1 @@
+FROM doccano/doccano:master
