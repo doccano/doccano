@@ -3,12 +3,12 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile.prod
-    image: doccano_backend:prod
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    image: doccano_backend:dev
     volumes:
-      - static_volume:/backend/staticfiles
-      - media:/backend/media
+      - ..:/src
+      - venv:/root/.local/share
     environment:
       ADMIN_USERNAME: "${ADMIN_USERNAME}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
@@ -16,8 +16,10 @@ services:
       CELERY_BROKER_URL: "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq"
       DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
       ALLOW_SIGNUP: "False"
-      DEBUG: "False"
-      DJANGO_SETTINGS_MODULE: "config.settings.production"
+      DEBUG: "True"
+      DJANGO_SETTINGS_MODULE: "config.settings.development"
+    ports:
+      - 8000:8000
     depends_on:
       - postgres
     networks:
@@ -26,17 +28,18 @@ services:
 
   celery:
     build:
-      context: .
-      dockerfile: backend/Dockerfile.prod
-    image: doccano_celery:prod
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    image: doccano_celery:dev
     volumes:
-      - media:/backend/media
-    entrypoint: ["/opt/bin/prod-celery.sh"]
+      - ..:/src
+      - venv:/root/.local/share
+    entrypoint: ["/src/tools/dev-celery.sh"]
     environment:
       PYTHONUNBUFFERED: "1"
       CELERY_BROKER_URL: "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq"
       DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
-      DJANGO_SETTINGS_MODULE: "config.settings.production"
+      DJANGO_SETTINGS_MODULE: "config.settings.development"
     depends_on:
       - postgres
       - rabbitmq
@@ -53,18 +56,17 @@ services:
     networks:
       - network-backend
 
-  nginx:
-    build:
-      context: .
-      dockerfile: nginx/Dockerfile
+  frontend:
+    image: node:16.13.0
+    command: ["/src/tools/dev-nuxt.sh"]
+    working_dir: /src/frontend
     environment:
       API_URL: "http://backend:8000"
-      GOOGLE_TRACKING_ID: ""
     volumes:
-      - static_volume:/static
-      - media:/media
+      - ..:/src
+      - node_modules:/src/frontend/node_modules
     ports:
-      - 80:8080
+      - 3000:3000
     depends_on:
       - backend
     networks:
@@ -83,8 +85,8 @@ services:
 
 volumes:
   postgres_data:
-  static_volume:
-  media:
+  node_modules:
+  venv:
 
 networks:
   network-backend:

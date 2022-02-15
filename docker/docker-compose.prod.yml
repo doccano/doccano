@@ -3,12 +3,12 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile.dev
-    image: doccano_backend:dev
+      context: ..
+      dockerfile: docker/Dockerfile.prod
+    image: doccano_backend:prod
     volumes:
-      - .:/src
-      - venv:/root/.local/share
+      - static_volume:/backend/staticfiles
+      - media:/backend/media
     environment:
       ADMIN_USERNAME: "${ADMIN_USERNAME}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
@@ -16,10 +16,8 @@ services:
       CELERY_BROKER_URL: "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq"
       DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
       ALLOW_SIGNUP: "False"
-      DEBUG: "True"
-      DJANGO_SETTINGS_MODULE: "config.settings.development"
-    ports:
-      - 8000:8000
+      DEBUG: "False"
+      DJANGO_SETTINGS_MODULE: "config.settings.production"
     depends_on:
       - postgres
     networks:
@@ -28,18 +26,17 @@ services:
 
   celery:
     build:
-      context: .
-      dockerfile: backend/Dockerfile.dev
-    image: doccano_celery:dev
+      context: ..
+      dockerfile: docker/Dockerfile.prod
+    image: doccano_celery:prod
     volumes:
-      - .:/src
-      - venv:/root/.local/share
-    entrypoint: ["/src/tools/dev-celery.sh"]
+      - media:/backend/media
+    entrypoint: ["/opt/bin/prod-celery.sh"]
     environment:
       PYTHONUNBUFFERED: "1"
       CELERY_BROKER_URL: "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq"
       DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
-      DJANGO_SETTINGS_MODULE: "config.settings.development"
+      DJANGO_SETTINGS_MODULE: "config.settings.production"
     depends_on:
       - postgres
       - rabbitmq
@@ -56,17 +53,18 @@ services:
     networks:
       - network-backend
 
-  frontend:
-    image: node:16.13.0
-    command: ["/src/tools/dev-nuxt.sh"]
-    working_dir: /src/frontend
+  nginx:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.nginx
     environment:
       API_URL: "http://backend:8000"
+      GOOGLE_TRACKING_ID: ""
     volumes:
-      - .:/src
-      - node_modules:/src/frontend/node_modules
+      - static_volume:/static
+      - media:/media
     ports:
-      - 3000:3000
+      - 80:8080
     depends_on:
       - backend
     networks:
@@ -85,8 +83,8 @@ services:
 
 volumes:
   postgres_data:
-  node_modules:
-  venv:
+  static_volume:
+  media:
 
 networks:
   network-backend:
