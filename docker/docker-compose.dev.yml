@@ -3,11 +3,11 @@ services:
 
   backend:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.dev
     image: doccano_backend:dev
     volumes:
-      - .:/src
+      - ..:/src
       - venv:/root/.local/share
     environment:
       ADMIN_USERNAME: "${ADMIN_USERNAME}"
@@ -28,11 +28,11 @@ services:
 
   celery:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.dev
     image: doccano_celery:dev
     volumes:
-      - .:/src
+      - ..:/src
       - venv:/root/.local/share
     entrypoint: ["/src/tools/dev-celery.sh"]
     environment:
@@ -63,7 +63,7 @@ services:
     environment:
       API_URL: "http://backend:8000"
     volumes:
-      - .:/src
+      - ..:/src
       - node_modules:/src/frontend/node_modules
     ports:
       - 3000:3000
