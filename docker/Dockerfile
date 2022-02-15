@@ -2,7 +2,7 @@ ARG PYTHON_VERSION="3.8.12-slim-buster"
 ARG NODE_VERSION="16.5-alpine3.14"
 FROM node:${NODE_VERSION} AS frontend-builder
 
-COPY ../frontend /frontend/
+COPY frontend/ /frontend/
 WORKDIR /frontend
 ENV PUBLIC_PATH="/static/_nuxt/"
 
@@ -55,7 +55,7 @@ RUN pip install --no-cache-dir -U pip \
  && pip install --no-cache-dir /deps/*.whl \
  && rm -rf /deps
 
-COPY --chown=doccano:doccano .. /doccano
+COPY --chown=doccano:doccano . /doccano
 WORKDIR /doccano/backend
 COPY --from=frontend-builder /frontend/dist /doccano/backend/client/dist
 RUN python manage.py collectstatic --noinput
