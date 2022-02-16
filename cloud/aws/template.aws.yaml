@@ -143,10 +143,10 @@ Resources:
           yum install -y git
           git clone https://github.com/doccano/doccano.git
           cd doccano
-          cp config/.env.example .env
+          cp docker/.env.example .env
           sed -i s/admin/${Username}/g .env
           sed -i s/password/${Password}/g .env
-          docker-compose -f docker-compose.prod.yml up -d
+          docker-compose -f docker/docker-compose.prod.yml up -d
       Tags:
         - Key: Name
           Value: doccano
