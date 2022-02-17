@@ -1,5 +1,5 @@
 import abc
-from typing import List
+from typing import List, Type
 
 from auto_labeling_pipeline.labels import Labels
 from django.contrib.auth.models import User
@@ -11,8 +11,8 @@ from labels.models import Label, Category, Span, TextLabel
 
 
 class LabelCollection(abc.ABC):
-    label_type: LabelType = None
-    model: Label = None
+    label_type: Type[LabelType]
+    model: Type[Label]
 
     def __init__(self, labels):
         self.labels = labels

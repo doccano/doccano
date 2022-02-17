@@ -1,13 +1,13 @@
 import abc
 import itertools
 from collections import defaultdict
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Type
 
 from django.conf import settings
 
 from projects.models import Project
 from examples.models import Example
-from label_types.models import CategoryType, SpanType
+from label_types.models import CategoryType, LabelType, SpanType
 from .exceptions import FileParseException
 from .readers import BaseReader, Record
 
@@ -66,10 +66,10 @@ class Examples:
         return Example.objects.bulk_create(examples)
 
     def save_annotation(self, project: Project, user, examples):
-        # mapping = {label.text: label for label in project.labels.all()}
         # Todo: move annotation class
         mapping = {}
-        for model in [CategoryType, SpanType]:
+        label_types: List[Type[LabelType]] = [CategoryType, SpanType]
+        for model in label_types:
             for label in model.objects.all():
                 mapping[label.text] = label
         annotations = list(
