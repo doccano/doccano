@@ -5,11 +5,11 @@ from typing import Any, Dict, List, Type
 
 from django.conf import settings
 
-from projects.models import Project
-from examples.models import Example
-from label_types.models import CategoryType, LabelType, SpanType
 from .exceptions import FileParseException
 from .readers import BaseReader, Record
+from examples.models import Example
+from label_types.models import CategoryType, LabelType, SpanType
+from projects.models import Project
 
 
 class Writer(abc.ABC):

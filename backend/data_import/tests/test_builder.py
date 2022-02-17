@@ -1,5 +1,5 @@
 import unittest
-from typing import Optional, List
+from typing import List, Optional
 
 from data_import.pipeline import builders
 from data_import.pipeline.data import TextData

@@ -10,10 +10,15 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
-from .models import LabelType, CategoryType, SpanType, RelationType
 from .exceptions import LabelValidationError
-from .serializers import CategoryTypeSerializer, LabelSerializer, RelationTypesSerializer, SpanTypeSerializer
+from .models import CategoryType, LabelType, RelationType, SpanType
+from .serializers import (
+    CategoryTypeSerializer,
+    LabelSerializer,
+    RelationTypesSerializer,
+    SpanTypeSerializer,
+)
+from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 
 def camel_to_snake(name):

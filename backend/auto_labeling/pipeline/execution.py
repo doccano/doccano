@@ -1,6 +1,11 @@
 from typing import Type
 
-from auto_labeling_pipeline.labels import SequenceLabels, Seq2seqLabels, ClassificationLabels, Labels
+from auto_labeling_pipeline.labels import (
+    ClassificationLabels,
+    Labels,
+    Seq2seqLabels,
+    SequenceLabels,
+)
 from auto_labeling_pipeline.mappings import MappingTemplate
 from auto_labeling_pipeline.models import RequestModelFactory
 from auto_labeling_pipeline.pipeline import pipeline

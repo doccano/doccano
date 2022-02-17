@@ -1307,10 +1307,14 @@ python-versions = ">=3.7"
 [package.extras]
 brotli = ["brotli"]
 
+[extras]
+mssql = []
+postgresql = []
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "2266cf8a3e7663746a57da39b8b1d9904080018df8af20e38abac13b06135152"
+content-hash = "ba374bd631f54e82e0eaaa41cd38d6b6e71f69d3e5202a5c46575667b12f2b10"
 
 [metadata.files]
 amqp = [

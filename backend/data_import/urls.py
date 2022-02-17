@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .views import DatasetImportAPI, DatasetCatalog
+from .views import DatasetCatalog, DatasetImportAPI
 
 urlpatterns = [
     path("fp/", include("django_drf_filepond.urls")),

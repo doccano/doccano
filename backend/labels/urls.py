@@ -1,10 +1,15 @@
 from django.urls import path
 
-from .views import CategoryListAPI, CategoryDetailAPI
-from .views import SpanListAPI, SpanDetailAPI
-from .views import TextLabelListAPI, TextLabelDetailAPI
-from .views import RelationList, RelationDetail
-
+from .views import (
+    CategoryDetailAPI,
+    CategoryListAPI,
+    RelationDetail,
+    RelationList,
+    SpanDetailAPI,
+    SpanListAPI,
+    TextLabelDetailAPI,
+    TextLabelListAPI,
+)
 
 urlpatterns = [
     path(route="annotation_relations", view=RelationList.as_view(), name="relation_list"),

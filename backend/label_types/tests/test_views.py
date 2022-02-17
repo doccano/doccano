@@ -5,11 +5,11 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from .utils import make_label
 from api.tests.utils import CRUDMixin
 from projects.models import DOCUMENT_CLASSIFICATION
 from projects.tests.utils import make_project, prepare_project
 from users.tests.utils import make_user
-from .utils import make_label
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 

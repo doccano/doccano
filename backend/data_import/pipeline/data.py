@@ -4,8 +4,8 @@ from typing import Any, Dict
 
 from pydantic import BaseModel, validator
 
-from projects.models import Project
 from examples.models import Example
+from projects.models import Project
 
 
 class BaseData(BaseModel, abc.ABC):

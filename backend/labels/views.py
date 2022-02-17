@@ -7,11 +7,16 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from projects.models import Project
-from labels.models import Category, Label, Span, TextLabel, Relation
-from projects.permissions import IsProjectMember
 from .permissions import CanEditLabel
-from .serializers import CategorySerializer, SpanSerializer, TextLabelSerializer, RelationSerializer
+from .serializers import (
+    CategorySerializer,
+    RelationSerializer,
+    SpanSerializer,
+    TextLabelSerializer,
+)
+from labels.models import Category, Label, Relation, Span, TextLabel
+from projects.models import Project
+from projects.permissions import IsProjectMember
 
 
 class BaseListAPI(generics.ListCreateAPIView):

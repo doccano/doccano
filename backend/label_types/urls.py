@@ -1,9 +1,16 @@
 from django.urls import path
 
-from .views import CategoryTypeList, CategoryTypeDetail, CategoryTypeUploadAPI
-from .views import SpanTypeList, SpanTypeDetail, SpanTypeUploadAPI
-from .views import RelationTypeList, RelationTypeDetail, RelationTypeUploadAPI
-
+from .views import (
+    CategoryTypeDetail,
+    CategoryTypeList,
+    CategoryTypeUploadAPI,
+    RelationTypeDetail,
+    RelationTypeList,
+    RelationTypeUploadAPI,
+    SpanTypeDetail,
+    SpanTypeList,
+    SpanTypeUploadAPI,
+)
 
 urlpatterns = [
     path(route="category-types", view=CategoryTypeList.as_view(), name="category_types"),

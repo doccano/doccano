@@ -2,16 +2,16 @@ from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (
-    Tag,
-    Project,
-    TextClassificationProject,
-    SequenceLabelingProject,
-    Seq2seqProject,
-    IntentDetectionAndSlotFillingProject,
-    Speech2textProject,
     ImageClassificationProject,
+    IntentDetectionAndSlotFillingProject,
+    Member,
+    Project,
+    Seq2seqProject,
+    SequenceLabelingProject,
+    Speech2textProject,
+    Tag,
+    TextClassificationProject,
 )
-from .models import Member
 
 
 class MemberSerializer(serializers.ModelSerializer):

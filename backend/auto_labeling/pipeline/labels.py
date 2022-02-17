@@ -4,10 +4,10 @@ from typing import List, Type
 from auto_labeling_pipeline.labels import Labels
 from django.contrib.auth.models import User
 
-from projects.models import Project
 from examples.models import Example
 from label_types.models import CategoryType, LabelType, SpanType
-from labels.models import Label, Category, Span, TextLabel
+from labels.models import Category, Label, Span, TextLabel
+from projects.models import Project
 
 
 class LabelCollection(abc.ABC):

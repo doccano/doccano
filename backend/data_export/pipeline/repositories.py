@@ -3,9 +3,9 @@ import itertools
 from collections import defaultdict
 from typing import Dict, Iterator, List, Tuple, Union
 
-from projects.models import Project
-from examples.models import Example
 from .data import Record
+from examples.models import Example
+from projects.models import Project
 
 SpanType = Tuple[int, int, str]
 

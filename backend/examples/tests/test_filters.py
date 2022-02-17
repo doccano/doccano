@@ -2,10 +2,10 @@ from unittest.mock import MagicMock
 
 from django.test import TestCase
 
-from examples.models import Example
-from examples.filters import ExampleFilter
-from projects.tests.utils import prepare_project
 from .utils import make_doc, make_example_state
+from examples.filters import ExampleFilter
+from examples.models import Example
+from projects.tests.utils import prepare_project
 
 
 class TestFilterMixin(TestCase):

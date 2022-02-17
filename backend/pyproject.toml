@@ -1,0 +1,33 @@
+[tool.isort]
+profile = "black"
+include_trailing_comma = true
+multi_line_output = 3
+#src_paths = ["backend/*"]
+known_first_party = [
+    "api",
+    "auto_labeling",
+    "config",
+    "data_export",
+    "data_import",
+    "examples",
+    "label_types",
+    "labels",
+    "metrics",
+    "projects",
+    "roles",
+    "users"
+]
+known_local_folder = [
+    "api",
+    "auto_labeling",
+    "config",
+    "data_export",
+    "data_import",
+    "examples",
+    "label_types",
+    "labels",
+    "metrics",
+    "projects",
+    "roles",
+    "users"
+]

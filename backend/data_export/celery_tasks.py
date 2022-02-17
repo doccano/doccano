@@ -3,9 +3,9 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
-from projects.models import Project
 from .pipeline.factories import create_repository, create_writer
 from .pipeline.services import ExportApplicationService
+from projects.models import Project
 
 logger = get_task_logger(__name__)
 

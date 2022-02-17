@@ -3,14 +3,15 @@ from typing import List
 from django.conf import settings
 from model_mommy import mommy
 
-from projects.models import Role, Member
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
-    SEQUENCE_LABELING,
-    SEQ2SEQ,
-    SPEECH2TEXT,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEQ2SEQ,
+    SEQUENCE_LABELING,
+    SPEECH2TEXT,
+    Member,
+    Role,
 )
 from roles.tests.utils import create_default_roles
 from users.tests.utils import make_user

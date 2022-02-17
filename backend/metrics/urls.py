@@ -1,6 +1,11 @@
 from django.urls import path
 
-from .views import ProgressAPI, MemberProgressAPI, CategoryTypeDistribution, SpanTypeDistribution
+from .views import (
+    CategoryTypeDistribution,
+    MemberProgressAPI,
+    ProgressAPI,
+    SpanTypeDistribution,
+)
 
 urlpatterns = [
     path(route="progress", view=ProgressAPI.as_view(), name="progress"),

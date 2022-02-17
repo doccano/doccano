@@ -7,13 +7,12 @@ from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 
-
 from api.tests.utils import CRUDMixin
 from auto_labeling.pipeline.labels import Categories, Spans, Texts
 from examples.tests.utils import make_doc
 from labels.models import Category, Span, TextLabel
+from projects.models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
 from projects.tests.utils import prepare_project
-from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ
 
 data_dir = pathlib.Path(__file__).parent / "data"
 

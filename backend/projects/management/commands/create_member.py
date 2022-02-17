@@ -1,9 +1,9 @@
-from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
-
+from django.core.management.base import BaseCommand, CommandError
 from models import Project
-from roles.models import Role
+
 from ...models import Member
+from roles.models import Role
 
 
 class Command(BaseCommand):
