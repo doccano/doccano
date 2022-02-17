@@ -127,26 +127,10 @@ POSTGRES_PASSWORD=doccano
 POSTGRES_DB=doccano
 ```
 
-#### Production
-
 After running the following command, access <http://127.0.0.1/>.
 
 ```bash
 docker-compose -f docker/docker-compose.prod.yml --env-file ./docker/.env.example up
-```
-
-#### Development
-
-After running the following command, access <http://127.0.0.1:3000/>. If you want to use the admin site, please access <http://127.0.0.1:8000/admin/>.
-
-```bash
-docker-compose -f docker/docker-compose.dev.yml --env-file ./docker/.env.example up
-```
-
-You can run the the test codes for the backend with the following command:
-
-```bash
-docker exec doccano_backend_1 python backend/manage.py test api
 ```
 
 ### One-click Deployment
