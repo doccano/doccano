@@ -47,7 +47,6 @@ if settings.DEBUG or os.environ.get("STANDALONE", False):
 
 urlpatterns += [
     path("admin/", admin.site.urls),
-    path("social/", include("social_django.urls")),
     path("api-auth/", include("rest_framework.urls")),
     path("v1/health/", include("health_check.urls")),
     path("v1/", include("api.urls")),
@@ -64,6 +63,3 @@ urlpatterns += [
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     re_path("", TemplateView.as_view(template_name="index.html")),
 ]
-
-if "cloud_browser" in settings.INSTALLED_APPS:
-    urlpatterns.append(path("cloud-storage/", include("cloud_browser.urls")))
