@@ -6,6 +6,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
 
     steps:
     - uses: actions/checkout@v2
@@ -16,29 +19,24 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pipenv
-        pipenv sync --dev
+        pip install poetry
+        poetry install
     - name: Run migrations
       run: |
-        pipenv run wait_for_db
-        pipenv run migrate
-      working-directory: ./backend
+        poetry run task wait_for_db
+        poetry run task migrate
     - name: Lint with flake8
       run: |
-        pipenv run flake8
-      working-directory: ./backend
+        poetry run task flake8
     - name: Lint with isort
       run: |
-        pipenv run isort
-      working-directory: ./backend
+        poetry run task isort
     - name: Black
       run: |
-        pipenv run black
-      working-directory: ./backend
+        poetry run task black
     - name: mypy
       run: |
-        pipenv run mypy
+        poetry run task mypy
     - name: Run tests
       run: |
-        pipenv run test
-      working-directory: ./backend
+        poetry run task test
