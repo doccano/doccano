@@ -33,28 +33,30 @@ All data created in the container will persist across restarts.
 
 Go to <http://127.0.0.1:8000/>.
 
-### For Developers
+### Setup development environment
 
-You can setup local development environment as follows:
+You can setup development environment via Python and Node.js. You need to install Git and to clone the repository:
 
 ```bash
 git clone https://github.com/doccano/doccano.git
 cd doccano
-docker-compose -f docker-compose.dev.yml up
 ```
 
-Go to <http://127.0.0.1:3000/>.
+### Backend
 
-Or, you can setup via Python and Node.js:
+The doccano backend is built in Python 3.8+ and uses [Poetry](https://github.com/python-poetry/poetry) as a dependency manager. If you haven't installed them yet, please see [Python](https://www.python.org/downloads/) and [Poetry](https://python-poetry.org/docs/) documentation.
 
-### Python
+First, to install the defined dependencies for our project, just run the `install` command. After that, activate the virtual environment by runnning `shell` command:
 
 ```bash
-git clone https://github.com/doccano/doccano.git
-cd doccano
-pipenv sync --dev
-pipenv shell
 cd backend
+poetry install
+poetry shell
+```
+
+Second, setup database and run the development server. Doccano uses [Django](https://www.djangoproject.com/) and [Django Rest Framework](https://www.django-rest-framework.org/) as a backend. We can setup them by using Django command:
+
+```bash
 python manage.py migrate
 python manage.py create_roles
 python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
@@ -68,12 +70,36 @@ cd doccano/backend
 celery --app=config worker --loglevel=INFO --concurrency=1
 ```
 
-### Node.js
+After you change the code, don't forget to run [mypy](https://mypy.readthedocs.io/en/stable/index.html), [flake8](https://flake8.pycqa.org/en/latest/), [black](https://github.com/psf/black), and [isort](https://github.com/PyCQA/isort). These ensures the code consistency. To run them, just run the following commands:
+
+```bash
+poetry run task mypy
+poetry run task flake8
+poetry run task black
+poetry run task isort
+```
+
+Similarly, you can run the test by executing the following command:
+
+```bash
+poetry run task test
+```
+
+Did you pass the test? Great!
+
+### Frontend
+
+The doccano frontend is built in Node.js and uses [Yarn](https://yarnpkg.com/) as a package manager. If you haven't installed them yet, please see [Node.js](https://nodejs.org/en/) and [Yarn](https://yarnpkg.com/) documentation.
+
+First, to install the defined dependencies for our project, just run the `install` command.
 
 ```bash
 cd frontend
 yarn install
-yarn dev
 ```
 
-Go to <http://127.0.0.1:3000/>.
+Then run the `dev` command to serve with hot reload at <localhost:3000>:
+
+```bash
+yarn dev
+```
