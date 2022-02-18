@@ -16,3 +16,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CONFIG_FILE: docs/mkdocs.yml
+          REQUIREMENTS: docs/requirements.txt
