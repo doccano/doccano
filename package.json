@@ -1,8 +1,0 @@
-{
-    "engines": {
-        "node": "8.x"
-    },
-    "scripts": {
-        "heroku-postbuild": "sh tools/heroku.sh build"
-    }
-}
