@@ -26,7 +26,6 @@ exclude = [
     "poetry.lock"
 ]
 
-
 [tool.poetry.extras]
 mssql = ["django-mssql-backend"]
 postgresql = ["psycopg2-binary"]
@@ -137,7 +136,6 @@ known_local_folder = [
     "roles",
     "users"
 ]
-
 
 [tool.taskipy.tasks]
 isort = "isort . -c --skip migrations"
