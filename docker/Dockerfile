@@ -25,7 +25,7 @@ RUN apt-get update \
  && apt-get clean
 
 WORKDIR /tmp
-COPY pyproject.toml /tmp/
+COPY backend/pyproject.toml backend/poetry.lock /tmp/
 
 # hadolint ignore=DL3013
 RUN pip install --upgrade pip \
