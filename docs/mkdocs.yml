@@ -3,6 +3,7 @@ site_name: 'doccano'
 site_description: 'A Text Annotation tool for Humans'
 site_author: 'Hiroki Nakayama'
 site_url: 'https://doccano.github.io/doccano/'
+docs_dir: .
 
 # Repository
 repo_name: 'doccano/doccano'
@@ -24,6 +25,9 @@ extra:
       link: 'https://github.com/Hironsan'
     - icon: 'fontawesome/brands/github'
       link: 'https://twitter.com/Hironsan13'
+
+plugins:
+  - same-dir
 
 # Page tree
 nav:
