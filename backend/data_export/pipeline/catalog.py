@@ -4,15 +4,15 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
+from . import examples
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
-    SEQUENCE_LABELING,
-    SEQ2SEQ,
-    SPEECH2TEXT,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEQ2SEQ,
+    SEQUENCE_LABELING,
+    SPEECH2TEXT,
 )
-from . import examples
 
 
 class Format:

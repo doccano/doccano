@@ -1,4 +1,4 @@
-from django.db.models import Manager, Count
+from django.db.models import Count, Manager
 
 
 class LabelManager(Manager):

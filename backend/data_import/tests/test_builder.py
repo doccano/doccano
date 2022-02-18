@@ -1,5 +1,5 @@
 import unittest
-from typing import List
+from typing import List, Optional
 
 from data_import.pipeline import builders
 from data_import.pipeline.data import TextData
@@ -12,7 +12,7 @@ class TestColumnBuilder(unittest.TestCase):
         self.assertEqual(actual.data.text, expected["data"])
         self.assertEqual(actual.label, expected["label"])
 
-    def create_record(self, row, data_column: builders.DataColumn, label_columns: List[builders.LabelColumn]):
+    def create_record(self, row, data_column: builders.DataColumn, label_columns: Optional[List[builders.Column]]):
         builder = builders.ColumnBuilder(data_column=data_column, label_columns=label_columns)
         return builder.build(row, filename="", line_num=1)
 

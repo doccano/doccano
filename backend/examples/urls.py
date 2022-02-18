@@ -1,9 +1,8 @@
 from django.urls import path
 
-from .views.example import ExampleList, ExampleDetail
-from .views.comment import CommentList, CommentDetail
+from .views.comment import CommentDetail, CommentList
+from .views.example import ExampleDetail, ExampleList
 from .views.example_state import ExampleStateList
-
 
 urlpatterns = [
     path(route="examples", view=ExampleList.as_view(), name="example_list"),

@@ -3,10 +3,10 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from projects.permissions import IsProjectMember
 from examples.models import Comment
 from examples.permissions import IsOwnComment
 from examples.serializers import CommentSerializer
+from projects.permissions import IsProjectMember
 
 
 class CommentList(generics.ListCreateAPIView):

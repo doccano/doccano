@@ -1,6 +1,11 @@
 from model_mommy import mommy
 
-from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT
+from projects.models import (
+    DOCUMENT_CLASSIFICATION,
+    SEQ2SEQ,
+    SEQUENCE_LABELING,
+    SPEECH2TEXT,
+)
 
 
 def make_annotation(task, doc, user, **kwargs):

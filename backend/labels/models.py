@@ -2,10 +2,10 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from .managers import LabelManager, CategoryManager, SpanManager, TextLabelManager
-from projects.models import Project
+from .managers import CategoryManager, LabelManager, SpanManager, TextLabelManager
 from examples.models import Example
-from label_types.models import CategoryType, SpanType, RelationType
+from label_types.models import CategoryType, RelationType, SpanType
+from projects.models import Project
 
 
 class Label(models.Model):

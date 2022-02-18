@@ -1,7 +1,7 @@
 from typing import List
 
-from projects.models import Project
 from .labels import Label, SpanLabel
+from projects.models import Project
 
 
 class Cleaner:

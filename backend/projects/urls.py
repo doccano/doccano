@@ -1,9 +1,8 @@
 from django.urls import path
 
-from .views.member import MemberList, MemberDetail
-from .views.tag import TagList, TagDetail
-from .views.project import ProjectList, ProjectDetail
-
+from .views.member import MemberDetail, MemberList
+from .views.project import ProjectDetail, ProjectList
+from .views.tag import TagDetail, TagList
 
 urlpatterns = [
     path(route="projects", view=ProjectList.as_view(), name="project_list"),

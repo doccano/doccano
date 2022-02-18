@@ -11,7 +11,7 @@ ENV PYTHONUNBUFFERED 1
 RUN groupadd -g 61000 doccano \
   && useradd -g 61000 -l -M -s /bin/false -u 61000 doccano
 
-COPY --chown=doccano:doccano ./Pipfile* /backend/
+COPY --chown=doccano:doccano backend/pyproject.toml backend/poetry.lock /backend/
 
 # hadolint ignore=DL3013
 RUN apt-get update \
@@ -20,10 +20,13 @@ RUN apt-get update \
     libpq-dev=11.* \
     unixodbc-dev=2.* \
     g++=4:* \
+    curl \
  && pip install --upgrade pip \
- && pip install --no-cache-dir pipenv \
- && pipenv install --system --deploy \
- && pip uninstall -y pipenv virtualenv-clone virtualenv \
+ && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python - \
+ && PATH="${PATH}:$HOME/.poetry/bin" \
+ && poetry config virtualenvs.create false \
+ && poetry install --no-dev --no-root \
+ && poetry add psycopg2-binary \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -34,7 +37,7 @@ RUN mkdir -p /backend/staticfiles \
   && chown -R doccano:doccano /backend/
 
 COPY --chown=doccano:doccano ./backend/ /backend/
-
+RUN ls /backend
 USER doccano:doccano
 VOLUME /backend/staticfiles
 

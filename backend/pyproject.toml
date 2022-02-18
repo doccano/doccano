@@ -1,0 +1,148 @@
+[tool.poetry]
+name = "doccano"
+version = "0.0.0"
+description = "doccano, text annotation tool for machine learning practitioners"
+authors = ["Hironsan <hiroki.nakayama.py@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://doccano.github.io/doccano/"
+repository = "https://github.com/doccano/doccano"
+documentation = "https://doccano.github.io/doccano/"
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+]
+packages = [
+    { include = "backend", from = ".." },
+]
+include = [
+    "client/dist/**/*",
+    "staticfiles/**/*"
+]
+exclude = [
+    "filepond-temp-uploads",
+    "media",
+    "db.sqlite3*",
+    "poetry.lock"
+]
+
+[tool.poetry.extras]
+mssql = ["django-mssql-backend"]
+postgresql = ["psycopg2-binary"]
+
+[tool.poetry.scripts]
+doccano = 'backend.cli:main'
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^4.0.2"
+environs = "^9.5.0"
+furl = "^2.1.3"
+djangorestframework = "^3.13.1"
+django-filter = "^21.1"
+django-polymorphic = "^3.1.0"
+django-cors-headers = "^3.11.0"
+drf-yasg = "^1.20.0"
+django-rest-polymorphic = "^0.1.9"
+chardet = "^4.0.0"
+pyexcel = "^0.7.0"
+seqeval = "^1.2.2"
+whitenoise = "^6.0.0"
+dj-database-url = "^0.5.0"
+pyexcel-xlsx = "^0.6.0"
+gunicorn = "^20.1.0"
+auto-labeling-pipeline = "^0.1.21"
+dj-rest-auth = "^2.2.3"
+django-drf-filepond = "^0.4.1"
+celery = "^5.2.3"
+django-celery-results = "^2.2.0"
+SQLAlchemy = "^1.4.31"
+waitress = "^2.0.0"
+django-health-check = "^3.16.5"
+djangorestframework-xml = "^2.0.0"
+
+[tool.poetry.dev-dependencies]
+model-mommy = "^2.0.0"
+coverage = "^6.3.1"
+flake8 = "^4.0.1"
+isort = {extras = ["pyproject"], version = "^5.10.1"}
+autopep8 = "^1.6.0"
+mypy = "^0.931"
+watchdog = "^2.1.6"
+black = "^22.1.0"
+pyproject-flake8 = "^0.0.1-alpha.2"
+types-chardet = "^4.0.3"
+types-requests = "^2.27.10"
+types-waitress = "^2.0.6"
+taskipy = "^1.10.1"
+unittest-xml-reporting = "^3.2.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[tool.black]
+line-length = 120
+target-version = ['py37', 'py38']
+include = '\.pyi?$'
+
+[tool.flake8]
+max-line-length = 120
+max-complexity = 18
+ignore = "E203,E266,W503,"
+filename = "*.py"
+
+[tool.mypy]
+python_version = "3.8"
+ignore_missing_imports = true
+show_error_codes = true
+exclude = [
+    "migrations",
+    "config",
+]
+
+[tool.isort]
+profile = "black"
+include_trailing_comma = true
+multi_line_output = 3
+known_first_party = [
+    "api",
+    "auto_labeling",
+    "config",
+    "data_export",
+    "data_import",
+    "examples",
+    "label_types",
+    "labels",
+    "metrics",
+    "projects",
+    "roles",
+    "users"
+]
+known_local_folder = [
+    "api",
+    "auto_labeling",
+    "config",
+    "data_export",
+    "data_import",
+    "examples",
+    "label_types",
+    "labels",
+    "metrics",
+    "projects",
+    "roles",
+    "users"
+]
+
+[tool.taskipy.tasks]
+isort = "isort . -c --skip migrations"
+flake8 = "pflake8 --filename \"*.py\" --extend-exclude \"*/migrations\""
+black = "black --check ."
+mypy = "mypy --namespace-packages --explicit-package-bases ."
+wait_for_db = "python manage.py wait_for_db"
+test = "python manage.py test --pattern=\"test*.py\""
+migrate = "python manage.py migrate"
+collectstatic = "python manage.py collectstatic --noinput"

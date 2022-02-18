@@ -15,12 +15,17 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from projects.models import Project
-from projects.permissions import IsProjectMember, IsProjectAdmin
-from .pipeline.execution import execute_pipeline, get_label_collection
-from .exceptions import AWSTokenError, SampleDataException, TemplateMappingError, URLConnectionError
+from .exceptions import (
+    AWSTokenError,
+    SampleDataException,
+    TemplateMappingError,
+    URLConnectionError,
+)
 from .models import AutoLabelingConfig
+from .pipeline.execution import execute_pipeline, get_label_collection
 from .serializers import AutoLabelingConfigSerializer
+from projects.models import Project
+from projects.permissions import IsProjectAdmin, IsProjectMember
 
 
 class TemplateListAPI(APIView):

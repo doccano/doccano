@@ -1,14 +1,14 @@
 from typing import Type
 
+from . import catalog, repositories, writers
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
-    SEQUENCE_LABELING,
-    SEQ2SEQ,
-    SPEECH2TEXT,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEQ2SEQ,
+    SEQUENCE_LABELING,
+    SPEECH2TEXT,
 )
-from . import catalog, repositories, writers
 
 
 def create_repository(project):

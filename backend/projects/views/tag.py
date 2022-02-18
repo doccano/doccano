@@ -1,9 +1,8 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
-from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
-
 from projects.models import Tag
+from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 from projects.serializers import TagSerializer
 
 

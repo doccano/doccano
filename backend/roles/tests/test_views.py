@@ -1,9 +1,9 @@
 from rest_framework import status
 from rest_framework.reverse import reverse
 
+from .utils import create_default_roles
 from api.tests.utils import CRUDMixin
 from users.tests.utils import make_user
-from .utils import create_default_roles
 
 
 class TestRoleAPI(CRUDMixin):

@@ -4,10 +4,10 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from projects.permissions import IsProjectAdmin
-from projects.serializers import MemberSerializer
 from projects.exceptions import RoleAlreadyAssignedException, RoleConstraintException
 from projects.models import Member
+from projects.permissions import IsProjectAdmin
+from projects.serializers import MemberSerializer
 
 
 class MemberList(generics.ListCreateAPIView):

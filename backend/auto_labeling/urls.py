@@ -1,14 +1,14 @@
 from django.urls import path
 
 from .views import (
-    ConfigDetail,
     AutomatedLabeling,
-    LabelMapperTesting,
-    TemplateListAPI,
-    TemplateDetailAPI,
+    ConfigDetail,
     ConfigList,
-    RestAPIRequestTesting,
     LabelExtractorTesting,
+    LabelMapperTesting,
+    RestAPIRequestTesting,
+    TemplateDetailAPI,
+    TemplateListAPI,
 )
 
 urlpatterns = [

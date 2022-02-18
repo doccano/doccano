@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from examples.models import Example, ExampleState
-from label_types.models import LabelType, CategoryType, SpanType
-from labels.models import Label, Category, Span
+from label_types.models import CategoryType, LabelType, SpanType
+from labels.models import Category, Label, Span
 from projects.models import Member
 from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 

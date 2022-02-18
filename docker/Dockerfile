@@ -21,15 +21,17 @@ RUN apt-get update \
     unixodbc-dev=2.* \
     g++=4:* \
     libssl-dev=1.* \
+    curl \
  && apt-get clean
 
 WORKDIR /tmp
-COPY Pipfile* /tmp/
+COPY backend/pyproject.toml backend/poetry.lock /tmp/
 
 # hadolint ignore=DL3013
 RUN pip install --upgrade pip \
- && pip install --no-cache-dir --upgrade pipenv \
- && pipenv lock -r > /requirements.txt \
+ && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python - \
+ && PATH="${PATH}:$HOME/.poetry/bin" \
+ && poetry export --without-hashes -o /requirements.txt \
  && echo "psycopg2-binary==2.8.6" >> /requirements.txt \
  && echo "django-heroku==0.3.1" >> /requirements.txt \
  && pip install --no-cache-dir -r /requirements.txt \

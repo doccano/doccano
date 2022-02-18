@@ -1,12 +1,12 @@
+from . import builders, catalog, cleaners, data, labels, parsers, readers
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
-    SEQUENCE_LABELING,
-    SEQ2SEQ,
-    SPEECH2TEXT,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEQ2SEQ,
+    SEQUENCE_LABELING,
+    SPEECH2TEXT,
 )
-from . import builders, catalog, cleaners, data, labels, parsers, readers
 
 
 def get_data_class(project_type: str):

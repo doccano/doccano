@@ -1,9 +1,9 @@
 from django.test import TestCase
 from model_mommy import mommy
 
-from projects.models import SEQUENCE_LABELING, IMAGE_CLASSIFICATION
-from projects.tests.utils import prepare_project
 from examples.models import ExampleState
+from projects.models import IMAGE_CLASSIFICATION, SEQUENCE_LABELING
+from projects.tests.utils import prepare_project
 
 
 class TestExampleState(TestCase):

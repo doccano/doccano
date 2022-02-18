@@ -107,7 +107,8 @@ STATIC_ROOT = path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [
     path.join(BASE_DIR, "client/dist/static"),
 ]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # Auth settings
 AUTHENTICATION_BACKENDS = [

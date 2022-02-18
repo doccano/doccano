@@ -1,7 +1,13 @@
 from django.contrib import admin
 
-from .models import Member
-from .models import Project, TextClassificationProject, SequenceLabelingProject, Seq2seqProject, Tag
+from .models import (
+    Member,
+    Project,
+    Seq2seqProject,
+    SequenceLabelingProject,
+    Tag,
+    TextClassificationProject,
+)
 
 
 class MemberAdmin(admin.ModelAdmin):

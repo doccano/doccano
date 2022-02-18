@@ -1,9 +1,9 @@
 from django.conf import settings
-from django.test import TestCase
 from django.core.exceptions import ValidationError
+from django.test import TestCase
+from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
-from model_mommy import mommy
 
 from api.tests.utils import CRUDMixin
 from projects.models import Member
