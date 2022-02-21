@@ -1,18 +1,12 @@
 <template>
-  <base-card
-    :disabled="!valid"
-    :title="$t('labels.importTitle')"
-    :agree-text="$t('generic.upload')"
-    :cancel-text="$t('generic.cancel')"
-    @agree="$emit('upload', file)"
-    @cancel="cancel"
-  >
-    <template #content>
+  <v-card>
+    <v-card-title v-text="$t('labels.importLabels')" />
+    <v-card-text>
       <v-form
         ref="form"
         v-model="valid"
       >
-        <h2>{{ $t('labels.importMessage1') }}</h2>
+        <h3>{{ $t('labels.importMessage1') }}</h3>
         <v-sheet
           v-if="exampleFormat"
           :dark="!$vuetify.theme.dark"
@@ -21,31 +15,35 @@
         >
           <pre>{{ exampleFormat }}</pre>
         </v-sheet>
-        <h2>{{ $t('labels.importMessage2') }}</h2>
         <v-file-input
           v-model="file"
           accept=".json"
           :error-messages="errorMessage"
           :label="$t('labels.filePlaceholder')"
           :rules="uploadSingleFileRules($t('rules.uploadFileRules'))"
+          outlined
+          prepend-icon=""
           @change="$emit('clear')"
           @click:clear="$emit('clear')"
         />
+        <v-btn
+          :disabled="!valid"
+          color="primary"
+          class="text-capitalize"
+          @click="$emit('upload', file)"
+        >
+          Import
+        </v-btn>
       </v-form>
-    </template>
-  </base-card>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import BaseCard from '@/components/utils/BaseCard.vue'
 import { uploadSingleFileRules } from '@/rules/index'
 
 export default Vue.extend({
-  components: {
-    BaseCard
-  },
-
   props: {
     errorMessage: {
       type: String,
@@ -78,13 +76,6 @@ export default Vue.extend({
         }
       ]
       return JSON.stringify(data, null, 4)
-    }
-  },
-
-  methods: {
-    cancel() {
-      (this.$refs.form as HTMLFormElement).reset()
-      this.$emit('cancel')
     }
   }
 })
