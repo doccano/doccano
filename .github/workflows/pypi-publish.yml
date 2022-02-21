@@ -37,9 +37,11 @@ jobs:
     - name: collectstatic
       run: |
         poetry run task collectstatic
+      working-directory: ./backend
     - name: Build a binary wheel and a source tarball
       run: |
         poetry build
+      working-directory: ./backend
     - name: Publish a Python distribution to PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
