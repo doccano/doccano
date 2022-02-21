@@ -2,8 +2,10 @@ import argparse
 import multiprocessing
 import os
 import platform
-import subprocess
 import sys
+
+import django
+from django.core import management
 
 from .config.celery import app
 
@@ -11,7 +13,7 @@ os.environ["STANDALONE"] = "True"
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 base = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(base)
-manage_path = os.path.join(base, "manage.py")
+django.setup()
 parser = argparse.ArgumentParser(description="doccano, text annotation for machine learning practitioners.")
 
 
@@ -56,27 +58,15 @@ def run_on_windows(args):
 
 def command_db_init(args):
     print("Setup Database.")
-    subprocess.call([sys.executable, manage_path, "wait_for_db"], shell=False)
-    subprocess.call([sys.executable, manage_path, "migrate"], shell=False)
-    subprocess.call([sys.executable, manage_path, "create_roles"], shell=False)
+    management.call_command("wait_for_db")
+    management.call_command("migrate")
+    management.call_command("create_roles")
 
 
 def command_user_create(args):
     print("Create admin user.")
-    subprocess.call(
-        [
-            sys.executable,
-            manage_path,
-            "create_admin",
-            "--username",
-            args.username,
-            "--password",
-            args.password,
-            "--email",
-            args.email,
-            "--noinput",
-        ],
-        shell=False,
+    management.call_command(
+        "create_admin", "--noinput", username=args.username, password=args.password, email=args.email
     )
 
 
