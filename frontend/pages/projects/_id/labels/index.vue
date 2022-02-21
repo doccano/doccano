@@ -7,7 +7,7 @@
     <v-card-title>
       <action-menu
         @create="$router.push('labels/add?type=' + labelType)"
-        @upload="dialogUpload=true"
+        @upload="$router.push('labels/import?type=' + labelType)"
         @download="download"
       />
       <v-btn
@@ -18,14 +18,6 @@
       >
         {{ $t('generic.delete') }}
       </v-btn>
-      <v-dialog v-model="dialogUpload">
-        <form-upload
-          :error-message="errorMessage"
-          @cancel="closeUpload"
-          @clear="clearErrorMessage"
-          @upload="upload"
-        />
-      </v-dialog>
       <v-dialog v-model="dialogDelete">
         <form-delete
           :selected="selected"
@@ -47,7 +39,6 @@
 import Vue from 'vue'
 import ActionMenu from '@/components/label/ActionMenu.vue'
 import FormDelete from '@/components/label/FormDelete.vue'
-import FormUpload from '@/components/label/FormUpload.vue'
 import LabelList from '@/components/label/LabelList.vue'
 import { LabelDTO } from '~/services/application/label/labelData'
 import { ProjectDTO } from '~/services/application/project/projectData'
@@ -57,7 +48,6 @@ export default Vue.extend({
   components: {
     ActionMenu,
     FormDelete,
-    FormUpload,
     LabelList
   },
   layout: 'project',
@@ -75,11 +65,9 @@ export default Vue.extend({
   data() {
     return {
       dialogDelete: false,
-      dialogUpload: false,
       items: [] as LabelDTO[],
       selected: [] as LabelDTO[],
       isLoading: false,
-      errorMessage: '',
       tab: null,
       project: {} as ProjectDTO,
     }
@@ -161,25 +149,6 @@ export default Vue.extend({
 
     async download() {
       await this.service.export(this.projectId)
-    },
-
-    async upload(file: File) {
-      try {
-        await this.service.upload(this.projectId, file)
-        this.list()
-        this.closeUpload()
-      } catch(e) {
-        this.errorMessage = e.message
-      }
-    },
-
-    closeUpload() {
-      this.clearErrorMessage()
-      this.dialogUpload = false
-    },
-
-    clearErrorMessage() {
-      this.errorMessage = ''
     },
 
     editItem(item: LabelDTO) {
