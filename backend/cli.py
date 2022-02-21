@@ -70,6 +70,11 @@ def command_user_create(args):
     )
 
 
+def command_migrate(args):
+    print("Start migration.")
+    management.call_command("migrate")
+
+
 def command_run_webserver(args):
     print(f"Starting server with port {args.port}.")
     if is_windows():
@@ -102,8 +107,11 @@ def main():
 
     # Create a parser for db initialization.
     parser_init = subparsers.add_parser("init", help="see `init -h`")
-
     parser_init.set_defaults(handler=command_db_init)
+
+    # Create a parser for migration.
+    parser_migration = subparsers.add_parser("migrate", help="Updates database schema.")
+    parser_migration.set_defaults(handler=command_migrate)
 
     # Create a parser for user creation.
     parser_create_user = subparsers.add_parser("createuser", help="see `createuser -h`")
