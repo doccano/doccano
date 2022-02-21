@@ -103,3 +103,27 @@ Then run the `dev` command to serve with hot reload at <localhost:3000>:
 ```bash
 yarn dev
 ```
+
+## How to create a Python package
+
+During development, you may want to create a Python package and verify it works correctly. In such a case, you can create a package by running the following command in the root directory of your project:
+
+```bash
+./tools/create-package.sh
+```
+
+This command builds the frontend, copies the files, and packages them. This will take a few minutes. After finishing the command, you will find `sdist` and `wheel` in `backend/dist`:
+
+```bash
+Building doccano (1.5.5.post335.dev0+6be6d198)
+  - Building sdist
+  - Built doccano-1.5.5.post335.dev0+6be6d198.tar.gz
+  - Building wheel
+  - Built doccano-1.5.5.post335.dev0+6be6d198-py3-none-any.whl
+```
+
+Then, you can install the package via `pip install` command:
+
+```bash
+pip install doccano-1.5.5.post335.dev0+6be6d198-py3-none-any.whl
+```
