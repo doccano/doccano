@@ -91,7 +91,7 @@ class TextLabel(Label):
         unique_together = ("example", "user", "text")
 
 
-class Relation(models.Model):
+class RelationOld(models.Model):
     annotation_id_1 = models.IntegerField()
     annotation_id_2 = models.IntegerField()
     type = models.ForeignKey(RelationTypeOld, related_name="annotation_relations", on_delete=models.CASCADE)

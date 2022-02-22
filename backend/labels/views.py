@@ -14,7 +14,7 @@ from .serializers import (
     SpanSerializer,
     TextLabelSerializer,
 )
-from labels.models import Category, Label, Relation, Span, TextLabel
+from labels.models import Category, Label, RelationOld, Span, TextLabel
 from projects.models import Project
 from projects.permissions import IsProjectMember
 
@@ -118,12 +118,12 @@ class RelationList(generics.ListCreateAPIView):
 
     def delete(self, request, *args, **kwargs):
         delete_ids = request.data["ids"]
-        Relation.objects.filter(pk__in=delete_ids).delete()
+        RelationOld.objects.filter(pk__in=delete_ids).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class RelationDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Relation.objects.all()
+    queryset = RelationOld.objects.all()
     serializer_class = RelationSerializer
     lookup_url_kwarg = "annotation_id"
     permission_classes = [IsAuthenticated & IsProjectMember]
