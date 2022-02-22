@@ -82,3 +82,9 @@ class RelationTypeOld(models.Model):
 
     class Meta:
         unique_together = ("color", "name")
+
+
+class RelationType(LabelType):
+    @property
+    def labels(self):
+        return RelationType.objects.filter(project=self.project)
