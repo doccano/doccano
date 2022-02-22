@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .exceptions import LabelValidationError
-from .models import CategoryType, LabelType, RelationType, SpanType
+from .models import CategoryType, LabelType, RelationTypeOld, SpanType
 from .serializers import (
     CategoryTypeSerializer,
     LabelSerializer,
@@ -74,12 +74,12 @@ class SpanTypeDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 class RelationTypeList(LabelList):
-    model = RelationType
+    model = RelationTypeOld
     serializer_class = RelationTypesSerializer
 
 
 class RelationTypeDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = RelationType.objects.all()
+    queryset = RelationTypeOld.objects.all()
     serializer_class = RelationTypesSerializer
     lookup_url_kwarg = "relation_type_id"
     permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
