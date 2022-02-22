@@ -31,8 +31,8 @@ plugins:
 
 # Page tree
 nav:
-  - Doccano: index.md
-  - Getting started: getting-started.md
+  - Get started: index.md
+  - Installation: getting-started.md
   - Tutorial: tutorial.md
   - Project Structure: project_structure.md
   - Advanced:
