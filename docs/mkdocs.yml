@@ -32,14 +32,12 @@ plugins:
 # Page tree
 nav:
   - Get started: index.md
-  - Installation: getting-started.md
+  - Install and upgrade doccano: install-and-upgrade-doccano.md
   - Tutorial: tutorial.md
   - Project Structure: project_structure.md
   - Advanced:
     - AWS HTTPS settings: advanced/aws_https_settings.md
     - OAuth2 settings: advanced/oauth2_settings.md
-  #- Release notes: release-notes.md
-  #- Author's notes: authors-notes.md
   - FAQ: faq.md
   - Code of Conduct: CODE_OF_CONDUCT.md
   - Roadmap: roadmap.md
