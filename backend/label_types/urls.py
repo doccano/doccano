@@ -21,5 +21,5 @@ urlpatterns = [
     path(route="span-type-upload", view=SpanTypeUploadAPI.as_view(), name="span_type_upload"),
     path(route="relation_types", view=RelationTypeList.as_view(), name="relation_types_list"),
     path(route="relation_type-upload", view=RelationTypeUploadAPI.as_view(), name="relation_type-upload"),
-    path(route="relation_types/<int:relation_type_id>", view=RelationTypeDetail.as_view(), name="relation_type_detail"),
+    path(route="relation_types/<int:label_id>", view=RelationTypeDetail.as_view(), name="relation_type_detail"),
 ]
