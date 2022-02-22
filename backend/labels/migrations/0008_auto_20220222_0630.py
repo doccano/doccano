@@ -19,7 +19,21 @@ def copy_relation(apps, schema_editor):
 
 def delete_new_relation(apps, schema_editor):
     RelationNew = apps.get_model("labels", "RelationNew")
-    RelationNew.objects.all().delete()
+    RelationOld = apps.get_model("labels", "RelationOld")
+    RelationTypeOld = apps.get_model("label_types", "RelationTypeOld")
+    for relation in RelationNew.objects.all():
+        relation_type, created = RelationTypeOld.objects.get_or_create(
+            project=relation.type.project, name=relation.type.text, color=relation.type.background_color
+        )
+        RelationOld(
+            annotation_id_1=relation.from_id.id,
+            annotation_id_2=relation.to_id.id,
+            timestamp=relation.created_at,
+            user=relation.user,
+            project=relation.example.project,
+            type=relation_type,
+        ).save()
+        relation.delete()
 
 
 class Migration(migrations.Migration):

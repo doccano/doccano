@@ -4,8 +4,7 @@ from django.db import models
 
 from .managers import CategoryManager, LabelManager, SpanManager, TextLabelManager
 from examples.models import Example
-from label_types.models import CategoryType, RelationType, RelationTypeOld, SpanType
-from projects.models import Project
+from label_types.models import CategoryType, RelationType, SpanType
 
 
 class Label(models.Model):
@@ -89,21 +88,6 @@ class TextLabel(Label):
 
     class Meta:
         unique_together = ("example", "user", "text")
-
-
-class RelationOld(models.Model):
-    annotation_id_1 = models.IntegerField()
-    annotation_id_2 = models.IntegerField()
-    type = models.ForeignKey(RelationTypeOld, related_name="annotation_relations", on_delete=models.CASCADE)
-    timestamp = models.DateTimeField()
-    user = models.ForeignKey(User, related_name="annotation_relations", on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, related_name="annotation_relations", on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.__dict__.__str__()
-
-    class Meta:
-        unique_together = ("annotation_id_1", "annotation_id_2", "type", "project")
 
 
 class RelationNew(Label):

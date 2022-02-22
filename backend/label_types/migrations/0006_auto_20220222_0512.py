@@ -10,11 +10,17 @@ def copy_relation_type(apps, schema_editor):
         RelationType(
             background_color=relation_type.color, text=relation_type.name, project=relation_type.project
         ).save()
+        relation_type.delete()
 
 
 def delete_new_relation_type(apps, schema_editor):
-    RelationType = apps.get_model("label_types", "RelationType")
-    RelationType.objects.all().delete()
+    RelationTypeNew = apps.get_model("label_types", "RelationType")
+    RelationTypeOld = apps.get_model("label_types", "RelationTypeOld")
+    for relation_type in RelationTypeNew.objects.all():
+        RelationTypeOld.objects.get_or_create(
+            color=relation_type.background_color, name=relation_type.text, project=relation_type.project
+        )
+        relation_type.delete()
 
 
 class Migration(migrations.Migration):
