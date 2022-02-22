@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
-from .models import Category, RelationNew, Span, TextLabel
+from .models import Category, Relation, Span, TextLabel
 from examples.models import Example
-from label_types.models import CategoryType, SpanType
+from label_types.models import CategoryType, RelationType, SpanType
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -61,9 +61,10 @@ class TextLabelSerializer(serializers.ModelSerializer):
 
 
 class RelationSerializer(serializers.ModelSerializer):
-    def validate(self, attrs):
-        return super().validate(attrs)
+    example = serializers.PrimaryKeyRelatedField(queryset=Example.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=RelationType.objects.all())
 
     class Meta:
-        model = RelationNew
+        model = Relation
         fields = ("id", "prob", "user", "example", "created_at", "updated_at", "from_id", "to_id", "type")
+        read_only_fields = ("user",)

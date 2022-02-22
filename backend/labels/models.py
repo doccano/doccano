@@ -90,7 +90,7 @@ class TextLabel(Label):
         unique_together = ("example", "user", "text")
 
 
-class RelationNew(Label):
+class Relation(Label):
     from_id = models.ForeignKey(Span, on_delete=models.CASCADE, related_name="from_relations")
     to_id = models.ForeignKey(Span, on_delete=models.CASCADE, related_name="to_relations")
     type = models.ForeignKey(RelationType, on_delete=models.CASCADE)
