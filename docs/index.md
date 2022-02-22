@@ -1,58 +1,60 @@
-# Welcome to doccano
+# Get started with doccano
 
-## Text Annotation for Humans
+## What is doccano?
 
-doccano is an open source text annotation tool built for human beings. It provides annotation features for text classification, sequence labeling and sequence to sequence. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create project, upload your data and start annotating. You can build a dataset in hours.
+doccano is an open-source data labeling tool for machine learning practitioners. You can perform different types of labeling tasks with many data formats. You can try doccano from the [demo page](http://doccano.herokuapp.com).
 
-## Demo
+![Demo image](https://raw.githubusercontent.com/doccano/doccano/master/docs/images/demo/demo.gif)
 
-You can enjoy this [annotation demo](http://doccano.herokuapp.com).
+You can also integrate doccano with your script because it exposes the features as REST APIs. By using the APIs, you can label your data by using some machine learning model. See API documentation in detail.
 
-### [Named entity recognition](https://doccano.herokuapp.com/demo/named-entity-recognition/)
+## Labeling workflow with doccano
 
-First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate them. Since doccano supports shortcut keys, you can quickly annotate text spans.
+Start and finish a labeling project with doccano by the following steps:
 
-![Named Entity Recognition](./images/demo/named_entity_annotation.gif)
+1. Install doccano.
+2. Run doccano.
+3. Set up the labeling project. Select the type of labeling project and configure project settings.
+4. Import dataset. You can also import labeled datasets.
+5. Add users to the project.
+6. Define the annotation guideline.
+7. Start labeling the data.
+8. Export the labeled dataset.
 
-### [Text Classification](https://doccano.herokuapp.com/demo/text-classification/)
+## Quick start
 
-Second demo is one of the text classification tasks, topic classification. Since there may be more than one category, you can annotate multi-labels.
-
-![Text Classification](./images/demo/text_classification.gif)
-
-### [Machine translation](https://doccano.herokuapp.com/demo/translation/)
-
-Final demo is one of the sequence to sequence tasks, machine translation. Since there may be more than one responses in sequence to sequence tasks, you can create multiple responses.
-
-![Machine Translation](./images/demo/translation.gif)
-
-## Quick Deployment
-
-<!-- ### Azure
-
-Doccano can be deployed to Azure ([Web App for Containers](https://azure.microsoft.com/en-us/services/app-service/containers/) +
-[PostgreSQL database](https://azure.microsoft.com/en-us/services/postgresql/)) by clicking on the button below:
-
-[![Deploy to Azure](https://azuredeploy.net/deploybutton.svg)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdoccano%2Fdoccano%2Fmaster%2Fazuredeploy.json) -->
-
-### Heroku
-
-Doccano can be deployed to [Heroku](https://www.heroku.com/) by clicking on the button below:
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
-
-Of course, you can deploy doccano by using [heroku-cli](https://devcenter.heroku.com/articles/heroku-cli).
+1. Install doccano:
 
 ```bash
-heroku create
-heroku stack:set container
-git push heroku master
+pip install doccano
 ```
 
-### AWS
+2. Run doccano:
 
-Doccano can be deployed to AWS ([Cloudformation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Welcome.html)) by clicking on the button below:
+```bash
+doccano init
+doccano createuser
+doccano webserver
+# In another terminal, run the following command:
+doccano task
+```
 
-[![AWS CloudFormation Launch Stack SVG Button](https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg)](https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/review?templateURL=https://s3-external-1.amazonaws.com/cf-templates-10vry9l3mp71r-us-east-1/20190732wl-new.templatexloywxxyimi&stackName=doccano)
+3. Open doccano UI at <http://localhost:8000>.
+4. Sign up with a username and password created by the `doccano createuser`.
+5. Click `Create` to create a project and start labeling data.
+6. Click `Import dataset` on the dataset page and import the dataset you want to use.
+7. Click `Start annotation` and label the data.
+8. Click `Export dataset` on the dataset page and export the labeled dataset.
 
-> Notice: (1) EC2 KeyPair cannot be created automatically, so make sure you have an existing EC2 KeyPair in one region. Or [create one yourself](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#having-ec2-create-your-key-pair). (2) If you want to access doccano via HTTPS in AWS, here is an [instruction](https://github.com/doccano/doccano/wiki/HTTPS-setting-for-doccano-in-AWS).
+## Architecture
+
+You can customize doccano to suit your needs. The architecture of doccano consists of two parts: backend and frontend.
+
+|      Module      |                 Technology                  |                Description                 |
+| ---------------- | ------------------------------------------- | ------------------------------------------ |
+| [doccano backend](https://github.com/doccano/doccano/tree/master/backend)  | Python, [Django](https://www.djangoproject.com/), and [Django Rest Framework](https://www.django-rest-framework.org/)   | Perform data labeling via REST APIs.              |
+| [doccano frontend](https://github.com/doccano/doccano/tree/master/frontend) | Javascript web app using [Vue.js](https://vuejs.org/) and [Nuxt.js](https://nuxtjs.org/) | Perform data labeling in a user interface. |
+
+## Contact
+
+For help and feedback, please feel free to contact [the author](https://github.com/Hironsan).
