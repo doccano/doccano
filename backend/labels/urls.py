@@ -12,8 +12,12 @@ from .views import (
 )
 
 urlpatterns = [
-    path(route="annotation_relations", view=RelationList.as_view(), name="relation_list"),
-    path(route="annotation_relations/<int:annotation_id>", view=RelationDetail.as_view(), name="relation_detail"),
+    path(route="examples/<int:example_id>/relations", view=RelationList.as_view(), name="relation_list"),
+    path(
+        route="examples/<int:example_id>/relations/<int:annotation_id>",
+        view=RelationDetail.as_view(),
+        name="relation_detail",
+    ),
     path(route="examples/<int:example_id>/categories", view=CategoryListAPI.as_view(), name="category_list"),
     path(
         route="examples/<int:example_id>/categories/<int:annotation_id>",
