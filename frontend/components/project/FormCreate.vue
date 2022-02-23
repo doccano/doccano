@@ -63,6 +63,12 @@
         />
         <v-checkbox
           v-if="isSequenceLabelingProject"
+          :value="useRelation"
+          label="Use relation labeling"
+          @change="updateValue('useRelation', $event === true)"
+        />
+        <v-checkbox
+          v-if="isSequenceLabelingProject"
           :value="graphemeMode"
           @change="updateValue('graphemeMode', $event === true)"
         >
@@ -148,6 +154,10 @@ export default Vue.extend({
       default: false
     },
     graphemeMode: {
+      type: Boolean,
+      default: false
+    },
+    useRelation: {
       type: Boolean,
       default: false
     }

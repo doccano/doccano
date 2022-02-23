@@ -36,6 +36,9 @@ export class ProjectReadItem {
   @Expose({ name: 'grapheme_mode' })
   graphemeMode: boolean;
 
+  @Expose({ name: 'use_relation' })
+  useRelation: boolean;
+
   @Expose({ name: 'is_text_project'})
   isTextProject: boolean;
 
@@ -96,7 +99,8 @@ export class ProjectWriteItem {
     public collaborative_annotation:    boolean,
     public single_class_classification: boolean,
     public allow_overlapping:           boolean,
-    public grapheme_mode:               boolean
+    public grapheme_mode:               boolean,
+    public use_relation:                boolean,
   ) {}
 
   get resourceType(): string {
@@ -123,6 +127,7 @@ export class ProjectWriteItem {
       single_class_classification: this.single_class_classification,
       allow_overlapping: this.allow_overlapping,
       grapheme_mode: this.grapheme_mode,
+      use_relation: this.use_relation,
       resourcetype: this.resourceType
     }
   }
