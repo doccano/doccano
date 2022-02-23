@@ -103,3 +103,13 @@ class Relation(Label):
 
     def __str__(self):
         return self.__dict__.__str__()
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.full_clean()
+        super().save(force_insert, force_update, using, update_fields)
+
+    def clean(self):
+        same_example = self.from_id.example == self.to_id.example == self.example
+        if not same_example:
+            raise ValidationError("You need to label the same example.")
+        return super().clean()
