@@ -20,8 +20,8 @@ export class LinkDTO {
 
   constructor(item: LinkItem) {
     this.id = item.id
-    this.fromId = item.annotation_id_1
-    this.toId = item.annotation_id_2
+    this.fromId = item.fromId
+    this.toId = item.toId
     this.labelId = item.type
   }
 }

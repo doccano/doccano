@@ -1,9 +1,10 @@
 import {AnnotationApplicationService} from '../annotationApplicationService'
+import { LinkDTO } from '../../links/linkData'
 import {SequenceLabelingDTO} from './sequenceLabelingData'
 import {APISequenceLabelingRepository} from '~/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
 import {SequenceLabelingLabel} from '~/domain/models/tasks/sequenceLabeling'
-import {LinkRepository} from "~/domain/models/links/linkRepository";
-import {LinkItem} from "~/domain/models/links/link";
+import {LinkRepository} from "~/domain/models/links/linkRepository"
+import {LinkItem} from "~/domain/models/links/link"
 
 export class SequenceLabelingApplicationService extends AnnotationApplicationService<SequenceLabelingLabel> {
     constructor(
@@ -22,7 +23,7 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
         const item = new SequenceLabelingLabel(0, labelId, 0, startOffset, endOffset)
         try {
             await this.repository.create(projectId, docId, item)
-        } catch(e) {
+        } catch(e: any) {
             console.log(e.response.data.detail)
         }
     }
@@ -30,25 +31,26 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
     public async changeLabel(projectId: string, docId: number, annotationId: number, labelId: number): Promise<void> {
         try {
             await this.repository.update(projectId, docId, annotationId, labelId)
-        } catch(e) {
+        } catch(e: any) {
             console.log(e.response.data.detail)
         }
     }
 
-    public async listLinks(projectId: string): Promise<LinkItem[]> {
-        return await this.linkRepository.list(projectId);
+    public async listLinks(projectId: string, docId: number): Promise<LinkDTO[]> {
+        const items = await this.linkRepository.list(projectId, docId)
+        return items.map(item => new LinkDTO(item))
     }
 
-    public async createLink(projectId: string, sourceId: number, targetId: number, linkType: number, userId: number): Promise<void> {
-        const link = new LinkItem(0, sourceId, targetId, linkType, userId, (new Date()).toISOString());
-        await this.linkRepository.create(projectId, link);
+    public async createLink(projectId: string, docId: number, fromId: number, toId: number, typeId: number): Promise<void> {
+        const link = new LinkItem(0, fromId, toId, typeId);
+        await this.linkRepository.create(projectId, docId, link);
     }
 
-    public async deleteLink(projectId: string, linkId: number): Promise<void> {
-        await this.linkRepository.bulkDelete(projectId, [linkId]);
+    public async deleteLink(projectId: string, docId: number, linkId: number): Promise<void> {
+        await this.linkRepository.delete(projectId, docId, linkId);
     }
 
-    public async updateLink(projectId: string, linkId: number, linkType: number): Promise<void> {
-        await this.linkRepository.update(projectId, linkId, linkType);
+    public async updateLink(projectId: string, docId: number, linkId: number, linkType: number): Promise<void> {
+        await this.linkRepository.update(projectId, docId, linkId, linkType);
     }
 }

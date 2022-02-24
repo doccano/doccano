@@ -25,29 +25,24 @@ export class LinkTypeItem {
 export class LinkItem {
     constructor(
         public id: number,
-        public annotation_id_1: number,
-        public annotation_id_2: number,
+        public fromId: number,
+        public toId: number,
         public type: number,
-        public user: number,
-        public timestamp: string
     ) {
     }
 
     static valueOf(
-        {id, annotation_id_1, annotation_id_2, type, user, timestamp}:
-            { id: number, annotation_id_1: number, annotation_id_2: number, type: number, user:number, timestamp:string }
+        {id, from_id, to_id, type}: { id: number, from_id: number, to_id: number, type: number }
     ): LinkItem {
-        return new LinkItem(id, annotation_id_1, annotation_id_2, type, user, timestamp)
+        return new LinkItem(id, from_id, to_id, type)
     }
 
     toObject(): Object {
         return {
             id: this.id,
-            annotation_id_1: this.annotation_id_1,
-            annotation_id_2: this.annotation_id_2,
+            from_id: this.fromId,
+            to_id: this.toId,
             type: this.type,
-            user: this.user,
-            timestamp: this.timestamp
         }
     }
 }

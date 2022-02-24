@@ -128,6 +128,10 @@ export default Vue.extend({
       default: null,
       required: false,
     },
+    relationMode: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
@@ -138,6 +142,8 @@ export default Vue.extend({
       startOffset: 0,
       endOffset: 0,
       entity: null as any,
+      fromEntity: null as any,
+      toEntity: null as any,
     };
   },
 
@@ -166,6 +172,18 @@ export default Vue.extend({
       this.entity = this.entities.find((entity: any) => entity.id === entityId)
     },
 
+    setEntityForRelation(entityId: number) {
+      const entity = this.entities.find((entity: any) => entity.id === entityId)
+      if (!this.fromEntity) {
+        this.fromEntity = entity
+      } else {
+        this.toEntity = entity
+        if (this.selectedLabel) {
+          this.addRelation()
+        }
+      }
+    },
+
     showEntityLabelMenu(e: any) {
       e.preventDefault()
       this.showMenu = false
@@ -186,8 +204,12 @@ export default Vue.extend({
     },
 
     handleEntityClickEvent(e: any, entityId: number) {
-      this.setEntity(entityId)
-      this.showEntityLabelMenu(e)
+      if (this.relationMode) {
+        this.setEntityForRelation(entityId)
+      } else {
+        this.setEntity(entityId)
+        this.showEntityLabelMenu(e)
+      }
     },
 
     addOrUpdateEntity(labelId: number) {
@@ -228,6 +250,12 @@ export default Vue.extend({
           (this.$refs.autocomplete as any).selectedItems = []
         }
       })
+    },
+
+    addRelation() {
+      this.$emit('addRelation', this.fromEntity.id, this.toEntity.id, this.selectedLabel.id)
+      this.fromEntity = null
+      this.toEntity = null
     },
 
     updateRelation() {
