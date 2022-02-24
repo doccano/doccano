@@ -2,7 +2,13 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from .managers import CategoryManager, LabelManager, SpanManager, TextLabelManager
+from .managers import (
+    CategoryManager,
+    LabelManager,
+    RelationManager,
+    SpanManager,
+    TextLabelManager,
+)
 from examples.models import Example
 from label_types.models import CategoryType, RelationType, SpanType
 
@@ -91,6 +97,7 @@ class TextLabel(Label):
 
 
 class Relation(Label):
+    objects = RelationManager()
     from_id = models.ForeignKey(Span, on_delete=models.CASCADE, related_name="from_relations")
     to_id = models.ForeignKey(Span, on_delete=models.CASCADE, related_name="to_relations")
     type = models.ForeignKey(RelationType, on_delete=models.CASCADE)
