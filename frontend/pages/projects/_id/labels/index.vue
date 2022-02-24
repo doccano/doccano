@@ -1,8 +1,14 @@
 <template>
   <v-card>
     <v-tabs v-if="hasMultiType" v-model="tab">
-      <v-tab class="text-capitalize">Category</v-tab>
-      <v-tab class="text-capitalize">Span</v-tab>
+      <template v-if="isIntentDetectionAndSlotFilling">
+        <v-tab class="text-capitalize">Category</v-tab>
+        <v-tab class="text-capitalize">Span</v-tab>
+      </template>
+      <template v-else>
+        <v-tab class="text-capitalize">Span</v-tab>
+        <v-tab class="text-capitalize">Relation</v-tab>
+      </template>
     </v-tabs>
     <v-card-title>
       <action-menu
@@ -68,7 +74,7 @@ export default Vue.extend({
       items: [] as LabelDTO[],
       selected: [] as LabelDTO[],
       isLoading: false,
-      tab: null,
+      tab: 0,
       project: {} as ProjectDTO,
     }
   },
@@ -84,18 +90,22 @@ export default Vue.extend({
 
     hasMultiType(): boolean {
       if ('projectType' in this.project) {
-        return this.project.projectType === 'IntentDetectionAndSlotFilling'
+        return this.isIntentDetectionAndSlotFilling || !!this.project.useRelation
       } else {
         return false
       }
     },
 
+    isIntentDetectionAndSlotFilling(): boolean {
+      return this.project.projectType === 'IntentDetectionAndSlotFilling'
+    },
+
     labelType(): string {
       if (this.hasMultiType) {
-        if (this.tab === 0) {
-          return 'category'
+        if (this.isIntentDetectionAndSlotFilling){
+          return ['category', 'span'][this.tab!]
         } else {
-          return 'span'
+          return ['span', 'relation'][this.tab!]
         }
       } else if (this.project.projectType.endsWith('Classification')) {
         return 'category'
@@ -109,10 +119,10 @@ export default Vue.extend({
         return
       }
       if (this.hasMultiType) {
-        if (this.tab === 0) {
-          return this.$services.categoryType
+        if (this.isIntentDetectionAndSlotFilling) {
+          return [this.$services.categoryType, this.$services.spanType][this.tab!]
         } else {
-          return this.$services.spanType
+          return [this.$services.spanType, this.$services.relationType][this.tab!]
         }
       } else if (this.project.projectType.endsWith('Classification')) {
         return this.$services.categoryType
