@@ -4,7 +4,7 @@
       :dark="$vuetify.theme.dark"
       :rtl="rtl"
       :text="text"
-      :entities="JSON.stringify(entities)"
+      :entities="entities"
       :entity-labels="entityLabels"
       :relations="relations"
       :relation-labels="relationLabels"
