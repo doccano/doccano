@@ -162,6 +162,7 @@ export default Vue.extend({
       if (this.selectedEntities.length === 2) {
         if (this.selectedLabel) {
           this.addRelation(this.selectedLabel.id)
+          this.cleanUp()
         } else {
           this.showRelationLabelMenu(e)
         }
