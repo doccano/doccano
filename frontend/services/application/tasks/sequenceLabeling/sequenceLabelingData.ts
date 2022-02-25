@@ -1,14 +1,14 @@
-import { SequenceLabelingLabel } from '~/domain/models/tasks/sequenceLabeling'
+import { Span } from '~/domain/models/tasks/sequenceLabeling'
 
 
-export class SequenceLabelingDTO {
+export class SpanDTO {
   id: number;
   label: number;
   user: number;
   startOffset: number;
   endOffset: number;
 
-  constructor(item: SequenceLabelingLabel) {
+  constructor(item: Span) {
     this.id = item.id;
     this.label = item.label;
     this.user = item.user;

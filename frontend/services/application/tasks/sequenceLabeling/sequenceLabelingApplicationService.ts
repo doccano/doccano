@@ -1,12 +1,12 @@
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { RelationDTO } from './relationData'
-import { SequenceLabelingDTO } from './sequenceLabelingData'
+import { SpanDTO } from './sequenceLabelingData'
 import { APISequenceLabelingRepository } from '~/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
-import { SequenceLabelingLabel } from '~/domain/models/tasks/sequenceLabeling'
+import { Span } from '~/domain/models/tasks/sequenceLabeling'
 import { RelationRepository } from "~/domain/models/tasks/relationRepository"
 import { RelationItem } from "~/domain/models/tasks/relation"
 
-export class SequenceLabelingApplicationService extends AnnotationApplicationService<SequenceLabelingLabel> {
+export class SequenceLabelingApplicationService extends AnnotationApplicationService<Span> {
     constructor(
         readonly repository: APISequenceLabelingRepository,
         readonly relationRepository: RelationRepository
@@ -14,13 +14,13 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
         super(new APISequenceLabelingRepository())
     }
 
-    public async list(projectId: string, docId: number): Promise<SequenceLabelingDTO[]> {
+    public async list(projectId: string, docId: number): Promise<SpanDTO[]> {
         const items = await this.repository.list(projectId, docId)
-        return items.map(item => new SequenceLabelingDTO(item))
+        return items.map(item => new SpanDTO(item))
     }
 
     public async create(projectId: string, docId: number, labelId: number, startOffset: number, endOffset: number): Promise<void> {
-        const item = new SequenceLabelingLabel(0, labelId, 0, startOffset, endOffset)
+        const item = new Span(0, labelId, 0, startOffset, endOffset)
         try {
             await this.repository.create(projectId, docId, item)
         } catch(e: any) {
