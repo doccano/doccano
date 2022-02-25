@@ -159,7 +159,7 @@ export default Vue.extend({
         if (this.selectedLabel) {
           this.addRelation(this.selectedLabel.id)
         } else {
-          // this.showEntityLabelMenu(e)
+          this.showRelationLabelMenu(e)
         }
       }
     },

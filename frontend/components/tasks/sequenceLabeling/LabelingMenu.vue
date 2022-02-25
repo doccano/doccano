@@ -114,7 +114,6 @@ export default Vue.extend({
     },
 
     onLabelSelected(labelId: number) {
-      console.log(labelId)
       this.$emit('click:label', labelId)
       this.close()
     }
