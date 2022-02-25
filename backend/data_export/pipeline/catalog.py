@@ -50,6 +50,11 @@ class IntentAndSlot(Format):
     extension = "jsonl"
 
 
+class JSONLRelation(Format):
+    name = "JSONL(relation)"
+    extension = "jsonl"
+
+
 class OptionDelimiter(BaseModel):
     delimiter: Literal[",", "\t", ";", "|", " "] = ","
 
@@ -79,6 +84,7 @@ Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionNone, examples.Category_J
 
 # Sequence Labeling
 Options.register(SEQUENCE_LABELING, JSONL, OptionNone, examples.Offset_JSONL)
+Options.register(SEQUENCE_LABELING, JSONLRelation, OptionNone, examples.ENTITY_AND_RELATION_JSONL)
 
 # Sequence to sequence
 Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
