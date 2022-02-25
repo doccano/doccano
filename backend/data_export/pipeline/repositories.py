@@ -126,6 +126,42 @@ class SequenceLabelingRepository(TextRepository):
         return label_per_user
 
 
+class RelationExtractionRepository(TextRepository):
+    @property
+    def docs(self):
+        return Example.objects.filter(project=self.project).prefetch_related(
+            "spans__user", "spans__label", "relations__user", "relations__type"
+        )
+
+    def label_per_user(self, doc) -> Dict:
+        relation_per_user: Dict = defaultdict(list)
+        span_per_user: Dict = defaultdict(list)
+        label_per_user: Dict = defaultdict(dict)
+        for relation in doc.relations.all():
+            relation_per_user[relation.user.username].append(
+                {
+                    "id": relation.id,
+                    "from_id": relation.from_id.id,
+                    "to_id": relation.to_id.id,
+                    "type": relation.type.text,
+                }
+            )
+        for span in doc.spans.all():
+            span_per_user[span.user.username].append(
+                {
+                    "id": span.id,
+                    "start_offset": span.start_offset,
+                    "end_offset": span.end_offset,
+                    "label": span.label.text,
+                }
+            )
+        for user, relations in relation_per_user.items():
+            label_per_user[user]["relations"] = relations
+        for user, span in span_per_user.items():
+            label_per_user[user]["entities"] = span
+        return label_per_user
+
+
 class Seq2seqRepository(TextRepository):
     @property
     def docs(self):
