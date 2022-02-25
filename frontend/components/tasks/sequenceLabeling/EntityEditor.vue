@@ -10,6 +10,7 @@
       :relation-labels="relationLabels"
       :allow-overlapping="allowOverlapping"
       :grapheme-mode="graphemeMode"
+      :selected-entities="selectedEntities"
       @add:entity="handleAddEvent"
       @click:entity="onEntityClicked"
       @click:relation="onRelationClicked"
