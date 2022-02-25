@@ -49,8 +49,12 @@
           <v-switch
             v-if="useRelationLabeling"
             v-model="relationMode"
-            label="Relation"
-          />
+          >
+            <template #label>
+              <span v-if="relationMode">Relation</span>
+              <span v-else>Entity</span>
+            </template>
+          </v-switch>
           <v-chip-group
             v-model="selectedLabelIndex"
             column
