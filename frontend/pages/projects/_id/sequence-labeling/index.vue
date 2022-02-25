@@ -34,6 +34,7 @@
             @addEntity="addEntity"
             @addRelation="addRelation"
             @click:entity="updateEntity"
+            @click:relation="updateRelation"
             @contextmenu:entity="deleteEntity"
             @contextmenu:relation="deleteRelation"
           />
@@ -234,6 +235,11 @@ export default {
 
     async addRelation(fromId, toId, typeId) {
       await this.$services.sequenceLabeling.createLink(this.projectId, this.doc.id, fromId, toId, typeId)
+      await this.list(this.doc.id)
+    },
+
+    async updateRelation(relationId, typeId) {
+      await this.$services.sequenceLabeling.updateLink(this.projectId, this.doc.id, relationId, typeId)
       await this.list(this.doc.id)
     },
 

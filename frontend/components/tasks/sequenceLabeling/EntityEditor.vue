@@ -12,7 +12,7 @@
       :grapheme-mode="graphemeMode"
       @add:entity="handleAddEvent"
       @click:entity="onEntityClicked"
-      @click:relation="updateRelation"
+      @click:relation="onRelationClicked"
       @contextmenu:entity="deleteEntity"
       @contextmenu:relation="deleteRelation"
     />
@@ -24,6 +24,15 @@
       :labels="entityLabels"
       @close="cleanUp"
       @click:label="addOrUpdateEntity"
+    />
+    <labeling-menu
+      :opened="relationMenuOpened"
+      :x="x"
+      :y="y"
+      :selected-label="currentRelationLabel"
+      :labels="relationLabels"
+      @close="cleanUp"
+      @click:label="addOrUpdateRelation"
     />
   </div>
 </template>
@@ -101,6 +110,7 @@ export default Vue.extend({
       startOffset: 0,
       endOffset: 0,
       entity: null as any,
+      relation: null as any,
       fromEntity: null as any,
       toEntity: null as any,
     };
@@ -110,6 +120,15 @@ export default Vue.extend({
     currentLabel(): any {
       if (this.entity) {
         const label = this.entityLabels.find((label: any) => label.id === this.entity!.label)
+        return label
+      } else {
+        return null
+      }
+    },
+
+    currentRelationLabel(): any {
+      if (this.relation) {
+        const label = this.relationLabels.find((label: any) => label.id === this.relation.labelId)
         return label
       } else {
         return null
@@ -127,6 +146,10 @@ export default Vue.extend({
       this.entity = this.entities.find((entity: any) => entity.id === entityId)
     },
 
+    setRelation(relationId: number) {
+      this.relation = this.relations.find((relation: any) => relation.id === relationId)
+    },
+
     setEntityForRelation(e: any, entityId: number) {
       const entity = this.entities.find((entity: any) => entity.id === entityId)
       if (!this.fromEntity) {
@@ -134,7 +157,7 @@ export default Vue.extend({
       } else {
         this.toEntity = entity
         if (this.selectedLabel) {
-          this.addRelation()
+          this.addRelation(this.selectedLabel.id)
         } else {
           // this.showEntityLabelMenu(e)
         }
@@ -148,6 +171,16 @@ export default Vue.extend({
       this.y = e.clientY || e.changedTouches[0].clientY
       this.$nextTick(() => {
         this.entityMenuOpened = true
+      })
+    },
+
+    showRelationLabelMenu(e: any) {
+      e.preventDefault()
+      this.relationMenuOpened = false
+      this.x = e.clientX || e.changedTouches[0].clientX
+      this.y = e.clientY || e.changedTouches[0].clientY
+      this.$nextTick(() => {
+        this.relationMenuOpened = true
       })
     },
 
@@ -169,6 +202,11 @@ export default Vue.extend({
       }
     },
 
+    onRelationClicked(e: any, relation: any) {
+      this.setRelation(relation.id)
+      this.showRelationLabelMenu(e)
+    },
+
     addOrUpdateEntity(labelId: number) {
       if (labelId) {
         if (this.entity) {
@@ -178,6 +216,19 @@ export default Vue.extend({
         }
       } else {
         this.deleteEntity(this.entity)
+      }
+      this.cleanUp()
+    },
+
+    addOrUpdateRelation(labelId: number) {
+      if (labelId) {
+        if (this.relation) {
+          this.updateRelation(labelId)
+        } else {
+          this.addRelation(labelId)
+        }
+      } else {
+        this.deleteRelation(this.relation)
       }
       this.cleanUp()
     },
@@ -197,19 +248,21 @@ export default Vue.extend({
 
     cleanUp() {
       this.entityMenuOpened = false
+      this.relationMenuOpened = false
       this.entity = null
+      this.relation = null
       this.startOffset = 0
       this.endOffset = 0
     },
 
-    addRelation() {
-      this.$emit('addRelation', this.fromEntity.id, this.toEntity.id, this.selectedLabel.id)
+    addRelation(labelId: number) {
+      this.$emit('addRelation', this.fromEntity.id, this.toEntity.id, labelId)
       this.fromEntity = null
       this.toEntity = null
     },
 
-    updateRelation() {
-      console.log("updateRelation")
+    updateRelation(labelId: number) {
+      this.$emit("click:relation", this.relation.id, labelId)
     },
 
     deleteRelation(relation: any) {
