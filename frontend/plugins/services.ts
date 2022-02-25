@@ -41,7 +41,7 @@ import { DownloadApplicationService } from '~/services/application/download/down
 import { DownloadFormatApplicationService } from '~/services/application/download/downloadFormatApplicationService'
 import { APITagRepository } from '~/repositories/tag/apiTagRepository'
 import { TagApplicationService } from '~/services/application/tag/tagApplicationService'
-import {ApiLinkRepository} from "~/repositories/links/apiLinkRepository";
+import { ApiRelationRepository } from "~/repositories/tasks/sequenceLabeling/apiRelationRepository"
 
 export interface Services {
   categoryType: LabelApplicationService,
@@ -85,7 +85,7 @@ const plugin: Plugin = (context, inject) => {
   const exampleRepository    = new APIExampleRepository()
   const textClassificationRepository = new APITextClassificationRepository()
   const sequenceLabelingRepository   = new APISequenceLabelingRepository()
-  const linkRepository = new ApiLinkRepository()
+  const linkRepository = new ApiRelationRepository()
   const seq2seqRepository = new APISeq2seqRepository()
   const optionRepository     = new LocalStorageOptionRepository()
   const configRepository     = new APIConfigRepository()

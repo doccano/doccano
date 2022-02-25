@@ -43,7 +43,6 @@
     </template>
     <template #sidebar>
       <annotation-progress :progress="progress" />
-      <list-metadata :metadata="doc.meta" class="mt-4" />
       <v-card class="mt-4">
         <v-card-title>Label Types</v-card-title>
         <v-card-text>
@@ -78,6 +77,7 @@
           </v-chip-group>
         </v-card-text>
       </v-card>
+      <list-metadata :metadata="doc.meta" class="mt-4" />
     </template>
   </layout-text>
 </template>
@@ -210,7 +210,7 @@ export default {
 
     async list(docId) {
       const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId)
-      const relations = await this.$services.sequenceLabeling.listLinks(this.projectId, docId)
+      const relations = await this.$services.sequenceLabeling.listRelations(this.projectId, docId)
       // In colab mode, if someone add a new label and annotate data with the label during your work,
       // it occurs exception because there is no corresponding label.
       await this.maybeFetchEntityTypes(annotations)
@@ -234,17 +234,17 @@ export default {
     },
 
     async addRelation(fromId, toId, typeId) {
-      await this.$services.sequenceLabeling.createLink(this.projectId, this.doc.id, fromId, toId, typeId)
+      await this.$services.sequenceLabeling.createRelation(this.projectId, this.doc.id, fromId, toId, typeId)
       await this.list(this.doc.id)
     },
 
     async updateRelation(relationId, typeId) {
-      await this.$services.sequenceLabeling.updateLink(this.projectId, this.doc.id, relationId, typeId)
+      await this.$services.sequenceLabeling.updateRelation(this.projectId, this.doc.id, relationId, typeId)
       await this.list(this.doc.id)
     },
 
     async deleteRelation(relationId) {
-      await this.$services.sequenceLabeling.deleteLink(this.projectId, this.doc.id, relationId)
+      await this.$services.sequenceLabeling.deleteRelation(this.projectId, this.doc.id, relationId)
       await this.list(this.doc.id)
     },
 
