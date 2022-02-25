@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-shortkey="['esc']" @shortkey="cleanUp">
     <v-annotator
       :dark="$vuetify.theme.dark"
       :rtl="rtl"
@@ -38,9 +38,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue, { PropType } from 'vue'
 import VAnnotator from 'v-annotator'
 import LabelingMenu from './LabelingMenu.vue'
+import { SpanDTO } from '~/services/application/tasks/sequenceLabeling/sequenceLabelingData'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 export default Vue.extend({
@@ -64,7 +65,7 @@ export default Vue.extend({
       required: true,
     },
     entities: {
-      type: Array,
+      type: Array as PropType<SpanDTO[]>,
       default: () => [],
       required: true,
     },
@@ -111,8 +112,7 @@ export default Vue.extend({
       endOffset: 0,
       entity: null as any,
       relation: null as any,
-      fromEntity: null as any,
-      toEntity: null as any,
+      selectedEntities: [] as SpanDTO[],
     };
   },
 
@@ -150,12 +150,15 @@ export default Vue.extend({
       this.relation = this.relations.find((relation: any) => relation.id === relationId)
     },
 
-    setEntityForRelation(e: any, entityId: number) {
-      const entity = this.entities.find((entity: any) => entity.id === entityId)
-      if (!this.fromEntity) {
-        this.fromEntity = entity
+    setEntityForRelation(e: Event, entityId: number) {
+      const entity = this.entities.find((entity) => entity.id === entityId)!
+      const index = this.selectedEntities.findIndex((e) => e.id === entity.id)
+      if (index === -1) {
+        this.selectedEntities.push(entity)
       } else {
-        this.toEntity = entity
+        this.selectedEntities.splice(index, 1)
+      }
+      if (this.selectedEntities.length === 2) {
         if (this.selectedLabel) {
           this.addRelation(this.selectedLabel.id)
         } else {
@@ -253,12 +256,12 @@ export default Vue.extend({
       this.relation = null
       this.startOffset = 0
       this.endOffset = 0
+      this.selectedEntities = []
     },
 
     addRelation(labelId: number) {
-      this.$emit('addRelation', this.fromEntity.id, this.toEntity.id, labelId)
-      this.fromEntity = null
-      this.toEntity = null
+      const [fromEntity, toEntity] = this.selectedEntities
+      this.$emit('addRelation', fromEntity.id, toEntity.id, labelId)
     },
 
     updateRelation(labelId: number) {
