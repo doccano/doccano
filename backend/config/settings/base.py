@@ -239,7 +239,7 @@ if not EMAIL_HOST:
 
 
 # User media files
-MEDIA_ROOT = path.join(BASE_DIR, "media")
+MEDIA_ROOT = env("MEDIA_ROOT", path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
 # Filepond settings
