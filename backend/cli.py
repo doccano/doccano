@@ -3,14 +3,19 @@ import multiprocessing
 import os
 import platform
 import sys
+from pathlib import Path
 
 import django
 from django.core import management
 
 from .config.celery import app
 
+DOCCANO_HOME = os.path.expanduser(os.environ.get("DOCCANO_HOME", "~/doccano"))
+Path(DOCCANO_HOME).mkdir(parents=True, exist_ok=True)
 os.environ["STANDALONE"] = "True"
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
+os.environ.setdefault("DATABASE_URL", os.path.join(f"sqlite:///{DOCCANO_HOME}", "db.sqlite3"))
+os.environ.setdefault("MEDIA_ROOT", os.path.join(DOCCANO_HOME, "media"))
 base = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(base)
 django.setup()
