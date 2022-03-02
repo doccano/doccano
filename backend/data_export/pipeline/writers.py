@@ -156,3 +156,25 @@ class IntentAndSlotWriter(LineWriter):
                 {"id": record.id, "text": record.data, "cats": [], "entities": [], **record.metadata},
                 ensure_ascii=False,
             )
+
+
+class EntityAndRelationWriter(LineWriter):
+    extension = "jsonl"
+
+    def create_line(self, record):
+        if isinstance(record.label, dict):
+            return json.dumps(
+                {
+                    "id": record.id,
+                    "text": record.data,
+                    "relations": record.label.get("relations", []),
+                    "entities": record.label.get("entities", []),
+                    **record.metadata,
+                },
+                ensure_ascii=False,
+            )
+        else:
+            return json.dumps(
+                {"id": record.id, "text": record.data, "relations": [], "entities": [], **record.metadata},
+                ensure_ascii=False,
+            )

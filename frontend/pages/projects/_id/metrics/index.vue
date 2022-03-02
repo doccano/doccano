@@ -9,17 +9,22 @@
     <v-col v-if="!!project.hasSpan" cols="12">
       <span-distribution />
     </v-col>
+    <v-col v-if="!!project.useRelation" cols="12">
+      <relation-distribution />
+    </v-col>
   </v-row>
 </template>
 
 <script>
 import CategoryDistribution from '~/components/metrics/CategoryDistribution'
+import RelationDistribution from '~/components/metrics/RelationDistribution'
 import SpanDistribution from '~/components/metrics/SpanDistribution'
 import MemberProgress from '~/components/metrics/MemberProgress'
 
 export default {
   components: {
     CategoryDistribution,
+    RelationDistribution,
     SpanDistribution,
     MemberProgress
   },

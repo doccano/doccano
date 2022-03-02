@@ -1,3 +1,4 @@
+from model_mommy import mommy
 from rest_framework import status
 from rest_framework.reverse import reverse
 
@@ -127,9 +128,9 @@ class TestDataLabeling:
     def setUp(self):
         self.project = prepare_project(task=self.task)
         self.non_member = make_user()
-        doc = make_doc(self.project.item)
+        self.doc = make_doc(self.project.item)
         self.data = self.create_data()
-        self.url = reverse(viewname=self.view_name, args=[self.project.item.id, doc.id])
+        self.url = reverse(viewname=self.view_name, args=[self.project.item.id, self.doc.id])
 
     def create_data(self):
         label = make_label(self.project.item)
@@ -157,6 +158,17 @@ class TestSpanCreation(TestDataLabeling, CRUDMixin):
     def create_data(self):
         label = make_label(self.project.item)
         return {"label": label.id, "start_offset": 0, "end_offset": 1}
+
+
+class TestRelationCreation(TestDataLabeling, CRUDMixin):
+    task = SEQUENCE_LABELING
+    view_name = "relation_list"
+
+    def create_data(self):
+        relation_type = mommy.make("RelationType", project=self.project.item)
+        from_id = mommy.make("Span", example=self.doc, start_offset=0, end_offset=1)
+        to_id = mommy.make("Span", example=self.doc, start_offset=1, end_offset=2)
+        return {"type": relation_type.id, "from_id": from_id.id, "to_id": to_id.id}
 
 
 class TestTextLabelCreation(TestDataLabeling, CRUDMixin):

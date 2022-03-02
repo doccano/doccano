@@ -73,7 +73,8 @@ export default Vue.extend({
         enableShareAnnotation: false,
         singleClassClassification: false,
         allowOverlapping: false,
-        graphemeMode: false
+        graphemeMode: false,
+        useRelation: false,
       } as ProjectWriteDTO,
       defaultItem: {
         name: '',
@@ -83,7 +84,8 @@ export default Vue.extend({
         enableShareAnnotation: false,
         singleClassClassification: false,
         allowOverlapping: false,
-        graphemeMode: false
+        graphemeMode: false,
+        useRelation: false,
       } as ProjectWriteDTO,
       projects: {} as ProjectListDTO,
       selected: [] as ProjectDTO[],

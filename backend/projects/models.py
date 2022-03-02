@@ -95,6 +95,7 @@ class TextClassificationProject(Project):
 class SequenceLabelingProject(Project):
     allow_overlapping = models.BooleanField(default=False)
     grapheme_mode = models.BooleanField(default=False)
+    use_relation = models.BooleanField(default=False)
 
     @property
     def is_text_project(self) -> bool:

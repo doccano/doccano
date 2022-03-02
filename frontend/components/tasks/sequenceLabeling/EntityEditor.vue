@@ -1,85 +1,54 @@
 <template>
-  <div>
+  <div v-shortkey="['esc']" @shortkey="cleanUp">
     <v-annotator
       :dark="$vuetify.theme.dark"
       :rtl="rtl"
       :text="text"
-      :entities="JSON.stringify(entities)"
+      :entities="entities"
       :entity-labels="entityLabels"
       :relations="relations"
       :relation-labels="relationLabels"
       :allow-overlapping="allowOverlapping"
       :grapheme-mode="graphemeMode"
+      :selected-entities="selectedEntities"
       @add:entity="handleAddEvent"
-      @click:entity="handleEntityClickEvent"
-      @click:relation="updateRelation"
+      @click:entity="onEntityClicked"
+      @click:relation="onRelationClicked"
       @contextmenu:entity="deleteEntity"
       @contextmenu:relation="deleteRelation"
     />
-    <v-menu
-      v-model="showMenu"
-      :position-x="x"
-      :position-y="y"
-      absolute
-      offset-y
-      @input="cleanUp"
-    >
-      <v-list
-        dense
-        min-width="150"
-        max-height="400"
-        class="overflow-y-auto"
-      >
-        <v-list-item>
-          <v-autocomplete
-            ref="autocomplete"
-            :value="currentLabel"
-            :items="entityLabels"
-            autofocus
-            dense
-            deletable-chips
-            hide-details
-            item-text="text"
-            item-value="id"
-            label="Label List"
-            small-chips
-            @input="addOrUpdateEntity"
-          />
-        </v-list-item>
-        <v-list-item
-          v-for="(label, i) in entityLabels"
-          :key="i"
-          @click="addOrUpdateEntity(label.id)"
-        >
-          <v-list-item-action
-            v-if="hasAnySuffixKey"
-          >
-            <v-chip
-              v-if="label.suffixKey"
-              :color="label.backgroundColor"
-              outlined
-              small
-              v-text="label.suffixKey"
-            />
-            <span v-else class="mr-8" />
-          </v-list-item-action>
-          <v-list-item-content>
-            <v-list-item-title v-text="label.text"/>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-    </v-menu>
+    <labeling-menu
+      :opened="entityMenuOpened"
+      :x="x"
+      :y="y"
+      :selected-label="currentLabel"
+      :labels="entityLabels"
+      @close="cleanUp"
+      @click:label="addOrUpdateEntity"
+    />
+    <labeling-menu
+      :opened="relationMenuOpened"
+      :x="x"
+      :y="y"
+      :selected-label="currentRelationLabel"
+      :labels="relationLabels"
+      @close="cleanUp"
+      @click:label="addOrUpdateRelation"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue, { PropType } from 'vue'
 import VAnnotator from 'v-annotator'
+import LabelingMenu from './LabelingMenu.vue'
+import { SpanDTO } from '~/services/application/tasks/sequenceLabeling/sequenceLabelingData'
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 export default Vue.extend({
   components: {
     VAnnotator,
+    LabelingMenu,
   },
 
   props: {
@@ -97,7 +66,7 @@ export default Vue.extend({
       required: true,
     },
     entities: {
-      type: Array,
+      type: Array as PropType<SpanDTO[]>,
       default: () => [],
       required: true,
     },
@@ -128,27 +97,39 @@ export default Vue.extend({
       default: null,
       required: false,
     },
+    relationMode: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {
     return {
-      showMenu: false,
+      entityMenuOpened: false,
+      relationMenuOpened: false,
       x: 0,
       y: 0,
       startOffset: 0,
       endOffset: 0,
       entity: null as any,
+      relation: null as any,
+      selectedEntities: [] as SpanDTO[],
     };
   },
 
   computed: {
-    hasAnySuffixKey(): boolean {
-      return this.entityLabels.some((label: any) => label.suffixKey !== null)
-    },
-
     currentLabel(): any {
       if (this.entity) {
         const label = this.entityLabels.find((label: any) => label.id === this.entity!.label)
+        return label
+      } else {
+        return null
+      }
+    },
+
+    currentRelationLabel(): any {
+      if (this.relation) {
+        const label = this.relationLabels.find((label: any) => label.id === this.relation.labelId)
         return label
       } else {
         return null
@@ -166,13 +147,45 @@ export default Vue.extend({
       this.entity = this.entities.find((entity: any) => entity.id === entityId)
     },
 
+    setRelation(relationId: number) {
+      this.relation = this.relations.find((relation: any) => relation.id === relationId)
+    },
+
+    setEntityForRelation(e: Event, entityId: number) {
+      const entity = this.entities.find((entity) => entity.id === entityId)!
+      const index = this.selectedEntities.findIndex((e) => e.id === entity.id)
+      if (index === -1) {
+        this.selectedEntities.push(entity)
+      } else {
+        this.selectedEntities.splice(index, 1)
+      }
+      if (this.selectedEntities.length === 2) {
+        if (this.selectedLabel) {
+          this.addRelation(this.selectedLabel.id)
+          this.cleanUp()
+        } else {
+          this.showRelationLabelMenu(e)
+        }
+      }
+    },
+
     showEntityLabelMenu(e: any) {
       e.preventDefault()
-      this.showMenu = false
+      this.entityMenuOpened = false
       this.x = e.clientX || e.changedTouches[0].clientX
       this.y = e.clientY || e.changedTouches[0].clientY
       this.$nextTick(() => {
-        this.showMenu = true
+        this.entityMenuOpened = true
+      })
+    },
+
+    showRelationLabelMenu(e: any) {
+      e.preventDefault()
+      this.relationMenuOpened = false
+      this.x = e.clientX || e.changedTouches[0].clientX
+      this.y = e.clientY || e.changedTouches[0].clientY
+      this.$nextTick(() => {
+        this.relationMenuOpened = true
       })
     },
 
@@ -185,9 +198,18 @@ export default Vue.extend({
       }
     },
 
-    handleEntityClickEvent(e: any, entityId: number) {
-      this.setEntity(entityId)
-      this.showEntityLabelMenu(e)
+    onEntityClicked(e: any, entityId: number) {
+      if (this.relationMode) {
+        this.setEntityForRelation(e, entityId)
+      } else {
+        this.setEntity(entityId)
+        this.showEntityLabelMenu(e)
+      }
+    },
+
+    onRelationClicked(e: any, relation: any) {
+      this.setRelation(relation.id)
+      this.showRelationLabelMenu(e)
     },
 
     addOrUpdateEntity(labelId: number) {
@@ -199,6 +221,19 @@ export default Vue.extend({
         }
       } else {
         this.deleteEntity(this.entity)
+      }
+      this.cleanUp()
+    },
+
+    addOrUpdateRelation(labelId: number) {
+      if (labelId) {
+        if (this.relation) {
+          this.updateRelation(labelId)
+        } else {
+          this.addRelation(labelId)
+        }
+      } else {
+        this.deleteRelation(this.relation)
       }
       this.cleanUp()
     },
@@ -217,21 +252,22 @@ export default Vue.extend({
     },
 
     cleanUp() {
-      this.showMenu = false
+      this.entityMenuOpened = false
+      this.relationMenuOpened = false
       this.entity = null
+      this.relation = null
       this.startOffset = 0
       this.endOffset = 0
-      // Todo: a bit hacky. I want to fix this problem.
-      // https://github.com/vuetifyjs/vuetify/issues/10765
-      this.$nextTick(() => {
-        if (this.$refs.autocomplete) {
-          (this.$refs.autocomplete as any).selectedItems = []
-        }
-      })
+      this.selectedEntities = []
     },
 
-    updateRelation() {
-      console.log("updateRelation")
+    addRelation(labelId: number) {
+      const [fromEntity, toEntity] = this.selectedEntities
+      this.$emit('addRelation', fromEntity.id, toEntity.id, labelId)
+    },
+
+    updateRelation(labelId: number) {
+      this.$emit("click:relation", this.relation.id, labelId)
     },
 
     deleteRelation(relation: any) {

@@ -103,27 +103,11 @@ class TextLabelDetailAPI(BaseDetailAPI):
     serializer_class = TextLabelSerializer
 
 
-class RelationList(generics.ListCreateAPIView):
+class RelationList(BaseListAPI):
+    label_class = Relation
     serializer_class = RelationSerializer
-    pagination_class = None
-    permission_classes = [IsAuthenticated & IsProjectMember]
-
-    def get_queryset(self):
-        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
-        return project.annotation_relations
-
-    def perform_create(self, serializer):
-        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
-        serializer.save(project=project)
-
-    def delete(self, request, *args, **kwargs):
-        delete_ids = request.data["ids"]
-        Relation.objects.filter(pk__in=delete_ids).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RelationDetail(generics.RetrieveUpdateDestroyAPIView):
+class RelationDetail(BaseDetailAPI):
     queryset = Relation.objects.all()
     serializer_class = RelationSerializer
-    lookup_url_kwarg = "annotation_id"
-    permission_classes = [IsAuthenticated & IsProjectMember]

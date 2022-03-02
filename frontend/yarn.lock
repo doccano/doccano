@@ -1323,9 +1323,9 @@
     strip-json-comments "^3.1.1"
 
 "@flatten-js/interval-tree@^1.0.14":
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/@flatten-js/interval-tree/-/interval-tree-1.0.14.tgz#500466b41220fbc0229066ea9f29f6bb8e79b146"
-  integrity sha512-u7RFCMnrQb/fC6gIEXtfuqXFXN+yRDM+NSKZe0JECVyiDPTPqYDgkzvRHIX1NS1BxgK6BlZRLtPukAHoDJgGWg==
+  version "1.0.18"
+  resolved "https://registry.yarnpkg.com/@flatten-js/interval-tree/-/interval-tree-1.0.18.tgz#285c6d491e838ed0c60b7a4f143a5d20b7f41947"
+  integrity sha512-o72sZErW0Y1C82Cg7nk82ojJ/22EtmKyp5I3eNqgcOKFp/VCzetATYYjJIqOBBaR7FQ/MFj/ZpsmP38mL4TkYA==
 
 "@gar/promisify@^1.0.1":
   version "1.1.2"
@@ -4429,9 +4429,9 @@ core-js@^3.15.*, core-js@^3.6.4:
   integrity sha512-tKs41J7NJVuaya8DxIOCnl8QuPHx5/ZVbFo1oKgVl1qHFBBrDctzQGtuLjPpRdNTWmKPH6oEvgN/MUID+l485Q==
 
 core-js@^3.6.5:
-  version "3.18.3"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.18.3.tgz#86a0bba2d8ec3df860fefcc07a8d119779f01509"
-  integrity sha512-tReEhtMReZaPFVw7dajMx0vlsz3oOb8ajgPoHVYGxr8ErnZ6PcYEvvmjGmXlfpnxpkYSdOQttjB+MvVbCGfvLw==
+  version "3.21.1"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.21.1.tgz#f2e0ddc1fc43da6f904706e8e955bc19d06a0d94"
+  integrity sha512-FRq5b/VMrWlrmCzwRrpDYNxyHP9BcAZC+xHJaqTgIE5091ZV1NTmyh0sGOg5XqpnHvR0svdy0sv1gWA1zmhxig==
 
 core-util-is@~1.0.0:
   version "1.0.3"
@@ -12041,10 +12041,10 @@ utils-merge@1.0.1:
   resolved "https://registry.yarnpkg.com/utils-merge/-/utils-merge-1.0.1.tgz#9f95710f50a267947b2ccc124741c1028427e713"
   integrity sha1-n5VxD1CiZ5R7LMwSR0HBAoQn5xM=
 
-v-annotator@0.1.24:
-  version "0.1.24"
-  resolved "https://registry.yarnpkg.com/v-annotator/-/v-annotator-0.1.24.tgz#f06e7e88c4d46a1b371deb1b3c5235f48116d924"
-  integrity sha512-cD5VssyYiHnSTxF9IaCq7nOZ8xhoBhTnK5Dl/3/5RZtb2D4UI/UyHL6vIDMkcGOXwP/nUk/3EY8Qowb2Fv+tSw==
+v-annotator@0.1.27:
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/v-annotator/-/v-annotator-0.1.27.tgz#ea66f0a4d3bf0d2db922467bcdeb8996c33d8efc"
+  integrity sha512-qYvHFHB2p7FmV7e10HRZ4LsyMfnGdok2f6HIp1wRGl9PM/3BdajU0nFclYKy9GkudEoPP7VYSa2ihwJJBoj6xA==
   dependencies:
     "@flatten-js/interval-tree" "^1.0.14"
     core-js "^3.6.5"

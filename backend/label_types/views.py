@@ -15,7 +15,7 @@ from .models import CategoryType, LabelType, RelationType, SpanType
 from .serializers import (
     CategoryTypeSerializer,
     LabelSerializer,
-    RelationTypesSerializer,
+    RelationTypeSerializer,
     SpanTypeSerializer,
 )
 from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
@@ -75,13 +75,13 @@ class SpanTypeDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class RelationTypeList(LabelList):
     model = RelationType
-    serializer_class = RelationTypesSerializer
+    serializer_class = RelationTypeSerializer
 
 
 class RelationTypeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = RelationType.objects.all()
-    serializer_class = RelationTypesSerializer
-    lookup_url_kwarg = "relation_type_id"
+    serializer_class = RelationTypeSerializer
+    lookup_url_kwarg = "label_id"
     permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
 
 
@@ -116,4 +116,4 @@ class SpanTypeUploadAPI(LabelUploadAPI):
 
 
 class RelationTypeUploadAPI(LabelUploadAPI):
-    serializer_class = RelationTypesSerializer
+    serializer_class = RelationTypeSerializer

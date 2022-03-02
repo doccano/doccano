@@ -1,28 +1,29 @@
-import {AnnotationApplicationService} from '../annotationApplicationService'
-import {SequenceLabelingDTO} from './sequenceLabelingData'
-import {APISequenceLabelingRepository} from '~/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
-import {SequenceLabelingLabel} from '~/domain/models/tasks/sequenceLabeling'
-import {LinkRepository} from "~/domain/models/links/linkRepository";
-import {LinkItem} from "~/domain/models/links/link";
+import { AnnotationApplicationService } from '../annotationApplicationService'
+import { RelationDTO } from './relationData'
+import { SpanDTO } from './sequenceLabelingData'
+import { APISequenceLabelingRepository } from '~/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
+import { Span } from '~/domain/models/tasks/sequenceLabeling'
+import { RelationRepository } from "~/domain/models/tasks/relationRepository"
+import { RelationItem } from "~/domain/models/tasks/relation"
 
-export class SequenceLabelingApplicationService extends AnnotationApplicationService<SequenceLabelingLabel> {
+export class SequenceLabelingApplicationService extends AnnotationApplicationService<Span> {
     constructor(
         readonly repository: APISequenceLabelingRepository,
-        readonly linkRepository: LinkRepository
+        readonly relationRepository: RelationRepository
     ) {
         super(new APISequenceLabelingRepository())
     }
 
-    public async list(projectId: string, docId: number): Promise<SequenceLabelingDTO[]> {
+    public async list(projectId: string, docId: number): Promise<SpanDTO[]> {
         const items = await this.repository.list(projectId, docId)
-        return items.map(item => new SequenceLabelingDTO(item))
+        return items.map(item => new SpanDTO(item))
     }
 
     public async create(projectId: string, docId: number, labelId: number, startOffset: number, endOffset: number): Promise<void> {
-        const item = new SequenceLabelingLabel(0, labelId, 0, startOffset, endOffset)
+        const item = new Span(0, labelId, 0, startOffset, endOffset)
         try {
             await this.repository.create(projectId, docId, item)
-        } catch(e) {
+        } catch(e: any) {
             console.log(e.response.data.detail)
         }
     }
@@ -30,25 +31,26 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
     public async changeLabel(projectId: string, docId: number, annotationId: number, labelId: number): Promise<void> {
         try {
             await this.repository.update(projectId, docId, annotationId, labelId)
-        } catch(e) {
+        } catch(e: any) {
             console.log(e.response.data.detail)
         }
     }
 
-    public async listLinks(projectId: string): Promise<LinkItem[]> {
-        return await this.linkRepository.list(projectId);
+    public async listRelations(projectId: string, docId: number): Promise<RelationDTO[]> {
+        const items = await this.relationRepository.list(projectId, docId)
+        return items.map(item => new RelationDTO(item))
     }
 
-    public async createLink(projectId: string, sourceId: number, targetId: number, linkType: number, userId: number): Promise<void> {
-        const link = new LinkItem(0, sourceId, targetId, linkType, userId, (new Date()).toISOString());
-        await this.linkRepository.create(projectId, link);
+    public async createRelation(projectId: string, docId: number, fromId: number, toId: number, typeId: number): Promise<void> {
+        const relation = new RelationItem(0, fromId, toId, typeId)
+        await this.relationRepository.create(projectId, docId, relation)
     }
 
-    public async deleteLink(projectId: string, linkId: number): Promise<void> {
-        await this.linkRepository.bulkDelete(projectId, [linkId]);
+    public async deleteRelation(projectId: string, docId: number, relationId: number): Promise<void> {
+        await this.relationRepository.delete(projectId, docId, relationId)
     }
 
-    public async updateLink(projectId: string, linkId: number, linkType: number): Promise<void> {
-        await this.linkRepository.update(projectId, linkId, linkType);
+    public async updateRelation(projectId: string, docId: number, relationId: number, typeId: number): Promise<void> {
+        await this.relationRepository.update(projectId, docId, relationId, typeId)
     }
 }

@@ -2,6 +2,8 @@ from django.db.models import Count, Manager
 
 
 class LabelManager(Manager):
+    label_type_field = "label"
+
     def calc_label_distribution(self, examples, members, labels):
         """Calculate label distribution.
 
@@ -20,12 +22,12 @@ class LabelManager(Manager):
         distribution = {member.username: {label.text: 0 for label in labels} for member in members}
         items = (
             self.filter(example_id__in=examples)
-            .values("user__username", "label__text")
-            .annotate(count=Count("label__text"))
+            .values("user__username", f"{self.label_type_field}__text")
+            .annotate(count=Count(f"{self.label_type_field}__text"))
         )
         for item in items:
             username = item["user__username"]
-            label = item["label__text"]
+            label = item[f"{self.label_type_field}__text"]
             count = item["count"]
             distribution[username][label] = count
         return distribution
@@ -71,4 +73,11 @@ class TextLabelManager(LabelManager):
         for text in texts:
             if text.is_same_text(label):
                 return False
+        return True
+
+
+class RelationManager(LabelManager):
+    label_type_field = "type"
+
+    def can_annotate(self, label, project) -> bool:
         return True

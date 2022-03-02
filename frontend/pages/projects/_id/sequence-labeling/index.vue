@@ -24,31 +24,43 @@
             :rtl="isRTL"
             :text="doc.text"
             :entities="annotations"
-            :entity-labels="labels"
-            :relations="links"
-            :relation-labels="linkTypes"
+            :entity-labels="spanTypes"
+            :relations="relations"
+            :relation-labels="relationTypes"
             :allow-overlapping="project.allowOverlapping"
             :grapheme-mode="project.graphemeMode"
             :selected-label="selectedLabel"
-            @addEntity="addEntity"
-            @click:entity="updateEntity"
-            @contextmenu:entity="deleteEntity"
+            :relation-mode="relationMode"
+            @addEntity="addSpan"
+            @addRelation="addRelation"
+            @click:entity="updateSpan"
+            @click:relation="updateRelation"
+            @contextmenu:entity="deleteSpan"
+            @contextmenu:relation="deleteRelation"
           />
         </div>
       </v-card>
     </template>
     <template #sidebar>
       <annotation-progress :progress="progress" />
-      <list-metadata :metadata="doc.meta" class="mt-4" />
       <v-card class="mt-4">
         <v-card-title>Label Types</v-card-title>
         <v-card-text>
+          <v-switch
+            v-if="useRelationLabeling"
+            v-model="relationMode"
+          >
+            <template #label>
+              <span v-if="relationMode">Relation</span>
+              <span v-else>Span</span>
+            </template>
+          </v-switch>
           <v-chip-group
             v-model="selectedLabelIndex"
             column
           >
             <v-chip
-              v-for="(item, index) in labels"
+              v-for="(item, index) in labelTypes"
               :key="item.id"
               v-shortkey="[item.suffixKey]"
               :color="item.backgroundColor"
@@ -69,6 +81,7 @@
           </v-chip-group>
         </v-card-text>
       </v-card>
+      <list-metadata :metadata="doc.meta" class="mt-4" />
     </template>
   </layout-text>
 </template>
@@ -104,14 +117,15 @@ export default {
     return {
       annotations: [],
       docs: [],
-      labels: [],
-      links: [],
-      linkTypes: [],
+      spanTypes: [],
+      relations: [],
+      relationTypes: [],
       project: {},
       enableAutoLabeling: false,
       rtl: false,
       selectedLabelIndex: null,
       progress: {},
+      relationMode: false,
     }
   },
 
@@ -134,7 +148,7 @@ export default {
     ...mapGetters('config', ['isRTL']),
 
     shortKeys() {
-      return Object.fromEntries(this.labels.map(item => [item.id, [item.suffixKey]]))
+      return Object.fromEntries(this.spanTypes.map(item => [item.id, [item.suffixKey]]))
     },
 
     projectId() {
@@ -151,9 +165,25 @@ export default {
 
     selectedLabel() {
       if (Number.isInteger(this.selectedLabelIndex)) {
-        return this.labels[this.selectedLabelIndex]
+        if (this.relationMode) {
+          return this.relationTypes[this.selectedLabelIndex]
+        } else {
+          return this.spanTypes[this.selectedLabelIndex]
+        }
       } else {
         return null
+      }
+    },
+
+    useRelationLabeling() {
+      return !!this.project.useRelation
+    },
+
+    labelTypes() {
+      if (this.relationMode) {
+        return this.relationTypes
+      } else {
+        return this.spanTypes
       }
     }
   },
@@ -168,42 +198,57 @@ export default {
   },
 
   async created() {
-    this.labels = await this.$services.spanType.list(this.projectId)
-    this.linkTypes = await this.$services.linkTypes.list(this.projectId)
+    this.spanTypes = await this.$services.spanType.list(this.projectId)
+    this.relationTypes = await this.$services.relationType.list(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
     this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
-    async maybeFetchLabels(annotations) {
-      const labelIds = new Set(this.labels.map((label) => label.id));
+    async maybeFetchSpanTypes(annotations) {
+      const labelIds = new Set(this.spanTypes.map((label) => label.id));
       if (annotations.some((item) => !labelIds.has(item.label))) {
-          this.labels = await this.$services.spanType.list(this.projectId);
+          this.spanTypes = await this.$services.spanType.list(this.projectId);
       }
     },
 
     async list(docId) {
-      const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId);
-      const links = await this.$services.sequenceLabeling.listLinks(this.projectId);
+      const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId)
+      const relations = await this.$services.sequenceLabeling.listRelations(this.projectId, docId)
       // In colab mode, if someone add a new label and annotate data with the label during your work,
       // it occurs exception because there is no corresponding label.
-      await this.maybeFetchLabels(annotations);
-      this.annotations = annotations;
-      this.links = links;
+      await this.maybeFetchSpanTypes(annotations)
+      this.annotations = annotations
+      this.relations = relations
     },
 
-    async deleteEntity(id) {
+    async deleteSpan(id) {
       await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
     },
 
-    async addEntity(startOffset, endOffset, labelId) {
+    async addSpan(startOffset, endOffset, labelId) {
       await this.$services.sequenceLabeling.create(this.projectId, this.doc.id, labelId, startOffset, endOffset)
       await this.list(this.doc.id)
     },
 
-    async updateEntity(annotationId, labelId) {
+    async updateSpan(annotationId, labelId) {
       await this.$services.sequenceLabeling.changeLabel(this.projectId, this.doc.id, annotationId, labelId)
+      await this.list(this.doc.id)
+    },
+
+    async addRelation(fromId, toId, typeId) {
+      await this.$services.sequenceLabeling.createRelation(this.projectId, this.doc.id, fromId, toId, typeId)
+      await this.list(this.doc.id)
+    },
+
+    async updateRelation(relationId, typeId) {
+      await this.$services.sequenceLabeling.updateRelation(this.projectId, this.doc.id, relationId, typeId)
+      await this.list(this.doc.id)
+    },
+
+    async deleteRelation(relationId) {
+      await this.$services.sequenceLabeling.deleteRelation(this.projectId, this.doc.id, relationId)
       await this.list(this.doc.id)
     },
 
@@ -231,7 +276,7 @@ export default {
     },
 
     changeSelectedLabel(event) {
-      this.selectedLabelIndex = this.labels.findIndex((item) => item.suffixKey === event.srcKey)
+      this.selectedLabelIndex = this.spanTypes.findIndex((item) => item.suffixKey === event.srcKey)
     }
   }
 }

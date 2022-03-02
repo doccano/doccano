@@ -2,10 +2,15 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from .managers import CategoryManager, LabelManager, SpanManager, TextLabelManager
+from .managers import (
+    CategoryManager,
+    LabelManager,
+    RelationManager,
+    SpanManager,
+    TextLabelManager,
+)
 from examples.models import Example
 from label_types.models import CategoryType, RelationType, SpanType
-from projects.models import Project
 
 
 class Label(models.Model):
@@ -91,16 +96,22 @@ class TextLabel(Label):
         unique_together = ("example", "user", "text")
 
 
-class Relation(models.Model):
-    annotation_id_1 = models.IntegerField()
-    annotation_id_2 = models.IntegerField()
-    type = models.ForeignKey(RelationType, related_name="annotation_relations", on_delete=models.CASCADE)
-    timestamp = models.DateTimeField()
-    user = models.ForeignKey(User, related_name="annotation_relations", on_delete=models.CASCADE)
-    project = models.ForeignKey(Project, related_name="annotation_relations", on_delete=models.CASCADE)
+class Relation(Label):
+    objects = RelationManager()
+    from_id = models.ForeignKey(Span, on_delete=models.CASCADE, related_name="from_relations")
+    to_id = models.ForeignKey(Span, on_delete=models.CASCADE, related_name="to_relations")
+    type = models.ForeignKey(RelationType, on_delete=models.CASCADE)
+    example = models.ForeignKey(to=Example, on_delete=models.CASCADE, related_name="relations")
 
     def __str__(self):
         return self.__dict__.__str__()
 
-    class Meta:
-        unique_together = ("annotation_id_1", "annotation_id_2", "type", "project")
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        self.full_clean()
+        super().save(force_insert, force_update, using, update_fields)
+
+    def clean(self):
+        same_example = self.from_id.example == self.to_id.example == self.example
+        if not same_example:
+            raise ValidationError("You need to label the same example.")
+        return super().clean()

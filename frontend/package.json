@@ -40,7 +40,7 @@
     "reflect-metadata": "^0.1.13",
     "ts-loader": "^8.3.0",
     "tui-editor": "^1.4.10",
-    "v-annotator": "0.1.24",
+    "v-annotator": "0.1.27",
     "vue": "^2.6.14",
     "vue-chartjs": "^3.5.1",
     "vue-filepond": "^6.0.3",

@@ -1,6 +1,6 @@
 import { AnnotationModel } from './interface'
 
-export class SequenceLabelingLabel implements AnnotationModel {
+export class Span implements AnnotationModel {
   constructor(
     public id: number,
     public label: number,
@@ -13,7 +13,7 @@ export class SequenceLabelingLabel implements AnnotationModel {
     { id, label, user, start_offset, end_offset }:
     { id: number, label: number, user: number, start_offset: number, end_offset: number }
   ) {
-    return new SequenceLabelingLabel(id, label, user, start_offset, end_offset)
+    return new Span(id, label, user, start_offset, end_offset)
   }
 
   toObject() {

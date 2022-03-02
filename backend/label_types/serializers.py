@@ -54,33 +54,16 @@ class LabelSerializer(serializers.ModelSerializer):
 class CategoryTypeSerializer(LabelSerializer):
     class Meta:
         model = CategoryType
-        fields = (
-            "id",
-            "text",
-            "prefix_key",
-            "suffix_key",
-            "background_color",
-            "text_color",
-        )
+        fields = LabelSerializer.Meta.fields
 
 
 class SpanTypeSerializer(LabelSerializer):
     class Meta:
         model = SpanType
-        fields = (
-            "id",
-            "text",
-            "prefix_key",
-            "suffix_key",
-            "background_color",
-            "text_color",
-        )
+        fields = LabelSerializer.Meta.fields
 
 
-class RelationTypesSerializer(serializers.ModelSerializer):
-    def validate(self, attrs):
-        return super().validate(attrs)
-
+class RelationTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = RelationType
-        fields = ("id", "color", "name")
+        fields = LabelSerializer.Meta.fields

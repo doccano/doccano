@@ -72,13 +72,7 @@ class SpanType(LabelType):
         return SpanType.objects.filter(project=self.project)
 
 
-class RelationType(models.Model):
-    color = models.TextField()
-    name = models.TextField()
-    project = models.ForeignKey(Project, related_name="relation_types", on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        unique_together = ("color", "name")
+class RelationType(LabelType):
+    @property
+    def labels(self):
+        return RelationType.objects.filter(project=self.project)

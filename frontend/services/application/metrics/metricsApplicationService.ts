@@ -18,6 +18,10 @@ export class MetricsApplicationService {
     return await this.repository.fetchSpanDistribution(projectId)
   }
 
+  public async fetchRelationDistribution(projectId: string): Promise<Distribution> {
+    return await this.repository.fetchRelationDistribution(projectId)
+  }
+
   public async fetchMyProgress(projectId: string): Promise<MyProgress> {
     return await this.repository.fetchMyProgress(projectId)
   }

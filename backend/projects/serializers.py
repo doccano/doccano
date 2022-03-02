@@ -86,7 +86,7 @@ class TextClassificationProjectSerializer(ProjectSerializer):
 class SequenceLabelingProjectSerializer(ProjectSerializer):
     class Meta(ProjectSerializer.Meta):
         model = SequenceLabelingProject
-        fields = ProjectSerializer.Meta.fields + ["allow_overlapping", "grapheme_mode"]
+        fields = ProjectSerializer.Meta.fields + ["allow_overlapping", "grapheme_mode", "use_relation"]
 
 
 class Seq2seqProjectSerializer(ProjectSerializer):

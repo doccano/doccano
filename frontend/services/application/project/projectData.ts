@@ -20,6 +20,7 @@ export class ProjectDTO {
   hasCategory: boolean
   hasSpan: boolean
   taskNames: string[]
+  useRelation: boolean
 
   constructor(item: ProjectReadItem) {
     this.id = item.id
@@ -41,10 +42,11 @@ export class ProjectDTO {
     this.hasCategory = item.canDefineCategory
     this.hasSpan = item.canDefineSpan
     this.taskNames = item.taskNames
+    this.useRelation = item.useRelation
   }
 }
 
-export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'allowOverlapping' | 'graphemeMode' | 'tags'>
+export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'allowOverlapping' | 'graphemeMode' | 'tags' | 'useRelation'>
 
 export class ProjectListDTO {
   count: number

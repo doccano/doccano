@@ -57,7 +57,8 @@ export class ProjectApplicationService {
       item.enableShareAnnotation,
       item.singleClassClassification,
       item.allowOverlapping,
-      item.graphemeMode
+      item.graphemeMode,
+      item.useRelation
     )
   }
 }
