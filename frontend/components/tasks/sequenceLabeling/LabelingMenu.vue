@@ -16,7 +16,7 @@
       <v-list-item>
         <v-autocomplete
           ref="autocomplete"
-          :value="selectedLabel"
+          v-model="value"
           :items="labels"
           autofocus
           dense
@@ -92,6 +92,7 @@ export default Vue.extend({
       entity: null as any,
       fromEntity: null as any,
       toEntity: null as any,
+      value: this.selectedLabel
     };
   },
 
@@ -106,6 +107,7 @@ export default Vue.extend({
       // Todo: a bit hacky. I want to fix this problem.
       // https://github.com/vuetifyjs/vuetify/issues/10765
       this.$nextTick(() => {
+        this.value = null
         if (this.$refs.autocomplete) {
           (this.$refs.autocomplete as any).selectedItems = []
         }
@@ -114,6 +116,7 @@ export default Vue.extend({
     },
 
     onLabelSelected(labelId: number) {
+      this.value = labelId
       this.$emit('click:label', labelId)
       this.close()
     }
