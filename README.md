@@ -15,6 +15,10 @@ You can try the [annotation demo](http://doccano.herokuapp.com).
 
 ![Demo image](https://raw.githubusercontent.com/doccano/doccano/master/docs/images/demo/demo.gif)
 
+## Documentation
+
+Read the documentation at the <https://doccano.github.io/doccano/>.
+
 ## Features
 
 - Collaborative annotation
