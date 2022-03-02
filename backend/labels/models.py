@@ -102,11 +102,6 @@ class Relation(Label):
     to_id = models.ForeignKey(Span, on_delete=models.CASCADE, related_name="to_relations")
     type = models.ForeignKey(RelationType, on_delete=models.CASCADE)
     example = models.ForeignKey(to=Example, on_delete=models.CASCADE, related_name="relations")
-    direction = models.CharField(
-        max_length=10,
-        choices=(("left", "left"), ("right", "right"), ("undirected", "undirected")),
-        default="undirected",
-    )
 
     def __str__(self):
         return self.__dict__.__str__()
