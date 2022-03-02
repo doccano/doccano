@@ -107,7 +107,7 @@ export default Vue.extend({
       // Todo: a bit hacky. I want to fix this problem.
       // https://github.com/vuetifyjs/vuetify/issues/10765
       this.$nextTick(() => {
-        this.value = undefined;
+        this.value = null
         if (this.$refs.autocomplete) {
           (this.$refs.autocomplete as any).selectedItems = []
         }
@@ -116,7 +116,7 @@ export default Vue.extend({
     },
 
     onLabelSelected(labelId: number) {
-      this.value= labelId;
+      this.value = labelId
       this.$emit('click:label', labelId)
       this.close()
     }
