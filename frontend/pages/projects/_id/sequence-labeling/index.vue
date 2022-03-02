@@ -24,18 +24,18 @@
             :rtl="isRTL"
             :text="doc.text"
             :entities="annotations"
-            :entity-labels="entityTypes"
+            :entity-labels="spanTypes"
             :relations="relations"
             :relation-labels="relationTypes"
             :allow-overlapping="project.allowOverlapping"
             :grapheme-mode="project.graphemeMode"
             :selected-label="selectedLabel"
             :relation-mode="relationMode"
-            @addEntity="addEntity"
+            @addEntity="addSpan"
             @addRelation="addRelation"
-            @click:entity="updateEntity"
+            @click:entity="updateSpan"
             @click:relation="updateRelation"
-            @contextmenu:entity="deleteEntity"
+            @contextmenu:entity="deleteSpan"
             @contextmenu:relation="deleteRelation"
           />
         </div>
@@ -52,7 +52,7 @@
           >
             <template #label>
               <span v-if="relationMode">Relation</span>
-              <span v-else>Entity</span>
+              <span v-else>Span</span>
             </template>
           </v-switch>
           <v-chip-group
@@ -117,7 +117,7 @@ export default {
     return {
       annotations: [],
       docs: [],
-      entityTypes: [],
+      spanTypes: [],
       relations: [],
       relationTypes: [],
       project: {},
@@ -148,7 +148,7 @@ export default {
     ...mapGetters('config', ['isRTL']),
 
     shortKeys() {
-      return Object.fromEntries(this.entityTypes.map(item => [item.id, [item.suffixKey]]))
+      return Object.fromEntries(this.spanTypes.map(item => [item.id, [item.suffixKey]]))
     },
 
     projectId() {
@@ -168,7 +168,7 @@ export default {
         if (this.relationMode) {
           return this.relationTypes[this.selectedLabelIndex]
         } else {
-          return this.entityTypes[this.selectedLabelIndex]
+          return this.spanTypes[this.selectedLabelIndex]
         }
       } else {
         return null
@@ -183,7 +183,7 @@ export default {
       if (this.relationMode) {
         return this.relationTypes
       } else {
-        return this.entityTypes
+        return this.spanTypes
       }
     }
   },
@@ -198,17 +198,17 @@ export default {
   },
 
   async created() {
-    this.entityTypes = await this.$services.spanType.list(this.projectId)
+    this.spanTypes = await this.$services.spanType.list(this.projectId)
     this.relationTypes = await this.$services.relationType.list(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
     this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
-    async maybeFetchEntityTypes(annotations) {
-      const labelIds = new Set(this.entityTypes.map((label) => label.id));
+    async maybeFetchSpanTypes(annotations) {
+      const labelIds = new Set(this.spanTypes.map((label) => label.id));
       if (annotations.some((item) => !labelIds.has(item.label))) {
-          this.entityTypes = await this.$services.spanType.list(this.projectId);
+          this.spanTypes = await this.$services.spanType.list(this.projectId);
       }
     },
 
@@ -217,22 +217,22 @@ export default {
       const relations = await this.$services.sequenceLabeling.listRelations(this.projectId, docId)
       // In colab mode, if someone add a new label and annotate data with the label during your work,
       // it occurs exception because there is no corresponding label.
-      await this.maybeFetchEntityTypes(annotations)
+      await this.maybeFetchSpanTypes(annotations)
       this.annotations = annotations
       this.relations = relations
     },
 
-    async deleteEntity(id) {
+    async deleteSpan(id) {
       await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
     },
 
-    async addEntity(startOffset, endOffset, labelId) {
+    async addSpan(startOffset, endOffset, labelId) {
       await this.$services.sequenceLabeling.create(this.projectId, this.doc.id, labelId, startOffset, endOffset)
       await this.list(this.doc.id)
     },
 
-    async updateEntity(annotationId, labelId) {
+    async updateSpan(annotationId, labelId) {
       await this.$services.sequenceLabeling.changeLabel(this.projectId, this.doc.id, annotationId, labelId)
       await this.list(this.doc.id)
     },
@@ -276,7 +276,7 @@ export default {
     },
 
     changeSelectedLabel(event) {
-      this.selectedLabelIndex = this.entityTypes.findIndex((item) => item.suffixKey === event.srcKey)
+      this.selectedLabelIndex = this.spanTypes.findIndex((item) => item.suffixKey === event.srcKey)
     }
   }
 }
