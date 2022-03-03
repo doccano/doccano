@@ -2,7 +2,7 @@
   <v-card>
     <v-card-title v-if="isProjectAdmin">
       <action-menu
-        @upload="upload"
+        @upload="$router.push('dataset/import')"
         @download="dialogDownload=true"
       />
       <v-btn
@@ -172,9 +172,6 @@ export default Vue.extend({
       this.$fetch()
       this.dialogDeleteAll = false
       this.selected = []
-    },
-    upload() {
-      this.$router.push(`/projects/${this.projectId}/upload`)
     },
     updateQuery(query: object) {
       this.$router.push(query)
