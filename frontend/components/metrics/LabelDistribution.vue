@@ -28,6 +28,7 @@
 import Vue, { PropType } from 'vue'
 import BarChart from '@/components/metrics/ChartBar.vue'
 import { Distribution } from '~/domain/models/metrics/metrics'
+import { LabelDTO } from '~/services/application/label/labelData'
 
 export default Vue.extend({
   components: {
@@ -44,13 +45,18 @@ export default Vue.extend({
       type: Object as PropType<Distribution>,
       required: true
     },
-    colorMapping: {
-      type: Object,
-      default: () => {},
-    }
+    labelTypes: {
+      type: Array as PropType<LabelDTO[]>,
+      default: () => [],
+      required: true,
+    },
   },
 
   computed: {
+    colorMapping(): {[text: string]: string} {
+      return Object.fromEntries(this.labelTypes.map((labelType) => [labelType.text, labelType.backgroundColor]))
+    },
+
     chartJSFormat(): any {
       const data: {[user: string]: {labels: string[], datasets: any[]}} = {}
       for (const user in this.distribution) {
