@@ -45,7 +45,7 @@ export default Vue.extend({
       type: Object as PropType<Distribution>,
       required: true
     },
-    labels: {
+    labelTypes: {
       type: Array as PropType<LabelDTO[]>,
       default: () => [],
       required: true,
@@ -54,7 +54,7 @@ export default Vue.extend({
 
   computed: {
     colorMapping(): {[text: string]: string} {
-      return Object.fromEntries(this.labels.map((label) => [label.text, label.backgroundColor]))
+      return Object.fromEntries(this.labelTypes.map((labelType) => [labelType.text, labelType.backgroundColor]))
     },
 
     chartJSFormat(): any {

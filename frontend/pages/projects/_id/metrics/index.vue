@@ -7,21 +7,21 @@
       <label-distribution
         title="Category Distribution"
         :distribution="categoryDistribution"
-        :labels="categoryTypes"
+        :label-types="categoryTypes"
       />
     </v-col>
     <v-col v-if="!!project.hasSpan" cols="12">
       <label-distribution
         title="Span Distribution"
         :distribution="spanDistribution"
-        :labels="spanTypes"
+        :label-types="spanTypes"
       />
     </v-col>
     <v-col v-if="!!project.useRelation" cols="12">
       <label-distribution
         title="Relation Distribution"
         :distribution="relationDistribution"
-        :labels="relationTypes"
+        :label-types="relationTypes"
       />
     </v-col>
   </v-row>
