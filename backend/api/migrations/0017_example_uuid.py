@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 
 def create_uuid(apps, schema_editor):
-    Example = apps.get_model('api', 'example')
+    Example = apps.get_model("api", "example")
     for example in Example.objects.all():
         example.uuid = uuid.uuid4()
         example.save()
@@ -25,9 +25,5 @@ class Migration(migrations.Migration):
             field=models.UUIDField(editable=False, blank=True, null=True),
         ),
         migrations.RunPython(create_uuid),
-        migrations.AlterField(
-            model_name='example',
-            name='uuid',
-            field=models.UUIDField(db_index=True, unique=True)
-        )
+        migrations.AlterField(model_name="example", name="uuid", field=models.UUIDField(db_index=True, unique=True)),
     ]
