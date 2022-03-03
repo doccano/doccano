@@ -81,9 +81,8 @@
       ></v-data-table>
     </v-card-text>
     <v-card-actions>
-      <v-spacer />
       <v-btn
-        class='text-capitalize me-2 primary'
+        class='text-capitalize ms-2 primary'
         :disabled="isDisabled"
         @click="importDataset"
       >
