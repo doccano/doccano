@@ -59,8 +59,8 @@
         :accepted-file-types="acceptedFileTypes"
         :server="server"
         :files="myFiles"
-        @processfile="handleFilePondProcessfile"
-        @removefile="handleFilePondRemovefile"
+        @processfile="handleFilePondProcessFile"
+        @removefile="handleFilePondRemoveFile"
       />
       <file-pond
         v-if="selected && acceptedFileTypes === '*'"
@@ -70,8 +70,8 @@
         :allow-multiple="true"
         :server="server"
         :files="myFiles"
-        @processfile="handleFilePondProcessfile"
-        @removefile="handleFilePondRemovefile"
+        @processfile="handleFilePondProcessFile"
+        @removefile="handleFilePondRemoveFile"
       />
       <v-data-table
         v-if="errors.length > 0"
@@ -81,9 +81,8 @@
       ></v-data-table>
     </v-card-text>
     <v-card-actions>
-      <v-spacer />
       <v-btn
-        class='text-capitalize me-2 primary'
+        class='text-capitalize ms-2 primary'
         :disabled="isDisabled"
         @click="importDataset"
       >
@@ -220,12 +219,12 @@ export default {
   },
 
   methods: {
-    handleFilePondProcessfile(error, file) {
+    handleFilePondProcessFile(error, file) {
       console.log(error)
       this.uploadedFiles.push(file)
       this.$nextTick()
     },
-    handleFilePondRemovefile(error, file) {
+    handleFilePondRemoveFile(error, file) {
       console.log(error)
       const index = this.uploadedFiles.findIndex(item => item.id === file.id)
       if (index > -1) {
@@ -252,6 +251,9 @@ export default {
             this.myFiles = []
             this.uploadedFiles = []
             this.isImporting = false
+            if (this.errors.length === 0) {
+              this.$router.push(`/projects/${this.$route.params.id}/dataset`)
+            }
           }
         }
   		}, 3000)
