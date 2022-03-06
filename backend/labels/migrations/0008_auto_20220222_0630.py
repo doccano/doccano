@@ -22,7 +22,7 @@ def delete_new_relation(apps, schema_editor):
     RelationOld = apps.get_model("labels", "RelationOld")
     RelationTypeOld = apps.get_model("label_types", "RelationTypeOld")
     for relation in RelationNew.objects.all():
-        relation_type, created = RelationTypeOld.objects.get_or_create(
+        relation_type, _ = RelationTypeOld.objects.get_or_create(
             project=relation.type.project, name=relation.type.text, color=relation.type.background_color
         )
         RelationOld(

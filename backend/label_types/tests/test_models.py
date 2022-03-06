@@ -51,6 +51,6 @@ class TestLabel(TestCase):
 
 class TestGeneratedColor(TestCase):
     def test_length(self):
-        for i in range(100):
+        for _ in range(100):
             color = generate_random_hex_color()
             self.assertEqual(len(color), 7)
