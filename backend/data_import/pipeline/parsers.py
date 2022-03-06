@@ -151,7 +151,7 @@ class CSVParser(Parser):
         encoding = decide_encoding(filename, self.encoding)
         with open(filename, encoding=encoding) as f:
             reader = csv.DictReader(f, delimiter=self.delimiter)
-            for line_num, row in enumerate(reader, start=2):
+            for row in reader:
                 yield row
 
 
@@ -171,7 +171,7 @@ class JSONParser(Parser):
         with open(filename, encoding=encoding) as f:
             try:
                 rows = json.load(f)
-                for line_num, row in enumerate(rows, start=1):
+                for row in rows:
                     yield row
             except json.decoder.JSONDecodeError as e:
                 error = FileParseException(filename, line_num=1, message=str(e))
@@ -246,7 +246,7 @@ class FastTextParser(Parser):
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         reader = LineReader(filename, self.encoding)
-        for line_num, line in enumerate(reader, start=1):
+        for line in reader:
             labels = []
             tokens = []
             for token in line.rstrip().split(" "):

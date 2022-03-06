@@ -69,11 +69,13 @@ class Options:
     @classmethod
     def filter_by_task(cls, task_name: str):
         options = cls.options[task_name]
-        return [{**format.dict(), **option.schema(), "example": example} for format, option, example in options]
+        return [
+            {**file_format.dict(), **option.schema(), "example": example} for file_format, option, example in options
+        ]
 
     @classmethod
-    def register(cls, task: str, format: Type[Format], option: Type[BaseModel], example: str):
-        cls.options[task].append((format, option, example))
+    def register(cls, task: str, file_format: Type[Format], option: Type[BaseModel], example: str):
+        cls.options[task].append((file_format, option, example))
 
 
 # Text Classification

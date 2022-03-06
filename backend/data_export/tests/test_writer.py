@@ -9,9 +9,9 @@ from ..pipeline.writers import CsvWriter, IntentAndSlotWriter
 class TestCSVWriter(unittest.TestCase):
     def setUp(self):
         self.records = [
-            Record(id=0, data="exampleA", label=["labelA"], user="admin", metadata={"hidden": "secretA"}),
-            Record(id=1, data="exampleB", label=["labelB"], user="admin", metadata={"hidden": "secretB"}),
-            Record(id=2, data="exampleC", label=["labelC"], user="admin", metadata={"meta": "secretC"}),
+            Record(data_id=0, data="exampleA", label=["labelA"], user="admin", metadata={"hidden": "secretA"}),
+            Record(data_id=1, data="exampleB", label=["labelB"], user="admin", metadata={"hidden": "secretB"}),
+            Record(data_id=2, data="exampleC", label=["labelC"], user="admin", metadata={"meta": "secretC"}),
         ]
 
     def test_create_header(self):
@@ -29,8 +29,8 @@ class TestCSVWriter(unittest.TestCase):
 
     def test_label_order(self):
         writer = CsvWriter(".")
-        record1 = Record(id=0, data="", label=["labelA", "labelB"], user="", metadata={})
-        record2 = Record(id=0, data="", label=["labelB", "labelA"], user="", metadata={})
+        record1 = Record(data_id=0, data="", label=["labelA", "labelB"], user="", metadata={})
+        record2 = Record(data_id=0, data="", label=["labelB", "labelA"], user="", metadata={})
         line1 = writer.create_line(record1)
         line2 = writer.create_line(record2)
         expected = "labelA#labelB"
@@ -61,7 +61,11 @@ class TestCSVWriter(unittest.TestCase):
 class TestIntentWriter(unittest.TestCase):
     def setUp(self):
         self.record = Record(
-            id=0, data="exampleA", label={"cats": ["positive"], "entities": [(0, 1, "LOC")]}, user="admin", metadata={}
+            data_id=0,
+            data="exampleA",
+            label={"cats": ["positive"], "entities": [(0, 1, "LOC")]},
+            user="admin",
+            metadata={},
         )
 
     def test_create_line(self):
