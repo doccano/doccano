@@ -31,7 +31,7 @@ class FileRepository(BaseRepository):
                 label_per_user = self.reduce_user(label_per_user)
             for user, label in label_per_user.items():
                 yield Record(
-                    id=example.id,
+                    data_id=example.id,
                     data=str(example.filename).split("/")[-1],
                     label=label,
                     user=user,
@@ -45,7 +45,7 @@ class FileRepository(BaseRepository):
             # This means I will allow each user to be able to approve the doc.
             if len(label_per_user) == 0:
                 yield Record(
-                    id=example.id, data=str(example.filename).split("/")[-1], label=[], user="unknown", metadata={}
+                    data_id=example.id, data=str(example.filename).split("/")[-1], label=[], user="unknown", metadata={}
                 )
 
     def label_per_user(self, example) -> Dict:
@@ -82,7 +82,7 @@ class TextRepository(BaseRepository):
             if self.project.collaborative_annotation:
                 label_per_user = self.reduce_user(label_per_user)
             for user, label in label_per_user.items():
-                yield Record(id=doc.id, data=doc.text, label=label, user=user, metadata=doc.meta)
+                yield Record(data_id=doc.id, data=doc.text, label=label, user=user, metadata=doc.meta)
             # todo:
             # If there is no label, export the doc with `unknown` user.
             # This is a quick solution.
@@ -90,7 +90,7 @@ class TextRepository(BaseRepository):
             # with the user who approved the doc.
             # This means I will allow each user to be able to approve the doc.
             if len(label_per_user) == 0:
-                yield Record(id=doc.id, data=doc.text, label=[], user="unknown", metadata={})
+                yield Record(data_id=doc.id, data=doc.text, label=[], user="unknown", metadata={})
 
     @abc.abstractmethod
     def label_per_user(self, doc) -> Dict:
