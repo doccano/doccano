@@ -86,7 +86,7 @@
         :disabled="isDisabled"
         @click="importDataset"
       >
-        Import
+        {{ $t('generic.import') }}
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -106,7 +106,12 @@ export default {
   components: {
     FilePond,
   },
+
   layout: 'project',
+
+  validate({ params }) {
+    return /^\d+$/.test(params.id)
+  },
   
   data() {
     return {

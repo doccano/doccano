@@ -3,7 +3,7 @@
     <v-card-title v-if="isProjectAdmin">
       <action-menu
         @upload="$router.push('dataset/import')"
-        @download="dialogDownload=true"
+        @download="$router.push('dataset/export')"
       />
       <v-btn
         class="text-capitalize ms-2"
@@ -34,11 +34,6 @@
         <form-delete-bulk
           @cancel="dialogDeleteAll=false"
           @remove="removeAll"
-        />
-      </v-dialog>
-      <v-dialog v-model="dialogDownload">
-        <form-download
-          @cancel="dialogDownload=false"
         />
       </v-dialog>
     </v-card-title>
@@ -79,7 +74,6 @@ import _ from 'lodash'
 import DocumentList from '@/components/example/DocumentList.vue'
 import FormDelete from '@/components/example/FormDelete.vue'
 import FormDeleteBulk from '@/components/example/FormDeleteBulk.vue'
-import FormDownload from '@/components/example/FormDownload.vue'
 import ImageList from '~/components/example/ImageList.vue'
 import AudioList from '~/components/example/AudioList.vue'
 import { ExampleListDTO, ExampleDTO } from '~/services/application/example/exampleData'
@@ -95,7 +89,6 @@ export default Vue.extend({
     ImageList,
     FormDelete,
     FormDeleteBulk,
-    FormDownload,
   },
 
   layout: 'project',
@@ -109,7 +102,6 @@ export default Vue.extend({
     return {
       dialogDelete: false,
       dialogDeleteAll: false,
-      dialogDownload: false,
       project: {} as ProjectDTO,
       item: {} as ExampleListDTO,
       selected: [] as ExampleDTO[],
