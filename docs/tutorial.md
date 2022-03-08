@@ -2,7 +2,7 @@
 
 ## Dataset
 
-Here we take an NER annotation task for science fictions to give you a brief tutorial on doccano. Below is a JSON file named `books.json` containing lots of science fictions description with different languages. We need to annotate some entities like people name, book title, date and so on.
+Here we take named entity recognition annotation task for science fiction to give you a brief tutorial on doccano. Below is a JSON file named `books.json` containing lots of science fictions description with different languages. We need to annotate some entities like person name, book title, date and so on.
 
 ```json
 {"text": "The Hitchhiker's Guide to the Galaxy (sometimes referred to as HG2G, HHGTTGor H2G2) is a comedy science fiction series created by Douglas Adams. Originally a radio comedy broadcast on BBC Radio 4 in 1978, it was later adapted to other formats, including stage shows, novels, comic books, a 1981 TV series, a 1984 video game, and 2005 feature film."}
@@ -12,15 +12,15 @@ Here we take an NER annotation task for science fictions to give you a brief tut
 
 ## Create a project
 
-We need to create a new project for this task. Logging in with the superuser account. 
+We need to create a new project for this task. Log in with the superuser account.
 
 ![Sign in as a superuser.](./images/tutorial/signin.png)
 
-To create your project, make sure you’re in the project list page and click `Create` button. As for this tutorial, we name the project as `sequence labeling for books`, write some description, choose the sequence labeling task type.
+To create your project, make sure you're in the project list page and click `Create` button. As for this tutorial, we name the project as `sequence labeling for books`, write some description, choose the sequence labeling task type.
 
 ![Creating a project.](./images/tutorial/create_project.png)
 
-## Import Data
+## Import a dataset
 
 After creating a project, we will see the `Dataset` page, and click `Import dataset` button in the `Actions` menu. We should see the following screen:
 
@@ -30,11 +30,23 @@ We choose `JSON` and click `Select a file` button. Select `books.json` and it wo
 
 ## Define labels
 
-Click `Labels` button in left bar to define our own labels. We should see the label editor page. In label editor page, you can create labels by specifying label text, shortcut key, background color and text color.
+Click `Labels` button in the left left side menu to define our labels. We should see the label editor page. In label editor page, you can create labels by specifying label text, shortcut key, background color and text color.
 
 ![Defining labels.](./images/tutorial/define_labels.png)
 
 As for the tutorial, we created some entities related to science fictions.
+
+## Add members
+
+Click `Members` button in the left side menu. If you are not the project administrator, the button won't be displayed.
+
+![](images/faq/add_annotator/select_members.png)
+
+Then, select the `Add` button to display the form. Fill in this form with the user name and role you want to add to the project. Then, select the `Save` button.
+
+![](images/faq/add_annotator/select_user.png)
+
+If there is no user to select, please create users(see [FAQ](./faq.md)).
 
 ## Annotation
 
@@ -42,9 +54,9 @@ Next, we are ready to annotate the texts. Just click the `Start annotation` butt
 
 ![Annotating named entities.](./images/tutorial/annotation.png)
 
-## Export Data
+## Export the dataset
 
-After the annotation step, we can download the annotated data. Go to the `Dataset` page and click the `Export dataset` button in the `Action` menu. After selecting an export format, click `Export`. You should see below screen:
+After the annotation step, we can download the annotated data. Go to the `Dataset` page and click the `Export dataset` button in the `Action` menu. After selecting an export format, click `Export`. You should see the following screen:
 
 ![Exporting a dataset.](./images/tutorial/export_dataset.png)
 
@@ -59,4 +71,4 @@ Here we choose JSONL file to download the data by clicking the button. Below is 
  "username": "admin"}
 ```
 
-Congratulation! You just mastered how to use doccano for a sequence labeling project. 
+Congratulation! You just mastered how to use doccano for a sequence labeling project.
