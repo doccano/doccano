@@ -70,7 +70,7 @@ class Examples:
         mapping = {}
         label_types: List[Type[LabelType]] = [CategoryType, SpanType]
         for model in label_types:
-            for label in model.objects.all():
+            for label in model.objects.filter(project=project):
                 mapping[label.text] = label
         annotations = list(
             itertools.chain.from_iterable(
