@@ -1,5 +1,5 @@
 export default {
-  createProjectTitle: 'Add Project',
+  createProjectTitle: 'Create a project',
   projectName: 'Project name',
   projectType: 'Project type',
   textClassification: 'Text Classification',

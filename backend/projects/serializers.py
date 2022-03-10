@@ -74,8 +74,14 @@ class ProjectSerializer(serializers.ModelSerializer):
             "can_define_relation",
             "can_define_category",
             "can_define_span",
-            "tags",
         )
+
+    def create(self, validated_data):
+        tags = TagSerializer(data=validated_data.pop("tags", []), many=True)
+        project = self.Meta.model.objects.create(**validated_data)
+        tags.is_valid()
+        tags.save(project=project)
+        return project
 
 
 class TextClassificationProjectSerializer(ProjectSerializer):
