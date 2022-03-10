@@ -49,7 +49,13 @@ def run_on_nix(args):
         def load(self):
             return gunicorn.util.import_app("config.wsgi")
 
-    options = {"bind": "%s:%s" % ("0.0.0.0", args.port), "workers": number_of_workers(), "chdir": base}
+    options = {
+        "bind": "%s:%s" % ("0.0.0.0", args.port),
+        "workers": number_of_workers(),
+        "chdir": base,
+        "capture_output": True,
+        "loglevel": "debug",
+    }
     StandaloneApplication(options).run()
 
 
