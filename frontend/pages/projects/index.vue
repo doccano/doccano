@@ -4,7 +4,7 @@
       <v-btn
         class="text-capitalize"
         color="primary"
-        @click.stop="dialogCreate=true"
+        @click.stop="$router.push('projects/create')"
       >
         {{ $t('generic.create') }}
       </v-btn>
@@ -16,13 +16,6 @@
       >
         {{ $t('generic.delete') }}
       </v-btn>
-      <v-dialog v-model="dialogCreate">
-        <form-create
-          v-bind.sync="editedItem"
-          @cancel="close"
-          @save="create"
-        />
-      </v-dialog>
       <v-dialog v-model="dialogDelete">
         <form-delete
           :selected="selected"
@@ -46,14 +39,12 @@ import _ from 'lodash'
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import ProjectList from '@/components/project/ProjectList.vue'
-import { ProjectDTO, ProjectWriteDTO, ProjectListDTO } from '~/services/application/project/projectData'
+import { ProjectDTO, ProjectListDTO } from '~/services/application/project/projectData'
 import FormDelete from '~/components/project/FormDelete.vue'
-import FormCreate from '~/components/project/FormCreate.vue'
 
 export default Vue.extend({
 
   components: {
-    FormCreate,
     FormDelete,
     ProjectList,
   },
@@ -63,30 +54,7 @@ export default Vue.extend({
 
   data() {
     return {
-      dialogCreate: false,
       dialogDelete: false,
-      editedItem: {
-        name: '',
-        description: '',
-        projectType: 'DocumentClassification',
-        enableRandomOrder: false,
-        enableShareAnnotation: false,
-        singleClassClassification: false,
-        allowOverlapping: false,
-        graphemeMode: false,
-        useRelation: false,
-      } as ProjectWriteDTO,
-      defaultItem: {
-        name: '',
-        description: '',
-        projectType: 'DocumentClassification',
-        enableRandomOrder: false,
-        enableShareAnnotation: false,
-        singleClassClassification: false,
-        allowOverlapping: false,
-        graphemeMode: false,
-        useRelation: false,
-      } as ProjectWriteDTO,
       projects: {} as ProjectListDTO,
       selected: [] as ProjectDTO[],
       isLoading: false
@@ -115,19 +83,6 @@ export default Vue.extend({
   },
 
   methods: {
-    async create() {
-      const project = await this.$services.project.create(this.editedItem)
-      this.$router.push(`/projects/${project.id}`)
-      this.close()
-    },
-
-    close() {
-      this.dialogCreate = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-      })
-    },
-
     async remove() {
       await this.$services.project.bulkDelete(this.selected)
       this.$fetch()
