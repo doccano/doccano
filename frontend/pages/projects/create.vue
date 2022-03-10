@@ -31,6 +31,7 @@ export default Vue.extend({
         allowOverlapping: false,
         graphemeMode: false,
         useRelation: false,
+        tags: [] as string[],
       } as ProjectWriteDTO,
       defaultItem: {
         name: '',
@@ -42,6 +43,7 @@ export default Vue.extend({
         allowOverlapping: false,
         graphemeMode: false,
         useRelation: false,
+        tags: [] as string[],
       } as ProjectWriteDTO,
     }
   },

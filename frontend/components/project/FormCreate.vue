@@ -51,6 +51,18 @@
           required
           @input="updateValue('description', $event)"
         />
+        <v-combobox
+          :value="tags"
+          :items="tags"
+          label="Tags"
+          multiple
+          chips
+          outlined
+          dense
+          deletable-chips
+          hide-selected
+          @input="updateValue('tags', $event)"
+        />
         <v-checkbox
           v-if="hasSingleLabelOption"
           :value="singleClassClassification"
@@ -175,6 +187,10 @@ export default Vue.extend({
     useRelation: {
       type: Boolean,
       default: false
+    },
+    tags: {
+      type: Array,
+      default: () => [],
     }
   },
 

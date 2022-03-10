@@ -11,7 +11,7 @@ export class ProjectDTO {
   enableShareAnnotation: boolean
   singleClassClassification: boolean
   pageLink: string
-  tags: Object[]
+  tags: Object[] | string[]
   canDefineLabel: boolean
   canDefineRelation: boolean
   isTextProject: boolean
@@ -46,7 +46,7 @@ export class ProjectDTO {
   }
 }
 
-export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'allowOverlapping' | 'graphemeMode' | 'tags' | 'useRelation'>
+export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'allowOverlapping' | 'graphemeMode' | 'useRelation'> & { tags: string[] }
 
 export class ProjectListDTO {
   count: number

@@ -58,7 +58,8 @@ export class ProjectApplicationService {
       item.singleClassClassification,
       item.allowOverlapping,
       item.graphemeMode,
-      item.useRelation
+      item.useRelation,
+      item.tags
     )
   }
 }
