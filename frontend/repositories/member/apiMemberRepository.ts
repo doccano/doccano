@@ -30,4 +30,10 @@ export class APIMemberRepository implements MemberRepository {
     const url = `/projects/${projectId}/members`
     await this.request.delete(url, { ids: memberIds })
   }
+
+  async fetchMyRole(projectId: string): Promise<MemberItem> {
+    const url = `/projects/${projectId}/my-role`
+    const response = await this.request.get(url)
+    return plainToInstance(MemberItem, response.data)
+  }
 }

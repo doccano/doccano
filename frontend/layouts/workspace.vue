@@ -46,7 +46,6 @@ export default {
 
   computed: {
     ...mapGetters('projects', ['getLink', 'currentProject']),
-    ...mapGetters('auth', ['getUserId'])
   },
   
   watch: {
@@ -56,7 +55,7 @@ export default {
   },
 
   async created() {
-    this.isProjectAdmin = await this.$services.member.isProjectAdmin(this.$route.params.id, this.getUserId)
+    this.isProjectAdmin = await this.$services.member.isProjectAdmin(this.$route.params.id)
   }
 }
 </script>
