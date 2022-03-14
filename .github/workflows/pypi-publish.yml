@@ -32,7 +32,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install poetry
+        pip install poetry poetry-dynamic-versioning
         poetry install
       working-directory: ./backend
     - name: collectstatic
