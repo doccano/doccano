@@ -212,13 +212,40 @@ doccano also supports one-click deployment to cloud providers. Click the followi
 
 Caution: If you use SQLite3 as a database, upgrading the package would lose your database.
 
+The migrate command has been supported since v1.6.0.
+
+### After v1.6.0
+
 To upgrade to the latest version of doccano, reinstall or upgrade using pip.
 
 ```bash
 pip install -U doccano
 ```
 
-If you need update the database scheme, run the following:
+If you need to update the database scheme, run the following:
+
+```bash
+doccano migrate
+```
+
+### Before v1.6.0
+
+First, you need to copy the database file and media directory in the case of SQLite3:
+
+```bash
+mkdir -p ~/doccano
+# Replace your path.
+cp venv/lib/python3.8/site-packages/backend/db.sqlite3 ~/doccano/
+cp -r venv/lib/python3.8/site-packages/backend/media ~/doccano/
+```
+
+Then, upgrade the package:
+
+```bash
+pip install -U doccano
+```
+
+At the end, run the migration:
 
 ```bash
 doccano migrate
