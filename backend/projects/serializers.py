@@ -83,6 +83,11 @@ class ProjectSerializer(serializers.ModelSerializer):
         tags.save(project=project)
         return project
 
+    def update(self, instance, validated_data):
+        # Don't update tags. Please use TagAPI.
+        validated_data.pop("tags", None)
+        return super().update(instance, validated_data)
+
 
 class TextClassificationProjectSerializer(ProjectSerializer):
     class Meta(ProjectSerializer.Meta):

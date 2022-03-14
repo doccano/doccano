@@ -35,6 +35,7 @@ export class ProjectApplicationService {
   public async update(item: ProjectWriteDTO): Promise<void> {
     try {
       const project = this.toWriteModel(item)
+      project.tags = []
       await this.repository.update(project)
     } catch(e: any) {
       throw new Error(e.response.data.detail)
