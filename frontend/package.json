@@ -89,5 +89,12 @@
     "stylus-loader": "^4.3.3",
     "typescript": "^4.3.5",
     "vue-jest": "^3.0.7"
+  },
+  "resolutions": {
+    "node-fetch": "^2.6.7",
+    "follow-redirects": "^1.14.7",
+    "highlight.js": "^10.4.1",
+    "markdown-it": "^12.3.2",
+    "watchpack": "^1.7.5"
   }
 }
