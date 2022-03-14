@@ -116,6 +116,24 @@ class TestMemberFilter(CRUDMixin):
         self.assertEqual(len(response.data), 1)
 
 
+class TestMyRole(CRUDMixin):
+    def setUp(self):
+        self.project = prepare_project()
+        self.url = reverse(viewname="my_role", args=[self.project.item.id])
+
+    def test_admin(self):
+        response = self.assert_fetch(self.project.admin, status.HTTP_200_OK)
+        self.assertEqual(response.data["rolename"], settings.ROLE_PROJECT_ADMIN)
+
+    def test_approver(self):
+        response = self.assert_fetch(self.project.approver, status.HTTP_200_OK)
+        self.assertEqual(response.data["rolename"], settings.ROLE_ANNOTATION_APPROVER)
+
+    def test_annotator(self):
+        response = self.assert_fetch(self.project.annotator, status.HTTP_200_OK)
+        self.assertEqual(response.data["rolename"], settings.ROLE_ANNOTATOR)
+
+
 class TestMemberManager(CRUDMixin):
     def test_has_role(self):
         project = prepare_project()

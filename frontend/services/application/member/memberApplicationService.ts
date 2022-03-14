@@ -40,8 +40,8 @@ export class MemberApplicationService {
     return this.repository.bulkDelete(projectId, ids)
   }
 
-  public async isProjectAdmin(projectId: string, userId: number): Promise<boolean> {
-    const items = await this.repository.list(projectId)
-    return items.some((item) => item.user === userId && item.isProjectAdmin)
+  public async isProjectAdmin(projectId: string): Promise<boolean> {
+    const item = await this.repository.fetchMyRole(projectId)
+    return item.isProjectAdmin
   }
 }

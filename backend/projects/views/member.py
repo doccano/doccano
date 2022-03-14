@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -6,7 +7,7 @@ from rest_framework.response import Response
 
 from projects.exceptions import RoleAlreadyAssignedException, RoleConstraintException
 from projects.models import Member
-from projects.permissions import IsProjectAdmin
+from projects.permissions import IsProjectAdmin, IsProjectMember
 from projects.serializers import MemberSerializer
 
 
@@ -51,3 +52,13 @@ class MemberDetail(generics.RetrieveUpdateAPIView):
             super().perform_update(serializer)
         except IntegrityError:
             raise RoleAlreadyAssignedException
+
+
+class MyRole(generics.RetrieveAPIView):
+    queryset = Member.objects.all()
+    serializer_class = MemberSerializer
+    permission_classes = [IsAuthenticated & IsProjectMember]
+
+    def get_object(self):
+        kwargs = {"user": self.request.user, "project_id": self.kwargs["project_id"]}
+        return get_object_or_404(self.queryset, **kwargs)

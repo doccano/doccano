@@ -8,4 +8,6 @@ export interface MemberRepository {
   update(projectId: string, item: MemberItem): Promise<MemberItem>
 
   bulkDelete(projectId: string, memberIds: number[]): Promise<void>
+
+  fetchMyRole(projectId: string): Promise<MemberItem>
 }
