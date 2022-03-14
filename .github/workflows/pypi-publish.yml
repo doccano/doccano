@@ -48,4 +48,4 @@ jobs:
       with:
         user: ${{ secrets.PYPI_USERNAME }}
         password: ${{ secrets.PYPI_PASSWORD }}
-      working-directory: ./backend
+        packages_dir: ./backend/dist/
