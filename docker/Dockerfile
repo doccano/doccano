@@ -8,6 +8,7 @@ ENV PUBLIC_PATH="/static/_nuxt/"
 
 # hadolint ignore=DL3018
 RUN apk add -U --no-cache git python3 make g++ \
+ && git config --global url."https://github.com/".insteadOf git://github.com/ \
  && yarn install \
  && yarn build \
  && apk del --no-cache git make g++

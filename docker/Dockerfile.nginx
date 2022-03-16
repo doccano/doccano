@@ -6,6 +6,7 @@ WORKDIR /app
 
 RUN apt-get update \
  && apt-get install -y git python3 make g++ \
+ && git config --global url."https://github.com/".insteadOf git://github.com/ \
  && yarn install \
  && yarn build \
  && apt-get clean
