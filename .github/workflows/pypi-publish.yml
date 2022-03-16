@@ -13,6 +13,8 @@ jobs:
     - name: Preparation
       run: |
         mkdir backend/client
+    - name: Fix up git URLs
+      run: echo -e '[url "https://github.com/"]\n  insteadOf = "git@github.com:"' >> ~/.gitconfig
     - name: Use Node.js
       uses: actions/setup-node@v1
       with:
