@@ -26,7 +26,6 @@
           item-value="id"
           label="Select a label"
           small-chips
-          @input="onLabelSelected"
         />
       </v-list-item>
       <v-list-item
@@ -92,13 +91,21 @@ export default Vue.extend({
       entity: null as any,
       fromEntity: null as any,
       toEntity: null as any,
-      value: this.selectedLabel
     };
   },
 
   computed: {
     hasAnySuffixKey(): boolean {
       return this.labels.some((label: any) => label.suffixKey !== null)
+    },
+
+    value: {
+      get() {
+        return this.selectedLabel
+      },
+      set(labelId: number) {
+        this.onLabelSelected(labelId)
+      }
     }
   },
 
@@ -107,7 +114,6 @@ export default Vue.extend({
       // Todo: a bit hacky. I want to fix this problem.
       // https://github.com/vuetifyjs/vuetify/issues/10765
       this.$nextTick(() => {
-        this.value = null
         if (this.$refs.autocomplete) {
           (this.$refs.autocomplete as any).selectedItems = []
         }
@@ -116,7 +122,6 @@ export default Vue.extend({
     },
 
     onLabelSelected(labelId: number) {
-      this.value = labelId
       this.$emit('click:label', labelId)
       this.close()
     }
