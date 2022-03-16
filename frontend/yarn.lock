@@ -5665,9 +5665,9 @@ etag@^1.8.1, etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
-"eve@git://github.com/adobe-webplatform/eve.git#eef80ed":
+"eve@https://github.com/adobe-webplatform/eve.git#eef80ed":
   version "0.4.1"
-  resolved "git://github.com/adobe-webplatform/eve.git#eef80ed8d188423c2272746fb8ae5cc8dad84cb1"
+  resolved "https://github.com/adobe-webplatform/eve.git#eef80ed8d188423c2272746fb8ae5cc8dad84cb1"
 
 eventemitter3@^4.0.0:
   version "4.0.7"
@@ -10225,7 +10225,7 @@ range-parser@^1.2.1, range-parser@~1.2.1:
   version "2.2.0-c"
   resolved "https://github.com/nhn/raphael.git#78a6ed3ec269f33b6457b0ec66f8c3d1f2ed70e0"
   dependencies:
-    eve "git://github.com/adobe-webplatform/eve.git#eef80ed"
+    eve "https://github.com/adobe-webplatform/eve.git#eef80ed"
 
 raw-loader@^4.0.2:
   version "4.0.2"
