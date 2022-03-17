@@ -93,6 +93,11 @@ export default Vue.extend({
     headers() {
       return [
         {
+          text: 'ID',
+          value: 'id',
+          sortable: false
+        },
+        {
           text: this.$t('dataset.text'),
           value: 'text',
           sortable: false
