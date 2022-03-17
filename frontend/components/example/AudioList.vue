@@ -99,6 +99,11 @@ export default Vue.extend({
     headers() {
       return [
         {
+          text: 'ID',
+          value: 'id',
+          sortable: false
+        },
+        {
           text: 'Audio',
           value: 'url',
           sortable: false
