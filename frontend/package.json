@@ -95,6 +95,7 @@
     "follow-redirects": "^1.14.7",
     "highlight.js": "^10.4.1",
     "markdown-it": "^12.3.2",
-    "watchpack": "^1.7.5"
+    "watchpack": "^1.7.5",
+    "minimist": "npm:minimist-lite@2.2.0"
   }
 }
