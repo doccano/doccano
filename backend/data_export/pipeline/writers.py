@@ -35,7 +35,7 @@ class LineWriter(BaseWriter):
         for record in records:
             filename = os.path.join(self.tmpdir, f"{record.user}.{self.extension}")
             if filename not in files:
-                f = open(filename, mode="a")
+                f = open(filename, mode="a", encoding="utf-8")
                 files[filename] = f
             f = files[filename]
             line = self.create_line(record)
