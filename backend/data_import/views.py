@@ -1,5 +1,3 @@
-import os
-
 from django.shortcuts import get_object_or_404
 from django_drf_filepond.models import TemporaryUpload
 from rest_framework import status
@@ -33,7 +31,7 @@ class DatasetImportAPI(APIView):
 
         temporary_uploads = TemporaryUpload.objects.filter(upload_id__in=upload_ids)
         file_paths = [tu.get_file_path() for tu in temporary_uploads]
-        save_names = {tu.get_file_path(): os.path.join(tu.file.name, tu.upload_name) for tu in temporary_uploads}
+        save_names = {tu.get_file_path(): tu.file.name for tu in temporary_uploads}
         task = import_dataset.delay(
             user_id=request.user.id,
             project_id=project_id,

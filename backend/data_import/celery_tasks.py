@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 from celery import shared_task
@@ -34,5 +33,4 @@ def import_dataset(user_id, project_id, filenames, file_format: str, save_names=
 def upload_to_store(upload_ids: List[int]):
     temporary_uploads = TemporaryUpload.objects.filter(upload_id__in=upload_ids)
     for tu in temporary_uploads:
-        file_path = os.path.join(tu.file.name, tu.upload_name)
-        store_upload(tu.upload_id, destination_file_path=file_path)
+        store_upload(tu.upload_id, destination_file_path=tu.file.name)
