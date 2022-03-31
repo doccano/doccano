@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+set -o errexit
+set -o nounset
+
 mkdir -p backend/client
 
 cd frontend
