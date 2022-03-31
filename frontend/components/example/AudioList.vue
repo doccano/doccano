@@ -39,6 +39,9 @@
         <code>audio</code> element.
       </audio>
     </template>
+    <template #[`item.filename`]="{ item }">
+      {{ item.filename.split('?')[0] }}
+    </template>
     <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
     </template>

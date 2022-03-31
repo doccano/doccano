@@ -39,6 +39,9 @@
         class="grey lighten-2"
       />
     </template>
+    <template #[`item.filename`]="{ item }">
+      {{ item.filename.split('?')[0] }}
+    </template>
     <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
     </template>
