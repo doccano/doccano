@@ -43,11 +43,10 @@ def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str],
     cleaner = create_cleaner(project)
     writer = BulkWriter(batch_size=settings.IMPORT_BATCH_SIZE, save_names=save_names)
     writer.save(reader, project, user, cleaner)
+    upload_to_store(temporary_uploads)
     return {"error": writer.errors + errors}
 
 
-@shared_task
-def upload_to_store(upload_ids: List[int]):
-    temporary_uploads = TemporaryUpload.objects.filter(upload_id__in=upload_ids)
+def upload_to_store(temporary_uploads):
     for tu in temporary_uploads:
         store_upload(tu.upload_id, destination_file_path=tu.file.name)
