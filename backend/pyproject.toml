@@ -62,6 +62,7 @@ django-health-check = "^3.16.5"
 djangorestframework-xml = "^2.0.0"
 django-storages = {extras = ["google"], version = "^1.12.3"}
 django-cleanup = "^6.0.0"
+filetype = "^1.0.10"
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"

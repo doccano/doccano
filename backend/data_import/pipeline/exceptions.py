@@ -21,3 +21,16 @@ class MaximumFileSizeException(Exception):
 
     def dict(self):
         return {"filename": self.filename, "line": -1, "message": str(self)}
+
+
+class FileTypeException(Exception):
+    def __init__(self, filename: str, filetype: str, allowed_types=None):
+        self.filename = filename
+        self.filetype = filetype
+        self.allowed_types = allowed_types
+
+    def __str__(self):
+        return f"The file type {self.filetype} is unexpected. Expected: {self.allowed_types}"
+
+    def dict(self):
+        return {"filename": self.filename, "line": -1, "message": str(self)}

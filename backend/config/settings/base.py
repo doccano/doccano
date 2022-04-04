@@ -248,7 +248,8 @@ DJANGO_DRF_FILEPOND_UPLOAD_TMP = path.join(BASE_DIR, "filepond-temp-uploads")
 DJANGO_DRF_FILEPOND_FILE_STORE_PATH = MEDIA_ROOT
 
 # File upload setting
-MAX_UPLOAD_SIZE = env("MAX_UPLOAD_SIZE", pow(1024, 3))  # default: 1GB per a file
+MAX_UPLOAD_SIZE = env.int("MAX_UPLOAD_SIZE", pow(1024, 3))  # default: 1GB per a file
+ENABLE_FILE_TYPE_CHECK = env.bool("ENABLE_FILE_TYPE_CHECK", False)
 
 # Celery settings
 DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191

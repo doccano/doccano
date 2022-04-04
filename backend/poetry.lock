@@ -536,6 +536,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "filetype"
+version = "1.0.10"
+description = "Infer file type and MIME type of any file/buffer. No external dependencies."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "flake8"
 version = "4.0.1"
 description = "the modular source code checker: pep8 pyflakes and co"
@@ -1478,7 +1486,7 @@ postgresql = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "2b7d21429a29cfe0f07be53971292f593d955bad855f76e0d05f22cbfd60baf9"
+content-hash = "aba19bd73c1d181ff5a54ea860e255055b0f9ed7ad9788605f989f03715bad64"
 
 [metadata.files]
 amqp = [
@@ -1713,6 +1721,10 @@ environs = [
 et-xmlfile = [
     {file = "et_xmlfile-1.1.0-py3-none-any.whl", hash = "sha256:a2ba85d1d6a74ef63837eed693bcb89c3f752169b0e3e7ae5b16ca5e1b3deada"},
     {file = "et_xmlfile-1.1.0.tar.gz", hash = "sha256:8eb9e2bc2f8c97e37a2dc85a09ecdcdec9d8a396530a6d5a33b30b9a92da0c5c"},
+]
+filetype = [
+    {file = "filetype-1.0.10-py2.py3-none-any.whl", hash = "sha256:63fbe6e818a3d1cfac1d62b196574a7a4b7fc8e06a6c500d53577c018ef127d9"},
+    {file = "filetype-1.0.10.tar.gz", hash = "sha256:323a13500731b6c65a253bc3930bbce9a56dfba71e90b60ffd968ab69d9ae937"},
 ]
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
