@@ -1,5 +1,4 @@
 from django.shortcuts import get_object_or_404
-from django_drf_filepond.models import TemporaryUpload
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -29,16 +28,11 @@ class DatasetImportAPI(APIView):
         upload_ids = request.data.pop("uploadIds")
         file_format = request.data.pop("format")
 
-        temporary_uploads = TemporaryUpload.objects.filter(upload_id__in=upload_ids)
-        file_paths = [tu.get_file_path() for tu in temporary_uploads]
-        save_names = {tu.get_file_path(): tu.file.name for tu in temporary_uploads}
-
         task = import_dataset.delay(
             user_id=request.user.id,
             project_id=project_id,
-            filenames=file_paths,
             file_format=file_format,
-            save_names=save_names,
+            upload_ids=upload_ids,
             **request.data,
         )
         upload_task = upload_to_store.delay(upload_ids)

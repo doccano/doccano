@@ -1,6 +1,9 @@
+import os
 import pathlib
 
-from django.test import TestCase
+from django.core.files import File
+from django.test import TestCase, override_settings
+from django_drf_filepond.models import TemporaryUpload
 
 from data_import.celery_tasks import import_dataset
 from examples.models import Example
@@ -16,6 +19,7 @@ from projects.models import (
 from projects.tests.utils import prepare_project
 
 
+@override_settings(MEDIA_ROOT=os.path.join(os.path.dirname(__file__), "data"))
 class TestImportData(TestCase):
     task = "Any"
     annotation_class = Category
@@ -26,9 +30,17 @@ class TestImportData(TestCase):
         self.data_path = pathlib.Path(__file__).parent / "data"
 
     def import_dataset(self, filename, file_format, kwargs=None):
-        filenames = [str(self.data_path / filename)]
+        file_path = str(self.data_path / filename)
+        TemporaryUpload.objects.create(
+            upload_id="1",
+            file_id="1",
+            file=File(open(file_path, mode="rb"), filename),
+            upload_name=filename,
+            upload_type="F",
+        )
+        upload_ids = ["1"]
         kwargs = kwargs or {}
-        return import_dataset(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
+        return import_dataset(self.user.id, self.project.item.id, file_format, upload_ids, **kwargs)
 
 
 class TestImportClassificationData(TestImportData):
