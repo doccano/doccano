@@ -1,9 +1,10 @@
 import os
 import pathlib
+import shutil
 
 from django.core.files import File
 from django.test import TestCase, override_settings
-from django_drf_filepond.models import TemporaryUpload
+from django_drf_filepond.models import StoredUpload, TemporaryUpload
 from django_drf_filepond.utils import _get_file_id
 
 from data_import.celery_tasks import import_dataset
@@ -29,18 +30,26 @@ class TestImportData(TestCase):
         self.project = prepare_project(self.task)
         self.user = self.project.admin
         self.data_path = pathlib.Path(__file__).parent / "data"
+        self.upload_id = _get_file_id()
+
+    def tearDown(self):
+        try:
+            su = StoredUpload.objects.get(upload_id=self.upload_id)
+            directory = pathlib.Path(su.get_absolute_file_path()).parent
+            shutil.rmtree(directory)
+        except StoredUpload.DoesNotExist:
+            pass
 
     def import_dataset(self, filename, file_format, kwargs=None):
         file_path = str(self.data_path / filename)
-        upload_id = _get_file_id()
         TemporaryUpload.objects.create(
-            upload_id=upload_id,
+            upload_id=self.upload_id,
             file_id="1",
             file=File(open(file_path, mode="rb"), filename.split("/")[-1]),
             upload_name=filename,
             upload_type="F",
         )
-        upload_ids = [upload_id]
+        upload_ids = [self.upload_id]
         kwargs = kwargs or {}
         return import_dataset(self.user.id, self.project.item.id, file_format, upload_ids, **kwargs)
 
