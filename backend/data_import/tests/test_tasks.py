@@ -4,6 +4,7 @@ import pathlib
 from django.core.files import File
 from django.test import TestCase, override_settings
 from django_drf_filepond.models import TemporaryUpload
+from django_drf_filepond.utils import _get_file_id
 
 from data_import.celery_tasks import import_dataset
 from examples.models import Example
@@ -31,16 +32,30 @@ class TestImportData(TestCase):
 
     def import_dataset(self, filename, file_format, kwargs=None):
         file_path = str(self.data_path / filename)
+        upload_id = _get_file_id()
         TemporaryUpload.objects.create(
-            upload_id="1",
+            upload_id=upload_id,
             file_id="1",
-            file=File(open(file_path, mode="rb"), filename),
+            file=File(open(file_path, mode="rb"), filename.split("/")[-1]),
             upload_name=filename,
             upload_type="F",
         )
-        upload_ids = ["1"]
+        upload_ids = [upload_id]
         kwargs = kwargs or {}
         return import_dataset(self.user.id, self.project.item.id, file_format, upload_ids, **kwargs)
+
+
+@override_settings(MAX_UPLOAD_SIZE=0)
+class TestMaxFileSize(TestImportData):
+    task = DOCUMENT_CLASSIFICATION
+
+    def test_jsonl(self):
+        filename = "text_classification/example.jsonl"
+        file_format = "JSONL"
+        kwargs = {"column_label": "labels"}
+        response = self.import_dataset(filename, file_format, kwargs)
+        self.assertEqual(len(response["error"]), 1)
+        self.assertIn("maximum file size", response["error"][0]["message"])
 
 
 class TestImportClassificationData(TestImportData):

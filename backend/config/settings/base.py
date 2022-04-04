@@ -247,6 +247,9 @@ MEDIA_URL = "/media/"
 DJANGO_DRF_FILEPOND_UPLOAD_TMP = path.join(BASE_DIR, "filepond-temp-uploads")
 DJANGO_DRF_FILEPOND_FILE_STORE_PATH = MEDIA_ROOT
 
+# File upload setting
+MAX_UPLOAD_SIZE = env("MAX_UPLOAD_SIZE", pow(1024, 3))  # default: 1GB per a file
+
 # Celery settings
 DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191
 CELERY_RESULT_BACKEND = "django-db"
