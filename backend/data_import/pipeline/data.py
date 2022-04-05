@@ -10,6 +10,7 @@ from projects.models import Project
 
 class BaseData(BaseModel, abc.ABC):
     filename: str
+    upload_name: str
 
     @classmethod
     def parse(cls, **kwargs):
@@ -34,9 +35,18 @@ class TextData(BaseData):
             raise ValueError("is not empty.")
 
     def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
-        return Example(uuid=uuid.uuid4(), project=project, filename=self.filename, text=self.text, meta=meta)
+        return Example(
+            uuid=uuid.uuid4(),
+            project=project,
+            filename=self.filename,
+            upload_name=self.upload_name,
+            text=self.text,
+            meta=meta,
+        )
 
 
 class FileData(BaseData):
     def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
-        return Example(uuid=uuid.uuid4(), project=project, filename=self.filename, meta=meta)
+        return Example(
+            uuid=uuid.uuid4(), project=project, filename=self.filename, upload_name=self.upload_name, meta=meta
+        )

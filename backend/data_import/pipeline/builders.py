@@ -7,7 +7,7 @@ from pydantic import ValidationError
 from .data import BaseData
 from .exceptions import FileParseException
 from .labels import Label
-from .readers import Builder, Record
+from .readers import Builder, FileName, Record
 
 logger = getLogger(__name__)
 
@@ -16,8 +16,8 @@ class PlainBuilder(Builder):
     def __init__(self, data_class: Type[BaseData]):
         self.data_class = data_class
 
-    def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:
-        data = self.data_class.parse(filename=filename)
+    def build(self, row: Dict[Any, Any], filename: FileName, line_num: int) -> Record:
+        data = self.data_class.parse(filename=filename.generated_name, upload_name=filename.upload_name)
         return Record(data=data)
 
 
@@ -27,9 +27,9 @@ def build_label(row: Dict[Any, Any], name: str, label_class: Type[Label]) -> Lis
     return [label_class.parse(label) for label in labels]
 
 
-def build_data(row: Dict[Any, Any], name: str, data_class: Type[BaseData], filename: str) -> BaseData:
+def build_data(row: Dict[Any, Any], name: str, data_class: Type[BaseData], filename: FileName) -> BaseData:
     data = row[name]
-    return data_class.parse(text=data, filename=filename)
+    return data_class.parse(text=data, filename=filename.generated_name, upload_name=filename.upload_name)
 
 
 class Column(abc.ABC):
@@ -39,17 +39,17 @@ class Column(abc.ABC):
         self.value_class = value_class
 
     @abc.abstractmethod
-    def __call__(self, row: Dict[Any, Any], filename: str):
+    def __call__(self, row: Dict[Any, Any], filename: FileName):
         raise NotImplementedError("Please implement this method in the subclass.")
 
 
 class DataColumn(Column):
-    def __call__(self, row: Dict[Any, Any], filename: str) -> BaseData:
+    def __call__(self, row: Dict[Any, Any], filename: FileName) -> BaseData:
         return build_data(row, self.name, self.value_class, filename)
 
 
 class LabelColumn(Column):
-    def __call__(self, row: Dict[Any, Any], filename: str) -> List[Label]:
+    def __call__(self, row: Dict[Any, Any], filename: FileName) -> List[Label]:
         return build_label(row, self.name, self.value_class)
 
 
@@ -58,16 +58,16 @@ class ColumnBuilder(Builder):
         self.data_column = data_column
         self.label_columns = label_columns or []
 
-    def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:
+    def build(self, row: Dict[Any, Any], filename: FileName, line_num: int) -> Record:
         try:
             data = self.data_column(row, filename)
             row.pop(self.data_column.name)
         except KeyError:
             message = f"{self.data_column.name} field does not exist."
-            raise FileParseException(filename, line_num, message)
+            raise FileParseException(filename.upload_name, line_num, message)
         except ValidationError:
             message = "The empty text is not allowed."
-            raise FileParseException(filename, line_num, message)
+            raise FileParseException(filename.upload_name, line_num, message)
 
         labels = []
         for column in self.label_columns:

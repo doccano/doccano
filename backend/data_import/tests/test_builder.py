@@ -5,6 +5,7 @@ from data_import.pipeline import builders
 from data_import.pipeline.data import TextData
 from data_import.pipeline.exceptions import FileParseException
 from data_import.pipeline.labels import CategoryLabel, SpanLabel
+from data_import.pipeline.readers import FileName
 
 
 class TestColumnBuilder(unittest.TestCase):
@@ -14,7 +15,8 @@ class TestColumnBuilder(unittest.TestCase):
 
     def create_record(self, row, data_column: builders.DataColumn, label_columns: Optional[List[builders.Column]]):
         builder = builders.ColumnBuilder(data_column=data_column, label_columns=label_columns)
-        return builder.build(row, filename="", line_num=1)
+        filename = FileName("", "", "")
+        return builder.build(row, filename=filename, line_num=1)
 
     def test_can_load_default_column_names(self):
         row = {"text": "Text", "label": "Label"}

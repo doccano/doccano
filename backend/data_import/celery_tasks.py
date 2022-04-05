@@ -55,7 +55,7 @@ def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str],
     upload_ids, errors = check_uploaded_files(upload_ids, file_format)
     temporary_uploads = TemporaryUpload.objects.filter(upload_id__in=upload_ids)
     filenames = [
-        FileName(full_path=tu.get_file_path(), generated_name=tu.file.name, original_name=tu.upload_name)
+        FileName(full_path=tu.get_file_path(), generated_name=tu.file.name, upload_name=tu.upload_name)
         for tu in temporary_uploads
     ]
 

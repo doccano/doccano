@@ -87,20 +87,20 @@ class Parser(abc.ABC):
         return []
 
 
-class Builder(abc.ABC):
-    """The abstract Record builder."""
-
-    @abc.abstractmethod
-    def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:
-        """Builds the record from the dictionary."""
-        raise NotImplementedError("Please implement this method in the subclass.")
-
-
 @dataclasses.dataclass
 class FileName:
     full_path: str
     generated_name: str
-    original_name: str
+    upload_name: str
+
+
+class Builder(abc.ABC):
+    """The abstract Record builder."""
+
+    @abc.abstractmethod
+    def build(self, row: Dict[Any, Any], filename: FileName, line_num: int) -> Record:
+        """Builds the record from the dictionary."""
+        raise NotImplementedError("Please implement this method in the subclass.")
 
 
 class Reader(BaseReader):
@@ -115,7 +115,7 @@ class Reader(BaseReader):
             rows = self.parser.parse(filename.full_path)
             for line_num, row in enumerate(rows, start=1):
                 try:
-                    yield self.builder.build(row, filename.generated_name, line_num)
+                    yield self.builder.build(row, filename, line_num)
                 except FileParseException as e:
                     self._errors.append(e)
 
