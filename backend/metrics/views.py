@@ -1,5 +1,6 @@
 import abc
 
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -8,7 +9,7 @@ from rest_framework.views import APIView
 from examples.models import Example, ExampleState
 from label_types.models import CategoryType, LabelType, RelationType, SpanType
 from labels.models import Category, Label, Relation, Span
-from projects.models import Member
+from projects.models import Member, Project
 from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 
@@ -18,7 +19,11 @@ class ProgressAPI(APIView):
     def get(self, request, *args, **kwargs):
         examples = Example.objects.filter(project=self.kwargs["project_id"]).values("id")
         total = examples.count()
-        complete = ExampleState.objects.count_done(examples, user=self.request.user)
+        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
+        if project.collaborative_annotation:
+            complete = ExampleState.objects.count_done(examples)
+        else:
+            complete = ExampleState.objects.count_done(examples, user=self.request.user)
         data = {"total": total, "remaining": total - complete, "complete": complete}
         return Response(data=data, status=status.HTTP_200_OK)
 
