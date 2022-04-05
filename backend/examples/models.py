@@ -14,6 +14,7 @@ class Example(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, db_index=True, unique=True)
     meta = models.JSONField(default=dict)
     filename = models.FileField(default=".", max_length=1024, storage=DrfFilePondStoredStorage())
+    upload_name = models.CharField(max_length=512)
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name="examples")
     annotations_approved_by = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True, blank=True)
     text = models.TextField(null=True, blank=True)
