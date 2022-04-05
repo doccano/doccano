@@ -1,5 +1,6 @@
 import abc
 import collections.abc
+import dataclasses
 from typing import Any, Dict, Iterator, List, Type
 
 from .cleaners import Cleaner
@@ -95,8 +96,15 @@ class Builder(abc.ABC):
         raise NotImplementedError("Please implement this method in the subclass.")
 
 
+@dataclasses.dataclass
+class FileName:
+    full_path: str
+    generated_name: str
+    original_name: str
+
+
 class Reader(BaseReader):
-    def __init__(self, filenames: List[str], parser: Parser, builder: Builder):
+    def __init__(self, filenames: List[FileName], parser: Parser, builder: Builder):
         self.filenames = filenames
         self.parser = parser
         self.builder = builder
@@ -104,10 +112,10 @@ class Reader(BaseReader):
 
     def __iter__(self) -> Iterator[Record]:
         for filename in self.filenames:
-            rows = self.parser.parse(filename)
+            rows = self.parser.parse(filename.full_path)
             for line_num, row in enumerate(rows, start=1):
                 try:
-                    yield self.builder.build(row, filename, line_num)
+                    yield self.builder.build(row, filename.generated_name, line_num)
                 except FileParseException as e:
                     self._errors.append(e)
 

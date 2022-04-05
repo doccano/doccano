@@ -61,10 +61,8 @@ class Examples:
         for klass, instances in groups.items():
             klass.objects.bulk_create(instances, ignore_conflicts=True)
 
-    def save_data(self, project: Project, save_names: Dict[str, str]) -> List[Example]:
+    def save_data(self, project: Project) -> List[Example]:
         examples = [example.create_data(project) for example in self.buffer]
-        for example in examples:
-            example.filename = save_names.get(example.filename, example.filename)
         return Example.objects.bulk_create(examples)
 
     def save_annotation(self, project: Project, user, examples):
@@ -85,10 +83,9 @@ class Examples:
 
 
 class BulkWriter(Writer):
-    def __init__(self, batch_size: int, save_names: Dict[str, str]):
+    def __init__(self, batch_size: int):
         self.examples = Examples(batch_size)
         self._errors: List[FileParseException] = []
-        self.save_names = save_names
 
     def save(self, reader: BaseReader, project: Project, user, cleaner):
         it = iter(reader)
@@ -118,5 +115,5 @@ class BulkWriter(Writer):
 
     def create(self, project: Project, user):
         self.examples.save_label(project)
-        ids = self.examples.save_data(project, self.save_names)
+        ids = self.examples.save_data(project)
         self.examples.save_annotation(project, user, ids)
