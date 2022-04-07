@@ -205,3 +205,11 @@ class IntentDetectionSlotFillingRepository(TextRepository):
             label.setdefault("cats", [])
             label.setdefault("entities", [])
         return label_per_user
+
+    def reduce_user(self, label_per_user: Dict[str, Any]):
+        cats = []
+        entities = []
+        for user, label in label_per_user.items():
+            cats.extend(label.get("cats", []))
+            entities.extend(label.get("entities", []))
+        return {"all": {"entities": entities, "cats": cats}}
