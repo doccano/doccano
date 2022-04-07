@@ -11,8 +11,8 @@ from projects.models import (
 )
 
 
-def create_repository(project):
-    if getattr(project, "use_relation", False):
+def create_repository(project, file_format: str):
+    if getattr(project, "use_relation", False) and file_format == catalog.JSONLRelation.name:
         return repositories.RelationExtractionRepository(project)
     mapping = {
         DOCUMENT_CLASSIFICATION: repositories.TextClassificationRepository,
