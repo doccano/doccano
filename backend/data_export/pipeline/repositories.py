@@ -1,7 +1,7 @@
 import abc
 import itertools
 from collections import defaultdict
-from typing import Dict, Iterator, List, Tuple, Union
+from typing import Any, Dict, Iterator, List, Tuple
 
 from .data import Record
 from examples.models import Example
@@ -10,13 +10,12 @@ from projects.models import Project
 SpanType = Tuple[int, int, str]
 
 
-class BaseRepository(abc.ABC):
+class BaseRepository:
     def __init__(self, project: Project):
         self.project = project
 
-    @abc.abstractmethod
     def list(self, export_approved=False) -> Iterator[Record]:
-        pass
+        raise NotImplementedError()
 
 
 class FileRepository(BaseRepository):
@@ -54,7 +53,7 @@ class FileRepository(BaseRepository):
             label_per_user[a.user.username].append(a.label.text)
         return label_per_user
 
-    def reduce_user(self, label_per_user: Dict[str, List]):
+    def reduce_user(self, label_per_user: Dict[str, Any]):
         value = list(itertools.chain(*label_per_user.values()))
         return {"all": value}
 
@@ -96,7 +95,7 @@ class TextRepository(BaseRepository):
     def label_per_user(self, doc) -> Dict:
         raise NotImplementedError()
 
-    def reduce_user(self, label_per_user: Dict[str, List]):
+    def reduce_user(self, label_per_user: Dict[str, Any]):
         value = list(itertools.chain(*label_per_user.values()))
         return {"all": value}
 
@@ -161,6 +160,14 @@ class RelationExtractionRepository(TextRepository):
             label_per_user[user]["entities"] = span
         return label_per_user
 
+    def reduce_user(self, label_per_user: Dict[str, Any]):
+        entities = []
+        relations = []
+        for user, label in label_per_user.items():
+            entities.extend(label.get("entities", []))
+            relations.extend(label.get("relations", []))
+        return {"all": {"entities": entities, "relations": relations}}
+
 
 class Seq2seqRepository(TextRepository):
     @property
@@ -184,7 +191,7 @@ class IntentDetectionSlotFillingRepository(TextRepository):
     def label_per_user(self, doc) -> Dict:
         category_per_user: Dict[str, List[str]] = defaultdict(list)
         span_per_user: Dict[str, List[SpanType]] = defaultdict(list)
-        label_per_user: Dict[str, Dict[str, Union[List[str], List[SpanType]]]] = defaultdict(dict)
+        label_per_user: Dict[str, Dict[str, List]] = defaultdict(dict)
         for a in doc.categories.all():
             category_per_user[a.user.username].append(a.label.text)
         for a in doc.spans.all():
@@ -193,4 +200,15 @@ class IntentDetectionSlotFillingRepository(TextRepository):
             label_per_user[user]["cats"] = cats
         for user, span in span_per_user.items():
             label_per_user[user]["entities"] = span
+        for label in label_per_user.values():
+            label.setdefault("cats", [])
+            label.setdefault("entities", [])
         return label_per_user
+
+    def reduce_user(self, label_per_user: Dict[str, Any]):
+        cats = []
+        entities = []
+        for user, label in label_per_user.items():
+            cats.extend(label.get("cats", []))
+            entities.extend(label.get("entities", []))
+        return {"all": {"entities": entities, "cats": cats}}
