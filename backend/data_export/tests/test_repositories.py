@@ -77,7 +77,7 @@ class TestSequenceLabelingRepository(TestRepository):
 
     def test_list(self):
         project = prepare_project(SEQUENCE_LABELING)
-        repository = SequenceLabelingRepository(project)
+        repository = SequenceLabelingRepository(project.item)
         self.prepare_data(project)
         expected = [
             {
@@ -95,7 +95,7 @@ class TestSequenceLabelingRepository(TestRepository):
 
     def test_list_on_collaborative_annotation(self):
         project = prepare_project(SEQUENCE_LABELING, collaborative_annotation=True)
-        repository = SequenceLabelingRepository(project)
+        repository = SequenceLabelingRepository(project.item)
         self.prepare_data(project)
         expected = [
             {

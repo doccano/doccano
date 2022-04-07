@@ -201,4 +201,7 @@ class IntentDetectionSlotFillingRepository(TextRepository):
             label_per_user[user]["cats"] = cats
         for user, span in span_per_user.items():
             label_per_user[user]["entities"] = span
+        for label in label_per_user.values():
+            label.setdefault("cats", [])
+            label.setdefault("entities", [])
         return label_per_user
