@@ -6,8 +6,13 @@ from ..pipeline.repositories import (
     IntentDetectionSlotFillingRepository,
     RelationExtractionRepository,
     SequenceLabelingRepository,
+    TextClassificationRepository,
 )
-from projects.models import INTENT_DETECTION_AND_SLOT_FILLING, SEQUENCE_LABELING
+from projects.models import (
+    DOCUMENT_CLASSIFICATION,
+    INTENT_DETECTION_AND_SLOT_FILLING,
+    SEQUENCE_LABELING,
+)
 from projects.tests.utils import prepare_project
 
 
@@ -19,6 +24,44 @@ class TestRepository(unittest.TestCase):
             self.assertEqual(record.data, expect["data"])
             self.assertEqual(record.label, expect["label"])
             self.assertEqual(record.user, expect["user"])
+
+
+class TestTextClassificationRepository(TestRepository):
+    def prepare_data(self, project):
+        self.example = mommy.make("Example", project=project.item, text="example")
+        self.category1 = mommy.make("Category", example=self.example, user=project.admin)
+        self.category2 = mommy.make("Category", example=self.example, user=project.annotator)
+
+    def test_list(self):
+        project = prepare_project(DOCUMENT_CLASSIFICATION)
+        repository = TextClassificationRepository(project.item)
+        self.prepare_data(project)
+        expected = [
+            {
+                "data": self.example.text,
+                "label": [self.category1.label.text],
+                "user": project.admin.username,
+            },
+            {
+                "data": self.example.text,
+                "label": [self.category2.label.text],
+                "user": project.annotator.username,
+            },
+        ]
+        self.assert_records(repository, expected)
+
+    def test_list_on_collaborative_annotation(self):
+        project = prepare_project(DOCUMENT_CLASSIFICATION, collaborative_annotation=True)
+        repository = TextClassificationRepository(project.item)
+        self.prepare_data(project)
+        expected = [
+            {
+                "data": self.example.text,
+                "label": [self.category1.label.text, self.category2.label.text],
+                "user": "all",
+            }
+        ]
+        self.assert_records(repository, expected)
 
 
 class TestIntentDetectionSlotFillingRepository(TestRepository):
