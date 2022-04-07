@@ -7,6 +7,7 @@ from ..pipeline.repositories import (
     RelationExtractionRepository,
     Seq2seqRepository,
     SequenceLabelingRepository,
+    Speech2TextRepository,
     TextClassificationRepository,
 )
 from projects.models import (
@@ -14,6 +15,7 @@ from projects.models import (
     INTENT_DETECTION_AND_SLOT_FILLING,
     SEQ2SEQ,
     SEQUENCE_LABELING,
+    SPEECH2TEXT,
 )
 from projects.tests.utils import prepare_project
 
@@ -257,6 +259,44 @@ class TestRelationExtractionRepository(TestRepository):
                         {"id": relation.id, "from_id": span1.id, "to_id": span2.id, "type": relation.type.text}
                     ],
                 },
+                "user": "all",
+            }
+        ]
+        self.assert_records(repository, expected)
+
+
+class TestSpeech2TextRepository(TestRepository):
+    def prepare_data(self, project):
+        self.example = mommy.make("Example", project=project.item, text="example")
+        self.text1 = mommy.make("TextLabel", example=self.example, user=project.admin)
+        self.text2 = mommy.make("TextLabel", example=self.example, user=project.annotator)
+
+    def test_list(self):
+        project = prepare_project(SPEECH2TEXT)
+        repository = Speech2TextRepository(project.item)
+        self.prepare_data(project)
+        expected = [
+            {
+                "data": self.example.filename,
+                "label": [self.text1.text],
+                "user": project.admin.username,
+            },
+            {
+                "data": self.example.filename,
+                "label": [self.text2.text],
+                "user": project.annotator.username,
+            },
+        ]
+        self.assert_records(repository, expected)
+
+    def test_list_on_collaborative_annotation(self):
+        project = prepare_project(SPEECH2TEXT, collaborative_annotation=True)
+        repository = Speech2TextRepository(project.item)
+        self.prepare_data(project)
+        expected = [
+            {
+                "data": self.example.filename,
+                "label": [self.text1.text, self.text2.text],
                 "user": "all",
             }
         ]
