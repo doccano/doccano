@@ -1,7 +1,7 @@
 import abc
 import itertools
 from collections import defaultdict
-from typing import Dict, Iterator, List, Tuple, Union
+from typing import Any, Dict, Iterator, List, Tuple, Union
 
 from .data import Record
 from examples.models import Example
@@ -54,7 +54,7 @@ class FileRepository(BaseRepository):
             label_per_user[a.user.username].append(a.label.text)
         return label_per_user
 
-    def reduce_user(self, label_per_user: Dict[str, List]):
+    def reduce_user(self, label_per_user: Dict[str, Any]):
         value = list(itertools.chain(*label_per_user.values()))
         return {"all": value}
 
@@ -80,11 +80,7 @@ class TextRepository(BaseRepository):
         for doc in docs:
             label_per_user = self.label_per_user(doc)
             if self.project.collaborative_annotation:
-                if getattr(self.project, "use_relation", False):
-                    value_type = "dict"
-                else:
-                    value_type = "list"
-                label_per_user = self.reduce_user(label_per_user, value_type)
+                label_per_user = self.reduce_user(label_per_user)
             for user, label in label_per_user.items():
                 yield Record(data_id=doc.id, data=doc.text, label=label, user=user, metadata=doc.meta)
             # todo:
@@ -100,17 +96,9 @@ class TextRepository(BaseRepository):
     def label_per_user(self, doc) -> Dict:
         raise NotImplementedError()
 
-    def reduce_user(self, label_per_user: Dict, value_type):
-        if value_type == "list":
-            value_list = list(itertools.chain(*label_per_user))
-            return {"all": value_list}
-        if value_type == "dict":
-            value_dict = dict(
-                (label_type, label_per_user[user][label_type])
-                for user in label_per_user
-                for label_type in label_per_user[user]
-            )
-            return {"all": value_dict}
+    def reduce_user(self, label_per_user: Dict[str, Any]):
+        value = list(itertools.chain(*label_per_user.values()))
+        return {"all": value}
 
 
 class TextClassificationRepository(TextRepository):
@@ -172,6 +160,14 @@ class RelationExtractionRepository(TextRepository):
         for user, span in span_per_user.items():
             label_per_user[user]["entities"] = span
         return label_per_user
+
+    def reduce_user(self, label_per_user: Dict[str, Any]):
+        entities = []
+        relations = []
+        for user, label in label_per_user.items():
+            entities.extend(label.get("entities", []))
+            relations.extend(label.get("relations", []))
+        return {"all": {"entities": entities, "relations": relations}}
 
 
 class Seq2seqRepository(TextRepository):
