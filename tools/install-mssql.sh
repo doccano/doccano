@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -o errexit
+set -o nounset
+
 # parse arguments
 mode="prod"
 for opt in "$@"; do

@@ -11,6 +11,8 @@ if [[ -z "${DOCCANO_ADMIN_CONTACT_EMAIL}" ]]; then echo "Missing DOCCANO_ADMIN_C
 if [[ -z "${DOCCANO_ADMIN_PASSWORD}" ]]; then echo "Missing DOCCANO_ADMIN_PASSWORD environment variable" >&2; exit 1; fi
 if ! az account show >/dev/null; then echo "Must be logged into Azure" >&2; exit 2; fi
 
+set -o nounset
+
 az group create \
   --location "${DOCCANO_LOCATION}" \
   --name "${DOCCANO_RESOURCE_GROUP}"
