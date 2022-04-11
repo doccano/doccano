@@ -1,6 +1,5 @@
-import os
-
 from .base import *  # noqa: F403
+from .base import env
 
 MIDDLEWARE.append("api.middleware.RangesMiddleware")  # noqa: F405
 CORS_ORIGIN_WHITELIST = ("http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000")
