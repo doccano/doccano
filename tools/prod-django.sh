@@ -2,6 +2,12 @@
 
 set -o errexit
 
+if [[ -z "${ADMIN_USERNAME}" ]]; then echo "Missing ADMIN_USERNAME environment variable" >&2; exit 1; fi
+if [[ -z "${ADMIN_PASSWORD}" ]]; then echo "Missing ADMIN_PASSWORD environment variable" >&2; exit 1; fi
+if [[ -z "${ADMIN_EMAIL}" ]]; then echo "Missing ADMIN_EMAIL environment variable" >&2; exit 1; fi
+
+set -o nounset
+
 echo "Making staticfiles"
 static_dir=staticfiles
 if [[ ! -d $static_dir ]] || [[ -z $(ls -A $static_dir) ]]; then
@@ -25,4 +31,4 @@ if [[ -n "${ADMIN_USERNAME}" ]] && [[ -n "${ADMIN_PASSWORD}" ]] && [[ -n "${ADMI
 fi
 
 echo "Starting django"
-gunicorn --bind="0.0.0.0:${PORT:-8000}" --workers="${WORKERS:-4}" config.wsgi --timeout 300
+gunicorn --bind="${HOST:-0.0.0.0}:${PORT:-8000}" --workers="${WORKERS:-4}" config.wsgi --timeout 300

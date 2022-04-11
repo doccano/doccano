@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -o errexit
+set -o nounset
 
 root="$(dirname "$0")/.."
 app="${root}/frontend"

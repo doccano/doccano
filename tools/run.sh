@@ -2,6 +2,15 @@
 
 set -o errexit
 
+if [[ -z "${ADMIN_USERNAME}" ]]; then echo "Missing ADMIN_USERNAME environment variable" >&2; exit 1; fi
+if [[ -z "${ADMIN_PASSWORD}" ]]; then echo "Missing ADMIN_PASSWORD environment variable" >&2; exit 1; fi
+if [[ -z "${ADMIN_EMAIL}" ]]; then echo "Missing ADMIN_EMAIL environment variable" >&2; exit 1; fi
+if [[ -z "${PORT}" ]]; then echo "Missing PORT environment variable" >&2; exit 1; fi
+if [[ -z "${WORKERS}" ]]; then echo "Missing WORKERS environment variable" >&2; exit 1; fi
+if [[ -z "${CELERY_WORKERS}" ]]; then echo "Missing CELERY_WORKERS environment variable" >&2; exit 1; fi
+
+set -o nounset
+
 echo "Making staticfiles"
 static_dir=staticfiles
 mkdir -p client/dist/static

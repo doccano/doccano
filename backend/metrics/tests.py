@@ -28,6 +28,41 @@ class TestMemberProgress(CRUDMixin):
         self.assertEqual(response.data, {"total": 1, "progress": expected_progress})
 
 
+class TestProgressHelper(CRUDMixin):
+    collaborative_annotation = False
+
+    def setUp(self):
+        self.project = prepare_project(DOCUMENT_CLASSIFICATION, collaborative_annotation=self.collaborative_annotation)
+        self.example = make_doc(self.project.item)
+        mommy.make("ExampleState", example=self.example, confirmed_by=self.project.admin)
+        self.url = reverse(viewname="progress", args=[self.project.item.id])
+
+
+class TestProgress(TestProgressHelper):
+    collaborative_annotation = False
+
+    def test_fetch_progress(self):
+        response = self.assert_fetch(self.project.admin, status.HTTP_200_OK)
+        expected = {"total": 1, "remaining": 0, "complete": 1}
+        self.assertEqual(response.data, expected)
+
+    def test_cannot_affect_others_progress(self):
+        for member in self.project.staffs:
+            response = self.assert_fetch(member, status.HTTP_200_OK)
+            expected = {"total": 1, "remaining": 1, "complete": 0}
+            self.assertEqual(response.data, expected)
+
+
+class TestProgressOnCollaborativeAnnotation(TestProgressHelper):
+    collaborative_annotation = True
+
+    def test_fetch_progress(self):
+        for member in self.project.members:
+            response = self.assert_fetch(member, status.HTTP_200_OK)
+            expected = {"total": 1, "remaining": 0, "complete": 1}
+            self.assertEqual(response.data, expected)
+
+
 class TestCategoryDistribution(CRUDMixin):
     def setUp(self):
         self.project = prepare_project(DOCUMENT_CLASSIFICATION)
