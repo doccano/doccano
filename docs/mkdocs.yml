@@ -33,6 +33,7 @@ plugins:
 nav:
   - Get started: index.md
   - Install and upgrade doccano: install-and-upgrade-doccano.md
+  - Setup cloud storage: setup_cloud_storage.md
   - Tutorial: tutorial.md
   - Project Structure: project_structure.md
   - Advanced:
