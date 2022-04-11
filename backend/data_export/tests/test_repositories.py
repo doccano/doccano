@@ -279,12 +279,12 @@ class TestSpeech2TextRepository(TestRepository):
         self.prepare_data(project)
         expected = [
             {
-                "data": self.example.filename,
+                "data": self.example.upload_name,
                 "label": [self.text1.text],
                 "user": project.admin.username,
             },
             {
-                "data": self.example.filename,
+                "data": self.example.upload_name,
                 "label": [self.text2.text],
                 "user": project.annotator.username,
             },
@@ -297,7 +297,7 @@ class TestSpeech2TextRepository(TestRepository):
         self.prepare_data(project)
         expected = [
             {
-                "data": self.example.filename,
+                "data": self.example.upload_name,
                 "label": [self.text1.text, self.text2.text],
                 "user": "all",
             }
@@ -317,12 +317,12 @@ class TestFileRepository(TestRepository):
         self.prepare_data(project)
         expected = [
             {
-                "data": self.example.filename,
+                "data": self.example.upload_name,
                 "label": [self.category1.label.text],
                 "user": project.admin.username,
             },
             {
-                "data": self.example.filename,
+                "data": self.example.upload_name,
                 "label": [self.category2.label.text],
                 "user": project.annotator.username,
             },
@@ -335,7 +335,7 @@ class TestFileRepository(TestRepository):
         self.prepare_data(project)
         expected = [
             {
-                "data": self.example.filename,
+                "data": self.example.upload_name,
                 "label": [self.category1.label.text, self.category2.label.text],
                 "user": "all",
             }
