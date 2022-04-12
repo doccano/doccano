@@ -19,7 +19,7 @@ You must provide your AWS access keys to make programmatic calls to AWS.
 
 When you create your access keys, you create the access key ID (for example, AKIAIOSFODNN7EXAMPLE) and secret access key (for example, wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY) as a set. The secret access key is available for download only when you create it. If you don't download your secret access key or if you lose it, you must create a new one.
 
-1. Sign in to the AWS Management Console as an IAM user. For more information.
+1. Sign in to the AWS Management Console as an IAM user.
 2. In the navigation bar on the upper right, choose your user name and then choose **My Security Credentials**.
 3. To create an access key, choose **Create access key**. If you already have two access keys, this button is disabled and you must delete an access key before you can create a new one. When prompted, choose either **Show secret access key** or **Download .csv file**. This is your only opportunity to save your secret access key. After you've saved your secret access key in a secure location, chose **Close**.
 
@@ -32,8 +32,8 @@ To store your dataset to Amazon S3, you must first create an Amazon S3 bucket in
 3. In Bucket name, enter a name for your bucket(e.g. doccano).
 4. In Region, choose the AWS Region where you want the bucket to reside. Choose a Region close to you to minimize latency and costs and address regulatory requirements.
 5. Under Object Ownership, to disable or enable ACLs and control ownership of objects uploaded in your bucket, choose **ACLs disabled**.
-6. In Bucket settings for Block Public Access, choose the Block Public Access settings that you want to apply to the bucket.
-7. Choose Create bucket.
+6. In Bucket settings for Block Public Access, choose the **Block Public Access** settings that you want to apply to the bucket.
+7. Choose **Create bucket**.
 
 ### Create a .env file
 
@@ -100,6 +100,8 @@ doccano task --env_file=.env
 ```
 
 ### Docker
+
+When you execute the `docker container create` command, specify `--eng-file` option:
 
 ```bash
 # Create a container
