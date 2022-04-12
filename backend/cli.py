@@ -14,6 +14,7 @@ from .config.celery import app
 env = Env()
 DOCCANO_HOME = os.path.expanduser(os.environ.get("DOCCANO_HOME", "~/doccano"))
 Path(DOCCANO_HOME).mkdir(parents=True, exist_ok=True)
+env.bool("DEBUG", False)
 os.environ["STANDALONE"] = "True"
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 os.environ.setdefault("DATABASE_URL", os.path.join(f"sqlite:///{DOCCANO_HOME}", "db.sqlite3"))

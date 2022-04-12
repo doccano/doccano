@@ -2,8 +2,6 @@ from .base import *  # noqa: F403
 from .base import env
 
 MIDDLEWARE.append("api.middleware.RangesMiddleware")  # noqa: F405
-CORS_ORIGIN_WHITELIST = ("http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000")
-CSRF_TRUSTED_ORIGINS = CORS_ORIGIN_WHITELIST
 
 DJANGO_DRF_FILEPOND_STORAGES_BACKEND = "storages.backends.s3boto3.S3Boto3Storage"
 AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
