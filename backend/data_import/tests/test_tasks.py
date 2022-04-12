@@ -1,6 +1,11 @@
+import os
 import pathlib
+import shutil
 
-from django.test import TestCase
+from django.core.files import File
+from django.test import TestCase, override_settings
+from django_drf_filepond.models import StoredUpload, TemporaryUpload
+from django_drf_filepond.utils import _get_file_id
 
 from data_import.celery_tasks import import_dataset
 from examples.models import Example
@@ -16,6 +21,7 @@ from projects.models import (
 from projects.tests.utils import prepare_project
 
 
+@override_settings(MEDIA_ROOT=os.path.join(os.path.dirname(__file__), "data"))
 class TestImportData(TestCase):
     task = "Any"
     annotation_class = Category
@@ -24,11 +30,41 @@ class TestImportData(TestCase):
         self.project = prepare_project(self.task)
         self.user = self.project.admin
         self.data_path = pathlib.Path(__file__).parent / "data"
+        self.upload_id = _get_file_id()
+
+    def tearDown(self):
+        try:
+            su = StoredUpload.objects.get(upload_id=self.upload_id)
+            directory = pathlib.Path(su.get_absolute_file_path()).parent
+            shutil.rmtree(directory)
+        except StoredUpload.DoesNotExist:
+            pass
 
     def import_dataset(self, filename, file_format, kwargs=None):
-        filenames = [str(self.data_path / filename)]
+        file_path = str(self.data_path / filename)
+        TemporaryUpload.objects.create(
+            upload_id=self.upload_id,
+            file_id="1",
+            file=File(open(file_path, mode="rb"), filename.split("/")[-1]),
+            upload_name=filename,
+            upload_type="F",
+        )
+        upload_ids = [self.upload_id]
         kwargs = kwargs or {}
-        return import_dataset(self.user.id, self.project.item.id, filenames, file_format, **kwargs)
+        return import_dataset(self.user.id, self.project.item.id, file_format, upload_ids, **kwargs)
+
+
+@override_settings(MAX_UPLOAD_SIZE=0)
+class TestMaxFileSize(TestImportData):
+    task = DOCUMENT_CLASSIFICATION
+
+    def test_jsonl(self):
+        filename = "text_classification/example.jsonl"
+        file_format = "JSONL"
+        kwargs = {"column_label": "labels"}
+        response = self.import_dataset(filename, file_format, kwargs)
+        self.assertEqual(len(response["error"]), 1)
+        self.assertIn("maximum file size", response["error"][0]["message"])
 
 
 class TestImportClassificationData(TestImportData):
@@ -237,3 +273,15 @@ class TestImportImageClassificationData(TestImportData):
         file_format = "ImageFile"
         self.import_dataset(filename, file_format)
         self.assertEqual(Example.objects.count(), 1)
+
+
+@override_settings(ENABLE_FILE_TYPE_CHECK=True)
+class TestFileTypeChecking(TestImportData):
+    task = IMAGE_CLASSIFICATION
+
+    def test_example(self):
+        filename = "images/example.ico"
+        file_format = "ImageFile"
+        response = self.import_dataset(filename, file_format)
+        self.assertEqual(len(response["error"]), 1)
+        self.assertIn("unexpected", response["error"][0]["message"])

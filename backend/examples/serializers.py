@@ -36,12 +36,21 @@ class ExampleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Example
-        fields = ["id", "filename", "meta", "annotation_approver", "comment_count", "text", "is_confirmed"]
-        read_only_fields = ["filename", "is_confirmed"]
+        fields = [
+            "id",
+            "filename",
+            "meta",
+            "annotation_approver",
+            "comment_count",
+            "text",
+            "is_confirmed",
+            "upload_name",
+        ]
+        read_only_fields = ["filename", "is_confirmed", "upload_name"]
 
 
 class ExampleStateSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExampleState
-        fields = ("id", "example", "confirmed_by")
-        read_only_fields = ("id", "example", "confirmed_by")
+        fields = ("id", "example", "confirmed_by", "confirmed_at")
+        read_only_fields = ("id", "example", "confirmed_by", "confirmed_at")

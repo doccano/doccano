@@ -55,7 +55,7 @@
         <v-divider />
         <v-img
           contain
-          :src="image.url"
+          :src="image.fileUrl"
           :max-height="imageSize.height"
           class="grey lighten-2"
         />
@@ -224,7 +224,7 @@ export default {
         self.imageSize.height = this.height
         self.imageSize.width = this.width
       }
-      img.src = val.url
+      img.src = val.fileUrl
     }
   }
 }

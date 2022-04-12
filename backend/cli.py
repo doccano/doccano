@@ -7,18 +7,20 @@ from pathlib import Path
 
 import django
 from django.core import management
+from environs import Env
 
 from .config.celery import app
 
+env = Env()
 DOCCANO_HOME = os.path.expanduser(os.environ.get("DOCCANO_HOME", "~/doccano"))
 Path(DOCCANO_HOME).mkdir(parents=True, exist_ok=True)
+env.bool("DEBUG", False)
 os.environ["STANDALONE"] = "True"
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 os.environ.setdefault("DATABASE_URL", os.path.join(f"sqlite:///{DOCCANO_HOME}", "db.sqlite3"))
 os.environ.setdefault("MEDIA_ROOT", os.path.join(DOCCANO_HOME, "media"))
 base = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(base)
-django.setup()
 parser = argparse.ArgumentParser(description="doccano, text annotation for machine learning practitioners.")
 
 
@@ -135,11 +137,13 @@ def main():
     parser_server = subparsers.add_parser("webserver", help="see `webserver -h`")
     parser_server.add_argument("--port", type=int, default=8000, help="port number")
     parser_server.add_argument("--workers", type=int, default=number_of_workers(), help="the number of workers")
+    parser_server.add_argument("--env_file", type=str, help="read in a file of environment variables")
     parser_server.set_defaults(handler=command_run_webserver)
 
     # Create a parser for task queue.
     parser_queue = subparsers.add_parser("task", help="see `task -h`")
     parser_queue.add_argument("--concurrency", type=int, default=2, help="concurrency")
+    parser_queue.add_argument("--env_file", type=str, help="read in a file of environment variables")
     parser_queue.set_defaults(handler=command_run_task_queue)
 
     # Create a parser for help.
@@ -149,7 +153,10 @@ def main():
 
     # Dispatch handler.
     args = parser.parse_args()
+    if hasattr(args, "env_file"):
+        env.read_env(args.env_file, recurse=False, override=True)
     if hasattr(args, "handler"):
+        django.setup()
         args.handler(args)
     else:
         # If specified unknown command, show help.

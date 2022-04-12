@@ -24,7 +24,7 @@
         />
       </v-overlay>
       <audio-viewer
-        :source="item.url"
+        :source="item.fileUrl"
         class="mb-5"
       />
       <seq2seq-box

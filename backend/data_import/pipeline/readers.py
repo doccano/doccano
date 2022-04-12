@@ -1,5 +1,6 @@
 import abc
 import collections.abc
+import dataclasses
 from typing import Any, Dict, Iterator, List, Type
 
 from .cleaners import Cleaner
@@ -86,17 +87,24 @@ class Parser(abc.ABC):
         return []
 
 
+@dataclasses.dataclass
+class FileName:
+    full_path: str
+    generated_name: str
+    upload_name: str
+
+
 class Builder(abc.ABC):
     """The abstract Record builder."""
 
     @abc.abstractmethod
-    def build(self, row: Dict[Any, Any], filename: str, line_num: int) -> Record:
+    def build(self, row: Dict[Any, Any], filename: FileName, line_num: int) -> Record:
         """Builds the record from the dictionary."""
         raise NotImplementedError("Please implement this method in the subclass.")
 
 
 class Reader(BaseReader):
-    def __init__(self, filenames: List[str], parser: Parser, builder: Builder):
+    def __init__(self, filenames: List[FileName], parser: Parser, builder: Builder):
         self.filenames = filenames
         self.parser = parser
         self.builder = builder
@@ -104,7 +112,7 @@ class Reader(BaseReader):
 
     def __iter__(self) -> Iterator[Record]:
         for filename in self.filenames:
-            rows = self.parser.parse(filename)
+            rows = self.parser.parse(filename.full_path)
             for line_num, row in enumerate(rows, start=1):
                 try:
                     yield self.builder.build(row, filename, line_num)

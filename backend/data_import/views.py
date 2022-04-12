@@ -1,8 +1,4 @@
-import os
-
 from django.shortcuts import get_object_or_404
-from django_drf_filepond.api import store_upload
-from django_drf_filepond.models import TemporaryUpload
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -28,16 +24,13 @@ class DatasetImportAPI(APIView):
     permission_classes = [IsAuthenticated & IsProjectAdmin]
 
     def post(self, request, *args, **kwargs):
-        project_id = self.kwargs["project_id"]
         upload_ids = request.data.pop("uploadIds")
         file_format = request.data.pop("format")
-
-        tus = [TemporaryUpload.objects.get(upload_id=upload_id) for upload_id in upload_ids]
-        sus = [
-            store_upload(tu.upload_id, destination_file_path=os.path.join(tu.file.name, tu.upload_name)) for tu in tus
-        ]
-        filenames = [su.file.path for su in sus]
         task = import_dataset.delay(
-            user_id=request.user.id, project_id=project_id, filenames=filenames, file_format=file_format, **request.data
+            user_id=request.user.id,
+            project_id=self.kwargs["project_id"],
+            file_format=file_format,
+            upload_ids=upload_ids,
+            **request.data,
         )
         return Response({"task_id": task.task_id})

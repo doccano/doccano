@@ -29,9 +29,9 @@
         filled
       />
     </template>
-    <template #[`item.url`]="{ item }">
+    <template #[`item.fileUrl`]="{ item }">
       <v-img
-        :src="item.url"
+        :src="item.fileUrl"
         aspect-ratio="1"
         height="150"
         max-height="150"
@@ -105,7 +105,7 @@ export default Vue.extend({
         },
         {
           text: 'Image',
-          value: 'url',
+          value: 'fileUrl',
           sortable: false
         },
         {

@@ -9,3 +9,28 @@ class FileParseException(Exception):
 
     def dict(self):
         return {"filename": self.filename, "line": self.line_num, "message": self.message}
+
+
+class MaximumFileSizeException(Exception):
+    def __init__(self, filename: str, max_size: int):
+        self.filename = filename
+        self.max_size = max_size
+
+    def __str__(self):
+        return f"The maximum file size that can be uploaded is {self.max_size/1024/1024} MB"
+
+    def dict(self):
+        return {"filename": self.filename, "line": -1, "message": str(self)}
+
+
+class FileTypeException(Exception):
+    def __init__(self, filename: str, filetype: str, allowed_types=None):
+        self.filename = filename
+        self.filetype = filetype
+        self.allowed_types = allowed_types
+
+    def __str__(self):
+        return f"The file type {self.filetype} is unexpected. Expected: {self.allowed_types}"
+
+    def dict(self):
+        return {"filename": self.filename, "line": -1, "message": str(self)}

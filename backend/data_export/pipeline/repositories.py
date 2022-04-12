@@ -31,7 +31,7 @@ class FileRepository(BaseRepository):
             for user, label in label_per_user.items():
                 yield Record(
                     data_id=example.id,
-                    data=str(example.filename).split("/")[-1],
+                    data=example.upload_name,
                     label=label,
                     user=user,
                     metadata=example.meta,
@@ -43,9 +43,7 @@ class FileRepository(BaseRepository):
             # with the user who approved the doc.
             # This means I will allow each user to be able to approve the doc.
             if len(label_per_user) == 0:
-                yield Record(
-                    data_id=example.id, data=str(example.filename).split("/")[-1], label=[], user="unknown", metadata={}
-                )
+                yield Record(data_id=example.id, data=example.upload_name, label=[], user="unknown", metadata={})
 
     def label_per_user(self, example) -> Dict:
         label_per_user = defaultdict(list)
