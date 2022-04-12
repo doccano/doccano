@@ -29,18 +29,15 @@
         filled
       />
     </template>
-    <template #[`item.url`]="{ item }">
+    <template #[`item.fileUrl`]="{ item }">
       <v-img
-        :src="item.url"
+        :src="item.fileUrl"
         aspect-ratio="1"
         height="150"
         max-height="150"
         width="150"
         class="grey lighten-2"
       />
-    </template>
-    <template #[`item.filename`]="{ item }">
-      {{ item.filename.split('?')[0] }}
     </template>
     <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
@@ -108,7 +105,7 @@ export default Vue.extend({
         },
         {
           text: 'Image',
-          value: 'url',
+          value: 'fileUrl',
           sortable: false
         },
         {

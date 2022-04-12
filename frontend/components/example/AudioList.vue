@@ -29,18 +29,15 @@
         filled
       />
     </template>
-    <template #[`item.url`]="{ item }">
+    <template #[`item.fileUrl`]="{ item }">
       <audio
         controls
-        :src="item.url"
+        :src="item.fileUrl"
         class="mt-2"
       >
         Your browser does not support the
         <code>audio</code> element.
       </audio>
-    </template>
-    <template #[`item.filename`]="{ item }">
-      {{ item.filename.split('?')[0] }}
     </template>
     <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
@@ -108,7 +105,7 @@ export default Vue.extend({
         },
         {
           text: 'Audio',
-          value: 'url',
+          value: 'fileUrl',
           sortable: false
         },
         {

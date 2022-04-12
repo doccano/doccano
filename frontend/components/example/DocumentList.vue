@@ -33,9 +33,6 @@
       <span class="d-flex d-sm-none">{{ item.text | truncate(50) }}</span>
       <span class="d-none d-sm-flex">{{ item.text | truncate(200) }}</span>
     </template>
-    <template #[`item.filename`]="{ item }">
-      {{ item.filename.split('?')[0] }}
-    </template>
     <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
     </template>

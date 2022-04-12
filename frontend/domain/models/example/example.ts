@@ -18,15 +18,13 @@ export class ExampleItem {
   @Expose({ name: 'is_confirmed' })
   isConfirmed: boolean;
 
+  @Expose({ name: 'upload_name' })
+  filename: string;
+
   get url() {
     const l = this.fileUrl.indexOf('media/')
     const r = this.fileUrl.indexOf('media/', l + 1)
     return this.fileUrl.slice(0, l) + this.fileUrl.slice(r)
-  }
-
-  get filename() {
-    const items = this.fileUrl.split('/')
-    return items[items.length - 1]
   }
 
   toObject(): Object {
