@@ -9,6 +9,7 @@ services:
     volumes:
       - static_volume:/backend/staticfiles
       - media:/backend/media
+      - tmp_file:/backend/filepond-temp-uploads
     environment:
       ADMIN_USERNAME: "${ADMIN_USERNAME}"
       ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
@@ -31,6 +32,7 @@ services:
     image: doccano_celery:prod
     volumes:
       - media:/backend/media
+      - tmp_file:/backend/filepond-temp-uploads
     entrypoint: ["/opt/bin/prod-celery.sh"]
     environment:
       PYTHONUNBUFFERED: "1"
@@ -85,6 +87,7 @@ volumes:
   postgres_data:
   static_volume:
   media:
+  tmp_file:
 
 networks:
   network-backend:
