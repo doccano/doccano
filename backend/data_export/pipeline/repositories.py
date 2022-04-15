@@ -17,12 +17,15 @@ class BaseRepository:
     def list(self, export_approved=False) -> Iterator[Record]:
         raise NotImplementedError()
 
+    def create_unlabeled_record(self, example: Example) -> Record:
+        raise NotImplementedError()
+
 
 class FileRepository(BaseRepository):
     def list(self, export_approved=False) -> Iterator[Record]:
         examples = self.project.examples.all()
         if export_approved:
-            examples = examples.exclude(annotations_approved_by=None)
+            examples = examples.exclude(states=None)
 
         for example in examples:
             label_per_user = self.label_per_user(example)
@@ -43,7 +46,10 @@ class FileRepository(BaseRepository):
             # with the user who approved the doc.
             # This means I will allow each user to be able to approve the doc.
             if len(label_per_user) == 0:
-                yield Record(data_id=example.id, data=example.upload_name, label=[], user="unknown", metadata={})
+                yield self.create_unlabeled_record(example)
+
+    def create_unlabeled_record(self, example: Example) -> Record:
+        return Record(data_id=example.id, data=example.upload_name, label=[], user="unknown", metadata=example.meta)
 
     def label_per_user(self, example) -> Dict:
         label_per_user = defaultdict(list)
@@ -72,7 +78,7 @@ class TextRepository(BaseRepository):
     def list(self, export_approved=False):
         docs = self.docs
         if export_approved:
-            docs = docs.exclude(annotations_approved_by=None)
+            docs = docs.exclude(states=None)
 
         for doc in docs:
             label_per_user = self.label_per_user(doc)
@@ -87,7 +93,10 @@ class TextRepository(BaseRepository):
             # with the user who approved the doc.
             # This means I will allow each user to be able to approve the doc.
             if len(label_per_user) == 0:
-                yield Record(data_id=doc.id, data=doc.text, label=[], user="unknown", metadata={})
+                yield self.create_unlabeled_record(doc)
+
+    def create_unlabeled_record(self, example: Example) -> Record:
+        return Record(data_id=example.id, data=example.text, label=[], user="unknown", metadata=example.meta)
 
     @abc.abstractmethod
     def label_per_user(self, doc) -> Dict:
@@ -128,6 +137,15 @@ class RelationExtractionRepository(TextRepository):
     def docs(self):
         return Example.objects.filter(project=self.project).prefetch_related(
             "spans__user", "spans__label", "relations__user", "relations__type"
+        )
+
+    def create_unlabeled_record(self, example: Example) -> Record:
+        return Record(
+            data_id=example.id,
+            data=example.text,
+            label={"entities": [], "relations": []},
+            user="unknown",
+            metadata=example.meta,
         )
 
     def label_per_user(self, doc) -> Dict:
@@ -184,6 +202,15 @@ class IntentDetectionSlotFillingRepository(TextRepository):
     def docs(self):
         return Example.objects.filter(project=self.project).prefetch_related(
             "categories__user", "categories__label", "spans__user", "spans__label"
+        )
+
+    def create_unlabeled_record(self, example: Example) -> Record:
+        return Record(
+            data_id=example.id,
+            data=example.text,
+            label={"entities": [], "cats": []},
+            user="unknown",
+            metadata=example.meta,
         )
 
     def label_per_user(self, doc) -> Dict:
