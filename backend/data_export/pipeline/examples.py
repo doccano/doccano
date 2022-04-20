@@ -1,17 +1,17 @@
-Category_CSV = """
+CATEGORY_CSV = """
 text,label
 "Terrible customer service.","negative"
 "Really great transaction.","positive"
 "Great price.","positive"
 """
 
-Category_fastText = """
+CATEGORY_FASTTEXT = """
 __label__negative Terrible customer service.
 __label__positive Really great transaction.
 __label__positive Great price.
 """
 
-Category_JSON = """
+CATEGORY_JSON = """
 [
     {
         "text": "Terrible customer service.",
@@ -20,20 +20,20 @@ Category_JSON = """
 ]
 """
 
-Category_JSONL = """
+CATEGORY_JSONL = """
 {"text": "Terrible customer service.", "label": ["negative"]}
 {"text": "Really great transaction.", "label": ["positive"]}
 {"text": "Great price.", "label": ["positive"]}
 """
 
-Text_CSV = """
+TEXT_CSV = """
 text,label
 "Hello!","こんにちは！"
 "Good morning.","おはようございます。"
 "See you.","さようなら。"
 """
 
-Text_JSON = """
+TEXT_JSON = """
 [
     {
         "text": "Hello!",
@@ -42,13 +42,13 @@ Text_JSON = """
 ]
 """
 
-Text_JSONL = """
+TEXT_JSONL = """
 {"text": "Hello!", "label": ["こんにちは！"]}
 {"text": "Good morning.", "label": ["おはようございます。"]}
 {"text": "See you.", "label": ["さようなら。"]}
 """
 
-Offset_JSONL = """
+SPAN_JSONL = """
 {"text": "EU rejects German call to boycott British lamb.", "label": [ [0, 2, "ORG"], [11, 17, "MISC"], ... ]}
 {"text": "Peter Blackburn", "label": [ [0, 15, "PERSON"] ]}
 {"text": "President Obama", "label": [ [10, 15, "PERSON"] ]}
@@ -106,7 +106,7 @@ ENTITY_AND_RELATION_JSONL = """
 }
 """
 
-CategoryImageClassification = """
+CATEGORY_IMAGE_CLASSIFICATION = """
 [
     {
         "filename": "20210514.png",
@@ -115,7 +115,7 @@ CategoryImageClassification = """
 ]
 """
 
-Speech2Text = """
+SPEECH_TO_TEXT = """
 [
     {
         "filename": "20210514.mp3",

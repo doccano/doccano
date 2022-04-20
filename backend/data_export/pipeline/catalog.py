@@ -79,25 +79,25 @@ class Options:
 
 
 # Text Classification
-Options.register(DOCUMENT_CLASSIFICATION, CSV, OptionDelimiter, examples.Category_CSV)
-Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionNone, examples.Category_fastText)
-Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionNone, examples.Category_JSON)
-Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionNone, examples.Category_JSONL)
+Options.register(DOCUMENT_CLASSIFICATION, CSV, OptionDelimiter, examples.CATEGORY_CSV)
+Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionNone, examples.CATEGORY_FASTTEXT)
+Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionNone, examples.CATEGORY_JSON)
+Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionNone, examples.CATEGORY_JSONL)
 
 # Sequence Labeling
-Options.register(SEQUENCE_LABELING, JSONL, OptionNone, examples.Offset_JSONL)
+Options.register(SEQUENCE_LABELING, JSONL, OptionNone, examples.SPAN_JSONL)
 Options.register(SEQUENCE_LABELING, JSONLRelation, OptionNone, examples.ENTITY_AND_RELATION_JSONL)
 
 # Sequence to sequence
-Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
-Options.register(SEQ2SEQ, JSON, OptionNone, examples.Text_JSON)
-Options.register(SEQ2SEQ, JSONL, OptionNone, examples.Text_JSONL)
+Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.TEXT_CSV)
+Options.register(SEQ2SEQ, JSON, OptionNone, examples.TEXT_JSON)
+Options.register(SEQ2SEQ, JSONL, OptionNone, examples.TEXT_JSONL)
 
 # Intent detection and slot filling
 Options.register(INTENT_DETECTION_AND_SLOT_FILLING, IntentAndSlot, OptionNone, examples.INTENT_JSONL)
 
 # Image Classification
-Options.register(IMAGE_CLASSIFICATION, JSONL, OptionNone, examples.CategoryImageClassification)
+Options.register(IMAGE_CLASSIFICATION, JSONL, OptionNone, examples.CATEGORY_IMAGE_CLASSIFICATION)
 
 # Speech to Text
-Options.register(SPEECH2TEXT, JSONL, OptionNone, examples.Speech2Text)
+Options.register(SPEECH2TEXT, JSONL, OptionNone, examples.SPEECH_TO_TEXT)
