@@ -1,5 +1,4 @@
-import abc
-from typing import Any, Dict, Protocol
+from typing import Any, Dict, Protocol, Tuple
 
 from django.db import models
 
@@ -13,14 +12,19 @@ class ExportedLabelManager(models.Manager):
 class ExportedLabel(Protocol):
     objects: models.Manager = ExportedLabelManager()
 
-    @abc.abstractmethod
-    def dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
+        raise NotImplementedError("Please implement this method in the subclass.")
+
+    def to_string(self) -> str:
+        raise NotImplementedError("Please implement this method in the subclass.")
+
+    def to_tuple(self) -> Tuple:
         raise NotImplementedError("Please implement this method in the subclass.")
 
 
 class ExportedCategory(Category):
-    def dict(self) -> Dict[str, Any]:
-        return {"category": self.label.text}
+    def to_string(self) -> str:
+        return self.label.text
 
     class Meta:
         proxy = True

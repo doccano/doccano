@@ -20,9 +20,9 @@ class Labels(abc.ABC):
         self.label_groups = defaultdict(list)
         labels = self.label_class.objects.filter(example__in=examples, user=user).select_related(*self.fields)
         for label in labels:
-            self.label_groups[label.example.id].append(label.dict())
+            self.label_groups[label.example.id].append(label)
 
-    def find_by(self, example_id: int) -> Dict[str, List]:
+    def find_by(self, example_id: int) -> Dict[str, List[ExportedLabel]]:
         return {self.field_name: self.label_groups[example_id]}
 
 
