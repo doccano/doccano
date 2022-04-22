@@ -27,9 +27,10 @@ def create_collaborative_dataset(project: Project, file_format: str, confirmed_o
     )
     writer = create_writer(file_format)
     label_collections = select_label_collection(project)
+    formatters = create_formatter(project, file_format)
     formatters = [
-        create_formatter(project, file_format)(target_column=label_collection.field_name)
-        for label_collection in label_collections
+        formatter(target_column=label_collection.field_name)
+        for formatter, label_collection in zip(formatters, label_collections)
     ]
     labels = [create_labels(label_collection, examples=examples) for label_collection in label_collections]
     dataset = Dataset(examples, labels)
@@ -52,9 +53,10 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
         )
         writer = create_writer(file_format)
         label_collections = select_label_collection(project)
+        formatters = create_formatter(project, file_format)
         formatters = [
-            create_formatter(project, file_format)(target_column=label_collection.field_name)
-            for label_collection in label_collections
+            formatter(target_column=label_collection.field_name)
+            for formatter, label_collection in zip(formatters, label_collections)
         ]
         labels = [
             create_labels(label_collection, examples=examples, user=member.user)

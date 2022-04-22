@@ -1,4 +1,4 @@
-from typing import Type
+from typing import List, Type
 
 from django.db.models import QuerySet
 
@@ -44,13 +44,13 @@ def create_writer(file_format: str) -> writers.Writer:
     return mapping[file_format]()
 
 
-def create_formatter(project, file_format: str):
+def create_formatter(project, file_format: str) -> List[Type[formatters.Formatter]]:
     use_relation = getattr(project, "use_relation", False)
     mapping = {
         DOCUMENT_CLASSIFICATION: {
-            catalog.CSV.name: formatters.JoinedCategoryFormatter,
-            catalog.JSON.name: formatters.ListedCategoryFormatter,
-            catalog.JSONL.name: formatters.ListedCategoryFormatter,
+            catalog.CSV.name: [formatters.JoinedCategoryFormatter],
+            catalog.JSON.name: [formatters.ListedCategoryFormatter],
+            catalog.JSONL.name: [formatters.ListedCategoryFormatter],
         },
         SEQUENCE_LABELING: {
             catalog.JSONL.name: [formatters.DictFormatter, formatters.DictFormatter]
