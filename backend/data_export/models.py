@@ -2,7 +2,7 @@ from typing import Any, Dict, Protocol, Tuple
 
 from django.db import models
 
-from labels.models import Category, Relation, Span
+from labels.models import Category, Relation, Span, TextLabel
 
 
 class ExportedLabelManager(models.Manager):
@@ -49,6 +49,14 @@ class ExportedSpan(Span):
 class ExportedRelation(Relation):
     def to_dict(self):
         return {"id": self.id, "from_id": self.from_id.id, "to_id": self.to_id.id, "type": self.type.text}
+
+    class Meta:
+        proxy = True
+
+
+class ExportedText(TextLabel):
+    def to_string(self) -> str:
+        return self.text
 
     class Meta:
         proxy = True

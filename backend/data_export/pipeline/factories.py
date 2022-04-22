@@ -57,10 +57,20 @@ def create_formatter(project, file_format: str) -> List[Type[formatters.Formatte
             if use_relation
             else [formatters.TupledSpanFormatter]
         },
-        SEQ2SEQ: {},
-        IMAGE_CLASSIFICATION: {},
-        SPEECH2TEXT: {},
-        INTENT_DETECTION_AND_SLOT_FILLING: {},
+        SEQ2SEQ: {
+            catalog.CSV.name: [formatters.JoinedCategoryFormatter],
+            catalog.JSON.name: [formatters.ListedCategoryFormatter],
+            catalog.JSONL.name: [formatters.ListedCategoryFormatter],
+        },
+        IMAGE_CLASSIFICATION: {
+            catalog.JSONL.name: [formatters.ListedCategoryFormatter],
+        },
+        SPEECH2TEXT: {
+            catalog.JSONL.name: [formatters.ListedCategoryFormatter],
+        },
+        INTENT_DETECTION_AND_SLOT_FILLING: {
+            catalog.JSONL.name: [formatters.ListedCategoryFormatter, formatters.TupledSpanFormatter]
+        },
     }
     return mapping[project.project_type][file_format]
 
@@ -70,6 +80,10 @@ def select_label_collection(project):
     mapping = {
         DOCUMENT_CLASSIFICATION: [labels.Categories],
         SEQUENCE_LABELING: [labels.Spans, labels.Relations] if use_relation else [labels.Spans],
+        SEQ2SEQ: [labels.Texts],
+        IMAGE_CLASSIFICATION: [labels.Categories],
+        SPEECH2TEXT: [labels.Texts],
+        INTENT_DETECTION_AND_SLOT_FILLING: [labels.Categories, labels.Spans],
     }
     return mapping[project.project_type]
 

@@ -12,6 +12,7 @@ from data_export.models import (
     ExportedLabel,
     ExportedRelation,
     ExportedSpan,
+    ExportedText,
 )
 from examples.models import Example
 
@@ -49,3 +50,9 @@ class Relations(Labels):
     label_class = ExportedRelation
     field_name = "relations"
     fields = ("example", "type")
+
+
+class Texts(Labels):
+    label_class = ExportedText
+    field_name = "labels"
+    fields = ("example",)
