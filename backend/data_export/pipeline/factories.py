@@ -51,7 +51,7 @@ def create_formatter(project, file_format: str):
             catalog.JSON.name: formatters.ListedCategoryFormatter,
             catalog.JSONL.name: formatters.ListedCategoryFormatter,
         },
-        SEQUENCE_LABELING: {},
+        SEQUENCE_LABELING: {catalog.JSONL.name: formatters.TupledSpanFormatter},
         SEQ2SEQ: {},
         IMAGE_CLASSIFICATION: {},
         SPEECH2TEXT: {},
@@ -61,7 +61,7 @@ def create_formatter(project, file_format: str):
 
 
 def select_label_collection(project):
-    mapping = {DOCUMENT_CLASSIFICATION: labels.Categories}
+    mapping = {DOCUMENT_CLASSIFICATION: labels.Categories, SEQUENCE_LABELING: labels.Spans}
     return mapping[project.project_type]
 
 

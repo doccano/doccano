@@ -2,7 +2,7 @@ from typing import Any, Dict, Protocol, Tuple
 
 from django.db import models
 
-from labels.models import Category
+from labels.models import Category, Span
 
 
 class ExportedLabelManager(models.Manager):
@@ -25,6 +25,22 @@ class ExportedLabel(Protocol):
 class ExportedCategory(Category):
     def to_string(self) -> str:
         return self.label.text
+
+    class Meta:
+        proxy = True
+
+
+class ExportedSpan(Span):
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "label": self.label.text,
+            "start_offset": self.start_offset,
+            "end_offset": self.end_offset,
+        }
+
+    def to_tuple(self):
+        return self.start_offset, self.end_offset, self.label.text
 
     class Meta:
         proxy = True

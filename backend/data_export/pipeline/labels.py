@@ -7,7 +7,7 @@ from typing import Dict, List
 
 from django.db.models import QuerySet
 
-from data_export.models import ExportedCategory, ExportedLabel
+from data_export.models import ExportedCategory, ExportedLabel, ExportedSpan
 from examples.models import Example
 
 
@@ -31,4 +31,10 @@ class Labels(abc.ABC):
 class Categories(Labels):
     label_class = ExportedCategory
     field_name = "categories"
+    fields = ("example", "label")
+
+
+class Spans(Labels):
+    label_class = ExportedSpan
+    field_name = "entities"
     fields = ("example", "label")

@@ -52,3 +52,26 @@ class FastTextCategoryFormatter(Formatter):
             lambda labels: sorted(f"__label__{label.to_string()}" for label in labels)
         )
         return dataset
+
+
+class TupledSpanFormatter(Formatter):
+    def format(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Format the span column to `(start_offset, end_offset, label)` format"""
+        if self.target_column not in dataset.columns:
+            return dataset
+
+        dataset[self.target_column] = dataset[self.target_column].apply(
+            lambda spans: sorted(span.to_tuple() for span in spans)
+        )
+        return dataset
+
+
+class DictSpanFormatter(Formatter):
+    def format(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        if self.target_column not in dataset.columns:
+            return dataset
+
+        dataset[self.target_column] = dataset[self.target_column].apply(
+            lambda spans: [span.to_dict() for span in spans]
+        )
+        return dataset
