@@ -2,7 +2,7 @@ from typing import Dict, List, Type
 
 from django.db.models import QuerySet
 
-from . import catalog, formatters, labels, repositories, writers
+from . import catalog, formatters, labels, writers
 from .labels import Labels
 from data_export.models import ExportedExample
 from projects.models import (
@@ -13,23 +13,6 @@ from projects.models import (
     SEQUENCE_LABELING,
     SPEECH2TEXT,
 )
-
-
-def create_repository(project, file_format: str):
-    if getattr(project, "use_relation", False) and file_format == catalog.JSONLRelation.name:
-        return repositories.RelationExtractionRepository(project)
-    mapping = {
-        DOCUMENT_CLASSIFICATION: repositories.TextClassificationRepository,
-        SEQUENCE_LABELING: repositories.SequenceLabelingRepository,
-        SEQ2SEQ: repositories.Seq2seqRepository,
-        IMAGE_CLASSIFICATION: repositories.FileRepository,
-        SPEECH2TEXT: repositories.Speech2TextRepository,
-        INTENT_DETECTION_AND_SLOT_FILLING: repositories.IntentDetectionSlotFillingRepository,
-    }
-    if project.project_type not in mapping:
-        ValueError(f"Invalid project type: {project.project_type}")
-    repository = mapping[project.project_type](project)
-    return repository
 
 
 def select_writer(file_format: str) -> Type[writers.Writer]:

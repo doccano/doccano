@@ -45,16 +45,6 @@ class JSONL(Format):
     extension = "jsonl"
 
 
-class IntentAndSlot(Format):
-    name = "JSONL(intent and slot)"
-    extension = "jsonl"
-
-
-class JSONLRelation(Format):
-    name = "JSONL(relation)"
-    extension = "jsonl"
-
-
 class OptionDelimiter(BaseModel):
     delimiter: Literal[",", "\t", ";", "|", " "] = ","
 

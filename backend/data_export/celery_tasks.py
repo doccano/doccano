@@ -5,7 +5,6 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
-from .models import ExportedExample
 from .pipeline.dataset import Dataset, filter_examples
 from .pipeline.factories import (
     create_labels,
@@ -15,6 +14,7 @@ from .pipeline.factories import (
 )
 from .pipeline.services import ExportApplicationService
 from .pipeline.writers import zip_files
+from data_export.models import ExportedExample
 from projects.models import Member, Project
 
 logger = get_task_logger(__name__)
