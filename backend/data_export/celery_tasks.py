@@ -5,6 +5,7 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
+from .models import ExportedExample
 from .pipeline.dataset import Dataset, filter_examples
 from .pipeline.factories import (
     create_formatter,
@@ -21,16 +22,16 @@ logger = get_task_logger(__name__)
 
 def create_collaborative_dataset(project: Project, file_format: str, confirmed_only: bool):
     examples = filter_examples(
-        examples=project.examples.all(),
+        examples=ExportedExample.objects.filter(project=project),
         is_collaborative=project.collaborative_annotation,
         confirmed_only=confirmed_only,
     )
     writer = create_writer(file_format)
     label_collections = select_label_collection(project)
-    formatters = create_formatter(project, file_format)
+    formatter_classes = create_formatter(project, file_format)
     formatters = [
         formatter(target_column=label_collection.field_name)
-        for formatter, label_collection in zip(formatters, label_collections)
+        for formatter, label_collection in zip(formatter_classes, label_collections)
     ]
     labels = [create_labels(label_collection, examples=examples) for label_collection in label_collections]
     dataset = Dataset(examples, labels)
@@ -46,17 +47,17 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
     members = Member.objects.filter(project=project)
     for member in members:
         examples = filter_examples(
-            examples=project.examples.all(),
+            examples=ExportedExample.objects.filter(project=project),
             is_collaborative=project.collaborative_annotation,
             confirmed_only=confirmed_only,
             user=member.user,
         )
         writer = create_writer(file_format)
         label_collections = select_label_collection(project)
-        formatters = create_formatter(project, file_format)
+        formatter_classes = create_formatter(project, file_format)
         formatters = [
             formatter(target_column=label_collection.field_name)
-            for formatter, label_collection in zip(formatters, label_collections)
+            for formatter, label_collection in zip(formatter_classes, label_collections)
         ]
         labels = [
             create_labels(label_collection, examples=examples, user=member.user)

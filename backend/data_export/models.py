@@ -2,7 +2,16 @@ from typing import Any, Dict, Protocol, Tuple
 
 from django.db import models
 
+from examples.models import Example
 from labels.models import Category, Relation, Span, TextLabel
+
+
+class ExportedExample(Example):
+    def to_dict(self) -> Dict[str, Any]:
+        return {"id": self.id, "data": self.text if self.project.is_text_project else self.upload_name, **self.meta}
+
+    class Meta:
+        proxy = True
 
 
 class ExportedLabelManager(models.Manager):

@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 
 from . import catalog, formatters, labels, repositories, writers
 from .labels import Labels
-from examples.models import Example
+from data_export.models import ExportedExample
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
@@ -88,5 +88,5 @@ def select_label_collection(project):
     return mapping[project.project_type]
 
 
-def create_labels(label_collection_class: Type[Labels], examples: QuerySet[Example], user=None):
+def create_labels(label_collection_class: Type[Labels], examples: QuerySet[ExportedExample], user=None):
     return label_collection_class(examples, user)

@@ -3,7 +3,7 @@ Represents label collection.
 """
 import abc
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from django.db.models import QuerySet
 
@@ -20,7 +20,7 @@ from examples.models import Example
 class Labels(abc.ABC):
     label_class = ExportedLabel
     field_name = "labels"
-    fields = ("example", "label")
+    fields: Tuple[str, ...] = ("example", "label")
 
     def __init__(self, examples: QuerySet[Example], user=None):
         self.label_groups = defaultdict(list)
