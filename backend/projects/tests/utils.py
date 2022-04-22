@@ -23,6 +23,10 @@ class ProjectData:
         self.members = members
 
     @property
+    def id(self):
+        return self.item.id
+
+    @property
     def admin(self):
         return self.members[0]
 

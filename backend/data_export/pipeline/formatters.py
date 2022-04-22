@@ -18,6 +18,9 @@ class Formatter(abc.ABC):
 class JoinedCategoryFormatter(Formatter):
     def format(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Format the label column to `LabelA#LabelB` format."""
+        if self.target_column not in dataset.columns:
+            return dataset
+
         dataset[self.target_column] = dataset[self.target_column].apply(
             lambda labels: "#".join(sorted(label.to_string() for label in labels))
         )
@@ -27,6 +30,9 @@ class JoinedCategoryFormatter(Formatter):
 class ListedCategoryFormatter(Formatter):
     def format(self, dataset: pd.DataFrame) -> pd.DataFrame:
         """Format the label column to `['LabelA', 'LabelB']` format."""
+        if self.target_column not in dataset.columns:
+            return dataset
+
         dataset[self.target_column] = dataset[self.target_column].apply(
             lambda labels: sorted([label.to_string() for label in labels])
         )
@@ -38,6 +44,9 @@ class FastTextCategoryFormatter(Formatter):
         """Format the label column to `__label__LabelA __label__LabelB` format.
         Also, drop the columns except for `data` and `self.target_column`.
         """
+        if self.target_column not in dataset.columns:
+            return dataset
+
         dataset = dataset[["data", self.target_column]]
         dataset[self.target_column] = dataset[self.target_column].apply(
             lambda labels: sorted(f"__label__{label.to_string()}" for label in labels)

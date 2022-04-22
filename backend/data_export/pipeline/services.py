@@ -1,13 +1,16 @@
-from .repositories import BaseRepository
-from .writers import BaseWriter
+from .dataset import Dataset
+from .formatters import Formatter
+from .writers import Writer
 
 
 class ExportApplicationService:
-    def __init__(self, repository: BaseRepository, writer: BaseWriter):
-        self.repository = repository
+    def __init__(self, dataset: Dataset, formatter: Formatter, writer: Writer):
+        self.dataset = dataset
+        self.formatter = formatter
         self.writer = writer
 
-    def export(self, export_approved=False) -> str:
-        records = self.repository.list(export_approved=export_approved)
-        filepath = self.writer.write(records)
-        return filepath
+    def export(self, file):
+        dataset = self.dataset.to_dataframe()
+        dataset = self.formatter.format(dataset)
+        self.writer.write(file, dataset)
+        return file

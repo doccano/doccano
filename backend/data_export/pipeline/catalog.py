@@ -86,7 +86,7 @@ Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionNone, examples.CATEGORY_J
 
 # Sequence Labeling
 Options.register(SEQUENCE_LABELING, JSONL, OptionNone, examples.SPAN_JSONL)
-Options.register(SEQUENCE_LABELING, JSONLRelation, OptionNone, examples.ENTITY_AND_RELATION_JSONL)
+Options.register(SEQUENCE_LABELING, JSONL, OptionNone, examples.ENTITY_AND_RELATION_JSONL)
 
 # Sequence to sequence
 Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.TEXT_CSV)
@@ -94,7 +94,7 @@ Options.register(SEQ2SEQ, JSON, OptionNone, examples.TEXT_JSON)
 Options.register(SEQ2SEQ, JSONL, OptionNone, examples.TEXT_JSONL)
 
 # Intent detection and slot filling
-Options.register(INTENT_DETECTION_AND_SLOT_FILLING, IntentAndSlot, OptionNone, examples.INTENT_JSONL)
+Options.register(INTENT_DETECTION_AND_SLOT_FILLING, JSONL, OptionNone, examples.INTENT_JSONL)
 
 # Image Classification
 Options.register(IMAGE_CLASSIFICATION, JSONL, OptionNone, examples.CATEGORY_IMAGE_CLASSIFICATION)

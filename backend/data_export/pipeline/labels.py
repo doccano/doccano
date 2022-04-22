@@ -16,10 +16,12 @@ class Labels(abc.ABC):
     field_name = "labels"
     fields = ("example", "label")
 
-    def __init__(self, examples: QuerySet[Example], user):
+    def __init__(self, examples: QuerySet[Example], user=None):
         self.label_groups = defaultdict(list)
-        labels = self.label_class.objects.filter(example__in=examples, user=user).select_related(*self.fields)
-        for label in labels:
+        labels = self.label_class.objects.filter(example__in=examples)
+        if user:
+            labels = labels.filter(user=user)
+        for label in labels.select_related(*self.fields):
             self.label_groups[label.example.id].append(label)
 
     def find_by(self, example_id: int) -> Dict[str, List[ExportedLabel]]:
