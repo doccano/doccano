@@ -11,6 +11,7 @@ from ..celery_tasks import export_dataset
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
+    INTENT_DETECTION_AND_SLOT_FILLING,
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
@@ -212,19 +213,112 @@ class TestExportSeq2seq(TestCase):
 @override_settings(MEDIA_URL=os.path.dirname(__file__))
 class TestExportIntentDetectionAndSlotFilling(TestCase):
     def prepare_data(self, collaborative=False):
-        pass
+        self.project = prepare_project(INTENT_DETECTION_AND_SLOT_FILLING, collaborative_annotation=collaborative)
+        self.example1 = mommy.make("Example", project=self.project.item, text="confirmed")
+        self.example2 = mommy.make("Example", project=self.project.item, text="unconfirmed")
+        self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
+        self.category2 = mommy.make("ExportedCategory", example=self.example1, user=self.project.annotator)
+        self.span = mommy.make(
+            "ExportedSpan", example=self.example1, user=self.project.admin, start_offset=0, end_offset=1
+        )
+        mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
 
     def test_unconfirmed_and_non_collaborative(self):
-        pass
+        self.prepare_data()
+        file = export_dataset(self.project.id, "JSONL", False)
+        datasets = read_zip_content(file, "jsonl")
+        os.remove(file)
+
+        expected_datasets = {
+            self.project.admin.username: pd.DataFrame(
+                [
+                    {
+                        "id": self.example1.id,
+                        "data": self.example1.text,
+                        "entities": [list(self.span.to_tuple())],
+                        "categories": [self.category1.to_string()],
+                    },
+                    {"id": self.example2.id, "data": self.example2.text, "entities": [], "categories": []},
+                ]
+            ),
+            self.project.annotator.username: pd.DataFrame(
+                [
+                    {
+                        "id": self.example1.id,
+                        "data": self.example1.text,
+                        "entities": [],
+                        "categories": [self.category2.to_string()],
+                    },
+                    {"id": self.example2.id, "data": self.example2.text, "entities": [], "categories": []},
+                ]
+            ),
+            self.project.approver.username: pd.DataFrame(
+                [
+                    {"id": self.example1.id, "data": self.example1.text, "entities": [], "categories": []},
+                    {"id": self.example2.id, "data": self.example2.text, "entities": [], "categories": []},
+                ]
+            ),
+        }
+        for username, dataset in expected_datasets.items():
+            self.assertEqual(dataset.to_dict(), datasets[username].to_dict())
 
     def test_unconfirmed_and_collaborative(self):
-        pass
+        self.prepare_data(collaborative=True)
+        file = export_dataset(self.project.id, "JSONL", False)
+        dataset = pd.read_json(file, lines=True)
+        os.remove(file)
+        expected_dataset = pd.DataFrame(
+            [
+                {
+                    "id": self.example1.id,
+                    "data": self.example1.text,
+                    "entities": [list(self.span.to_tuple())],
+                    "categories": sorted([self.category1.to_string(), self.category2.to_string()]),
+                },
+                {"id": self.example2.id, "data": self.example2.text, "entities": [], "categories": []},
+            ]
+        )
+        self.assertEqual(dataset.to_dict(), expected_dataset.to_dict())
 
     def test_confirmed_and_non_collaborative(self):
-        pass
+        self.prepare_data()
+        file = export_dataset(self.project.id, "JSONL", True)
+        datasets = read_zip_content(file, "jsonl")
+        os.remove(file)
+
+        expected_datasets = {
+            self.project.admin.username: pd.DataFrame(
+                [
+                    {
+                        "id": self.example1.id,
+                        "data": self.example1.text,
+                        "entities": [list(self.span.to_tuple())],
+                        "categories": [self.category1.to_string()],
+                    },
+                ]
+            ),
+            self.project.annotator.username: pd.DataFrame(),
+            self.project.approver.username: pd.DataFrame(),
+        }
+        for username, dataset in expected_datasets.items():
+            self.assertEqual(dataset.to_dict(), datasets[username].to_dict())
 
     def test_confirmed_and_collaborative(self):
-        pass
+        self.prepare_data(collaborative=True)
+        file = export_dataset(self.project.id, "JSONL", True)
+        dataset = pd.read_json(file, lines=True)
+        os.remove(file)
+        expected_dataset = pd.DataFrame(
+            [
+                {
+                    "id": self.example1.id,
+                    "data": self.example1.text,
+                    "entities": [list(self.span.to_tuple())],
+                    "categories": sorted([self.category1.to_string(), self.category2.to_string()]),
+                },
+            ]
+        )
+        self.assertEqual(dataset.to_dict(), expected_dataset.to_dict())
 
 
 @override_settings(MEDIA_URL=os.path.dirname(__file__))
