@@ -25,12 +25,16 @@ def create_collaborative_dataset(project: Project, file_format: str, confirmed_o
         is_collaborative=project.collaborative_annotation,
         confirmed_only=confirmed_only,
     )
-    label_collection = select_label_collection(project)
-    labels = create_labels(label_collection, examples=examples)
-    dataset = Dataset(examples, labels)
-    formatter = create_formatter(project, file_format)(target_column=label_collection.field_name)
     writer = create_writer(file_format)
-    service = ExportApplicationService(dataset, formatter, writer)
+    label_collections = select_label_collection(project)
+    formatters = [
+        create_formatter(project, file_format)(target_column=label_collection.field_name)
+        for label_collection in label_collections
+    ]
+    labels = [create_labels(label_collection, examples=examples) for label_collection in label_collections]
+    dataset = Dataset(examples, labels)
+
+    service = ExportApplicationService(dataset, formatters, writer)
     filepath = os.path.join(settings.MEDIA_URL, f"all.{writer.extension}")
     service.export(filepath)
     return filepath
@@ -46,12 +50,19 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
             confirmed_only=confirmed_only,
             user=member.user,
         )
-        label_collection = select_label_collection(project)
-        labels = create_labels(label_collection, examples=examples, user=member.user)
-        dataset = Dataset(examples, labels)
-        formatter = create_formatter(project, file_format)(target_column=label_collection.field_name)
         writer = create_writer(file_format)
-        service = ExportApplicationService(dataset, formatter, writer)
+        label_collections = select_label_collection(project)
+        formatters = [
+            create_formatter(project, file_format)(target_column=label_collection.field_name)
+            for label_collection in label_collections
+        ]
+        labels = [
+            create_labels(label_collection, examples=examples, user=member.user)
+            for label_collection in label_collections
+        ]
+        dataset = Dataset(examples, labels)
+
+        service = ExportApplicationService(dataset, formatters, writer)
         filepath = os.path.join(settings.MEDIA_URL, f"{member.username}.{writer.extension}")
         service.export(filepath)
         files.append(filepath)

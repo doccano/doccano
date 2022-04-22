@@ -7,7 +7,12 @@ from typing import Dict, List
 
 from django.db.models import QuerySet
 
-from data_export.models import ExportedCategory, ExportedLabel, ExportedSpan
+from data_export.models import (
+    ExportedCategory,
+    ExportedLabel,
+    ExportedRelation,
+    ExportedSpan,
+)
 from examples.models import Example
 
 
@@ -38,3 +43,9 @@ class Spans(Labels):
     label_class = ExportedSpan
     field_name = "entities"
     fields = ("example", "label")
+
+
+class Relations(Labels):
+    label_class = ExportedRelation
+    field_name = "relations"
+    fields = ("example", "type")

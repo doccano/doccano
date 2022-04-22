@@ -45,13 +45,18 @@ def create_writer(file_format: str) -> writers.Writer:
 
 
 def create_formatter(project, file_format: str):
+    use_relation = getattr(project, "use_relation", False)
     mapping = {
         DOCUMENT_CLASSIFICATION: {
             catalog.CSV.name: formatters.JoinedCategoryFormatter,
             catalog.JSON.name: formatters.ListedCategoryFormatter,
             catalog.JSONL.name: formatters.ListedCategoryFormatter,
         },
-        SEQUENCE_LABELING: {catalog.JSONL.name: formatters.TupledSpanFormatter},
+        SEQUENCE_LABELING: {
+            catalog.JSONL.name: [formatters.DictFormatter, formatters.DictFormatter]
+            if use_relation
+            else [formatters.TupledSpanFormatter]
+        },
         SEQ2SEQ: {},
         IMAGE_CLASSIFICATION: {},
         SPEECH2TEXT: {},
@@ -61,7 +66,11 @@ def create_formatter(project, file_format: str):
 
 
 def select_label_collection(project):
-    mapping = {DOCUMENT_CLASSIFICATION: labels.Categories, SEQUENCE_LABELING: labels.Spans}
+    use_relation = getattr(project, "use_relation", False)
+    mapping = {
+        DOCUMENT_CLASSIFICATION: [labels.Categories],
+        SEQUENCE_LABELING: [labels.Spans, labels.Relations] if use_relation else [labels.Spans],
+    }
     return mapping[project.project_type]
 
 

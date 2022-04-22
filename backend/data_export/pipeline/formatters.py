@@ -66,12 +66,12 @@ class TupledSpanFormatter(Formatter):
         return dataset
 
 
-class DictSpanFormatter(Formatter):
+class DictFormatter(Formatter):
     def format(self, dataset: pd.DataFrame) -> pd.DataFrame:
         if self.target_column not in dataset.columns:
             return dataset
 
         dataset[self.target_column] = dataset[self.target_column].apply(
-            lambda spans: [span.to_dict() for span in spans]
+            lambda labels: [label.to_dict() for label in labels]
         )
         return dataset

@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterator
+from typing import Any, Dict, Iterator, List
 
 import pandas as pd
 from django.db.models.query import QuerySet
@@ -18,13 +18,16 @@ def filter_examples(examples: QuerySet[Example], is_collaborative=False, confirm
 
 
 class Dataset:
-    def __init__(self, examples: QuerySet[Example], labels: Labels):
+    def __init__(self, examples: QuerySet[Example], labels: List[Labels]):
         self.examples = examples
         self.labels = labels
 
     def __iter__(self) -> Iterator[Dict[str, Any]]:
         for example in self.examples:
-            yield {"id": example.id, "data": example.text, **example.meta, **self.labels.find_by(example.id)}
+            data = {"id": example.id, "data": example.text, **example.meta}
+            for labels in self.labels:
+                data.update(**labels.find_by(example.id))
+            yield data
 
     def to_dataframe(self) -> pd.DataFrame:
         return pd.DataFrame(self)
