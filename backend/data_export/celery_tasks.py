@@ -8,10 +8,10 @@ from django.shortcuts import get_object_or_404
 from .models import ExportedExample
 from .pipeline.dataset import Dataset, filter_examples
 from .pipeline.factories import (
-    create_formatter,
     create_labels,
-    create_writer,
+    select_formatter,
     select_label_collection,
+    select_writer,
 )
 from .pipeline.services import ExportApplicationService
 from .pipeline.writers import zip_files
@@ -26,9 +26,9 @@ def create_collaborative_dataset(project: Project, file_format: str, confirmed_o
         is_collaborative=project.collaborative_annotation,
         confirmed_only=confirmed_only,
     )
-    writer = create_writer(file_format)
+    writer = select_writer(file_format)()
     label_collections = select_label_collection(project)
-    formatter_classes = create_formatter(project, file_format)
+    formatter_classes = select_formatter(project, file_format)
     formatters = [
         formatter(target_column=label_collection.field_name)
         for formatter, label_collection in zip(formatter_classes, label_collections)
@@ -52,9 +52,9 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
             confirmed_only=confirmed_only,
             user=member.user,
         )
-        writer = create_writer(file_format)
+        writer = select_writer(file_format)()
         label_collections = select_label_collection(project)
-        formatter_classes = create_formatter(project, file_format)
+        formatter_classes = select_formatter(project, file_format)
         formatters = [
             formatter(target_column=label_collection.field_name)
             for formatter, label_collection in zip(formatter_classes, label_collections)

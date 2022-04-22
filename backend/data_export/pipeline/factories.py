@@ -1,4 +1,4 @@
-from typing import List, Type
+from typing import Dict, List, Type
 
 from django.db.models import QuerySet
 
@@ -32,7 +32,7 @@ def create_repository(project, file_format: str):
     return repository
 
 
-def create_writer(file_format: str) -> writers.Writer:
+def select_writer(file_format: str) -> Type[writers.Writer]:
     mapping = {
         catalog.CSV.name: writers.CsvWriter,
         catalog.JSON.name: writers.JsonWriter,
@@ -41,12 +41,12 @@ def create_writer(file_format: str) -> writers.Writer:
     }
     if file_format not in mapping:
         ValueError(f"Invalid format: {file_format}")
-    return mapping[file_format]()
+    return mapping[file_format]
 
 
-def create_formatter(project, file_format: str) -> List[Type[formatters.Formatter]]:
+def select_formatter(project, file_format: str) -> List[Type[formatters.Formatter]]:
     use_relation = getattr(project, "use_relation", False)
-    mapping = {
+    mapping: Dict[str, Dict[str, List[Type[formatters.Formatter]]]] = {
         DOCUMENT_CLASSIFICATION: {
             catalog.CSV.name: [formatters.JoinedCategoryFormatter],
             catalog.JSON.name: [formatters.ListedCategoryFormatter],
