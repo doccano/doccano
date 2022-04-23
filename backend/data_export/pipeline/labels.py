@@ -9,12 +9,12 @@ from django.db.models import QuerySet
 
 from data_export.models import (
     ExportedCategory,
+    ExportedExample,
     ExportedLabel,
     ExportedRelation,
     ExportedSpan,
     ExportedText,
 )
-from examples.models import Example
 
 
 class Labels(abc.ABC):
@@ -22,7 +22,7 @@ class Labels(abc.ABC):
     field_name = "labels"
     fields: Tuple[str, ...] = ("example", "label")
 
-    def __init__(self, examples: QuerySet[Example], user=None):
+    def __init__(self, examples: QuerySet[ExportedExample], user=None):
         self.label_groups = defaultdict(list)
         labels = self.label_class.objects.filter(example__in=examples)
         if user:
