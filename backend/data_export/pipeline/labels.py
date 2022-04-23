@@ -19,8 +19,8 @@ from data_export.models import (
 
 class Labels(abc.ABC):
     label_class = ExportedLabel
-    field_name = "labels"
-    fields: Tuple[str, ...] = ("example", "label")
+    column = "labels"
+    fields: Tuple[str, ...] = ("example", "label")  # To boost performance
 
     def __init__(self, examples: QuerySet[ExportedExample], user=None):
         self.label_groups = defaultdict(list)
@@ -31,28 +31,28 @@ class Labels(abc.ABC):
             self.label_groups[label.example.id].append(label)
 
     def find_by(self, example_id: int) -> Dict[str, List[ExportedLabel]]:
-        return {self.field_name: self.label_groups[example_id]}
+        return {self.column: self.label_groups[example_id]}
 
 
 class Categories(Labels):
     label_class = ExportedCategory
-    field_name = "categories"
+    column = "categories"
     fields = ("example", "label")
 
 
 class Spans(Labels):
     label_class = ExportedSpan
-    field_name = "entities"
+    column = "entities"
     fields = ("example", "label")
 
 
 class Relations(Labels):
     label_class = ExportedRelation
-    field_name = "relations"
+    column = "relations"
     fields = ("example", "type")
 
 
 class Texts(Labels):
     label_class = ExportedText
-    field_name = "labels"
+    column = "labels"
     fields = ("example",)

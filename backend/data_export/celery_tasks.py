@@ -30,7 +30,7 @@ def create_collaborative_dataset(project: Project, file_format: str, confirmed_o
     label_collections = select_label_collection(project)
     formatter_classes = select_formatter(project, file_format)
     formatters = [
-        formatter(target_column=label_collection.field_name)
+        formatter(target_column=label_collection.column)
         for formatter, label_collection in zip(formatter_classes, label_collections)
     ]
     labels = [create_labels(label_collection, examples=examples) for label_collection in label_collections]
@@ -56,7 +56,7 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
         label_collections = select_label_collection(project)
         formatter_classes = select_formatter(project, file_format)
         formatters = [
-            formatter(target_column=label_collection.field_name)
+            formatter(target_column=label_collection.column)
             for formatter, label_collection in zip(formatter_classes, label_collections)
         ]
         labels = [
