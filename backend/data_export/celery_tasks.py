@@ -13,7 +13,7 @@ from .pipeline.factories import (
     select_writer,
 )
 from .pipeline.services import ExportApplicationService
-from .pipeline.writers import zip_files
+from .pipeline.writers import remove_files, zip_files
 from data_export.models import ExportedExample
 from projects.models import Member, Project
 
@@ -70,8 +70,7 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
         service.export(filepath)
         files.append(filepath)
     zip_file = zip_files(files, settings.MEDIA_URL)
-    for file in files:
-        os.remove(file)
+    remove_files(files)
     return zip_file
 
 

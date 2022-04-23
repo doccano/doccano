@@ -14,6 +14,11 @@ def zip_files(files, dirname):
     return save_file
 
 
+def remove_files(files):
+    for file in files:
+        os.remove(file)
+
+
 class Writer(abc.ABC):
     extension = ""
 
