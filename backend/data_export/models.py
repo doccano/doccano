@@ -14,12 +14,8 @@ class ExportedExample(Example):
         proxy = True
 
 
-class ExportedLabelManager(models.Manager):
-    pass
-
-
 class ExportedLabel(Protocol):
-    objects: models.Manager = ExportedLabelManager()
+    objects: models.Manager
 
     def to_dict(self) -> Dict[str, Any]:
         raise NotImplementedError("Please implement this method in the subclass.")
