@@ -8,7 +8,18 @@ from labels.models import Category, Relation, Span, TextLabel
 DATA = "data"
 
 
+class ExportedExampleManager(models.Manager):
+    def confirmed(self, is_collaborative=False, user=None):
+        if is_collaborative:
+            return self.exclude(states=None)
+        else:
+            assert user is not None
+            return self.filter(states__confirmed_by=user)
+
+
 class ExportedExample(Example):
+    objects = ExportedExampleManager()
+
     def to_dict(self) -> Dict[str, Any]:
         return {"id": self.id, DATA: self.text if self.project.is_text_project else self.upload_name, **self.meta}
 

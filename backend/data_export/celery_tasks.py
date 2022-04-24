@@ -5,7 +5,7 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
-from .pipeline.dataset import Dataset, filter_examples
+from .pipeline.dataset import Dataset
 from .pipeline.factories import (
     create_labels,
     select_formatter,
@@ -21,11 +21,10 @@ logger = get_task_logger(__name__)
 
 
 def create_collaborative_dataset(project: Project, file_format: str, confirmed_only: bool):
-    examples = filter_examples(
-        examples=ExportedExample.objects.filter(project=project),
-        is_collaborative=project.collaborative_annotation,
-        confirmed_only=confirmed_only,
-    )
+    if confirmed_only:
+        examples = ExportedExample.objects.confirmed(is_collaborative=project.collaborative_annotation)
+    else:
+        examples = ExportedExample.objects.all()
     writer = select_writer(file_format)()
     label_collections = select_label_collection(project)
     formatter_classes = select_formatter(project, file_format)
@@ -46,12 +45,12 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
     files = []
     members = Member.objects.filter(project=project)
     for member in members:
-        examples = filter_examples(
-            examples=ExportedExample.objects.filter(project=project),
-            is_collaborative=project.collaborative_annotation,
-            confirmed_only=confirmed_only,
-            user=member.user,
-        )
+        if confirmed_only:
+            examples = ExportedExample.objects.confirmed(
+                is_collaborative=project.collaborative_annotation, user=member.user
+            )
+        else:
+            examples = ExportedExample.objects.all()
         writer = select_writer(file_format)()
         label_collections = select_label_collection(project)
         formatter_classes = select_formatter(project, file_format)
