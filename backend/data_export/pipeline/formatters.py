@@ -5,6 +5,8 @@ import abc
 
 import pandas as pd
 
+from data_export.models import DATA
+
 
 class Formatter(abc.ABC):
     def __init__(self, target_column: str):
@@ -43,7 +45,7 @@ class FastTextCategoryFormatter(Formatter):
         """Format the label column to `__label__LabelA __label__LabelB` format.
         Also, drop the columns except for `data` and `self.target_column`.
         """
-        dataset = dataset[["data", self.target_column]]
+        dataset = dataset[[DATA, self.target_column]]
         dataset[self.target_column] = dataset[self.target_column].apply(
             lambda labels: sorted(f"__label__{label.to_string()}" for label in labels)
         )
