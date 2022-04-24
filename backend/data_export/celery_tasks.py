@@ -56,9 +56,9 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
 
 
 @shared_task
-def export_dataset(project_id, file_format: str, export_approved=False):
+def export_dataset(project_id, file_format: str, confirmed_only=False):
     project = get_object_or_404(Project, pk=project_id)
     if project.collaborative_annotation:
-        return create_collaborative_dataset(project, file_format, export_approved)
+        return create_collaborative_dataset(project, file_format, confirmed_only)
     else:
-        return create_individual_dataset(project, file_format, export_approved)
+        return create_individual_dataset(project, file_format, confirmed_only)
