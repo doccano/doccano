@@ -9,8 +9,9 @@ from data_export.models import DATA
 
 
 class Formatter(abc.ABC):
-    def __init__(self, target_column: str):
+    def __init__(self, target_column: str = "labels", **kwargs):
         self.target_column = target_column
+        self.mapper = kwargs
 
     def format(self, dataset: pd.DataFrame) -> pd.DataFrame:
         if self.target_column not in dataset.columns:
@@ -69,4 +70,14 @@ class DictFormatter(Formatter):
         dataset[self.target_column] = dataset[self.target_column].apply(
             lambda labels: [label.to_dict() for label in labels]
         )
+        return dataset
+
+
+class RenameFormatter(Formatter):
+    def format(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        return self.apply(dataset)
+
+    def apply(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Rename columns"""
+        dataset.rename(columns=self.mapper, inplace=True)
         return dataset

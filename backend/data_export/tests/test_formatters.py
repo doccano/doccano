@@ -10,6 +10,7 @@ from data_export.pipeline.formatters import (
     FastTextCategoryFormatter,
     JoinedCategoryFormatter,
     ListedCategoryFormatter,
+    RenameFormatter,
     TupledSpanFormatter,
 )
 
@@ -84,3 +85,12 @@ class TestFastTextFormatter(unittest.TestCase):
         dataset = formatter.format(self.dataset)
         expected_dataset = pd.DataFrame([f"__label__{self.return_value} example"])
         self.assertEqual(dataset.to_csv(index=False, header=None), expected_dataset.to_csv(index=False, header=None))
+
+
+class TestRenameFormatter(unittest.TestCase):
+    def test_format(self):
+        dataset = pd.DataFrame([{"data": "example"}])
+        formatter = RenameFormatter(**{"data": "text"})
+        dataset = formatter.format(dataset)
+        expected_dataset = pd.DataFrame([{"text": "example"}])
+        assert_frame_equal(dataset, expected_dataset)
