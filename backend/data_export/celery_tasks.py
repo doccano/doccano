@@ -6,12 +6,7 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 from .pipeline.dataset import Dataset
-from .pipeline.factories import (
-    create_labels,
-    select_formatter,
-    select_label_collection,
-    select_writer,
-)
+from .pipeline.factories import create_formatter, create_labels, create_writer
 from .pipeline.services import ExportApplicationService
 from .pipeline.writers import remove_files, zip_files
 from data_export.models import ExportedExample
@@ -25,16 +20,11 @@ def create_collaborative_dataset(project: Project, file_format: str, confirmed_o
         examples = ExportedExample.objects.confirmed(is_collaborative=project.collaborative_annotation)
     else:
         examples = ExportedExample.objects.all()
-    writer = select_writer(file_format)()
-    label_collections = select_label_collection(project)
-    formatter_classes = select_formatter(project, file_format)
-    formatters = [
-        formatter(target_column=label_collection.column)
-        for formatter, label_collection in zip(formatter_classes, label_collections)
-    ]
-    labels = [create_labels(label_collection, examples=examples) for label_collection in label_collections]
+    labels = create_labels(project, examples)
     dataset = Dataset(examples, labels)
 
+    formatters = create_formatter(project, file_format)
+    writer = create_writer(file_format)
     service = ExportApplicationService(dataset, formatters, writer)
     filepath = os.path.join(settings.MEDIA_URL, f"all.{writer.extension}")
     service.export(filepath)
@@ -51,19 +41,11 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
             )
         else:
             examples = ExportedExample.objects.all()
-        writer = select_writer(file_format)()
-        label_collections = select_label_collection(project)
-        formatter_classes = select_formatter(project, file_format)
-        formatters = [
-            formatter(target_column=label_collection.column)
-            for formatter, label_collection in zip(formatter_classes, label_collections)
-        ]
-        labels = [
-            create_labels(label_collection, examples=examples, user=member.user)
-            for label_collection in label_collections
-        ]
+        labels = create_labels(project, examples, member.user)
         dataset = Dataset(examples, labels)
 
+        formatters = create_formatter(project, file_format)
+        writer = create_writer(file_format)
         service = ExportApplicationService(dataset, formatters, writer)
         filepath = os.path.join(settings.MEDIA_URL, f"{member.username}.{writer.extension}")
         service.export(filepath)
