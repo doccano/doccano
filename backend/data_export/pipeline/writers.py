@@ -50,3 +50,11 @@ class JsonlWriter(Writer):
     @staticmethod
     def write(file, dataset: pd.DataFrame):
         dataset.to_json(file, orient="records", force_ascii=False, lines=True)
+
+
+class FastTextWriter(Writer):
+    extension = "txt"
+
+    @staticmethod
+    def write(file, dataset: pd.DataFrame):
+        dataset.to_csv(file, index=False, encoding="utf-8", header=False)

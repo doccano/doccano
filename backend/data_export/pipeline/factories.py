@@ -20,7 +20,7 @@ def select_writer(file_format: str) -> Type[writers.Writer]:
         catalog.CSV.name: writers.CsvWriter,
         catalog.JSON.name: writers.JsonWriter,
         catalog.JSONL.name: writers.JsonlWriter,
-        # catalog.FastText.name: writers.FastTextWriter,
+        catalog.FastText.name: writers.FastTextWriter,
     }
     if file_format not in mapping:
         ValueError(f"Invalid format: {file_format}")
@@ -34,6 +34,7 @@ def select_formatter(project, file_format: str) -> List[Type[formatters.Formatte
             catalog.CSV.name: [formatters.JoinedCategoryFormatter],
             catalog.JSON.name: [formatters.ListedCategoryFormatter],
             catalog.JSONL.name: [formatters.ListedCategoryFormatter],
+            catalog.FastText.name: [formatters.FastTextCategoryFormatter],
         },
         SEQUENCE_LABELING: {
             catalog.JSONL.name: [formatters.DictFormatter, formatters.DictFormatter]

@@ -47,8 +47,10 @@ class FastTextCategoryFormatter(Formatter):
         """
         dataset = dataset[[DATA, self.target_column]]
         dataset[self.target_column] = dataset[self.target_column].apply(
-            lambda labels: sorted(f"__label__{label.to_string()}" for label in labels)
+            lambda labels: " ".join(sorted(f"__label__{label.to_string()}" for label in labels))
         )
+        dataset[self.target_column] = dataset[self.target_column].fillna("")
+        dataset = dataset[self.target_column] + " " + dataset[DATA]
         return dataset
 
 
@@ -63,6 +65,7 @@ class TupledSpanFormatter(Formatter):
 
 class DictFormatter(Formatter):
     def apply(self, dataset: pd.DataFrame) -> pd.DataFrame:
+        """Format the column to `{key: value}` format"""
         dataset[self.target_column] = dataset[self.target_column].apply(
             lambda labels: [label.to_dict() for label in labels]
         )
