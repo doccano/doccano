@@ -60,8 +60,8 @@ column_data,column_label
 Text_JSON = """
 [
     {
-        "text": "Hello!",
-        "labels": ["こんにちは！"]
+        "column_data": "Hello!",
+        "column_label": ["こんにちは！"]
     }
 ]
 """

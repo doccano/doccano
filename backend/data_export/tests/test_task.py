@@ -6,6 +6,7 @@ from django.test import TestCase, override_settings
 from model_mommy import mommy
 
 from ..celery_tasks import export_dataset
+from data_export.models import DATA
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
@@ -42,6 +43,16 @@ class TestExport(TestCase):
         os.remove(file)
         return dataset
 
+    def data_to_text(self, example):
+        d = example.to_dict()
+        d["text"] = d.pop(DATA)
+        return d
+
+    def data_to_filename(self, example):
+        d = example.to_dict()
+        d["filename"] = d.pop(DATA)
+        return d
+
 
 class TestExportCategory(TestExport):
     def prepare_data(self, collaborative=False):
@@ -51,22 +62,24 @@ class TestExportCategory(TestExport):
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
         self.category2 = mommy.make("ExportedCategory", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
+        self.data1 = self.data_to_text(self.example1)
+        self.data2 = self.data_to_text(self.example2)
 
     def test_unconfirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.example1.to_dict(), "categories": [self.category1.to_string()]},
-                {**self.example2.to_dict(), "categories": []},
+                {**self.data1, "label": [self.category1.to_string()]},
+                {**self.data2, "label": []},
             ],
             self.project.approver.username: [
-                {**self.example1.to_dict(), "categories": []},
-                {**self.example2.to_dict(), "categories": []},
+                {**self.data1, "label": []},
+                {**self.data2, "label": []},
             ],
             self.project.annotator.username: [
-                {**self.example1.to_dict(), "categories": [self.category2.to_string()]},
-                {**self.example2.to_dict(), "categories": []},
+                {**self.data1, "label": [self.category2.to_string()]},
+                {**self.data2, "label": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -77,19 +90,17 @@ class TestExportCategory(TestExport):
         dataset = self.export_dataset()
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "categories": sorted([self.category1.to_string(), self.category2.to_string()]),
+                **self.data1,
+                "label": sorted([self.category1.to_string(), self.category2.to_string()]),
             },
-            {**self.example2.to_dict(), "categories": []},
+            {**self.data2, "label": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
     def test_confirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset(confirmed_only=True)
-        expected_datasets = {
-            self.project.admin.username: [{**self.example1.to_dict(), "categories": [self.category1.to_string()]}]
-        }
+        expected_datasets = {self.project.admin.username: [{**self.data1, "label": [self.category1.to_string()]}]}
         for username, dataset in expected_datasets.items():
             self.assertEqual(datasets[username], dataset)
 
@@ -98,8 +109,8 @@ class TestExportCategory(TestExport):
         dataset = self.export_dataset(confirmed_only=True)
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "categories": sorted([self.category1.to_string(), self.category2.to_string()]),
+                **self.data1,
+                "label": sorted([self.category1.to_string(), self.category2.to_string()]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -113,22 +124,24 @@ class TestExportSeq2seq(TestExport):
         self.text1 = mommy.make("TextLabel", example=self.example1, user=self.project.admin)
         self.text2 = mommy.make("TextLabel", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
+        self.data1 = self.data_to_text(self.example1)
+        self.data2 = self.data_to_text(self.example2)
 
     def test_unconfirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.example1.to_dict(), "labels": [self.text1.text]},
-                {**self.example2.to_dict(), "labels": []},
+                {**self.data1, "label": [self.text1.text]},
+                {**self.data2, "label": []},
             ],
             self.project.approver.username: [
-                {**self.example1.to_dict(), "labels": []},
-                {**self.example2.to_dict(), "labels": []},
+                {**self.data1, "label": []},
+                {**self.data2, "label": []},
             ],
             self.project.annotator.username: [
-                {**self.example1.to_dict(), "labels": [self.text2.text]},
-                {**self.example2.to_dict(), "labels": []},
+                {**self.data1, "label": [self.text2.text]},
+                {**self.data2, "label": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -139,10 +152,10 @@ class TestExportSeq2seq(TestExport):
         dataset = self.export_dataset()
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "labels": sorted([self.text1.text, self.text2.text]),
+                **self.data1,
+                "label": sorted([self.text1.text, self.text2.text]),
             },
-            {**self.example2.to_dict(), "labels": []},
+            {**self.data2, "label": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -151,7 +164,7 @@ class TestExportSeq2seq(TestExport):
         datasets = self.export_dataset(confirmed_only=True)
         expected_datasets = {
             self.project.admin.username: [
-                {**self.example1.to_dict(), "labels": [self.text1.text]},
+                {**self.data1, "label": [self.text1.text]},
             ],
             self.project.approver.username: [],
             self.project.annotator.username: [],
@@ -164,8 +177,8 @@ class TestExportSeq2seq(TestExport):
         dataset = self.export_dataset(confirmed_only=True)
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "labels": sorted([self.text1.text, self.text2.text]),
+                **self.data1,
+                "label": sorted([self.text1.text, self.text2.text]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -182,6 +195,8 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
             "ExportedSpan", example=self.example1, user=self.project.admin, start_offset=0, end_offset=1
         )
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
+        self.data1 = self.data_to_text(self.example1)
+        self.data2 = self.data_to_text(self.example2)
 
     def test_unconfirmed_and_non_collaborative(self):
         self.prepare_data()
@@ -189,23 +204,23 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
         expected_datasets = {
             self.project.admin.username: [
                 {
-                    **self.example1.to_dict(),
+                    **self.data1,
                     "entities": [list(self.span.to_tuple())],
-                    "categories": [self.category1.to_string()],
+                    "cats": [self.category1.to_string()],
                 },
-                {**self.example2.to_dict(), "entities": [], "categories": []},
+                {**self.data2, "entities": [], "cats": []},
             ],
             self.project.annotator.username: [
                 {
-                    **self.example1.to_dict(),
+                    **self.data1,
                     "entities": [],
-                    "categories": [self.category2.to_string()],
+                    "cats": [self.category2.to_string()],
                 },
-                {**self.example2.to_dict(), "entities": [], "categories": []},
+                {**self.data2, "entities": [], "cats": []},
             ],
             self.project.approver.username: [
-                {**self.example1.to_dict(), "entities": [], "categories": []},
-                {**self.example2.to_dict(), "entities": [], "categories": []},
+                {**self.data1, "entities": [], "cats": []},
+                {**self.data2, "entities": [], "cats": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -216,11 +231,11 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
         dataset = self.export_dataset()
         expected_dataset = [
             {
-                **self.example1.to_dict(),
+                **self.data1,
                 "entities": [list(self.span.to_tuple())],
-                "categories": sorted([self.category1.to_string(), self.category2.to_string()]),
+                "cats": sorted([self.category1.to_string(), self.category2.to_string()]),
             },
-            {**self.example2.to_dict(), "entities": [], "categories": []},
+            {**self.data2, "entities": [], "cats": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -230,9 +245,9 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
         expected_datasets = {
             self.project.admin.username: [
                 {
-                    **self.example1.to_dict(),
+                    **self.data1,
                     "entities": [list(self.span.to_tuple())],
-                    "categories": [self.category1.to_string()],
+                    "cats": [self.category1.to_string()],
                 },
             ],
             self.project.annotator.username: [],
@@ -246,9 +261,9 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
         dataset = self.export_dataset(confirmed_only=True)
         expected_dataset = [
             {
-                **self.example1.to_dict(),
+                **self.data1,
                 "entities": [list(self.span.to_tuple())],
-                "categories": sorted([self.category1.to_string(), self.category2.to_string()]),
+                "cats": sorted([self.category1.to_string(), self.category2.to_string()]),
             },
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -266,22 +281,24 @@ class TestExportSequenceLabeling(TestExport):
         )
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
+        self.data1 = self.data_to_text(self.example1)
+        self.data2 = self.data_to_text(self.example2)
 
     def test_unconfirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.example1.to_dict(), "entities": [list(self.span1.to_tuple())]},
-                {**self.example2.to_dict(), "entities": []},
+                {**self.data1, "label": [list(self.span1.to_tuple())]},
+                {**self.data2, "label": []},
             ],
             self.project.annotator.username: [
-                {**self.example1.to_dict(), "entities": [list(self.span2.to_tuple())]},
-                {**self.example2.to_dict(), "entities": []},
+                {**self.data1, "label": [list(self.span2.to_tuple())]},
+                {**self.data2, "label": []},
             ],
             self.project.approver.username: [
-                {**self.example1.to_dict(), "entities": []},
-                {**self.example2.to_dict(), "entities": []},
+                {**self.data1, "label": []},
+                {**self.data2, "label": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -292,10 +309,10 @@ class TestExportSequenceLabeling(TestExport):
         dataset = self.export_dataset()
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "entities": [list(self.span1.to_tuple()), list(self.span2.to_tuple())],
+                **self.data1,
+                "label": [list(self.span1.to_tuple()), list(self.span2.to_tuple())],
             },
-            {**self.example2.to_dict(), "entities": []},
+            {**self.data2, "label": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -304,7 +321,7 @@ class TestExportSequenceLabeling(TestExport):
         datasets = self.export_dataset(confirmed_only=True)
         expected_datasets = {
             self.project.admin.username: [
-                {**self.example1.to_dict(), "entities": [list(self.span1.to_tuple())]},
+                {**self.data1, "label": [list(self.span1.to_tuple())]},
             ],
             self.project.annotator.username: [],
             self.project.approver.username: [],
@@ -317,8 +334,8 @@ class TestExportSequenceLabeling(TestExport):
         dataset = self.export_dataset(confirmed_only=True)
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "entities": [list(self.span1.to_tuple()), list(self.span2.to_tuple())],
+                **self.data1,
+                "label": [list(self.span1.to_tuple()), list(self.span2.to_tuple())],
             },
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -332,22 +349,24 @@ class TestExportSpeechToText(TestExport):
         self.text1 = mommy.make("TextLabel", example=self.example1, user=self.project.admin)
         self.text2 = mommy.make("TextLabel", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
+        self.data1 = self.data_to_filename(self.example1)
+        self.data2 = self.data_to_filename(self.example2)
 
     def test_unconfirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.example1.to_dict(), "labels": [self.text1.text]},
-                {**self.example2.to_dict(), "labels": []},
+                {**self.data1, "label": [self.text1.text]},
+                {**self.data2, "label": []},
             ],
             self.project.approver.username: [
-                {**self.example1.to_dict(), "labels": []},
-                {**self.example2.to_dict(), "labels": []},
+                {**self.data1, "label": []},
+                {**self.data2, "label": []},
             ],
             self.project.annotator.username: [
-                {**self.example1.to_dict(), "labels": [self.text2.text]},
-                {**self.example2.to_dict(), "labels": []},
+                {**self.data1, "label": [self.text2.text]},
+                {**self.data2, "label": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -358,10 +377,10 @@ class TestExportSpeechToText(TestExport):
         dataset = self.export_dataset()
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "labels": sorted([self.text1.text, self.text2.text]),
+                **self.data1,
+                "label": sorted([self.text1.text, self.text2.text]),
             },
-            {**self.example2.to_dict(), "labels": []},
+            {**self.data2, "label": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -370,7 +389,7 @@ class TestExportSpeechToText(TestExport):
         datasets = self.export_dataset(confirmed_only=True)
         expected_datasets = {
             self.project.admin.username: [
-                {**self.example1.to_dict(), "labels": [self.text1.text]},
+                {**self.data1, "label": [self.text1.text]},
             ],
             self.project.annotator.username: [],
             self.project.approver.username: [],
@@ -383,8 +402,8 @@ class TestExportSpeechToText(TestExport):
         dataset = self.export_dataset(confirmed_only=True)
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "labels": sorted([self.text1.text, self.text2.text]),
+                **self.data1,
+                "label": sorted([self.text1.text, self.text2.text]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -398,6 +417,8 @@ class TestExportImageClassification(TestExport):
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
         self.category2 = mommy.make("ExportedCategory", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
+        self.data1 = self.data_to_filename(self.example1)
+        self.data2 = self.data_to_filename(self.example2)
 
     def test_unconfirmed_and_non_collaborative(self):
         self.prepare_data()
@@ -405,21 +426,21 @@ class TestExportImageClassification(TestExport):
         expected_datasets = {
             self.project.admin.username: [
                 {
-                    **self.example1.to_dict(),
-                    "categories": [self.category1.to_string()],
+                    **self.data1,
+                    "label": [self.category1.to_string()],
                 },
-                {**self.example2.to_dict(), "categories": []},
+                {**self.data2, "label": []},
             ],
             self.project.approver.username: [
-                {**self.example1.to_dict(), "categories": []},
-                {**self.example2.to_dict(), "categories": []},
+                {**self.data1, "label": []},
+                {**self.data2, "label": []},
             ],
             self.project.annotator.username: [
                 {
-                    **self.example1.to_dict(),
-                    "categories": [self.category2.to_string()],
+                    **self.data1,
+                    "label": [self.category2.to_string()],
                 },
-                {**self.example2.to_dict(), "categories": []},
+                {**self.data2, "label": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -430,19 +451,17 @@ class TestExportImageClassification(TestExport):
         dataset = self.export_dataset()
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "categories": sorted([self.category1.to_string(), self.category2.to_string()]),
+                **self.data1,
+                "label": sorted([self.category1.to_string(), self.category2.to_string()]),
             },
-            {**self.example2.to_dict(), "categories": []},
+            {**self.data2, "label": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
     def test_confirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset(confirmed_only=True)
-        expected_datasets = {
-            self.project.admin.username: [{**self.example1.to_dict(), "categories": [self.category1.to_string()]}]
-        }
+        expected_datasets = {self.project.admin.username: [{**self.data1, "label": [self.category1.to_string()]}]}
         for username, dataset in expected_datasets.items():
             self.assertEqual(datasets[username], dataset)
 
@@ -451,8 +470,8 @@ class TestExportImageClassification(TestExport):
         dataset = self.export_dataset(confirmed_only=True)
         expected_dataset = [
             {
-                **self.example1.to_dict(),
-                "categories": sorted([self.category1.to_string(), self.category2.to_string()]),
+                **self.data1,
+                "label": sorted([self.category1.to_string(), self.category2.to_string()]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -476,6 +495,8 @@ class TestExportRelation(TestExport):
             "ExportedRelation", from_id=self.span1, to_id=self.span2, example=self.example1, user=self.project.admin
         )
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
+        self.data1 = self.data_to_text(self.example1)
+        self.data2 = self.data_to_text(self.example2)
 
     def test_unconfirmed_and_non_collaborative(self):
         self.prepare_data()
@@ -483,23 +504,23 @@ class TestExportRelation(TestExport):
         expected_datasets = {
             self.project.admin.username: [
                 {
-                    **self.example1.to_dict(),
+                    **self.data1,
                     "entities": [self.span1.to_dict(), self.span2.to_dict()],
                     "relations": [self.relation.to_dict()],
                 },
-                {**self.example2.to_dict(), "entities": [], "relations": []},
+                {**self.data2, "entities": [], "relations": []},
             ],
             self.project.annotator.username: [
                 {
-                    **self.example1.to_dict(),
+                    **self.data1,
                     "entities": [self.span3.to_dict()],
                     "relations": [],
                 },
-                {**self.example2.to_dict(), "entities": [], "relations": []},
+                {**self.data2, "entities": [], "relations": []},
             ],
             self.project.approver.username: [
-                {**self.example1.to_dict(), "entities": [], "relations": []},
-                {**self.example2.to_dict(), "entities": [], "relations": []},
+                {**self.data1, "entities": [], "relations": []},
+                {**self.data2, "entities": [], "relations": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -510,11 +531,11 @@ class TestExportRelation(TestExport):
         dataset = self.export_dataset()
         expected_dataset = [
             {
-                **self.example1.to_dict(),
+                **self.data1,
                 "entities": [self.span1.to_dict(), self.span2.to_dict(), self.span3.to_dict()],
                 "relations": [self.relation.to_dict()],
             },
-            {**self.example2.to_dict(), "entities": [], "relations": []},
+            {**self.data2, "entities": [], "relations": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -524,7 +545,7 @@ class TestExportRelation(TestExport):
         expected_datasets = {
             self.project.admin.username: [
                 {
-                    **self.example1.to_dict(),
+                    **self.data1,
                     "entities": [self.span1.to_dict(), self.span2.to_dict()],
                     "relations": [self.relation.to_dict()],
                 },
@@ -540,7 +561,7 @@ class TestExportRelation(TestExport):
         dataset = self.export_dataset(confirmed_only=True)
         expected_dataset = [
             {
-                **self.example1.to_dict(),
+                **self.data1,
                 "entities": [self.span1.to_dict(), self.span2.to_dict(), self.span3.to_dict()],
                 "relations": [self.relation.to_dict()],
             }
