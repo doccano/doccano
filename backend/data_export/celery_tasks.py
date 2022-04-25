@@ -16,34 +16,24 @@ from projects.models import Member, Project
 logger = get_task_logger(__name__)
 
 
-def create_collaborative_dataset(project: Project, file_format: str, confirmed_only: bool):
+def create_collaborative_dataset(project: Project, dirpath: str, confirmed_only: bool, formatters, writer):
+    is_text_project = project.is_text_project
     if confirmed_only:
         examples = ExportedExample.objects.confirmed(project)
     else:
         examples = ExportedExample.objects.filter(project=project)
-    is_text_project = project.is_text_project
     labels = create_labels(project, examples)
     dataset = Dataset(examples, labels, is_text_project)
 
-    formatters = create_formatter(project, file_format)
-    writer = create_writer(file_format)
     service = ExportApplicationService(dataset, formatters, writer)
-    dirname = str(uuid.uuid4())
-    dirpath = os.path.join(settings.MEDIA_ROOT, dirname)
-    os.makedirs(dirpath, exist_ok=True)
+
     filepath = os.path.join(dirpath, f"all.{writer.extension}")
     service.export(filepath)
-    zip_file = shutil.make_archive(dirpath, "zip", dirpath)
-    shutil.rmtree(dirpath)
-    return zip_file
 
 
-def create_individual_dataset(project: Project, file_format: str, confirmed_only: bool):
-    members = Member.objects.filter(project=project)
+def create_individual_dataset(project: Project, dirpath: str, confirmed_only: bool, formatters, writer):
     is_text_project = project.is_text_project
-    dirname = str(uuid.uuid4())
-    dirpath = os.path.join(settings.MEDIA_ROOT, dirname)
-    os.makedirs(dirpath, exist_ok=True)
+    members = Member.objects.filter(project=project)
     for member in members:
         if confirmed_only:
             examples = ExportedExample.objects.confirmed(project, user=member.user)
@@ -52,20 +42,23 @@ def create_individual_dataset(project: Project, file_format: str, confirmed_only
         labels = create_labels(project, examples, member.user)
         dataset = Dataset(examples, labels, is_text_project)
 
-        formatters = create_formatter(project, file_format)
-        writer = create_writer(file_format)
         service = ExportApplicationService(dataset, formatters, writer)
+
         filepath = os.path.join(dirpath, f"{member.username}.{writer.extension}")
         service.export(filepath)
-    zip_file = shutil.make_archive(dirpath, "zip", dirpath)
-    shutil.rmtree(dirpath)
-    return zip_file
 
 
 @shared_task
 def export_dataset(project_id, file_format: str, confirmed_only=False):
     project = get_object_or_404(Project, pk=project_id)
+    dirpath = os.path.join(settings.MEDIA_ROOT, str(uuid.uuid4()))
+    os.makedirs(dirpath, exist_ok=True)
+    formatters = create_formatter(project, file_format)
+    writer = create_writer(file_format)
     if project.collaborative_annotation:
-        return create_collaborative_dataset(project, file_format, confirmed_only)
+        create_collaborative_dataset(project, dirpath, confirmed_only, formatters, writer)
     else:
-        return create_individual_dataset(project, file_format, confirmed_only)
+        create_individual_dataset(project, dirpath, confirmed_only, formatters, writer)
+    zip_file = shutil.make_archive(dirpath, "zip", dirpath)
+    shutil.rmtree(dirpath)
+    return zip_file
