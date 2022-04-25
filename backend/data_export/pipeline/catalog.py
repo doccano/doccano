@@ -1,10 +1,7 @@
 from collections import defaultdict
+from pathlib import Path
 from typing import Dict, List, Type
 
-from pydantic import BaseModel
-from typing_extensions import Literal
-
-from . import examples
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
@@ -13,6 +10,8 @@ from projects.models import (
     SEQUENCE_LABELING,
     SPEECH2TEXT,
 )
+
+EXAMPLE_DIR = Path(__file__).parent.resolve() / "examples"
 
 
 class Format:
@@ -27,40 +26,18 @@ class Format:
 
 class CSV(Format):
     name = "CSV"
-    extension = "csv"
 
 
 class FastText(Format):
     name = "fastText"
-    extension = "txt"
 
 
 class JSON(Format):
     name = "JSON"
-    extension = "json"
 
 
 class JSONL(Format):
     name = "JSONL"
-    extension = "jsonl"
-
-
-class IntentAndSlot(Format):
-    name = "JSONL(intent and slot)"
-    extension = "jsonl"
-
-
-class JSONLRelation(Format):
-    name = "JSONL(relation)"
-    extension = "jsonl"
-
-
-class OptionDelimiter(BaseModel):
-    delimiter: Literal[",", "\t", ";", "|", " "] = ","
-
-
-class OptionNone(BaseModel):
-    pass
 
 
 class Options:
@@ -69,35 +46,46 @@ class Options:
     @classmethod
     def filter_by_task(cls, task_name: str):
         options = cls.options[task_name]
-        return [
-            {**file_format.dict(), **option.schema(), "example": example} for file_format, option, example in options
-        ]
+        return [{**file_format.dict(), "example": example} for file_format, example in options]
 
     @classmethod
-    def register(cls, task: str, file_format: Type[Format], option: Type[BaseModel], example: str):
-        cls.options[task].append((file_format, option, example))
+    def register(cls, task: str, file_format: Type[Format], file: Path):
+        example = cls.load_example(file)
+        cls.options[task].append((file_format, example))
+
+    @staticmethod
+    def load_example(file):
+        with open(file, encoding="utf-8") as f:
+            return f.read()
 
 
 # Text Classification
-Options.register(DOCUMENT_CLASSIFICATION, CSV, OptionDelimiter, examples.Category_CSV)
-Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionNone, examples.Category_fastText)
-Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionNone, examples.Category_JSON)
-Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionNone, examples.Category_JSONL)
+TEXT_CLASSIFICATION_DIR = EXAMPLE_DIR / "text_classification"
+Options.register(DOCUMENT_CLASSIFICATION, CSV, TEXT_CLASSIFICATION_DIR / "example.csv")
+Options.register(DOCUMENT_CLASSIFICATION, FastText, TEXT_CLASSIFICATION_DIR / "example.txt")
+Options.register(DOCUMENT_CLASSIFICATION, JSON, TEXT_CLASSIFICATION_DIR / "example.json")
+Options.register(DOCUMENT_CLASSIFICATION, JSONL, TEXT_CLASSIFICATION_DIR / "example.jsonl")
 
 # Sequence Labeling
-Options.register(SEQUENCE_LABELING, JSONL, OptionNone, examples.Offset_JSONL)
-Options.register(SEQUENCE_LABELING, JSONLRelation, OptionNone, examples.ENTITY_AND_RELATION_JSONL)
+SEQUENCE_LABELING_DIR = EXAMPLE_DIR / "sequence_labeling"
+RELATION_EXTRACTION_DIR = EXAMPLE_DIR / "relation_extraction"
+Options.register(SEQUENCE_LABELING, JSONL, SEQUENCE_LABELING_DIR / "example.jsonl")
+Options.register(SEQUENCE_LABELING, JSONL, RELATION_EXTRACTION_DIR / "example.jsonl")
 
 # Sequence to sequence
-Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
-Options.register(SEQ2SEQ, JSON, OptionNone, examples.Text_JSON)
-Options.register(SEQ2SEQ, JSONL, OptionNone, examples.Text_JSONL)
+SEQ2SEQ_DIR = EXAMPLE_DIR / "sequence_to_sequence"
+Options.register(SEQ2SEQ, CSV, SEQ2SEQ_DIR / "example.csv")
+Options.register(SEQ2SEQ, JSON, SEQ2SEQ_DIR / "example.json")
+Options.register(SEQ2SEQ, JSONL, SEQ2SEQ_DIR / "example.jsonl")
 
 # Intent detection and slot filling
-Options.register(INTENT_DETECTION_AND_SLOT_FILLING, IntentAndSlot, OptionNone, examples.INTENT_JSONL)
+INTENT_DETECTION_DIR = EXAMPLE_DIR / "intent_detection"
+Options.register(INTENT_DETECTION_AND_SLOT_FILLING, JSONL, INTENT_DETECTION_DIR / "example.jsonl")
 
 # Image Classification
-Options.register(IMAGE_CLASSIFICATION, JSONL, OptionNone, examples.CategoryImageClassification)
+IMAGE_CLASSIFICATION_DIR = EXAMPLE_DIR / "image_classification"
+Options.register(IMAGE_CLASSIFICATION, JSONL, IMAGE_CLASSIFICATION_DIR / "example.jsonl")
 
 # Speech to Text
-Options.register(SPEECH2TEXT, JSONL, OptionNone, examples.Speech2Text)
+SPEECH2TEXT_DIR = EXAMPLE_DIR / "speech_to_text"
+Options.register(SPEECH2TEXT, JSONL, SPEECH2TEXT_DIR / "example.jsonl")

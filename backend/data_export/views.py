@@ -39,6 +39,6 @@ class DatasetExportAPI(APIView):
         file_format = request.data.pop("format")
         export_approved = request.data.pop("exportApproved", False)
         task = export_dataset.delay(
-            project_id=project_id, file_format=file_format, export_approved=export_approved, **request.data
+            project_id=project_id, file_format=file_format, confirmed_only=export_approved, **request.data
         )
         return Response({"task_id": task.task_id})
