@@ -8,13 +8,14 @@ from data_export.models import ExportedExample
 
 
 class Dataset:
-    def __init__(self, examples: QuerySet[ExportedExample], labels: List[Labels]):
+    def __init__(self, examples: QuerySet[ExportedExample], labels: List[Labels], is_text_project=True):
         self.examples = examples
         self.labels = labels
+        self.is_text_project = is_text_project
 
     def __iter__(self) -> Iterator[Dict[str, Any]]:
         for example in self.examples:
-            data = example.to_dict()
+            data = example.to_dict(self.is_text_project)
             for labels in self.labels:
                 data.update(**labels.find_by(example.id))
             yield data

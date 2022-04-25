@@ -17,16 +17,17 @@ logger = get_task_logger(__name__)
 
 def create_collaborative_dataset(project: Project, file_format: str, confirmed_only: bool):
     if confirmed_only:
-        examples = ExportedExample.objects.confirmed(is_collaborative=project.collaborative_annotation)
+        examples = ExportedExample.objects.confirmed(project)
     else:
-        examples = ExportedExample.objects.all()
+        examples = ExportedExample.objects.filter(project=project)
+    is_text_project = project.is_text_project
     labels = create_labels(project, examples)
-    dataset = Dataset(examples, labels)
+    dataset = Dataset(examples, labels, is_text_project)
 
     formatters = create_formatter(project, file_format)
     writer = create_writer(file_format)
     service = ExportApplicationService(dataset, formatters, writer)
-    filepath = os.path.join(settings.MEDIA_URL, f"all.{writer.extension}")
+    filepath = os.path.join(settings.MEDIA_ROOT, f"all.{writer.extension}")
     service.export(filepath)
     return filepath
 
@@ -34,23 +35,22 @@ def create_collaborative_dataset(project: Project, file_format: str, confirmed_o
 def create_individual_dataset(project: Project, file_format: str, confirmed_only: bool):
     files = []
     members = Member.objects.filter(project=project)
+    is_text_project = project.is_text_project
     for member in members:
         if confirmed_only:
-            examples = ExportedExample.objects.confirmed(
-                is_collaborative=project.collaborative_annotation, user=member.user
-            )
+            examples = ExportedExample.objects.confirmed(project, user=member.user)
         else:
-            examples = ExportedExample.objects.all()
+            examples = ExportedExample.objects.filter(project=project)
         labels = create_labels(project, examples, member.user)
-        dataset = Dataset(examples, labels)
+        dataset = Dataset(examples, labels, is_text_project)
 
         formatters = create_formatter(project, file_format)
         writer = create_writer(file_format)
         service = ExportApplicationService(dataset, formatters, writer)
-        filepath = os.path.join(settings.MEDIA_URL, f"{member.username}.{writer.extension}")
+        filepath = os.path.join(settings.MEDIA_ROOT, f"{member.username}.{writer.extension}")
         service.export(filepath)
         files.append(filepath)
-    zip_file = zip_files(files, settings.MEDIA_URL)
+    zip_file = zip_files(files, settings.MEDIA_ROOT)
     remove_files(files)
     return zip_file
 

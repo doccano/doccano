@@ -14,17 +14,17 @@ class TestExportedExample(TestCase):
 
     def test_collaborative(self):
         self.prepare_data(collaborative=True)
-        examples = ExportedExample.objects.confirmed(is_collaborative=True)
+        examples = ExportedExample.objects.confirmed(self.project.item)
         self.assertEqual(examples.count(), 1)
         self.assertEqual(examples.first(), self.example1)
 
     def test_filter_by_confirmed_user(self):
         self.prepare_data(collaborative=False)
-        examples = ExportedExample.objects.confirmed(is_collaborative=False, user=self.project.admin)
+        examples = ExportedExample.objects.confirmed(self.project.item, user=self.project.admin)
         self.assertEqual(examples.count(), 1)
         self.assertEqual(examples.first(), self.example1)
 
     def test_filter_by_unconfirmed_user(self):
         self.prepare_data(collaborative=False)
-        examples = ExportedExample.objects.confirmed(is_collaborative=False, user=self.project.annotator)
+        examples = ExportedExample.objects.confirmed(self.project.item, user=self.project.annotator)
         self.assertEqual(examples.count(), 0)

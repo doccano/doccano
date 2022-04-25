@@ -4,24 +4,25 @@ from django.db import models
 
 from examples.models import Example
 from labels.models import Category, Relation, Span, TextLabel
+from projects.models import Project
 
 DATA = "data"
 
 
 class ExportedExampleManager(models.Manager):
-    def confirmed(self, is_collaborative=False, user=None):
-        if is_collaborative:
-            return self.exclude(states=None)
+    def confirmed(self, project: Project, user=None):
+        if project.collaborative_annotation:
+            return self.filter(project=project).exclude(states=None)
         else:
             assert user is not None
-            return self.filter(states__confirmed_by=user)
+            return self.filter(project=project, states__confirmed_by=user)
 
 
 class ExportedExample(Example):
     objects = ExportedExampleManager()
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {"id": self.id, DATA: self.text if self.project.is_text_project else self.upload_name, **self.meta}
+    def to_dict(self, is_text_project=True) -> Dict[str, Any]:
+        return {"id": self.id, DATA: self.text if is_text_project else self.upload_name, **self.meta}
 
     class Meta:
         proxy = True

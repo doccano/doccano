@@ -49,7 +49,7 @@ class TestExport(TestCase):
         return d
 
     def data_to_filename(self, example):
-        d = example.to_dict()
+        d = example.to_dict(is_text_project=False)
         d["filename"] = d.pop(DATA)
         return d
 
