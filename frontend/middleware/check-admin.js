@@ -6,7 +6,6 @@ export default _.debounce(async function({ app, store, route, redirect }) {
   } catch(e) {
     redirect('/projects')
   }
-  const userId = store.getters['auth/getUserId']
   const isProjectAdmin = await app.$services.member.isProjectAdmin(route.params.id)
   const projectRoot = app.localePath('/projects/' + route.params.id)
   const path = route.fullPath.replace(/\/$/g, '')

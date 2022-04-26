@@ -35,7 +35,7 @@ export class APICommentRepository implements CommentRepository {
 
   async delete(projectId: string, commentId: number): Promise<void> {
     const url = `/projects/${projectId}/comments/${commentId}`
-    const response = await this.request.delete(url)
+    await this.request.delete(url)
   }
 
   async deleteBulk(projectId: string, items: number[]): Promise<void> {

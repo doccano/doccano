@@ -165,12 +165,12 @@ export default {
     },
     textFields() {
       const asArray = Object.entries(this.properties)
-      const textFields = asArray.filter(([key, value]) => !('enum' in value))
+      const textFields = asArray.filter(([_, value]) => !('enum' in value))
       return Object.fromEntries(textFields)
     },
     selectFields() {
       const asArray = Object.entries(this.properties)
-      const textFields = asArray.filter(([key, value]) => 'enum' in value)
+      const textFields = asArray.filter(([_, value]) => 'enum' in value)
       return Object.fromEntries(textFields)
     },
     acceptedFileTypes() {

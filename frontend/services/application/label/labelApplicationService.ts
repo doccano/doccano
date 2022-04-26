@@ -63,11 +63,6 @@ export class LabelApplicationService {
   async upload(projectId: string, file: File) {
     const formData = new FormData()
     formData.append('file', file)
-    const config = {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }
     await this.repository.uploadFile(projectId, formData)
   }
 }

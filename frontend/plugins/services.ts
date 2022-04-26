@@ -75,7 +75,7 @@ declare module 'vue/types/vue' {
   }
 }
 
-const plugin: Plugin = (context, inject) => {
+const plugin: Plugin = (_, inject) => {
   const memberRepository     = new APIMemberRepository()
   const userRepository       = new APIUserRepository()
   const roleRepository       = new APIRoleRepository()

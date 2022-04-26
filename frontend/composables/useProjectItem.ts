@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { reactive, useContext } from '@nuxtjs/composition-api'
 import { ProjectDTO } from '@/services/application/project/projectData'
 
