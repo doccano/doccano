@@ -54,7 +54,7 @@ export default Vue.extend({
   props: {
     login: {
       type: Function,
-      default: (username: string, password: string) => Promise
+      default: () => Promise
     }
   },
   data() {

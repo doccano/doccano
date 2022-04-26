@@ -1,6 +1,5 @@
 import { TagDTO } from './tagData'
 import { TagRepository } from '~/domain/models/tag/tagRepository'
-import { TagItem } from '~/domain/models/tag/tag'
 
 
 export class TagApplicationService {

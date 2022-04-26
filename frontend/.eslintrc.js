@@ -19,12 +19,12 @@ module.exports = {
         message: 'Unexpected property on console object was called'
       }
     ],
-    'vue/valid-template-root': 'off',
-    'space-before-function-paren': ['error', 'never'],
+    // 'vue/valid-template-root': 'off',
+    // 'space-before-function-paren': ['error', 'never'],
     'no-useless-constructor': 'off',
-    '@typescript-eslint/no-useless-constructor': 'off',
-    'no-unused-vars': 'off',
-    '@typescript-eslint/no-unused-vars': 'off',
-    camelcase: 'off'
+    // '@typescript-eslint/no-useless-constructor': 'off',
+    // 'no-unused-vars': 'off',
+    // '@typescript-eslint/no-unused-vars': 'off',
+    'camelcase': 'off'
   }
 }

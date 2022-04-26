@@ -1,4 +1,4 @@
-import { ConfigRepository, ConfigTestResponse } from '~/domain/models/autoLabeling/configRepository'
+import { ConfigRepository } from '~/domain/models/autoLabeling/configRepository'
 import { ConfigItemList, ConfigItem } from '~/domain/models/autoLabeling/config'
 
 export class ConfigApplicationService {

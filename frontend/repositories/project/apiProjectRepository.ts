@@ -29,7 +29,7 @@ export class APIProjectRepository implements ProjectRepository {
 
   async update(item: ProjectWriteItem): Promise<void> {
     const url = `/projects/${item.id}`
-    const response = await this.request.patch(url, item.toObject())
+    await this.request.patch(url, item.toObject())
   }
 
   async bulkDelete(projectIds: number[]): Promise<void> {

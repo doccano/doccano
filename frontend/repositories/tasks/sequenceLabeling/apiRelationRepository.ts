@@ -28,7 +28,7 @@ export class ApiRelationRepository implements RelationRepository {
 
     async delete(projectId: string, exampleId: number, relationId: number): Promise<void> {
         const url = `/projects/${projectId}/examples/${exampleId}/relations/${relationId}`
-        const response = await this.request.delete(url)
+        await this.request.delete(url)
     }
 
     async bulkDelete(projectId: string, exampleId: number, relationIds: number[]): Promise<void> {
