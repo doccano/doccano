@@ -3,13 +3,11 @@ name: doccano CI
 on: [push, pull_request]
 
 jobs:
-  build:
-
+  backend:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./backend
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.8
@@ -40,3 +38,20 @@ jobs:
     - name: Run tests
       run: |
         poetry run task test
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Install Yarn
+        run: npm install -g yarn
+      - name: Install npm modules
+        run: yarn install
+      - name: Lint
+        run: yarn lint
