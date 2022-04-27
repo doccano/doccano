@@ -12,8 +12,9 @@ RUN groupadd -g 61000 doccano \
   && useradd -g 61000 -l -M -s /bin/false -u 61000 doccano
 
 COPY --chown=doccano:doccano backend/pyproject.toml backend/poetry.lock /backend/
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# hadolint ignore=DL3013
+# hadolint ignore=DL3013,DL3008
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     netcat=1.* \
@@ -21,7 +22,7 @@ RUN apt-get update \
     unixodbc-dev=2.* \
     g++=4:* \
     curl \
- && pip install --upgrade pip \
+ && pip install --upgrade --no-cache-dir pip \
  && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python - \
  && PATH="${PATH}:$HOME/.poetry/bin" \
  && poetry config virtualenvs.create false \
