@@ -3,6 +3,10 @@ junitxml
 .mypy_cache
 .pytest_cache
 .vscode
+.git
+.github
+.DS_Store
+dist
 
 backend/*.sqlite3*
 backend/junitxml
@@ -12,6 +16,7 @@ backend/stored_uploads
 backend/staticfiles
 backend/venv
 backend/**/__pycache__/
+backend/.mypy_cache
 
 frontend/.nuxt/
 frontend/coverage/

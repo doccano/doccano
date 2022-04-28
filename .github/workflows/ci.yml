@@ -55,3 +55,14 @@ jobs:
         run: yarn install
       - name: Lint
         run: yarn lint
+
+  docker-lint:
+    runs-on: ubuntu-latest
+    container: hadolint/hadolint:latest-debian
+    defaults:
+      run:
+        working-directory: ./docker
+    steps:
+      - uses: actions/checkout@v2
+      - name: hadolint
+        run: hadolint ./Dockerfile*
