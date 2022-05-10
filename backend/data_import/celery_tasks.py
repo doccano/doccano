@@ -12,7 +12,7 @@ from .pipeline.catalog import AudioFile, ImageFile
 from .pipeline.exceptions import FileTypeException, MaximumFileSizeException
 from .pipeline.factories import create_builder, create_cleaner, create_parser
 from .pipeline.readers import FileName, Reader
-from .pipeline.writers import BulkWriter
+from .pipeline.writers import Writer
 from projects.models import Project
 
 
@@ -63,7 +63,7 @@ def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str],
     builder = create_builder(project, **kwargs)
     reader = Reader(filenames=filenames, parser=parser, builder=builder)
     cleaner = create_cleaner(project)
-    writer = BulkWriter(batch_size=settings.IMPORT_BATCH_SIZE)
+    writer = Writer(batch_size=settings.IMPORT_BATCH_SIZE)
     writer.save(reader, project, user, cleaner)
     upload_to_store(temporary_uploads)
     return {"error": writer.errors + errors}

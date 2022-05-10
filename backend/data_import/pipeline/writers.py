@@ -1,4 +1,3 @@
-import abc
 import itertools
 from collections import defaultdict
 from typing import Any, Dict, List, Type
@@ -10,17 +9,6 @@ from .readers import BaseReader, Record
 from examples.models import Example
 from label_types.models import CategoryType, LabelType, SpanType
 from projects.models import Project
-
-
-class Writer(abc.ABC):
-    @abc.abstractmethod
-    def save(self, reader: BaseReader, project: Project, user, cleaner):
-        """Save the read contents to DB."""
-        raise NotImplementedError("Please implement this method in the subclass.")
-
-    def errors(self) -> List[Dict[Any, Any]]:
-        """Return errors."""
-        raise NotImplementedError("Please implement this method in the subclass.")
 
 
 def group_by_class(instances):
@@ -54,7 +42,7 @@ class Examples:
         return len(self) == 0
 
 
-class BulkWriter(Writer):
+class Writer:
     def __init__(self, batch_size: int):
         self.examples = Examples(batch_size)
         self._errors: List[FileParseException] = []
