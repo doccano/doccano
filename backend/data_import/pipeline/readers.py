@@ -35,7 +35,7 @@ class Record:
         changed = len(label) != len(self.label)
         self._label = label
         if changed:
-            raise FileParseException(filename=self._data.filename, line_num=self._line_num, message=cleaner.message)
+            return FileParseException(filename=self._data.filename, line_num=self._line_num, message=cleaner.message)
 
     @property
     def data(self):
@@ -104,10 +104,11 @@ class Builder(abc.ABC):
 
 
 class Reader(BaseReader):
-    def __init__(self, filenames: List[FileName], parser: Parser, builder: Builder):
+    def __init__(self, filenames: List[FileName], parser: Parser, builder: Builder, cleaner: Cleaner):
         self.filenames = filenames
         self.parser = parser
         self.builder = builder
+        self.cleaner = cleaner
         self._errors: List[FileParseException] = []
 
     def __iter__(self) -> Iterator[Record]:
@@ -115,7 +116,11 @@ class Reader(BaseReader):
             rows = self.parser.parse(filename.full_path)
             for line_num, row in enumerate(rows, start=1):
                 try:
-                    yield self.builder.build(row, filename, line_num)
+                    record = self.builder.build(row, filename, line_num)
+                    maybe_error = record.clean(self.cleaner)
+                    if maybe_error:
+                        self._errors.append(maybe_error)
+                    yield record
                 except FileParseException as e:
                     self._errors.append(e)
 
@@ -123,4 +128,5 @@ class Reader(BaseReader):
     def errors(self) -> List[FileParseException]:
         """Aggregates parser and builder errors."""
         errors = self.parser.errors + self._errors
-        return errors
+        errors.sort(key=lambda error: error.line_num)
+        return [error.dict() for error in errors]

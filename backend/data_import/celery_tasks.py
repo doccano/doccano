@@ -61,12 +61,12 @@ def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str],
 
     parser = create_parser(file_format, **kwargs)
     builder = create_builder(project, **kwargs)
-    reader = Reader(filenames=filenames, parser=parser, builder=builder)
     cleaner = create_cleaner(project)
+    reader = Reader(filenames=filenames, parser=parser, builder=builder, cleaner=cleaner)
     writer = Writer(batch_size=settings.IMPORT_BATCH_SIZE)
-    writer.save(reader, project, user, cleaner)
+    writer.save(reader, project, user)
     upload_to_store(temporary_uploads)
-    return {"error": writer.errors + errors}
+    return {"error": reader.errors + errors}
 
 
 def upload_to_store(temporary_uploads):
