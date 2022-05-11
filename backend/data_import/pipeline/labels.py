@@ -5,7 +5,7 @@ from pydantic import BaseModel, validator
 
 from label_types.models import CategoryType, LabelType, SpanType
 from labels.models import Category, Span
-from labels.models import TextLabel as TL
+from labels.models import TextLabel as TL, Label as LabelModel
 from projects.models import Project
 
 
@@ -24,11 +24,11 @@ class Label(BaseModel, abc.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def create(self, project: Project) -> Optional[LabelType]:
+    def create_type(self, project: Project) -> Optional[LabelType]:
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def create_annotation(self, user, example, mapping):
+    def create(self, user, example, mapping) -> LabelModel:
         raise NotImplementedError
 
     def __hash__(self):
@@ -61,10 +61,10 @@ class CategoryLabel(Label):
         else:
             raise TypeError(f"{obj} is not str.")
 
-    def create(self, project: Project) -> Optional[LabelType]:
+    def create_type(self, project: Project) -> Optional[LabelType]:
         return CategoryType(text=self.label, project=project)
 
-    def create_annotation(self, user, example, mapping: Dict[str, LabelType]):
+    def create(self, user, example, mapping: Dict[str, LabelType]):
         return Category(user=user, example=example, label=mapping[self.label])
 
 
@@ -91,10 +91,10 @@ class SpanLabel(Label):
         else:
             raise TypeError(f"{obj} is invalid type.")
 
-    def create(self, project: Project) -> Optional[LabelType]:
+    def create_type(self, project: Project) -> Optional[LabelType]:
         return SpanType(text=self.label, project=project)
 
-    def create_annotation(self, user, example, mapping: Dict[str, LabelType]):
+    def create(self, user, example, mapping: Dict[str, LabelType]):
         return Span(
             user=user,
             example=example,
@@ -121,8 +121,8 @@ class TextLabel(Label):
         else:
             raise TypeError(f"{obj} is not str or empty.")
 
-    def create(self, project: Project) -> Optional[LabelType]:
+    def create_type(self, project: Project) -> Optional[LabelType]:
         return None
 
-    def create_annotation(self, user, example, mapping):
+    def create(self, user, example, mapping):
         return TL(user=user, example=example, text=self.text)

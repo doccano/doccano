@@ -22,9 +22,7 @@ def group_by_class(instances):
 class Record:
     """Record represents a data."""
 
-    def __init__(
-        self, data: BaseData, label: List[Label] = None, meta: Dict[Any, Any] = None, line_num: int = -1
-    ):
+    def __init__(self, data: BaseData, label: List[Label] = None, meta: Dict[Any, Any] = None, line_num: int = -1):
         if label is None:
             label = []
         if meta is None:
@@ -51,12 +49,12 @@ class Record:
     def create_data(self, project) -> Example:
         return self._data.create(project=project, meta=self._meta)
 
-    def create_label(self, project) -> List[LabelType]:
-        labels = [label.create(project) for label in self._label]
+    def create_label_type(self, project) -> List[LabelType]:
+        labels = [label.create_type(project) for label in self._label]
         return list(filter(None, labels))
 
-    def create_annotation(self, user, example, mapping):
-        return [label.create_annotation(user, example, mapping) for label in self._label]
+    def create_label(self, user, example, mapping) -> List[LabelModel]:
+        return [label.create(user, example, mapping) for label in self._label]
 
     @property
     def label(self):
@@ -68,23 +66,25 @@ class LabeledExamples:
         self.records = records
 
     def create_data(self, project: Project) -> List[Example]:
-        return [record.create_data(project) for record in self.records]
+        examples = [record.create_data(project) for record in self.records]
+        examples = Example.objects.bulk_create(examples)
+        return examples
 
-    def create_label_type(self, project: Project) -> Dict[Type[LabelType], List[LabelType]]:
-        labels = [record.create_label(project) for record in self.records]
-        flatten = list(itertools.chain.from_iterable(labels))
-        return group_by_class(flatten)
+    def create_label_type(self, project: Project):
+        labels = [record.create_label_type(project) for record in self.records]
+        flatten = itertools.chain.from_iterable(labels)
+        for label_type_class, instances in group_by_class(flatten).items():
+            label_type_class.objects.bulk_create(instances, ignore_conflicts=True)
 
-    def create_label(self, project: Project, user, examples: List[Example]) -> Dict[Type[LabelModel], List[LabelModel]]:
+    def create_label(self, project: Project, user, examples: List[Example]):
         mapping = {}
         label_types: List[Type[LabelType]] = [CategoryType, SpanType]
         for model in label_types:
             for label in model.objects.filter(project=project):
                 mapping[label.text] = label
 
-        annotations = list(
-            itertools.chain.from_iterable(
-                [data.create_annotation(user, example, mapping) for data, example in zip(self.records, examples)]
-            )
+        labels = itertools.chain.from_iterable(
+            [data.create_label(user, example, mapping) for data, example in zip(self.records, examples)]
         )
-        return group_by_class(annotations)
+        for label_class, instances in group_by_class(labels).items():
+            label_class.objects.bulk_create(instances)
