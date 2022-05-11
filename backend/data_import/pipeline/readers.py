@@ -72,6 +72,10 @@ class BaseReader(collections.abc.Iterable):
     def errors(self):
         raise NotImplementedError("Please implement this method in the subclass.")
 
+    @abc.abstractmethod
+    def batch(self, batch_size: int) -> Iterator[List[Record]]:
+        raise NotImplementedError("Please implement this method in the subclass.")
+
 
 class Parser(abc.ABC):
     """The abstract file parser."""
@@ -123,6 +127,16 @@ class Reader(BaseReader):
                     yield record
                 except FileParseException as e:
                     self._errors.append(e)
+
+    def batch(self, batch_size: int) -> Iterator[List[Record]]:
+        batch = []
+        for record in self:
+            batch.append(record)
+            if len(batch) == batch_size:
+                yield batch
+                batch = []
+        if batch:
+            yield batch
 
     @property
     def errors(self) -> List[FileParseException]:
