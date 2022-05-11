@@ -6,8 +6,9 @@ from pydantic import ValidationError
 
 from .data import BaseData
 from .exceptions import FileParseException
+from .labeled_examples import Record
 from .labels import Label
-from .readers import Builder, FileName, Record
+from .readers import Builder, FileName
 
 logger = getLogger(__name__)
 

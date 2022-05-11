@@ -1,58 +1,14 @@
 import abc
 import collections.abc
 import dataclasses
-from typing import Any, Dict, Iterator, List, Type
+from typing import Any, Dict, Iterator, List
 
 from .cleaners import Cleaner
-from .data import BaseData
 from .exceptions import FileParseException
-from .labels import Label
+from .labeled_examples import LabeledExamples, Record
 
 DEFAULT_TEXT_COLUMN = "text"
 DEFAULT_LABEL_COLUMN = "label"
-
-
-class Record:
-    """Record represents a data."""
-
-    def __init__(
-        self, data: Type[BaseData], label: List[Label] = None, meta: Dict[Any, Any] = None, line_num: int = -1
-    ):
-        if label is None:
-            label = []
-        if meta is None:
-            meta = {}
-        self._data = data
-        self._label = label
-        self._meta = meta
-        self._line_num = line_num
-
-    def __str__(self):
-        return f"{self._data}\t{self._label}"
-
-    def clean(self, cleaner: Cleaner):
-        label = cleaner.clean(self._label)
-        changed = len(label) != len(self.label)
-        self._label = label
-        if changed:
-            return FileParseException(filename=self._data.filename, line_num=self._line_num, message=cleaner.message)
-
-    @property
-    def data(self):
-        return self._data
-
-    def create_data(self, project):
-        return self._data.create(project, self._meta)
-
-    def create_label(self, project):
-        return [label.create(project) for label in self._label]
-
-    def create_annotation(self, user, example, mapping):
-        return [label.create_annotation(user, example, mapping) for label in self._label]
-
-    @property
-    def label(self):
-        return [label.dict() for label in self._label if label.has_name() and label.name]
 
 
 class BaseReader(collections.abc.Iterable):
@@ -73,7 +29,7 @@ class BaseReader(collections.abc.Iterable):
         raise NotImplementedError("Please implement this method in the subclass.")
 
     @abc.abstractmethod
-    def batch(self, batch_size: int) -> Iterator[List[Record]]:
+    def batch(self, batch_size: int) -> Iterator[LabeledExamples]:
         raise NotImplementedError("Please implement this method in the subclass.")
 
 
@@ -128,15 +84,15 @@ class Reader(BaseReader):
                 except FileParseException as e:
                     self._errors.append(e)
 
-    def batch(self, batch_size: int) -> Iterator[List[Record]]:
+    def batch(self, batch_size: int) -> Iterator[LabeledExamples]:
         batch = []
         for record in self:
             batch.append(record)
             if len(batch) == batch_size:
-                yield batch
+                yield LabeledExamples(batch)
                 batch = []
         if batch:
-            yield batch
+            yield LabeledExamples(batch)
 
     @property
     def errors(self) -> List[FileParseException]:
