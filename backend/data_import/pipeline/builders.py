@@ -22,17 +22,6 @@ class PlainBuilder(Builder):
         return Record(data=data)
 
 
-def build_label(row: Dict[Any, Any], name: str, label_class: Type[Label]) -> List[Label]:
-    labels = row[name]
-    labels = [labels] if isinstance(labels, (str, int)) else labels
-    return [label_class.parse(label) for label in labels]
-
-
-def build_data(row: Dict[Any, Any], name: str, data_class: Type[BaseData], filename: FileName) -> BaseData:
-    data = row[name]
-    return data_class.parse(text=data, filename=filename.generated_name, upload_name=filename.upload_name)
-
-
 class Column(abc.ABC):
     # Todo: need to redesign.
     def __init__(self, name: str, value_class: Any):
@@ -46,12 +35,16 @@ class Column(abc.ABC):
 
 class DataColumn(Column):
     def __call__(self, row: Dict[Any, Any], filename: FileName) -> BaseData:
-        return build_data(row, self.name, self.value_class, filename)
+        return self.value_class.parse(
+            text=row[self.name], filename=filename.generated_name, upload_name=filename.upload_name
+        )
 
 
 class LabelColumn(Column):
     def __call__(self, row: Dict[Any, Any], filename: FileName) -> List[Label]:
-        return build_label(row, self.name, self.value_class)
+        labels = row[self.name]
+        labels = [labels] if isinstance(labels, (str, int)) else labels
+        return [self.value_class.parse(label) for label in labels]
 
 
 class ColumnBuilder(Builder):
