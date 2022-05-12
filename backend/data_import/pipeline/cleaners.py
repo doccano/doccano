@@ -25,14 +25,16 @@ class SpanCleaner(Cleaner):
         if self.allow_overlapping:
             return labels
 
-        labels.sort(key=lambda label: label.start_offset)
+        span_labels = [label for label in labels if isinstance(label, SpanLabel)]
+        other_labels = [label for label in labels if not isinstance(label, SpanLabel)]
+        span_labels.sort(key=lambda label: label.start_offset)
         last_offset = -1
         new_labels = []
-        for label in labels:
+        for label in span_labels:
             if label.start_offset >= last_offset:
                 last_offset = label.end_offset
                 new_labels.append(label)
-        return new_labels
+        return new_labels + other_labels
 
     @property
     def message(self) -> str:

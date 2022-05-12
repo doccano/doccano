@@ -1,4 +1,13 @@
-from . import builders, catalog, cleaners, data, labels, parsers, readers
+from . import (
+    builders,
+    catalog,
+    cleaners,
+    data,
+    labeled_examples,
+    labels,
+    parsers,
+    readers,
+)
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
@@ -58,6 +67,14 @@ def create_cleaner(project):
         return cleaners.Cleaner(project)
     cleaner_class = mapping.get(project.project_type, cleaners.Cleaner)
     return cleaner_class(project)
+
+
+def select_examples(project):
+    use_relation = getattr(project, "use_relation", False)
+    if project.project_type == SEQUENCE_LABELING and use_relation:
+        return labeled_examples.RelationExamples
+    else:
+        return labeled_examples.LabeledExamples
 
 
 def create_builder(project, **kwargs):

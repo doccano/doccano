@@ -208,6 +208,42 @@ class TestImportSequenceLabelingData(TestImportData):
         self.assertEqual(len(response["error"]), 1)
 
 
+class TestImportRelationExtractionData(TestImportData):
+    task = SEQUENCE_LABELING
+
+    def setUp(self):
+        self.project = prepare_project(self.task, use_relation=True)
+        self.user = self.project.admin
+        self.data_path = pathlib.Path(__file__).parent / "data"
+        self.upload_id = _get_file_id()
+
+    def assert_examples(self, dataset):
+        self.assertEqual(Example.objects.count(), len(dataset))
+        for text, expected_spans in dataset:
+            example = Example.objects.get(text=text)
+            spans = [[span.start_offset, span.end_offset, span.label.text] for span in example.spans.all()]
+            self.assertEqual(spans, expected_spans)
+            self.assertEqual(example.relations.count(), 3)
+
+    def assert_parse_error(self, response):
+        self.assertGreaterEqual(len(response["error"]), 1)
+        self.assertEqual(Example.objects.count(), 0)
+        self.assertEqual(SpanType.objects.count(), 0)
+        self.assertEqual(Span.objects.count(), 0)
+
+    def test_jsonl(self):
+        filename = "relation_extraction/example.jsonl"
+        file_format = "JSONL"
+        dataset = [
+            (
+                "Google was founded on September 4, 1998, by Larry Page and Sergey Brin.",
+                [[0, 6, "ORG"], [22, 39, "DATE"], [44, 54, "PERSON"], [59, 70, "PERSON"]],
+            ),
+        ]
+        self.import_dataset(filename, file_format)
+        self.assert_examples(dataset)
+
+
 class TestImportSeq2seqData(TestImportData):
     task = SEQ2SEQ
 

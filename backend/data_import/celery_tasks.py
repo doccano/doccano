@@ -10,7 +10,12 @@ from django_drf_filepond.models import TemporaryUpload
 
 from .pipeline.catalog import AudioFile, ImageFile
 from .pipeline.exceptions import FileTypeException, MaximumFileSizeException
-from .pipeline.factories import create_builder, create_cleaner, create_parser
+from .pipeline.factories import (
+    create_builder,
+    create_cleaner,
+    create_parser,
+    select_examples,
+)
 from .pipeline.readers import FileName, Reader
 from .pipeline.writers import Writer
 from projects.models import Project
@@ -64,7 +69,8 @@ def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str],
     cleaner = create_cleaner(project)
     reader = Reader(filenames=filenames, parser=parser, builder=builder, cleaner=cleaner)
     writer = Writer(batch_size=settings.IMPORT_BATCH_SIZE)
-    writer.save(reader, project, user)
+    examples = select_examples(project)
+    writer.save(reader, project, user, examples)
     upload_to_store(temporary_uploads)
     return {"error": reader.errors + errors}
 

@@ -1,14 +1,15 @@
 import itertools
 from collections import defaultdict
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Optional, Type
 
 from .cleaners import Cleaner
 from .data import BaseData
 from .exceptions import FileParseException
-from .labels import Label
+from .labels import Label, RelationLabel, SpanLabel
 from examples.models import Example
-from label_types.models import CategoryType, LabelType, SpanType
+from label_types.models import CategoryType, LabelType, RelationType, SpanType
 from labels.models import Label as LabelModel
+from labels.models import Relation, Span
 from projects.models import Project
 
 
@@ -53,8 +54,20 @@ class Record:
         labels = [label.create_type(project) for label in self._label]
         return list(filter(None, labels))
 
-    def create_label(self, user, example, mapping) -> List[LabelModel]:
-        return [label.create(user, example, mapping) for label in self._label]
+    def create_label(
+        self, user, example, mapping, label_class: Optional[Type[Label]] = None, **kwargs
+    ) -> List[LabelModel]:
+        if label_class is None:
+            return [label.create(user, example, mapping) for label in self._label]
+        else:
+            return [
+                label.create(user, example, mapping, **kwargs)
+                for label in self._label
+                if isinstance(label, label_class)
+            ]
+
+    def select_label(self, label_class: Type[Label]) -> List[Label]:
+        return [label for label in self._label if isinstance(label, label_class)]
 
     @property
     def label(self):
@@ -88,3 +101,35 @@ class LabeledExamples:
         )
         for label_class, instances in group_by_class(labels).items():
             label_class.objects.bulk_create(instances)
+
+
+class RelationExamples(LabeledExamples):
+    def create_label(self, project: Project, user, examples: List[Example]):
+        mapping = {}
+        label_types: List[Type[LabelType]] = [RelationType, SpanType]
+        for model in label_types:
+            for label in model.objects.filter(project=project):
+                mapping[label.text] = label
+
+        labels = list(
+            itertools.chain.from_iterable(
+                [data.create_label(user, example, mapping, SpanLabel) for data, example in zip(self.records, examples)]
+            )
+        )
+        Span.objects.bulk_create(labels)
+        # filter spans by uuid
+        original_spans = list(
+            itertools.chain.from_iterable(example.select_label(SpanLabel) for example in self.records)
+        )
+        spans = Span.objects.filter(uuid__in=[span.uuid for span in original_spans])
+        # create mapping from id to span
+        # this is needed to create the relation
+        span_mapping = {original_span.id: saved_span for saved_span, original_span in zip(spans, original_spans)}
+        # then, replace from_id and to_id with the span id
+        relations = itertools.chain.from_iterable(
+            [
+                data.create_label(user, example, mapping, RelationLabel, span_mapping=span_mapping)
+                for data, example in zip(self.records, examples)
+            ]
+        )
+        Relation.objects.bulk_create(relations)

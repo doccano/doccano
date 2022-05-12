@@ -10,8 +10,12 @@ from data_import.pipeline.readers import FileName
 
 class TestColumnBuilder(unittest.TestCase):
     def assert_record(self, actual, expected):
+        labels = actual.label
+        for label in labels:
+            label.pop("id")
+            label.pop("uuid")
         self.assertEqual(actual.data.text, expected["data"])
-        self.assertEqual(actual.label, expected["label"])
+        self.assertEqual(labels, expected["label"])
 
     def create_record(self, row, data_column: builders.DataColumn, label_columns: Optional[List[builders.Column]]):
         builder = builders.ColumnBuilder(data_column=data_column, label_columns=label_columns)
@@ -71,6 +75,6 @@ class TestColumnBuilder(unittest.TestCase):
         actual = self.create_record(row, data_column, label_columns)
         expected = {
             "data": "Text",
-            "label": [{"label": "Label"}, {"id": -1, "label": "LOC", "start_offset": 0, "end_offset": 1}],
+            "label": [{"label": "Label"}, {"label": "LOC", "start_offset": 0, "end_offset": 1}],
         }
         self.assert_record(actual, expected)

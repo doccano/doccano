@@ -1,7 +1,8 @@
 import abc
+import uuid
 from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, validator
+from pydantic import UUID4, BaseModel, validator
 
 from label_types.models import CategoryType, LabelType, RelationType, SpanType
 from labels.models import Category
@@ -12,6 +13,13 @@ from projects.models import Project
 
 
 class Label(BaseModel, abc.ABC):
+    id: int = -1
+    uuid: UUID4
+
+    def __init__(self, **data):
+        data["uuid"] = uuid.uuid4()
+        super().__init__(**data)
+
     @abc.abstractmethod
     def has_name(self) -> bool:
         raise NotImplementedError()
@@ -67,11 +75,10 @@ class CategoryLabel(Label):
         return CategoryType(text=self.label, project=project)
 
     def create(self, user, example, mapping: Dict[str, LabelType], **kwargs):
-        return Category(user=user, example=example, label=mapping[self.label])
+        return Category(uuid=self.uuid, user=user, example=example, label=mapping[self.label])
 
 
 class SpanLabel(Label):
-    id: int = -1
     label: str
     start_offset: int
     end_offset: int
@@ -99,6 +106,7 @@ class SpanLabel(Label):
 
     def create(self, user, example, mapping: Dict[str, LabelType], **kwargs):
         return Span(
+            uuid=self.uuid,
             user=user,
             example=example,
             start_offset=self.start_offset,
@@ -128,7 +136,7 @@ class TextLabel(Label):
         return None
 
     def create(self, user, example, mapping, **kwargs):
-        return TL(user=user, example=example, text=self.text)
+        return TL(uuid=self.uuid, user=user, example=example, text=self.text)
 
 
 class RelationLabel(Label):
@@ -155,6 +163,7 @@ class RelationLabel(Label):
 
     def create(self, user, example, mapping: Dict[str, LabelType], **kwargs):
         return Relation(
+            uuid=self.uuid,
             user=user,
             example=example,
             type=mapping[self.type],

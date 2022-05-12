@@ -1,7 +1,7 @@
 import abc
 import collections.abc
 import dataclasses
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator, List, Type
 
 from .cleaners import Cleaner
 from .exceptions import FileParseException
@@ -29,7 +29,7 @@ class BaseReader(collections.abc.Iterable):
         raise NotImplementedError("Please implement this method in the subclass.")
 
     @abc.abstractmethod
-    def batch(self, batch_size: int) -> Iterator[LabeledExamples]:
+    def batch(self, batch_size: int, labeled_examples: Type[LabeledExamples]) -> Iterator[LabeledExamples]:
         raise NotImplementedError("Please implement this method in the subclass.")
 
 
@@ -84,15 +84,15 @@ class Reader(BaseReader):
                 except FileParseException as e:
                     self._errors.append(e)
 
-    def batch(self, batch_size: int) -> Iterator[LabeledExamples]:
+    def batch(self, batch_size: int, labeled_examples: Type[LabeledExamples]) -> Iterator[LabeledExamples]:
         batch = []
         for record in self:
             batch.append(record)
             if len(batch) == batch_size:
-                yield LabeledExamples(batch)
+                yield labeled_examples(batch)
                 batch = []
         if batch:
-            yield LabeledExamples(batch)
+            yield labeled_examples(batch)
 
     @property
     def errors(self) -> List[FileParseException]:
