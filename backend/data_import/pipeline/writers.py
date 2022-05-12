@@ -8,6 +8,4 @@ class Writer:
 
     def save(self, reader: BaseReader, project: Project, user, labeled_examples):
         for batch in reader.batch(self.batch_size, labeled_examples):
-            examples = batch.create_data(project)
-            batch.create_label_type(project)
-            batch.create_label(project, user, examples)
+            batch.create(project, user)

@@ -73,6 +73,14 @@ def select_examples(project):
     use_relation = getattr(project, "use_relation", False)
     if project.project_type == SEQUENCE_LABELING and use_relation:
         return labeled_examples.RelationExamples
+    if project.project_type == SEQUENCE_LABELING:
+        return labeled_examples.SpanExamples
+    elif project.project_type == DOCUMENT_CLASSIFICATION:
+        return labeled_examples.CategoryExamples
+    elif project.project_type == SEQ2SEQ:
+        return labeled_examples.TextExamples
+    elif project.project_type == INTENT_DETECTION_AND_SLOT_FILLING:
+        return labeled_examples.SpanAndCategoryExamples
     else:
         return labeled_examples.LabeledExamples
 
