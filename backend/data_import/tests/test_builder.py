@@ -69,5 +69,8 @@ class TestColumnBuilder(unittest.TestCase):
         data_column = builders.DataColumn("text", TextData)
         label_columns = [builders.LabelColumn("cats", CategoryLabel), builders.LabelColumn("entities", SpanLabel)]
         actual = self.create_record(row, data_column, label_columns)
-        expected = {"data": "Text", "label": [{"label": "Label"}, {"label": "LOC", "start_offset": 0, "end_offset": 1}]}
+        expected = {
+            "data": "Text",
+            "label": [{"label": "Label"}, {"id": -1, "label": "LOC", "start_offset": 0, "end_offset": 1}],
+        }
         self.assert_record(actual, expected)
