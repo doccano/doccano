@@ -67,12 +67,18 @@ def create_builder(project, **kwargs):
     data_column = builders.DataColumn(
         name=kwargs.get("column_data") or readers.DEFAULT_TEXT_COLUMN, value_class=get_data_class(project.project_type)
     )
+    use_relation = getattr(project, "use_relation", False)
     # If project is intent detection and slot filling,
     # column names are fixed: entities, cats
     if project.project_type == INTENT_DETECTION_AND_SLOT_FILLING:
         label_columns = [
             builders.LabelColumn(name="cats", value_class=labels.CategoryLabel),
             builders.LabelColumn(name="entities", value_class=labels.SpanLabel),
+        ]
+    elif project.project_type == SEQUENCE_LABELING and use_relation:
+        label_columns = [
+            builders.LabelColumn(name="entities", value_class=labels.SpanLabel),
+            builders.LabelColumn(name="relations", value_class=labels.RelationLabel),
         ]
     else:
         label_columns = [
