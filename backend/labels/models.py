@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -16,6 +18,7 @@ from label_types.models import CategoryType, RelationType, SpanType
 class Label(models.Model):
     objects = LabelManager()
 
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True)
     prob = models.FloatField(default=0.0)
     manual = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
