@@ -37,7 +37,7 @@ class TextData(BaseData):
         if value:
             return value
         else:
-            raise ValueError("is not empty.")
+            raise ValueError("The empty text is not allowed.")
 
     def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
         return Example(
@@ -50,6 +50,6 @@ class TextData(BaseData):
         )
 
 
-class FileData(BaseData):
+class BinaryData(BaseData):
     def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
         return Example(uuid=self.uuid, project=project, filename=self.filename, upload_name=self.upload_name, meta=meta)

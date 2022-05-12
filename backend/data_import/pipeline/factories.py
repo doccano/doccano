@@ -23,7 +23,7 @@ def get_data_class(project_type: str):
     if project_type in text_projects:
         return data.TextData
     else:
-        return data.FileData
+        return data.BinaryData
 
 
 def create_parser(file_format: str, **kwargs):
