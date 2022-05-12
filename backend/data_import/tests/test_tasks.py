@@ -224,6 +224,7 @@ class TestImportRelationExtractionData(TestImportData):
             spans = [[span.start_offset, span.end_offset, span.label.text] for span in example.spans.all()]
             self.assertEqual(spans, expected_spans)
             self.assertEqual(example.relations.count(), 3)
+            print(example.relations.all())
 
     def assert_parse_error(self, response):
         self.assertGreaterEqual(len(response["error"]), 1)

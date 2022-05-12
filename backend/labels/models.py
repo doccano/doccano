@@ -45,6 +45,10 @@ class Span(Label):
     start_offset = models.IntegerField()
     end_offset = models.IntegerField()
 
+    def __str__(self):
+        text = self.example.text[self.start_offset:self.end_offset]
+        return f"({text}, {self.start_offset}, {self.end_offset}, {self.label.text})"
+
     def validate_unique(self, exclude=None):
         allow_overlapping = getattr(self.example.project, "allow_overlapping", False)
         is_collaborative = self.example.project.collaborative_annotation
@@ -107,7 +111,11 @@ class Relation(Label):
     example = models.ForeignKey(to=Example, on_delete=models.CASCADE, related_name="relations")
 
     def __str__(self):
-        return self.__dict__.__str__()
+        text = self.example.text
+        from_span = text[self.from_id.start_offset: self.from_id.end_offset]
+        to_span = text[self.to_id.start_offset: self.to_id.end_offset]
+        type_text = self.type.text
+        return f"{from_span} - ({type_text}) -> {to_span}"
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.full_clean()

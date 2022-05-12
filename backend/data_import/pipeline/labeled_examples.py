@@ -116,15 +116,16 @@ class RelationExamples(LabeledExamples):
                 [data.create_label(user, example, mapping, SpanLabel) for data, example in zip(self.records, examples)]
             )
         )
+        uuids = [label.uuid for label in labels]
         Span.objects.bulk_create(labels)
         # filter spans by uuid
         original_spans = list(
             itertools.chain.from_iterable(example.select_label(SpanLabel) for example in self.records)
         )
-        spans = Span.objects.filter(uuid__in=[span.uuid for span in original_spans])
+        uuid_to_span = {span.uuid: span for span in Span.objects.filter(uuid__in=uuids)}
         # create mapping from id to span
         # this is needed to create the relation
-        span_mapping = {original_span.id: saved_span for saved_span, original_span in zip(spans, original_spans)}
+        span_mapping = {span.id: uuid_to_span[span.uuid] for span in original_spans}
         # then, replace from_id and to_id with the span id
         relations = itertools.chain.from_iterable(
             [
