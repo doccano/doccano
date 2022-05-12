@@ -234,10 +234,12 @@ Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionColumn, TEXT_CLASSIFICATI
 Options.register(DOCUMENT_CLASSIFICATION, Excel, OptionColumn, TEXT_CLASSIFICATION_DIR / "example.csv")
 
 SEQUENCE_LABELING_DIR = EXAMPLE_DIR / "sequence_labeling"
+RELATION_EXTRACTION_DIR = EXAMPLE_DIR / "relation_extraction"
 Options.register(SEQUENCE_LABELING, TextFile, OptionEncoding, TASK_AGNOSTIC_DIR / "text_files.txt")
 Options.register(SEQUENCE_LABELING, TextLine, OptionEncoding, TASK_AGNOSTIC_DIR / "text_lines.txt")
 Options.register(SEQUENCE_LABELING, JSONL, OptionColumn, SEQUENCE_LABELING_DIR / "example.jsonl")
 Options.register(SEQUENCE_LABELING, CoNLL, OptionCoNLL, SEQUENCE_LABELING_DIR / "example.txt")
+Options.register(SEQUENCE_LABELING, JSONL, OptionNone, RELATION_EXTRACTION_DIR / "example.jsonl")
 
 SEQ2SEQ_DIR = EXAMPLE_DIR / "sequence_to_sequence"
 Options.register(SEQ2SEQ, TextFile, OptionEncoding, TASK_AGNOSTIC_DIR / "text_files.txt")
