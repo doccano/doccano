@@ -1,6 +1,7 @@
 import abc
 import collections.abc
 import dataclasses
+import uuid
 from typing import Any, Dict, Iterator, List
 
 import pandas as pd
@@ -13,6 +14,7 @@ DEFAULT_LABEL_COLUMN = "label"
 LINE_NUM_COLUMN = "#line_num"
 FILE_NAME_COLUMN = "filename"
 UPLOAD_NAME_COLUMN = "upload_name"
+UUID_COLUMN = "uuid"
 
 
 class BaseReader(collections.abc.Iterable):
@@ -80,6 +82,7 @@ class Reader(BaseReader):
                 try:
                     yield {
                         LINE_NUM_COLUMN: line_num,
+                        UUID_COLUMN: uuid.uuid4(),
                         FILE_NAME_COLUMN: filename.generated_name,
                         UPLOAD_NAME_COLUMN: filename.upload_name,
                         **row,

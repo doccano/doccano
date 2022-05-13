@@ -1,10 +1,16 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from data_import.pipeline.readers import FILE_NAME_COLUMN, LINE_NUM_COLUMN, Reader
+from data_import.pipeline.readers import (
+    FILE_NAME_COLUMN,
+    LINE_NUM_COLUMN,
+    UPLOAD_NAME_COLUMN,
+    UUID_COLUMN,
+    Reader,
+)
 
 
 class TestReader(unittest.TestCase):
@@ -12,18 +18,36 @@ class TestReader(unittest.TestCase):
         self.parser = MagicMock()
         self.parser.parse.return_value = [{"a": 1}, {"a": 2}]
         filename = MagicMock()
+        filename.generated_name = "filename"
+        filename.upload_name = "upload_name"
         self.filenames = MagicMock()
         self.filenames.__iter__.return_value = [filename]
         self.rows = [
-            {LINE_NUM_COLUMN: 1, FILE_NAME_COLUMN: filename, "a": 1},
-            {LINE_NUM_COLUMN: 2, FILE_NAME_COLUMN: filename, "a": 2},
+            {
+                LINE_NUM_COLUMN: 1,
+                UUID_COLUMN: "uuid",
+                FILE_NAME_COLUMN: filename.generated_name,
+                UPLOAD_NAME_COLUMN: filename.upload_name,
+                "a": 1,
+            },
+            {
+                LINE_NUM_COLUMN: 2,
+                UUID_COLUMN: "uuid",
+                FILE_NAME_COLUMN: filename.generated_name,
+                UPLOAD_NAME_COLUMN: filename.upload_name,
+                "a": 2,
+            },
         ]
 
-    def test_iter_method(self):
+    @patch("data_import.pipeline.readers.uuid.uuid4")
+    def test_iter_method(self, mock):
+        mock.return_value = "uuid"
         reader = Reader(self.filenames, self.parser)
         self.assertEqual(list(reader), self.rows)
 
-    def test_batch(self):
+    @patch("data_import.pipeline.readers.uuid.uuid4")
+    def test_batch(self, mock):
+        mock.return_value = "uuid"
         reader = Reader(self.filenames, self.parser)
         batch = next(reader.batch(2))
         expected_df = pd.DataFrame(self.rows)

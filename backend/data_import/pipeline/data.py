@@ -1,5 +1,4 @@
 import abc
-import uuid
 from typing import Any, Dict
 
 from pydantic import UUID4, BaseModel, validator
@@ -15,7 +14,6 @@ class BaseData(BaseModel, abc.ABC):
     meta: Dict[Any, Any] = {}
 
     def __init__(self, **data):
-        data["uuid"] = uuid.uuid4()
         super().__init__(**data)
 
     @classmethod
