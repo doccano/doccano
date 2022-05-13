@@ -1,3 +1,5 @@
+from typing import List
+
 from . import (
     builders,
     catalog,
@@ -8,6 +10,7 @@ from . import (
     parsers,
     readers,
 )
+from .formatters import DataFormatter, LabelFormatter
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
@@ -15,6 +18,7 @@ from projects.models import (
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
+    Project,
 )
 
 
@@ -83,6 +87,30 @@ def select_examples(project):
         return labeled_examples.SpanAndCategoryExamples
     else:
         return labeled_examples.LabeledExamples
+
+
+def create_data_formatter(project: Project, column_data: str = readers.DEFAULT_TEXT_COLUMN, **kwargs) -> DataFormatter:
+    data_class = get_data_class(project.project_type)
+    return DataFormatter(column=column_data, data_class=data_class)
+
+
+def create_label_formatters(
+    project: Project, column_label: str = readers.DEFAULT_LABEL_COLUMN, **kwargs
+) -> List[LabelFormatter]:
+    use_relation = getattr(project, "use_relation", False)
+    if project.project_type == INTENT_DETECTION_AND_SLOT_FILLING:
+        return [
+            LabelFormatter(column="entities", label_class=labels.SpanLabel),
+            LabelFormatter(column="cats", label_class=labels.CategoryLabel),
+        ]
+    elif project.project_type == SEQUENCE_LABELING and use_relation:
+        return [
+            LabelFormatter(column="entities", label_class=labels.SpanLabel),
+            LabelFormatter(column="relations", label_class=labels.RelationLabel),
+        ]
+    else:
+        label_class = get_label_class(project.project_type)
+        return [LabelFormatter(column=column_label, label_class=label_class)]
 
 
 def create_builder(project, **kwargs):
