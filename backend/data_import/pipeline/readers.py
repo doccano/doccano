@@ -1,25 +1,28 @@
 import abc
 import collections.abc
 import dataclasses
-from typing import Any, Dict, Iterator, List, Type
+from typing import Any, Dict, Iterator, List
 
-from .cleaners import Cleaner
+import pandas as pd
+
 from .exceptions import FileParseException
-from .labeled_examples import LabeledExamples, Record
+from .labeled_examples import Record
 
 DEFAULT_TEXT_COLUMN = "text"
 DEFAULT_LABEL_COLUMN = "label"
+LINE_NUM_COLUMN = "#line_num"
+FILE_NAME_COLUMN = "#file_name"
 
 
 class BaseReader(collections.abc.Iterable):
     """Reader has a role to parse files and return a Record iterator."""
 
     @abc.abstractmethod
-    def __iter__(self) -> Iterator[Record]:
+    def __iter__(self) -> Iterator[Dict[Any, Any]]:
         """Creates an iterator for elements of this dataset.
 
         Returns:
-            A `Record` for the elements of this dataset.
+            A `dict` for the elements of this dataset.
         """
         raise NotImplementedError("Please implement this method in the subclass.")
 
@@ -29,7 +32,7 @@ class BaseReader(collections.abc.Iterable):
         raise NotImplementedError("Please implement this method in the subclass.")
 
     @abc.abstractmethod
-    def batch(self, batch_size: int, labeled_examples: Type[LabeledExamples]) -> Iterator[LabeledExamples]:
+    def batch(self, batch_size: int) -> Iterator[pd.DataFrame]:
         raise NotImplementedError("Please implement this method in the subclass.")
 
 
@@ -64,35 +67,29 @@ class Builder(abc.ABC):
 
 
 class Reader(BaseReader):
-    def __init__(self, filenames: List[FileName], parser: Parser, builder: Builder, cleaner: Cleaner):
+    def __init__(self, filenames: List[FileName], parser: Parser):
         self.filenames = filenames
         self.parser = parser
-        self.builder = builder
-        self.cleaner = cleaner
         self._errors: List[FileParseException] = []
 
-    def __iter__(self) -> Iterator[Record]:
+    def __iter__(self) -> Iterator[Dict[Any, Any]]:
         for filename in self.filenames:
             rows = self.parser.parse(filename.full_path)
             for line_num, row in enumerate(rows, start=1):
                 try:
-                    record = self.builder.build(row, filename, line_num)
-                    maybe_error = record.clean(self.cleaner)
-                    if maybe_error:
-                        self._errors.append(maybe_error)
-                    yield record
+                    yield {LINE_NUM_COLUMN: line_num, FILE_NAME_COLUMN: filename, **row}
                 except FileParseException as e:
                     self._errors.append(e)
 
-    def batch(self, batch_size: int, labeled_examples: Type[LabeledExamples]) -> Iterator[LabeledExamples]:
+    def batch(self, batch_size: int) -> Iterator[pd.DataFrame]:
         batch = []
         for record in self:
             batch.append(record)
             if len(batch) == batch_size:
-                yield labeled_examples(batch)
+                yield pd.DataFrame(batch)
                 batch = []
         if batch:
-            yield labeled_examples(batch)
+            yield pd.DataFrame(batch)
 
     @property
     def errors(self) -> List[FileParseException]:
