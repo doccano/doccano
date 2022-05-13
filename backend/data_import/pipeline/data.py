@@ -12,14 +12,15 @@ class BaseData(BaseModel, abc.ABC):
     filename: str
     upload_name: str
     uuid: UUID4
+    meta: Dict[Any, Any] = {}
 
     def __init__(self, **data):
         data["uuid"] = uuid.uuid4()
         super().__init__(**data)
 
     @classmethod
-    def parse(cls, **kwargs):
-        return cls.parse_obj(kwargs)
+    def parse(cls, filename: str, upload_name: str, text: str = "", **kwargs):
+        return cls(filename=filename, upload_name=upload_name, text=text, meta=kwargs)
 
     def __hash__(self):
         return hash(tuple(self.dict()))

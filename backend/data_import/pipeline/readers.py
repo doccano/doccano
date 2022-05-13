@@ -11,7 +11,8 @@ from .labeled_examples import Record
 DEFAULT_TEXT_COLUMN = "text"
 DEFAULT_LABEL_COLUMN = "label"
 LINE_NUM_COLUMN = "#line_num"
-FILE_NAME_COLUMN = "#file_name"
+FILE_NAME_COLUMN = "filename"
+UPLOAD_NAME_COLUMN = "upload_name"
 
 
 class BaseReader(collections.abc.Iterable):
@@ -77,7 +78,12 @@ class Reader(BaseReader):
             rows = self.parser.parse(filename.full_path)
             for line_num, row in enumerate(rows, start=1):
                 try:
-                    yield {LINE_NUM_COLUMN: line_num, FILE_NAME_COLUMN: filename, **row}
+                    yield {
+                        LINE_NUM_COLUMN: line_num,
+                        FILE_NAME_COLUMN: filename.generated_name,
+                        UPLOAD_NAME_COLUMN: filename.upload_name,
+                        **row,
+                    }
                 except FileParseException as e:
                     self._errors.append(e)
 

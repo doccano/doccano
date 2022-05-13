@@ -4,11 +4,21 @@ from unittest.mock import MagicMock
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-from data_import.pipeline.formatters import LabelFormatter
-from data_import.pipeline.readers import LINE_NUM_COLUMN
+from data_import.pipeline.formatters import (
+    DEFAULT_DATA_COLUMN,
+    DataFormatter,
+    LabelFormatter,
+)
+from data_import.pipeline.readers import (
+    DEFAULT_LABEL_COLUMN,
+    DEFAULT_TEXT_COLUMN,
+    FILE_NAME_COLUMN,
+    LINE_NUM_COLUMN,
+    UPLOAD_NAME_COLUMN,
+)
 
 
-class TestFormatter(unittest.TestCase):
+class TestLabelFormatter(unittest.TestCase):
     def setUp(self):
         self.label_column = "label"
         self.label_class = MagicMock
@@ -25,9 +35,9 @@ class TestFormatter(unittest.TestCase):
         df = label_formatter.format(self.df)
         expected_df = pd.DataFrame(
             [
-                {LINE_NUM_COLUMN: 1, self.label_column: "A"},
-                {LINE_NUM_COLUMN: 2, self.label_column: "B"},
-                {LINE_NUM_COLUMN: 2, self.label_column: "C"},
+                {LINE_NUM_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"},
+                {LINE_NUM_COLUMN: 2, DEFAULT_LABEL_COLUMN: "B"},
+                {LINE_NUM_COLUMN: 2, DEFAULT_LABEL_COLUMN: "C"},
             ]
         )
         assert_frame_equal(df, expected_df)
@@ -47,7 +57,7 @@ class TestFormatter(unittest.TestCase):
             ]
         )
         df_label = label_formatter.format(df)
-        expected_df = pd.DataFrame([{LINE_NUM_COLUMN: 1, self.label_column: "A"}])
+        expected_df = pd.DataFrame([{LINE_NUM_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"}])
         assert_frame_equal(df_label, expected_df)
 
     def test_format_with_invalid_label(self):
@@ -61,5 +71,40 @@ class TestFormatter(unittest.TestCase):
             ]
         )
         df_label = label_formatter.format(df)
-        expected_df = pd.DataFrame([{LINE_NUM_COLUMN: 1, self.label_column: "A"}])
+        expected_df = pd.DataFrame([{LINE_NUM_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"}])
         assert_frame_equal(df_label, expected_df)
+
+
+class TestDataFormatter(unittest.TestCase):
+    def setUp(self):
+        self.data_column = "data"
+        self.filename = "filename"
+        self.upload_name = "upload_name"
+
+    def test_format(self):
+        data_class = MagicMock
+        data_class.parse = lambda **kwargs: kwargs
+        data_formatter = DataFormatter(column=self.data_column, data_class=data_class)
+        df = pd.DataFrame(
+            [
+                {
+                    LINE_NUM_COLUMN: 1,
+                    self.data_column: "A",
+                    FILE_NAME_COLUMN: self.filename,
+                    UPLOAD_NAME_COLUMN: self.upload_name,
+                },
+            ]
+        )
+        df_data = data_formatter.format(df)
+        expected_df = pd.DataFrame(
+            [
+                {
+                    DEFAULT_DATA_COLUMN: {
+                        DEFAULT_TEXT_COLUMN: "A",
+                        "filename": self.filename,
+                        "upload_name": self.upload_name,
+                    }
+                },
+            ]
+        )
+        assert_frame_equal(df_data, expected_df)

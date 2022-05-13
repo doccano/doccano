@@ -21,15 +21,6 @@ class Label(BaseModel, abc.ABC):
         data["uuid"] = uuid.uuid4()
         super().__init__(**data)
 
-    @abc.abstractmethod
-    def has_name(self) -> bool:
-        raise NotImplementedError()
-
-    @property
-    @abc.abstractmethod
-    def name(self) -> str:
-        raise NotImplementedError()
-
     @classmethod
     def parse(cls, obj: Any):
         raise NotImplementedError()
@@ -56,13 +47,6 @@ class CategoryLabel(Label):
         else:
             raise ValueError("is not empty.")
 
-    def has_name(self) -> bool:
-        return True
-
-    @property
-    def name(self) -> str:
-        return self.label
-
     @classmethod
     def parse(cls, obj: Any):
         try:
@@ -81,13 +65,6 @@ class SpanLabel(Label):
     label: str
     start_offset: int
     end_offset: int
-
-    def has_name(self) -> bool:
-        return True
-
-    @property
-    def name(self) -> str:
-        return self.label
 
     @classmethod
     def parse(cls, obj: Any):
@@ -118,13 +95,6 @@ class SpanLabel(Label):
 class TextLabel(Label):
     text: str
 
-    def has_name(self) -> bool:
-        return False
-
-    @property
-    def name(self) -> str:
-        return self.text
-
     @classmethod
     def parse(cls, obj: Any):
         try:
@@ -143,13 +113,6 @@ class RelationLabel(Label):
     from_id: int
     to_id: int
     type: str
-
-    def has_name(self) -> bool:
-        return True
-
-    @property
-    def name(self) -> str:
-        return self.type
 
     @classmethod
     def parse(cls, obj: Any):
