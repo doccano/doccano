@@ -2,6 +2,7 @@ import abc
 import uuid
 from typing import Any, Dict, Optional
 
+import pydantic.error_wrappers
 from pydantic import UUID4, BaseModel, validator
 
 from label_types.models import CategoryType, LabelType, RelationType, SpanType
@@ -64,12 +65,10 @@ class CategoryLabel(Label):
 
     @classmethod
     def parse(cls, obj: Any):
-        if isinstance(obj, str):
+        try:
             return cls(label=obj)
-        elif isinstance(obj, int):
-            return cls(label=str(obj))
-        else:
-            raise TypeError(f"{obj} is not str.")
+        except pydantic.error_wrappers.ValidationError:
+            return None
 
     def create_type(self, project: Project) -> Optional[LabelType]:
         return CategoryType(text=self.label, project=project)
@@ -92,14 +91,15 @@ class SpanLabel(Label):
 
     @classmethod
     def parse(cls, obj: Any):
-        if isinstance(obj, list) or isinstance(obj, tuple):
-            columns = ["start_offset", "end_offset", "label"]
-            obj = zip(columns, obj)
-            return cls.parse_obj(obj)
-        elif isinstance(obj, dict):
-            return cls.parse_obj(obj)
-        else:
-            raise TypeError(f"{obj} is invalid type.")
+        try:
+            if isinstance(obj, list) or isinstance(obj, tuple):
+                columns = ["start_offset", "end_offset", "label"]
+                obj = zip(columns, obj)
+                return cls.parse_obj(obj)
+            elif isinstance(obj, dict):
+                return cls.parse_obj(obj)
+        except pydantic.error_wrappers.ValidationError:
+            return None
 
     def create_type(self, project: Project) -> Optional[LabelType]:
         return SpanType(text=self.label, project=project)
@@ -127,10 +127,10 @@ class TextLabel(Label):
 
     @classmethod
     def parse(cls, obj: Any):
-        if isinstance(obj, str) and obj:
+        try:
             return cls(text=obj)
-        else:
-            raise TypeError(f"{obj} is not str or empty.")
+        except pydantic.error_wrappers.ValidationError:
+            return None
 
     def create_type(self, project: Project) -> Optional[LabelType]:
         return None
@@ -153,10 +153,10 @@ class RelationLabel(Label):
 
     @classmethod
     def parse(cls, obj: Any):
-        if isinstance(obj, dict):
+        try:
             return cls.parse_obj(obj)
-        else:
-            raise TypeError(f"{obj} is not dict.")
+        except pydantic.error_wrappers.ValidationError:
+            return None
 
     def create_type(self, project: Project) -> Optional[LabelType]:
         return RelationType(text=self.type, project=project)
