@@ -15,6 +15,7 @@ from data_import.pipeline.readers import (
     FILE_NAME_COLUMN,
     LINE_NUM_COLUMN,
     UPLOAD_NAME_COLUMN,
+    UUID_COLUMN,
 )
 
 
@@ -25,8 +26,8 @@ class TestLabelFormatter(unittest.TestCase):
         self.label_class.parse = lambda x: x
         self.df = pd.DataFrame(
             [
-                {LINE_NUM_COLUMN: 1, self.label_column: ["A"]},
-                {LINE_NUM_COLUMN: 2, self.label_column: ["B", "C"]},
+                {LINE_NUM_COLUMN: 1, UUID_COLUMN: 1, self.label_column: ["A"]},
+                {LINE_NUM_COLUMN: 2, UUID_COLUMN: 2, self.label_column: ["B", "C"]},
             ]
         )
 
@@ -35,9 +36,9 @@ class TestLabelFormatter(unittest.TestCase):
         df = label_formatter.format(self.df)
         expected_df = pd.DataFrame(
             [
-                {LINE_NUM_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"},
-                {LINE_NUM_COLUMN: 2, DEFAULT_LABEL_COLUMN: "B"},
-                {LINE_NUM_COLUMN: 2, DEFAULT_LABEL_COLUMN: "C"},
+                {UUID_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"},
+                {UUID_COLUMN: 2, DEFAULT_LABEL_COLUMN: "B"},
+                {UUID_COLUMN: 2, DEFAULT_LABEL_COLUMN: "C"},
             ]
         )
         assert_frame_equal(df, expected_df)
@@ -51,13 +52,13 @@ class TestLabelFormatter(unittest.TestCase):
         label_formatter = LabelFormatter(column=self.label_column, label_class=self.label_class)
         df = pd.DataFrame(
             [
-                {LINE_NUM_COLUMN: 1, self.label_column: ["A"]},
-                {LINE_NUM_COLUMN: 2, "invalid_column": ["B"]},
-                {LINE_NUM_COLUMN: 3},
+                {LINE_NUM_COLUMN: 1, UUID_COLUMN: 1, self.label_column: ["A"]},
+                {LINE_NUM_COLUMN: 2, UUID_COLUMN: 2, "invalid_column": ["B"]},
+                {LINE_NUM_COLUMN: 3, UUID_COLUMN: 3},
             ]
         )
         df_label = label_formatter.format(df)
-        expected_df = pd.DataFrame([{LINE_NUM_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"}])
+        expected_df = pd.DataFrame([{UUID_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"}])
         assert_frame_equal(df_label, expected_df)
 
     def test_format_with_invalid_label(self):
@@ -66,12 +67,12 @@ class TestLabelFormatter(unittest.TestCase):
         label_formatter = LabelFormatter(column=self.label_column, label_class=label_class)
         df = pd.DataFrame(
             [
-                {LINE_NUM_COLUMN: 1, self.label_column: ["A"]},
-                {LINE_NUM_COLUMN: 2, self.label_column: [{}]},
+                {LINE_NUM_COLUMN: 1, UUID_COLUMN: 1, self.label_column: ["A"]},
+                {LINE_NUM_COLUMN: 2, UUID_COLUMN: 2, self.label_column: [{}]},
             ]
         )
         df_label = label_formatter.format(df)
-        expected_df = pd.DataFrame([{LINE_NUM_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"}])
+        expected_df = pd.DataFrame([{UUID_COLUMN: 1, DEFAULT_LABEL_COLUMN: "A"}])
         assert_frame_equal(df_label, expected_df)
 
 
@@ -89,6 +90,7 @@ class TestDataFormatter(unittest.TestCase):
             [
                 {
                     LINE_NUM_COLUMN: 1,
+                    UUID_COLUMN: 1,
                     self.data_column: "A",
                     FILE_NAME_COLUMN: self.filename,
                     UPLOAD_NAME_COLUMN: self.upload_name,
@@ -99,11 +101,13 @@ class TestDataFormatter(unittest.TestCase):
         expected_df = pd.DataFrame(
             [
                 {
+                    UUID_COLUMN: 1,
                     DEFAULT_DATA_COLUMN: {
+                        UUID_COLUMN: 1,
                         DEFAULT_TEXT_COLUMN: "A",
                         "filename": self.filename,
                         "upload_name": self.upload_name,
-                    }
+                    },
                 },
             ]
         )
