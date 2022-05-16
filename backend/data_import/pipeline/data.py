@@ -17,14 +17,14 @@ class BaseData(BaseModel, abc.ABC):
         super().__init__(**data)
 
     @classmethod
-    def parse(cls, filename: str, upload_name: str, text: str = "", **kwargs):
-        return cls(filename=filename, upload_name=upload_name, text=text, meta=kwargs)
+    def parse(cls, example_uuid: UUID4, filename: str, upload_name: str, text: str = "", **kwargs):
+        return cls(uuid=example_uuid, filename=filename, upload_name=upload_name, text=text, meta=kwargs)
 
     def __hash__(self):
         return hash(tuple(self.dict()))
 
     @abc.abstractmethod
-    def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
+    def create(self, project: Project) -> Example:
         raise NotImplementedError("Please implement this method in the subclass.")
 
 
@@ -38,17 +38,24 @@ class TextData(BaseData):
         else:
             raise ValueError("The empty text is not allowed.")
 
-    def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
+    def create(self, project: Project) -> Example:
         return Example(
             uuid=self.uuid,
             project=project,
             filename=self.filename,
             upload_name=self.upload_name,
             text=self.text,
-            meta=meta,
+            meta=self.meta,
         )
 
 
 class BinaryData(BaseData):
-    def create(self, project: Project, meta: Dict[Any, Any]) -> Example:
-        return Example(uuid=self.uuid, project=project, filename=self.filename, upload_name=self.upload_name, meta=meta)
+    def create(self, project: Project) -> Example:
+        return Example(
+            uuid=self.uuid,
+            project=project,
+            filename=self.filename,
+            upload_name=self.upload_name,
+            text=None,
+            meta=self.meta,
+        )
