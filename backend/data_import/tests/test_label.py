@@ -84,8 +84,8 @@ class TestSpanLabel(TestLabel):
 
     def test_parse_invalid_dict(self):
         example_uuid = uuid.uuid4()
-        span = SpanLabel.parse(example_uuid, obj={"label": "A", "start_offset": 0})
-        self.assertEqual(span, None)
+        with self.assertRaises(ValueError):
+            SpanLabel.parse(example_uuid, obj={"label": "A", "start_offset": 0})
 
     def test_create_type(self):
         span = SpanLabel(label="A", start_offset=0, end_offset=1, example_uuid=uuid.uuid4())
@@ -116,8 +116,8 @@ class TestTextLabel(TestLabel):
 
     def test_parse_invalid_data(self):
         example_uuid = uuid.uuid4()
-        text = TextLabel.parse(example_uuid, obj=[])
-        self.assertEqual(text, None)
+        with self.assertRaises(ValueError):
+            TextLabel.parse(example_uuid, obj=[])
 
     def test_create_type(self):
         text = TextLabel(text="A", example_uuid=uuid.uuid4())
@@ -148,8 +148,8 @@ class TestRelationLabel(TestLabel):
 
     def test_parse_invalid_data(self):
         example_uuid = uuid.uuid4()
-        relation = RelationLabel.parse(example_uuid, obj={"type": "A", "from_id": 0})
-        self.assertEqual(relation, None)
+        with self.assertRaises(ValueError):
+            RelationLabel.parse(example_uuid, obj={"type": "A", "from_id": 0})
 
     def test_create_type(self):
         relation = RelationLabel(type="A", from_id=0, to_id=1, example_uuid=uuid.uuid4())
