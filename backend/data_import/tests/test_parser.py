@@ -5,6 +5,7 @@ import tempfile
 import unittest
 
 from data_import.pipeline import parsers
+from data_import.pipeline.readers import LINE_NUMBER_COLUMN
 
 
 class TestParser(unittest.TestCase):
@@ -24,6 +25,7 @@ class TestParser(unittest.TestCase):
         it = parser.parse(self.test_file)
         for expect in expected:
             row = next(it)
+            row.pop(LINE_NUMBER_COLUMN, None)
             self.assertEqual(row, expect)
         with self.assertRaises(StopIteration):
             next(it)
