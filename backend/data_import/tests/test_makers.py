@@ -4,8 +4,8 @@ import pandas as pd
 from django.test import TestCase
 
 from data_import.pipeline.data import TextData
-from data_import.pipeline.formatters import ExampleMaker, LabelMaker
 from data_import.pipeline.label import CategoryLabel
+from data_import.pipeline.makers import ExampleMaker, LabelMaker
 from data_import.pipeline.readers import (
     FILE_NAME_COLUMN,
     LINE_NUMBER_COLUMN,

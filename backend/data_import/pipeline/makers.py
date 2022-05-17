@@ -27,7 +27,7 @@ class ExampleMaker:
         self.data_class = data_class
         self.column_data = column_data
         self.exclude_columns = exclude_columns or []
-        self._errors = []
+        self._errors: List[FileParseException] = []
 
     def make(self, df: pd.DataFrame) -> List[Example]:
         if not self.check_column_existence(df):
@@ -76,7 +76,7 @@ class LabelMaker:
     def __init__(self, column: str, label_class: Type[Label]):
         self.column = column
         self.label_class = label_class
-        self._errors = []
+        self._errors: List[FileParseException] = []
 
     def make(self, df: pd.DataFrame) -> List[Label]:
         if not self.check_column_existence(df):
