@@ -8,6 +8,7 @@ from .label import Label
 from .label_types import LabelTypes
 from examples.models import Example
 from labels.models import Category as CategoryModel
+from labels.models import Label as LabelModel
 from labels.models import Relation as RelationModel
 from labels.models import Span as SpanModel
 from labels.models import TextLabel as TextLabelModel
@@ -15,9 +16,14 @@ from projects.models import Project
 
 
 class Labels(abc.ABC):
+    label_model = LabelModel
+
     def __init__(self, labels: List[Label], types: LabelTypes):
         self.labels = labels
         self.types = types
+
+    def __len__(self) -> int:
+        return len(self.labels)
 
     def clean(self, project: Project):
         pass
@@ -34,27 +40,26 @@ class Labels(abc.ABC):
         examples = Example.objects.filter(uuid__in=example_uuids)
         return {example.uuid: example for example in examples}
 
-    @abc.abstractmethod
     def save(self, user, **kwargs):
-        raise NotImplementedError()
+        labels = [
+            label.create(user, self.uuid_to_example[label.example_uuid], self.types, **kwargs) for label in self.labels
+        ]
+        self.label_model.objects.bulk_create(labels)
 
 
 class Categories(Labels):
+    label_model = CategoryModel
+
     def clean(self, project: Project):
         exclusive = getattr(project, "single_class_classification", False)
         if exclusive:
             groups = groupby(self.labels, lambda label: label.example_uuid)
             self.labels = [next(group) for _, group in groups]
 
-    def save(self, user, **kwargs):
-        uuid_to_example = self.uuid_to_example
-        categories = [
-            category.create(user, uuid_to_example[category.example_uuid], self.types) for category in self.labels
-        ]
-        CategoryModel.objects.bulk_create(categories)
-
 
 class Spans(Labels):
+    label_model = SpanModel
+
     def clean(self, project: Project):
         allow_overlapping = getattr(project, "allow_overlapping", False)
         if allow_overlapping:
@@ -68,11 +73,6 @@ class Spans(Labels):
                 spans.append(label)
         self.labels = spans
 
-    def save(self, user, **kwargs):
-        uuid_to_example = self.uuid_to_example
-        spans = [span.create(user, uuid_to_example[span.example_uuid], self.types) for span in self.labels]
-        SpanModel.objects.bulk_create(spans)
-
     @property
     def id_to_span(self) -> Dict[int, SpanModel]:
         span_uuids = [str(label.uuid) for label in self.labels]
@@ -82,18 +82,12 @@ class Spans(Labels):
 
 
 class Texts(Labels):
-    def save(self, user, **kwargs):
-        uuid_to_example = self.uuid_to_example
-        texts = [text.create(user, uuid_to_example[text.example_uuid], self.types) for text in self.labels]
-        TextLabelModel.objects.bulk_create(texts)
+    label_model = TextLabelModel
 
 
 class Relations(Labels):
+    label_model = RelationModel
+
     def save(self, user, **kwargs):
         id_to_span = kwargs["spans"].id_to_span
-        uuid_to_example = self.uuid_to_example
-        relations = [
-            relation.create(user, uuid_to_example[relation.example_uuid], self.types, id_to_span=id_to_span)
-            for relation in self.labels
-        ]
-        RelationModel.objects.bulk_create(relations)
+        super().save(user, id_to_span=id_to_span)
