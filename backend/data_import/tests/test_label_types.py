@@ -16,7 +16,7 @@ class TestCategoryLabel(TestCase):
     def test_create(self):
         label_types = LabelTypes(CategoryType)
         category_types = [CategoryType(text="A", project=self.project.item)]
-        label_types.create(category_types)
+        label_types.save(category_types)
         self.assertEqual(CategoryType.objects.count(), 1)
         self.assertEqual(CategoryType.objects.first().text, "A")
 
@@ -25,7 +25,7 @@ class TestCategoryLabel(TestCase):
         with self.assertRaises(KeyError):
             label_types.get_by_text("A")
         category_types = [CategoryType(text="A", project=self.project.item)]
-        label_types.create(category_types)
+        label_types.save(category_types)
         label_types.update(self.project.item)
         category_type = label_types.get_by_text("A")
         self.assertEqual(category_type.text, "A")

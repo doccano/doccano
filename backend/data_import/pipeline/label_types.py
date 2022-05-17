@@ -12,7 +12,7 @@ class LabelTypes:
     def __contains__(self, text: str) -> bool:
         return text in self.types
 
-    def create(self, label_types: List[LabelType]):
+    def save(self, label_types: List[LabelType]):
         self.label_type_class.objects.bulk_create(label_types, ignore_conflicts=True)
 
     def update(self, project: Project):
