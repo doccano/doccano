@@ -6,7 +6,6 @@ from pandas.testing import assert_frame_equal
 
 from data_import.pipeline.readers import (
     FILE_NAME_COLUMN,
-    LINE_NUM_COLUMN,
     UPLOAD_NAME_COLUMN,
     UUID_COLUMN,
     Reader,
@@ -24,14 +23,12 @@ class TestReader(unittest.TestCase):
         self.filenames.__iter__.return_value = [filename]
         self.rows = [
             {
-                LINE_NUM_COLUMN: 1,
                 UUID_COLUMN: "uuid",
                 FILE_NAME_COLUMN: filename.generated_name,
                 UPLOAD_NAME_COLUMN: filename.upload_name,
                 "a": 1,
             },
             {
-                LINE_NUM_COLUMN: 2,
                 UUID_COLUMN: "uuid",
                 FILE_NAME_COLUMN: filename.generated_name,
                 UPLOAD_NAME_COLUMN: filename.upload_name,
