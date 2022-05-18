@@ -132,15 +132,17 @@ class TestImportClassificationData(TestImportData):
         filename = "example.txt"
         file_format = "TextFile"
         dataset = [("exampleA\nexampleB\n\nexampleC\n", [])]
-        self.import_dataset(filename, file_format, self.task)
+        response = self.import_dataset(filename, file_format, self.task)
         self.assert_examples(dataset)
+        self.assertEqual(len(response["error"]), 0)
 
     def test_textline(self):
         filename = "example.txt"
         file_format = "TextLine"
         dataset = [("exampleA", []), ("exampleB", []), ("exampleC", [])]
-        self.import_dataset(filename, file_format, self.task)
+        response = self.import_dataset(filename, file_format, self.task)
         self.assert_examples(dataset)
+        self.assertEqual(len(response["error"]), 1)
 
     def test_wrong_jsonl(self):
         filename = "text_classification/example.json"
