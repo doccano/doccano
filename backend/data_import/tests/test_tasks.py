@@ -9,7 +9,7 @@ from django_drf_filepond.utils import _get_file_id
 
 from data_import.celery_tasks import import_dataset
 from examples.models import Example
-from label_types.models import CategoryType, SpanType
+from label_types.models import SpanType
 from labels.models import Category, Span
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
@@ -71,17 +71,18 @@ class TestImportClassificationData(TestImportData):
     task = DOCUMENT_CLASSIFICATION
 
     def assert_examples(self, dataset):
-        self.assertEqual(Example.objects.count(), len(dataset))
-        for text, expected_labels in dataset:
-            example = Example.objects.get(text=text)
-            labels = set(cat.label.text for cat in example.categories.all())
-            self.assertEqual(labels, set(expected_labels))
+        with self.subTest():
+            self.assertEqual(Example.objects.count(), len(dataset))
+            for text, expected_labels in dataset:
+                example = Example.objects.get(text=text)
+                labels = set(cat.label.text for cat in example.categories.all())
+                self.assertEqual(labels, set(expected_labels))
 
     def assert_parse_error(self, response):
-        self.assertGreaterEqual(len(response["error"]), 1)
-        self.assertEqual(Example.objects.count(), 0)
-        self.assertEqual(CategoryType.objects.count(), 0)
-        self.assertEqual(Category.objects.count(), 0)
+        with self.subTest():
+            self.assertGreaterEqual(len(response["error"]), 1)
+            self.assertEqual(Example.objects.count(), 0)
+            self.assertEqual(Category.objects.count(), 0)
 
     def test_jsonl(self):
         filename = "text_classification/example.jsonl"
@@ -205,7 +206,7 @@ class TestImportSequenceLabelingData(TestImportData):
         filename = "sequence_labeling/example_overlapping.jsonl"
         file_format = "JSONL"
         response = self.import_dataset(filename, file_format)
-        self.assertEqual(len(response["error"]), 1)
+        self.assertEqual(len(response["error"]), 0)
 
 
 class TestImportRelationExtractionData(TestImportData):
@@ -224,7 +225,6 @@ class TestImportRelationExtractionData(TestImportData):
             spans = [[span.start_offset, span.end_offset, span.label.text] for span in example.spans.all()]
             self.assertEqual(spans, expected_spans)
             self.assertEqual(example.relations.count(), 3)
-            print(example.relations.all())
 
     def assert_parse_error(self, response):
         self.assertGreaterEqual(len(response["error"]), 1)
