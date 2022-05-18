@@ -67,13 +67,15 @@ class Spans(Labels):
         allow_overlapping = getattr(project, "allow_overlapping", False)
         if allow_overlapping:
             return
-        self.labels.sort()
-        last_offset = -1
         spans = []
-        for label in self.labels:
-            if getattr(label, "start_offset") >= last_offset:
-                last_offset = getattr(label, "end_offset")
-                spans.append(label)
+        groups = groupby(self.labels, lambda label: label.example_uuid)
+        for _, group in groups:
+            labels = sorted(group)
+            last_offset = -1
+            for label in labels:
+                if getattr(label, "start_offset") >= last_offset:
+                    last_offset = getattr(label, "end_offset")
+                    spans.append(label)
         self.labels = spans
 
     @property

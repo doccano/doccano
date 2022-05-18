@@ -67,15 +67,32 @@ class TestSpans(TestCase):
         mommy.make("Example", project=self.project.item, uuid=example_uuid)
         self.spans = Spans(labels, self.types)
 
-    def test_clean(self):
+    def disable_overlapping(self):
         self.project.item.allow_overlapping = False
         self.project.item.save()
+
+    def test_clean(self):
+        self.disable_overlapping()
         self.spans.clean(self.project.item)
         self.assertEqual(len(self.spans), 2)
 
     def test_clean_with_overlapping(self):
         self.spans.clean(self.project.item)
         self.assertEqual(len(self.spans), 3)
+
+    def test_clean_with_multiple_examples(self):
+        self.disable_overlapping()
+        example_uuid1 = uuid.uuid4()
+        example_uuid2 = uuid.uuid4()
+        labels = [
+            SpanLabel(example_uuid=example_uuid1, label="A", start_offset=0, end_offset=1),
+            SpanLabel(example_uuid=example_uuid2, label="B", start_offset=0, end_offset=3),
+        ]
+        mommy.make("Example", project=self.project.item, uuid=example_uuid1)
+        mommy.make("Example", project=self.project.item, uuid=example_uuid2)
+        spans = Spans(labels, self.types)
+        spans.clean(self.project.item)
+        self.assertEqual(len(spans), 2)
 
     def test_save(self):
         self.spans.save_types(self.project.item)
