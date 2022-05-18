@@ -41,8 +41,11 @@ class Labels(abc.ABC):
         return {example.uuid: example for example in examples}
 
     def save(self, user, **kwargs):
+        uuid_to_example = self.uuid_to_example
         labels = [
-            label.create(user, self.uuid_to_example[label.example_uuid], self.types, **kwargs) for label in self.labels
+            label.create(user, uuid_to_example[label.example_uuid], self.types, **kwargs)
+            for label in self.labels
+            if label.example_uuid in uuid_to_example
         ]
         self.label_model.objects.bulk_create(labels)
 
