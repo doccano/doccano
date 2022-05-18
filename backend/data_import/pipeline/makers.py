@@ -20,7 +20,7 @@ class ExampleMaker:
         self,
         project: Project,
         data_class: Type[BaseData],
-        column_data: str,
+        column_data: str = DEFAULT_TEXT_COLUMN,
         exclude_columns: Optional[List[str]] = None,
     ):
         self.project = project
@@ -70,6 +70,16 @@ class ExampleMaker:
     def errors(self) -> List[FileParseException]:
         self._errors.sort(key=lambda error: error.line_num)
         return self._errors
+
+
+class BinaryExampleMaker(ExampleMaker):
+    def make(self, df: pd.DataFrame) -> List[Example]:
+        examples = []
+        for row in df.to_dict(orient="records"):
+            data = self.data_class.parse(**row)
+            example = data.create(self.project)
+            examples.append(example)
+        return examples
 
 
 class LabelMaker:
