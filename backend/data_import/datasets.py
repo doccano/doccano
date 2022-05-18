@@ -56,11 +56,11 @@ class DatasetWithSingleLabelType(Dataset):
         self.example_maker = ExampleMaker(
             project=project,
             data_class=self.data_class,
-            column_data=kwargs.get("column_data", DEFAULT_TEXT_COLUMN),
-            exclude_columns=[kwargs.get("column_label", DEFAULT_LABEL_COLUMN)],
+            column_data=kwargs.get("column_data") or DEFAULT_TEXT_COLUMN,
+            exclude_columns=[kwargs.get("column_label") or DEFAULT_LABEL_COLUMN],
         )
         self.label_maker = LabelMaker(
-            column=kwargs.get("column_label", DEFAULT_LABEL_COLUMN), label_class=self.label_class
+            column=kwargs.get("column_label") or DEFAULT_LABEL_COLUMN, label_class=self.label_class
         )
 
     def save(self, user: User, batch_size: int = 1000):
@@ -126,7 +126,7 @@ class RelationExtractionDataset(Dataset):
         self.example_maker = ExampleMaker(
             project=project,
             data_class=TextData,
-            column_data=kwargs.get("column_data", DEFAULT_TEXT_COLUMN),
+            column_data=kwargs.get("column_data") or DEFAULT_TEXT_COLUMN,
             exclude_columns=["entities", "relations"],
         )
         self.span_maker = LabelMaker(column="entities", label_class=SpanLabel)
@@ -164,7 +164,7 @@ class CategoryAndSpanDataset(Dataset):
         self.example_maker = ExampleMaker(
             project=project,
             data_class=TextData,
-            column_data=kwargs.get("column_data", DEFAULT_TEXT_COLUMN),
+            column_data=kwargs.get("column_data") or DEFAULT_TEXT_COLUMN,
             exclude_columns=["cats", "entities"],
         )
         self.category_maker = LabelMaker(column="cats", label_class=CategoryLabel)
