@@ -13,7 +13,7 @@
       <v-select
         v-model="selected"
         :items="catalog"
-        item-text="name"
+        item-text="displayName"
         label="File format"
         outlined
       />
@@ -156,7 +156,7 @@ export default {
       return this.uploadedFiles.length === 0 || this.taskId !== null || !this.valid
     },
     properties() {
-      const item = this.catalog.find(item => item.name === this.selected)
+      const item = this.catalog.find(item => item.displayName === this.selected)
       if (item) {
         return item.properties
       } else {
@@ -174,7 +174,7 @@ export default {
       return Object.fromEntries(textFields)
     },
     acceptedFileTypes() {
-      const item = this.catalog.find(item => item.name === this.selected)
+      const item = this.catalog.find(item => item.displayName === this.selected)
       if (item) {
         return item.acceptTypes
       } else {
@@ -182,7 +182,7 @@ export default {
       }
     },
     example() {
-      const item = this.catalog.find(item => item.name === this.selected)
+      const item = this.catalog.find(item => item.displayName === this.selected)
       if (item) {
         const column_data = 'column_data'
         const column_label = 'column_label'
@@ -201,7 +201,7 @@ export default {
 
   watch: {
     selected() {
-      const item = this.catalog.find(item => item.name === this.selected)
+      const item = this.catalog.find(item => item.displayName === this.selected)
       for (const [key, value] of Object.entries(item.properties)) {
         this.option[key] = value.default
       }
@@ -239,9 +239,11 @@ export default {
     },
     async importDataset() {
       this.isImporting = true
+      const item = this.catalog.find(item => item.displayName === this.selected)
       this.taskId = await this.$services.parse.analyze(
         this.$route.params.id,
-        this.selected,
+        item.name,
+        item.taskId,
         this.uploadedFiles.map(item => item.serverId),
         this.option
       )

@@ -53,7 +53,7 @@ def check_uploaded_files(upload_ids: List[str], file_format: str):
 
 
 @shared_task
-def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str], **kwargs):
+def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str], task: str, **kwargs):
     project = get_object_or_404(Project, pk=project_id)
     user = get_object_or_404(get_user_model(), pk=user_id)
 
@@ -64,7 +64,7 @@ def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str],
         for tu in temporary_uploads
     ]
 
-    dataset = load_dataset(file_format, filenames, project, **kwargs)
+    dataset = load_dataset(task, file_format, filenames, project, **kwargs)
     dataset.save(user, batch_size=settings.IMPORT_BATCH_SIZE)
     upload_to_store(temporary_uploads)
     errors.extend(dataset.errors)

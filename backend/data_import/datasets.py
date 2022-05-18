@@ -4,6 +4,7 @@ from typing import List, Type
 from django.contrib.auth.models import User
 
 from .models import DummyLabelType
+from .pipeline.catalog import RELATION_EXTRACTION
 from .pipeline.data import BaseData, BinaryData, TextData
 from .pipeline.exceptions import FileParseException
 from .pipeline.factories import create_parser
@@ -194,23 +195,23 @@ class CategoryAndSpanDataset(Dataset):
         return self.reader.errors + self.example_maker.errors + self.category_maker.errors + self.span_maker.errors
 
 
-def select_dataset(project: Project) -> Type[Dataset]:
-    use_relation = getattr(project, "use_relation", False)
+def select_dataset(task: str, project: Project) -> Type[Dataset]:
     mapping = {
         DOCUMENT_CLASSIFICATION: TextClassificationDataset,
-        SEQUENCE_LABELING: RelationExtractionDataset if use_relation else SequenceLabelingDataset,
+        SEQUENCE_LABELING: SequenceLabelingDataset,
+        RELATION_EXTRACTION: RelationExtractionDataset,
         SEQ2SEQ: Seq2seqDataset,
         INTENT_DETECTION_AND_SLOT_FILLING: CategoryAndSpanDataset,
         IMAGE_CLASSIFICATION: BinaryDataset,
         SPEECH2TEXT: BinaryDataset,
     }
-    if project.project_type not in mapping:
-        ValueError(f"Invalid project type: {project.project_type}")
-    return mapping[project.project_type]
+    if task not in mapping:
+        task = project.project_type
+    return mapping[task]
 
 
-def load_dataset(file_format: str, data_files: List[FileName], project: Project, **kwargs) -> Dataset:
+def load_dataset(task: str, file_format: str, data_files: List[FileName], project: Project, **kwargs) -> Dataset:
     parser = create_parser(file_format, **kwargs)
     reader = Reader(data_files, parser)
-    dataset_class = select_dataset(project)
+    dataset_class = select_dataset(task, project)
     return dataset_class(reader, project, **kwargs)

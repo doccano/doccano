@@ -6,10 +6,11 @@ export class APIParseRepository implements ParseRepository {
     private readonly request = ApiService
   ) {}
 
-  async analyze(projectId: string, format: string, uploadIds: number[], option: object): Promise<string> {
+  async analyze(projectId: string, format: string, task: string, uploadIds: number[], option: object): Promise<string> {
     const url = `/projects/${projectId}/upload`
     const data = {
       format,
+      task,
       uploadIds,
       ...option
     }
