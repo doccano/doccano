@@ -46,7 +46,7 @@ class Span(Label):
     end_offset = models.IntegerField()
 
     def __str__(self):
-        text = self.example.text[self.start_offset:self.end_offset]
+        text = self.example.text[self.start_offset : self.end_offset]
         return f"({text}, {self.start_offset}, {self.end_offset}, {self.label.text})"
 
     def validate_unique(self, exclude=None):
@@ -112,8 +112,8 @@ class Relation(Label):
 
     def __str__(self):
         text = self.example.text
-        from_span = text[self.from_id.start_offset: self.from_id.end_offset]
-        to_span = text[self.to_id.start_offset: self.to_id.end_offset]
+        from_span = text[self.from_id.start_offset : self.from_id.end_offset]
+        to_span = text[self.to_id.start_offset : self.to_id.end_offset]
         type_text = self.type.text
         return f"{from_span} - ({type_text}) -> {to_span}"
 
