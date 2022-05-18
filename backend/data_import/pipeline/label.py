@@ -106,6 +106,13 @@ class TextLabel(Label):
     def __lt__(self, other):
         return self.text < other.text
 
+    @validator("text")
+    def text_is_not_empty(cls, value: str):
+        if value:
+            return value
+        else:
+            raise ValueError("is not empty.")
+
     @classmethod
     def parse(cls, example_uuid: UUID4, obj: Any):
         return cls(example_uuid=example_uuid, text=obj)
