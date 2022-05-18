@@ -10,7 +10,7 @@ from django_drf_filepond.models import TemporaryUpload
 
 from .datasets import load_dataset
 from .pipeline.catalog import AudioFile, ImageFile
-from .pipeline.exceptions import FileTypeException, MaximumFileSizeException
+from .pipeline.exceptions import FileTypeException, MaximumFileSizeException, FileImportException
 from .pipeline.readers import FileName
 from projects.models import Project
 
@@ -30,7 +30,7 @@ def check_file_type(filename, file_format: str, filepath: str):
 
 
 def check_uploaded_files(upload_ids: List[str], file_format: str):
-    errors = []
+    errors: List[FileImportException] = []
     cleaned_ids = []
     temporary_uploads = TemporaryUpload.objects.filter(upload_id__in=upload_ids)
     for tu in temporary_uploads:
