@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "doccano"
-version = "0.0.0"
+version = "1.7.0"
 description = "doccano, text annotation tool for machine learning practitioners"
 authors = ["Hironsan <hiroki.nakayama.py@gmail.com>"]
 license = "MIT"
@@ -16,14 +16,14 @@ packages = [
     { include = "backend", from = ".." },
 ]
 include = [
-    "client/dist/**/*",
-    "staticfiles/**/*"
+    "backend/client/dist/**/*",
+    "backend/staticfiles/**/*"
 ]
 exclude = [
-    "filepond-temp-uploads",
-    "media",
-    "db.sqlite3*",
-    "poetry.lock"
+    "backend/filepond-temp-uploads",
+    "backend/media",
+    "backend/db.sqlite3*",
+    "backend/poetry.lock"
 ]
 
 [tool.poetry.extras]
@@ -82,11 +82,11 @@ taskipy = "^1.10.1"
 unittest-xml-reporting = "^3.2.0"
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 
 [tool.black]
 line-length = 120
