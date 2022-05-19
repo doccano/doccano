@@ -1,128 +1,98 @@
 import abc
-from typing import Any, Dict, Optional
+from itertools import groupby
+from typing import Dict, List
 
-from pydantic import BaseModel, validator
+from pydantic import UUID4
 
-from label_types.models import CategoryType, LabelType, SpanType
-from labels.models import Category, Span
-from labels.models import TextLabel as TL
+from .label import Label
+from .label_types import LabelTypes
+from examples.models import Example
+from labels.models import Category as CategoryModel
+from labels.models import Label as LabelModel
+from labels.models import Relation as RelationModel
+from labels.models import Span as SpanModel
+from labels.models import TextLabel as TextLabelModel
 from projects.models import Project
 
 
-class Label(BaseModel, abc.ABC):
-    @abc.abstractmethod
-    def has_name(self) -> bool:
-        raise NotImplementedError()
+class Labels(abc.ABC):
+    label_model = LabelModel
+
+    def __init__(self, labels: List[Label], types: LabelTypes):
+        self.labels = labels
+        self.types = types
+
+    def __len__(self) -> int:
+        return len(self.labels)
+
+    def clean(self, project: Project):
+        pass
+
+    def save_types(self, project: Project):
+        types = [label.create_type(project) for label in self.labels]
+        filtered_types = list(filter(None, types))
+        self.types.save(filtered_types)
+        self.types.update(project)
 
     @property
-    @abc.abstractmethod
-    def name(self) -> str:
-        raise NotImplementedError()
+    def uuid_to_example(self) -> Dict[UUID4, Example]:
+        example_uuids = {str(label.example_uuid) for label in self.labels}
+        examples = Example.objects.filter(uuid__in=example_uuids)
+        return {example.uuid: example for example in examples}
 
-    @classmethod
-    def parse(cls, obj: Any):
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def create(self, project: Project) -> Optional[LabelType]:
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def create_annotation(self, user, example, mapping):
-        raise NotImplementedError
-
-    def __hash__(self):
-        return hash(tuple(self.dict()))
+    def save(self, user, **kwargs):
+        uuid_to_example = self.uuid_to_example
+        labels = [
+            label.create(user, uuid_to_example[label.example_uuid], self.types, **kwargs)
+            for label in self.labels
+            if label.example_uuid in uuid_to_example
+        ]
+        self.label_model.objects.bulk_create(labels)
 
 
-class CategoryLabel(Label):
-    label: str
+class Categories(Labels):
+    label_model = CategoryModel
 
-    @validator("label")
-    def label_is_not_empty(cls, value: str):
-        if value:
-            return value
-        else:
-            raise ValueError("is not empty.")
-
-    def has_name(self) -> bool:
-        return True
-
-    @property
-    def name(self) -> str:
-        return self.label
-
-    @classmethod
-    def parse(cls, obj: Any):
-        if isinstance(obj, str):
-            return cls(label=obj)
-        elif isinstance(obj, int):
-            return cls(label=str(obj))
-        else:
-            raise TypeError(f"{obj} is not str.")
-
-    def create(self, project: Project) -> Optional[LabelType]:
-        return CategoryType(text=self.label, project=project)
-
-    def create_annotation(self, user, example, mapping: Dict[str, LabelType]):
-        return Category(user=user, example=example, label=mapping[self.label])
+    def clean(self, project: Project):
+        exclusive = getattr(project, "single_class_classification", False)
+        if exclusive:
+            groups = groupby(self.labels, lambda label: label.example_uuid)
+            self.labels = [next(group) for _, group in groups]
 
 
-class SpanLabel(Label):
-    label: str
-    start_offset: int
-    end_offset: int
+class Spans(Labels):
+    label_model = SpanModel
 
-    def has_name(self) -> bool:
-        return True
+    def clean(self, project: Project):
+        allow_overlapping = getattr(project, "allow_overlapping", False)
+        if allow_overlapping:
+            return
+        spans = []
+        groups = groupby(self.labels, lambda label: label.example_uuid)
+        for _, group in groups:
+            labels = sorted(group)
+            last_offset = -1
+            for label in labels:
+                if getattr(label, "start_offset") >= last_offset:
+                    last_offset = getattr(label, "end_offset")
+                    spans.append(label)
+        self.labels = spans
 
     @property
-    def name(self) -> str:
-        return self.label
-
-    @classmethod
-    def parse(cls, obj: Any):
-        if isinstance(obj, list) or isinstance(obj, tuple):
-            columns = ["start_offset", "end_offset", "label"]
-            obj = zip(columns, obj)
-            return cls.parse_obj(obj)
-        elif isinstance(obj, dict):
-            return cls.parse_obj(obj)
-        else:
-            raise TypeError(f"{obj} is invalid type.")
-
-    def create(self, project: Project) -> Optional[LabelType]:
-        return SpanType(text=self.label, project=project)
-
-    def create_annotation(self, user, example, mapping: Dict[str, LabelType]):
-        return Span(
-            user=user,
-            example=example,
-            start_offset=self.start_offset,
-            end_offset=self.end_offset,
-            label=mapping[self.label],
-        )
+    def id_to_span(self) -> Dict[int, SpanModel]:
+        span_uuids = [str(label.uuid) for label in self.labels]
+        spans = SpanModel.objects.filter(uuid__in=span_uuids)
+        uuid_to_span = {span.uuid: span for span in spans}
+        return {span.id: uuid_to_span[span.uuid] for span in self.labels}
 
 
-class TextLabel(Label):
-    text: str
+class Texts(Labels):
+    label_model = TextLabelModel
 
-    def has_name(self) -> bool:
-        return False
 
-    @property
-    def name(self) -> str:
-        return self.text
+class Relations(Labels):
+    label_model = RelationModel
 
-    @classmethod
-    def parse(cls, obj: Any):
-        if isinstance(obj, str) and obj:
-            return cls(text=obj)
-        else:
-            raise TypeError(f"{obj} is not str or empty.")
-
-    def create(self, project: Project) -> Optional[LabelType]:
-        return None
-
-    def create_annotation(self, user, example, mapping):
-        return TL(user=user, example=example, text=self.text)
+    def save(self, user, **kwargs):
+        id_to_span = kwargs["spans"].id_to_span
+        super().save(user, id_to_span=id_to_span)

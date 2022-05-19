@@ -1,10 +1,11 @@
 from collections import defaultdict
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Dict, List, Type
 
 from pydantic import BaseModel
 from typing_extensions import Literal
 
-from . import examples
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
@@ -13,6 +14,20 @@ from projects.models import (
     SEQUENCE_LABELING,
     SPEECH2TEXT,
 )
+
+# Define the example directories
+EXAMPLE_DIR = Path(__file__).parent.resolve() / "examples"
+TASK_AGNOSTIC_DIR = EXAMPLE_DIR / "task_agnostic"
+TEXT_CLASSIFICATION_DIR = EXAMPLE_DIR / "text_classification"
+SEQUENCE_LABELING_DIR = EXAMPLE_DIR / "sequence_labeling"
+RELATION_EXTRACTION_DIR = EXAMPLE_DIR / "relation_extraction"
+SEQ2SEQ_DIR = EXAMPLE_DIR / "sequence_to_sequence"
+INTENT_DETECTION_DIR = EXAMPLE_DIR / "intent_detection"
+IMAGE_CLASSIFICATION_DIR = EXAMPLE_DIR / "image_classification"
+SPEECH_TO_TEXT_DIR = EXAMPLE_DIR / "speech_to_text"
+
+# Define the task identifiers
+RELATION_EXTRACTION = "RelationExtraction"
 
 encodings = Literal[
     "Auto",
@@ -176,74 +191,236 @@ class AudioFile(Format):
     accept_types = "audio/ogg, audio/aac, audio/mpeg, audio/wav"
 
 
-class OptionColumn(BaseModel):
+class ArgColumn(BaseModel):
     encoding: encodings = "utf_8"
     column_data: str = "text"
     column_label: str = "label"
 
 
-class OptionDelimiter(OptionColumn):
+class ArgDelimiter(ArgColumn):
     encoding: encodings = "utf_8"
     delimiter: Literal[",", "\t", ";", "|", " "] = ","
 
 
-class OptionEncoding(BaseModel):
+class ArgEncoding(BaseModel):
     encoding: encodings = "utf_8"
 
 
-class OptionCoNLL(BaseModel):
+class ArgCoNLL(BaseModel):
     encoding: encodings = "utf_8"
     scheme: Literal["IOB2", "IOE2", "IOBES", "BILOU"] = "IOB2"
     delimiter: Literal[" ", ""] = " "
 
 
-class OptionNone(BaseModel):
+class ArgNone(BaseModel):
     pass
+
+
+@dataclass
+class Option:
+    display_name: str
+    task_id: str
+    file_format: Type[Format]
+    arg: Type[BaseModel]
+    file: Path
+
+    @property
+    def example(self) -> str:
+        with open(self.file, "r", encoding="utf-8") as f:
+            return f.read()
+
+    def dict(self) -> Dict:
+        return {
+            **self.file_format.dict(),
+            **self.arg.schema(),
+            "example": self.example,
+            "task_id": self.task_id,
+            "display_name": self.display_name,
+        }
 
 
 class Options:
     options: Dict[str, List] = defaultdict(list)
 
     @classmethod
-    def filter_by_task(cls, task_name: str):
+    def filter_by_task(cls, task_name: str, use_relation: bool = False):
         options = cls.options[task_name]
-        return [{**format.dict(), **option.schema(), "example": example} for format, option, example in options]
+        if use_relation:
+            options = cls.options[task_name] + cls.options[RELATION_EXTRACTION]
+        return [option.dict() for option in options]
 
     @classmethod
-    def register(cls, task: str, format: Type[Format], option: Type[BaseModel], example: str):
-        cls.options[task].append((format, option, example))
+    def register(cls, option: Option):
+        cls.options[option.task_id].append(option)
 
+
+# Text tasks
+text_tasks = [DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, INTENT_DETECTION_AND_SLOT_FILLING]
+for task_id in text_tasks:
+    Options.register(
+        Option(
+            display_name=TextFile.name,
+            task_id=task_id,
+            file_format=TextFile,
+            arg=ArgEncoding,
+            file=TASK_AGNOSTIC_DIR / "text_files.txt",
+        )
+    )
+    Options.register(
+        Option(
+            display_name=TextLine.name,
+            task_id=task_id,
+            file_format=TextLine,
+            arg=ArgEncoding,
+            file=TASK_AGNOSTIC_DIR / "text_lines.txt",
+        )
+    )
 
 # Text Classification
-Options.register(DOCUMENT_CLASSIFICATION, TextFile, OptionEncoding, examples.Generic_TextFile)
-Options.register(DOCUMENT_CLASSIFICATION, TextLine, OptionEncoding, examples.Generic_TextLine)
-Options.register(DOCUMENT_CLASSIFICATION, CSV, OptionDelimiter, examples.Category_CSV)
-Options.register(DOCUMENT_CLASSIFICATION, FastText, OptionEncoding, examples.Category_fastText)
-Options.register(DOCUMENT_CLASSIFICATION, JSON, OptionColumn, examples.Category_JSON)
-Options.register(DOCUMENT_CLASSIFICATION, JSONL, OptionColumn, examples.Category_JSONL)
-Options.register(DOCUMENT_CLASSIFICATION, Excel, OptionColumn, examples.Category_CSV)
+Options.register(
+    Option(
+        display_name=CSV.name,
+        task_id=DOCUMENT_CLASSIFICATION,
+        file_format=CSV,
+        arg=ArgDelimiter,
+        file=TEXT_CLASSIFICATION_DIR / "example.csv",
+    )
+)
+Options.register(
+    Option(
+        display_name=FastText.name,
+        task_id=DOCUMENT_CLASSIFICATION,
+        file_format=FastText,
+        arg=ArgEncoding,
+        file=TEXT_CLASSIFICATION_DIR / "example.txt",
+    )
+)
+Options.register(
+    Option(
+        display_name=JSON.name,
+        task_id=DOCUMENT_CLASSIFICATION,
+        file_format=JSON,
+        arg=ArgColumn,
+        file=TEXT_CLASSIFICATION_DIR / "example.json",
+    )
+)
+Options.register(
+    Option(
+        display_name=JSONL.name,
+        task_id=DOCUMENT_CLASSIFICATION,
+        file_format=JSONL,
+        arg=ArgColumn,
+        file=TEXT_CLASSIFICATION_DIR / "example.jsonl",
+    )
+)
+Options.register(
+    Option(
+        display_name=Excel.name,
+        task_id=DOCUMENT_CLASSIFICATION,
+        file_format=Excel,
+        arg=ArgColumn,
+        file=TEXT_CLASSIFICATION_DIR / "example.csv",
+    )
+)
 
-# Sequence Labeling
-Options.register(SEQUENCE_LABELING, TextFile, OptionEncoding, examples.Generic_TextFile)
-Options.register(SEQUENCE_LABELING, TextLine, OptionEncoding, examples.Generic_TextLine)
-Options.register(SEQUENCE_LABELING, JSONL, OptionColumn, examples.Offset_JSONL)
-Options.register(SEQUENCE_LABELING, CoNLL, OptionCoNLL, examples.Offset_CoNLL)
+# Sequence Labelling
+Options.register(
+    Option(
+        display_name=JSONL.name,
+        task_id=SEQUENCE_LABELING,
+        file_format=JSONL,
+        arg=ArgColumn,
+        file=SEQUENCE_LABELING_DIR / "example.jsonl",
+    )
+)
+Options.register(
+    Option(
+        display_name=CoNLL.name,
+        task_id=SEQUENCE_LABELING,
+        file_format=CoNLL,
+        arg=ArgCoNLL,
+        file=SEQUENCE_LABELING_DIR / "example.txt",
+    )
+)
 
-# Sequence to sequence
-Options.register(SEQ2SEQ, TextFile, OptionEncoding, examples.Generic_TextFile)
-Options.register(SEQ2SEQ, TextLine, OptionEncoding, examples.Generic_TextLine)
-Options.register(SEQ2SEQ, CSV, OptionDelimiter, examples.Text_CSV)
-Options.register(SEQ2SEQ, JSON, OptionColumn, examples.Text_JSON)
-Options.register(SEQ2SEQ, JSONL, OptionColumn, examples.Text_JSONL)
-Options.register(SEQ2SEQ, Excel, OptionColumn, examples.Text_CSV)
+# Relation Extraction
+Options.register(
+    Option(
+        display_name="JSONL(Relation)",
+        task_id=RELATION_EXTRACTION,
+        file_format=JSONL,
+        arg=ArgNone,
+        file=RELATION_EXTRACTION_DIR / "example.jsonl",
+    )
+)
 
-# Intent detection and slof filling
-Options.register(INTENT_DETECTION_AND_SLOT_FILLING, TextFile, OptionEncoding, examples.Generic_TextFile)
-Options.register(INTENT_DETECTION_AND_SLOT_FILLING, TextLine, OptionEncoding, examples.Generic_TextLine)
-Options.register(INTENT_DETECTION_AND_SLOT_FILLING, JSONL, OptionNone, examples.IDSF_JSONL)
+# Seq2seq
+Options.register(
+    Option(
+        display_name=CSV.name,
+        task_id=SEQ2SEQ,
+        file_format=CSV,
+        arg=ArgDelimiter,
+        file=SEQ2SEQ_DIR / "example.csv",
+    )
+)
+Options.register(
+    Option(
+        display_name=JSON.name,
+        task_id=SEQ2SEQ,
+        file_format=JSON,
+        arg=ArgColumn,
+        file=SEQ2SEQ_DIR / "example.json",
+    )
+)
+Options.register(
+    Option(
+        display_name=JSONL.name,
+        task_id=SEQ2SEQ,
+        file_format=JSONL,
+        arg=ArgColumn,
+        file=SEQ2SEQ_DIR / "example.jsonl",
+    )
+)
+Options.register(
+    Option(
+        display_name=Excel.name,
+        task_id=SEQ2SEQ,
+        file_format=Excel,
+        arg=ArgColumn,
+        file=SEQ2SEQ_DIR / "example.csv",
+    )
+)
 
-# Image classification
-Options.register(IMAGE_CLASSIFICATION, ImageFile, OptionNone, examples.Generic_ImageFile)
+# Intent detection
+Options.register(
+    Option(
+        display_name=JSONL.name,
+        task_id=INTENT_DETECTION_AND_SLOT_FILLING,
+        file_format=JSONL,
+        arg=ArgNone,
+        file=INTENT_DETECTION_DIR / "example.jsonl",
+    )
+)
+
+# Image Classification
+Options.register(
+    Option(
+        display_name=ImageFile.name,
+        task_id=IMAGE_CLASSIFICATION,
+        file_format=ImageFile,
+        arg=ArgNone,
+        file=IMAGE_CLASSIFICATION_DIR / "image_files.txt",
+    )
+)
 
 # Speech to Text
-Options.register(SPEECH2TEXT, AudioFile, OptionNone, examples.Generic_AudioFile)
+Options.register(
+    Option(
+        display_name=AudioFile.name,
+        task_id=SPEECH2TEXT,
+        file_format=AudioFile,
+        arg=ArgNone,
+        file=SPEECH_TO_TEXT_DIR / "audio_files.txt",
+    )
+)
