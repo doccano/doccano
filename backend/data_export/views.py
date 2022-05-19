@@ -18,7 +18,8 @@ class DatasetCatalog(APIView):
     def get(self, request, *args, **kwargs):
         project_id = kwargs["project_id"]
         project = get_object_or_404(Project, pk=project_id)
-        options = Options.filter_by_task(project.project_type)
+        use_relation = getattr(project, "use_relation", False)
+        options = Options.filter_by_task(project.project_type, use_relation)
         return Response(data=options, status=status.HTTP_200_OK)
 
 

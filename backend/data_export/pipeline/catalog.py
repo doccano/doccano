@@ -44,14 +44,18 @@ class Options:
     options: Dict[str, List] = defaultdict(list)
 
     @classmethod
-    def filter_by_task(cls, task_name: str):
+    def filter_by_task(cls, task_name: str, use_relation: bool = False):
         options = cls.options[task_name]
-        return [{**file_format.dict(), "example": example} for file_format, example in options]
+        return [
+            {**file_format.dict(), "example": example}
+            for file_format, example, use_rel in options
+            if use_rel == use_relation
+        ]
 
     @classmethod
-    def register(cls, task: str, file_format: Type[Format], file: Path):
+    def register(cls, task: str, file_format: Type[Format], file: Path, use_relation: bool = False):
         example = cls.load_example(file)
-        cls.options[task].append((file_format, example))
+        cls.options[task].append((file_format, example, use_relation))
 
     @staticmethod
     def load_example(file):
@@ -70,7 +74,7 @@ Options.register(DOCUMENT_CLASSIFICATION, JSONL, TEXT_CLASSIFICATION_DIR / "exam
 SEQUENCE_LABELING_DIR = EXAMPLE_DIR / "sequence_labeling"
 RELATION_EXTRACTION_DIR = EXAMPLE_DIR / "relation_extraction"
 Options.register(SEQUENCE_LABELING, JSONL, SEQUENCE_LABELING_DIR / "example.jsonl")
-Options.register(SEQUENCE_LABELING, JSONL, RELATION_EXTRACTION_DIR / "example.jsonl")
+Options.register(SEQUENCE_LABELING, JSONL, RELATION_EXTRACTION_DIR / "example.jsonl", True)
 
 # Sequence to sequence
 SEQ2SEQ_DIR = EXAMPLE_DIR / "sequence_to_sequence"
