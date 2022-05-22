@@ -2,7 +2,7 @@ import abc
 import uuid
 from typing import Any, Optional
 
-from pydantic import UUID4, BaseModel, validator
+from pydantic import UUID4, BaseModel, NonNegativeInt, validator
 
 from .label_types import LabelTypes
 from examples.models import Example
@@ -70,8 +70,8 @@ class CategoryLabel(Label):
 
 class SpanLabel(Label):
     label: str
-    start_offset: int
-    end_offset: int
+    start_offset: NonNegativeInt
+    end_offset: NonNegativeInt
 
     def __lt__(self, other):
         return self.start_offset < other.start_offset

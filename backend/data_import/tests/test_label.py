@@ -82,6 +82,10 @@ class TestSpanLabel(TestLabel):
         self.assertEqual(span.start_offset, 0)
         self.assertEqual(span.end_offset, 1)
 
+    def test_invalid_negative_offset(self):
+        with self.assertRaises(ValueError):
+            SpanLabel(label="A", start_offset=-1, end_offset=1, example_uuid=uuid.uuid4())
+
     def test_parse_invalid_dict(self):
         example_uuid = uuid.uuid4()
         with self.assertRaises(ValueError):
