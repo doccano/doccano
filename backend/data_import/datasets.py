@@ -4,7 +4,7 @@ from typing import List, Type
 from django.contrib.auth.models import User
 
 from .models import DummyLabelType
-from .pipeline.catalog import RELATION_EXTRACTION, TextFile, TextLine
+from .pipeline.catalog import RELATION_EXTRACTION, Format
 from .pipeline.data import BaseData, BinaryData, TextData
 from .pipeline.exceptions import FileParseException
 from .pipeline.factories import create_parser
@@ -210,7 +210,7 @@ class CategoryAndSpanDataset(Dataset):
         return self.reader.errors + self.example_maker.errors + self.category_maker.errors + self.span_maker.errors
 
 
-def select_dataset(project: Project, task: str, file_format: str) -> Type[Dataset]:
+def select_dataset(project: Project, task: str, file_format: Format) -> Type[Dataset]:
     mapping = {
         DOCUMENT_CLASSIFICATION: TextClassificationDataset,
         SEQUENCE_LABELING: SequenceLabelingDataset,
@@ -222,12 +222,12 @@ def select_dataset(project: Project, task: str, file_format: str) -> Type[Datase
     }
     if task not in mapping:
         task = project.project_type
-    if project.is_text_project and file_format in [TextLine.name, TextFile.name]:
+    if project.is_text_project and file_format.is_plain_text():
         return PlainDataset
     return mapping[task]
 
 
-def load_dataset(task: str, file_format: str, data_files: List[FileName], project: Project, **kwargs) -> Dataset:
+def load_dataset(task: str, file_format: Format, data_files: List[FileName], project: Project, **kwargs) -> Dataset:
     parser = create_parser(file_format, **kwargs)
     reader = Reader(data_files, parser)
     dataset_class = select_dataset(project, task, file_format)

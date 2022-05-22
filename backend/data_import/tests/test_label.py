@@ -55,7 +55,7 @@ class TestCategoryLabel(TestLabel):
     def test_create(self):
         category = CategoryLabel(label="A", example_uuid=uuid.uuid4())
         types = MagicMock()
-        types.get_by_text.return_value = mommy.make(CategoryType, project=self.project.item)
+        types.__getitem__.return_value = mommy.make(CategoryType, project=self.project.item)
         category_model = category.create(self.user, self.example, types)
         self.assertIsInstance(category_model, CategoryModel)
 
@@ -65,7 +65,7 @@ class TestSpanLabel(TestLabel):
 
     def test_comparison(self):
         span1 = SpanLabel(label="A", start_offset=0, end_offset=1, example_uuid=uuid.uuid4())
-        span2 = SpanLabel(label="A", start_offset=1, end_offset=1, example_uuid=uuid.uuid4())
+        span2 = SpanLabel(label="A", start_offset=1, end_offset=2, example_uuid=uuid.uuid4())
         self.assertLess(span1, span2)
 
     def test_parse_tuple(self):
@@ -82,6 +82,14 @@ class TestSpanLabel(TestLabel):
         self.assertEqual(span.start_offset, 0)
         self.assertEqual(span.end_offset, 1)
 
+    def test_invalid_negative_offset(self):
+        with self.assertRaises(ValueError):
+            SpanLabel(label="A", start_offset=-1, end_offset=1, example_uuid=uuid.uuid4())
+
+    def test_invalid_offset(self):
+        with self.assertRaises(ValueError):
+            SpanLabel(label="A", start_offset=1, end_offset=0, example_uuid=uuid.uuid4())
+
     def test_parse_invalid_dict(self):
         example_uuid = uuid.uuid4()
         with self.assertRaises(ValueError):
@@ -96,7 +104,7 @@ class TestSpanLabel(TestLabel):
     def test_create(self):
         span = SpanLabel(label="A", start_offset=0, end_offset=1, example_uuid=uuid.uuid4())
         types = MagicMock()
-        types.get_by_text.return_value = mommy.make(SpanType, project=self.project.item)
+        types.__getitem__.return_value = mommy.make(SpanType, project=self.project.item)
         span_model = span.create(self.user, self.example, types)
         self.assertIsInstance(span_model, SpanModel)
 
@@ -160,7 +168,7 @@ class TestRelationLabel(TestLabel):
     def test_create(self):
         relation = RelationLabel(type="A", from_id=0, to_id=1, example_uuid=uuid.uuid4())
         types = MagicMock()
-        types.get_by_text.return_value = mommy.make(RelationType, project=self.project.item)
+        types.__getitem__.return_value = mommy.make(RelationType, project=self.project.item)
         id_to_span = {
             0: mommy.make(SpanModel, start_offset=0, end_offset=1),
             1: mommy.make(SpanModel, start_offset=2, end_offset=3),

@@ -12,12 +12,12 @@ class LabelTypes:
     def __contains__(self, text: str) -> bool:
         return text in self.types
 
+    def __getitem__(self, text: str) -> LabelType:
+        return self.types[text]
+
     def save(self, label_types: List[LabelType]):
         self.label_type_class.objects.bulk_create(label_types, ignore_conflicts=True)
 
     def update(self, project: Project):
         types = self.label_type_class.objects.filter(project=project)
         self.types = {label_type.text: label_type for label_type in types}
-
-    def get_by_text(self, text: str) -> LabelType:
-        return self.types[text]
