@@ -65,7 +65,7 @@ class TestSpanLabel(TestLabel):
 
     def test_comparison(self):
         span1 = SpanLabel(label="A", start_offset=0, end_offset=1, example_uuid=uuid.uuid4())
-        span2 = SpanLabel(label="A", start_offset=1, end_offset=1, example_uuid=uuid.uuid4())
+        span2 = SpanLabel(label="A", start_offset=1, end_offset=2, example_uuid=uuid.uuid4())
         self.assertLess(span1, span2)
 
     def test_parse_tuple(self):
@@ -85,6 +85,10 @@ class TestSpanLabel(TestLabel):
     def test_invalid_negative_offset(self):
         with self.assertRaises(ValueError):
             SpanLabel(label="A", start_offset=-1, end_offset=1, example_uuid=uuid.uuid4())
+
+    def test_invalid_offset(self):
+        with self.assertRaises(ValueError):
+            SpanLabel(label="A", start_offset=1, end_offset=0, example_uuid=uuid.uuid4())
 
     def test_parse_invalid_dict(self):
         example_uuid = uuid.uuid4()

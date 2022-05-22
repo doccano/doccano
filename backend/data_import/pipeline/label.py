@@ -2,7 +2,7 @@ import abc
 import uuid
 from typing import Any, Optional
 
-from pydantic import UUID4, BaseModel, NonNegativeInt, validator
+from pydantic import UUID4, BaseModel, ConstrainedStr, NonNegativeInt, root_validator
 
 from .label_types import LabelTypes
 from examples.models import Example
@@ -13,6 +13,10 @@ from labels.models import Relation as RelationModel
 from labels.models import Span as SpanModel
 from labels.models import TextLabel as TextLabelModel
 from projects.models import Project
+
+
+class NonEmptyStr(ConstrainedStr):
+    min_length = 1
 
 
 class Label(BaseModel, abc.ABC):
@@ -45,17 +49,10 @@ class Label(BaseModel, abc.ABC):
 
 
 class CategoryLabel(Label):
-    label: str
+    label: NonEmptyStr
 
     def __lt__(self, other):
         return self.label < other.label
-
-    @validator("label")
-    def label_is_not_empty(cls, value: str):
-        if value:
-            return value
-        else:
-            raise ValueError("is not empty.")
 
     @classmethod
     def parse(cls, example_uuid: UUID4, obj: Any):
@@ -69,12 +66,19 @@ class CategoryLabel(Label):
 
 
 class SpanLabel(Label):
-    label: str
+    label: NonEmptyStr
     start_offset: NonNegativeInt
     end_offset: NonNegativeInt
 
     def __lt__(self, other):
         return self.start_offset < other.start_offset
+
+    @root_validator
+    def check_start_offset_is_less_than_end_offset(cls, values):
+        start_offset, end_offset = values.get("start_offset"), values.get("end_offset")
+        if start_offset >= end_offset:
+            raise ValueError("start_offset must be less than end_offset.")
+        return values
 
     @classmethod
     def parse(cls, example_uuid: UUID4, obj: Any):
@@ -101,17 +105,10 @@ class SpanLabel(Label):
 
 
 class TextLabel(Label):
-    text: str
+    text: NonEmptyStr
 
     def __lt__(self, other):
         return self.text < other.text
-
-    @validator("text")
-    def text_is_not_empty(cls, value: str):
-        if value:
-            return value
-        else:
-            raise ValueError("is not empty.")
 
     @classmethod
     def parse(cls, example_uuid: UUID4, obj: Any):
@@ -127,7 +124,7 @@ class TextLabel(Label):
 class RelationLabel(Label):
     from_id: int
     to_id: int
-    type: str
+    type: NonEmptyStr
 
     def __lt__(self, other):
         return self.from_id < other.from_id
