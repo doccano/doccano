@@ -68,6 +68,16 @@ class TestMaxFileSize(TestImportData):
         self.assertIn("maximum file size", response["error"][0]["message"])
 
 
+class TestInvalidFileFormat(TestImportData):
+    task = DOCUMENT_CLASSIFICATION
+
+    def test_invalid_file_format(self):
+        filename = "text_classification/example.csv"
+        file_format = "INVALID_FORMAT"
+        response = self.import_dataset(filename, file_format, self.task)
+        self.assertEqual(len(response["error"]), 1)
+
+
 class TestImportClassificationData(TestImportData):
     task = DOCUMENT_CLASSIFICATION
 

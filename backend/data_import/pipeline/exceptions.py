@@ -42,3 +42,12 @@ class FileTypeException(FileImportException):
 
     def dict(self):
         return {"filename": self.filename, "line": -1, "message": str(self)}
+
+
+class FileFormatException(FileImportException):
+    def __init__(self, file_format: str):
+        self.file_format = file_format
+
+    def dict(self):
+        message = f"Unknown file format: {self.file_format}"
+        return {"message": message}

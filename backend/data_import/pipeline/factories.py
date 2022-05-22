@@ -6,6 +6,7 @@ from .catalog import (
     CoNLL,
     Excel,
     FastText,
+    Format,
     ImageFile,
     TextFile,
     TextLine,
@@ -23,7 +24,7 @@ from .parsers import (
 )
 
 
-def create_parser(file_format: str, **kwargs):
+def create_parser(file_format: Format, **kwargs):
     mapping = {
         TextFile.name: TextFileParser,
         TextLine.name: LineParser,
@@ -36,6 +37,4 @@ def create_parser(file_format: str, **kwargs):
         ImageFile.name: PlainParser,
         AudioFile.name: PlainParser,
     }
-    if file_format not in mapping:
-        raise ValueError(f"Invalid format: {file_format}")
-    return mapping[file_format](**kwargs)
+    return mapping[file_format.name](**kwargs)

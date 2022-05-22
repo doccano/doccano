@@ -6,6 +6,7 @@ from typing import Dict, List, Type
 from pydantic import BaseModel
 from typing_extensions import Literal
 
+from .exceptions import FileFormatException
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
@@ -140,6 +141,13 @@ class Format:
     def dict(cls):
         return {"name": cls.name, "accept_types": cls.accept_types}
 
+    def validate_mime(self, mime: str):
+        return True
+
+    @staticmethod
+    def is_plain_text():
+        return False
+
 
 class CSV(Format):
     name = "CSV"
@@ -170,10 +178,18 @@ class TextFile(Format):
     name = "TextFile"
     accept_types = "text/*"
 
+    @staticmethod
+    def is_plain_text():
+        return True
+
 
 class TextLine(Format):
     name = "TextLine"
     accept_types = "text/*"
+
+    @staticmethod
+    def is_plain_text():
+        return True
 
 
 class CoNLL(Format):
@@ -185,10 +201,16 @@ class ImageFile(Format):
     name = "ImageFile"
     accept_types = "image/png, image/jpeg, image/bmp, image/gif"
 
+    def validate_mime(self, mime: str):
+        return mime in self.accept_types
+
 
 class AudioFile(Format):
     name = "AudioFile"
     accept_types = "audio/ogg, audio/aac, audio/mpeg, audio/wav"
+
+    def validate_mime(self, mime: str):
+        return mime in self.accept_types
 
 
 class ArgColumn(BaseModel):
@@ -237,6 +259,13 @@ class Option:
             "task_id": self.task_id,
             "display_name": self.display_name,
         }
+
+
+def create_file_format(file_format: str) -> Format:
+    for format_class in Format.__subclasses__():
+        if format_class.name == file_format:
+            return format_class()
+    raise FileFormatException(file_format)
 
 
 class Options:
