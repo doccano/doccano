@@ -201,8 +201,7 @@ bundle/
 webpack-stats.json
 
 .vscode
-/app/doccano.db
-/app/run.bat
-/frontend/components/layout/doccano.json
-/frontend/run.bat
-/run-docker-dev.bat
+backend/filepond-temp-uploads
+backend/media
+backend/*.sqlite3*
+frontend/assets/fonts
