@@ -62,7 +62,7 @@ class CategoryLabel(Label):
         return CategoryType(text=self.label, project=project)
 
     def create(self, user, example: Example, types: LabelTypes, **kwargs):
-        return CategoryModel(uuid=self.uuid, user=user, example=example, label=types.get_by_text(self.label))
+        return CategoryModel(uuid=self.uuid, user=user, example=example, label=types[self.label])
 
 
 class SpanLabel(Label):
@@ -100,7 +100,7 @@ class SpanLabel(Label):
             example=example,
             start_offset=self.start_offset,
             end_offset=self.end_offset,
-            label=types.get_by_text(self.label),
+            label=types[self.label],
         )
 
 
@@ -141,7 +141,7 @@ class RelationLabel(Label):
             uuid=self.uuid,
             user=user,
             example=example,
-            type=types.get_by_text(self.type),
+            type=types[self.type],
             from_id=kwargs["id_to_span"][self.from_id],
             to_id=kwargs["id_to_span"][self.to_id],
         )

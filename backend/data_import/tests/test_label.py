@@ -55,7 +55,7 @@ class TestCategoryLabel(TestLabel):
     def test_create(self):
         category = CategoryLabel(label="A", example_uuid=uuid.uuid4())
         types = MagicMock()
-        types.get_by_text.return_value = mommy.make(CategoryType, project=self.project.item)
+        types.__getitem__.return_value = mommy.make(CategoryType, project=self.project.item)
         category_model = category.create(self.user, self.example, types)
         self.assertIsInstance(category_model, CategoryModel)
 
@@ -104,7 +104,7 @@ class TestSpanLabel(TestLabel):
     def test_create(self):
         span = SpanLabel(label="A", start_offset=0, end_offset=1, example_uuid=uuid.uuid4())
         types = MagicMock()
-        types.get_by_text.return_value = mommy.make(SpanType, project=self.project.item)
+        types.__getitem__.return_value = mommy.make(SpanType, project=self.project.item)
         span_model = span.create(self.user, self.example, types)
         self.assertIsInstance(span_model, SpanModel)
 
@@ -168,7 +168,7 @@ class TestRelationLabel(TestLabel):
     def test_create(self):
         relation = RelationLabel(type="A", from_id=0, to_id=1, example_uuid=uuid.uuid4())
         types = MagicMock()
-        types.get_by_text.return_value = mommy.make(RelationType, project=self.project.item)
+        types.__getitem__.return_value = mommy.make(RelationType, project=self.project.item)
         id_to_span = {
             0: mommy.make(SpanModel, start_offset=0, end_offset=1),
             1: mommy.make(SpanModel, start_offset=2, end_offset=3),

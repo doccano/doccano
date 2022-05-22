@@ -22,10 +22,8 @@ class TestCategoryLabel(TestCase):
 
     def test_update(self):
         label_types = LabelTypes(CategoryType)
-        with self.assertRaises(KeyError):
-            label_types.get_by_text("A")
         category_types = [CategoryType(text="A", project=self.project.item)]
         label_types.save(category_types)
         label_types.update(self.project.item)
-        category_type = label_types.get_by_text("A")
+        category_type = label_types["A"]
         self.assertEqual(category_type.text, "A")
