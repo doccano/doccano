@@ -51,6 +51,10 @@ The architecture of the `docker-compose.prod.yml` is as follows:
 
 ![](images/developer_guide/architecture_docker_compose.png)
 
+On the other hand, the one of the `Dockerfile` is as follows:
+
+![](images/developer_guide/architecture_docker.png)
+
 ## frontend
 
 The `frontend/` directory contains frontend code. The `frontent` directory structure follows [Nuxt.js](https://ru.nuxtjs.org) one. See the [Nuxt.js documentation](https://nuxtjs.org/guide/directory-structure/) in details.
@@ -66,3 +70,7 @@ The `tools` directory contains some shell scripts. They are mainly used in Docke
 | prod-celery.sh    | This script is used to run celery in `docker-compose.prod.yml`.                                                      |
 | prod-django.sh    | This script is used to run gunicorn in `docker-compose.prod.yml`. In addition, create roles, superuser, and migrate. |
 | run.sh            | This script is used in `Dockerfile`. After creating roles and superuser, run gunicorn and celery.                    |
+
+## Architecture of Python package
+
+![](images/developer_guide/architecture_python_package.png)
