@@ -117,15 +117,15 @@ export default Vue.extend({
       valid: false,
       rules: {
         required: (v: string) => !!v || 'Required',
-        // @ts-ignore
-        counter: (v: string) =>
-          (v && v.length <= 100) || this.$t('rules.labelNameRules').labelLessThan100Chars,
-        // @ts-ignore
-        nameDuplicated: (v: string) =>
-          !this.isUsedName(v) || this.$t('rules.labelNameRules').duplicated,
-        // @ts-ignore
-        keyDuplicated: (v: string) =>
-          !this.isUsedSuffixKey(v) || this.$t('rules.keyNameRules').duplicated,
+        counter: (
+          v: string // @ts-ignore
+        ) => (v && v.length <= 100) || this.$t('rules.labelNameRules').labelLessThan100Chars,
+        nameDuplicated: (
+          v: string // @ts-ignore
+        ) => !this.isUsedName(v) || this.$t('rules.labelNameRules').duplicated,
+        keyDuplicated: (
+          v: string // @ts-ignore
+        ) => !this.isUsedSuffixKey(v) || this.$t('rules.keyNameRules').duplicated,
         validColor: (v: string) =>
           /^#[0-9A-F]{6}$/i.test(v) || 'This string is NOT a valid hex color.'
       },

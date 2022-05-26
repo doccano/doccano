@@ -33,7 +33,7 @@ import { Seq2seqApplicationService } from '~/services/application/tasks/seq2seq/
 import { ConfigApplicationService } from '~/services/application/autoLabeling/configApplicationService'
 import { TemplateApplicationService } from '~/services/application/autoLabeling/templateApplicationService'
 import { APITextClassificationRepository } from '~/repositories/tasks/textClassification/apiTextClassification'
-import { TextClassificationService } from '~/services/application/tasks/textClassification/TextClassificationApplicationService'
+import { TextClassificationService } from '~/services/application/tasks/textClassification/textClassificationApplicationService'
 import { AuthApplicationService } from '~/services/application/auth/authApplicationService'
 import { APIDownloadFormatRepository } from '~/repositories/download/apiDownloadFormatRepository'
 import { APIDownloadRepository } from '~/repositories/download/apiDownloadRepository'
