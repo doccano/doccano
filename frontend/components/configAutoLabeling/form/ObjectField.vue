@@ -1,31 +1,14 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="value"
-  >
+  <v-data-table :headers="headers" :items="value">
     <template #top>
-      <v-toolbar
-        class="toolbar-control"
-        flat
-      >
+      <v-toolbar class="toolbar-control" flat>
         <v-toolbar-title class="text-capitalize">
           {{ title }}
         </v-toolbar-title>
         <v-spacer />
-        <v-dialog
-          v-model="dialog"
-          max-width="800px"
-        >
+        <v-dialog v-model="dialog" max-width="800px">
           <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              dark
-              class="text-none"
-              v-bind="attrs"
-              v-on="on"
-            >
-              Add
-            </v-btn>
+            <v-btn color="primary" dark class="text-none" v-bind="attrs" v-on="on"> Add </v-btn>
           </template>
           <v-card>
             <v-card-title>
@@ -34,32 +17,13 @@
 
             <v-card-text>
               <v-container>
-                <v-form
-                  ref="form"
-                  v-model="valid"
-                >
+                <v-form ref="form" v-model="valid">
                   <v-row>
-                    <v-col
-                      cols="12"
-                      sm="12"
-                      class="pa-0"
-                    >
-                      <v-text-field
-                        v-model="editedItem.key"
-                        label="Key"
-                        outlined
-                      />
+                    <v-col cols="12" sm="12" class="pa-0">
+                      <v-text-field v-model="editedItem.key" label="Key" outlined />
                     </v-col>
-                    <v-col
-                      cols="12"
-                      sm="12"
-                      class="pa-0"
-                    >
-                      <v-text-field
-                        v-model="editedItem.value"
-                        label="Value"
-                        outlined
-                      />
+                    <v-col cols="12" sm="12" class="pa-0">
+                      <v-text-field v-model="editedItem.value" label="Value" outlined />
                     </v-col>
                   </v-row>
                 </v-form>
@@ -68,12 +32,7 @@
 
             <v-card-actions>
               <v-spacer />
-              <v-btn
-                color="blue darken-1"
-                class="text-capitalize"
-                text
-                @click="close"
-              >
+              <v-btn color="blue darken-1" class="text-capitalize" text @click="close">
                 Cancel
               </v-btn>
               <v-btn
@@ -91,17 +50,10 @@
       </v-toolbar>
     </template>
     <template #[`item.actions`]="{ item }">
-      <v-icon
-        small
-        class="mr-2"
-        @click="editItem(item)"
-      >
+      <v-icon small class="mr-2" @click="editItem(item)">
         {{ mdiPencil }}
       </v-icon>
-      <v-icon
-        small
-        @click="deleteItem(item)"
-      >
+      <v-icon small @click="deleteItem(item)">
         {{ mdiDelete }}
       </v-icon>
     </template>
@@ -113,7 +65,6 @@ import Vue from 'vue'
 import { mdiPencil, mdiDelete } from '@mdi/js'
 
 export default Vue.extend({
-
   props: {
     value: {
       type: Array,
@@ -151,12 +102,12 @@ export default Vue.extend({
       valid: false,
       editedIndex: -1,
       editedItem: {
-        'key': '',
-        'value': ''
+        key: '',
+        value: ''
       },
       defaultItem: {
-        'key': '',
-        'value': ''
+        key: '',
+        value: ''
       },
       items: [] as string[],
       mdiPencil,
@@ -165,13 +116,13 @@ export default Vue.extend({
   },
 
   methods: {
-    editItem(item: {'key': string, 'value': string}) {
+    editItem(item: { key: string; value: string }) {
       this.editedIndex = this.value.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
     },
 
-    deleteItem(item: {'key': string, 'value': string}) {
+    deleteItem(item: { key: string; value: string }) {
       this.editedIndex = this.value.indexOf(item)
       this.editedItem = Object.assign({}, item)
       const items = Object.assign([], this.value)

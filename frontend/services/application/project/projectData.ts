@@ -46,18 +46,31 @@ export class ProjectDTO {
   }
 }
 
-export type ProjectWriteDTO = Pick<ProjectDTO, 'id' | 'name' | 'description' | 'guideline' | 'projectType' | 'enableRandomOrder' | 'enableShareAnnotation' | 'singleClassClassification' | 'allowOverlapping' | 'graphemeMode' | 'useRelation'> & { tags: string[] }
+export type ProjectWriteDTO = Pick<
+  ProjectDTO,
+  | 'id'
+  | 'name'
+  | 'description'
+  | 'guideline'
+  | 'projectType'
+  | 'enableRandomOrder'
+  | 'enableShareAnnotation'
+  | 'singleClassClassification'
+  | 'allowOverlapping'
+  | 'graphemeMode'
+  | 'useRelation'
+> & { tags: string[] }
 
 export class ProjectListDTO {
   count: number
-  next : string | null
-  prev : string | null
+  next: string | null
+  prev: string | null
   items: ProjectDTO[]
 
   constructor(item: ProjectItemList) {
     this.count = item.count
     this.next = item.next
     this.prev = item.prev
-    this.items = item.items.map(_ => new ProjectDTO(_))
+    this.items = item.items.map((_) => new ProjectDTO(_))
   }
 }

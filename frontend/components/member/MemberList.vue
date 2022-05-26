@@ -8,7 +8,7 @@
     :loading-text="$t('generic.loading')"
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
-      'showFirstLastPage': true,
+      showFirstLastPage: true,
       'items-per-page-text': $t('vuetify.itemsPerPageText'),
       'page-text': $t('dataset.pageText')
     }"
@@ -30,10 +30,7 @@
       {{ $translateRole(item.rolename, $t('members.roles')) }}
     </template>
     <template #[`item.actions`]="{ item }">
-      <v-icon
-        small
-        @click="$emit('edit', item)"
-      >
+      <v-icon small @click="$emit('edit', item)">
         {{ mdiPencil }}
       </v-icon>
     </template>
@@ -78,6 +75,6 @@ export default Vue.extend({
         { text: 'Actions', value: 'actions', sortable: false }
       ]
     }
-  } 
+  }
 })
 </script>

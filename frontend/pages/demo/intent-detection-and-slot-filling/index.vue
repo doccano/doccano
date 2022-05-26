@@ -1,4 +1,3 @@
-
 <template>
   <v-main>
     <v-container fluid>
@@ -58,7 +57,7 @@ export default {
           prefixKey: null,
           suffixKey: 'l',
           color: '#fbb028',
-          textColor: '#ffffff',
+          textColor: '#ffffff'
         },
         {
           id: 5,
@@ -66,7 +65,7 @@ export default {
           prefixKey: null,
           suffixKey: 'm',
           color: '#7c20e0',
-          textColor: '#000000',
+          textColor: '#000000'
         },
         {
           id: 6,
@@ -74,7 +73,7 @@ export default {
           prefixKey: null,
           suffixKey: 'o',
           color: '#e6d176',
-          textColor: '#000000',
+          textColor: '#000000'
         },
         {
           id: 7,
@@ -82,7 +81,7 @@ export default {
           prefixKey: null,
           suffixKey: 'p',
           color: '#6a74b9',
-          textColor: '#ffffff',
+          textColor: '#ffffff'
         }
       ],
       items: [
@@ -123,7 +122,7 @@ export default {
       exclusive: true,
       currentDoc: {
         id: 8,
-        text: "I want to fly from Boston at 8:38 am and arrive in Denver at 11:10 in the morning.",
+        text: 'I want to fly from Boston at 8:38 am and arrive in Denver at 11:10 in the morning.',
         annotations: [
           {
             id: 17,
@@ -131,7 +130,7 @@ export default {
             label: 4,
             startOffset: 19,
             endOffset: 25,
-            user: 1,
+            user: 1
           },
           {
             id: 19,
@@ -139,7 +138,7 @@ export default {
             label: 7,
             startOffset: 29,
             endOffset: 36,
-            user: 1,
+            user: 1
           },
           {
             id: 16,
@@ -147,7 +146,7 @@ export default {
             label: 4,
             startOffset: 51,
             endOffset: 57,
-            user: 1,
+            user: 1
           },
           {
             id: 18,
@@ -155,8 +154,8 @@ export default {
             label: 7,
             startOffset: 61,
             endOffset: 66,
-            user: 1,
-          },
+            user: 1
+          }
         ],
         meta: { wikiPageId: 2 },
         annotation_approver: null
@@ -166,11 +165,13 @@ export default {
 
   methods: {
     deleteEntity(annotationId) {
-      this.currentDoc.annotations = this.currentDoc.annotations.filter(item => item.id !== annotationId)
+      this.currentDoc.annotations = this.currentDoc.annotations.filter(
+        (item) => item.id !== annotationId
+      )
     },
 
     updateEntity(annotationId, labelId) {
-      const index = this.currentDoc.annotations.findIndex(item => item.id === annotationId)
+      const index = this.currentDoc.annotations.findIndex((item) => item.id === annotationId)
       this.currentDoc.annotations[index].label = labelId
     },
 
@@ -185,7 +186,7 @@ export default {
     },
 
     removeLabel(annotationId) {
-      this.categoryAnnotations = this.categoryAnnotations.filter(item => item.id !== annotationId)
+      this.categoryAnnotations = this.categoryAnnotations.filter((item) => item.id !== annotationId)
     },
 
     addLabel(labelId) {
@@ -203,7 +204,7 @@ export default {
   font-size: 1.25rem !important;
   font-weight: 500;
   line-height: 2rem;
-  font-family: "Roboto", sans-serif !important;
+  font-family: 'Roboto', sans-serif !important;
   opacity: 0.6;
 }
 </style>

@@ -1,8 +1,5 @@
 <template>
-  <v-btn-toggle
-    v-model="option"
-    mandatory
-  >
+  <v-btn-toggle v-model="option" mandatory>
     <v-btn icon>
       <v-icon>{{ mdiFormatListBulleted }}</v-icon>
     </v-btn>

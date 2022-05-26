@@ -1,9 +1,6 @@
 <template>
   <v-card>
-    <v-img
-      :src="imageSrc"
-      height="200px"
-    />
+    <v-img :src="imageSrc" height="200px" />
     <v-card-title primary-title class="layout justify-center">
       <div class="headline text-xs-center font-weight-bold mb-2">
         {{ title }}

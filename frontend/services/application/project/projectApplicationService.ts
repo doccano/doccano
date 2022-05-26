@@ -2,17 +2,14 @@ import { ProjectDTO, ProjectWriteDTO, ProjectListDTO } from './projectData'
 import { ProjectRepository, SearchOption } from '~/domain/models/project/projectRepository'
 import { ProjectWriteItem } from '~/domain/models/project/project'
 
-
 export class ProjectApplicationService {
-  constructor(
-    private readonly repository: ProjectRepository
-  ) {}
+  constructor(private readonly repository: ProjectRepository) {}
 
   public async list(options: SearchOption): Promise<ProjectListDTO> {
     try {
       const items = await this.repository.list(options)
       return new ProjectListDTO(items)
-    } catch(e: any) {
+    } catch (e: any) {
       throw new Error(e.response.data.detail)
     }
   }
@@ -27,7 +24,7 @@ export class ProjectApplicationService {
       const project = this.toWriteModel(item)
       const response = await this.repository.create(project)
       return new ProjectDTO(response)
-    } catch(e: any) {
+    } catch (e: any) {
       throw new Error(e.response.data.detail)
     }
   }
@@ -37,13 +34,13 @@ export class ProjectApplicationService {
       const project = this.toWriteModel(item)
       project.tags = []
       await this.repository.update(project)
-    } catch(e: any) {
+    } catch (e: any) {
       throw new Error(e.response.data.detail)
     }
   }
 
   public bulkDelete(items: ProjectDTO[]): Promise<void> {
-    const ids = items.map(item => item.id)
+    const ids = items.map((item) => item.id)
     return this.repository.bulkDelete(ids)
   }
 

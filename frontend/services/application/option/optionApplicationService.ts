@@ -3,9 +3,7 @@ import { OptionRepository } from '~/domain/models/option/optionRepository'
 import { OptionItem } from '~/domain/models/option/option'
 
 export class OptionApplicationService {
-  constructor(
-    private readonly repository: OptionRepository
-  ) {}
+  constructor(private readonly repository: OptionRepository) {}
 
   public findOption(projectId: string): OptionDTO {
     const item = this.repository.findById(projectId)

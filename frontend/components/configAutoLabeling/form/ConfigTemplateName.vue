@@ -7,12 +7,7 @@
           <p class="font-weight-regular body-1">
             You can select the template to create the auto-labeling configuration.{{ valid }}
           </p>
-          <v-select
-            v-model="selectedTask"
-            :items="taskNames"
-            label="Select a task name"
-            outlined
-          />
+          <v-select v-model="selectedTask" :items="taskNames" label="Select a task name" outlined />
           <v-select
             v-model="templateName"
             :items="templateNames"
@@ -24,12 +19,7 @@
       </v-card-text>
       <v-card-actions class="pa-0">
         <v-spacer />
-        <v-btn
-          :disabled="!valid"
-          color="primary"
-          class="text-capitalize"
-          @click="$emit('next')"
-        >
+        <v-btn :disabled="!valid" color="primary" class="text-capitalize" @click="$emit('next')">
           Next
         </v-btn>
       </v-card-actions>
@@ -66,12 +56,12 @@ export default Vue.extend({
     taskType(): string {
       return {
         DocumentClassification: 'Category',
-        SequenceLabeling      : 'Span',
-        Seq2seq               : 'Text',
-        ImageClassification   : 'Category',
-        Speech2text           : 'Text',
+        SequenceLabeling: 'Span',
+        Seq2seq: 'Text',
+        ImageClassification: 'Category',
+        Speech2text: 'Text'
       }[this.selectedTask]!
-  }
+    }
   },
 
   watch: {

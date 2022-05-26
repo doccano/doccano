@@ -7,12 +7,7 @@
   >
     <template #content>
       <v-form v-model="valid">
-        <v-alert
-          v-show="showError"
-          v-model="showError"
-          type="error"
-          dismissible
-        >
+        <v-alert v-show="showError" v-model="showError" type="error" dismissible>
           {{ $t('errors.invalidUserOrPass') }}
         </v-alert>
         <v-text-field

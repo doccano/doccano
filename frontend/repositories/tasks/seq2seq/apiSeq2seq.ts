@@ -1,7 +1,6 @@
 import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
 import { Seq2seqLabel } from '~/domain/models/tasks/seq2seq'
 
-
 export class APISeq2seqRepository extends AnnotationRepository<Seq2seqLabel> {
   constructor() {
     super(Seq2seqLabel)

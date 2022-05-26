@@ -1,5 +1,5 @@
-declare module "*.vue" {
+declare module '*.vue' {
   import Vue from 'vue'
   export default Vue
 }
-declare module "v-annotator"
+declare module 'v-annotator'

@@ -1,9 +1,5 @@
 <template>
-  <v-btn
-    icon
-    fab
-    @click="isDark=!isDark"
-  >
+  <v-btn icon fab @click="isDark = !isDark">
     <v-icon v-if="isDark">
       {{ mdiMoonWaxingCrescent }}
     </v-icon>

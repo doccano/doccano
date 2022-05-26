@@ -1,25 +1,25 @@
-import "reflect-metadata"
+import 'reflect-metadata'
 import { Expose, Type } from 'class-transformer'
 
 export class ExampleItem {
-  id: number;
-  text: string;
-  meta: object;
+  id: number
+  text: string
+  meta: object
 
   @Expose({ name: 'annotation_approver' })
-  annotationApprover: boolean | null;
+  annotationApprover: boolean | null
 
   @Expose({ name: 'comment_count' })
-  commentCount: number;
+  commentCount: number
 
   @Expose({ name: 'filename' })
-  fileUrl: string;
+  fileUrl: string
 
   @Expose({ name: 'is_confirmed' })
-  isConfirmed: boolean;
+  isConfirmed: boolean
 
   @Expose({ name: 'upload_name' })
-  filename: string;
+  filename: string
 
   get url() {
     const l = this.fileUrl.indexOf('media/')
@@ -39,11 +39,11 @@ export class ExampleItem {
 }
 
 export class ExampleItemList {
-  count: number;
-  next: string | null;
-  prev: string | null;
+  count: number
+  next: string | null
+  prev: string | null
 
   @Type(() => ExampleItem)
   @Expose({ name: 'results' })
-  items: ExampleItem[];
+  items: ExampleItem[]
 }

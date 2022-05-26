@@ -1,5 +1,5 @@
 export class Format {
-  name: string;
-  example: string;
-  properties: object;
+  name: string
+  example: string
+  properties: object
 }

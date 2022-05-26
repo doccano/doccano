@@ -3,10 +3,7 @@
     <template #activator="{ on: menu }">
       <v-tooltip bottom>
         <template #activator="{ on: tooltip }">
-          <v-btn
-            icon
-            v-on="{ ...tooltip, ...menu }"
-          >
+          <v-btn icon v-on="{ ...tooltip, ...menu }">
             <v-icon>
               {{ mdiFilter }}
             </v-icon>
@@ -17,10 +14,7 @@
     </template>
     <v-list>
       <v-list-item-group v-model="selected" mandatory>
-        <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-        >
+        <v-list-item v-for="(item, i) in items" :key="i">
           <v-list-item-icon>
             <v-icon v-if="selected === i">
               {{ mdiCheck }}
@@ -64,7 +58,7 @@ export default {
   computed: {
     selected: {
       get() {
-        const index = this.items.findIndex(item => item.param === this.value)
+        const index = this.items.findIndex((item) => item.param === this.value)
         return index === -1 ? 0 : index
       },
       set(value) {

@@ -4,27 +4,23 @@ module.exports = {
     browser: true,
     node: true
   },
-  extends: [
-    '@nuxtjs',
-    'plugin:nuxt/recommended',
-    '@nuxtjs/eslint-config-typescript',
-    'prettier'
-  ],
+  extends: ['@nuxtjs/eslint-config-typescript', 'plugin:nuxt/recommended', 'prettier'],
   rules: {
-    'no-console': 'off',
-    'no-restricted-syntax': [
-      'error',
-      {
-        selector: "CallExpression[callee.object.name='console'][callee.property.name!=/^(log|warn|error|info|trace)$/]",
-        message: 'Unexpected property on console object was called'
-      }
-    ],
-    // 'vue/valid-template-root': 'off',
-    // 'space-before-function-paren': ['error', 'never'],
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-useless-constructor': 'off',
-    // '@typescript-eslint/no-useless-constructor': 'off',
-    // 'no-unused-vars': 'off',
-    // '@typescript-eslint/no-unused-vars': 'off',
-    'camelcase': 'off'
+    camelcase: 'off',
+    'max-len': [
+      'error',
+      100,
+      2,
+      {
+        ignoreUrls: true,
+        ignoreComments: false,
+        ignoreRegExpLiterals: true,
+        ignoreStrings: true,
+        ignoreTemplateLiterals: true
+      }
+    ]
   }
 }

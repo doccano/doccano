@@ -1,21 +1,12 @@
 <template>
-  <v-menu
-    open-on-hover
-    offset-y
-  >
+  <v-menu open-on-hover offset-y>
     <template #activator="{ on }">
-      <v-btn
-        text
-        v-on="on"
-      >
+      <v-btn text v-on="on">
         {{ $i18n.locale }}
         <v-icon>{{ mdiMenuDown }}</v-icon>
       </v-btn>
     </template>
-    <v-list
-      v-for="locale in $i18n.locales"
-      :key="locale.code"
-    >
+    <v-list v-for="locale in $i18n.locales" :key="locale.code">
       <nuxt-link
         class="v-list-item v-list-item--link"
         :class="$vuetify.theme.dark ? 'theme--dark' : 'theme--light'"

@@ -11,15 +11,9 @@
         @click:clear-label="clearTeacherList(project.id, example.id)"
         @click:review="confirm(project.id)"
       >
-        <button-label-switch
-          class="ms-2"
-          @change="labelComponent=$event"
-        />
+        <button-label-switch class="ms-2" @change="labelComponent = $event" />
       </toolbar-laptop>
-      <toolbar-mobile
-        :total="totalExample"
-        class="d-flex d-sm-none"
-      />
+      <toolbar-mobile :total="totalExample" class="d-flex d-sm-none" />
     </template>
     <template #content>
       <v-card
@@ -37,11 +31,7 @@
           />
         </v-card-title>
         <v-divider />
-        <v-card-text
-          class="title highlight"
-          style="white-space: pre-wrap;"
-          v-text="example.text"
-        />
+        <v-card-text class="title highlight" style="white-space: pre-wrap" v-text="example.text" />
       </v-card>
     </template>
     <template #sidebar>
@@ -67,7 +57,6 @@ import { useTeacherList } from '@/composables/useTeacherList'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 
 export default {
-
   components: {
     AnnotationProgress,
     ButtonLabelSwitch,
@@ -106,15 +95,12 @@ export default {
     getProjectById(projectId)
     updateProgress(projectId)
 
-    const { fetch } = useFetch(async() => {
-      await getExample(
-        projectId,
-        query.value
-      )
+    const { fetch } = useFetch(async () => {
+      await getExample(projectId, query.value)
       if (enableAutoLabeling.value) {
         try {
           await autoLabel(projectId, exampleState.example.id)
-        } catch(e) {
+        } catch (e) {
           enableAutoLabeling.value = false
           alert(e.response.data.detail)
         }
@@ -136,7 +122,7 @@ export default {
       enableAutoLabeling,
       labelComponent,
       removeTeacher,
-      shortKeys,
+      shortKeys
     }
   }
 }

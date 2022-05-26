@@ -1,15 +1,10 @@
 <template>
-  <v-stepper
-    v-model="step.count"
-  >
+  <v-stepper v-model="step.count">
     <v-overlay :value="isLoading">
       <v-progress-circular indeterminate size="64" />
     </v-overlay>
     <config-header :step="step.count" />
-    <config-template-name
-      v-model="fields"
-      @next="step.next()"
-    />
+    <config-template-name v-model="fields" @next="step.next()" />
     <config-parameters
       v-if="fields.modelAttrs !== undefined"
       v-model="fields.modelAttrs"
@@ -86,37 +81,44 @@ export default Vue.extend({
 
   watch: {
     'fields.modelName'() {
-      this.passTesting = {parameter: false, template: false, mapping: false}
-     },
-     'fields.modelAttrs': {
-       handler() {
-        this.passTesting = {parameter: false, template: false, mapping: false}
-       },
-       deep: true
-     },
+      this.passTesting = { parameter: false, template: false, mapping: false }
+    },
+    'fields.modelAttrs': {
+      handler() {
+        this.passTesting = {
+          parameter: false,
+          template: false,
+          mapping: false
+        }
+      },
+      deep: true
+    },
     'fields.template'() {
-      this.passTesting = {parameter: true, template: false, mapping: false}
+      this.passTesting = { parameter: true, template: false, mapping: false }
     },
     'fields.labelMapping': {
-       handler() {
-        this.passTesting = {parameter: true, template: true, mapping: false}
-       },
-       deep: true
-     },
+      handler() {
+        this.passTesting = { parameter: true, template: true, mapping: false }
+      },
+      deep: true
+    }
   },
 
   methods: {
-    testConfig(promise: Promise<any>, key: 'parameter'|'template'|'mapping') {
+    testConfig(promise: Promise<any>, key: 'parameter' | 'template' | 'mapping') {
       this.isLoading = true
-      promise.then((value) => {
-        this.response[key] = value
-        this.passTesting[key] = true
-        this.errors = []
-      }).catch((error) => {
-        this.errors = [error.message]
-      }).finally(() => {
-        this.isLoading = false
-      })
+      promise
+        .then((value) => {
+          this.response[key] = value
+          this.passTesting[key] = true
+          this.errors = []
+        })
+        .catch((error) => {
+          this.errors = [error.message]
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
     testParameters(text: string) {
       const projectId = this.$route.params.id
@@ -140,7 +142,8 @@ export default Vue.extend({
       const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
       this.isLoading = true
-      this.$services.config.save(projectId, item)
+      this.$services.config
+        .save(projectId, item)
         .then(() => {
           this.step.first()
           this.$emit('onCreate')

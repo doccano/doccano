@@ -1,8 +1,5 @@
 <template>
-  <form-create
-    v-bind.sync="editedItem"
-    @save="create"
-  />
+  <form-create v-bind.sync="editedItem" @save="create" />
 </template>
 
 <script lang="ts">
@@ -12,7 +9,7 @@ import { ProjectWriteDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   components: {
-    FormCreate,
+    FormCreate
   },
 
   layout: 'projects',
@@ -31,7 +28,7 @@ export default Vue.extend({
         allowOverlapping: false,
         graphemeMode: false,
         useRelation: false,
-        tags: [] as string[],
+        tags: [] as string[]
       } as ProjectWriteDTO,
       defaultItem: {
         name: '',
@@ -43,8 +40,8 @@ export default Vue.extend({
         allowOverlapping: false,
         graphemeMode: false,
         useRelation: false,
-        tags: [] as string[],
-      } as ProjectWriteDTO,
+        tags: [] as string[]
+      } as ProjectWriteDTO
     }
   },
 
@@ -55,7 +52,7 @@ export default Vue.extend({
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
       })
-    },
+    }
   }
 })
 </script>

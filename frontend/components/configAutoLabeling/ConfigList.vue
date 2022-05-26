@@ -11,23 +11,23 @@
   >
     <template #top>
       <div class="ma-4">
-        <v-btn
-          class="primary text-capitalize"
-          @click="dialogCreate=true"
-        >
+        <v-btn class="primary text-capitalize" @click="dialogCreate = true">
           {{ $t('generic.create') }}
         </v-btn>
         <v-btn
           class="text-capitalize ms-2"
           :disabled="!isDeletable()"
           outlined
-          @click="dialogDelete=true"
+          @click="dialogDelete = true"
         >
           {{ $t('generic.delete') }}
         </v-btn>
         <v-dialog v-model="dialogCreate">
           <config-creation-form
-            @onCreate="onCreate();dialogCreate=false"
+            @onCreate="
+              onCreate()
+              dialogCreate = false
+            "
           />
         </v-dialog>
         <v-dialog v-model="dialogDelete">
@@ -36,8 +36,11 @@
             title="Delete Config"
             message="Are you sure you want to delete these configs?"
             item-key="modelName"
-            @ok="remove();dialogDelete=false"
-            @cancel="dialogDelete=false"
+            @ok="
+              remove()
+              dialogDelete = false
+            "
+            @cancel="dialogDelete = false"
           />
         </v-dialog>
       </div>

@@ -1,15 +1,15 @@
-import "reflect-metadata"
+import 'reflect-metadata'
 import { Expose, Type } from 'class-transformer'
 
 export class CommentItem {
-  id: number;
-  user: number;
-  username: string;
-  example: number;
-  text: string;
+  id: number
+  user: number
+  username: string
+  example: number
+  text: string
 
   @Expose({ name: 'created_at' })
-  createdAt: string;
+  createdAt: string
 
   by(userId: number) {
     return this.user === userId
@@ -28,11 +28,11 @@ export class CommentItem {
 }
 
 export class CommentItemList {
-  count: number;
-  next: string | null;
-  prev: string | null;
+  count: number
+  next: string | null
+  prev: string | null
 
   @Type(() => CommentItem)
   @Expose({ name: 'results' })
-  items: CommentItem[];
+  items: CommentItem[]
 }

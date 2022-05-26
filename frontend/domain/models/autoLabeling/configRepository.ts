@@ -1,7 +1,7 @@
 import { ConfigItem, ConfigItemList } from '~/domain/models/autoLabeling/config'
 
 export interface ConfigTestResponse {
-  valid: boolean,
+  valid: boolean
   labels: object[]
 }
 

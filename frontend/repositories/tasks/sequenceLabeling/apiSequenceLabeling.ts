@@ -1,7 +1,6 @@
 import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
 import { Span } from '~/domain/models/tasks/sequenceLabeling'
 
-
 export class APISequenceLabelingRepository extends AnnotationRepository<Span> {
   constructor() {
     super(Span)

@@ -1,15 +1,9 @@
 <template>
   <v-card>
     <v-card-text v-if="isReady">
-      <v-form
-        ref="form"
-        v-model="valid"
-      >
+      <v-form ref="form" v-model="valid">
         <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-          >
+          <v-col cols="12" sm="6">
             <h3>Name</h3>
             <v-text-field
               v-model="project.name"
@@ -19,10 +13,7 @@
               single-line
             />
           </v-col>
-          <v-col
-            cols="12"
-            sm="6"
-          >
+          <v-col cols="12" sm="6">
             <v-btn
               v-if="!edit.name"
               outlined
@@ -53,10 +44,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-          >
+          <v-col cols="12" sm="6">
             <h3>Description</h3>
             <v-text-field
               v-model="project.description"
@@ -66,10 +54,7 @@
               single-line
             />
           </v-col>
-          <v-col
-            cols="12"
-            sm="6"
-          >
+          <v-col cols="12" sm="6">
             <v-btn
               v-if="!edit.desc"
               outlined
@@ -100,32 +85,28 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-          >
+          <v-col cols="12" sm="6">
             <h3>Tags</h3>
             <v-chip
               v-for="tag in tags"
               :key="tag.id"
               close
               outlined
-              @click:close="removeTag(tag.id)">{{tag.text}}
+              @click:close="removeTag(tag.id)"
+              >{{ tag.text }}
             </v-chip>
             <v-text-field
               v-model="tagInput"
               clearable
               :prepend-icon="mdiPlusCircle"
               @keyup.enter="addTag()"
-              @click:prepend="addTag()">
+              @click:prepend="addTag()"
+            >
             </v-text-field>
           </v-col>
         </v-row>
         <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-          >
+          <v-col cols="12" sm="6">
             <h3>Shuffle</h3>
             <v-checkbox
               v-model="project.enableRandomOrder"
@@ -134,10 +115,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col
-            cols="12"
-            sm="6"
-          >
+          <v-col cols="12" sm="6">
             <h3>Collaboration</h3>
             <v-checkbox
               v-model="project.enableShareAnnotation"
@@ -155,7 +133,6 @@ import { mdiPlusCircle } from '@mdi/js'
 import { projectNameRules, descriptionRules } from '@/rules/index'
 
 export default {
-
   data() {
     return {
       project: {},
@@ -197,7 +174,9 @@ export default {
 
   methods: {
     initEdit() {
-      Object.keys(this.edit).forEach((v) => { this.edit[v] = false })
+      Object.keys(this.edit).forEach((v) => {
+        this.edit[v] = false
+      })
     },
 
     editProject(name) {
@@ -229,19 +208,19 @@ export default {
       return this.$refs.form.validate()
     },
 
-    async getTags(){
-        this.tags = await this.$services.tag.list(this.projectId)
+    async getTags() {
+      this.tags = await this.$services.tag.list(this.projectId)
     },
 
-    addTag(){
+    addTag() {
       this.$services.tag.create(this.projectId, this.tagInput)
       this.tagInput = ''
       this.getTags()
     },
 
-    removeTag(id){
+    removeTag(id) {
       this.$services.tag.delete(this.projectId, id)
-      this.tags = this.tags.filter(tag => tag.id !== id)
+      this.tags = this.tags.filter((tag) => tag.id !== id)
     }
   }
 }

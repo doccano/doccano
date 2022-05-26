@@ -3,11 +3,7 @@
     <v-card-title>Member's Progress</v-card-title>
     <v-divider />
     <v-card-text>
-      <div
-        v-for="(item, index) in stats.progress"
-        :key="index"
-        class="mb-2"
-      >
+      <div v-for="(item, index) in stats.progress" :key="index" class="mb-2">
         <span class="font-weight-medium">{{ item.user }}</span>
         <span class="font-weight-medium">{{ item.done }} / {{ stats.total }}</span>
         <v-progress-linear :value="rate(item.done, stats.total)" />
@@ -31,7 +27,7 @@ export default Vue.extend({
 
   methods: {
     rate(done: number, total: number) {
-      return done / total * 100
+      return (done / total) * 100
     }
   }
 })

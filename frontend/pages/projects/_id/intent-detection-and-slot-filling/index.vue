@@ -1,4 +1,3 @@
-
 <template>
   <layout-text v-if="doc.id">
     <template #header>
@@ -12,10 +11,7 @@
         @click:clear-label="clear"
         @click:review="confirm"
       />
-      <toolbar-mobile
-        :total="docs.count"
-        class="d-flex d-sm-none"
-      />
+      <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
       <v-card>
@@ -132,8 +128,8 @@ export default {
 
   methods: {
     async listSpan(docId) {
-      const spans = await this.$services.sequenceLabeling.list(this.projectId, docId);
-      this.spans = spans;
+      const spans = await this.$services.sequenceLabeling.list(this.projectId, docId)
+      this.spans = spans
     },
 
     async deleteSpan(id) {
@@ -142,12 +138,23 @@ export default {
     },
 
     async addSpan(startOffset, endOffset, labelId) {
-      await this.$services.sequenceLabeling.create(this.projectId, this.doc.id, labelId, startOffset, endOffset)
+      await this.$services.sequenceLabeling.create(
+        this.projectId,
+        this.doc.id,
+        labelId,
+        startOffset,
+        endOffset
+      )
       await this.listSpan(this.doc.id)
     },
 
     async updateSpan(annotationId, labelId) {
-      await this.$services.sequenceLabeling.changeLabel(this.projectId, this.doc.id, annotationId, labelId)
+      await this.$services.sequenceLabeling.changeLabel(
+        this.projectId,
+        this.doc.id,
+        annotationId,
+        labelId
+      )
       await this.listSpan(this.doc.id)
     },
 
@@ -187,7 +194,7 @@ export default {
   font-size: 1.25rem !important;
   font-weight: 500;
   line-height: 2rem;
-  font-family: "Roboto", sans-serif !important;
+  font-family: 'Roboto', sans-serif !important;
   opacity: 0.6;
 }
 </style>

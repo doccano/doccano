@@ -4,9 +4,7 @@ import { CatalogRepository } from '@/domain/models/upload/catalogRepository'
 import { Catalog } from '~/domain/models/upload/catalog'
 
 export class APICatalogRepository implements CatalogRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
   async list(projectId: string): Promise<Catalog[]> {
     const url = `/projects/${projectId}/catalog`

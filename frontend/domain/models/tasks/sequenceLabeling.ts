@@ -9,10 +9,19 @@ export class Span implements AnnotationModel {
     public endOffset: number
   ) {}
 
-  static valueOf(
-    { id, label, user, start_offset, end_offset }:
-    { id: number, label: number, user: number, start_offset: number, end_offset: number }
-  ) {
+  static valueOf({
+    id,
+    label,
+    user,
+    start_offset,
+    end_offset
+  }: {
+    id: number
+    label: number
+    user: number
+    start_offset: number
+    end_offset: number
+  }) {
     return new Span(id, label, user, start_offset, end_offset)
   }
 

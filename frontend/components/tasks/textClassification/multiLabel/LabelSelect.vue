@@ -9,7 +9,7 @@
     multiple
     class="pt-0"
     :search-input.sync="search"
-    @change="search=''"
+    @change="search = ''"
   >
     <template #selection="{ attrs, item, select, selected }">
       <v-chip
@@ -21,28 +21,15 @@
         @click="select"
         @click:close="remove(item)"
       >
-        <v-avatar
-          v-if="item.suffixKey"
-          left
-          color="white"
-          class="black--text font-weight-bold"
-        >
+        <v-avatar v-if="item.suffixKey" left color="white" class="black--text font-weight-bold">
           {{ item.suffixKey }}
         </v-avatar>
         {{ item.text }}
       </v-chip>
     </template>
     <template #item="{ item }">
-      <v-chip
-        :color="item.backgroundColor"
-        :text-color="$contrastColor(item.backgroundColor)"
-      >
-        <v-avatar
-          v-if="item.suffixKey"
-          left
-          color="white"
-          class="black--text font-weight-bold"
-        >
+      <v-chip :color="item.backgroundColor" :text-color="$contrastColor(item.backgroundColor)">
+        <v-avatar v-if="item.suffixKey" left color="white" class="black--text font-weight-bold">
           {{ item.suffixKey }}
         </v-avatar>
         {{ item.text }}
@@ -61,7 +48,7 @@ export default {
     },
     annotations: {
       type: Array,
-      default: () => ([]),
+      default: () => [],
       required: true
     }
   },
@@ -75,8 +62,8 @@ export default {
   computed: {
     annotatedLabels: {
       get() {
-        const labelIds = this.annotations.map(item => item.label)
-        return this.labels.filter(item => labelIds.includes(item.id))
+        const labelIds = this.annotations.map((item) => item.label)
+        return this.labels.filter((item) => labelIds.includes(item.id))
       },
       set(newValue) {
         if (newValue.length > this.annotations.length) {
@@ -87,7 +74,7 @@ export default {
             newValue.pop()
           }
         } else {
-          const label = this.annotatedLabels.find(x => !newValue.some(y => y.id === x.id))
+          const label = this.annotatedLabels.find((x) => !newValue.some((y) => y.id === x.id))
           if (typeof label === 'object') {
             this.remove(label)
           }
@@ -102,7 +89,7 @@ export default {
     },
 
     remove(label) {
-      const annotation = this.annotations.find(item => item.label === label.id)
+      const annotation = this.annotations.find((item) => item.label === label.id)
       this.$emit('remove', annotation.id)
     }
   }

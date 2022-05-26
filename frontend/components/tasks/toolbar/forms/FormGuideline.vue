@@ -5,9 +5,7 @@
     @cancel="close"
   >
     <template #content>
-      <viewer
-        :initial-value="guidelineText"
-      />
+      <viewer :initial-value="guidelineText" />
     </template>
   </base-card>
 </template>

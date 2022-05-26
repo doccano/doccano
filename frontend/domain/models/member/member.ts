@@ -1,9 +1,9 @@
 export class MemberItem {
-  id: number;
-  user: number;
-  role: number;
-  username: string;
-  rolename: string;
+  id: number
+  user: number
+  role: number
+  username: string
+  rolename: string
 
   get isProjectAdmin(): boolean {
     return this.rolename === 'project_admin'

@@ -2,10 +2,7 @@
   <v-card>
     <v-card-title v-text="$t('labels.importLabels')" />
     <v-card-text>
-      <v-form
-        ref="form"
-        v-model="valid"
-      >
+      <v-form ref="form" v-model="valid">
         <h3>{{ $t('labels.importMessage1') }}</h3>
         <v-sheet
           v-if="exampleFormat"
@@ -55,7 +52,7 @@ export default Vue.extend({
     return {
       file: null,
       valid: false,
-      uploadSingleFileRules,
+      uploadSingleFileRules
     }
   },
 

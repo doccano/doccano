@@ -11,41 +11,26 @@
         <v-list-item-content>
           <v-list-item-title>{{ comment.username }}</v-list-item-title>
           <v-list-item-subtitle>
-            {{ comment.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm') }}
+            {{
+              comment.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm')
+            }}
           </v-list-item-subtitle>
         </v-list-item-content>
 
-        <v-row
-          align="center"
-          justify="end"
-        >
-          <v-menu
-            v-if="comment.user == userId"
-            bottom
-            left
-          >
+        <v-row align="center" justify="end">
+          <v-menu v-if="comment.user == userId" bottom left>
             <template #activator="{ on, attrs }">
-              <v-btn
-                icon
-                v-bind="attrs"
-                v-on="on"
-              >
+              <v-btn icon v-bind="attrs" v-on="on">
                 <v-icon>{{ mdiDotsVertical }}</v-icon>
               </v-btn>
             </template>
 
             <v-list>
               <v-list-item>
-                <v-list-item-title
-                  @click="showEdit=true"
-                >
-                  Edit
-                </v-list-item-title>
+                <v-list-item-title @click="showEdit = true"> Edit </v-list-item-title>
               </v-list-item>
               <v-list-item>
-                <v-list-item-title
-                  @click="$emit('delete-comment', comment)"
-                >
+                <v-list-item-title @click="$emit('delete-comment', comment)">
                   Delete
                 </v-list-item-title>
               </v-list-item>
@@ -59,27 +44,12 @@
       <span v-if="!showEdit">
         {{ comment.text }}
       </span>
-      <v-form
-        v-else
-        v-model="valid"
-      >
+      <v-form v-else v-model="valid">
         <v-row>
-          <v-textarea
-            v-model="editText"
-            auto-grow
-            rows="1"
-            solo
-            :rules="commentRules"
-          />
+          <v-textarea v-model="editText" auto-grow rows="1" solo :rules="commentRules" />
         </v-row>
         <v-row justify="end">
-          <v-btn
-            text
-            class="text-capitalize"
-            @click="cancel"
-          >
-            Cancel
-          </v-btn>
+          <v-btn text class="text-capitalize" @click="cancel"> Cancel </v-btn>
           <v-btn
             :disabled="!valid"
             color="primary"
@@ -119,9 +89,7 @@ export default Vue.extend({
     return {
       showEdit: false,
       editText: this.comment.text,
-      commentRules: [
-        (v: string) => !!v.trim() || 'Comment is required'
-      ],
+      commentRules: [(v: string) => !!v.trim() || 'Comment is required'],
       valid: false,
       mdiAccountCircle,
       mdiDotsVertical
@@ -131,10 +99,10 @@ export default Vue.extend({
   methods: {
     updateComment(newText: string) {
       this.showEdit = false
-      const comment = {...this.comment, text:newText }
+      const comment = { ...this.comment, text: newText }
       this.$emit('update-comment', comment)
     },
-    
+
     cancel() {
       this.showEdit = false
       this.editText = this.comment.text

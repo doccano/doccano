@@ -11,11 +11,7 @@
           <v-row no-gutters>
             <v-col v-for="(item, i) in projectTypes" :key="i">
               <v-item v-slot="{ active, toggle }">
-                <v-card
-                  class="mb-6 me-6"
-                  max-width="350"
-                  outlined
-                >
+                <v-card class="mb-6 me-6" max-width="350" outlined>
                   <v-img
                     :src="require(`~/assets/images/tasks/${images[i]}`)"
                     height="200"
@@ -33,7 +29,7 @@
             </v-col>
           </v-row>
         </v-item-group>
-        
+
         <v-text-field
           :value="name"
           :rules="projectNameRules($t('rules.projectNameRules'))"
@@ -98,12 +94,7 @@
               Count
               <v-tooltip bottom>
                 <template #activator="{ on }">
-                  <a
-                    target="_blank"
-                    href="https://unicode.org/reports/tr29/"
-                    @click.stop
-                    v-on="on"
-                  >
+                  <a target="_blank" href="https://unicode.org/reports/tr29/" @click.stop v-on="on">
                     grapheme clusters
                   </a>
                 </template>
@@ -190,7 +181,7 @@ export default Vue.extend({
     },
     tags: {
       type: Array,
-      default: () => [],
+      default: () => []
     }
   },
 
@@ -201,7 +192,7 @@ export default Vue.extend({
       projectTypeRules,
       descriptionRules,
       mdiCheckBold,
-      selected: 0,
+      selected: 0
     }
   },
 
@@ -213,7 +204,7 @@ export default Vue.extend({
         'Seq2seq',
         'IntentDetectionAndSlotFilling',
         'ImageClassification',
-        'Speech2text',
+        'Speech2text'
       ]
     },
     images() {
@@ -227,10 +218,7 @@ export default Vue.extend({
       ]
     },
     hasSingleLabelOption() {
-      return [
-        'DocumentClassification',
-        'ImageClassification',
-      ].includes(this.projectType)
+      return ['DocumentClassification', 'ImageClassification'].includes(this.projectType)
     },
     isSequenceLabelingProject() {
       return this.projectType === 'SequenceLabeling'
@@ -239,7 +227,7 @@ export default Vue.extend({
 
   methods: {
     updateValue(key: string, value: string) {
-      this.$emit(`update:${key}`, value);
+      this.$emit(`update:${key}`, value)
     },
     translateTypeName(type: string, types: string[]): string {
       const index = this.projectTypes.indexOf(type)

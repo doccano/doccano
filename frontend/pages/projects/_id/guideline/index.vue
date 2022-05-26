@@ -18,7 +18,6 @@ import { Editor } from '@toast-ui/vue-editor'
 import '@/assets/style/editor.css'
 
 export default {
-
   components: {
     Editor
   },
@@ -35,7 +34,7 @@ export default {
         language: this.$t('toastui.localeCode')
       },
       project: {},
-      mounted: false,
+      mounted: false
     }
   },
 
@@ -47,7 +46,7 @@ export default {
   },
 
   methods: {
-    updateProject: _.debounce(function() {
+    updateProject: _.debounce(function () {
       if (this.mounted) {
         this.project.guideline = this.$refs.toastuiEditor.invoke('getMarkdown')
         this.$services.project.update(this.project)
@@ -58,7 +57,8 @@ export default {
 </script>
 
 <style>
-.te-md-container .CodeMirror, .tui-editor-contents {
+.te-md-container .CodeMirror,
+.tui-editor-contents {
   font-size: 20px;
 }
 </style>

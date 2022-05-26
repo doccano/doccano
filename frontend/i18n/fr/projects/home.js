@@ -7,5 +7,5 @@ export default {
   defineGuideline: 'Définir une ligne directrice pour le travail',
   annotateDataset: 'Annoter un ensemble de données',
   viewStatistics: 'Voir les statistiques',
-  exportDataset: 'Exporter l\'ensemble de données'
+  exportDataset: "Exporter l'ensemble de données"
 }

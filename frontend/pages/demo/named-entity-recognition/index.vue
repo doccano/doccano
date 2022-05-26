@@ -1,4 +1,3 @@
-
 <template>
   <v-main>
     <v-container fluid>
@@ -7,12 +6,13 @@
           text
           outlined
           class="text-capitalize mr-2"
-          @click="allowOverlapping=!allowOverlapping"
+          @click="allowOverlapping = !allowOverlapping"
         >
           Overlapping({{ allowOverlapping }})
         </v-btn>
-        <v-btn text outlined @click="rtl=!rtl">
-          RTL(<span class="text-capitalize">{{ rtl }}</span>)
+        <v-btn text outlined @click="rtl = !rtl">
+          RTL(<span class="text-capitalize">{{ rtl }}</span
+          >)
         </v-btn>
       </div>
       <v-row justify="center">
@@ -49,7 +49,7 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 export default {
   components: {
     EntityEditor,
-    ListMetadata,
+    ListMetadata
   },
   layout: 'demo',
   data() {
@@ -63,7 +63,7 @@ export default {
           prefixKey: null,
           suffixKey: 'l',
           color: '#7c20e0',
-          textColor: '#ffffff',
+          textColor: '#ffffff'
         },
         {
           id: 5,
@@ -71,7 +71,7 @@ export default {
           prefixKey: null,
           suffixKey: 'm',
           color: '#fbb028',
-          textColor: '#000000',
+          textColor: '#000000'
         },
         {
           id: 6,
@@ -79,7 +79,7 @@ export default {
           prefixKey: null,
           suffixKey: 'o',
           color: '#e6d176',
-          textColor: '#000000',
+          textColor: '#000000'
         },
         {
           id: 7,
@@ -87,7 +87,7 @@ export default {
           prefixKey: null,
           suffixKey: 'p',
           color: '#6a74b9',
-          textColor: '#ffffff',
+          textColor: '#ffffff'
         }
       ],
       relations: [
@@ -95,15 +95,15 @@ export default {
           id: 0,
           fromId: 16,
           toId: 17,
-          labelId: 0,
-        },
+          labelId: 0
+        }
       ],
       relationLabels: [
         {
           id: 0,
-          text: "isLorem",
-          color: "#ffffff",
-        },
+          text: 'isLorem',
+          color: '#ffffff'
+        }
       ],
       currentDoc: {
         id: 8,
@@ -115,7 +115,7 @@ export default {
             label: 4,
             startOffset: 60,
             endOffset: 70,
-            user: 1,
+            user: 1
           },
           {
             id: 19,
@@ -123,7 +123,7 @@ export default {
             label: 4,
             startOffset: 164,
             endOffset: 171,
-            user: 1,
+            user: 1
           },
           {
             id: 16,
@@ -131,7 +131,7 @@ export default {
             label: 6,
             startOffset: 14,
             endOffset: 22,
-            user: 1,
+            user: 1
           },
           {
             id: 18,
@@ -139,7 +139,7 @@ export default {
             label: 6,
             startOffset: 72,
             endOffset: 86,
-            user: 1,
+            user: 1
           },
           {
             id: 20,
@@ -147,8 +147,8 @@ export default {
             label: 7,
             startOffset: 180,
             endOffset: 192,
-            user: 1,
-          },
+            user: 1
+          }
         ],
         meta: { wikiPageId: 2 },
         annotation_approver: null
@@ -163,13 +163,16 @@ export default {
       if (this.rtl) {
         this.currentDoc.text = 'داستان SVG Tiny 1.2 طولا ني است.'
       } else {
-        this.currentDoc.text = 'After bowling Somerset out for 83 on the opening morning at Grace Road, Leicestershire extended their first innings by 94 runs before being bowled out for 296 with England discard Andy Caddick taking three for 83.'
+        this.currentDoc.text =
+          'After bowling Somerset out for 83 on the opening morning at Grace Road, Leicestershire extended their first innings by 94 runs before being bowled out for 296 with England discard Andy Caddick taking three for 83.'
       }
     }
   },
   methods: {
     deleteEntity(annotationId) {
-      this.currentDoc.annotations = this.currentDoc.annotations.filter(item => item.id !== annotationId)
+      this.currentDoc.annotations = this.currentDoc.annotations.filter(
+        (item) => item.id !== annotationId
+      )
       this.relations.forEach((r) => {
         if (r.fromId === annotationId || r.toId === annotationId) {
           this.deleteRelation(r.id)
@@ -177,7 +180,7 @@ export default {
       })
     },
     updateEntity(annotationId, labelId) {
-      const index = this.currentDoc.annotations.findIndex(item => item.id === annotationId)
+      const index = this.currentDoc.annotations.findIndex((item) => item.id === annotationId)
       this.currentDoc.annotations[index].label = labelId
     },
     addEntity(startOffset, endOffset, labelId) {
@@ -190,7 +193,7 @@ export default {
       this.currentDoc.annotations.push(payload)
     },
     deleteRelation(relationId) {
-      this.relations = this.relations.filter(item => item.id !== relationId)
+      this.relations = this.relations.filter((item) => item.id !== relationId)
     }
   }
 }
@@ -200,7 +203,7 @@ export default {
   font-size: 1.25rem !important;
   font-weight: 500;
   line-height: 2rem;
-  font-family: "Roboto", sans-serif !important;
+  font-family: 'Roboto', sans-serif !important;
   opacity: 0.6;
 }
 </style>

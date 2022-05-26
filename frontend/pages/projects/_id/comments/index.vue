@@ -5,16 +5,12 @@
         class="text-capitalize ms-2"
         :disabled="!canDelete"
         outlined
-        @click.stop="dialogDelete=true"
+        @click.stop="dialogDelete = true"
       >
         {{ $t('generic.delete') }}
       </v-btn>
       <v-dialog v-model="dialogDelete">
-        <form-delete
-          :selected="selected"
-          @cancel="dialogDelete=false"
-          @remove="remove"
-        />
+        <form-delete :selected="selected" @cancel="dialogDelete = false" @remove="remove" />
       </v-dialog>
     </v-card-title>
     <comment-list
@@ -37,7 +33,6 @@ import { ProjectDTO } from '~/services/application/project/projectData'
 import FormDelete from '~/components/comment/FormDelete.vue'
 
 export default Vue.extend({
-
   components: {
     CommentList,
     FormDelete
@@ -75,11 +70,10 @@ export default Vue.extend({
   },
 
   watch: {
-    '$route.query': _.debounce(function() {
-        // @ts-ignore
-        this.$fetch()
-      }, 1000
-    ),
+    '$route.query': _.debounce(function () {
+      // @ts-ignore
+      this.$fetch()
+    }, 1000)
   },
 
   methods: {

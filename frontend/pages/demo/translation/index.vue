@@ -3,9 +3,7 @@
     <v-container fluid>
       <v-row justify="center">
         <v-col cols="12" md="9">
-          <v-card
-            class="title mb-5"
-          >
+          <v-card class="title mb-5">
             <v-card-text class="title">
               {{ currentDoc.text }}
             </v-card-text>
@@ -31,7 +29,6 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
-
   components: {
     Seq2seqBox,
     ListMetadata
@@ -57,7 +54,7 @@ export default {
             document: 8
           }
         ],
-        meta: { wikiPageId: 2},
+        meta: { wikiPageId: 2 },
         annotation_approver: null
       }
     }
@@ -65,10 +62,12 @@ export default {
 
   methods: {
     _deleteAnnotation(annotationId) {
-      this.currentDoc.annotations = this.currentDoc.annotations.filter(item => item.id !== annotationId)
+      this.currentDoc.annotations = this.currentDoc.annotations.filter(
+        (item) => item.id !== annotationId
+      )
     },
     _updateAnnotation(annotationId, text) {
-      const index = this.currentDoc.annotations.findIndex(item => item.id === annotationId)
+      const index = this.currentDoc.annotations.findIndex((item) => item.id === annotationId)
       this.currentDoc.annotations[index].text = text
     },
     _createAnnotation(text) {

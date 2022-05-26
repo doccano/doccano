@@ -1,14 +1,14 @@
 import { Expose } from 'class-transformer'
 
 export class UserItem {
-  id: number;
-  username: string;
-  
+  id: number
+  username: string
+
   @Expose({ name: 'is_superuser' })
-  isSuperuser: boolean;
+  isSuperuser: boolean
 
   @Expose({ name: 'is_staff' })
-  isStaff: boolean;
+  isStaff: boolean
 
   toObject(): Object {
     return {

@@ -34,9 +34,9 @@ import MemberProgress from '~/components/metrics/MemberProgress'
 export default {
   components: {
     LabelDistribution,
-    MemberProgress,
+    MemberProgress
   },
-  
+
   layout: 'project',
 
   validate({ params }) {
@@ -51,7 +51,7 @@ export default {
       relationTypes: [],
       relationDistribution: {},
       spanTypes: [],
-      spanDistribution: {},
+      spanDistribution: {}
     }
   },
 
@@ -65,7 +65,9 @@ export default {
     this.project = await this.$services.project.findById(this.projectId)
     if (this.project.hasCategory) {
       this.categoryTypes = await this.$services.categoryType.list(this.projectId)
-      this.categoryDistribution = await this.$services.metrics.fetchCategoryDistribution(this.projectId)
+      this.categoryDistribution = await this.$services.metrics.fetchCategoryDistribution(
+        this.projectId
+      )
     }
     if (this.project.hasSpan) {
       this.spanTypes = await this.$services.spanType.list(this.projectId)
@@ -73,7 +75,9 @@ export default {
     }
     if (this.project.useRelation) {
       this.relationTypes = await this.$services.relationType.list(this.projectId)
-      this.relationDistribution = await this.$services.metrics.fetchRelationDistribution(this.projectId)
+      this.relationDistribution = await this.$services.metrics.fetchRelationDistribution(
+        this.projectId
+      )
     }
   }
 }

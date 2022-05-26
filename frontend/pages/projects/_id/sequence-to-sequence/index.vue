@@ -11,10 +11,7 @@
         @click:clear-label="clear"
         @click:review="confirm"
       />
-      <toolbar-mobile
-        :total="docs.count"
-        class="d-flex d-sm-none"
-      />
+      <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
       <v-card class="mb-5">
@@ -45,7 +42,6 @@ import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vu
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
-
   components: {
     AnnotationProgress,
     LayoutText,

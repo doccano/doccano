@@ -1,8 +1,8 @@
 export default {
   dataset: 'Ensemble de données',
   actions: 'Actions',
-  importDataset: 'Importer l\'ensemble de données',
-  exportDataset: 'Exporter l\'ensemble de données',
+  importDataset: "Importer l'ensemble de données",
+  exportDataset: "Exporter l'ensemble de données",
   text: 'Texte',
   metadata: 'Métadonnées',
   action: 'Action',

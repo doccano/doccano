@@ -3,13 +3,11 @@
     <v-container fluid>
       <v-row justify="center">
         <v-col cols="12" md="9">
-          <audio controls :src="src" class="mt-2 mb-5" style="width: 100%">
-            Your browser does not support the
-            <code>audio</code> element.
-          </audio>
+          <v-card>
+            <v-img contain :src="currentDoc.filename" max-height="300" class="grey lighten-2" />
+          </v-card>
           <seq2seq-box
-            :text="currentDoc.text"
-            :annotations="currentDoc.annotations"
+            :annotations="annotations"
             @delete:annotation="_deleteAnnotation"
             @update:annotation="_updateAnnotation"
             @create:annotation="_createAnnotation"
@@ -29,49 +27,53 @@ import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
   components: {
-    Seq2seqBox,
-    ListMetadata
+    ListMetadata,
+    Seq2seqBox
   },
   layout: 'demo',
 
   data() {
     return {
+      annotations: [
+        {
+          id: 17,
+          text: 'A cat is looking up.',
+          user: 1,
+          document: 8
+        },
+        {
+          id: 18,
+          text: 'A cat is trying to climb the wall.',
+          user: 1,
+          document: 8
+        }
+      ],
+      singleLabel: true,
       currentDoc: {
         id: 8,
-        text: '',
-        annotations: [
-          {
-            id: 17,
-            text: 'Hi! Welcome to doccano!',
-            user: 1,
-            document: 8
-          }
-        ],
+        filename: require('~/assets/1500x500.jpeg'),
         meta: {
-          url: 'https://github.com/doccano'
+          url: 'https://github.com/Hironsan'
         },
         annotation_approver: null
-      },
-      src: require('~/assets/examples/speech_1.mp3').default
+      }
     }
   },
 
   methods: {
     _deleteAnnotation(annotationId) {
-      this.currentDoc.annotations = this.currentDoc.annotations.filter(
-        (item) => item.id !== annotationId
-      )
+      this.annotations = this.annotations.filter((item) => item.id !== annotationId)
     },
     _updateAnnotation(annotationId, text) {
-      const index = this.currentDoc.annotations.findIndex((item) => item.id === annotationId)
-      this.currentDoc.annotations[index].text = text
+      const index = this.annotations.findIndex((item) => item.id === annotationId)
+      this.annotations[index].text = text
     },
     _createAnnotation(text) {
       const payload = {
         id: Math.floor(Math.random() * Math.floor(Number.MAX_SAFE_INTEGER)),
         text
       }
-      this.currentDoc.annotations.push(payload)
+      this.annotations.push(payload)
     }
   }
 }

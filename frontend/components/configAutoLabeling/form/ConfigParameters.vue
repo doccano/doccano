@@ -4,9 +4,7 @@
       <v-card-text class="pa-0">
         <v-form>
           <h4 class="text-h6">Set parameters</h4>
-          <p class="font-weight-regular body-1">
-            You can set parameters to fetch API response.
-          </p>
+          <p class="font-weight-regular body-1">You can set parameters to fetch API response.</p>
           <template v-for="item in value">
             <v-text-field
               v-if="item.type === 'textField'"
@@ -33,7 +31,8 @@
           <h4 class="text-h6">Test the parameters</h4>
           <p class="font-weight-regular body-1">
             Before proceeding, you need to test the parameters whether they can fetch API response.
-            Please input sample text and press the <strong>Test</strong> button.
+            Please input sample text and press the
+            <strong>Test</strong> button.
           </p>
           <v-text-field
             v-if="project.isTextProject"
@@ -41,43 +40,23 @@
             outlined
             label="Sample Text"
           />
-          <file-field
-            v-else
-            v-model="payload"
-          />
-          <v-alert
-            v-for="(error, index) in errorMessages"
-            :key="index"
-            prominent
-            type="error"
-          >
+          <file-field v-else v-model="payload" />
+          <v-alert v-for="(error, index) in errorMessages" :key="index" prominent type="error">
             <v-row align="center">
               <v-col class="grow">
                 {{ error }}
               </v-col>
             </v-row>
           </v-alert>
-          <h4 class="text-h6">
-            Response
-          </h4>
-          <v-sheet
-            :dark="!$vuetify.theme.dark"
-            :light="$vuetify.theme.dark"
-            class="mb-5 pa-5"
-          >
+          <h4 class="text-h6">Response</h4>
+          <v-sheet :dark="!$vuetify.theme.dark" :light="$vuetify.theme.dark" class="mb-5 pa-5">
             <pre>{{ JSON.stringify(response, null, 4) }}</pre>
           </v-sheet>
         </v-form>
       </v-card-text>
       <v-card-actions class="pa-0">
         <v-spacer />
-        <v-btn
-          text
-          class="text-capitalize"
-          @click="$emit('prev')"
-        >
-          Prev
-        </v-btn>
+        <v-btn text class="text-capitalize" @click="$emit('prev')"> Prev </v-btn>
         <v-btn
           v-show="!isPassed"
           color="primary"
@@ -86,12 +65,7 @@
         >
           Test
         </v-btn>
-        <v-btn
-          v-show="isPassed"
-          color="primary"
-          class="text-capitalize"
-          @click="$emit('next')"
-        >
+        <v-btn v-show="isPassed" color="primary" class="text-capitalize" @click="$emit('next')">
           Next
         </v-btn>
       </v-card-actions>
@@ -107,7 +81,7 @@ import FileField from './FileField.vue'
 export default Vue.extend({
   components: {
     ObjectField,
-    FileField,
+    FileField
   },
 
   props: {
