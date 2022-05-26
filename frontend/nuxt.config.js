@@ -4,19 +4,21 @@ import i18n from './i18n'
 export default {
   ssr: false,
   /*
-  ** Headers of the page
-  */
+   ** Headers of the page
+   */
   head: {
     titleTemplate: '%s - ' + process.env.npm_package_name,
     title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' }
+      {
+        hid: 'description',
+        name: 'description',
+        content: process.env.npm_package_description || ''
+      }
     ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-    ]
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
 
   server: {
@@ -28,17 +30,16 @@ export default {
   },
 
   /*
-  ** Customize the progress-bar color
-  */
+   ** Customize the progress-bar color
+   */
   loading: { color: '#fff' },
   /*
-  ** Global CSS
-  */
-  css: [
-  ],
+   ** Global CSS
+   */
+  css: [],
   /*
-  ** Plugins to load before mounting the App
-  */
+   ** Plugins to load before mounting the App
+   */
   plugins: [
     '~/plugins/filters.js',
     '~/plugins/vue-youtube.js',
@@ -48,8 +49,8 @@ export default {
     '~/plugins/role.ts'
   ],
   /*
-  ** Nuxt.js modules
-  */
+   ** Nuxt.js modules
+   */
   modules: [
     ['nuxt-i18n', i18n],
     // Doc: https://axios.nuxtjs.org/usage
@@ -60,9 +61,12 @@ export default {
   buildModules: [
     '@nuxt/typescript-build',
     '@nuxtjs/composition-api/module',
-    ['@nuxtjs/google-analytics', {
-      id: process.env.GOOGLE_TRACKING_ID
-    }],
+    [
+      '@nuxtjs/google-analytics',
+      {
+        id: process.env.GOOGLE_TRACKING_ID
+      }
+    ],
     [
       '@nuxtjs/vuetify',
       {
@@ -70,9 +74,9 @@ export default {
         treeShake: true,
         defaultAssets: {
           font: false,
-          icons: ['mdiSvg'],
-        },
-      },
+          icons: ['mdiSvg']
+        }
+      }
     ],
     [
       '@nuxtjs/google-fonts',
@@ -83,14 +87,14 @@ export default {
         display: 'swap',
         download: true,
         overwriting: true,
-        inject: true,
+        inject: true
       }
     ]
   ],
   /*
-  ** Axios module configuration
-  ** See https://axios.nuxtjs.org/options
-  */
+   ** Axios module configuration
+   ** See https://axios.nuxtjs.org/options
+   */
   axios: {
     proxy: true
   },
@@ -102,9 +106,9 @@ export default {
     }
   },
   /*
-  ** vuetify module configuration
-  ** https://github.com/nuxt-community/vuetify-module
-  */
+   ** vuetify module configuration
+   ** https://github.com/nuxt-community/vuetify-module
+   */
   vuetify: {
     theme: {
       primary: colors.blue.darken2,
@@ -137,12 +141,12 @@ export default {
     }
   },
   /*
-  ** Build configuration
-  */
+   ** Build configuration
+   */
   build: {
     /*
-    ** You can extend webpack config here
-    */
+     ** You can extend webpack config here
+     */
     publicPath: process.env.PUBLIC_PATH || '/_nuxt/',
     extend(config, _) {
       // config.module.rules.push({
@@ -165,6 +169,6 @@ export default {
           name: '[path][name].[ext]'
         }
       })
-    },
+    }
   }
 }

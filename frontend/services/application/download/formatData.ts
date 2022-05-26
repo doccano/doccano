@@ -1,6 +1,5 @@
 import { Format } from '~/domain/models/download/format'
 
-
 export class FormatDTO {
   name: string
   example: string

@@ -1,9 +1,7 @@
 export class PageNumber {
   num: number
 
-  constructor(
-    public page: number
-  ) {
+  constructor(public page: number) {
     if (typeof page === 'string' && /^\d+$/.test(page)) {
       this.num = parseInt(page, 10)
     }
@@ -15,16 +13,17 @@ export class PageNumber {
 }
 
 export class OptionItem {
-  constructor(
-    public page      : number,
-    public q?        : string,
-    public isChecked?: string
-  ) {}
+  constructor(public page: number, public q?: string, public isChecked?: string) {}
 
-  static valueOf(
-    { page, q = '', isChecked = '' }:
-    { page: number, q?: string, isChecked?: string }
-  ): OptionItem {
+  static valueOf({
+    page,
+    q = '',
+    isChecked = ''
+  }: {
+    page: number
+    q?: string
+    isChecked?: string
+  }): OptionItem {
     return new OptionItem(page, q, isChecked)
   }
 

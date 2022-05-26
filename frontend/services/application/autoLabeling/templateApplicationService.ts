@@ -2,9 +2,7 @@ import { TemplateRepository } from '~/domain/models/autoLabeling/templateReposit
 import { ConfigTemplateItem } from '~/domain/models/autoLabeling/template'
 
 export class TemplateApplicationService {
-  constructor(
-    private readonly repository: TemplateRepository
-  ) {}
+  constructor(private readonly repository: TemplateRepository) {}
 
   public list(id: string, taskName: string): Promise<string[]> {
     return this.repository.list(id, taskName)

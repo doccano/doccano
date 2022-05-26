@@ -26,7 +26,7 @@
       </template>
       <template #[`item.text`]="{ item }">
         <v-edit-dialog>
-          <span class="title" style="font-weight:400">
+          <span class="title" style="font-weight: 400">
             {{ item.text }}
           </span>
           <template #input>
@@ -40,10 +40,7 @@
         </v-edit-dialog>
       </template>
       <template #[`item.action`]="{ item }">
-        <v-icon
-          small
-          @click="remove(item.id)"
-        >
+        <v-icon small @click="remove(item.id)">
           {{ mdiDeleteOutline }}
         </v-icon>
       </template>
@@ -59,7 +56,7 @@ export default Vue.extend({
   props: {
     annotations: {
       type: Array,
-      default: () => ([]),
+      default: () => [],
       required: true
     }
   },

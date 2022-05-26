@@ -1,11 +1,7 @@
 <template>
   <div>
     <div id="waveform" />
-    <v-row
-      no-gutters
-      align="center"
-      class="mb-3 mt-1"
-    >
+    <v-row no-gutters align="center" class="mb-3 mt-1">
       <v-col md="8">
         <v-slider
           v-model="zoom"
@@ -43,21 +39,11 @@
         />
       </v-col>
     </v-row>
-    <v-btn
-      color="primary"
-      class="text-capitalize"
-      @click="play"
-    >
-      <v-icon
-        v-if="!isPlaying"
-        left
-      >
+    <v-btn color="primary" class="text-capitalize" @click="play">
+      <v-icon v-if="!isPlaying" left>
         {{ mdiPlayCircleOutline }}
       </v-icon>
-      <v-icon
-        v-else
-        left
-      >
+      <v-icon v-else left>
         {{ mdiPauseCircleOutline }}
       </v-icon>
       <span v-if="!isPlaying">Play</span>
@@ -69,7 +55,13 @@
 <script>
 import Vue from 'vue'
 import WaveSurfer from 'wavesurfer.js'
-import { mdiPlayCircleOutline, mdiPauseCircleOutline, mdiVolumeHigh, mdiMagnifyPlusOutline, mdiMagnifyMinusOutline } from '@mdi/js'
+import {
+  mdiPlayCircleOutline,
+  mdiPauseCircleOutline,
+  mdiVolumeHigh,
+  mdiMagnifyPlusOutline,
+  mdiMagnifyMinusOutline
+} from '@mdi/js'
 
 export default Vue.extend({
   props: {
@@ -105,26 +97,26 @@ export default Vue.extend({
 
   mounted() {
     this.wavesurfer = WaveSurfer.create({
-        container: '#waveform',
-        backend: "MediaElement"
+      container: '#waveform',
+      backend: 'MediaElement'
     })
     this.load()
   },
 
   methods: {
     load() {
-    	this.wavesurfer.load(this.source)
+      this.wavesurfer.load(this.source)
     },
     play() {
       this.isPlaying = !this.isPlaying
-    	this.wavesurfer.playPause()
+      this.wavesurfer.playPause()
     },
     zoomOut() {
-      this.zoom = (this.zoom - 10) || 0
+      this.zoom = this.zoom - 10 || 0
       this.onChangeZoom(this.zoom)
     },
     zoomIn() {
-      this.zoom = (this.zoom + 10) || 500
+      this.zoom = this.zoom + 10 || 500
       this.onChangeZoom(this.zoom)
     },
     onChangeVolume(value) {

@@ -1,5 +1,5 @@
 export const state = () => ({
-  current: {},
+  current: {}
 })
 
 export const getters = {
@@ -15,7 +15,7 @@ export const getters = {
   },
   getLink(state) {
     return state.current.pageLink
-  },
+  }
 }
 
 export const mutations = {
@@ -29,7 +29,7 @@ export const actions = {
     try {
       const response = await this.$services.project.findById(projectId)
       commit('setCurrent', response)
-    } catch(error) {
+    } catch (error) {
       throw new Error(error)
     }
   }

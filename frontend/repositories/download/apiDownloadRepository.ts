@@ -2,15 +2,13 @@ import ApiService from '@/services/api.service'
 import { DownloadRepository } from '@/domain/models/download/downloadRepository'
 
 export class APIDownloadRepository implements DownloadRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
   async prepare(projectId: string, format: string, exportApproved: boolean): Promise<string> {
     const url = `/projects/${projectId}/download`
     const data = {
       format,
-      exportApproved,
+      exportApproved
     }
     const response = await this.request.post(url, data)
     return response.data.task_id
@@ -19,7 +17,7 @@ export class APIDownloadRepository implements DownloadRepository {
   async download(projectId: string, taskId: string): Promise<void> {
     const url = `/projects/${projectId}/download?taskId=${taskId}`
     const config = {
-      responseType: 'blob',
+      responseType: 'blob'
     }
     const response = await this.request.get(url, config)
     const downloadUrl = window.URL.createObjectURL(new Blob([response.data]))

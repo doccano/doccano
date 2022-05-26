@@ -4,11 +4,12 @@ import { ExampleRepository, SearchOption } from '~/domain/models/example/example
 import { ExampleItem, ExampleItemList } from '~/domain/models/example/example'
 
 export class APIExampleRepository implements ExampleRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
-  async list(projectId: string, { limit = '10', offset = '0', q = '', isChecked = '' }: SearchOption): Promise<ExampleItemList> {
+  async list(
+    projectId: string,
+    { limit = '10', offset = '0', q = '', isChecked = '' }: SearchOption
+  ): Promise<ExampleItemList> {
     const url = `/projects/${projectId}/examples?limit=${limit}&offset=${offset}&q=${q}&confirmed=${isChecked}`
     const response = await this.request.get(url)
     return plainToInstance(ExampleItemList, response.data)

@@ -11,11 +11,7 @@
         @click:clear-label="clear"
         @click:review="confirm"
       >
-        <v-btn-toggle
-          v-model="labelOption"
-          mandatory
-          class="ms-2"
-        >
+        <v-btn-toggle v-model="labelOption" mandatory class="ms-2">
           <v-btn icon>
             <v-icon>{{ mdiFormatListBulleted }}</v-icon>
           </v-btn>
@@ -24,16 +20,10 @@
           </v-btn>
         </v-btn-toggle>
       </toolbar-laptop>
-      <toolbar-mobile
-        :total="images.count"
-        class="d-flex d-sm-none"
-      />
+      <toolbar-mobile :total="images.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
-      <v-card
-        v-shortkey="shortKeys"
-        @shortkey="addOrRemove"
-      >
+      <v-card v-shortkey="shortKeys" @shortkey="addOrRemove">
         <v-card-title>
           <label-group
             v-if="labelOption === 0"
@@ -53,12 +43,7 @@
           />
         </v-card-title>
         <v-divider />
-        <v-img
-          contain
-          :src="image.fileUrl"
-          :max-height="imageSize.height"
-          class="grey lighten-2"
-        />
+        <v-img contain :src="image.fileUrl" :max-height="imageSize.height" class="grey lighten-2" />
       </v-card>
     </template>
     <template #sidebar>
@@ -82,7 +67,6 @@ import { useLabelList } from '@/composables/useLabelList'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 
 export default {
-
   components: {
     AnnotationProgress,
     LabelGroup,
@@ -105,7 +89,7 @@ export default {
     return {
       ...toRefs(state),
       getLabelList,
-      shortKeys,
+      shortKeys
     }
   },
 
@@ -186,7 +170,7 @@ export default {
 
     async addOrRemove(event) {
       const labelId = parseInt(event.srcKey, 10)
-      const annotation = this.annotations.find(item => item.label === labelId)
+      const annotation = this.annotations.find((item) => item.label === labelId)
       if (annotation) {
         await this.remove(annotation.id)
       } else {
@@ -220,7 +204,7 @@ export default {
     setImageSize(val) {
       const img = new Image()
       const self = this
-      img.onload = function() {
+      img.onload = function () {
         self.imageSize.height = this.height
         self.imageSize.width = this.width
       }

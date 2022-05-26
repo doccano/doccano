@@ -11,12 +11,5 @@ export default {
   deleteProjectTitle: '删除项目',
   deleteProjectMessage: '你确定要删除这些项目吗？',
   search: '搜索',
-  projectTypes: [
-    '文本分类',
-    '序列标注',
-    '序列到序列',
-    '意图检测和槽填充',
-    '图像分类',
-    '文字转语音'
-  ]
+  projectTypes: ['文本分类', '序列标注', '序列到序列', '意图检测和槽填充', '图像分类', '文字转语音']
 }

@@ -20,7 +20,7 @@ export default Vue.extend({
 
   computed: {
     items() {
-        return [
+      return [
         {
           title: this.$t('labels.createLabel'),
           icon: mdiPencil,

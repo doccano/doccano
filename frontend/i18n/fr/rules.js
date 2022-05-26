@@ -3,12 +3,12 @@ export default {
     colorRequired: 'La couleur est obligatoire'
   },
   labelNameRules: {
-    labelRequired: 'Le nom de l\'étiquette est obligatoire',
-    labelLessThan100Chars: 'Le nom de l\'étiquette doit comporter moins de 100 caractères'
+    labelRequired: "Le nom de l'étiquette est obligatoire",
+    labelLessThan100Chars: "Le nom de l'étiquette doit comporter moins de 100 caractères"
   },
   userNameRules: {
-    userNameRequired: 'Le nom d\'utilisateur est requis',
-    userNameLessThan30Chars: 'Le nom d\'utilisateur doit comporter moins de 30 caractères'
+    userNameRequired: "Le nom d'utilisateur est requis",
+    userNameLessThan30Chars: "Le nom d'utilisateur doit comporter moins de 30 caractères"
   },
   roleRules: {
     roleRequired: 'Rôle est obligatoire'

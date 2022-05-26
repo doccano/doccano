@@ -4,9 +4,7 @@ import { TaskStatusRepository } from '@/domain/models/celery/taskStatusRepositor
 import { Status } from '@/domain/models/celery/status'
 
 export class APITaskStatusRepository implements TaskStatusRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
   async get(taskId: string): Promise<Status> {
     const url = `/tasks/status/${taskId}`

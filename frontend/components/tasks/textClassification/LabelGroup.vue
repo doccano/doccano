@@ -33,7 +33,7 @@ export default {
     },
     annotations: {
       type: Array,
-      default: () => ([]),
+      default: () => [],
       required: true
     },
     singleLabel: {

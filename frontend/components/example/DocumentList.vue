@@ -10,7 +10,7 @@
     :loading-text="$t('generic.loading')"
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
-      'showFirstLastPage': true,
+      showFirstLastPage: true,
       'items-per-page-options': [10, 50, 100],
       'items-per-page-text': $t('vuetify.itemsPerPageText'),
       'page-text': $t('dataset.pageText')
@@ -40,11 +40,7 @@
       <span> {{ item.commentCount }} </span>
     </template>
     <template #[`item.action`]="{ item }">
-      <v-btn
-        small
-        color="primary text-capitalize"
-        @click="toLabeling(item)"
-      >
+      <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
         {{ $t('dataset.annotate') }}
       </v-btn>
     </template>

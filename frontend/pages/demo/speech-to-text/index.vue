@@ -3,12 +3,7 @@
     <v-container fluid>
       <v-row justify="center">
         <v-col cols="12" md="9">
-          <audio
-            controls
-            :src="src"
-            class="mt-2 mb-5"
-            style="width:100%;"
-          >
+          <audio controls :src="src" class="mt-2 mb-5" style="width: 100%">
             Your browser does not support the
             <code>audio</code> element.
           </audio>
@@ -33,7 +28,6 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
-
   components: {
     Seq2seqBox,
     ListMetadata
@@ -48,7 +42,7 @@ export default {
         annotations: [
           {
             id: 17,
-            text: "Hi! Welcome to doccano!",
+            text: 'Hi! Welcome to doccano!',
             user: 1,
             document: 8
           }
@@ -64,10 +58,12 @@ export default {
 
   methods: {
     _deleteAnnotation(annotationId) {
-      this.currentDoc.annotations = this.currentDoc.annotations.filter(item => item.id !== annotationId)
+      this.currentDoc.annotations = this.currentDoc.annotations.filter(
+        (item) => item.id !== annotationId
+      )
     },
     _updateAnnotation(annotationId, text) {
-      const index = this.currentDoc.annotations.findIndex(item => item.id === annotationId)
+      const index = this.currentDoc.annotations.findIndex((item) => item.id === annotationId)
       this.currentDoc.annotations[index].text = text
     },
     _createAnnotation(text) {

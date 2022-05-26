@@ -1,17 +1,10 @@
 import { AnnotationModel } from './interface'
 
-export class TextClassificationItem implements AnnotationModel{
-  constructor(
-    public id: number,
-    public label: number,
-    public user: number,
-  ) {}
+export class CategoryItem implements AnnotationModel {
+  constructor(public id: number, public label: number, public user: number) {}
 
-  static valueOf(
-    { id, label, user }:
-    { id: number, label: number, user: number }
-  ) {
-    return new TextClassificationItem(id, label, user)
+  static valueOf({ id, label, user }: { id: number; label: number; user: number }) {
+    return new CategoryItem(id, label, user)
   }
 
   toObject() {

@@ -4,9 +4,7 @@ import { UserRepository } from '@/domain/models/user/userRepository'
 import { UserItem } from '~/domain/models/user/user'
 
 export class APIUserRepository implements UserRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
   async getMe(): Promise<UserItem> {
     const url = '/me'

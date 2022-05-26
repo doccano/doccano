@@ -20,24 +20,15 @@
         class="text-capitalize ms-2"
         :disabled="!canDelete"
         outlined
-        @click.stop="dialogDelete=true"
+        @click.stop="dialogDelete = true"
       >
         {{ $t('generic.delete') }}
       </v-btn>
       <v-dialog v-model="dialogDelete">
-        <form-delete
-          :selected="selected"
-          @cancel="dialogDelete=false"
-          @remove="remove"
-        />
+        <form-delete :selected="selected" @cancel="dialogDelete = false" @remove="remove" />
       </v-dialog>
     </v-card-title>
-    <label-list
-      v-model="selected"
-      :items="items"
-      :is-loading="isLoading"
-      @edit="editItem"
-    />
+    <label-list v-model="selected" :items="items" :is-loading="isLoading" @edit="editItem" />
   </v-card>
 </template>
 
@@ -50,7 +41,6 @@ import { LabelDTO } from '~/services/application/label/labelData'
 import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
-
   components: {
     ActionMenu,
     FormDelete,
@@ -60,8 +50,7 @@ export default Vue.extend({
 
   validate({ params, app }) {
     if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id)
-      .then((res:ProjectDTO) => {
+      return app.$services.project.findById(params.id).then((res: ProjectDTO) => {
         return res.canDefineLabel
       })
     }
@@ -75,7 +64,7 @@ export default Vue.extend({
       selected: [] as LabelDTO[],
       isLoading: false,
       tab: 0,
-      project: {} as ProjectDTO,
+      project: {} as ProjectDTO
     }
   },
 
@@ -102,7 +91,7 @@ export default Vue.extend({
 
     labelType(): string {
       if (this.hasMultiType) {
-        if (this.isIntentDetectionAndSlotFilling){
+        if (this.isIntentDetectionAndSlotFilling) {
           return ['category', 'span'][this.tab!]
         } else {
           return ['span', 'relation'][this.tab!]
@@ -149,7 +138,7 @@ export default Vue.extend({
       this.items = await this.service.list(this.projectId)
       this.isLoading = false
     },
-  
+
     async remove() {
       await this.service.bulkDelete(this.projectId, this.selected)
       this.list()

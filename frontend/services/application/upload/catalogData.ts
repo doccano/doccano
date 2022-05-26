@@ -1,6 +1,5 @@
 import { Catalog } from '~/domain/models/upload/catalog'
 
-
 export class CatalogDTO {
   name: string
   example: string

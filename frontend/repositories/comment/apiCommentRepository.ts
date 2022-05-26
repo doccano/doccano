@@ -3,13 +3,13 @@ import ApiService from '@/services/api.service'
 import { CommentRepository, SearchOption } from '@/domain/models/comment/commentRepository'
 import { CommentItem, CommentItemList } from '~/domain/models/comment/comment'
 
-
 export class APICommentRepository implements CommentRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
-  async listAll(projectId: string, { limit = '10', offset = '0', q = '' }: SearchOption): Promise<CommentItemList> {
+  async listAll(
+    projectId: string,
+    { limit = '10', offset = '0', q = '' }: SearchOption
+  ): Promise<CommentItemList> {
     const url = `/projects/${projectId}/comments?q=${q}&limit=${limit}&offset=${offset}`
     const response = await this.request.get(url)
     return plainToInstance(CommentItemList, response.data)
@@ -23,7 +23,11 @@ export class APICommentRepository implements CommentRepository {
 
   async create(projectId: string, exampleId: number, text: string): Promise<CommentItem> {
     const url = `/projects/${projectId}/comments?example=${exampleId}`
-    const response = await this.request.post(url, { projectId, exampleId, text })
+    const response = await this.request.post(url, {
+      projectId,
+      exampleId,
+      text
+    })
     return plainToInstance(CommentItem, response.data)
   }
 

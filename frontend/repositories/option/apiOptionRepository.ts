@@ -2,7 +2,6 @@ import { OptionRepository } from '../../domain/models/option/optionRepository'
 import { OptionItem } from '~/domain/models/option/option'
 
 export class LocalStorageOptionRepository implements OptionRepository {
-
   findById(projectId: string): OptionItem {
     const checkpoint = this.loadCheckpoint()
     return OptionItem.valueOf(checkpoint[projectId] ? checkpoint[projectId] : { page: 1 })

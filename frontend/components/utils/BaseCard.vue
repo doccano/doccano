@@ -1,9 +1,6 @@
 <template>
   <v-card>
-    <v-toolbar
-      color="primary white--text"
-      flat
-    >
+    <v-toolbar color="primary white--text" flat>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
     </v-toolbar>
     <v-card-text class="text--primary mt-3 pl-4">

@@ -12,9 +12,9 @@ export const useExampleItem = () => {
   const { app } = useContext()
   const exampleService = app.$services.example
 
-  const getExample = async(
+  const getExample = async (
     projectId: string,
-    { page, q, isChecked }: { page: string, q: string, isChecked: string}
+    { page, q, isChecked }: { page: string; q: string; isChecked: string }
   ) => {
     const examples = await exampleService.fetchOne(projectId, page, q, isChecked)
     state.totalExample = examples.count
@@ -23,19 +23,15 @@ export const useExampleItem = () => {
     }
   }
 
-  const getExampleById = async(
-    projectId: string
-  ) => {
+  const getExampleById = async (projectId: string) => {
     state.example = await exampleService.findById(projectId, state.example.id)
   }
 
-  const updateProgress = async(projectId: string) => {
+  const updateProgress = async (projectId: string) => {
     state.progress = await app.$services.metrics.fetchMyProgress(projectId)
   }
 
-  const confirm = async(
-    projectId: string,
-  ) => {
+  const confirm = async (projectId: string) => {
     await exampleService.confirm(projectId, state.example.id)
     await getExampleById(projectId)
     updateProgress(projectId)

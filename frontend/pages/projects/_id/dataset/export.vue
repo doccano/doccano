@@ -5,15 +5,9 @@
     </v-card-title>
     <v-card-text>
       <v-overlay :value="isProcessing">
-        <v-progress-circular
-          indeterminate
-          size="64"
-        />
+        <v-progress-circular indeterminate size="64" />
       </v-overlay>
-      <v-form
-        ref="form"
-        v-model="valid"
-      >
+      <v-form ref="form" v-model="valid">
         <v-select
           v-model="selectedFormat"
           :items="formats"
@@ -31,19 +25,11 @@
         >
           <pre>{{ example }}</pre>
         </v-sheet>
-        <v-checkbox
-          v-model="exportApproved"
-          label="Export only approved documents"
-          hide-details
-        />
+        <v-checkbox v-model="exportApproved" label="Export only approved documents" hide-details />
       </v-form>
     </v-card-text>
     <v-card-actions>
-      <v-btn
-        class='text-capitalize ms-2 primary'
-        :disabled="!valid"
-        @click="downloadRequest"
-      >
+      <v-btn class="text-capitalize ms-2 primary" :disabled="!valid" @click="downloadRequest">
         {{ $t('generic.export') }}
       </v-btn>
     </v-card-actions>
@@ -72,7 +58,7 @@ export default Vue.extend({
       polling: null,
       selectedFormat: null as any,
       taskId: '',
-      valid: false,
+      valid: false
     }
   },
 
@@ -93,12 +79,12 @@ export default Vue.extend({
 
   beforeDestroy() {
     // @ts-ignore
-	  clearInterval(this.polling)
+    clearInterval(this.polling)
   },
 
   methods: {
     reset() {
-      (this.$refs.form as HTMLFormElement).reset()
+      ;(this.$refs.form as HTMLFormElement).reset()
       this.taskId = ''
       this.exportApproved = false
       this.selectedFormat = null
@@ -107,13 +93,17 @@ export default Vue.extend({
 
     async downloadRequest() {
       this.isProcessing = true
-      this.taskId = await this.$services.download.request(this.projectId, this.selectedFormat, this.exportApproved)
+      this.taskId = await this.$services.download.request(
+        this.projectId,
+        this.selectedFormat,
+        this.exportApproved
+      )
       this.pollData()
     },
 
     pollData() {
       // @ts-ignore
-		  this.polling = setInterval(async() => {
+      this.polling = setInterval(async () => {
         if (this.taskId) {
           const res = await this.$services.taskStatus.get(this.taskId)
           if (res.ready) {
@@ -121,8 +111,8 @@ export default Vue.extend({
             this.reset()
           }
         }
-  		}, 1000)
-	  },
-  } 
+      }, 1000)
+    }
+  }
 })
 </script>

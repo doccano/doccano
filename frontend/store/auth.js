@@ -43,7 +43,7 @@ export const actions = {
     try {
       await this.$services.auth.login(authData.username, authData.password)
       commit('setAuthenticated', true)
-    } catch(error) {
+    } catch (error) {
       throw new Error('The credential is invalid')
     }
   },

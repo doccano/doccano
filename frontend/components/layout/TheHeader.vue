@@ -1,27 +1,17 @@
 <template>
-  <v-app-bar
-    app
-    clipped-left
-  >
+  <v-app-bar app clipped-left>
     <slot name="leftDrawerIcon" />
-    <nuxt-link
-      v-if="!isAuthenticated"
-      to="/"
-      style="line-height:0;"
-    >
-      <img src="~/assets/icon.png" height="48">
+    <nuxt-link v-if="!isAuthenticated" to="/" style="line-height: 0">
+      <img src="~/assets/icon.png" height="48" />
     </nuxt-link>
-    <v-toolbar-title
-      v-if="!isAuthenticated"
-      class="ml-2 d-none d-sm-flex"
-    >
+    <v-toolbar-title v-if="!isAuthenticated" class="ml-2 d-none d-sm-flex">
       doccano
     </v-toolbar-title>
     <v-btn
       v-if="isAuthenticated && isIndividualProject"
       text
       class="d-none d-sm-flex"
-      style="text-transform:none"
+      style="text-transform: none"
     >
       <v-icon small class="mr-1">
         {{ mdiHexagonMultiple }}
@@ -39,16 +29,9 @@
     >
       {{ $t('header.projects') }}
     </v-btn>
-    <v-menu
-      v-if="!isAuthenticated"
-      open-on-hover
-      offset-y
-    >
+    <v-menu v-if="!isAuthenticated" open-on-hover offset-y>
       <template #activator="{ on }">
-        <v-btn
-          text
-          v-on="on"
-        >
+        <v-btn text v-on="on">
           {{ $t('home.demoDropDown') }}
           <v-icon>{{ mdiMenuDown }}</v-icon>
         </v-btn>
@@ -63,17 +46,10 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-btn
-      v-if="!isAuthenticated"
-      outlined
-      @click="$router.push(localePath('/auth'))"
-    >
+    <v-btn v-if="!isAuthenticated" outlined @click="$router.push(localePath('/auth'))">
       {{ $t('user.login') }}
     </v-btn>
-    <v-menu
-      v-if="isAuthenticated"
-      offset-y
-    >
+    <v-menu v-if="isAuthenticated" offset-y>
       <template #activator="{ on }">
         <v-btn on icon v-on="on">
           <v-icon>{{ mdiDotsVertical }}</v-icon>
@@ -83,12 +59,7 @@
         <v-subheader>{{ getUsername }}</v-subheader>
         <v-list-item>
           <v-list-item-content>
-            <v-switch
-              :input-value="isRTL"
-              :label="direction"
-              class="ms-1"
-              @change="toggleRTL"
-            />
+            <v-switch :input-value="isRTL" :label="direction" class="ms-1" @change="toggleRTL" />
           </v-list-item-content>
         </v-list-item>
         <v-list-item @click="signout">
@@ -124,10 +95,13 @@ export default {
         { title: this.$t('home.demoNER'), link: 'named-entity-recognition' },
         { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
         { title: this.$t('home.demoTranslation'), link: 'translation' },
-        { title: 'Intent Detection and Slot Filling', link: 'intent-detection-and-slot-filling' },
+        {
+          title: 'Intent Detection and Slot Filling',
+          link: 'intent-detection-and-slot-filling'
+        },
         { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' },
         { title: 'Image Classification', link: 'image-classification' },
-        { title: 'Speech to Text', link: 'speech-to-text' },
+        { title: 'Speech to Text', link: 'speech-to-text' }
       ],
       mdiLogout,
       mdiDotsVertical,

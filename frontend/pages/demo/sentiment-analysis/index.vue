@@ -32,7 +32,6 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 
 export default {
-
   components: {
     LabelGroup,
     ListMetadata
@@ -72,7 +71,7 @@ export default {
             document: 8
           }
         ],
-        meta: { wikiPageId: 2},
+        meta: { wikiPageId: 2 },
         annotation_approver: null
       }
     }
@@ -80,7 +79,9 @@ export default {
 
   methods: {
     removeLabel(annotationId) {
-      this.currentDoc.annotations = this.currentDoc.annotations.filter(item => item.id !== annotationId)
+      this.currentDoc.annotations = this.currentDoc.annotations.filter(
+        (item) => item.id !== annotationId
+      )
     },
     addLabel(labelId) {
       const payload = {

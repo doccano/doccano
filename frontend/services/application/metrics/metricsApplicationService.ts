@@ -2,9 +2,7 @@ import { MetricsRepository } from '~/domain/models/metrics/metricsRepository'
 import { Progress, Distribution, MyProgress } from '~/domain/models/metrics/metrics'
 
 export class MetricsApplicationService {
-  constructor(
-    private readonly repository: MetricsRepository
-  ) {}
+  constructor(private readonly repository: MetricsRepository) {}
 
   public async fetchMemberProgress(projectId: string): Promise<Progress> {
     return await this.repository.fetchMemberProgress(projectId)

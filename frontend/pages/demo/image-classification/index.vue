@@ -14,12 +14,7 @@
               />
             </v-card-title>
             <v-divider />
-            <v-img
-              contain
-              :src="currentDoc.filename"
-              max-height="300"
-              class="grey lighten-2"
-            />
+            <v-img contain :src="currentDoc.filename" max-height="300" class="grey lighten-2" />
           </v-card>
         </v-col>
         <v-col cols="12" md="3">
@@ -35,7 +30,6 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 
 export default {
-
   components: {
     LabelGroup,
     ListMetadata
@@ -78,14 +72,16 @@ export default {
         meta: {
           url: 'https://github.com/Hironsan'
         },
-        annotation_approver: null,
+        annotation_approver: null
       }
     }
   },
 
   methods: {
     removeLabel(annotationId) {
-      this.currentDoc.annotations = this.currentDoc.annotations.filter(item => item.id !== annotationId)
+      this.currentDoc.annotations = this.currentDoc.annotations.filter(
+        (item) => item.id !== annotationId
+      )
     },
     addLabel(labelId) {
       const payload = {

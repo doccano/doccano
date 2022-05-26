@@ -1,16 +1,11 @@
 export class StepCounter {
   private step: number
 
-  constructor(
-    private readonly minStep: number = 1,
-    private readonly maxStep: number = 10
-  ) {
+  constructor(private readonly minStep: number = 1, private readonly maxStep: number = 10) {
     this.step = 1
   }
 
-  static valueOf(
-    minStep: number = 1, maxStep: number = 10
-  ): StepCounter {
+  static valueOf(minStep: number = 1, maxStep: number = 10): StepCounter {
     return new StepCounter(minStep, maxStep)
   }
 

@@ -4,9 +4,7 @@ import { TagRepository } from '~/domain/models/tag/tagRepository'
 import { TagItem } from '~/domain/models/tag/tag'
 
 export class APITagRepository implements TagRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
   async list(projectId: string): Promise<TagItem[]> {
     const url = `/projects/${projectId}/tags`
