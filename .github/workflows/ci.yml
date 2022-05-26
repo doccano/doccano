@@ -9,35 +9,35 @@ jobs:
       run:
         working-directory: ./backend
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        poetry install
-    - name: Run migrations
-      run: |
-        poetry run task wait_for_db
-        poetry run task migrate
-    - name: Lint with flake8
-      run: |
-        poetry run task flake8
-    - name: Lint with isort
-      run: |
-        poetry run task isort
-    - name: Black
-      run: |
-        poetry run task black
-    - name: mypy
-      run: |
-        poetry run task mypy
-    - name: Run tests
-      run: |
-        poetry run task test
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+      - name: Run migrations
+        run: |
+          poetry run task wait_for_db
+          poetry run task migrate
+      - name: Lint with flake8
+        run: |
+          poetry run task flake8
+      - name: Lint with isort
+        run: |
+          poetry run task isort
+      - name: Black
+        run: |
+          poetry run task black
+      - name: mypy
+        run: |
+          poetry run task mypy
+      - name: Run tests
+        run: |
+          poetry run task test
 
   frontend:
     runs-on: ubuntu-latest
@@ -48,13 +48,15 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: "16"
       - name: Install Yarn
         run: npm install -g yarn
       - name: Install npm modules
         run: yarn install
       - name: Lint
         run: yarn lint
+      - name: Prettier
+        run: yarn lint:prettier
 
   docker-lint:
     runs-on: ubuntu-latest
