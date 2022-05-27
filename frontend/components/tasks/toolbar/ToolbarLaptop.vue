@@ -160,6 +160,12 @@ export default Vue.extend({
 </script>
 
 <style scoped>
+.toolbar-control {
+  position: sticky;
+  top: 68px;
+  z-index: 100;
+}
+
 .toolbar-control >>> .v-toolbar__content {
   padding: 0px !important;
 }
