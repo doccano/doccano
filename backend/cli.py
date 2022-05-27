@@ -66,7 +66,7 @@ def run_on_windows(args):
 
     from config.wsgi import application
 
-    serve(application, port=args.port)
+    serve(application, port=args.port, threads=args.workers)
 
 
 def command_db_init(args):
