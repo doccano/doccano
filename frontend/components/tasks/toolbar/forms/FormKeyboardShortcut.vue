@@ -16,7 +16,7 @@
                 <v-chip
                   v-for="key in item.key"
                   :key="key"
-                  color="primary"
+                  color="grey darken-3 white--text"
                   class="ma-1"
                   label
                   small
