@@ -2,13 +2,8 @@
   <v-app>
     <the-header />
     <v-main>
-      <v-container
-        fluid
-        fill-height
-      >
-        <v-layout
-          justify-center
-        >
+      <v-container fluid fill-height>
+        <v-layout justify-center>
           <v-flex>
             <nuxt />
           </v-flex>

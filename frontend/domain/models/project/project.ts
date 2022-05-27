@@ -1,67 +1,72 @@
-import "reflect-metadata"
+import 'reflect-metadata'
 import { Expose, Type } from 'class-transformer'
 
-export type ProjectType = 'DocumentClassification' | 'SequenceLabeling' | 'Seq2seq' | 'IntentDetectionAndSlotFilling' | 'ImageClassification' | 'Speech2text'
-
+export type ProjectType =
+  | 'DocumentClassification'
+  | 'SequenceLabeling'
+  | 'Seq2seq'
+  | 'IntentDetectionAndSlotFilling'
+  | 'ImageClassification'
+  | 'Speech2text'
 
 export class ProjectReadItem {
-  id:                          number;
-  name:                        string;
-  description:                 string;
-  guideline:                   string;
-  users:                       number[];
-  tags:                        Object[];
+  id: number
+  name: string
+  description: string
+  guideline: string
+  users: number[]
+  tags: Object[]
 
   @Expose({ name: 'project_type' })
-  projectType: ProjectType;
+  projectType: ProjectType
 
   @Expose({ name: 'updated_at' })
-  updatedAt: string;
+  updatedAt: string
 
   @Expose({ name: 'random_order' })
-  randomOrder: boolean;
+  randomOrder: boolean
 
   @Expose({ name: 'collaborative_annotation' })
-  collaborative_annotation: boolean;
+  collaborative_annotation: boolean
 
   @Expose({ name: 'single_class_classification' })
-  exclusiveCategories: boolean;
+  exclusiveCategories: boolean
 
   @Expose({ name: 'resourcetype' })
-  resourceType: string;
+  resourceType: string
 
   @Expose({ name: 'allow_overlapping' })
-  allowOverlapping: boolean;
+  allowOverlapping: boolean
 
   @Expose({ name: 'grapheme_mode' })
-  graphemeMode: boolean;
+  graphemeMode: boolean
 
   @Expose({ name: 'use_relation' })
-  useRelation: boolean;
+  useRelation: boolean
 
-  @Expose({ name: 'is_text_project'})
-  isTextProject: boolean;
+  @Expose({ name: 'is_text_project' })
+  isTextProject: boolean
 
   @Expose({ name: 'can_define_label' })
-  canDefineLabel: boolean;
+  canDefineLabel: boolean
 
   @Expose({ name: 'can_define_relation' })
-  canDefineRelation: boolean;
+  canDefineRelation: boolean
 
-  @Expose({ name: 'can_define_span'})
-  canDefineSpan: boolean;
+  @Expose({ name: 'can_define_span' })
+  canDefineSpan: boolean
 
   @Expose({ name: 'can_define_category' })
-  canDefineCategory: boolean;
+  canDefineCategory: boolean
 
   get annotationPageLink(): string {
     const mapping = {
       DocumentClassification: 'text-classification',
-      SequenceLabeling      : 'sequence-labeling',
-      Seq2seq               : 'sequence-to-sequence',
+      SequenceLabeling: 'sequence-labeling',
+      Seq2seq: 'sequence-to-sequence',
       IntentDetectionAndSlotFilling: 'intent-detection-and-slot-filling',
-      ImageClassification   : 'image-classification',
-      Speech2text           : 'speech-to-text',
+      ImageClassification: 'image-classification',
+      Speech2text: 'speech-to-text'
     }
     const url = `/projects/${this.id}/${mapping[this.projectType]}`
     return url
@@ -69,49 +74,46 @@ export class ProjectReadItem {
 
   get taskNames(): string[] {
     if (this.projectType === 'IntentDetectionAndSlotFilling') {
-      return [
-        'DocumentClassification',
-        'SequenceLabeling',
-      ]
+      return ['DocumentClassification', 'SequenceLabeling']
     }
     return [this.projectType]
   }
 }
 
 export class ProjectItemList {
-  count: number;
-  next: string | null;
-  prev: string | null;
+  count: number
+  next: string | null
+  prev: string | null
 
   @Type(() => ProjectReadItem)
   @Expose({ name: 'results' })
-  items: ProjectReadItem[];
+  items: ProjectReadItem[]
 }
 
 export class ProjectWriteItem {
   constructor(
-    public id:                          number,
-    public name:                        string,
-    public description:                 string,
-    public guideline:                   string,
-    public project_type:                ProjectType,
-    public random_order:                boolean,
-    public collaborative_annotation:    boolean,
+    public id: number,
+    public name: string,
+    public description: string,
+    public guideline: string,
+    public project_type: ProjectType,
+    public random_order: boolean,
+    public collaborative_annotation: boolean,
     public single_class_classification: boolean,
-    public allow_overlapping:           boolean,
-    public grapheme_mode:               boolean,
-    public use_relation:                boolean,
-    public tags:                        string[],
+    public allow_overlapping: boolean,
+    public grapheme_mode: boolean,
+    public use_relation: boolean,
+    public tags: string[]
   ) {}
 
   get resourceType(): string {
     const mapping = {
       DocumentClassification: 'TextClassificationProject',
-      SequenceLabeling      : 'SequenceLabelingProject',
-      Seq2seq               : 'Seq2seqProject',
+      SequenceLabeling: 'SequenceLabelingProject',
+      Seq2seq: 'Seq2seqProject',
       IntentDetectionAndSlotFilling: 'IntentDetectionAndSlotFillingProject',
-      ImageClassification   : 'ImageClassificationProject',
-      Speech2text           : 'Speech2textProject',
+      ImageClassification: 'ImageClassificationProject',
+      Speech2text: 'Speech2textProject'
     }
     return mapping[this.project_type]
   }
@@ -129,7 +131,7 @@ export class ProjectWriteItem {
       allow_overlapping: this.allow_overlapping,
       grapheme_mode: this.grapheme_mode,
       use_relation: this.use_relation,
-      tags: this.tags.map(tag => ({text: tag})),
+      tags: this.tags.map((tag) => ({ text: tag })),
       resourcetype: this.resourceType
     }
   }

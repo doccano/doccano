@@ -1,9 +1,5 @@
 <template>
-  <form-import
-    :error-message="errorMessage"
-    @clear="clearErrorMessage"
-    @upload="upload"
-  />
+  <form-import :error-message="errorMessage" @clear="clearErrorMessage" @upload="upload" />
 </template>
 
 <script lang="ts">
@@ -13,18 +9,17 @@ import FormImport from '~/components/label/FormImport.vue'
 
 export default Vue.extend({
   components: {
-    FormImport,
+    FormImport
   },
 
   layout: 'project',
 
   validate({ params, query, app }) {
-    if (!['category', 'span', 'relation'].includes((query.type as string))) {
+    if (!['category', 'span', 'relation'].includes(query.type as string)) {
       return false
     }
     if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id)
-      .then((res:ProjectDTO) => {
+      return app.$services.project.findById(params.id).then((res: ProjectDTO) => {
         return res.canDefineLabel
       })
     }
@@ -33,7 +28,7 @@ export default Vue.extend({
 
   data() {
     return {
-      errorMessage: '',
+      errorMessage: ''
     }
   },
 
@@ -51,7 +46,7 @@ export default Vue.extend({
       } else {
         return this.$services.relationType
       }
-    },
+    }
   },
 
   methods: {
@@ -59,7 +54,7 @@ export default Vue.extend({
       try {
         await this.service.upload(this.projectId, file)
         this.$router.push(`/projects/${this.projectId}/labels`)
-      } catch(e) {
+      } catch (e) {
         this.errorMessage = e.message
       }
     },
@@ -67,6 +62,6 @@ export default Vue.extend({
     clearErrorMessage() {
       this.errorMessage = ''
     }
-  },
+  }
 })
 </script>

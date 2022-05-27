@@ -1,20 +1,20 @@
 import { Expose } from 'class-transformer'
 
 export class LabelItem {
-  id: number;
-  text: string;
+  id: number
+  text: string
 
   @Expose({ name: 'prefix_key' })
-  prefixKey: string | null;
+  prefixKey: string | null
 
   @Expose({ name: 'suffix_key' })
-  suffixKey: string | null;
+  suffixKey: string | null
 
   @Expose({ name: 'background_color' })
-  backgroundColor: string;
+  backgroundColor: string
 
   @Expose({ name: 'text_color' })
-  textColor: string = '#ffffff';
+  textColor: string = '#ffffff'
 
   toObject() {
     return {

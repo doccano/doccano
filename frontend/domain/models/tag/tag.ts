@@ -1,7 +1,7 @@
 export class TagItem {
-  id: number;
-  text: string;
-  project: string;
+  id: number
+  text: string
+  project: string
 
   toObject(): Object {
     return {

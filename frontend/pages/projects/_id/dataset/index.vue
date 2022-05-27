@@ -9,7 +9,7 @@
         class="text-capitalize ms-2"
         :disabled="!canDelete"
         outlined
-        @click.stop="dialogDelete=true"
+        @click.stop="dialogDelete = true"
       >
         {{ $t('generic.delete') }}
       </v-btn>
@@ -18,7 +18,7 @@
         :disabled="!item.count"
         class="text-capitalize"
         color="error"
-        @click="dialogDeleteAll=true"
+        @click="dialogDeleteAll = true"
       >
         {{ $t('generic.deleteAll') }}
       </v-btn>
@@ -26,15 +26,12 @@
         <form-delete
           :selected="selected"
           :item-key="itemKey"
-          @cancel="dialogDelete=false"
+          @cancel="dialogDelete = false"
           @remove="remove"
         />
       </v-dialog>
       <v-dialog v-model="dialogDeleteAll">
-        <form-delete-bulk
-          @cancel="dialogDeleteAll=false"
-          @remove="removeAll"
-        />
+        <form-delete-bulk @cancel="dialogDeleteAll = false" @remove="removeAll" />
       </v-dialog>
     </v-card-title>
     <image-list
@@ -80,14 +77,13 @@ import ActionMenu from '~/components/example/ActionMenu.vue'
 import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
-
   components: {
     ActionMenu,
     AudioList,
     DocumentList,
     ImageList,
     FormDelete,
-    FormDeleteBulk,
+    FormDeleteBulk
   },
 
   layout: 'project',
@@ -134,15 +130,14 @@ export default Vue.extend({
       } else {
         return 'text'
       }
-    },
+    }
   },
 
   watch: {
-    '$route.query': _.debounce(function() {
-        // @ts-ignore
-        this.$fetch()
-      }, 1000
-    ),
+    '$route.query': _.debounce(function () {
+      // @ts-ignore
+      this.$fetch()
+    }, 1000)
   },
 
   async created() {

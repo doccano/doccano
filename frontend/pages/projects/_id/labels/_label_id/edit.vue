@@ -1,15 +1,6 @@
 <template>
-  <form-create
-    v-slot="slotProps"
-    v-bind.sync="editedItem"
-    :items="items"
-  >
-    <v-btn
-      :disabled="!slotProps.valid"
-      color="primary"
-      class="text-capitalize"
-      @click="save"
-    >
+  <form-create v-slot="slotProps" v-bind.sync="editedItem" :items="items">
+    <v-btn :disabled="!slotProps.valid" color="primary" class="text-capitalize" @click="save">
       Save
     </v-btn>
   </form-create>
@@ -23,18 +14,17 @@ import FormCreate from '~/components/label/FormCreate.vue'
 
 export default Vue.extend({
   components: {
-    FormCreate,
+    FormCreate
   },
 
   layout: 'project',
 
   validate({ params, query, app }) {
-    if (!['category', 'span', 'relation'].includes((query.type as string))) {
+    if (!['category', 'span', 'relation'].includes(query.type as string)) {
       return false
     }
     if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id)
-      .then((res:ProjectDTO) => {
+      return app.$services.project.findById(params.id).then((res: ProjectDTO) => {
         return res.canDefineLabel
       })
     }
@@ -67,12 +57,12 @@ export default Vue.extend({
       const type = this.$route.query.type
       if (type === 'category') {
         return this.$services.categoryType
-      } else if (type === 'span'){
+      } else if (type === 'span') {
         return this.$services.spanType
       } else {
         return this.$services.relationType
       }
-    },
+    }
   },
 
   async created() {

@@ -7,9 +7,9 @@ declare module 'vue/types/vue' {
 }
 
 type RoleMapping = {
-  projectAdmin: string,
-  annotator: string,
-  annotationApprover: string,
+  projectAdmin: string
+  annotator: string
+  annotationApprover: string
   undefined: string
 }
 

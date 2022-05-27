@@ -13,16 +13,14 @@
 
 <script>
 import Cookies from 'js-cookie'
-import vueFilePond from "vue-filepond"
-import "filepond/dist/filepond.min.css"
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type"
-const FilePond = vueFilePond(
-  FilePondPluginFileValidateType,
-)
+import vueFilePond from 'vue-filepond'
+import 'filepond/dist/filepond.min.css'
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
+const FilePond = vueFilePond(FilePondPluginFileValidateType)
 
 export default {
   components: {
-    FilePond,
+    FilePond
   },
 
   props: {
@@ -32,18 +30,18 @@ export default {
       required: true
     }
   },
-  
+
   data() {
     return {
       myFiles: [],
       server: {
         url: '/v1/fp',
         headers: {
-          'X-CSRFToken': Cookies.get('csrftoken'),
+          'X-CSRFToken': Cookies.get('csrftoken')
         },
         process: {
           url: '/process/',
-          method: 'POST',
+          method: 'POST'
         },
         patch: '/patch/',
         revert: '/revert/',
@@ -62,6 +60,6 @@ export default {
     handleFilePondRemovefile() {
       this.$emit('input', '')
     }
-  },
-};
+  }
+}
 </script>

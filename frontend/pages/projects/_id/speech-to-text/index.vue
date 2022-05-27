@@ -11,22 +11,13 @@
         @click:clear-label="clear"
         @click:review="confirm"
       />
-      <toolbar-mobile
-        :total="items.count"
-        class="d-flex d-sm-none"
-      />
+      <toolbar-mobile :total="items.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
       <v-overlay :value="isLoading">
-        <v-progress-circular
-          indeterminate
-          size="64"
-        />
+        <v-progress-circular indeterminate size="64" />
       </v-overlay>
-      <audio-viewer
-        :source="item.fileUrl"
-        class="mb-5"
-      />
+      <audio-viewer :source="item.fileUrl" class="mb-5" />
       <seq2seq-box
         :text="item.text"
         :annotations="annotations"
@@ -53,7 +44,6 @@ import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 import AudioViewer from '~/components/tasks/audio/AudioViewer'
 
 export default {
-
   components: {
     AnnotationProgress,
     AudioViewer,

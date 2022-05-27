@@ -1,15 +1,9 @@
 <template>
   <div class="v-data-footer">
-    <v-edit-dialog
-      large
-      persistent
-      @save="changePageNumber"
-    >
+    <v-edit-dialog large persistent @save="changePageNumber">
       <span>{{ value }} of {{ total }}</span>
       <template #input>
-        <div class="mt-4 title">
-          Move Page
-        </div>
+        <div class="mt-4 title">Move Page</div>
         <v-text-field
           v-model="editedPage"
           :rules="rules"
@@ -89,7 +83,8 @@ export default Vue.extend({
     return {
       editedPage: '1',
       rules: [
-        (v: string) => (v && parseInt(v, 10) > 0 && parseInt(v, 10) <= this.total) || 'Invalid page number!'
+        (v: string) =>
+          (v && parseInt(v, 10) > 0 && parseInt(v, 10) <= this.total) || 'Invalid page number!'
       ],
       mdiPageFirst,
       mdiPageLast,

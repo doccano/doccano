@@ -20,17 +20,17 @@ export default Vue.extend({
 
   computed: {
     items() {
-        return [
-          {
-            title: this.$t('dataset.importDataset'),
-            icon: mdiUpload,
-            event: 'upload'
-          },
-          {
-            title: this.$t('dataset.exportDataset'),
-            icon: mdiDownload,
-            event: 'download'
-          }
+      return [
+        {
+          title: this.$t('dataset.importDataset'),
+          icon: mdiUpload,
+          event: 'upload'
+        },
+        {
+          title: this.$t('dataset.exportDataset'),
+          icon: mdiDownload,
+          event: 'download'
+        }
       ]
     }
   }

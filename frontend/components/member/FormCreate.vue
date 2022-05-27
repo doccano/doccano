@@ -39,11 +39,7 @@
             {{ $translateRole(props.item.rolename, $t('members.roles')) }}
           </template>
         </v-select>
-        <v-alert
-          v-show="errorMessage"
-          prominent
-          type="error"
-        >
+        <v-alert v-show="errorMessage" prominent type="error">
           <v-row align="center">
             <v-col class="grow">
               {{ errorMessage }}
@@ -67,7 +63,7 @@ export default Vue.extend({
   components: {
     BaseCard
   },
-  
+
   props: {
     value: {
       type: Object as PropType<MemberDTO>,
@@ -87,8 +83,8 @@ export default Vue.extend({
       roles: [] as RoleDTO[],
       username: '',
       rules: {
-        userRequired: (v: UserDTO) => !!v && !!v.username || 'Required',
-        roleRequired: (v: RoleDTO) => !!v && !!v.rolename || 'Required'
+        userRequired: (v: UserDTO) => (!!v && !!v.username) || 'Required',
+        roleRequired: (v: RoleDTO) => (!!v && !!v.rolename) || 'Required'
       },
       mdiAccount,
       mdiCreditCardOutline

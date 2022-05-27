@@ -1,23 +1,9 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="value"
-  >
+  <v-data-table :headers="headers" :items="value">
     <template #top>
-      <v-dialog
-        v-model="dialog"
-        max-width="800px"
-      >
+      <v-dialog v-model="dialog" max-width="800px">
         <template #activator="{ on, attrs }">
-          <v-btn
-            color="primary"
-            dark
-            class="text-none"
-            v-bind="attrs"
-            v-on="on"
-          >
-            Add
-          </v-btn>
+          <v-btn color="primary" dark class="text-none" v-bind="attrs" v-on="on"> Add </v-btn>
         </template>
         <v-card>
           <v-card-title>
@@ -26,16 +12,9 @@
 
           <v-card-text>
             <v-container>
-              <v-form
-                ref="form"
-                v-model="valid"
-              >
+              <v-form ref="form" v-model="valid">
                 <v-row>
-                  <v-col
-                    cols="12"
-                    sm="12"
-                    class="pa-0"
-                  >
+                  <v-col cols="12" sm="12" class="pa-0">
                     <v-text-field
                       v-model="editedItem.from"
                       label="From"
@@ -43,11 +22,7 @@
                       outlined
                     />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="12"
-                    class="pa-0"
-                  >
+                  <v-col cols="12" sm="12" class="pa-0">
                     <v-select
                       v-model="editedItem.to"
                       :items="items"
@@ -63,12 +38,7 @@
 
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              color="blue darken-1"
-              class="text-capitalize"
-              text
-              @click="close"
-            >
+            <v-btn color="blue darken-1" class="text-capitalize" text @click="close">
               Cancel
             </v-btn>
             <v-btn
@@ -85,17 +55,10 @@
       </v-dialog>
     </template>
     <template #[`item.actions`]="{ item }">
-      <v-icon
-        small
-        class="mr-2"
-        @click="editItem(item)"
-      >
+      <v-icon small class="mr-2" @click="editItem(item)">
         {{ mdiPencil }}
       </v-icon>
-      <v-icon
-        small
-        @click="deleteItem(item)"
-      >
+      <v-icon small @click="deleteItem(item)">
         {{ mdiDelete }}
       </v-icon>
     </template>
@@ -140,12 +103,12 @@ export default Vue.extend({
       valid: false,
       editedIndex: -1,
       editedItem: {
-        'from': '',
-        'to': ''
+        from: '',
+        to: ''
       },
       defaultItem: {
-        'from': '',
-        'to': ''
+        from: '',
+        to: ''
       },
       items: [] as string[],
       labelNameRules,
@@ -158,21 +121,21 @@ export default Vue.extend({
     const project = await this.$services.project.findById(this.$route.params.id)
     if (project.projectType.endsWith('Classification')) {
       const labels = await this.$services.categoryType.list(this.$route.params.id)
-      this.items = labels.map(item => item.text)
+      this.items = labels.map((item) => item.text)
     } else {
       const labels = await this.$services.spanType.list(this.$route.params.id)
-      this.items = labels.map(item => item.text)
+      this.items = labels.map((item) => item.text)
     }
   },
 
   methods: {
-    editItem(item: {'from': string, 'to': string}) {
+    editItem(item: { from: string; to: string }) {
       this.editedIndex = this.value.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
     },
 
-    deleteItem(item: {'from': string, 'to': string}) {
+    deleteItem(item: { from: string; to: string }) {
       this.editedIndex = this.value.indexOf(item)
       this.editedItem = Object.assign({}, item)
       const items = Object.assign([], this.value)

@@ -1,17 +1,14 @@
 import { LabelDTO } from './labelData'
-import { CreateLabelCommand } from './labelCommand';
+import { CreateLabelCommand } from './labelCommand'
 import { LabelRepository } from '~/domain/models/label/labelRepository'
 import { LabelItem } from '~/domain/models/label/label'
 
-
 export class LabelApplicationService {
-  constructor(
-    private readonly repository: LabelRepository
-  ) {}
+  constructor(private readonly repository: LabelRepository) {}
 
   public async list(id: string): Promise<LabelDTO[]> {
     const items = await this.repository.list(id)
-    return items.map(item => new LabelDTO(item))
+    return items.map((item) => new LabelDTO(item))
   }
 
   public async findById(projectId: string, labelId: number): Promise<LabelDTO> {
@@ -45,13 +42,13 @@ export class LabelApplicationService {
   }
 
   public bulkDelete(projectId: string, items: LabelDTO[]): Promise<void> {
-    const ids = items.map(item => item.id)
+    const ids = items.map((item) => item.id)
     return this.repository.bulkDelete(projectId, ids)
   }
 
   public async export(projectId: string) {
     const items = await this.repository.list(projectId)
-    const labels = items.map(item => new LabelDTO(item))
+    const labels = items.map((item) => new LabelDTO(item))
     const url = window.URL.createObjectURL(new Blob([JSON.stringify(labels, null, 2)]))
     const link = document.createElement('a')
     link.href = url

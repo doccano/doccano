@@ -1,21 +1,11 @@
 <template>
-  <v-bottom-navigation
-    app
-    absolute
-    hide-on-scroll
-  >
-    <v-btn
-      :disabled="isFirstPage"
-      @click="updatePage(page - 1)"
-    >
+  <v-bottom-navigation app absolute hide-on-scroll>
+    <v-btn :disabled="isFirstPage" @click="updatePage(page - 1)">
       <span>Prev</span>
       <v-icon>{{ mdiChevronLeft }}</v-icon>
     </v-btn>
 
-    <v-btn
-      :disabled="isLastPage"
-      @click="updatePage(page + 1)"
-    >
+    <v-btn :disabled="isLastPage" @click="updatePage(page + 1)">
       <span>Next</span>
       <v-icon>{{ mdiChevronRight }}</v-icon>
     </v-btn>
@@ -57,7 +47,7 @@ export default Vue.extend({
 
   methods: {
     updatePage(page: number) {
-      this.$router.push({ query: { page: page.toString() }})
+      this.$router.push({ query: { page: page.toString() } })
     }
   }
 })

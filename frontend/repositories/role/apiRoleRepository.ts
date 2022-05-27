@@ -4,9 +4,7 @@ import { RoleRepository } from '../../domain/models/role/roleRepository'
 import { RoleItem } from '~/domain/models/role/role'
 
 export class APIRoleRepository implements RoleRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
   async list(): Promise<RoleItem[]> {
     const url = `/roles`

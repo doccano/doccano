@@ -1,11 +1,7 @@
 <template>
   <v-tooltip bottom>
     <template #activator="{ on }">
-      <v-btn
-        icon
-        v-on="on"
-        @click="$emit('click:clear')"
-      >
+      <v-btn icon v-on="on" @click="$emit('click:clear')">
         <v-icon>
           {{ mdiDeleteOutline }}
         </v-icon>
@@ -23,6 +19,6 @@ export default {
     return {
       mdiDeleteOutline
     }
-  },
+  }
 }
 </script>

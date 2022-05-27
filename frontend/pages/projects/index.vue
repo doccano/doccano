@@ -1,27 +1,19 @@
 <template>
   <v-card>
     <v-card-title v-if="isStaff">
-      <v-btn
-        class="text-capitalize"
-        color="primary"
-        @click.stop="$router.push('projects/create')"
-      >
+      <v-btn class="text-capitalize" color="primary" @click.stop="$router.push('projects/create')">
         {{ $t('generic.create') }}
       </v-btn>
       <v-btn
         class="text-capitalize ms-2"
         :disabled="!canDelete"
         outlined
-        @click.stop="dialogDelete=true"
+        @click.stop="dialogDelete = true"
       >
         {{ $t('generic.delete') }}
       </v-btn>
       <v-dialog v-model="dialogDelete">
-        <form-delete
-          :selected="selected"
-          @cancel="dialogDelete=false"
-          @remove="remove"
-        />
+        <form-delete :selected="selected" @cancel="dialogDelete = false" @remove="remove" />
       </v-dialog>
     </v-card-title>
     <project-list
@@ -43,10 +35,9 @@ import { ProjectDTO, ProjectListDTO } from '~/services/application/project/proje
 import FormDelete from '~/components/project/FormDelete.vue'
 
 export default Vue.extend({
-
   components: {
     FormDelete,
-    ProjectList,
+    ProjectList
   },
   layout: 'projects',
 
@@ -71,15 +62,14 @@ export default Vue.extend({
     ...mapGetters('auth', ['isStaff']),
     canDelete(): boolean {
       return this.selected.length > 0
-    },
+    }
   },
 
   watch: {
-    '$route.query': _.debounce(function() {
-        // @ts-ignore
-        this.$fetch()
-      }, 1000
-    ),
+    '$route.query': _.debounce(function () {
+      // @ts-ignore
+      this.$fetch()
+    }, 1000)
   },
 
   methods: {

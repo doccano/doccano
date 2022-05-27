@@ -11,7 +11,7 @@ const factory = () => {
     propsData: {
       guidelineText: 'Hello'
     },
-    mocks:{ $t }
+    mocks: { $t }
   })
 }
 

@@ -1,5 +1,5 @@
 export const state = () => ({
-  rtl: false,
+  rtl: false
 })
 
 export const mutations = {
@@ -11,11 +11,11 @@ export const mutations = {
 export const getters = {
   isRTL(state) {
     return state.rtl
-  },
+  }
 }
 
 export const actions = {
   toggleRTL({ commit }) {
     commit('changeRTLState')
-  },
+  }
 }

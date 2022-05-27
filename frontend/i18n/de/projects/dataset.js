@@ -14,6 +14,7 @@ export default {
   exportDataTitle: 'Exportiere Daten',
   exportDataMessage: 'Wähle ein Dateiformat',
   deleteDocumentsTitle: 'Dokument löschen',
-  deleteDocumentsMessage: 'Bist du dir sicher, dass du die Dokumente aus dem Projekt löschen willst?',
+  deleteDocumentsMessage:
+    'Bist du dir sicher, dass du die Dokumente aus dem Projekt löschen willst?',
   pageText: '{0}-{1} von {2}'
 }

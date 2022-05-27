@@ -1,60 +1,39 @@
 <template>
-  <v-toolbar
-    class="toolbar-control"
-    dense
-    flat
-  >
+  <v-toolbar class="toolbar-control" dense flat>
     <v-row no-gutters>
       <v-btn-toggle>
-        <button-review
-          :is-reviewd="isReviewd"
-          @click:review="$emit('click:review')"
-        />
+        <button-review :is-reviewd="isReviewd" @click:review="$emit('click:review')" />
 
-        <button-filter
-          :value="filterOption"
-          @click:filter="changeFilter"
-        />
+        <button-filter :value="filterOption" @click:filter="changeFilter" />
 
-        <button-guideline
-          @click:guideline="dialogGuideline=true"
-        />
+        <button-guideline @click:guideline="dialogGuideline = true" />
         <v-dialog v-model="dialogGuideline">
-          <form-guideline
-            :guideline-text="guidelineText"
-            @click:close="dialogGuideline=false"
-          />
+          <form-guideline :guideline-text="guidelineText" @click:close="dialogGuideline = false" />
         </v-dialog>
 
-        <button-comment
-          @click:comment="dialogComment=true"
-        />
+        <button-comment @click:comment="dialogComment = true" />
         <v-dialog v-model="dialogComment">
-          <form-comment
-            :example-id="docId"
-            @click:cancel="dialogComment=false"
-          />
+          <form-comment :example-id="docId" @click:cancel="dialogComment = false" />
         </v-dialog>
 
-        <button-auto-labeling
-          @click:auto="dialogAutoLabeling=true"
-        />
+        <button-auto-labeling @click:auto="dialogAutoLabeling = true" />
         <v-dialog v-model="dialogAutoLabeling">
           <form-auto-labeling
             :is-enabled="enableAutoLabeling"
             :error-message="errorMessage"
-            @click:cancel="dialogAutoLabeling=false"
+            @click:cancel="dialogAutoLabeling = false"
             @input="updateAutoLabeling"
           />
         </v-dialog>
 
-        <button-clear
-          @click:clear="dialogClear=true"
-        />
+        <button-clear @click:clear="dialogClear = true" />
         <v-dialog v-model="dialogClear">
           <form-clear-label
-            @click:ok="$emit('click:clear-label');dialogClear=false"
-            @click:cancel="dialogClear=false"
+            @click:ok="
+              $emit('click:clear-label')
+              dialogClear = false
+            "
+            @click:cancel="dialogClear = false"
           />
         </v-dialog>
       </v-btn-toggle>
@@ -150,21 +129,25 @@ export default Vue.extend({
 
   methods: {
     updatePage(page: number) {
-      this.$router.push({ query: {
-        page: page.toString(),
-        isChecked: this.filterOption,
-        q: this.$route.query.q
-      }})
+      this.$router.push({
+        query: {
+          page: page.toString(),
+          isChecked: this.filterOption,
+          q: this.$route.query.q
+        }
+      })
     },
 
     changeFilter(isChecked: string) {
-      this.$router.push({ query: {
-        page: '1',
-        isChecked,
-        q: this.$route.query.q
-      }})
+      this.$router.push({
+        query: {
+          page: '1',
+          isChecked,
+          q: this.$route.query.q
+        }
+      })
     },
-    
+
     updateAutoLabeling(isEnable: boolean) {
       if (isEnable) {
         this.$emit('update:enable-auto-labeling', true)

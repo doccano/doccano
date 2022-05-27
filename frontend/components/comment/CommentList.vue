@@ -10,7 +10,7 @@
     :loading-text="$t('generic.loading')"
     :no-data-text="$t('vuetify.noDataAvailable')"
     :footer-props="{
-      'showFirstLastPage': true,
+      showFirstLastPage: true,
       'items-per-page-options': [10, 50, 100],
       'items-per-page-text': $t('vuetify.itemsPerPageText'),
       'page-text': $t('dataset.pageText')
@@ -20,7 +20,9 @@
     @input="$emit('input', $event)"
   >
     <template #[`item.createdAt`]="{ item }">
-      <span>{{ item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm') }}</span>
+      <span>{{
+        item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm')
+      }}</span>
     </template>
     <template #top>
       <v-text-field
@@ -88,7 +90,7 @@ export default Vue.extend({
         { text: this.$t('dataset.text'), value: 'text' },
         { text: this.$t('user.username'), value: 'username' },
         { text: this.$t('comments.created_at'), value: 'createdAt' },
-        { text: this.$t('dataset.action'), value: 'action' },
+        { text: this.$t('dataset.action'), value: 'action' }
       ],
       mdiMagnify
     }
@@ -117,7 +119,7 @@ export default Vue.extend({
       })
       this.options.page = 1
     }
-  },
+  }
 
   // methods: {
   //   toLabeling(item: CommentReadDTO) {

@@ -9,9 +9,7 @@ export const useProjectItem = () => {
   const { app } = useContext()
   const projectService = app.$services.project
 
-  const getProjectById = async(
-    projectId: string
-  ) => {
+  const getProjectById = async (projectId: string) => {
     state.project = await projectService.findById(projectId)
   }
 

@@ -6,27 +6,13 @@
       </template>
     </the-header>
 
-    <v-navigation-drawer
-      v-model="drawerLeft"
-      app
-      clipped
-      color=""
-    >
-      <the-side-bar
-        :link="getLink"
-        :is-project-admin="isProjectAdmin"
-        :project="currentProject"
-      />
+    <v-navigation-drawer v-model="drawerLeft" app clipped color="">
+      <the-side-bar :link="getLink" :is-project-admin="isProjectAdmin" :project="currentProject" />
     </v-navigation-drawer>
 
     <v-main>
-      <v-container
-        fluid
-        fill-height
-      >
-        <v-layout
-          justify-center
-        >
+      <v-container fluid fill-height>
+        <v-layout justify-center>
           <v-flex fill-height>
             <nuxt />
           </v-flex>
@@ -42,7 +28,6 @@ import TheSideBar from '~/components/layout/TheSideBar'
 import TheHeader from '~/components/layout/TheHeader'
 
 export default {
-
   components: {
     TheSideBar,
     TheHeader
@@ -52,12 +37,12 @@ export default {
   data() {
     return {
       drawerLeft: null,
-      isProjectAdmin: false,
+      isProjectAdmin: false
     }
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink', 'currentProject']),
+    ...mapGetters('projects', ['getLink', 'currentProject'])
   },
 
   async created() {

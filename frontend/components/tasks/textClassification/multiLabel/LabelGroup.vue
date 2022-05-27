@@ -1,10 +1,5 @@
 <template>
-  <v-chip-group
-    :value="annotatedLabel"
-    column
-    multiple
-    @change="addOrRemove"
-  >
+  <v-chip-group :value="annotatedLabel" column multiple @change="addOrRemove">
     <v-chip
       v-for="item in labels"
       :key="item.id"
@@ -13,12 +8,7 @@
       :text-color="$contrastColor(item.backgroundColor)"
     >
       {{ item.text }}
-      <v-avatar
-        v-if="item.suffixKey"
-        right
-        color="white"
-        class="black--text font-weight-bold"
-      >
+      <v-avatar v-if="item.suffixKey" right color="white" class="black--text font-weight-bold">
         {{ item.suffixKey }}
       </v-avatar>
     </v-chip>
@@ -37,15 +27,15 @@ export default {
     },
     annotations: {
       type: Array,
-      default: () => ([]),
+      default: () => [],
       required: true
     }
   },
 
   computed: {
     annotatedLabel() {
-      const labelIds = this.annotations.map(item => item.label)
-      return labelIds.map(id => this.labels.findIndex(item => item.id === id))
+      const labelIds = this.annotations.map((item) => item.label)
+      return labelIds.map((id) => this.labels.findIndex((item) => item.id === id))
     }
   },
 
@@ -67,7 +57,7 @@ export default {
     },
 
     remove(label) {
-      const annotation = this.annotations.find(item => item.label === label.id)
+      const annotation = this.annotations.find((item) => item.label === label.id)
       this.$emit('remove', annotation.id)
     }
   }

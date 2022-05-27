@@ -1,19 +1,12 @@
 <template>
   <v-list dense>
-    <v-btn
-      color="ms-4 my-1 mb-2 primary text-capitalize"
-      nuxt
-      @click="toLabeling"
-    >
+    <v-btn color="ms-4 my-1 mb-2 primary text-capitalize" nuxt @click="toLabeling">
       <v-icon left>
         {{ mdiPlayCircleOutline }}
       </v-icon>
       {{ $t('home.startAnnotation') }}
     </v-btn>
-    <v-list-item-group
-      v-model="selected"
-      mandatory
-    >
+    <v-list-item-group v-model="selected" mandatory>
       <v-list-item
         v-for="(item, i) in filteredItems"
         :key="i"
@@ -35,7 +28,17 @@
 </template>
 
 <script>
-import { mdiHome, mdiDatabase, mdiCog, mdiChartBar, mdiBookOpenOutline, mdiCommentAccountOutline, mdiLabel, mdiAccount, mdiPlayCircleOutline } from '@mdi/js'
+import {
+  mdiHome,
+  mdiDatabase,
+  mdiCog,
+  mdiChartBar,
+  mdiBookOpenOutline,
+  mdiCommentAccountOutline,
+  mdiLabel,
+  mdiAccount,
+  mdiPlayCircleOutline
+} from '@mdi/js'
 
 export default {
   props: {
@@ -121,7 +124,7 @@ export default {
           isVisible: this.isProjectAdmin
         }
       ]
-      return items.filter(item => item.isVisible)
+      return items.filter((item) => item.isVisible)
     }
   },
 

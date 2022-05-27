@@ -5,9 +5,7 @@
     @cancel="$emit('click:cancel')"
   >
     <template v-if="user.id" #content>
-      <form-create
-        @add-comment="add"
-      />
+      <form-create @add-comment="add" />
       <comment
         v-for="comment in comments"
         :key="comment.id"
@@ -44,7 +42,7 @@ export default Vue.extend({
   data() {
     return {
       user: {},
-      comments: [] as CommentReadDTO[],
+      comments: [] as CommentReadDTO[]
     }
   },
 

@@ -4,18 +4,19 @@ import { CommentRepository, SearchOption } from '~/domain/models/comment/comment
 import { CommentItem } from '~/domain/models/comment/comment'
 
 export class CommentApplicationService {
-  constructor(
-    private readonly repository: CommentRepository
-  ) {}
+  constructor(private readonly repository: CommentRepository) {}
 
-  public async listProjectComment(projectId: string, options: SearchOption): Promise<CommentListDTO> {
+  public async listProjectComment(
+    projectId: string,
+    options: SearchOption
+  ): Promise<CommentListDTO> {
     const item = await this.repository.listAll(projectId, options)
     return new CommentListDTO(item)
   }
 
   public async list(projectId: string, docId: number): Promise<CommentReadDTO[]> {
     const items = await this.repository.list(projectId, docId)
-    return items.map(item => new CommentReadDTO(item))
+    return items.map((item) => new CommentReadDTO(item))
   }
 
   public create(projectId: string, docId: number, text: string): Promise<CommentItem> {
@@ -32,7 +33,7 @@ export class CommentApplicationService {
   }
 
   public deleteBulk(projectId: string, items: CommentReadDTO[]): Promise<void> {
-    const ids = items.map(item => item.id)
+    const ids = items.map((item) => item.id)
     return this.repository.deleteBulk(projectId, ids)
   }
 }

@@ -1,15 +1,12 @@
 import { TagDTO } from './tagData'
 import { TagRepository } from '~/domain/models/tag/tagRepository'
 
-
 export class TagApplicationService {
-  constructor(
-    private readonly repository: TagRepository
-  ) {}
+  constructor(private readonly repository: TagRepository) {}
 
   public async list(id: string): Promise<TagDTO[]> {
     const items = await this.repository.list(id)
-    return items.map(item => new TagDTO(item))
+    return items.map((item) => new TagDTO(item))
   }
 
   public create(projectId: string, text: string): void {

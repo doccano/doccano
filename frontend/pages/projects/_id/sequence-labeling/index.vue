@@ -11,10 +11,7 @@
         @click:clear-label="clear"
         @click:review="confirm"
       />
-      <toolbar-mobile
-        :total="docs.count"
-        class="d-flex d-sm-none"
-      />
+      <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
       <v-card>
@@ -46,19 +43,13 @@
       <v-card class="mt-4">
         <v-card-title>Label Types</v-card-title>
         <v-card-text>
-          <v-switch
-            v-if="useRelationLabeling"
-            v-model="relationMode"
-          >
+          <v-switch v-if="useRelationLabeling" v-model="relationMode">
             <template #label>
               <span v-if="relationMode">Relation</span>
               <span v-else>Span</span>
             </template>
           </v-switch>
-          <v-chip-group
-            v-model="selectedLabelIndex"
-            column
-          >
+          <v-chip-group v-model="selectedLabelIndex" column>
             <v-chip
               v-for="(item, index) in labelTypes"
               :key="item.id"
@@ -97,7 +88,6 @@ import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 
 export default {
-
   components: {
     AnnotationProgress,
     EntityEditor,
@@ -125,7 +115,7 @@ export default {
       rtl: false,
       selectedLabelIndex: null,
       progress: {},
-      relationMode: false,
+      relationMode: false
     }
   },
 
@@ -148,7 +138,7 @@ export default {
     ...mapGetters('config', ['isRTL']),
 
     shortKeys() {
-      return Object.fromEntries(this.spanTypes.map(item => [item.id, [item.suffixKey]]))
+      return Object.fromEntries(this.spanTypes.map((item) => [item.id, [item.suffixKey]]))
     },
 
     projectId() {
@@ -206,17 +196,18 @@ export default {
 
   methods: {
     async maybeFetchSpanTypes(annotations) {
-      const labelIds = new Set(this.spanTypes.map((label) => label.id));
+      const labelIds = new Set(this.spanTypes.map((label) => label.id))
       if (annotations.some((item) => !labelIds.has(item.label))) {
-          this.spanTypes = await this.$services.spanType.list(this.projectId);
+        this.spanTypes = await this.$services.spanType.list(this.projectId)
       }
     },
 
     async list(docId) {
       const annotations = await this.$services.sequenceLabeling.list(this.projectId, docId)
       const relations = await this.$services.sequenceLabeling.listRelations(this.projectId, docId)
-      // In colab mode, if someone add a new label and annotate data with the label during your work,
-      // it occurs exception because there is no corresponding label.
+      // In colab mode, if someone add a new label and annotate data
+      // with the label during your work, it occurs exception
+      // because there is no corresponding label.
       await this.maybeFetchSpanTypes(annotations)
       this.annotations = annotations
       this.relations = relations
@@ -228,22 +219,44 @@ export default {
     },
 
     async addSpan(startOffset, endOffset, labelId) {
-      await this.$services.sequenceLabeling.create(this.projectId, this.doc.id, labelId, startOffset, endOffset)
+      await this.$services.sequenceLabeling.create(
+        this.projectId,
+        this.doc.id,
+        labelId,
+        startOffset,
+        endOffset
+      )
       await this.list(this.doc.id)
     },
 
     async updateSpan(annotationId, labelId) {
-      await this.$services.sequenceLabeling.changeLabel(this.projectId, this.doc.id, annotationId, labelId)
+      await this.$services.sequenceLabeling.changeLabel(
+        this.projectId,
+        this.doc.id,
+        annotationId,
+        labelId
+      )
       await this.list(this.doc.id)
     },
 
     async addRelation(fromId, toId, typeId) {
-      await this.$services.sequenceLabeling.createRelation(this.projectId, this.doc.id, fromId, toId, typeId)
+      await this.$services.sequenceLabeling.createRelation(
+        this.projectId,
+        this.doc.id,
+        fromId,
+        toId,
+        typeId
+      )
       await this.list(this.doc.id)
     },
 
     async updateRelation(relationId, typeId) {
-      await this.$services.sequenceLabeling.updateRelation(this.projectId, this.doc.id, relationId, typeId)
+      await this.$services.sequenceLabeling.updateRelation(
+        this.projectId,
+        this.doc.id,
+        relationId,
+        typeId
+      )
       await this.list(this.doc.id)
     },
 
@@ -287,7 +300,7 @@ export default {
   font-size: 1.25rem !important;
   font-weight: 500;
   line-height: 2rem;
-  font-family: "Roboto", sans-serif !important;
+  font-family: 'Roboto', sans-serif !important;
   opacity: 0.6;
 }
 </style>

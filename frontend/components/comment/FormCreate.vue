@@ -28,9 +28,7 @@ import Vue from 'vue'
 export default Vue.extend({
   data() {
     return {
-      commentRules: [
-        (v: string) => !!v.trim() || 'Comment is required'
-      ],
+      commentRules: [(v: string) => !!v.trim() || 'Comment is required'],
       message: '',
       valid: false
     }

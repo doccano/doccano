@@ -1,6 +1,6 @@
 export class RoleItem {
-  id: number;
-  name: string;
+  id: number
+  name: string
 
   toObject(): Object {
     return {

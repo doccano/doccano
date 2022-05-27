@@ -3,9 +3,7 @@ import { TemplateRepository } from '~/domain/models/autoLabeling/templateReposit
 import { ConfigTemplateItem, ConfigResponse } from '~/domain/models/autoLabeling/template'
 
 export class APITemplateRepository implements TemplateRepository {
-  constructor(
-    private readonly request = ApiService
-  ) {}
+  constructor(private readonly request = ApiService) {}
 
   async list(projectId: string, taskName: string): Promise<string[]> {
     const url = `/projects/${projectId}/auto-labeling/templates?task_name=${taskName}`

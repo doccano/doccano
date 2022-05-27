@@ -1,11 +1,7 @@
 <template>
   <v-tooltip bottom>
     <template #activator="{ on }">
-      <v-btn
-        icon
-        v-on="on"
-        @click="$emit('click:comment')"
-      >
+      <v-btn icon v-on="on" @click="$emit('click:comment')">
         <v-icon>
           {{ mdiMessageText }}
         </v-icon>

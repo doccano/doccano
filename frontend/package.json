@@ -8,6 +8,8 @@
     "lint": "eslint --ext .ts,.js,.vue --ignore-path .gitignore .",
     "lintfix": "eslint --fix --ext .ts,.js,.vue --ignore-path .gitignore .",
     "precommit": "yarn lint",
+    "lint:prettier": "prettier --check .",
+    "fix:prettier": "prettier --write .",
     "test": "jest",
     "dev": "nuxt",
     "build": "nuxt build",

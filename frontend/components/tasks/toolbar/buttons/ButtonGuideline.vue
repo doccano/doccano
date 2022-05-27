@@ -1,11 +1,7 @@
 <template>
   <v-tooltip bottom>
     <template #activator="{ on }">
-      <v-btn
-        icon
-        v-on="on"
-        @click="$emit('click:guideline')"
-      >
+      <v-btn icon v-on="on" @click="$emit('click:guideline')">
         <v-icon>
           {{ mdiBookOpenOutline }}
         </v-icon>
@@ -23,6 +19,6 @@ export default {
     return {
       mdiBookOpenOutline
     }
-  },
+  }
 }
 </script>

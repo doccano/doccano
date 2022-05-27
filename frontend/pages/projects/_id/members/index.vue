@@ -1,18 +1,14 @@
 <template>
   <v-card>
     <v-card-title>
-      <v-btn
-        class="text-capitalize"
-        color="primary"
-        @click.stop="dialogCreate=true"
-      >
+      <v-btn class="text-capitalize" color="primary" @click.stop="dialogCreate = true">
         {{ $t('generic.add') }}
       </v-btn>
       <v-btn
         class="text-capitalize ms-2"
         :disabled="!canDelete"
         outlined
-        @click.stop="dialogDelete=true"
+        @click.stop="dialogDelete = true"
       >
         {{ $t('generic.delete') }}
       </v-btn>
@@ -25,19 +21,10 @@
         />
       </v-dialog>
       <v-dialog v-model="dialogDelete">
-        <form-delete
-          :selected="selected"
-          @cancel="dialogDelete=false"
-          @remove="remove"
-        />
+        <form-delete :selected="selected" @cancel="dialogDelete = false" @remove="remove" />
       </v-dialog>
     </v-card-title>
-    <member-list
-      v-model="selected"
-      :items="items"
-      :is-loading="isLoading"
-      @edit="editItem"
-    />
+    <member-list v-model="selected" :items="items" :is-loading="isLoading" @edit="editItem" />
   </v-card>
 </template>
 
@@ -49,7 +36,6 @@ import FormCreate from '~/components/member/FormCreate.vue'
 import { MemberDTO } from '~/services/application/member/memberData'
 
 export default Vue.extend({
-
   components: {
     MemberList,
     FormCreate,
@@ -89,7 +75,7 @@ export default Vue.extend({
     this.isLoading = true
     try {
       this.items = await this.$services.member.list(this.projectId)
-    } catch(e) {
+    } catch (e) {
       this.$router.push(`/projects/${this.projectId}`)
     } finally {
       this.isLoading = false
@@ -111,7 +97,7 @@ export default Vue.extend({
         await this.$services.member.create(this.projectId, this.editedItem)
         this.close()
         this.$fetch()
-      } catch(e) {
+      } catch (e) {
         this.errorMessage = e.message
       }
     },
@@ -121,7 +107,7 @@ export default Vue.extend({
         await this.$services.member.update(this.projectId, this.editedItem)
         this.close()
         this.$fetch()
-      } catch(e) {
+      } catch (e) {
         this.errorMessage = e.message
       }
     },
