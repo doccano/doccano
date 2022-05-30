@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from .models import DummyLabelType
 from .pipeline.catalog import RELATION_EXTRACTION, Format
 from .pipeline.data import BaseData, BinaryData, TextData
+from .pipeline.examples import Examples
 from .pipeline.exceptions import FileParseException
 from .pipeline.factories import create_parser
 from .pipeline.label import CategoryLabel, Label, RelationLabel, SpanLabel, TextLabel
@@ -18,7 +19,6 @@ from .pipeline.readers import (
     FileName,
     Reader,
 )
-from examples.models import Example
 from label_types.models import CategoryType, LabelType, RelationType, SpanType
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
@@ -52,8 +52,8 @@ class PlainDataset(Dataset):
 
     def save(self, user: User, batch_size: int = 1000):
         for records in self.reader.batch(batch_size):
-            examples = self.example_maker.make(records)
-            Example.objects.bulk_create(examples)
+            examples = Examples(self.example_maker.make(records))
+            examples.save()
 
     @property
     def errors(self) -> List[FileParseException]:
@@ -82,8 +82,8 @@ class DatasetWithSingleLabelType(Dataset):
     def save(self, user: User, batch_size: int = 1000):
         for records in self.reader.batch(batch_size):
             # create examples
-            examples = self.example_maker.make(records)
-            Example.objects.bulk_create(examples)
+            examples = Examples(self.example_maker.make(records))
+            examples.save()
 
             # create label types
             labels = self.labels_class(self.label_maker.make(records), self.types)
@@ -105,8 +105,8 @@ class BinaryDataset(Dataset):
 
     def save(self, user: User, batch_size: int = 1000):
         for records in self.reader.batch(batch_size):
-            examples = self.example_maker.make(records)
-            Example.objects.bulk_create(examples)
+            examples = Examples(self.example_maker.make(records))
+            examples.save()
 
     @property
     def errors(self) -> List[FileParseException]:
@@ -151,8 +151,8 @@ class RelationExtractionDataset(Dataset):
     def save(self, user: User, batch_size: int = 1000):
         for records in self.reader.batch(batch_size):
             # create examples
-            examples = self.example_maker.make(records)
-            Example.objects.bulk_create(examples)
+            examples = Examples(self.example_maker.make(records))
+            examples.save()
 
             # create label types
             spans = Spans(self.span_maker.make(records), self.span_types)
@@ -189,8 +189,8 @@ class CategoryAndSpanDataset(Dataset):
     def save(self, user: User, batch_size: int = 1000):
         for records in self.reader.batch(batch_size):
             # create examples
-            examples = self.example_maker.make(records)
-            Example.objects.bulk_create(examples)
+            examples = Examples(self.example_maker.make(records))
+            examples.save()
 
             # create label types
             categories = Categories(self.category_maker.make(records), self.category_types)
