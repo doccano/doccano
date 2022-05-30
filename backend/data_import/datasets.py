@@ -91,7 +91,7 @@ class DatasetWithSingleLabelType(Dataset):
             labels.save_types(self.project)
 
             # create Labels
-            labels.save(user)
+            labels.save(user, examples)
 
     @property
     def errors(self) -> List[FileParseException]:
@@ -164,8 +164,8 @@ class RelationExtractionDataset(Dataset):
             relations.save_types(self.project)
 
             # create Labels
-            spans.save(user)
-            relations.save(user, spans=spans)
+            spans.save(user, examples)
+            relations.save(user, examples, spans=spans)
 
     @property
     def errors(self) -> List[FileParseException]:
@@ -202,8 +202,8 @@ class CategoryAndSpanDataset(Dataset):
             spans.save_types(self.project)
 
             # create Labels
-            categories.save(user)
-            spans.save(user)
+            categories.save(user, examples)
+            spans.save(user, examples)
 
     @property
     def errors(self) -> List[FileParseException]:

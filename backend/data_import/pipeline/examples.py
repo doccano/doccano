@@ -10,8 +10,11 @@ class Examples:
         self.examples = examples
         self.uuid_to_example: Dict[UUID4, Example] = {}
 
-    def __getitem__(self, uuid: UUID4):
+    def __getitem__(self, uuid: UUID4) -> Example:
         return self.uuid_to_example[uuid]
+
+    def __contains__(self, uuid: UUID4) -> bool:
+        return uuid in self.uuid_to_example
 
     def save(self):
         examples = Example.objects.bulk_create(self.examples)
