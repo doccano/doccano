@@ -30,7 +30,10 @@ class TestCategories(TestCase):
             CategoryLabel(example_uuid=example_uuid, label="A"),
             CategoryLabel(example_uuid=example_uuid, label="B"),
         ]
-        mommy.make("Example", project=self.project.item, uuid=example_uuid)
+        example = mommy.make("Example", project=self.project.item, uuid=example_uuid)
+        self.examples = MagicMock()
+        self.examples.__getitem__.return_value = example
+        self.examples.__contains__.return_value = True
         self.categories = Categories(labels, self.types)
 
     def test_clean(self):
@@ -45,7 +48,7 @@ class TestCategories(TestCase):
 
     def test_save(self):
         self.categories.save_types(self.project.item)
-        self.categories.save(self.user)
+        self.categories.save(self.user, self.examples)
         self.assertEqual(Category.objects.count(), 2)
 
     def test_save_types(self):
@@ -64,7 +67,10 @@ class TestSpans(TestCase):
             SpanLabel(example_uuid=example_uuid, label="B", start_offset=0, end_offset=3),
             SpanLabel(example_uuid=example_uuid, label="B", start_offset=3, end_offset=4),
         ]
-        mommy.make("Example", project=self.project.item, uuid=example_uuid)
+        example = mommy.make("Example", project=self.project.item, uuid=example_uuid)
+        self.examples = MagicMock()
+        self.examples.__getitem__.return_value = example
+        self.examples.__contains__.return_value = True
         self.spans = Spans(labels, self.types)
 
     def disable_overlapping(self):
@@ -96,7 +102,7 @@ class TestSpans(TestCase):
 
     def test_save(self):
         self.spans.save_types(self.project.item)
-        self.spans.save(self.user)
+        self.spans.save(self.user, self.examples)
         self.assertEqual(Span.objects.count(), 3)
 
     def test_save_types(self):
@@ -114,7 +120,10 @@ class TestTexts(TestCase):
             TextLabel(example_uuid=example_uuid, text="A"),
             TextLabel(example_uuid=example_uuid, text="B"),
         ]
-        mommy.make("Example", project=self.project.item, uuid=example_uuid)
+        example = mommy.make("Example", project=self.project.item, uuid=example_uuid)
+        self.examples = MagicMock()
+        self.examples.__getitem__.return_value = example
+        self.examples.__contains__.return_value = True
         self.texts = Texts(labels, self.types)
 
     def test_clean(self):
@@ -123,7 +132,7 @@ class TestTexts(TestCase):
 
     def test_save(self):
         self.texts.save_types(self.project.item)
-        self.texts.save(self.user)
+        self.texts.save(self.user, self.examples)
         self.assertEqual(TextLabelModel.objects.count(), 2)
 
     def test_save_types(self):
@@ -146,6 +155,9 @@ class TestRelations(TestCase):
         self.relations = Relations(labels, self.types)
         self.spans = MagicMock()
         self.spans.id_to_span = {from_span.id: from_span, to_span.id: to_span}
+        self.examples = MagicMock()
+        self.examples.__getitem__.return_value = example
+        self.examples.__contains__.return_value = True
 
     def test_clean(self):
         self.relations.clean(self.project.item)
@@ -153,7 +165,7 @@ class TestRelations(TestCase):
 
     def test_save(self):
         self.relations.save_types(self.project.item)
-        self.relations.save(self.user, spans=self.spans)
+        self.relations.save(self.user, self.examples, spans=self.spans)
         self.assertEqual(Relation.objects.count(), 1)
 
     def test_save_types(self):

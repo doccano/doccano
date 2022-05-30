@@ -2,11 +2,9 @@ import abc
 from itertools import groupby
 from typing import Dict, List
 
-from pydantic import UUID4
-
+from .examples import Examples
 from .label import Label
 from .label_types import LabelTypes
-from examples.models import Example
 from labels.models import Category as CategoryModel
 from labels.models import Label as LabelModel
 from labels.models import Relation as RelationModel
@@ -34,18 +32,11 @@ class Labels(abc.ABC):
         self.types.save(filtered_types)
         self.types.update(project)
 
-    @property
-    def uuid_to_example(self) -> Dict[UUID4, Example]:
-        example_uuids = {str(label.example_uuid) for label in self.labels}
-        examples = Example.objects.filter(uuid__in=example_uuids)
-        return {example.uuid: example for example in examples}
-
-    def save(self, user, **kwargs):
-        uuid_to_example = self.uuid_to_example
+    def save(self, user, examples: Examples, **kwargs):
         labels = [
-            label.create(user, uuid_to_example[label.example_uuid], self.types, **kwargs)
+            label.create(user, examples[label.example_uuid], self.types, **kwargs)
             for label in self.labels
-            if label.example_uuid in uuid_to_example
+            if label.example_uuid in examples
         ]
         self.label_model.objects.bulk_create(labels)
 
@@ -93,6 +84,6 @@ class Texts(Labels):
 class Relations(Labels):
     label_model = RelationModel
 
-    def save(self, user, **kwargs):
+    def save(self, user, examples: Examples, **kwargs):
         id_to_span = kwargs["spans"].id_to_span
-        super().save(user, id_to_span=id_to_span)
+        super().save(user, examples, id_to_span=id_to_span)
