@@ -8,12 +8,12 @@ from projects.models import DOCUMENT_CLASSIFICATION
 from projects.tests.utils import prepare_project
 
 
-class TestCategories(TestCase):
+class TestExamples(TestCase):
     def setUp(self):
         self.project = prepare_project(DOCUMENT_CLASSIFICATION)
         self.example_uuid = uuid.uuid4()
-        self.example = Example(uuid=self.example_uuid, text="A", project=self.project.item)
-        self.examples = Examples([self.example])
+        example = Example(uuid=self.example_uuid, text="A", project=self.project.item)
+        self.examples = Examples([example])
 
     def test_save(self):
         self.examples.save()
@@ -22,4 +22,4 @@ class TestCategories(TestCase):
     def test_getitem(self):
         self.examples.save()
         example = self.examples[self.example_uuid]
-        self.assertEqual(example, self.example)
+        self.assertEqual(example.uuid, self.example_uuid)
