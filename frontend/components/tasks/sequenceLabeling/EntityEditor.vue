@@ -92,7 +92,12 @@ export default Vue.extend({
       type: Boolean,
       default: false
     },
-    selectedLabel: {
+    selectedEntityLabel: {
+      type: Object,
+      default: null,
+      required: false
+    },
+    selectedRelationLabel: {
       type: Object,
       default: null,
       required: false
@@ -165,8 +170,8 @@ export default Vue.extend({
         this.selectedEntities.splice(index, 1)
       }
       if (this.selectedEntities.length === 2) {
-        if (this.selectedLabel) {
-          this.addRelation(this.selectedLabel.id)
+        if (this.selectedRelationLabel) {
+          this.addRelation(this.selectedRelationLabel.id)
           this.cleanUp()
         } else {
           this.showRelationLabelMenu(e)
@@ -203,8 +208,8 @@ export default Vue.extend({
 
     handleAddEvent(e: any, startOffset: number, endOffset: number) {
       this.setOffset(startOffset, endOffset)
-      if (this.selectedLabel) {
-        this.addOrUpdateEntity(this.selectedLabel.id)
+      if (this.selectedEntityLabel) {
+        this.addOrUpdateEntity(this.selectedEntityLabel.id)
       } else {
         this.showEntityLabelMenu(e)
       }

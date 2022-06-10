@@ -1,5 +1,5 @@
 <template>
-  <layout-text v-if="doc.id" v-shortkey="shortKeys" @shortkey="changeSelectedLabel">
+  <layout-text v-if="doc.id" v-shortkey="shortKeys" @shortkey="changeSelectedEntityLabel">
     <template #header>
       <toolbar-laptop
         :doc-id="doc.id"
@@ -26,7 +26,8 @@
             :relation-labels="relationTypes"
             :allow-overlapping="project.allowOverlapping"
             :grapheme-mode="project.graphemeMode"
-            :selected-label="selectedLabel"
+            :selected-entity-label="selectedEntityLabel"
+            :selected-relation-label="selectedRelationLabel"
             :relation-mode="relationMode"
             :use-relation-labeling="useRelationLabeling"
             @addEntity="addSpan"
@@ -50,15 +51,36 @@
               <span v-else>Span</span>
             </template>
           </v-switch>
-          <v-chip-group v-model="selectedLabelIndex" column>
+          <v-chip-group v-if="relationMode" v-model="selectedRelationLabelIndex" column>
             <v-chip
-              v-for="(item, index) in labelTypes"
+              v-for="(item, index) in relationTypes"
               :key="item.id"
               v-shortkey="[item.suffixKey]"
               :color="item.backgroundColor"
               filter
               :text-color="$contrastColor(item.backgroundColor)"
-              @shortkey="selectedLabelIndex = index"
+              @shortkey="selectedRelationLabelIndex = index"
+            >
+              {{ item.text }}
+              <v-avatar
+                v-if="item.suffixKey"
+                right
+                color="white"
+                class="black--text font-weight-bold"
+              >
+                {{ item.suffixKey }}
+              </v-avatar>
+            </v-chip>
+          </v-chip-group>
+          <v-chip-group v-else v-model="selectedEntityLabelIndex" column>
+            <v-chip
+              v-for="(item, index) in spanTypes"
+              :key="item.id"
+              v-shortkey="[item.suffixKey]"
+              :color="item.backgroundColor"
+              filter
+              :text-color="$contrastColor(item.backgroundColor)"
+              @shortkey="selectedEntityLabelIndex = index"
             >
               {{ item.text }}
               <v-avatar
@@ -114,7 +136,8 @@ export default {
       project: {},
       enableAutoLabeling: false,
       rtl: false,
-      selectedLabelIndex: null,
+      selectedEntityLabelIndex: null,
+      selectedRelationLabelIndex: null,
       progress: {},
       relationMode: false
     }
@@ -154,13 +177,21 @@ export default {
       }
     },
 
-    selectedLabel() {
-      if (Number.isInteger(this.selectedLabelIndex)) {
-        if (this.relationMode) {
-          return this.relationTypes[this.selectedLabelIndex]
-        } else {
-          return this.spanTypes[this.selectedLabelIndex]
-        }
+    selectedEntityLabel() {
+      if (Number.isInteger(this.selectedEntityLabelIndex)) {
+        return this.spanTypes[this.selectedEntityLabelIndex]
+      } else if(this.spanTypes.length === 1) {
+        return this.spanTypes[0]
+      } else {
+        return null
+      }
+    },
+
+    selectedRelationLabel() {
+      if (Number.isInteger(this.selectedRelationLabelIndex)) {
+        return this.relationTypes[this.selectedRelationLabelIndex]
+      } else if(this.relationTypes.length === 1) {
+        return this.relationTypes[0]
       } else {
         return null
       }
@@ -170,13 +201,6 @@ export default {
       return !!this.project.useRelation
     },
 
-    labelTypes() {
-      if (this.relationMode) {
-        return this.relationTypes
-      } else {
-        return this.spanTypes
-      }
-    }
   },
 
   watch: {
@@ -289,8 +313,10 @@ export default {
       this.updateProgress()
     },
 
-    changeSelectedLabel(event) {
-      this.selectedLabelIndex = this.spanTypes.findIndex((item) => item.suffixKey === event.srcKey)
+    changeSelectedEntityLabel(event) {
+      this.selectedEntityLabelIndex = this.spanTypes.findIndex((item) => 
+        item.suffixKey === event.srcKey
+      )
     }
   }
 }
