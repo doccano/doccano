@@ -28,6 +28,7 @@
             :grapheme-mode="project.graphemeMode"
             :selected-label="selectedLabel"
             :relation-mode="relationMode"
+            :use-relation-labeling="useRelationLabeling"
             @addEntity="addSpan"
             @addRelation="addRelation"
             @click:entity="updateSpan"

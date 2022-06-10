@@ -23,7 +23,7 @@
       :y="y"
       :selected-label="currentLabel"
       :labels="entityLabels"
-      @close="cleanUp"
+      @close="onEntityMenuClose"
       @click:label="addOrUpdateEntity"
     />
     <labeling-menu
@@ -100,7 +100,11 @@ export default Vue.extend({
     relationMode: {
       type: Boolean,
       default: false
-    }
+    },
+    useRelationLabeling: {
+      type: Boolean,
+      default: false
+    },
   },
 
   data() {
@@ -113,7 +117,8 @@ export default Vue.extend({
       endOffset: 0,
       entity: null as any,
       relation: null as any,
-      selectedEntities: [] as SpanDTO[]
+      selectedEntities: [] as SpanDTO[],
+      quickAddRelationship: false
     }
   },
 
@@ -179,6 +184,13 @@ export default Vue.extend({
       })
     },
 
+    onEntityMenuClose() {
+      if(this.quickAddRelationship) {
+        return;
+      }
+      this.cleanUp()
+    },
+
     showRelationLabelMenu(e: any) {
       e.preventDefault()
       this.relationMenuOpened = false
@@ -201,6 +213,16 @@ export default Vue.extend({
     onEntityClicked(e: any, entityId: number) {
       if (this.relationMode) {
         this.setEntityForRelation(e, entityId)
+      } else if(this.useRelationLabeling) {
+        if(this.selectedEntities.length === 1 && 
+          this.selectedEntities.findIndex((e) => e.id === entityId) === -1) {
+          this.quickAddRelationship = true;
+          this.setEntityForRelation(e, entityId)
+        } else {
+          this.setEntity(entityId)
+          this.showEntityLabelMenu(e)
+          this.setEntityForRelation(e, entityId)
+        }
       } else {
         this.setEntity(entityId)
         this.showEntityLabelMenu(e)
@@ -259,6 +281,7 @@ export default Vue.extend({
       this.startOffset = 0
       this.endOffset = 0
       this.selectedEntities = []
+      this.quickAddRelationship = false
     },
 
     addRelation(labelId: number) {
