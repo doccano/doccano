@@ -29,7 +29,7 @@ export default {
   },
   uploadFileRules: {
     fileRequired: 'Datei(en) werden benötigt',
-    fileLessThan1MB: 'Dateigröße muss kleiner als 1 MB sein!'
+    fileLessThan1MB: 'Dateigröße muss kleiner als 100 MB sein!'
   },
   passwordRules: {
     passwordRequired: 'Passwort wird benötigt',
