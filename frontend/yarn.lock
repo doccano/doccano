@@ -12173,9 +12173,9 @@ vue-i18n@^8.25.0:
   integrity sha512-BN2OXolO15AKS95yNF8oOtARibaO6RxyKkAYNV4XpOmL7S4eVZYMIDtyvDv+XGZaiUmBJSH9mdNqzexvGMnK2A==
 
 vue-image-annotator@^0.1.17:
-  version "0.1.20"
-  resolved "https://registry.yarnpkg.com/vue-image-annotator/-/vue-image-annotator-0.1.20.tgz#704674e9d75b3e233a4c0b24f76e0a498495f2d5"
-  integrity sha512-Gs4JzUlfmnuvK0NP5gUPEr39yp7DCj8sbSocNJHLGJK+G7mGnY5xrppvcNIHotiY3Y+BDd9aKPMMyVUVTXl4iQ==
+  version "0.1.21"
+  resolved "https://registry.yarnpkg.com/vue-image-annotator/-/vue-image-annotator-0.1.21.tgz#18c356d81fec9add66c5a0226820d891a752b3b5"
+  integrity sha512-9ZC/wcMWkZC/2bJn5TkeVCZvUCv7hWklC2Y7bhDib6bQQdoulAqVGgkucawLtJhXZCVOgO8UzGP17pghb/DIuw==
   dependencies:
     "@flatten-js/core" "^1.3.4"
     core-js "^3.8.3"
