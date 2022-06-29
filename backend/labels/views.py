@@ -9,12 +9,13 @@ from rest_framework.response import Response
 
 from .permissions import CanEditLabel
 from .serializers import (
+    BoundingBoxSerializer,
     CategorySerializer,
     RelationSerializer,
     SpanSerializer,
     TextLabelSerializer,
 )
-from labels.models import Category, Label, Relation, Span, TextLabel
+from labels.models import BoundingBox, Category, Label, Relation, Span, TextLabel
 from projects.models import Project
 from projects.permissions import IsProjectMember
 
@@ -111,3 +112,13 @@ class RelationList(BaseListAPI):
 class RelationDetail(BaseDetailAPI):
     queryset = Relation.objects.all()
     serializer_class = RelationSerializer
+
+
+class BoundingBoxListAPI(BaseListAPI):
+    label_class = BoundingBox
+    serializer_class = BoundingBoxSerializer
+
+
+class BoundingBoxDetailAPI(BaseDetailAPI):
+    queryset = BoundingBox.objects.all()
+    serializer_class = BoundingBoxSerializer
