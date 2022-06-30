@@ -3,6 +3,7 @@ from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (
     BoundingBoxProject,
+    ImageCaptioningProject,
     ImageClassificationProject,
     IntentDetectionAndSlotFillingProject,
     Member,
@@ -130,6 +131,11 @@ class BoundingBoxProjectSerializer(ProjectSerializer):
 class SegmentationProjectSerializer(ProjectSerializer):
     class Meta(ProjectSerializer.Meta):
         model = SegmentationProject
+
+
+class ImageCaptioningProjectSerializer(ProjectSerializer):
+    class Meta(ProjectSerializer.Meta):
+        model = ImageCaptioningProject
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
