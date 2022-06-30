@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import Dict, List, Type
 
 from projects.models import (
+    BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
@@ -89,6 +90,9 @@ Options.register(INTENT_DETECTION_AND_SLOT_FILLING, JSONL, INTENT_DETECTION_DIR 
 # Image Classification
 IMAGE_CLASSIFICATION_DIR = EXAMPLE_DIR / "image_classification"
 Options.register(IMAGE_CLASSIFICATION, JSONL, IMAGE_CLASSIFICATION_DIR / "example.jsonl")
+
+BOUNDING_BOX_DIR = EXAMPLE_DIR / "bounding_box"
+Options.register(BOUNDING_BOX, JSONL, BOUNDING_BOX_DIR / "example.jsonl")
 
 # Speech to Text
 SPEECH2TEXT_DIR = EXAMPLE_DIR / "speech_to_text"

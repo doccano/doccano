@@ -2,6 +2,7 @@ import unittest
 
 from ..pipeline.catalog import Options
 from projects.models import (
+    BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
@@ -14,6 +15,7 @@ from projects.models import (
 class TestOptions(unittest.TestCase):
     def test_return_at_least_one_option(self):
         tasks = [
+            BOUNDING_BOX,
             DOCUMENT_CLASSIFICATION,
             IMAGE_CLASSIFICATION,
             INTENT_DETECTION_AND_SLOT_FILLING,
