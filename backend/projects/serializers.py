@@ -2,6 +2,7 @@ from rest_framework import serializers
 from rest_polymorphic.serializers import PolymorphicSerializer
 
 from .models import (
+    BoundingBoxProject,
     ImageClassificationProject,
     IntentDetectionAndSlotFillingProject,
     Member,
@@ -118,6 +119,11 @@ class Speech2textProjectSerializer(ProjectSerializer):
 class ImageClassificationProjectSerializer(ProjectSerializer):
     class Meta(ProjectSerializer.Meta):
         model = ImageClassificationProject
+
+
+class BoundingBoxProjectSerializer(ProjectSerializer):
+    class Meta(ProjectSerializer.Meta):
+        model = BoundingBoxProject
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):

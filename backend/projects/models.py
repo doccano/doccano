@@ -14,6 +14,7 @@ SEQUENCE_LABELING = "SequenceLabeling"
 SEQ2SEQ = "Seq2seq"
 SPEECH2TEXT = "Speech2text"
 IMAGE_CLASSIFICATION = "ImageClassification"
+BOUNDING_BOX = "BoundingBox"
 INTENT_DETECTION_AND_SLOT_FILLING = "IntentDetectionAndSlotFilling"
 PROJECT_CHOICES = (
     (DOCUMENT_CLASSIFICATION, "document classification"),
@@ -22,6 +23,7 @@ PROJECT_CHOICES = (
     (INTENT_DETECTION_AND_SLOT_FILLING, "intent detection and slot filling"),
     (SPEECH2TEXT, "speech to text"),
     (IMAGE_CLASSIFICATION, "image classification"),
+    (BOUNDING_BOX, "bounding box"),
 )
 
 
@@ -141,6 +143,20 @@ class Speech2textProject(Project):
 
 
 class ImageClassificationProject(Project):
+    @property
+    def is_text_project(self) -> bool:
+        return False
+
+    @property
+    def can_define_label(self) -> bool:
+        return True
+
+    @property
+    def can_define_category(self) -> bool:
+        return True
+
+
+class BoundingBoxProject(Project):
     @property
     def is_text_project(self) -> bool:
         return False
