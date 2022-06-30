@@ -7,6 +7,8 @@ from .views import (
     CategoryListAPI,
     RelationDetail,
     RelationList,
+    SegmentationDetailAPI,
+    SegmentationListAPI,
     SpanDetailAPI,
     SpanListAPI,
     TextLabelDetailAPI,
@@ -39,5 +41,11 @@ urlpatterns = [
         route="examples/<int:example_id>/bboxes/<int:annotation_id>",
         view=BoundingBoxDetailAPI.as_view(),
         name="bbox_detail",
+    ),
+    path(route="examples/<int:example_id>/segments", view=SegmentationListAPI.as_view(), name="segment_list"),
+    path(
+        route="examples/<int:example_id>/segments/<int:annotation_id>",
+        view=SegmentationDetailAPI.as_view(),
+        name="segment_detail",
     ),
 ]

@@ -12,10 +12,19 @@ from .serializers import (
     BoundingBoxSerializer,
     CategorySerializer,
     RelationSerializer,
+    SegmentationSerializer,
     SpanSerializer,
     TextLabelSerializer,
 )
-from labels.models import BoundingBox, Category, Label, Relation, Span, TextLabel
+from labels.models import (
+    BoundingBox,
+    Category,
+    Label,
+    Relation,
+    Segmentation,
+    Span,
+    TextLabel,
+)
 from projects.models import Project
 from projects.permissions import IsProjectMember
 
@@ -122,3 +131,13 @@ class BoundingBoxListAPI(BaseListAPI):
 class BoundingBoxDetailAPI(BaseDetailAPI):
     queryset = BoundingBox.objects.all()
     serializer_class = BoundingBoxSerializer
+
+
+class SegmentationListAPI(BaseListAPI):
+    label_class = Segmentation
+    serializer_class = SegmentationSerializer
+
+
+class SegmentationDetailAPI(BaseDetailAPI):
+    queryset = Segmentation.objects.all()
+    serializer_class = SegmentationSerializer
