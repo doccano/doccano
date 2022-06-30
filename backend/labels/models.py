@@ -9,6 +9,7 @@ from .managers import (
     CategoryManager,
     LabelManager,
     RelationManager,
+    SegmentationManager,
     SpanManager,
     TextLabelManager,
 )
@@ -145,3 +146,10 @@ class BoundingBox(Label):
             models.CheckConstraint(check=models.Q(width__gte=0), name="width >= 0"),
             models.CheckConstraint(check=models.Q(height__gte=0), name="height >= 0"),
         ]
+
+
+class Segmentation(Label):
+    objects = SegmentationManager()
+    points = models.JSONField(default=list)
+    label = models.ForeignKey(to=CategoryType, on_delete=models.CASCADE)
+    example = models.ForeignKey(to=Example, on_delete=models.CASCADE, related_name="segmentations")
