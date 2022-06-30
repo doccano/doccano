@@ -13,6 +13,7 @@ from data_export.models import (
     ExportedExample,
     ExportedLabel,
     ExportedRelation,
+    ExportedSegmentation,
     ExportedSpan,
     ExportedText,
 )
@@ -61,5 +62,11 @@ class Texts(Labels):
 
 class BoundingBoxes(Labels):
     label_class = ExportedBoundingBox
+    column = "labels"
+    fields = ("example", "label")
+
+
+class Segments(Labels):
+    label_class = ExportedSegmentation
     column = "labels"
     fields = ("example", "label")

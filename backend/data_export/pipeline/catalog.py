@@ -7,6 +7,7 @@ from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEGMENTATION,
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
@@ -93,6 +94,9 @@ Options.register(IMAGE_CLASSIFICATION, JSONL, IMAGE_CLASSIFICATION_DIR / "exampl
 
 BOUNDING_BOX_DIR = EXAMPLE_DIR / "bounding_box"
 Options.register(BOUNDING_BOX, JSONL, BOUNDING_BOX_DIR / "example.jsonl")
+
+SEGMENTATION_DIR = EXAMPLE_DIR / "segmentation"
+Options.register(SEGMENTATION, JSONL, SEGMENTATION_DIR / "example.jsonl")
 
 # Speech to Text
 SPEECH2TEXT_DIR = EXAMPLE_DIR / "speech_to_text"

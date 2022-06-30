@@ -3,7 +3,7 @@ from typing import Any, Dict, Protocol, Tuple
 from django.db import models
 
 from examples.models import Example
-from labels.models import BoundingBox, Category, Relation, Span, TextLabel
+from labels.models import BoundingBox, Category, Relation, Segmentation, Span, TextLabel
 from projects.models import Project
 
 DATA = "data"
@@ -87,6 +87,14 @@ class ExportedBoundingBox(BoundingBox):
 
     def to_tuple(self):
         return self.x, self.y, self.width, self.height
+
+    class Meta:
+        proxy = True
+
+
+class ExportedSegmentation(Segmentation):
+    def to_dict(self):
+        return {"uuid": str(self.uuid), "points": self.points}
 
     class Meta:
         proxy = True

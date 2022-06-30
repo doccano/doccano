@@ -13,13 +13,14 @@ from .formatters import (
     RenameFormatter,
     TupledSpanFormatter,
 )
-from .labels import BoundingBoxes, Categories, Labels, Relations, Spans, Texts
+from .labels import BoundingBoxes, Categories, Labels, Relations, Segments, Spans, Texts
 from data_export.models import DATA, ExportedExample
 from projects.models import (
     BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEGMENTATION,
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
@@ -46,6 +47,7 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
     mapper_seq2seq = {DATA: "text", Texts.column: "label"}
     mapper_image_classification = {DATA: "filename", Categories.column: "label"}
     mapper_bounding_box = {DATA: "filename", BoundingBoxes.column: "bbox"}
+    mapper_segmentation = {DATA: "filename", BoundingBoxes.column: "segmentation"}
     mapper_speech2text = {DATA: "filename", Texts.column: "label"}
     mapper_intent_detection = {DATA: "text", Categories.column: "cats"}
     mapper_relation_extraction = {DATA: "text"}
@@ -96,6 +98,7 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
             ]
         },
         BOUNDING_BOX: {JSONL.name: [DictFormatter(BoundingBoxes.column), RenameFormatter(**mapper_bounding_box)]},
+        SEGMENTATION: {JSONL.name: [DictFormatter(Segments.column), RenameFormatter(**mapper_segmentation)]},
     }
     return mapping[project.project_type][file_format]
 
@@ -110,6 +113,7 @@ def select_label_collection(project: Project) -> List[Type[Labels]]:
         SPEECH2TEXT: [Texts],
         INTENT_DETECTION_AND_SLOT_FILLING: [Categories, Spans],
         BOUNDING_BOX: [BoundingBoxes],
+        SEGMENTATION: [Segments],
     }
     return mapping[project.project_type]
 
