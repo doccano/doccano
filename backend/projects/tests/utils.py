@@ -8,6 +8,7 @@ from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEGMENTATION,
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
@@ -70,6 +71,7 @@ def make_project(task: str, users: List[str], roles: List[str], collaborative_an
         IMAGE_CLASSIFICATION: "ImageClassificationProject",
         INTENT_DETECTION_AND_SLOT_FILLING: "IntentDetectionAndSlotFillingProject",
         BOUNDING_BOX: "BoundingBoxProject",
+        SEGMENTATION: "SegmentationProject",
     }.get(task, "Project")
     project = mommy.make(
         _model=project_model,

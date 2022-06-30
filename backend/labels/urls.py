@@ -42,10 +42,10 @@ urlpatterns = [
         view=BoundingBoxDetailAPI.as_view(),
         name="bbox_detail",
     ),
-    path(route="examples/<int:example_id>/segments", view=SegmentationListAPI.as_view(), name="segment_list"),
+    path(route="examples/<int:example_id>/segments", view=SegmentationListAPI.as_view(), name="segmentation_list"),
     path(
         route="examples/<int:example_id>/segments/<int:annotation_id>",
         view=SegmentationDetailAPI.as_view(),
-        name="segment_detail",
+        name="segmentation_detail",
     ),
 ]

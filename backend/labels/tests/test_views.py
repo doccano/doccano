@@ -8,10 +8,11 @@ from .utils import make_annotation
 from api.tests.utils import CRUDMixin
 from examples.tests.utils import make_doc
 from label_types.tests.utils import make_label
-from labels.models import BoundingBox, Category, Span, TextLabel
+from labels.models import BoundingBox, Category, Segmentation, Span, TextLabel
 from projects.models import (
     BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
+    SEGMENTATION,
     SEQ2SEQ,
     SEQUENCE_LABELING,
 )
@@ -78,6 +79,16 @@ class TestBBoxList(TestLabelList, CRUDMixin):
     @classmethod
     def make_annotation(cls, doc, member):
         mommy.make("BoundingBox", example=doc, user=member, x=0, y=0, width=0, height=0)
+
+
+class TestSegmentationList(TestLabelList, CRUDMixin):
+    model = Segmentation
+    task = SEGMENTATION
+    view_name = "segmentation_list"
+
+    @classmethod
+    def make_annotation(cls, doc, member):
+        mommy.make("Segmentation", example=doc, user=member, points=[0, 1])
 
 
 class TestTextList(TestLabelList, CRUDMixin):
@@ -210,6 +221,20 @@ class TestBoundingBoxCreation(TestDataLabeling, CRUDMixin):
             self.assert_create(member, status.HTTP_201_CREATED)
 
 
+class TestSegmentationCreation(TestDataLabeling, CRUDMixin):
+    task = SEGMENTATION
+    view_name = "segmentation_list"
+
+    def create_data(self):
+        label = mommy.make("CategoryType", project=self.project.item)
+        return {"points": [1, 2], "label": label.id}
+
+    def test_allows_project_member_to_annotate(self):
+        for member in self.project.members:
+            self.data["uuid"] = str(uuid.uuid4())
+            self.assert_create(member, status.HTTP_201_CREATED)
+
+
 class TestLabelDetail:
     task = SEQUENCE_LABELING
     view_name = "annotation_detail"
@@ -291,6 +316,14 @@ class TestBBoxDetail(TestLabelDetail, CRUDMixin):
 
     def create_annotation_data(self, doc):
         return mommy.make("BoundingBox", example=doc, user=self.project.admin, x=0, y=0, width=0, height=0)
+
+
+class TestSegmentationDetail(TestLabelDetail, CRUDMixin):
+    task = SEGMENTATION
+    view_name = "segmentation_detail"
+
+    def create_annotation_data(self, doc):
+        return mommy.make("Segmentation", example=doc, user=self.project.admin, points=[1, 2])
 
 
 class TestSharedLabelDetail:
