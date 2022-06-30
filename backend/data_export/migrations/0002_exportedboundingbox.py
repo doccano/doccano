@@ -6,20 +6,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('labels', '0015_create_boundingbox_table'),
-        ('data_export', '0001_initial'),
+        ("labels", "0015_create_boundingbox_table"),
+        ("data_export", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ExportedBoundingBox',
-            fields=[
-            ],
+            name="ExportedBoundingBox",
+            fields=[],
             options={
-                'proxy': True,
-                'indexes': [],
-                'constraints': [],
+                "proxy": True,
+                "indexes": [],
+                "constraints": [],
             },
-            bases=('labels.boundingbox',),
+            bases=("labels.boundingbox",),
         ),
     ]

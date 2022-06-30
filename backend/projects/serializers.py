@@ -7,6 +7,7 @@ from .models import (
     IntentDetectionAndSlotFillingProject,
     Member,
     Project,
+    SegmentationProject,
     Seq2seqProject,
     SequenceLabelingProject,
     Speech2textProject,
@@ -124,6 +125,11 @@ class ImageClassificationProjectSerializer(ProjectSerializer):
 class BoundingBoxProjectSerializer(ProjectSerializer):
     class Meta(ProjectSerializer.Meta):
         model = BoundingBoxProject
+
+
+class SegmentationProjectSerializer(ProjectSerializer):
+    class Meta(ProjectSerializer.Meta):
+        model = SegmentationProject
 
 
 class ProjectPolymorphicSerializer(PolymorphicSerializer):
