@@ -5,6 +5,7 @@ from typing import Dict, List, Type
 from projects.models import (
     BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
+    IMAGE_CAPTIONING,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
     SEGMENTATION,
@@ -97,6 +98,9 @@ Options.register(BOUNDING_BOX, JSONL, BOUNDING_BOX_DIR / "example.jsonl")
 
 SEGMENTATION_DIR = EXAMPLE_DIR / "segmentation"
 Options.register(SEGMENTATION, JSONL, SEGMENTATION_DIR / "example.jsonl")
+
+IMAGE_CAPTIONING_DIR = EXAMPLE_DIR / "image_captioning"
+Options.register(IMAGE_CAPTIONING, JSONL, IMAGE_CAPTIONING_DIR / "example.jsonl")
 
 # Speech to Text
 SPEECH2TEXT_DIR = EXAMPLE_DIR / "speech_to_text"

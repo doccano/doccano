@@ -6,6 +6,7 @@ from model_mommy import mommy
 from projects.models import (
     BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
+    IMAGE_CAPTIONING,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
     SEGMENTATION,
@@ -72,6 +73,7 @@ def make_project(task: str, users: List[str], roles: List[str], collaborative_an
         INTENT_DETECTION_AND_SLOT_FILLING: "IntentDetectionAndSlotFillingProject",
         BOUNDING_BOX: "BoundingBoxProject",
         SEGMENTATION: "SegmentationProject",
+        IMAGE_CAPTIONING: "ImageCaptioningProject",
     }.get(task, "Project")
     project = mommy.make(
         _model=project_model,

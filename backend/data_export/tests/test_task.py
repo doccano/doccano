@@ -10,6 +10,7 @@ from data_export.models import DATA
 from projects.models import (
     BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
+    IMAGE_CAPTIONING,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
     SEGMENTATION,
@@ -617,6 +618,75 @@ class TestExportSegmentation(TestExport):
             {
                 **self.data1,
                 self.column: [self.seg1.to_dict(), self.seg2.to_dict()],
+            }
+        ]
+        self.assertEqual(dataset, expected_dataset)
+
+
+class TestExportImageCaptioning(TestExport):
+    def prepare_data(self, collaborative=False):
+        self.project = prepare_project(IMAGE_CAPTIONING, collaborative_annotation=collaborative)
+        self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
+        self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
+        self.text1 = mommy.make("TextLabel", example=self.example1, user=self.project.admin)
+        self.text2 = mommy.make("TextLabel", example=self.example1, user=self.project.annotator)
+        mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
+        self.data1 = self.data_to_filename(self.example1)
+        self.data2 = self.data_to_filename(self.example2)
+        self.column = "label"
+
+    def test_unconfirmed_and_non_collaborative(self):
+        self.prepare_data()
+        datasets = self.export_dataset()
+        expected_datasets = {
+            self.project.admin.username: [
+                {**self.data1, self.column: [self.text1.text]},
+                {**self.data2, self.column: []},
+            ],
+            self.project.approver.username: [
+                {**self.data1, self.column: []},
+                {**self.data2, self.column: []},
+            ],
+            self.project.annotator.username: [
+                {**self.data1, self.column: [self.text2.text]},
+                {**self.data2, self.column: []},
+            ],
+        }
+        for username, dataset in expected_datasets.items():
+            self.assertEqual(datasets[username], dataset)
+
+    def test_unconfirmed_and_collaborative(self):
+        self.prepare_data(collaborative=True)
+        dataset = self.export_dataset()
+        expected_dataset = [
+            {
+                **self.data1,
+                self.column: sorted([self.text1.text, self.text2.text]),
+            },
+            {**self.data2, self.column: []},
+        ]
+        self.assertEqual(dataset, expected_dataset)
+
+    def test_confirmed_and_non_collaborative(self):
+        self.prepare_data()
+        datasets = self.export_dataset(confirmed_only=True)
+        expected_datasets = {
+            self.project.admin.username: [
+                {**self.data1, self.column: [self.text1.text]},
+            ],
+            self.project.approver.username: [],
+            self.project.annotator.username: [],
+        }
+        for username, dataset in datasets.items():
+            self.assertEqual(dataset, expected_datasets[username])
+
+    def test_confirmed_and_collaborative(self):
+        self.prepare_data(collaborative=True)
+        dataset = self.export_dataset(confirmed_only=True)
+        expected_dataset = [
+            {
+                **self.data1,
+                self.column: sorted([self.text1.text, self.text2.text]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
