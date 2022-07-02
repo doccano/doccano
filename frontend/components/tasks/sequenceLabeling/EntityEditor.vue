@@ -109,7 +109,7 @@ export default Vue.extend({
     useRelationLabeling: {
       type: Boolean,
       default: false
-    },
+    }
   },
 
   data() {
@@ -190,8 +190,8 @@ export default Vue.extend({
     },
 
     onEntityMenuClose() {
-      if(this.quickAddRelationship) {
-        return;
+      if (this.quickAddRelationship) {
+        return
       }
       this.cleanUp()
     },
@@ -218,10 +218,12 @@ export default Vue.extend({
     onEntityClicked(e: any, entityId: number) {
       if (this.relationMode) {
         this.setEntityForRelation(e, entityId)
-      } else if(this.useRelationLabeling) {
-        if(this.selectedEntities.length === 1 && 
-          this.selectedEntities.findIndex((e) => e.id === entityId) === -1) {
-          this.quickAddRelationship = true;
+      } else if (this.useRelationLabeling) {
+        if (
+          this.selectedEntities.length === 1 &&
+          this.selectedEntities.findIndex((e) => e.id === entityId) === -1
+        ) {
+          this.quickAddRelationship = true
           this.setEntityForRelation(e, entityId)
         } else {
           this.setEntity(entityId)

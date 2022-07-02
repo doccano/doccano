@@ -180,7 +180,7 @@ export default {
     selectedEntityLabel() {
       if (Number.isInteger(this.selectedEntityLabelIndex)) {
         return this.spanTypes[this.selectedEntityLabelIndex]
-      } else if(this.spanTypes.length === 1) {
+      } else if (this.spanTypes.length === 1) {
         return this.spanTypes[0]
       } else {
         return null
@@ -190,7 +190,7 @@ export default {
     selectedRelationLabel() {
       if (Number.isInteger(this.selectedRelationLabelIndex)) {
         return this.relationTypes[this.selectedRelationLabelIndex]
-      } else if(this.relationTypes.length === 1) {
+      } else if (this.relationTypes.length === 1) {
         return this.relationTypes[0]
       } else {
         return null
@@ -199,8 +199,7 @@ export default {
 
     useRelationLabeling() {
       return !!this.project.useRelation
-    },
-
+    }
   },
 
   watch: {
@@ -314,8 +313,8 @@ export default {
     },
 
     changeSelectedEntityLabel(event) {
-      this.selectedEntityLabelIndex = this.spanTypes.findIndex((item) => 
-        item.suffixKey === event.srcKey
+      this.selectedEntityLabelIndex = this.spanTypes.findIndex(
+        (item) => item.suffixKey === event.srcKey
       )
     }
   }
