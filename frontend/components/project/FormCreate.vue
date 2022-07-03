@@ -204,6 +204,9 @@ export default Vue.extend({
         'Seq2seq',
         'IntentDetectionAndSlotFilling',
         'ImageClassification',
+        'ImageCaptioning',
+        'BoundingBox',
+        'Segmentation',
         'Speech2text'
       ]
     },
@@ -214,6 +217,9 @@ export default Vue.extend({
         'seq2seq.png',
         'intent_detection.png',
         'image_classification.png',
+        'image_classification.png', // image captioning
+        'image_classification.png', // bounding box
+        'image_classification.png', // segmentation
         'speech_to_text.png'
       ]
     },

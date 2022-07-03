@@ -7,6 +7,9 @@ export type ProjectType =
   | 'Seq2seq'
   | 'IntentDetectionAndSlotFilling'
   | 'ImageClassification'
+  | 'ImageCaptioning'
+  | 'BoundingBox'
+  | 'Segmentation'
   | 'Speech2text'
 
 export class ProjectReadItem {
@@ -66,6 +69,9 @@ export class ProjectReadItem {
       Seq2seq: 'sequence-to-sequence',
       IntentDetectionAndSlotFilling: 'intent-detection-and-slot-filling',
       ImageClassification: 'image-classification',
+      ImageCaptioning: 'image-captioning',
+      BoundingBox: 'object-detection',
+      Segmentation: 'segmentation',
       Speech2text: 'speech-to-text'
     }
     const url = `/projects/${this.id}/${mapping[this.projectType]}`
@@ -113,6 +119,9 @@ export class ProjectWriteItem {
       Seq2seq: 'Seq2seqProject',
       IntentDetectionAndSlotFilling: 'IntentDetectionAndSlotFillingProject',
       ImageClassification: 'ImageClassificationProject',
+      ImageCaptioning: 'ImageCaptioningProject',
+      BoundingBox: 'BoundingBoxProject',
+      Segmentation: 'SegmentationProject',
       Speech2text: 'Speech2textProject'
     }
     return mapping[this.project_type]
