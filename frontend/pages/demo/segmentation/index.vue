@@ -4,15 +4,38 @@
       <v-row justify="center">
         <v-col cols="12" md="9">
           <v-card>
+            <v-card-title>
+              <v-chip-group v-model="selectedLabelIndex" column>
+                <v-chip
+                  v-for="item in labels"
+                  :key="item.id"
+                  :color="item.backgroundColor"
+                  filter
+                  :text-color="$contrastColor(item.backgroundColor)"
+                >
+                  {{ item.text }}
+                  <v-avatar
+                    v-if="item.suffixKey"
+                    right
+                    color="white"
+                    class="black--text font-weight-bold"
+                  >
+                    {{ item.suffixKey }}
+                  </v-avatar>
+                </v-chip>
+              </v-chip-group>
+            </v-card-title>
+            <v-divider />
             <v-segmentation
+              :highlight-id="highlightId"
               :image-url="imageUrl"
-              :labels="labels"
-              :polygons="polygons"
+              :labels="bboxLabels"
+              :polygons="filteredRegions"
               :selected-label="selectedLabel"
               :scale="scale"
               @add-polygon="addPolygon"
               @delete-polygon="deletePolygon"
-              @select-polygon="selectPolygon"
+              @select-polygon="selectRegion"
               @update-polygon="updatePolygon"
               @update-scale="updateScale"
             />
@@ -20,6 +43,13 @@
         </v-col>
         <v-col cols="12" md="3">
           <list-metadata :metadata="meta" />
+          <region-list
+            class="mt-4"
+            :regions="regionList"
+            @change-visibility="changeVisibility"
+            @hover-region="hoverRegion"
+            @unhover-region="unhoverRegion"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -29,11 +59,13 @@
 <script>
 import { VSegmentation } from 'vue-image-annotator'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import RegionList from '@/components/tasks/image/RegionList.vue'
 
 export default {
   components: {
     ListMetadata,
-    VSegmentation
+    VSegmentation,
+    RegionList
   },
 
   layout: 'demo',
@@ -51,48 +83,82 @@ export default {
       task: 'bounding box',
       labels: [
         {
-          id: 0,
-          name: 'pig',
-          color: '#ff0000'
-        },
-        {
           id: 1,
-          name: 'cat',
-          color: '#00ff00'
+          text: 'Cat',
+          prefixKey: null,
+          suffixKey: 'c',
+          backgroundColor: '#7c20e0',
+          textColor: '#ffffff'
         },
         {
           id: 2,
-          name: 'dog',
-          color: '#0000ff'
+          text: 'Dog',
+          prefixKey: null,
+          suffixKey: 'd',
+          backgroundColor: '#fbb028',
+          textColor: '#000000'
         }
       ],
       meta: { wikiPageId: 2 },
-      selectedLabel: undefined,
+      selectedLabelIndex: undefined,
       selectedPolygon: undefined,
-      scale: 1
+      scale: 1,
+      visibilities: {},
+      highlightId: null
+    }
+  },
+
+  computed: {
+    bboxLabels() {
+      return this.labels.map((label) => {
+        return {
+          id: label.id,
+          name: label.text,
+          color: label.backgroundColor
+        }
+      })
+    },
+
+    selectedLabel() {
+      if (this.selectedLabelIndex !== undefined) {
+        return this.labels[this.selectedLabelIndex]
+      } else {
+        return undefined
+      }
+    },
+
+    regionList() {
+      return this.polygons.map((polygon) => {
+        return {
+          id: polygon.id,
+          category: this.labels.find((label) => polygon.label === label.id).text,
+          color: this.labels.find((label) => polygon.label === label.id).backgroundColor,
+          visibility: polygon.id in this.visibilities ? this.visibilities[polygon.id] : true
+        }
+      })
+    },
+
+    filteredRegions() {
+      return this.polygons.filter((polygon) => this.visibilities[polygon.id] !== false)
+    }
+  },
+
+  watch: {
+    selectedLabel(newLabel) {
+      if (newLabel !== undefined && !!this.selectedPolygon) {
+        this.selectedPolygon.label = newLabel.id
+        this.updatePolygon(this.selectedPolygon)
+      }
     }
   },
 
   methods: {
-    selectLabel(index) {
-      this.selectedLabel = this.labels[index]
-    },
-
-    resetLabel() {
-      this.selectedLabel = undefined
-    },
-
     addPolygon(polygon) {
       this.polygons.push(polygon)
     },
 
     deletePolygon(polygonId) {
       this.polygons = this.polygons.filter((p) => p.id !== polygonId)
-    },
-
-    selectPolygon(id) {
-      console.log('selectPolygon', id)
-      this.selectedPolygon = this.polygons.find((p) => p.id === id)
     },
 
     updatePolygon(polygon) {
@@ -102,6 +168,27 @@ export default {
         this.$set(this.polygons, index, polygon)
         this.selectedPolygon = polygon
       }
+    },
+
+    changeVisibility(regionId, visibility) {
+      console.log('changeVisibility', regionId, visibility)
+      this.$set(this.visibilities, regionId, visibility)
+      this.visibilities = Object.assign({}, this.visibilities)
+    },
+
+    hoverRegion(regionId) {
+      console.log('hoverRegion', regionId)
+      this.highlightId = regionId
+    },
+
+    unhoverRegion(regionId) {
+      console.log('unhoverRegion', regionId)
+      this.highlightId = null
+    },
+
+    selectRegion(regionId) {
+      this.selectedPolygon = this.polygons.find((r) => r.id === regionId)
+      this.selectedLabelIndex = this.labels.findIndex((l) => l.id === this.selectedPolygon.label)
     },
 
     zoomOut() {
