@@ -8,9 +8,12 @@ from typing_extensions import Literal
 
 from .exceptions import FileFormatException
 from projects.models import (
+    BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
+    IMAGE_CAPTIONING,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEGMENTATION,
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
@@ -432,16 +435,18 @@ Options.register(
     )
 )
 
-# Image Classification
-Options.register(
-    Option(
-        display_name=ImageFile.name,
-        task_id=IMAGE_CLASSIFICATION,
-        file_format=ImageFile,
-        arg=ArgNone,
-        file=IMAGE_CLASSIFICATION_DIR / "image_files.txt",
+# Image tasks
+image_tasks = [IMAGE_CLASSIFICATION, IMAGE_CAPTIONING, BOUNDING_BOX, SEGMENTATION]
+for task_name in image_tasks:
+    Options.register(
+        Option(
+            display_name=ImageFile.name,
+            task_id=task_name,
+            file_format=ImageFile,
+            arg=ArgNone,
+            file=IMAGE_CLASSIFICATION_DIR / "image_files.txt",
+        )
     )
-)
 
 # Speech to Text
 Options.register(
