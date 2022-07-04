@@ -44,6 +44,8 @@ import { TagApplicationService } from '~/services/application/tag/tagApplication
 import { ApiRelationRepository } from '~/repositories/tasks/sequenceLabeling/apiRelationRepository'
 import { ApiBoundingBoxRepository } from '~/repositories/tasks/boundingBox/apiBoundingBoxRepository'
 import { BoundingBoxApplicationService } from '~/services/application/tasks/boundingBox/boundingBoxApplicationService'
+import { ApiSegmentationRepository } from '~/repositories/tasks/segmentation/apiSegmentationRepository'
+import { SegmentationApplicationService } from '~/services/application/tasks/segmentation/segmentationApplicationService'
 
 export interface Services {
   categoryType: LabelApplicationService
@@ -70,6 +72,7 @@ export interface Services {
   download: DownloadApplicationService
   tag: TagApplicationService
   bbox: BoundingBoxApplicationService
+  segmentation: SegmentationApplicationService
 }
 
 declare module 'vue/types/vue' {
@@ -101,6 +104,7 @@ const plugin: Plugin = (_, inject) => {
   const downloadFormatRepository = new APIDownloadFormatRepository()
   const downloadRepository = new APIDownloadRepository()
   const boundingBoxRepository = new ApiBoundingBoxRepository()
+  const segmentationRepository = new ApiSegmentationRepository()
 
   const categoryType = new LabelApplicationService(new APILabelRepository('category-type'))
   const spanType = new LabelApplicationService(new APILabelRepository('span-type'))
@@ -118,6 +122,7 @@ const plugin: Plugin = (_, inject) => {
     linkRepository
   )
   const bbox = new BoundingBoxApplicationService(boundingBoxRepository)
+  const segmentation = new SegmentationApplicationService(segmentationRepository)
   const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
   const option = new OptionApplicationService(optionRepository)
   const config = new ConfigApplicationService(configRepository)
@@ -154,7 +159,8 @@ const plugin: Plugin = (_, inject) => {
     downloadFormat,
     download,
     tag,
-    bbox
+    bbox,
+    segmentation
   }
   inject('services', services)
 }
