@@ -39,6 +39,9 @@
       </v-btn-toggle>
       <slot />
       <v-spacer />
+      <button-review-next
+        @click:review-next="$emit('click:review-next', Math.min(page + 1, total))"
+      />
       <button-pagination
         :value="page"
         :total="total"
@@ -61,6 +64,7 @@ import ButtonFilter from './buttons/ButtonFilter.vue'
 import ButtonGuideline from './buttons/ButtonGuideline.vue'
 import ButtonPagination from './buttons/ButtonPagination.vue'
 import ButtonReview from './buttons/ButtonReview.vue'
+import ButtonReviewNext from './buttons/ButtonReviewNext.vue'
 import FormAutoLabeling from './forms/FormAutoLabeling.vue'
 import FormClearLabel from './forms/FormClearLabel.vue'
 import FormComment from './forms/FormComment.vue'
@@ -75,6 +79,7 @@ export default Vue.extend({
     ButtonGuideline,
     ButtonPagination,
     ButtonReview,
+    ButtonReviewNext,
     FormAutoLabeling,
     FormClearLabel,
     FormComment,
