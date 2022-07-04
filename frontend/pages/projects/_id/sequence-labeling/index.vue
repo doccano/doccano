@@ -14,7 +14,7 @@
       <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
-      <v-card>
+      <v-card class="scrollable">
         <div class="annotation-text pa-4">
           <entity-editor
             :dark="$vuetify.theme.dark"
@@ -44,11 +44,11 @@
       <annotation-progress :progress="progress" />
       <v-card class="mt-4">
         <v-card-title>Label Types</v-card-title>
-        <v-card-text>
+        <v-card-text v-shortkey="['alt', 'r']" @shortkey="relationMode = !relationMode">
           <v-switch v-if="useRelationLabeling" v-model="relationMode">
             <template #label>
-              <span v-if="relationMode">Relation</span>
-              <span v-else>Span</span>
+              <span v-if="relationMode">Relation [alt]+[r]</span>
+              <span v-else>Span [alt]+[r]</span>
             </template>
           </v-switch>
           <v-chip-group v-if="relationMode" v-model="selectedRelationLabelIndex" column>
@@ -322,6 +322,10 @@ export default {
 </script>
 
 <style scoped>
+.scrollable {
+  overflow-y: auto;
+  height: calc(100vh - 135px);
+}
 .annotation-text {
   font-size: 1.25rem !important;
   font-weight: 500;
