@@ -10,6 +10,7 @@
         class="d-none d-sm-block"
         @click:clear-label="clear"
         @click:review="confirm"
+        @click:review-next="confirmNext"
       />
       <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
     </template>
@@ -310,6 +311,19 @@ export default {
       await this.$services.example.confirm(this.projectId, this.doc.id)
       await this.$fetch()
       this.updateProgress()
+    },
+
+    async confirmNext(nextPageNum) {
+      await this.$services.example.confirm(this.projectId, this.doc.id)
+      await this.$fetch()
+      await this.updateProgress()
+      this.$router.push({
+        query: {
+          page: nextPageNum.toString(),
+          isChecked: this.$route.query.isChecked,
+          q: this.$route.query.q
+        }
+      })
     },
 
     changeSelectedEntityLabel(event) {
