@@ -6,6 +6,7 @@
           v-for="(item, i) in regions"
           :key="`item-${i}`"
           :value="item"
+          :style="{ opacity: item.visibility ? 1 : 0.5 }"
           active-class="text--accent-4"
           @mouseenter="$emit('hover-region', item.id)"
           @mouseleave="$emit('unhover-region', item.id)"
