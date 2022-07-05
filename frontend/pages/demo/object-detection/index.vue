@@ -47,6 +47,7 @@
             class="mt-4"
             :regions="regionList"
             @change-visibility="changeVisibility"
+            @delete-region="deleteRectangle"
             @hover-region="hoverRegion"
             @unhover-region="unhoverRegion"
           />

@@ -47,6 +47,7 @@
             class="mt-4"
             :regions="regionList"
             @change-visibility="changeVisibility"
+            @delete-region="deletePolygon"
             @hover-region="hoverRegion"
             @unhover-region="unhoverRegion"
           />

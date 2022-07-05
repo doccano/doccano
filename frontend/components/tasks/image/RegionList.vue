@@ -24,6 +24,11 @@
                 @change="$emit('change-visibility', item.id, $event)"
               />
             </v-list-item-action>
+            <v-list-item-action>
+              <v-btn icon @click="$emit('delete-region', item.id)">
+                <v-icon>{{ mdiDelete }}</v-icon>
+              </v-btn>
+            </v-list-item-action>
           </template>
         </v-list-item>
       </v-list-item-group>
@@ -32,7 +37,7 @@
 </template>
 
 <script>
-import { mdiEyeOutline, mdiEyeOffOutline } from '@mdi/js'
+import { mdiEyeOutline, mdiEyeOffOutline, mdiDelete } from '@mdi/js'
 
 export default {
   props: {
@@ -44,6 +49,7 @@ export default {
 
   data() {
     return {
+      mdiDelete,
       mdiEyeOutline,
       mdiEyeOffOutline,
       model: null,
