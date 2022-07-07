@@ -189,7 +189,7 @@ export default {
     },
 
     selectRegion(regionId) {
-      console.log("selectRegion", regionId)
+      console.log('selectRegion', regionId)
       if (regionId) {
         this.selectedPolygon = this.polygons.find((r) => r.id === regionId)
         this.selectedLabelIndex = this.labels.findIndex((l) => l.id === this.selectedPolygon.label)

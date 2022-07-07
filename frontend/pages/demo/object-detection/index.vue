@@ -195,7 +195,7 @@ export default {
     },
 
     selectRectangle(rectangleId) {
-      console.log("selectRectangle", rectangleId)
+      console.log('selectRectangle', rectangleId)
       if (rectangleId) {
         this.selectedRectangle = this.rectangles.find((r) => r.id === rectangleId)
         this.selectedLabelIndex = this.labels.findIndex(
