@@ -1,5 +1,6 @@
 <template>
   <v-card>
+    <v-card-title class="pb-0">Regions</v-card-title>
     <v-list dense>
       <v-list-item-group v-model="model">
         <v-list-item
