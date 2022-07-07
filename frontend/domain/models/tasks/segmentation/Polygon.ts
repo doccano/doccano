@@ -27,6 +27,10 @@ export default class Polygon {
     }
   }
 
+  clone(): Polygon {
+    return new Polygon(this.labelId, this.flattenedPoints, this.id)
+  }
+
   translate(x: number, y: number): void {
     const vector = new Vector(x, y)
     this.points = this.points.map((point) => point.translate(vector))

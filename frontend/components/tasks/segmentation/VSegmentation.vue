@@ -34,7 +34,6 @@
         @click-line="insertPoint"
         @click-polygon="updateSelectedPolygon"
         @drag-end-polygon="translatePolygon"
-        @drag-move-point="movePoint"
         @drag-end-point="movePoint"
         @double-click-point="removePoint"
       />

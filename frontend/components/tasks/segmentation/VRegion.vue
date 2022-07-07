@@ -1,7 +1,7 @@
 <template>
   <v-group>
     <v-polygon
-      :polygon="polygon"
+      :polygon="writablePolygon"
       :closed="true"
       :color="color"
       :draggable="true"
@@ -9,7 +9,7 @@
       :max-height="maxHeight"
       :max-width="maxWidth"
       :scale="scale"
-      @click="$emit('click-polygon', polygon)"
+      @click="$emit('click-polygon', writablePolygon)"
       @dragstart="onDragStart"
       @dragend="onDragEnd"
     />
@@ -27,7 +27,7 @@
         }"
       />
       <v-line
-        v-for="(lineSegment, insertIndex) in polygon.lineSegments"
+        v-for="(lineSegment, insertIndex) in writablePolygon.lineSegments"
         :key="insertIndex"
         :config="{
           draggable: false,
@@ -41,11 +41,11 @@
         }"
         @mousemove="onMouseMoveLine($event, lineSegment)"
         @mouseleave="hideAnchorPoint"
-        @click="handleClickLine($event, polygon, insertIndex + 1)"
+        @click="handleClickLine($event, writablePolygon, insertIndex + 1)"
       />
       <v-point
-        v-for="(point, index) in polygon.toPoints()"
-        :key="`${polygon.id}-${index}`"
+        v-for="(point, index) in writablePolygon.toPoints()"
+        :key="`${writablePolygon.id}-${index}`"
         :color="index === selectedPoint ? color : 'white'"
         :point="point"
         :index="index"
@@ -116,13 +116,24 @@ export default Vue.extend({
 
   data() {
     return {
-      isMoving: false
+      isMoving: false,
+      writablePolygon: this.polygon
     }
   },
 
   computed: {
     anchor() {
       return (this.$refs.anchorRef as Konva.ShapeConfig).getNode()
+    }
+  },
+
+  watch: {
+    polygon: {
+      handler(newPolygon: Polygon) {
+        this.writablePolygon = newPolygon
+      },
+      immediate: true,
+      deep: true
     }
   },
 
@@ -137,7 +148,8 @@ export default Vue.extend({
     },
 
     handleDragMovePoint(index: number, x: number, y: number) {
-      this.$emit('drag-move-point', this.polygon, index, x, y)
+      this.writablePolygon.movePoint(index, x, y)
+      this.writablePolygon = this.writablePolygon.clone()
     },
 
     handleDragEndPoint(index: number, x: number, y: number) {
