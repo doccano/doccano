@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { VSegmentation } from 'vue-image-annotator'
+import VSegmentation from '@/components/tasks/segmentation/VSegmentation.vue'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import RegionList from '@/components/tasks/image/RegionList.vue'
 
@@ -156,6 +156,7 @@ export default {
   methods: {
     addPolygon(polygon) {
       this.polygons.push(polygon)
+      this.selectedLabelIndex = undefined
     },
 
     deletePolygon(polygonId) {
@@ -188,8 +189,14 @@ export default {
     },
 
     selectRegion(regionId) {
-      this.selectedPolygon = this.polygons.find((r) => r.id === regionId)
-      this.selectedLabelIndex = this.labels.findIndex((l) => l.id === this.selectedPolygon.label)
+      console.log("selectRegion", regionId)
+      if (regionId) {
+        this.selectedPolygon = this.polygons.find((r) => r.id === regionId)
+        this.selectedLabelIndex = this.labels.findIndex((l) => l.id === this.selectedPolygon.label)
+      } else {
+        this.selectedPolygon = undefined
+        this.selectedLabelIndex = undefined
+      }
     },
 
     zoomOut() {

@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { VBoundingBox } from 'vue-image-annotator'
+import VBoundingBox from '@/components/tasks/boundingBox/VBoundingBox.vue'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import RegionList from '@/components/tasks/image/RegionList.vue'
 
@@ -149,8 +149,9 @@ export default {
   watch: {
     selectedLabel(newLabel) {
       if (newLabel !== undefined && !!this.selectedRectangle) {
-        this.selectedRectangle.label = newLabel.id
-        this.updateRectangle(this.selectedRectangle)
+        const rect = this.rectangles.find((r) => r.id === this.selectedRectangle.id)
+        rect.label = newLabel.id
+        this.updateRectangle(rect)
       }
     }
   },
@@ -160,6 +161,7 @@ export default {
       console.log('addRectangle', rectangle)
       this.rectangles.push(rectangle)
       this.visibilities[rectangle.id] = true
+      this.selectedLabelIndex = undefined
     },
 
     updateRectangle(rectangle) {
@@ -193,8 +195,16 @@ export default {
     },
 
     selectRectangle(rectangleId) {
-      this.selectedRectangle = this.rectangles.find((r) => r.id === rectangleId)
-      this.selectedLabelIndex = this.labels.findIndex((l) => l.id === this.selectedRectangle.label)
+      console.log("selectRectangle", rectangleId)
+      if (rectangleId) {
+        this.selectedRectangle = this.rectangles.find((r) => r.id === rectangleId)
+        this.selectedLabelIndex = this.labels.findIndex(
+          (l) => l.id === this.selectedRectangle.label
+        )
+      } else {
+        this.selectedRectangle = undefined
+        this.selectedLabelIndex = undefined
+      }
     },
 
     zoomOut() {

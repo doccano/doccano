@@ -87,7 +87,7 @@ import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import { useLabelList } from '@/composables/useLabelList'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
-import { VSegmentation } from 'vue-image-annotator'
+import VSegmentation from '@/components/tasks/segmentation/VSegmentation.vue'
 import RegionList from '@/components/tasks/image/RegionList.vue'
 
 export default {
