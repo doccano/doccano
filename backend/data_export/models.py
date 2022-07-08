@@ -83,7 +83,14 @@ class ExportedText(TextLabel):
 
 class ExportedBoundingBox(BoundingBox):
     def to_dict(self):
-        return {"uuid": str(self.uuid), "x": self.x, "y": self.y, "width": self.width, "height": self.height}
+        return {
+            "uuid": str(self.uuid),
+            "x": self.x,
+            "y": self.y,
+            "width": self.width,
+            "height": self.height,
+            "label": self.label.text,
+        }
 
     def to_tuple(self):
         return self.x, self.y, self.width, self.height
@@ -94,7 +101,7 @@ class ExportedBoundingBox(BoundingBox):
 
 class ExportedSegmentation(Segmentation):
     def to_dict(self):
-        return {"uuid": str(self.uuid), "points": self.points}
+        return {"uuid": str(self.uuid), "points": self.points, "label": self.label.text}
 
     class Meta:
         proxy = True
