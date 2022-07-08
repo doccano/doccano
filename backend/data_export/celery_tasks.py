@@ -8,9 +8,9 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 from .pipeline.dataset import Dataset
-from .pipeline.factories import create_formatter, create_labels, create_writer
+from .pipeline.factories import create_formatter, create_labels, create_writer, create_comment
 from .pipeline.services import ExportApplicationService
-from data_export.models import ExportedExample
+from data_export.models import ExportedExample, ExportedComment
 from projects.models import Member, Project
 
 logger = get_task_logger(__name__)
@@ -23,7 +23,8 @@ def create_collaborative_dataset(project: Project, dirpath: str, confirmed_only:
     else:
         examples = ExportedExample.objects.filter(project=project)
     labels = create_labels(project, examples)
-    dataset = Dataset(examples, labels, is_text_project)
+    comments = create_comment(examples)
+    dataset = Dataset(examples, labels, comments, is_text_project)
 
     service = ExportApplicationService(dataset, formatters, writer)
 
@@ -40,7 +41,8 @@ def create_individual_dataset(project: Project, dirpath: str, confirmed_only: bo
         else:
             examples = ExportedExample.objects.filter(project=project)
         labels = create_labels(project, examples, member.user)
-        dataset = Dataset(examples, labels, is_text_project)
+        comments = create_comment(examples, member.user)
+        dataset = Dataset(examples, labels, comments, is_text_project)
 
         service = ExportApplicationService(dataset, formatters, writer)
 

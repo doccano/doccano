@@ -14,7 +14,8 @@ from .formatters import (
     TupledSpanFormatter,
 )
 from .labels import Categories, Labels, Relations, Spans, Texts
-from data_export.models import DATA, ExportedExample
+from .comments import Comments
+from data_export.models import DATA, ExportedExample, ExportedComment
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,
@@ -51,14 +52,17 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
         DOCUMENT_CLASSIFICATION: {
             CSV.name: [
                 JoinedCategoryFormatter(Categories.column),
+                JoinedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_text_classification),
             ],
             JSON.name: [
                 ListedCategoryFormatter(Categories.column),
+                ListedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_text_classification),
             ],
             JSONL.name: [
                 ListedCategoryFormatter(Categories.column),
+                ListedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_text_classification),
             ],
             FastText.name: [FastTextCategoryFormatter(Categories.column)],
@@ -114,3 +118,7 @@ def create_labels(project: Project, examples: QuerySet[ExportedExample], user=No
     label_collections = select_label_collection(project)
     labels = [label_collection(examples=examples, user=user) for label_collection in label_collections]
     return labels
+
+
+def create_comment(examples: QuerySet[ExportedExample], user=None) -> List[Comments]:
+    return [Comments(examples=examples, user=user)]
