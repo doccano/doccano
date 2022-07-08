@@ -122,11 +122,13 @@ export default Vue.extend({
 
   mounted() {
     document.addEventListener('keydown', this.removePointOrPolygon)
+    window.addEventListener('resize', this.setZoom)
     this.stage = (this.$refs.stageRef as unknown as Konva.StageConfig).getNode()
   },
 
   beforeDestroy() {
     document.removeEventListener('keydown', this.removePointOrPolygon)
+    window.removeEventListener('resize', this.setZoom)
   },
 
   methods: {
@@ -246,7 +248,7 @@ export default Vue.extend({
     },
 
     imageLoaded(width: number, height: number) {
-      const maxScale = Math.min(this.$el.clientWidth / width, this.$el.clientHeight / height)
+      const maxScale = this.$el.clientWidth / width
       const imageIsSmallerThanContainer = maxScale > 1
       this.imageSize.width = width
       this.imageSize.height = height
@@ -268,18 +270,15 @@ export default Vue.extend({
       if (this.scale < 0) {
         return
       }
-      const maxScale = Math.min(
-        this.$el.clientWidth / this.imageSize.width,
-        this.$el.clientHeight / this.imageSize.height
-      )
+      const maxScale = this.$el.clientWidth / this.imageSize.width
       this.stage.scale({ x: this.scale, y: this.scale })
       if (this.scale <= maxScale) {
         this.configStage.width = this.imageSize.width * this.scale
-        this.configStage.height = this.imageSize.height * this.scale
       } else {
         this.configStage.width = this.imageSize.width * maxScale
-        this.configStage.height = this.imageSize.height * maxScale
       }
+      this.configStage.height = this.imageSize.height * this.scale
+      this.$el.setAttribute('style', `min-height: ${this.configStage.height}px`)
     }
   }
 })
