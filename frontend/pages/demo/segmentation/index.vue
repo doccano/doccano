@@ -73,7 +73,7 @@ export default {
 
   data() {
     return {
-      imageUrl: 'https://www.pakutaso.com/shared/img/thumb/shikun20220402_122123_TP_V.jpg',
+      imageUrl: require('~/assets/images/demo/cat.jpeg'),
       polygons: [
         {
           id: 'uuid',

@@ -59,7 +59,7 @@ export default {
       singleLabel: true,
       currentDoc: {
         id: 8,
-        filename: require('~/assets/6737785.png'),
+        filename: require('~/assets/images/demo/cat.jpeg'),
         annotations: [
           {
             id: 17,
