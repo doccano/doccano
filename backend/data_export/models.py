@@ -85,9 +85,6 @@ class ExportedComment(Comment):
     def to_string(self) -> str:
         return self.text
 
-    def to_dict(self):
-        return {"id": self.example.id, "comment": self.text}
-
     class Meta:
         proxy = True
 
