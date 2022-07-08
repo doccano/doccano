@@ -296,8 +296,13 @@ export default {
     },
 
     selectRegion(regionId) {
-      this.selectedRegion = this.annotations.find((r) => r.uuid === regionId)
-      this.selectedLabelIndex = this.labels.findIndex((l) => l.id === this.selectedRegion.label)
+      if (regionId) {
+        this.selectedRegion = this.annotations.find((r) => r.uuid === regionId)
+        this.selectedLabelIndex = this.labels.findIndex((l) => l.id === this.selectedRegion.label)
+      } else {
+        this.selectedRegion = undefined
+        this.selectedLabelIndex = undefined
+      }
     },
 
     updateScale(scale) {
