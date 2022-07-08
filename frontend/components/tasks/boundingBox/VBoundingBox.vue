@@ -220,13 +220,23 @@ export default Vue.extend({
 
     onMouseUp() {
       if (this.newRectangle && this.newRectangle.exists()) {
-        const sx = this.newRectangle.x
-        const sy = this.newRectangle.y
         const pos = this.stage.getPointerPosition()!
         const { x: stageX = 0, y: stageY = 0 } = this.stage.attrs
         pos.x = transform(pos.x, stageX, this.scale)
         pos.y = transform(pos.y, stageY, this.scale)
-        const annotationToAdd = this.newRectangle.transform(sx, sy, pos.x - sx, pos.y - sy)
+        let x = this.newRectangle.x
+        let y = this.newRectangle.y
+        let width = pos.x - x
+        let height = pos.y - y
+        if (width < 0) {
+          x += width
+          width = -width
+        }
+        if (height < 0) {
+          y += height
+          height = -height
+        }
+        const annotationToAdd = this.newRectangle.transform(x, y, width, height)
         this.newRectangle = null
         this.configStage.draggable = true
         this.$emit('add-rectangle', annotationToAdd.toProps())
