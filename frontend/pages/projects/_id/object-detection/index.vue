@@ -233,7 +233,7 @@ export default {
 
     async remove(id) {
       delete this.visibilities[id]
-      const bbox = this.annotations.find((a) => a.uuid === region.id)
+      const bbox = this.annotations.find((a) => a.uuid === id)
       await this.$services.bbox.delete(this.projectId, this.image.id, bbox.id)
       await this.list(this.image.id)
     },

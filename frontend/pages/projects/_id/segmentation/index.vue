@@ -234,7 +234,7 @@ export default {
 
     async remove(id) {
       delete this.visibilities[id]
-      const segmentation = this.annotations.find((a) => a.uuid === region.id)
+      const segmentation = this.annotations.find((a) => a.uuid === id)
       await this.$services.segmentation.delete(this.projectId, this.image.id, segmentation.id)
       await this.list(this.image.id)
     },
