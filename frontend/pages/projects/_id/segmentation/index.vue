@@ -11,14 +11,7 @@
         @click:clear-label="clear"
         @click:review="confirm"
       >
-        <v-btn-toggle v-model="labelOption" mandatory class="ms-2">
-          <v-btn icon>
-            <v-icon>{{ mdiFormatListBulleted }}</v-icon>
-          </v-btn>
-          <v-btn icon>
-            <v-icon>{{ mdiText }}</v-icon>
-          </v-btn>
-        </v-btn-toggle>
+        <button-zoom class="ms-2" @zoom-in="zoomIn" @zoom-out="zoomOut" />
       </toolbar-laptop>
       <toolbar-mobile :total="images.count" class="d-flex d-sm-none" />
     </template>
@@ -89,10 +82,12 @@ import { useLabelList } from '@/composables/useLabelList'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import VSegmentation from '@/components/tasks/segmentation/VSegmentation.vue'
 import RegionList from '@/components/tasks/image/RegionList.vue'
+import ButtonZoom from '@/components/tasks/toolbar/buttons/ButtonZoom.vue'
 
 export default {
   components: {
     AnnotationProgress,
+    ButtonZoom,
     LayoutText,
     ListMetadata,
     RegionList,
@@ -310,6 +305,14 @@ export default {
 
     updateScale(scale) {
       this.scale = scale
+    },
+
+    zoomOut() {
+      this.scale -= 0.1
+    },
+
+    zoomIn() {
+      this.scale += 0.1
     }
   }
 }
