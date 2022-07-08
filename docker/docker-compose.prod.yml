@@ -59,6 +59,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.nginx
+    image: doccano_nginx:prod
     environment:
       API_URL: "http://backend:8000"
       GOOGLE_TRACKING_ID: ""
