@@ -13,19 +13,19 @@
       @dragstart="onDragStart"
       @dragend="onDragEnd"
     />
+    <v-circle
+      ref="anchorRef"
+      :config="{
+        x: -10,
+        y: -10,
+        radius: 5,
+        fill: 'white',
+        stroke: 'black',
+        scaleX: 1 / (scale || 1),
+        scaleY: 1 / (scale || 1)
+      }"
+    />
     <template v-if="isSelected && !isMoving">
-      <v-circle
-        ref="anchorRef"
-        :config="{
-          x: -10,
-          y: -10,
-          radius: 5,
-          fill: 'white',
-          stroke: 'black',
-          scaleX: 1 / (scale || 1),
-          scaleY: 1 / (scale || 1)
-        }"
-      />
       <v-line
         v-for="(lineSegment, insertIndex) in writablePolygon.lineSegments"
         :key="insertIndex"
