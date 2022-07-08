@@ -93,17 +93,17 @@ export default {
       mdiDeleteOutline,
       currentDoc: {
         id: 8,
-        filename: require('~/assets/6737785.png'),
+        filename: require('~/assets/images/demo/cat.jpeg'),
         annotations: [
           {
             id: 17,
-            text: "S'il ne m'avait pas aidé, j'aurais échoué.",
+            text: 'A cat playing with flowers',
             user: 1,
             document: 8
           },
           {
             id: 18,
-            text: "S'il ne m'avait pas aidée, j'aurais échoué.",
+            text: 'A flower is blooming on the ground',
             user: 1,
             document: 8
           }

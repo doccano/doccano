@@ -217,9 +217,9 @@ export default Vue.extend({
         'seq2seq.png',
         'intent_detection.png',
         'image_classification.png',
-        'image_classification.png', // image captioning
-        'image_classification.png', // bounding box
-        'image_classification.png', // segmentation
+        'image_captioning.png',
+        'object_detection.png',
+        'segmentation.png',
         'speech_to_text.png'
       ]
     },
