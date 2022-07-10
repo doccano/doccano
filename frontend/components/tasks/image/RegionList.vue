@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card max-height="500" style="overflow-y: scroll">
     <v-card-title class="pb-0">Regions</v-card-title>
     <v-list dense>
       <v-list-item-group v-model="model">
