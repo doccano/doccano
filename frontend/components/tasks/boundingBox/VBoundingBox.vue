@@ -179,8 +179,12 @@ export default Vue.extend({
     onMouseDown(e: Konva.KonvaEventObject<MouseEvent>) {
       if (e.target instanceof Konva.Image) {
         // while new polygon is creating, prevent to select polygon.
+        const clickedOutsideOfRectangle = !!this.selectedRectangle
         this.selectedRectangle = null
         this.updateTransformer()
+        if (clickedOutsideOfRectangle) {
+          return
+        }
       }
       // prevent multiple event.
       if (e.target instanceof HTMLCanvasElement) {
