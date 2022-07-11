@@ -4,6 +4,7 @@ from django.db.models import QuerySet
 
 from . import writers
 from .catalog import CSV, JSON, JSONL, FastText
+from .comments import Comments
 from .formatters import (
     DictFormatter,
     FastTextCategoryFormatter,
@@ -14,8 +15,7 @@ from .formatters import (
     TupledSpanFormatter,
 )
 from .labels import Categories, Labels, Relations, Spans, Texts
-from .comments import Comments
-from data_export.models import DATA, ExportedExample, ExportedComment
+from data_export.models import DATA, ExportedExample
 from projects.models import (
     DOCUMENT_CLASSIFICATION,
     IMAGE_CLASSIFICATION,

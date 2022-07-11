@@ -4,10 +4,8 @@ from typing import Dict, List, Tuple
 
 from django.db.models import QuerySet
 
-from data_export.models import (
-    ExportedExample,
-    ExportedComment,
-)
+from data_export.models import ExportedComment, ExportedExample
+
 
 class Comments(abc.ABC):
     comment_class = ExportedComment

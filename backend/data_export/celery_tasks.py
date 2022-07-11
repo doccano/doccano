@@ -8,9 +8,14 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404
 
 from .pipeline.dataset import Dataset
-from .pipeline.factories import create_formatter, create_labels, create_writer, create_comment
+from .pipeline.factories import (
+    create_comment,
+    create_formatter,
+    create_labels,
+    create_writer,
+)
 from .pipeline.services import ExportApplicationService
-from data_export.models import ExportedExample, ExportedComment
+from data_export.models import ExportedExample
 from projects.models import Member, Project
 
 logger = get_task_logger(__name__)
