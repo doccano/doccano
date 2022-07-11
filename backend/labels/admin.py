@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Span, TextLabel
+from .models import BoundingBox, Category, Segmentation, Span, TextLabel
 
 
 class SpanAdmin(admin.ModelAdmin):
@@ -18,6 +18,18 @@ class TextLabelAdmin(admin.ModelAdmin):
     ordering = ("example",)
 
 
+class BoundingBoxAdmin(admin.ModelAdmin):
+    list_display = ("example", "label", "user", "x", "y", "width", "height")
+    ordering = ("example",)
+
+
+class SegmentationAdmin(admin.ModelAdmin):
+    list_display = ("example", "label", "user", "points")
+    ordering = ("example",)
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Span, SpanAdmin)
 admin.site.register(TextLabel, TextLabelAdmin)
+admin.site.register(BoundingBox, BoundingBoxAdmin)
+admin.site.register(Segmentation, SegmentationAdmin)

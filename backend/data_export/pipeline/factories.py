@@ -13,12 +13,15 @@ from .formatters import (
     RenameFormatter,
     TupledSpanFormatter,
 )
-from .labels import Categories, Labels, Relations, Spans, Texts
+from .labels import BoundingBoxes, Categories, Labels, Relations, Segments, Spans, Texts
 from data_export.models import DATA, ExportedExample
 from projects.models import (
+    BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
+    IMAGE_CAPTIONING,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEGMENTATION,
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
@@ -40,13 +43,22 @@ def create_writer(file_format: str) -> writers.Writer:
 
 def create_formatter(project: Project, file_format: str) -> List[Formatter]:
     use_relation = getattr(project, "use_relation", False)
+    # text tasks
     mapper_text_classification = {DATA: "text", Categories.column: "label"}
     mapper_sequence_labeling = {DATA: "text", Spans.column: "label"}
     mapper_seq2seq = {DATA: "text", Texts.column: "label"}
-    mapper_image_classification = {DATA: "filename", Categories.column: "label"}
-    mapper_speech2text = {DATA: "filename", Texts.column: "label"}
     mapper_intent_detection = {DATA: "text", Categories.column: "cats"}
     mapper_relation_extraction = {DATA: "text"}
+
+    # image tasks
+    mapper_image_classification = {DATA: "filename", Categories.column: "label"}
+    mapper_bounding_box = {DATA: "filename", BoundingBoxes.column: "bbox"}
+    mapper_segmentation = {DATA: "filename", BoundingBoxes.column: "segmentation"}
+    mapper_image_captioning = {DATA: "filename", Texts.column: "label"}
+
+    # audio tasks
+    mapper_speech2text = {DATA: "filename", Texts.column: "label"}
+
     mapping: Dict[str, Dict[str, List[Formatter]]] = {
         DOCUMENT_CLASSIFICATION: {
             CSV.name: [
@@ -93,6 +105,11 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
                 RenameFormatter(**mapper_intent_detection),
             ]
         },
+        BOUNDING_BOX: {JSONL.name: [DictFormatter(BoundingBoxes.column), RenameFormatter(**mapper_bounding_box)]},
+        SEGMENTATION: {JSONL.name: [DictFormatter(Segments.column), RenameFormatter(**mapper_segmentation)]},
+        IMAGE_CAPTIONING: {
+            JSONL.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_image_captioning)]
+        },
     }
     return mapping[project.project_type][file_format]
 
@@ -106,6 +123,9 @@ def select_label_collection(project: Project) -> List[Type[Labels]]:
         IMAGE_CLASSIFICATION: [Categories],
         SPEECH2TEXT: [Texts],
         INTENT_DETECTION_AND_SLOT_FILLING: [Categories, Spans],
+        BOUNDING_BOX: [BoundingBoxes],
+        SEGMENTATION: [Segments],
+        IMAGE_CAPTIONING: [Texts],
     }
     return mapping[project.project_type]
 

@@ -1,10 +1,14 @@
 from django.urls import path
 
 from .views import (
+    BoundingBoxDetailAPI,
+    BoundingBoxListAPI,
     CategoryDetailAPI,
     CategoryListAPI,
     RelationDetail,
     RelationList,
+    SegmentationDetailAPI,
+    SegmentationListAPI,
     SpanDetailAPI,
     SpanListAPI,
     TextLabelDetailAPI,
@@ -31,5 +35,17 @@ urlpatterns = [
         route="examples/<int:example_id>/texts/<int:annotation_id>",
         view=TextLabelDetailAPI.as_view(),
         name="text_detail",
+    ),
+    path(route="examples/<int:example_id>/bboxes", view=BoundingBoxListAPI.as_view(), name="bbox_list"),
+    path(
+        route="examples/<int:example_id>/bboxes/<int:annotation_id>",
+        view=BoundingBoxDetailAPI.as_view(),
+        name="bbox_detail",
+    ),
+    path(route="examples/<int:example_id>/segments", view=SegmentationListAPI.as_view(), name="segmentation_list"),
+    path(
+        route="examples/<int:example_id>/segments/<int:annotation_id>",
+        view=SegmentationDetailAPI.as_view(),
+        name="segmentation_detail",
     ),
 ]

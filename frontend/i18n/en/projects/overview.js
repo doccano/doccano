@@ -17,6 +17,9 @@ export default {
     'Sequence to sequence',
     'Intent Detection and Slot Filling',
     'Image Classification',
+    'Image Captioning',
+    'Object Detection',
+    'Segmentation',
     'Speech to Text'
   ]
 }

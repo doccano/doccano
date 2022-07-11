@@ -119,7 +119,8 @@ export default Vue.extend({
       return this.$route.params.id
     },
     isImageTask(): boolean {
-      return this.project.projectType === 'ImageClassification'
+      const imageTasks = ['ImageClassification', 'ImageCaptioning', 'BoundingBox', 'Segmentation']
+      return imageTasks.includes(this.project.projectType)
     },
     isAudioTask(): boolean {
       return this.project.projectType === 'Speech2text'

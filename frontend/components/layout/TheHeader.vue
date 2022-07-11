@@ -101,6 +101,9 @@ export default {
         },
         { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' },
         { title: 'Image Classification', link: 'image-classification' },
+        { title: 'Image Captioning', link: 'image-caption' },
+        { title: 'Object Detection', link: 'object-detection' },
+        { title: 'Polygon Segmentation', link: 'segmentation' },
         { title: 'Speech to Text', link: 'speech-to-text' }
       ],
       mdiLogout,

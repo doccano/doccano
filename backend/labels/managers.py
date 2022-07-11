@@ -81,3 +81,13 @@ class RelationManager(LabelManager):
 
     def can_annotate(self, label, project) -> bool:
         return True
+
+
+class BoundingBoxManager(LabelManager):
+    def can_annotate(self, label, project) -> bool:
+        return True
+
+
+class SegmentationManager(LabelManager):
+    def can_annotate(self, label, project) -> bool:
+        return True

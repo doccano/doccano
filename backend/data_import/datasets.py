@@ -21,9 +21,12 @@ from .pipeline.readers import (
 )
 from label_types.models import CategoryType, LabelType, RelationType, SpanType
 from projects.models import (
+    BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
+    IMAGE_CAPTIONING,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEGMENTATION,
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
@@ -218,6 +221,9 @@ def select_dataset(project: Project, task: str, file_format: Format) -> Type[Dat
         SEQ2SEQ: Seq2seqDataset,
         INTENT_DETECTION_AND_SLOT_FILLING: CategoryAndSpanDataset,
         IMAGE_CLASSIFICATION: BinaryDataset,
+        IMAGE_CAPTIONING: BinaryDataset,
+        BOUNDING_BOX: BinaryDataset,
+        SEGMENTATION: BinaryDataset,
         SPEECH2TEXT: BinaryDataset,
     }
     if task not in mapping:
