@@ -119,6 +119,11 @@ export default Vue.extend({
   watch: {
     scale() {
       this.setZoom()
+    },
+
+    imageUrl() {
+      this.selectedRectangle = null
+      this.updateTransformer()
     }
   },
 
