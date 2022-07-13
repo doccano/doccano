@@ -1,6 +1,7 @@
 from typing import List, Optional, Type
 
 import pandas as pd
+from pydantic import ValidationError
 
 from .data import BaseData
 from .exceptions import FileParseException
@@ -93,15 +94,19 @@ class LabelMaker:
             return []
 
         df_label = df.explode(self.column)
-        df_label = df_label[[UUID_COLUMN, self.column]]
         df_label.dropna(subset=[self.column], inplace=True)
         labels = []
         for row in df_label.to_dict(orient="records"):
             try:
                 label = self.label_class.parse(row[UUID_COLUMN], row[self.column])
                 labels.append(label)
-            except ValueError:
-                pass
+            except ValidationError as e:
+                errors = e.errors()
+                filename = row.get(UPLOAD_NAME_COLUMN, "")
+                line = row.get(LINE_NUMBER_COLUMN, 0)
+                for error in errors:
+                    message = str(error["loc"]) + ":" + error["msg"]
+                    self._errors.append(FileParseException(filename, line, message))
         return labels
 
     def check_column_existence(self, df: pd.DataFrame) -> bool:

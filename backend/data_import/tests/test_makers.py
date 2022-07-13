@@ -86,3 +86,14 @@ class TestLabelFormatter(TestCase):
         )
         labels = label_maker.make(df)
         self.assertEqual(len(labels), 1)
+
+    def test_validation_error(self):
+        label_maker = LabelMaker(column=self.label_column, label_class=self.label_class)
+        df = pd.DataFrame(
+            [
+                {LINE_NUMBER_COLUMN: 1, UUID_COLUMN: uuid.uuid4(), self.label_column: [""]},  # empty label
+            ]
+        )
+        labels = label_maker.make(df)
+        self.assertEqual(len(labels), 0)
+        self.assertEqual(len(label_maker.errors), 1)

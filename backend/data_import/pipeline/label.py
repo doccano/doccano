@@ -2,7 +2,14 @@ import abc
 import uuid
 from typing import Any, Optional
 
-from pydantic import UUID4, BaseModel, ConstrainedStr, NonNegativeInt, root_validator
+from pydantic import (
+    UUID4,
+    BaseModel,
+    ConstrainedStr,
+    NonNegativeInt,
+    ValidationError,
+    root_validator,
+)
 
 from .label_types import LabelTypes
 from examples.models import Example
@@ -77,7 +84,7 @@ class SpanLabel(Label):
     def check_start_offset_is_less_than_end_offset(cls, values):
         start_offset, end_offset = values.get("start_offset"), values.get("end_offset")
         if start_offset >= end_offset:
-            raise ValueError("start_offset must be less than end_offset.")
+            raise ValidationError("start_offset must be less than end_offset.")
         return values
 
     @classmethod
