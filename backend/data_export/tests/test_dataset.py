@@ -17,9 +17,13 @@ class TestDataset(unittest.TestCase):
         label.find_by.return_value = {"labels": ["label"]}
         self.labels = MagicMock()
         self.labels.__iter__.return_value = [label]
+        comment = MagicMock()
+        comment.find_by.return_value = {"Comments": ["comment"]}
+        self.comments = MagicMock()
+        self.comments.__iter__.return_value = [comment]
 
     def test_to_dataframe(self):
         dataset = Dataset(self.examples, self.labels)
         df = dataset.to_dataframe()
-        expected = pd.DataFrame([{"data": "example", "labels": ["label"]}])
+        expected = pd.DataFrame([{"data": "example", "labels": ["label"], "Comments": ["comment"]}])
         assert_frame_equal(df, expected)

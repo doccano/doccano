@@ -78,12 +78,12 @@ class TestFastTextFormatter(unittest.TestCase):
         self.return_value = "Label"
         label = MagicMock()
         label.to_string.return_value = self.return_value
-        self.dataset = pd.DataFrame([{TARGET_COLUMN: [label], DATA: "example"}])
+        self.dataset = pd.DataFrame([{TARGET_COLUMN: [label], DATA: "example", "Comments": "comment"}])
 
     def test_format(self):
         formatter = FastTextCategoryFormatter(TARGET_COLUMN)
         dataset = formatter.format(self.dataset)
-        expected_dataset = pd.DataFrame([f"__label__{self.return_value} example"])
+        expected_dataset = pd.DataFrame([f"__label__{self.return_value} example comment"])
         self.assertEqual(dataset.to_csv(index=False, header=None), expected_dataset.to_csv(index=False, header=None))
 
 
