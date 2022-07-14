@@ -32,9 +32,6 @@
         }
     },
     "stack": "container",
-    "scripts": {
-        "postdeploy": "sh /doccano/tools/heroku.sh"
-    },
     "addons": [
         {
             "plan": "heroku-postgresql:hobby-dev"
