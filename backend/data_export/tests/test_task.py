@@ -62,7 +62,7 @@ class TestExportCategory(TestExport):
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
         self.category2 = mommy.make("ExportedCategory", example=self.example1, user=self.project.annotator)
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
-        self.comment2 = mommy.make("ExportedComment", example=self.example2, user=self.project.annotator)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
         self.data1 = self.data_to_text(self.example1)
         self.data2 = self.data_to_text(self.example2)
@@ -72,7 +72,7 @@ class TestExportCategory(TestExport):
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, "label": [self.category1.to_string()], "Comments": self.comment1},
+                {**self.data1, "label": [self.category1.to_string()], "Comments": [self.comment1.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.approver.username: [
@@ -80,7 +80,7 @@ class TestExportCategory(TestExport):
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.annotator.username: [
-                {**self.data1, "label": [self.category2.to_string()], "Comments": self.comment2},
+                {**self.data1, "label": [self.category2.to_string()], "Comments": [self.comment2.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
         }
@@ -94,16 +94,20 @@ class TestExportCategory(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             },
-            {**self.data2, "label": []},
+            {**self.data2, "label": [], "Comments": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
     def test_confirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset(confirmed_only=True)
-        expected_datasets = {self.project.admin.username: [{**self.data1, "label": [self.category1.to_string()], "Comments": self.comment1}]}
+        expected_datasets = {
+            self.project.admin.username: [
+                {**self.data1, "label": [self.category1.to_string()], "Comments": [self.comment1.to_string()]}
+            ]
+        }
         for username, dataset in expected_datasets.items():
             self.assertEqual(datasets[username], dataset)
 
@@ -114,7 +118,7 @@ class TestExportCategory(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -128,7 +132,7 @@ class TestExportSeq2seq(TestExport):
         self.text1 = mommy.make("TextLabel", example=self.example1, user=self.project.admin)
         self.text2 = mommy.make("TextLabel", example=self.example1, user=self.project.annotator)
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
-        self.comment2 = mommy.make("ExportedComment", example=self.example2, user=self.project.annotator)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
         self.data1 = self.data_to_text(self.example1)
         self.data2 = self.data_to_text(self.example2)
@@ -138,7 +142,7 @@ class TestExportSeq2seq(TestExport):
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, "label": [self.text1.text], "Comments": self.comment1},
+                {**self.data1, "label": [self.text1.text], "Comments": [self.comment1.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.approver.username: [
@@ -146,7 +150,7 @@ class TestExportSeq2seq(TestExport):
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.annotator.username: [
-                {**self.data1, "label": [self.text2.text], "Comments": self.comment2},
+                {**self.data1, "label": [self.text2.text], "Comments": [self.comment2.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
         }
@@ -160,9 +164,9 @@ class TestExportSeq2seq(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.text1.text, self.text2.text]),
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             },
-            {**self.data2, "label": []},
+            {**self.data2, "label": [], "Comments": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -171,7 +175,7 @@ class TestExportSeq2seq(TestExport):
         datasets = self.export_dataset(confirmed_only=True)
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, "label": [self.text1.text], "Comments": self.comment1},
+                {**self.data1, "label": [self.text1.text], "Comments": [self.comment1.to_string()]},
             ],
             self.project.approver.username: [],
             self.project.annotator.username: [],
@@ -186,7 +190,7 @@ class TestExportSeq2seq(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.text1.text, self.text2.text]),
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -200,7 +204,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
         self.category2 = mommy.make("ExportedCategory", example=self.example1, user=self.project.annotator)
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
-        self.comment2 = mommy.make("ExportedComment", example=self.example2, user=self.project.annotator)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         self.span = mommy.make(
             "ExportedSpan", example=self.example1, user=self.project.admin, start_offset=0, end_offset=1
         )
@@ -217,7 +221,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                     **self.data1,
                     "entities": [list(self.span.to_tuple())],
                     "cats": [self.category1.to_string()],
-                    "Comments": self.comment1
+                    "Comments": [self.comment1.to_string()]
                 },
                 {**self.data2, "entities": [], "cats": [], "Comments": []},
             ],
@@ -226,7 +230,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                     **self.data1,
                     "entities": [],
                     "cats": [self.category2.to_string()],
-                    "Comments": self.comment2
+                    "Comments": [self.comment2.to_string()]
                 },
                 {**self.data2, "entities": [], "cats": [], "Comments": []},
             ],
@@ -246,7 +250,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                 **self.data1,
                 "entities": [list(self.span.to_tuple())],
                 "cats": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": self.comment1
+                "Comments": [self.comment1.to_string(), self.comment2.to_string()]
             },
             {**self.data2, "entities": [], "cats": [], "Comments": []},
         ]
@@ -261,7 +265,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                     **self.data1,
                     "entities": [list(self.span.to_tuple())],
                     "cats": [self.category1.to_string()],
-                    "Comments": self.comment1
+                    "Comments": [self.comment1.to_string()]
                 },
             ],
             self.project.annotator.username: [],
@@ -278,7 +282,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                 **self.data1,
                 "entities": [list(self.span.to_tuple())],
                 "cats": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             },
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -297,7 +301,7 @@ class TestExportSequenceLabeling(TestExport):
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
-        self.comment2 = mommy.make("ExportedComment", example=self.example2, user=self.project.annotator)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         self.data1 = self.data_to_text(self.example1)
         self.data2 = self.data_to_text(self.example2)
 
@@ -306,11 +310,11 @@ class TestExportSequenceLabeling(TestExport):
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, "label": [list(self.span1.to_tuple())], "Comments": self.comment1},
+                {**self.data1, "label": [list(self.span1.to_tuple())], "Comments": [self.comment1.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.annotator.username: [
-                {**self.data1, "label": [list(self.span2.to_tuple())], "Comments": self.comment2},
+                {**self.data1, "label": [list(self.span2.to_tuple())], "Comments": [self.comment2.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.approver.username: [
@@ -328,9 +332,9 @@ class TestExportSequenceLabeling(TestExport):
             {
                 **self.data1,
                 "label": [list(self.span1.to_tuple()), list(self.span2.to_tuple())],
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             },
-            {**self.data2, "label": []},
+            {**self.data2, "label": [], "Comments": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -339,7 +343,7 @@ class TestExportSequenceLabeling(TestExport):
         datasets = self.export_dataset(confirmed_only=True)
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, "label": [list(self.span1.to_tuple())], "Comments": self.comment1},
+                {**self.data1, "label": [list(self.span1.to_tuple())], "Comments": [self.comment1.to_string()]},
             ],
             self.project.annotator.username: [],
             self.project.approver.username: [],
@@ -354,7 +358,7 @@ class TestExportSequenceLabeling(TestExport):
             {
                 **self.data1,
                 "label": [list(self.span1.to_tuple()), list(self.span2.to_tuple())],
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             },
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -368,7 +372,7 @@ class TestExportSpeechToText(TestExport):
         self.text1 = mommy.make("TextLabel", example=self.example1, user=self.project.admin)
         self.text2 = mommy.make("TextLabel", example=self.example1, user=self.project.annotator)
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
-        self.comment2 = mommy.make("ExportedComment", example=self.example2, user=self.project.annotator)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
         self.data1 = self.data_to_filename(self.example1)
         self.data2 = self.data_to_filename(self.example2)
@@ -378,7 +382,7 @@ class TestExportSpeechToText(TestExport):
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, "label": [self.text1.text], "Comments": self.comment1},
+                {**self.data1, "label": [self.text1.text], "Comments": [self.comment1.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.approver.username: [
@@ -386,7 +390,7 @@ class TestExportSpeechToText(TestExport):
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.annotator.username: [
-                {**self.data1, "label": [self.text2.text], "Comments": self.comment2},
+                {**self.data1, "label": [self.text2.text], "Comments": [self.comment2.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
         }
@@ -400,9 +404,9 @@ class TestExportSpeechToText(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.text1.text, self.text2.text]),
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             },
-            {**self.data2, "label": []},
+            {**self.data2, "label": [], "Comments": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -411,7 +415,7 @@ class TestExportSpeechToText(TestExport):
         datasets = self.export_dataset(confirmed_only=True)
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, "label": [self.text1.text], "Comments": self.comment1},
+                {**self.data1, "label": [self.text1.text], "Comments": [self.comment1.to_string()]},
             ],
             self.project.annotator.username: [],
             self.project.approver.username: [],
@@ -426,7 +430,7 @@ class TestExportSpeechToText(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.text1.text, self.text2.text]),
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -440,7 +444,7 @@ class TestExportImageClassification(TestExport):
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
         self.category2 = mommy.make("ExportedCategory", example=self.example1, user=self.project.annotator)
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
-        self.comment2 = mommy.make("ExportedComment", example=self.example2, user=self.project.annotator)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
         self.data1 = self.data_to_filename(self.example1)
         self.data2 = self.data_to_filename(self.example2)
@@ -453,9 +457,9 @@ class TestExportImageClassification(TestExport):
                 {
                     **self.data1,
                     "label": [self.category1.to_string()],
-                    "Comments": self.comment1
+                    "Comments": [self.comment1.to_string()]
                 },
-                {**self.data2, "label": [], "Comments": self.comment2},
+                {**self.data2, "label": [], "Comments": []},
             ],
             self.project.approver.username: [
                 {**self.data1, "label": [], "Comments": []},
@@ -465,7 +469,7 @@ class TestExportImageClassification(TestExport):
                 {
                     **self.data1,
                     "label": [self.category2.to_string()],
-                    "Comments": self.comment2
+                    "Comments": [self.comment2.to_string()]
                 },
                 {**self.data2, "label": [], "Comments": []},
             ],
@@ -480,7 +484,7 @@ class TestExportImageClassification(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": [self.comment1, self.comment2]
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             },
             {**self.data2, "label": [], "Comments": []},
         ]
@@ -489,7 +493,11 @@ class TestExportImageClassification(TestExport):
     def test_confirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset(confirmed_only=True)
-        expected_datasets = {self.project.admin.username: [{**self.data1, "label": [self.category1.to_string()]}]}
+        expected_datasets = {
+            self.project.admin.username: [
+                {**self.data1, "label": [self.category1.to_string()], "Comments": [self.comment1.to_string()]}
+            ]
+        }
         for username, dataset in expected_datasets.items():
             self.assertEqual(datasets[username], dataset)
 
@@ -500,6 +508,7 @@ class TestExportImageClassification(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.category1.to_string(), self.category2.to_string()]),
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -523,7 +532,7 @@ class TestExportRelation(TestExport):
             "ExportedRelation", from_id=self.span1, to_id=self.span2, example=self.example1, user=self.project.admin
         )
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
-        self.comment2 = mommy.make("ExportedComment", example=self.example2, user=self.project.annotator)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
         self.data1 = self.data_to_text(self.example1)
         self.data2 = self.data_to_text(self.example2)
@@ -537,7 +546,7 @@ class TestExportRelation(TestExport):
                     **self.data1,
                     "entities": [self.span1.to_dict(), self.span2.to_dict()],
                     "relations": [self.relation.to_dict()],
-                    "Comments": self.comment1
+                    "Comments": [self.comment1.to_dict()]
                 },
                 {**self.data2, "entities": [], "relations": [], "Comments": []},
             ],
@@ -546,9 +555,9 @@ class TestExportRelation(TestExport):
                     **self.data1,
                     "entities": [self.span3.to_dict()],
                     "relations": [],
-                    "Comments": self.comment2
+                    "Comments": [self.comment2.to_dict()]
                 },
-                {**self.data2, "entities": [], "relations": [], "Comments": self.comment2},
+                {**self.data2, "entities": [], "relations": [], "Comments": []},
             ],
             self.project.approver.username: [
                 {**self.data1, "entities": [], "relations": [], "Comments": []},
@@ -566,7 +575,7 @@ class TestExportRelation(TestExport):
                 **self.data1,
                 "entities": [self.span1.to_dict(), self.span2.to_dict(), self.span3.to_dict()],
                 "relations": [self.relation.to_dict()],
-                "Comments": [self.comment1, self.comment2]
+                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()]
             },
             {**self.data2, "entities": [], "relations": [], "Comments": []},
         ]
@@ -581,7 +590,7 @@ class TestExportRelation(TestExport):
                     **self.data1,
                     "entities": [self.span1.to_dict(), self.span2.to_dict()],
                     "relations": [self.relation.to_dict()],
-                    "Comments": self.comment1
+                    "Comments": [self.comment1.to_dict()]
                 },
             ],
             self.project.annotator.username: [],
@@ -598,7 +607,7 @@ class TestExportRelation(TestExport):
                 **self.data1,
                 "entities": [self.span1.to_dict(), self.span2.to_dict(), self.span3.to_dict()],
                 "relations": [self.relation.to_dict()],
-                "Comments": [self.comment1, self.comment2]
+                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()]
             }
         ]
         self.assertEqual(dataset, expected_dataset)

@@ -71,29 +71,52 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
             JSONL.name: [
                 DictFormatter(Spans.column),
                 DictFormatter(Relations.column),
+                DictFormatter(Comments.column),
                 RenameFormatter(**mapper_relation_extraction),
             ]
             if use_relation
-            else [TupledSpanFormatter(Spans.column), RenameFormatter(**mapper_sequence_labeling)]
+            else [
+                TupledSpanFormatter(Spans.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_sequence_labeling)
+            ]
         },
         SEQ2SEQ: {
-            CSV.name: [JoinedCategoryFormatter(Texts.column), RenameFormatter(**mapper_seq2seq)],
-            JSON.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_seq2seq)],
-            JSONL.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_seq2seq)],
+            CSV.name: [
+                JoinedCategoryFormatter(Texts.column),
+                JoinedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_seq2seq)
+            ],
+            JSON.name: [
+                ListedCategoryFormatter(Texts.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_seq2seq)
+            ],
+            JSONL.name: [
+                ListedCategoryFormatter(Texts.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_seq2seq)
+            ],
         },
         IMAGE_CLASSIFICATION: {
             JSONL.name: [
                 ListedCategoryFormatter(Categories.column),
+                ListedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_image_classification),
             ],
         },
         SPEECH2TEXT: {
-            JSONL.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_speech2text)],
+            JSONL.name: [
+                ListedCategoryFormatter(Texts.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_speech2text)
+            ],
         },
         INTENT_DETECTION_AND_SLOT_FILLING: {
             JSONL.name: [
                 ListedCategoryFormatter(Categories.column),
                 TupledSpanFormatter(Spans.column),
+                ListedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_intent_detection),
             ]
         },

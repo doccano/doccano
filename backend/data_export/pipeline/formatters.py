@@ -52,7 +52,7 @@ class FastTextCategoryFormatter(Formatter):
         )
         dataset[self.target_column] = dataset[self.target_column].fillna("")
         dataset["Comments"] = dataset["Comments"].apply(
-            lambda comments: "#".join(comment.to_string() for comment in comments)
+            lambda comments: " ".join(f"__comment__{comment.to_string()}" for comment in comments)
         )
         dataset = dataset[self.target_column] + " " + dataset[DATA] + " " + dataset["Comments"]
         return dataset
