@@ -90,24 +90,24 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
             else [
                 TupledSpanFormatter(Spans.column),
                 ListedCategoryFormatter(Comments.column),
-                RenameFormatter(**mapper_sequence_labeling)
+                RenameFormatter(**mapper_sequence_labeling),
             ]
         },
         SEQ2SEQ: {
             CSV.name: [
                 JoinedCategoryFormatter(Texts.column),
                 JoinedCategoryFormatter(Comments.column),
-                RenameFormatter(**mapper_seq2seq)
+                RenameFormatter(**mapper_seq2seq),
             ],
             JSON.name: [
                 ListedCategoryFormatter(Texts.column),
                 ListedCategoryFormatter(Comments.column),
-                RenameFormatter(**mapper_seq2seq)
+                RenameFormatter(**mapper_seq2seq),
             ],
             JSONL.name: [
                 ListedCategoryFormatter(Texts.column),
                 ListedCategoryFormatter(Comments.column),
-                RenameFormatter(**mapper_seq2seq)
+                RenameFormatter(**mapper_seq2seq),
             ],
         },
         IMAGE_CLASSIFICATION: {
@@ -121,7 +121,7 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
             JSONL.name: [
                 ListedCategoryFormatter(Texts.column),
                 ListedCategoryFormatter(Comments.column),
-                RenameFormatter(**mapper_speech2text)
+                RenameFormatter(**mapper_speech2text),
             ],
         },
         INTENT_DETECTION_AND_SLOT_FILLING: {

@@ -97,7 +97,7 @@ class TestExportCategory(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
             {**self.data2, "label": [], "Comments": []},
         ]
@@ -121,7 +121,7 @@ class TestExportCategory(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -167,7 +167,7 @@ class TestExportSeq2seq(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.text1.text, self.text2.text]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
             {**self.data2, "label": [], "Comments": []},
         ]
@@ -193,7 +193,7 @@ class TestExportSeq2seq(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.text1.text, self.text2.text]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -224,7 +224,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                     **self.data1,
                     "entities": [list(self.span.to_tuple())],
                     "cats": [self.category1.to_string()],
-                    "Comments": [self.comment1.to_string()]
+                    "Comments": [self.comment1.to_string()],
                 },
                 {**self.data2, "entities": [], "cats": [], "Comments": []},
             ],
@@ -233,7 +233,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                     **self.data1,
                     "entities": [],
                     "cats": [self.category2.to_string()],
-                    "Comments": [self.comment2.to_string()]
+                    "Comments": [self.comment2.to_string()],
                 },
                 {**self.data2, "entities": [], "cats": [], "Comments": []},
             ],
@@ -253,7 +253,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                 **self.data1,
                 "entities": [list(self.span.to_tuple())],
                 "cats": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": [self.comment1.to_string(), self.comment2.to_string()]
+                "Comments": [self.comment1.to_string(), self.comment2.to_string()],
             },
             {**self.data2, "entities": [], "cats": [], "Comments": []},
         ]
@@ -268,7 +268,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                     **self.data1,
                     "entities": [list(self.span.to_tuple())],
                     "cats": [self.category1.to_string()],
-                    "Comments": [self.comment1.to_string()]
+                    "Comments": [self.comment1.to_string()],
                 },
             ],
             self.project.annotator.username: [],
@@ -285,7 +285,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                 **self.data1,
                 "entities": [list(self.span.to_tuple())],
                 "cats": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -335,7 +335,7 @@ class TestExportSequenceLabeling(TestExport):
             {
                 **self.data1,
                 "label": [list(self.span1.to_tuple()), list(self.span2.to_tuple())],
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
             {**self.data2, "label": [], "Comments": []},
         ]
@@ -361,7 +361,7 @@ class TestExportSequenceLabeling(TestExport):
             {
                 **self.data1,
                 "label": [list(self.span1.to_tuple()), list(self.span2.to_tuple())],
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -407,7 +407,7 @@ class TestExportSpeechToText(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.text1.text, self.text2.text]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
             {**self.data2, "label": [], "Comments": []},
         ]
@@ -433,7 +433,7 @@ class TestExportSpeechToText(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.text1.text, self.text2.text]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -457,11 +457,7 @@ class TestExportImageClassification(TestExport):
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {
-                    **self.data1,
-                    "label": [self.category1.to_string()],
-                    "Comments": [self.comment1.to_string()]
-                },
+                {**self.data1, "label": [self.category1.to_string()], "Comments": [self.comment1.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.approver.username: [
@@ -469,11 +465,7 @@ class TestExportImageClassification(TestExport):
                 {**self.data2, "label": [], "Comments": []},
             ],
             self.project.annotator.username: [
-                {
-                    **self.data1,
-                    "label": [self.category2.to_string()],
-                    "Comments": [self.comment2.to_string()]
-                },
+                {**self.data1, "label": [self.category2.to_string()], "Comments": [self.comment2.to_string()]},
                 {**self.data2, "label": [], "Comments": []},
             ],
         }
@@ -487,7 +479,7 @@ class TestExportImageClassification(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
             {**self.data2, "label": [], "Comments": []},
         ]
@@ -511,7 +503,7 @@ class TestExportImageClassification(TestExport):
             {
                 **self.data1,
                 "label": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()])
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -761,7 +753,7 @@ class TestExportRelation(TestExport):
                     **self.data1,
                     "entities": [self.span1.to_dict(), self.span2.to_dict()],
                     "relations": [self.relation.to_dict()],
-                    "Comments": [self.comment1.to_dict()]
+                    "Comments": [self.comment1.to_dict()],
                 },
                 {**self.data2, "entities": [], "relations": [], "Comments": []},
             ],
@@ -770,7 +762,7 @@ class TestExportRelation(TestExport):
                     **self.data1,
                     "entities": [self.span3.to_dict()],
                     "relations": [],
-                    "Comments": [self.comment2.to_dict()]
+                    "Comments": [self.comment2.to_dict()],
                 },
                 {**self.data2, "entities": [], "relations": [], "Comments": []},
             ],
@@ -790,7 +782,7 @@ class TestExportRelation(TestExport):
                 **self.data1,
                 "entities": [self.span1.to_dict(), self.span2.to_dict(), self.span3.to_dict()],
                 "relations": [self.relation.to_dict()],
-                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()]
+                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()],
             },
             {**self.data2, "entities": [], "relations": [], "Comments": []},
         ]
@@ -805,7 +797,7 @@ class TestExportRelation(TestExport):
                     **self.data1,
                     "entities": [self.span1.to_dict(), self.span2.to_dict()],
                     "relations": [self.relation.to_dict()],
-                    "Comments": [self.comment1.to_dict()]
+                    "Comments": [self.comment1.to_dict()],
                 },
             ],
             self.project.annotator.username: [],
@@ -822,7 +814,7 @@ class TestExportRelation(TestExport):
                 **self.data1,
                 "entities": [self.span1.to_dict(), self.span2.to_dict(), self.span3.to_dict()],
                 "relations": [self.relation.to_dict()],
-                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()]
+                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()],
             }
         ]
         self.assertEqual(dataset, expected_dataset)
