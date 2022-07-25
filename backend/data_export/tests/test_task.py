@@ -253,7 +253,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
                 **self.data1,
                 "entities": [list(self.span.to_tuple())],
                 "cats": sorted([self.category1.to_string(), self.category2.to_string()]),
-                "Comments": [self.comment1.to_string(), self.comment2.to_string()],
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
             {**self.data2, "entities": [], "cats": [], "Comments": []},
         ]
@@ -514,6 +514,8 @@ class TestExportBoundingBox(TestExport):
         self.project = prepare_project(BOUNDING_BOX, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
+        self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         self.bbox1 = mommy.make(
             "ExportedBoundingBox", example=self.example1, user=self.project.admin, x=0, y=0, width=10, height=10
         )
@@ -532,19 +534,17 @@ class TestExportBoundingBox(TestExport):
                 {
                     **self.data1,
                     "bbox": [self.bbox1.to_dict()],
+                    "Comments": [self.comment1.to_dict()],
                 },
-                {**self.data2, "bbox": []},
+                {**self.data2, "bbox": [], "Comments": []},
             ],
             self.project.approver.username: [
-                {**self.data1, "bbox": []},
-                {**self.data2, "bbox": []},
+                {**self.data1, "bbox": [], "Comments": []},
+                {**self.data2, "bbox": [], "Comments": []},
             ],
             self.project.annotator.username: [
-                {
-                    **self.data1,
-                    "bbox": [self.bbox2.to_dict()],
-                },
-                {**self.data2, "bbox": []},
+                {**self.data1, "bbox": [self.bbox2.to_dict()], "Comments": [self.comment2.to_dict()]},
+                {**self.data2, "bbox": [], "Comments": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -557,15 +557,20 @@ class TestExportBoundingBox(TestExport):
             {
                 **self.data1,
                 "bbox": [self.bbox1.to_dict(), self.bbox2.to_dict()],
+                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()],
             },
-            {**self.data2, "bbox": []},
+            {**self.data2, "bbox": [], "Comments": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
     def test_confirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset(confirmed_only=True)
-        expected_datasets = {self.project.admin.username: [{**self.data1, "bbox": [self.bbox1.to_dict()]}]}
+        expected_datasets = {
+            self.project.admin.username: [
+                {**self.data1, "bbox": [self.bbox1.to_dict()], "Comments": [self.comment1.to_dict()]}
+            ]
+        }
         for username, dataset in expected_datasets.items():
             self.assertEqual(datasets[username], dataset)
 
@@ -576,6 +581,7 @@ class TestExportBoundingBox(TestExport):
             {
                 **self.data1,
                 "bbox": [self.bbox1.to_dict(), self.bbox2.to_dict()],
+                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()],
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -586,6 +592,8 @@ class TestExportSegmentation(TestExport):
         self.project = prepare_project(SEGMENTATION, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
+        self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         self.seg1 = mommy.make("ExportedSegmentation", example=self.example1, user=self.project.admin, points=[0, 1])
         self.seg2 = mommy.make(
             "ExportedSegmentation", example=self.example1, user=self.project.annotator, points=[1, 2]
@@ -600,22 +608,16 @@ class TestExportSegmentation(TestExport):
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {
-                    **self.data1,
-                    self.column: [self.seg1.to_dict()],
-                },
-                {**self.data2, self.column: []},
+                {**self.data1, self.column: [self.seg1.to_dict()], "Comments": [self.comment1.to_dict()]},
+                {**self.data2, self.column: [], "Comments": []},
             ],
             self.project.approver.username: [
-                {**self.data1, self.column: []},
-                {**self.data2, self.column: []},
+                {**self.data1, self.column: [], "Comments": []},
+                {**self.data2, self.column: [], "Comments": []},
             ],
             self.project.annotator.username: [
-                {
-                    **self.data1,
-                    self.column: [self.seg2.to_dict()],
-                },
-                {**self.data2, self.column: []},
+                {**self.data1, self.column: [self.seg2.to_dict()], "Comments": [self.comment2.to_dict()]},
+                {**self.data2, self.column: [], "Comments": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -628,15 +630,20 @@ class TestExportSegmentation(TestExport):
             {
                 **self.data1,
                 self.column: [self.seg1.to_dict(), self.seg2.to_dict()],
+                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()],
             },
-            {**self.data2, self.column: []},
+            {**self.data2, self.column: [], "Comments": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
     def test_confirmed_and_non_collaborative(self):
         self.prepare_data()
         datasets = self.export_dataset(confirmed_only=True)
-        expected_datasets = {self.project.admin.username: [{**self.data1, self.column: [self.seg1.to_dict()]}]}
+        expected_datasets = {
+            self.project.admin.username: [
+                {**self.data1, self.column: [self.seg1.to_dict()], "Comments": [self.comment1.to_dict()]}
+            ]
+        }
         for username, dataset in expected_datasets.items():
             self.assertEqual(datasets[username], dataset)
 
@@ -647,6 +654,7 @@ class TestExportSegmentation(TestExport):
             {
                 **self.data1,
                 self.column: [self.seg1.to_dict(), self.seg2.to_dict()],
+                "Comments": [self.comment1.to_dict(), self.comment2.to_dict()],
             }
         ]
         self.assertEqual(dataset, expected_dataset)
@@ -657,6 +665,8 @@ class TestExportImageCaptioning(TestExport):
         self.project = prepare_project(IMAGE_CAPTIONING, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
+        self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
+        self.comment2 = mommy.make("ExportedComment", example=self.example1, user=self.project.annotator)
         self.text1 = mommy.make("TextLabel", example=self.example1, user=self.project.admin)
         self.text2 = mommy.make("TextLabel", example=self.example1, user=self.project.annotator)
         mommy.make("ExampleState", example=self.example1, confirmed_by=self.project.admin)
@@ -669,16 +679,16 @@ class TestExportImageCaptioning(TestExport):
         datasets = self.export_dataset()
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, self.column: [self.text1.text]},
-                {**self.data2, self.column: []},
+                {**self.data1, self.column: [self.text1.text], "Comments": [self.comment1.to_string()]},
+                {**self.data2, self.column: [], "Comments": []},
             ],
             self.project.approver.username: [
-                {**self.data1, self.column: []},
-                {**self.data2, self.column: []},
+                {**self.data1, self.column: [], "Comments": []},
+                {**self.data2, self.column: [], "Comments": []},
             ],
             self.project.annotator.username: [
-                {**self.data1, self.column: [self.text2.text]},
-                {**self.data2, self.column: []},
+                {**self.data1, self.column: [self.text2.text], "Comments": [self.comment2.to_string()]},
+                {**self.data2, self.column: [], "Comments": []},
             ],
         }
         for username, dataset in expected_datasets.items():
@@ -691,8 +701,9 @@ class TestExportImageCaptioning(TestExport):
             {
                 **self.data1,
                 self.column: sorted([self.text1.text, self.text2.text]),
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             },
-            {**self.data2, self.column: []},
+            {**self.data2, self.column: [], "Comments": []},
         ]
         self.assertEqual(dataset, expected_dataset)
 
@@ -701,7 +712,7 @@ class TestExportImageCaptioning(TestExport):
         datasets = self.export_dataset(confirmed_only=True)
         expected_datasets = {
             self.project.admin.username: [
-                {**self.data1, self.column: [self.text1.text]},
+                {**self.data1, self.column: [self.text1.text], "Comments": [self.comment1.to_string()]},
             ],
             self.project.approver.username: [],
             self.project.annotator.username: [],
@@ -716,6 +727,7 @@ class TestExportImageCaptioning(TestExport):
             {
                 **self.data1,
                 self.column: sorted([self.text1.text, self.text2.text]),
+                "Comments": sorted([self.comment1.to_string(), self.comment2.to_string()]),
             }
         ]
         self.assertEqual(dataset, expected_dataset)

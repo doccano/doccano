@@ -132,10 +132,26 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
                 RenameFormatter(**mapper_intent_detection),
             ]
         },
-        BOUNDING_BOX: {JSONL.name: [DictFormatter(BoundingBoxes.column), RenameFormatter(**mapper_bounding_box)]},
-        SEGMENTATION: {JSONL.name: [DictFormatter(Segments.column), RenameFormatter(**mapper_segmentation)]},
+        BOUNDING_BOX: {
+            JSONL.name: [
+                DictFormatter(BoundingBoxes.column),
+                DictFormatter(Comments.column),
+                RenameFormatter(**mapper_bounding_box),
+            ]
+        },
+        SEGMENTATION: {
+            JSONL.name: [
+                DictFormatter(Segments.column),
+                DictFormatter(Comments.column),
+                RenameFormatter(**mapper_segmentation),
+            ]
+        },
         IMAGE_CAPTIONING: {
-            JSONL.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_image_captioning)]
+            JSONL.name: [
+                ListedCategoryFormatter(Texts.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_image_captioning),
+            ]
         },
     }
     return mapping[project.project_type][file_format]
