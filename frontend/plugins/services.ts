@@ -1,51 +1,28 @@
 import { Plugin } from '@nuxt/types'
-import { APITaskStatusRepository } from '@/repositories/celery/apiTaskStatusRepository'
 import { TaskStatusApplicationService } from '@/services/application/celery/taskStatusApplicationService'
-import { APICatalogRepository } from '../repositories/upload/apiCatalogRepository'
-import { CatalogApplicationService } from '../services/application/upload/catalogApplicationService'
-import { APIParseRepository } from '../repositories/upload/apiParseRepository'
-import { ParseApplicationService } from '../services/application/upload/parseApplicationService'
-import { APISequenceLabelingRepository } from '~/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
-import { APISeq2seqRepository } from '~/repositories/tasks/seq2seq/apiSeq2seq'
-import { APIConfigRepository } from '~/repositories/autoLabeling/config/apiConfigRepository'
-import { APITemplateRepository } from '~/repositories/autoLabeling/template/apiTemplateRepository'
-import { APIUserRepository } from '~/repositories/user/apiUserRepository'
-import { APIMetricsRepository } from '~/repositories/metrics/apiMetricsRepository'
-import { APIRoleRepository } from '~/repositories/role/apiRoleRepository'
-import { APIProjectRepository } from '~/repositories/project/apiProjectRepository'
-import { LocalStorageOptionRepository } from '~/repositories/option/apiOptionRepository'
-import { APIMemberRepository } from '~/repositories/member/apiMemberRepository'
-import { APILabelRepository } from '~/repositories/label/apiLabelRepository'
-import { APIExampleRepository } from '~/repositories/example/apiDocumentRepository'
-import { APICommentRepository } from '~/repositories/comment/apiCommentRepository'
-import { APIAuthRepository } from '~/repositories/auth/apiAuthRepository'
-import { LabelApplicationService } from '~/services/application/label/labelApplicationService'
-import { MemberApplicationService } from '~/services/application/member/memberApplicationService'
-import { UserApplicationService } from '~/services/application/user/userApplicationService'
-import { RoleApplicationService } from '~/services/application/role/roleApplicationService'
-import { ProjectApplicationService } from '~/services/application/project/projectApplicationService'
-import { CommentApplicationService } from '~/services/application/comment/commentApplicationService'
-import { MetricsApplicationService } from '~/services/application/metrics/metricsApplicationService'
-import { ExampleApplicationService } from '~/services/application/example/exampleApplicationService'
-import { OptionApplicationService } from '~/services/application/option/optionApplicationService'
-import { SequenceLabelingApplicationService } from '~/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
-import { Seq2seqApplicationService } from '~/services/application/tasks/seq2seq/seq2seqApplicationService'
-import { ConfigApplicationService } from '~/services/application/autoLabeling/configApplicationService'
-import { TemplateApplicationService } from '~/services/application/autoLabeling/templateApplicationService'
-import { APITextClassificationRepository } from '~/repositories/tasks/textClassification/apiTextClassification'
-import { TextClassificationService } from '~/services/application/tasks/textClassification/textClassificationApplicationService'
-import { AuthApplicationService } from '~/services/application/auth/authApplicationService'
-import { APIDownloadFormatRepository } from '~/repositories/download/apiDownloadFormatRepository'
-import { APIDownloadRepository } from '~/repositories/download/apiDownloadRepository'
-import { DownloadApplicationService } from '~/services/application/download/downloadApplicationService'
-import { DownloadFormatApplicationService } from '~/services/application/download/downloadFormatApplicationService'
-import { APITagRepository } from '~/repositories/tag/apiTagRepository'
-import { TagApplicationService } from '~/services/application/tag/tagApplicationService'
-import { ApiRelationRepository } from '~/repositories/tasks/sequenceLabeling/apiRelationRepository'
-import { ApiBoundingBoxRepository } from '~/repositories/tasks/boundingBox/apiBoundingBoxRepository'
-import { BoundingBoxApplicationService } from '~/services/application/tasks/boundingBox/boundingBoxApplicationService'
-import { ApiSegmentationRepository } from '~/repositories/tasks/segmentation/apiSegmentationRepository'
-import { SegmentationApplicationService } from '~/services/application/tasks/segmentation/segmentationApplicationService'
+import { CatalogApplicationService } from '@/services/application/upload/catalogApplicationService'
+import { ParseApplicationService } from '@/services/application/upload/parseApplicationService'
+import { LabelApplicationService } from '@/services/application/label/labelApplicationService'
+import { MemberApplicationService } from '@/services/application/member/memberApplicationService'
+import { UserApplicationService } from '@/services/application/user/userApplicationService'
+import { RoleApplicationService } from '@/services/application/role/roleApplicationService'
+import { ProjectApplicationService } from '@/services/application/project/projectApplicationService'
+import { CommentApplicationService } from '@/services/application/comment/commentApplicationService'
+import { MetricsApplicationService } from '@/services/application/metrics/metricsApplicationService'
+import { ExampleApplicationService } from '@/services/application/example/exampleApplicationService'
+import { OptionApplicationService } from '@/services/application/option/optionApplicationService'
+import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
+import { Seq2seqApplicationService } from '@/services/application/tasks/seq2seq/seq2seqApplicationService'
+import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
+import { TemplateApplicationService } from '@/services/application/autoLabeling/templateApplicationService'
+import { TextClassificationService } from '@/services/application/tasks/textClassification/textClassificationApplicationService'
+import { AuthApplicationService } from '@/services/application/auth/authApplicationService'
+import { DownloadApplicationService } from '@/services/application/download/downloadApplicationService'
+import { DownloadFormatApplicationService } from '@/services/application/download/downloadFormatApplicationService'
+import { TagApplicationService } from '@/services/application/tag/tagApplicationService'
+import { BoundingBoxApplicationService } from '@/services/application/tasks/boundingBox/boundingBoxApplicationService'
+import { SegmentationApplicationService } from '@/services/application/tasks/segmentation/segmentationApplicationService'
+import { repositories } from './repositories'
 
 export interface Services {
   categoryType: LabelApplicationService
@@ -82,85 +59,35 @@ declare module 'vue/types/vue' {
 }
 
 const plugin: Plugin = (_, inject) => {
-  const memberRepository = new APIMemberRepository()
-  const userRepository = new APIUserRepository()
-  const roleRepository = new APIRoleRepository()
-  const projectRepository = new APIProjectRepository()
-  const commentRepository = new APICommentRepository()
-  const metricsRepository = new APIMetricsRepository()
-  const exampleRepository = new APIExampleRepository()
-  const textClassificationRepository = new APITextClassificationRepository()
-  const sequenceLabelingRepository = new APISequenceLabelingRepository()
-  const linkRepository = new ApiRelationRepository()
-  const seq2seqRepository = new APISeq2seqRepository()
-  const optionRepository = new LocalStorageOptionRepository()
-  const configRepository = new APIConfigRepository()
-  const tagRepository = new APITagRepository()
-  const templateRepository = new APITemplateRepository()
-  const authRepository = new APIAuthRepository()
-  const catalogRepository = new APICatalogRepository()
-  const parseRepository = new APIParseRepository()
-  const taskStatusRepository = new APITaskStatusRepository()
-  const downloadFormatRepository = new APIDownloadFormatRepository()
-  const downloadRepository = new APIDownloadRepository()
-  const boundingBoxRepository = new ApiBoundingBoxRepository()
-  const segmentationRepository = new ApiSegmentationRepository()
-
-  const categoryType = new LabelApplicationService(new APILabelRepository('category-type'))
-  const spanType = new LabelApplicationService(new APILabelRepository('span-type'))
-  const relationType = new LabelApplicationService(new APILabelRepository('relation-type'))
-  const member = new MemberApplicationService(memberRepository)
-  const user = new UserApplicationService(userRepository)
-  const role = new RoleApplicationService(roleRepository)
-  const project = new ProjectApplicationService(projectRepository)
-  const comment = new CommentApplicationService(commentRepository)
-  const metrics = new MetricsApplicationService(metricsRepository)
-  const example = new ExampleApplicationService(exampleRepository)
-  const textClassification = new TextClassificationService(textClassificationRepository)
-  const sequenceLabeling = new SequenceLabelingApplicationService(
-    sequenceLabelingRepository,
-    linkRepository
-  )
-  const bbox = new BoundingBoxApplicationService(boundingBoxRepository)
-  const segmentation = new SegmentationApplicationService(segmentationRepository)
-  const seq2seq = new Seq2seqApplicationService(seq2seqRepository)
-  const option = new OptionApplicationService(optionRepository)
-  const config = new ConfigApplicationService(configRepository)
-  const tag = new TagApplicationService(tagRepository)
-  const template = new TemplateApplicationService(templateRepository)
-  const auth = new AuthApplicationService(authRepository)
-  const catalog = new CatalogApplicationService(catalogRepository)
-  const parse = new ParseApplicationService(parseRepository)
-  const taskStatus = new TaskStatusApplicationService(taskStatusRepository)
-  const downloadFormat = new DownloadFormatApplicationService(downloadFormatRepository)
-  const download = new DownloadApplicationService(downloadRepository)
-
   const services: Services = {
-    categoryType,
-    spanType,
-    relationType,
-    member,
-    user,
-    role,
-    project,
-    comment,
-    metrics,
-    example,
-    textClassification,
-    sequenceLabeling,
-    seq2seq,
-    option,
-    config,
-    template,
-    auth,
-    catalog,
-    parse,
-    taskStatus,
-    downloadFormat,
-    download,
-    tag,
-    bbox,
-    segmentation
+    categoryType: new LabelApplicationService(repositories.categoryType),
+    spanType: new LabelApplicationService(repositories.spanType),
+    relationType: new LabelApplicationService(repositories.relationType),
+    member: new MemberApplicationService(repositories.member),
+    user: new UserApplicationService(repositories.user),
+    role: new RoleApplicationService(repositories.role),
+    project: new ProjectApplicationService(repositories.project),
+    comment: new CommentApplicationService(repositories.comment),
+    metrics: new MetricsApplicationService(repositories.metrics),
+    example: new ExampleApplicationService(repositories.example),
+    textClassification: new TextClassificationService(repositories.category),
+    sequenceLabeling: new SequenceLabelingApplicationService(
+      repositories.span,
+      repositories.relation
+    ),
+    seq2seq: new Seq2seqApplicationService(repositories.textLabel),
+    option: new OptionApplicationService(repositories.option),
+    config: new ConfigApplicationService(repositories.config),
+    template: new TemplateApplicationService(repositories.template),
+    auth: new AuthApplicationService(repositories.auth),
+    catalog: new CatalogApplicationService(repositories.catalog),
+    parse: new ParseApplicationService(repositories.parse),
+    taskStatus: new TaskStatusApplicationService(repositories.taskStatus),
+    downloadFormat: new DownloadFormatApplicationService(repositories.downloadFormat),
+    download: new DownloadApplicationService(repositories.download),
+    tag: new TagApplicationService(repositories.tag),
+    bbox: new BoundingBoxApplicationService(repositories.boundingBox),
+    segmentation: new SegmentationApplicationService(repositories.segmentation)
   }
   inject('services', services)
 }
