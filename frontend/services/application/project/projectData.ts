@@ -14,6 +14,7 @@ export class ProjectDTO {
   tags: Object[] | string[]
   canDefineLabel: boolean
   canDefineRelation: boolean
+  canDefineCategory: boolean
   isTextProject: boolean
   allowOverlapping: boolean
   graphemeMode: boolean
@@ -36,6 +37,7 @@ export class ProjectDTO {
     this.tags = item.tags
     this.canDefineLabel = item.canDefineLabel
     this.canDefineRelation = item.canDefineRelation
+    this.canDefineCategory = item.canDefineCategory
     this.isTextProject = item.isTextProject
     this.allowOverlapping = item.allowOverlapping
     this.graphemeMode = item.graphemeMode

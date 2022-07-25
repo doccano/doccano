@@ -96,7 +96,7 @@ export default Vue.extend({
         } else {
           return ['span', 'relation'][this.tab!]
         }
-      } else if (this.project.projectType.endsWith('Classification')) {
+      } else if (this.project.canDefineCategory) {
         return 'category'
       } else {
         return 'span'
@@ -113,7 +113,7 @@ export default Vue.extend({
         } else {
           return [this.$services.spanType, this.$services.relationType][this.tab!]
         }
-      } else if (this.project.projectType.endsWith('Classification')) {
+      } else if (this.project.canDefineCategory) {
         return this.$services.categoryType
       } else {
         return this.$services.spanType

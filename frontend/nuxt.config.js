@@ -44,6 +44,7 @@ export default {
     '~/plugins/filters.js',
     '~/plugins/vue-youtube.js',
     '~/plugins/vue-shortkey.js',
+    '~/plugins/vue-konva.js',
     '~/plugins/services.ts',
     '~/plugins/color.ts',
     '~/plugins/role.ts'

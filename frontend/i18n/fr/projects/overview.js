@@ -15,6 +15,9 @@ export default {
     'Séquence à séquence',
     "Détection d'intention et remplissage d'emplacements",
     "Classification d'images",
+    "Sous-titrage d'images",
+    "Détection d'objets",
+    'Segmentation',
     'De la parole au texte'
   ]
 }

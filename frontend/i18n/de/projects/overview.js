@@ -17,6 +17,9 @@ export default {
     'Sequenz zu Sequenz',
     'Intent-Erkennung und Slot-Füllung',
     'Bildklassifikation',
+    'Bildbeschriftung',
+    'Objekt-Erkennung',
+    'Segmentierung',
     'Sprache zu Text'
   ]
 }

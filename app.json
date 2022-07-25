@@ -7,10 +7,10 @@
     "logo": "https://github.com/doccano/doccano/wiki/images/doccano.png",
     "success_url": "/",
     "env": {
-        "ADMIN_USER_NAME": {
+        "ADMIN_USERNAME": {
             "description": "The user name for the admin account."
         },
-        "ADMIN_CONTACT_EMAIL": {
+        "ADMIN_EMAIL": {
             "description": "The contact email address for the admin account."
         },
         "ADMIN_PASSWORD": {

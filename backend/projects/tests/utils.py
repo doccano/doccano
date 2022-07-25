@@ -4,9 +4,12 @@ from django.conf import settings
 from model_mommy import mommy
 
 from projects.models import (
+    BOUNDING_BOX,
     DOCUMENT_CLASSIFICATION,
+    IMAGE_CAPTIONING,
     IMAGE_CLASSIFICATION,
     INTENT_DETECTION_AND_SLOT_FILLING,
+    SEGMENTATION,
     SEQ2SEQ,
     SEQUENCE_LABELING,
     SPEECH2TEXT,
@@ -68,6 +71,9 @@ def make_project(task: str, users: List[str], roles: List[str], collaborative_an
         SPEECH2TEXT: "Speech2TextProject",
         IMAGE_CLASSIFICATION: "ImageClassificationProject",
         INTENT_DETECTION_AND_SLOT_FILLING: "IntentDetectionAndSlotFillingProject",
+        BOUNDING_BOX: "BoundingBoxProject",
+        SEGMENTATION: "SegmentationProject",
+        IMAGE_CAPTIONING: "ImageCaptioningProject",
     }.get(task, "Project")
     project = mommy.make(
         _model=project_model,
