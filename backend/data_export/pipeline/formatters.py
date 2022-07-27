@@ -46,12 +46,15 @@ class FastTextCategoryFormatter(Formatter):
         """Format the label column to `__label__LabelA __label__LabelB` format.
         Also, drop the columns except for `data` and `self.target_column`.
         """
-        dataset = dataset[[DATA, self.target_column]]
+        dataset = dataset[[DATA, self.target_column, "Comments"]]
         dataset[self.target_column] = dataset[self.target_column].apply(
             lambda labels: " ".join(sorted(f"__label__{label.to_string()}" for label in labels))
         )
         dataset[self.target_column] = dataset[self.target_column].fillna("")
-        dataset = dataset[self.target_column] + " " + dataset[DATA]
+        dataset["Comments"] = dataset["Comments"].apply(
+            lambda comments: " ".join(f"__comment__{comment.to_string()}" for comment in comments)
+        )
+        dataset = dataset[self.target_column] + " " + dataset[DATA] + " " + dataset["Comments"]
         return dataset
 
 

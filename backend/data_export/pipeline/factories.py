@@ -4,6 +4,7 @@ from django.db.models import QuerySet
 
 from . import writers
 from .catalog import CSV, JSON, JSONL, FastText
+from .comments import Comments
 from .formatters import (
     DictFormatter,
     FastTextCategoryFormatter,
@@ -63,14 +64,17 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
         DOCUMENT_CLASSIFICATION: {
             CSV.name: [
                 JoinedCategoryFormatter(Categories.column),
+                JoinedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_text_classification),
             ],
             JSON.name: [
                 ListedCategoryFormatter(Categories.column),
+                ListedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_text_classification),
             ],
             JSONL.name: [
                 ListedCategoryFormatter(Categories.column),
+                ListedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_text_classification),
             ],
             FastText.name: [FastTextCategoryFormatter(Categories.column)],
@@ -79,36 +83,75 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
             JSONL.name: [
                 DictFormatter(Spans.column),
                 DictFormatter(Relations.column),
+                DictFormatter(Comments.column),
                 RenameFormatter(**mapper_relation_extraction),
             ]
             if use_relation
-            else [TupledSpanFormatter(Spans.column), RenameFormatter(**mapper_sequence_labeling)]
+            else [
+                TupledSpanFormatter(Spans.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_sequence_labeling),
+            ]
         },
         SEQ2SEQ: {
-            CSV.name: [JoinedCategoryFormatter(Texts.column), RenameFormatter(**mapper_seq2seq)],
-            JSON.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_seq2seq)],
-            JSONL.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_seq2seq)],
+            CSV.name: [
+                JoinedCategoryFormatter(Texts.column),
+                JoinedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_seq2seq),
+            ],
+            JSON.name: [
+                ListedCategoryFormatter(Texts.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_seq2seq),
+            ],
+            JSONL.name: [
+                ListedCategoryFormatter(Texts.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_seq2seq),
+            ],
         },
         IMAGE_CLASSIFICATION: {
             JSONL.name: [
                 ListedCategoryFormatter(Categories.column),
+                ListedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_image_classification),
             ],
         },
         SPEECH2TEXT: {
-            JSONL.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_speech2text)],
+            JSONL.name: [
+                ListedCategoryFormatter(Texts.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_speech2text),
+            ],
         },
         INTENT_DETECTION_AND_SLOT_FILLING: {
             JSONL.name: [
                 ListedCategoryFormatter(Categories.column),
                 TupledSpanFormatter(Spans.column),
+                ListedCategoryFormatter(Comments.column),
                 RenameFormatter(**mapper_intent_detection),
             ]
         },
-        BOUNDING_BOX: {JSONL.name: [DictFormatter(BoundingBoxes.column), RenameFormatter(**mapper_bounding_box)]},
-        SEGMENTATION: {JSONL.name: [DictFormatter(Segments.column), RenameFormatter(**mapper_segmentation)]},
+        BOUNDING_BOX: {
+            JSONL.name: [
+                DictFormatter(BoundingBoxes.column),
+                DictFormatter(Comments.column),
+                RenameFormatter(**mapper_bounding_box),
+            ]
+        },
+        SEGMENTATION: {
+            JSONL.name: [
+                DictFormatter(Segments.column),
+                DictFormatter(Comments.column),
+                RenameFormatter(**mapper_segmentation),
+            ]
+        },
         IMAGE_CAPTIONING: {
-            JSONL.name: [ListedCategoryFormatter(Texts.column), RenameFormatter(**mapper_image_captioning)]
+            JSONL.name: [
+                ListedCategoryFormatter(Texts.column),
+                ListedCategoryFormatter(Comments.column),
+                RenameFormatter(**mapper_image_captioning),
+            ]
         },
     }
     return mapping[project.project_type][file_format]
@@ -134,3 +177,7 @@ def create_labels(project: Project, examples: QuerySet[ExportedExample], user=No
     label_collections = select_label_collection(project)
     labels = [label_collection(examples=examples, user=user) for label_collection in label_collections]
     return labels
+
+
+def create_comment(examples: QuerySet[ExportedExample], user=None) -> List[Comments]:
+    return [Comments(examples=examples, user=user)]

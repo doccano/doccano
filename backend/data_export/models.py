@@ -2,7 +2,7 @@ from typing import Any, Dict, Protocol, Tuple
 
 from django.db import models
 
-from examples.models import Example
+from examples.models import Comment, Example
 from labels.models import BoundingBox, Category, Relation, Segmentation, Span, TextLabel
 from projects.models import Project
 
@@ -76,6 +76,17 @@ class ExportedRelation(Relation):
 class ExportedText(TextLabel):
     def to_string(self) -> str:
         return self.text
+
+    class Meta:
+        proxy = True
+
+
+class ExportedComment(Comment):
+    def to_string(self) -> str:
+        return self.text
+
+    def to_dict(self):
+        return {"id": self.id, "comment": self.text}
 
     class Meta:
         proxy = True

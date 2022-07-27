@@ -75,15 +75,20 @@ class TestTupledSpanFormatter(unittest.TestCase):
 
 class TestFastTextFormatter(unittest.TestCase):
     def setUp(self):
-        self.return_value = "Label"
+        self.return_value_label = "Label"
+        self.return_value_comment = "Comment"
         label = MagicMock()
-        label.to_string.return_value = self.return_value
-        self.dataset = pd.DataFrame([{TARGET_COLUMN: [label], DATA: "example"}])
+        comment = MagicMock()
+        label.to_string.return_value = self.return_value_label
+        comment.to_string.return_value = self.return_value_comment
+        self.dataset = pd.DataFrame([{TARGET_COLUMN: [label], DATA: "example", "Comments": [comment]}])
 
     def test_format(self):
         formatter = FastTextCategoryFormatter(TARGET_COLUMN)
         dataset = formatter.format(self.dataset)
-        expected_dataset = pd.DataFrame([f"__label__{self.return_value} example"])
+        expected_dataset = pd.DataFrame(
+            [f"__label__{self.return_value_label} example __comment__{self.return_value_comment}"]
+        )
         self.assertEqual(dataset.to_csv(index=False, header=None), expected_dataset.to_csv(index=False, header=None))
 
 
