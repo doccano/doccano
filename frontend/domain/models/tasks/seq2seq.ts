@@ -1,17 +1,11 @@
-import { AnnotationModel } from './interface'
+export class TextLabel {
+  constructor(readonly id: number, private _text: string, readonly user: number) {}
 
-export class Seq2seqLabel implements AnnotationModel {
-  constructor(public id: number, public text: string, public user: number) {}
-
-  static valueOf({ id, text, user }: { id: number; text: string; user: number }) {
-    return new Seq2seqLabel(id, text, user)
+  get text(): string {
+    return this._text
   }
 
-  toObject() {
-    return {
-      id: this.id,
-      text: this.text,
-      user: this.user
-    }
+  updateText(text: string) {
+    this._text = text
   }
 }

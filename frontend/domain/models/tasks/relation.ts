@@ -1,26 +1,16 @@
-export class RelationItem {
-  constructor(public id: number, public fromId: number, public toId: number, public type: number) {}
+export class Relation {
+  constructor(
+    readonly id: number,
+    readonly fromId: number,
+    readonly toId: number,
+    private _type: number
+  ) {}
 
-  static valueOf({
-    id,
-    from_id,
-    to_id,
-    type
-  }: {
-    id: number
-    from_id: number
-    to_id: number
-    type: number
-  }): RelationItem {
-    return new RelationItem(id, from_id, to_id, type)
+  get type(): number {
+    return this._type
   }
 
-  toObject(): Object {
-    return {
-      id: this.id,
-      from_id: this.fromId,
-      to_id: this.toId,
-      type: this.type
-    }
+  changeType(type: number) {
+    this._type = type
   }
 }

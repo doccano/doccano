@@ -1,13 +1,8 @@
+import { BoundingBox } from '@/domain/models/tasks/boundingBox'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { BoundingBoxDTO } from './boundingBoxData'
-import { ApiBoundingBoxRepository } from '~/repositories/tasks/boundingBox/apiBoundingBoxRepository'
-import { BoundingBoxItem } from '~/domain/models/tasks/boundingBox'
 
-export class BoundingBoxApplicationService extends AnnotationApplicationService<BoundingBoxItem> {
-  constructor(readonly repository: ApiBoundingBoxRepository) {
-    super(new ApiBoundingBoxRepository())
-  }
-
+export class BoundingBoxApplicationService extends AnnotationApplicationService<BoundingBox> {
   public async list(projectId: string, exampleId: number): Promise<BoundingBoxDTO[]> {
     const items = await this.repository.list(projectId, exampleId)
     return items.map((item) => new BoundingBoxDTO(item))
@@ -23,7 +18,7 @@ export class BoundingBoxApplicationService extends AnnotationApplicationService<
     width: number,
     height: number
   ): Promise<void> {
-    const item = new BoundingBoxItem(0, uuid, label, x, y, width, height)
+    const item = new BoundingBox(0, uuid, label, x, y, width, height)
     try {
       await this.repository.create(projectId, exampleId, item)
     } catch (e: any) {
@@ -37,7 +32,7 @@ export class BoundingBoxApplicationService extends AnnotationApplicationService<
     annotationId: number,
     item: BoundingBoxDTO
   ): Promise<void> {
-    const bbox = new BoundingBoxItem(
+    const bbox = new BoundingBox(
       item.id,
       item.uuid,
       item.label,

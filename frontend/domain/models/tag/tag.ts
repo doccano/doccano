@@ -1,7 +1,5 @@
 export class TagItem {
-  id: number
-  text: string
-  project: string
+  constructor(readonly id: number, readonly text: string, readonly project: string) {}
 
   toObject(): Object {
     return {

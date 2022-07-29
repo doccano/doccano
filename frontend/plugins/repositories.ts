@@ -2,8 +2,8 @@ import { Plugin } from '@nuxt/types'
 import { APITaskStatusRepository } from '@/repositories/celery/apiTaskStatusRepository'
 import { APICatalogRepository } from '@/repositories/upload/apiCatalogRepository'
 import { APIParseRepository } from '@/repositories/upload/apiParseRepository'
-import { APISequenceLabelingRepository } from '@/repositories/tasks/sequenceLabeling/apiSequenceLabeling'
-import { APISeq2seqRepository } from '@/repositories/tasks/seq2seq/apiSeq2seq'
+import { APISequenceLabelingRepository } from '@/repositories/tasks/apiSequenceLabeling'
+import { APISeq2seqRepository } from '@/repositories/tasks/apiSeq2seq'
 import { APIConfigRepository } from '@/repositories/autoLabeling/config/apiConfigRepository'
 import { APITemplateRepository } from '@/repositories/autoLabeling/template/apiTemplateRepository'
 import { APIUserRepository } from '@/repositories/user/apiUserRepository'
@@ -16,13 +16,13 @@ import { APILabelRepository } from '@/repositories/label/apiLabelRepository'
 import { APIExampleRepository } from '@/repositories/example/apiDocumentRepository'
 import { APICommentRepository } from '@/repositories/comment/apiCommentRepository'
 import { APIAuthRepository } from '@/repositories/auth/apiAuthRepository'
-import { APITextClassificationRepository } from '@/repositories/tasks/textClassification/apiTextClassification'
+import { APITextClassificationRepository } from '@/repositories/tasks/apiTextClassification'
 import { APIDownloadFormatRepository } from '@/repositories/download/apiDownloadFormatRepository'
 import { APIDownloadRepository } from '@/repositories/download/apiDownloadRepository'
 import { APITagRepository } from '@/repositories/tag/apiTagRepository'
-import { ApiRelationRepository } from '@/repositories/tasks/sequenceLabeling/apiRelationRepository'
-import { ApiBoundingBoxRepository } from '@/repositories/tasks/boundingBox/apiBoundingBoxRepository'
-import { ApiSegmentationRepository } from '@/repositories/tasks/segmentation/apiSegmentationRepository'
+import { APIRelationRepository } from '@/repositories/tasks/apiRelationRepository'
+import { APIBoundingBoxRepository } from '@/repositories/tasks/apiBoundingBoxRepository'
+import { APISegmentationRepository } from '~/repositories/tasks/apiSegmentationRepository'
 
 export interface Repositories {
   // User
@@ -62,10 +62,10 @@ export interface Repositories {
   // Label
   category: APITextClassificationRepository
   span: APISequenceLabelingRepository
-  relation: ApiRelationRepository
+  relation: APIRelationRepository
   textLabel: APISeq2seqRepository
-  boundingBox: ApiBoundingBoxRepository
-  segmentation: ApiSegmentationRepository
+  boundingBox: APIBoundingBoxRepository
+  segmentation: APISegmentationRepository
 }
 
 declare module 'vue/types/vue' {
@@ -112,10 +112,10 @@ const repositories: Repositories = {
   // Label
   category: new APITextClassificationRepository(),
   span: new APISequenceLabelingRepository(),
-  relation: new ApiRelationRepository(),
+  relation: new APIRelationRepository(),
   textLabel: new APISeq2seqRepository(),
-  boundingBox: new ApiBoundingBoxRepository(),
-  segmentation: new ApiSegmentationRepository()
+  boundingBox: new APIBoundingBoxRepository(),
+  segmentation: new APISegmentationRepository()
 }
 
 const plugin: Plugin = (_, inject) => {

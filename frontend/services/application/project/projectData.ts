@@ -31,7 +31,7 @@ export class ProjectDTO {
     this.projectType = item.projectType
     this.updatedAt = item.updatedAt
     this.enableRandomOrder = item.randomOrder
-    this.enableShareAnnotation = item.collaborative_annotation
+    this.enableShareAnnotation = item.collaborativeAnnotation
     this.singleClassClassification = item.exclusiveCategories
     this.pageLink = item.annotationPageLink
     this.tags = item.tags

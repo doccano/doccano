@@ -1,6 +1,3 @@
-import 'reflect-metadata'
-import { Expose, Type } from 'class-transformer'
-
 export type ProjectType =
   | 'DocumentClassification'
   | 'SequenceLabeling'
@@ -13,54 +10,28 @@ export type ProjectType =
   | 'Speech2text'
 
 export class ProjectReadItem {
-  id: number
-  name: string
-  description: string
-  guideline: string
-  users: number[]
-  tags: Object[]
-
-  @Expose({ name: 'project_type' })
-  projectType: ProjectType
-
-  @Expose({ name: 'updated_at' })
-  updatedAt: string
-
-  @Expose({ name: 'random_order' })
-  randomOrder: boolean
-
-  @Expose({ name: 'collaborative_annotation' })
-  collaborative_annotation: boolean
-
-  @Expose({ name: 'single_class_classification' })
-  exclusiveCategories: boolean
-
-  @Expose({ name: 'resourcetype' })
-  resourceType: string
-
-  @Expose({ name: 'allow_overlapping' })
-  allowOverlapping: boolean
-
-  @Expose({ name: 'grapheme_mode' })
-  graphemeMode: boolean
-
-  @Expose({ name: 'use_relation' })
-  useRelation: boolean
-
-  @Expose({ name: 'is_text_project' })
-  isTextProject: boolean
-
-  @Expose({ name: 'can_define_label' })
-  canDefineLabel: boolean
-
-  @Expose({ name: 'can_define_relation' })
-  canDefineRelation: boolean
-
-  @Expose({ name: 'can_define_span' })
-  canDefineSpan: boolean
-
-  @Expose({ name: 'can_define_category' })
-  canDefineCategory: boolean
+  constructor(
+    readonly id: number,
+    readonly name: string,
+    readonly description: string,
+    readonly guideline: string,
+    readonly users: number[],
+    readonly tags: Object[],
+    readonly projectType: ProjectType,
+    readonly updatedAt: string,
+    readonly randomOrder: boolean,
+    readonly collaborativeAnnotation: boolean,
+    readonly exclusiveCategories: boolean,
+    readonly resourceType: string,
+    readonly allowOverlapping: boolean,
+    readonly graphemeMode: boolean,
+    readonly useRelation: boolean,
+    readonly isTextProject: boolean,
+    readonly canDefineLabel: boolean,
+    readonly canDefineRelation: boolean,
+    readonly canDefineSpan: boolean,
+    readonly canDefineCategory: boolean
+  ) {}
 
   get annotationPageLink(): string {
     const mapping = {
@@ -87,13 +58,12 @@ export class ProjectReadItem {
 }
 
 export class ProjectItemList {
-  count: number
-  next: string | null
-  prev: string | null
-
-  @Type(() => ProjectReadItem)
-  @Expose({ name: 'results' })
-  items: ProjectReadItem[]
+  constructor(
+    readonly count: number,
+    readonly next: string | null,
+    readonly prev: string | null,
+    readonly items: ProjectReadItem[]
+  ) {}
 }
 
 export class ProjectWriteItem {
@@ -102,13 +72,13 @@ export class ProjectWriteItem {
     public name: string,
     public description: string,
     public guideline: string,
-    public project_type: ProjectType,
-    public random_order: boolean,
-    public collaborative_annotation: boolean,
-    public single_class_classification: boolean,
-    public allow_overlapping: boolean,
-    public grapheme_mode: boolean,
-    public use_relation: boolean,
+    public projectType: ProjectType,
+    public randomOrder: boolean,
+    public collaborativeAnnotation: boolean,
+    public exclusiveCategories: boolean,
+    public allowOverlapping: boolean,
+    public graphemeMode: boolean,
+    public useRelation: boolean,
     public tags: string[]
   ) {}
 
@@ -124,24 +94,6 @@ export class ProjectWriteItem {
       Segmentation: 'SegmentationProject',
       Speech2text: 'Speech2textProject'
     }
-    return mapping[this.project_type]
-  }
-
-  toObject(): Object {
-    return {
-      id: this.id,
-      name: this.name,
-      description: this.description,
-      guideline: this.guideline,
-      project_type: this.project_type,
-      random_order: this.random_order,
-      collaborative_annotation: this.collaborative_annotation,
-      single_class_classification: this.single_class_classification,
-      allow_overlapping: this.allow_overlapping,
-      grapheme_mode: this.grapheme_mode,
-      use_relation: this.use_relation,
-      tags: this.tags.map((tag) => ({ text: tag })),
-      resourcetype: this.resourceType
-    }
+    return mapping[this.projectType]
   }
 }

@@ -1,4 +1,4 @@
-import { BoundingBoxItem } from '~/domain/models/tasks/boundingBox'
+import { BoundingBox } from '@/domain/models/tasks/boundingBox'
 
 export class BoundingBoxDTO {
   id: number
@@ -9,7 +9,7 @@ export class BoundingBoxDTO {
   width: number
   height: number
 
-  constructor(item: BoundingBoxItem) {
+  constructor(item: BoundingBox) {
     this.id = item.id
     this.uuid = item.uuid
     this.label = item.label
