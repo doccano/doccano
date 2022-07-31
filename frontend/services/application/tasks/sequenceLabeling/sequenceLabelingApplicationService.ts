@@ -1,4 +1,4 @@
-import { APISequenceLabelingRepository } from '@/repositories/tasks/apiSequenceLabeling'
+import { APISpanRepository } from '@/repositories/tasks/apiSpanRepository'
 import { APIRelationRepository } from '@/repositories/tasks/apiRelationRepository'
 import { Span } from '@/domain/models/tasks/span'
 import { Relation } from '@/domain/models/tasks/relation'
@@ -8,10 +8,10 @@ import { SpanDTO } from './sequenceLabelingData'
 
 export class SequenceLabelingApplicationService extends AnnotationApplicationService<Span> {
   constructor(
-    readonly repository: APISequenceLabelingRepository,
+    readonly repository: APISpanRepository,
     readonly relationRepository: APIRelationRepository
   ) {
-    super(new APISequenceLabelingRepository())
+    super(new APISpanRepository())
   }
 
   public async list(projectId: string, exampleId: number): Promise<SpanDTO[]> {

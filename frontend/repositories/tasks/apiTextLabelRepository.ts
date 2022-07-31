@@ -1,7 +1,7 @@
 import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
 import { TextLabel } from '@/domain/models/tasks/textLabel'
 
-export class APISeq2seqRepository extends AnnotationRepository<TextLabel> {
+export class APITextLabelRepository extends AnnotationRepository<TextLabel> {
   labelName = 'texts'
 
   toModel(item: { [key: string]: any }): TextLabel {

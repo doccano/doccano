@@ -1,7 +1,7 @@
 import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
 import { Span } from '@/domain/models/tasks/span'
 
-export class APISequenceLabelingRepository extends AnnotationRepository<Span> {
+export class APISpanRepository extends AnnotationRepository<Span> {
   labelName = 'spans'
 
   toModel(item: { [key: string]: any }): Span {

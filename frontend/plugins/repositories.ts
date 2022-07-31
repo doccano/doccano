@@ -2,8 +2,8 @@ import { Plugin } from '@nuxt/types'
 import { APITaskStatusRepository } from '@/repositories/celery/apiTaskStatusRepository'
 import { APICatalogRepository } from '@/repositories/upload/apiCatalogRepository'
 import { APIParseRepository } from '@/repositories/upload/apiParseRepository'
-import { APISequenceLabelingRepository } from '@/repositories/tasks/apiSequenceLabeling'
-import { APISeq2seqRepository } from '@/repositories/tasks/apiSeq2seq'
+import { APISpanRepository } from '@/repositories/tasks/apiSpanRepository'
+import { APITextLabelRepository } from '@/repositories/tasks/apiTextLabelRepository'
 import { APIConfigRepository } from '@/repositories/autoLabeling/config/apiConfigRepository'
 import { APITemplateRepository } from '@/repositories/autoLabeling/template/apiTemplateRepository'
 import { APIUserRepository } from '@/repositories/user/apiUserRepository'
@@ -16,7 +16,7 @@ import { APILabelRepository } from '@/repositories/label/apiLabelRepository'
 import { APIExampleRepository } from '@/repositories/example/apiDocumentRepository'
 import { APICommentRepository } from '@/repositories/comment/apiCommentRepository'
 import { APIAuthRepository } from '@/repositories/auth/apiAuthRepository'
-import { APITextClassificationRepository } from '@/repositories/tasks/apiTextClassification'
+import { APICategoryRepository } from '@/repositories/tasks/apiCategoryRepository'
 import { APIDownloadFormatRepository } from '@/repositories/download/apiDownloadFormatRepository'
 import { APIDownloadRepository } from '@/repositories/download/apiDownloadRepository'
 import { APITagRepository } from '@/repositories/tag/apiTagRepository'
@@ -60,10 +60,10 @@ export interface Repositories {
   relationType: APILabelRepository
 
   // Label
-  category: APITextClassificationRepository
-  span: APISequenceLabelingRepository
+  category: APICategoryRepository
+  span: APISpanRepository
   relation: APIRelationRepository
-  textLabel: APISeq2seqRepository
+  textLabel: APITextLabelRepository
   boundingBox: APIBoundingBoxRepository
   segmentation: APISegmentationRepository
 }
@@ -110,10 +110,10 @@ const repositories: Repositories = {
   relationType: new APILabelRepository('relation-type'),
 
   // Label
-  category: new APITextClassificationRepository(),
-  span: new APISequenceLabelingRepository(),
+  category: new APICategoryRepository(),
+  span: new APISpanRepository(),
   relation: new APIRelationRepository(),
-  textLabel: new APISeq2seqRepository(),
+  textLabel: new APITextLabelRepository(),
   boundingBox: new APIBoundingBoxRepository(),
   segmentation: new APISegmentationRepository()
 }
