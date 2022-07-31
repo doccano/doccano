@@ -32,7 +32,7 @@ The `backend/` directory includes the backend's REST API code. These APIs are bu
 | poetry.lock       | Related to Poetry. This file prevents you from automatically getting the latest versions of your dependencies. See [Basic usage](https://python-poetry.org/docs/basic-usage/) in Poetry documentation.                                                                                             |
 | pyproject.toml    | This file contains build system requirements and information, which are used by pip to build the package. See [pyproject.toml](https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/) and [The pyproject.toml file in Poetry](https://python-poetry.org/docs/pyproject/) in detail. |
 
-If you want to setup the backend environment, please see [Installation guide](./install-and-upgrade-doccano.md#install-from-source).
+If you want to setup the backend environment, please see [Installation guide](./install_and_upgrade_doccano.md#install-from-source).
 
 
 ## docker
