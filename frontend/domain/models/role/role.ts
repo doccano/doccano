@@ -1,11 +1,5 @@
-export class RoleItem {
-  id: number
-  name: string
+export type RoleName = 'project_admin' | 'annotator' | 'annotation_approver'
 
-  toObject(): Object {
-    return {
-      id: this.id,
-      name: this.name
-    }
-  }
+export class RoleItem {
+  constructor(readonly id: number, readonly name: RoleName) {}
 }

@@ -9,11 +9,11 @@ export class TagApplicationService {
     return items.map((item) => new TagDTO(item))
   }
 
-  public create(projectId: string, text: string): void {
-    this.repository.create(projectId, text)
+  public async create(projectId: string, text: string): Promise<void> {
+    await this.repository.create(projectId, text)
   }
 
-  public delete(projectId: string, id: number): Promise<void> {
-    return this.repository.delete(projectId, id)
+  public async delete(projectId: string, id: number): Promise<void> {
+    return await this.repository.delete(projectId, id)
   }
 }

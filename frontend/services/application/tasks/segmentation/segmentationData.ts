@@ -1,4 +1,4 @@
-import { SegmentationItem } from '~/domain/models/tasks/segmentation'
+import { Segment } from '@/domain/models/tasks/segmentation'
 
 export class SegmentationDTO {
   id: number
@@ -6,7 +6,7 @@ export class SegmentationDTO {
   label: number
   points: number[]
 
-  constructor(item: SegmentationItem) {
+  constructor(item: Segment) {
     this.id = item.id
     this.uuid = item.uuid
     this.label = item.label

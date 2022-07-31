@@ -1,13 +1,12 @@
-import { AnnotationRepository } from '~/domain/models/tasks/annotationRepository'
-import { AnnotationModel } from '~/domain/models/tasks/interface'
+import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
 
-export class AnnotationApplicationService<T extends AnnotationModel> {
+export class AnnotationApplicationService<T> {
   constructor(readonly repository: AnnotationRepository<T>) {}
 
   public async delete(projectId: string, docId: number, annotationId: number): Promise<void> {
     try {
       await this.repository.delete(projectId, docId, annotationId)
-    } catch (e) {
+    } catch (e: any) {
       console.log(e.response.data.detail)
     }
   }

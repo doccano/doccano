@@ -1,4 +1,4 @@
-import { Span } from '~/domain/models/tasks/sequenceLabeling'
+import { Span } from '@/domain/models/tasks/span'
 
 export class SpanDTO {
   id: number
