@@ -17,26 +17,19 @@ export class LabelApplicationService {
   }
 
   public async create(projectId: string, item: CreateLabelCommand): Promise<LabelDTO> {
-    // Todo: use auto mapping.
-    const label = new LabelItem()
-    label.text = item.text
-    label.prefixKey = item.prefixKey
-    label.suffixKey = item.suffixKey
-    label.backgroundColor = item.backgroundColor
-    label.textColor = item.textColor
+    const label = LabelItem.create(item.text, item.prefixKey, item.suffixKey, item.backgroundColor)
     const created = await this.repository.create(projectId, label)
     return new LabelDTO(created)
   }
 
   public async update(projectId: string, item: LabelDTO): Promise<LabelDTO> {
-    // Todo: use auto mapping.
-    const label = new LabelItem()
-    label.id = item.id
-    label.text = item.text
-    label.prefixKey = item.prefixKey
-    label.suffixKey = item.suffixKey
-    label.backgroundColor = item.backgroundColor
-    label.textColor = item.textColor
+    const label = new LabelItem(
+      item.id,
+      item.text,
+      item.prefixKey,
+      item.suffixKey,
+      item.backgroundColor
+    )
     const updated = await this.repository.update(projectId, label)
     return new LabelDTO(updated)
   }

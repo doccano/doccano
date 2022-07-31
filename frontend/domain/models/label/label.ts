@@ -7,7 +7,13 @@ export class LabelItem {
     readonly backgroundColor: string,
     readonly textColor: string = '#ffffff'
   ) {}
-}
 
-export class DocTypeItem extends LabelItem {}
-export class SpanTypeItem extends LabelItem {}
+  static create(
+    text: string,
+    prefixKey: string | null,
+    suffixKey: string | null,
+    backgroundColor: string
+  ): LabelItem {
+    return new LabelItem(0, text, prefixKey, suffixKey, backgroundColor)
+  }
+}

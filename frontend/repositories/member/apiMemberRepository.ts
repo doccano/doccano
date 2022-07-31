@@ -27,7 +27,8 @@ export class APIMemberRepository implements MemberRepository {
 
   async create(projectId: string, item: MemberItem): Promise<MemberItem> {
     const url = `/projects/${projectId}/members`
-    const response = await this.request.post(url, item.toObject())
+    const payload = toPayload(item)
+    const response = await this.request.post(url, payload)
     return toModel(response.data)
   }
 
