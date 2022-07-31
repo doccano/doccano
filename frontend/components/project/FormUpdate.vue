@@ -99,8 +99,8 @@
               v-model="tagInput"
               clearable
               :prepend-icon="mdiPlusCircle"
-              @keyup.enter="addTag()"
-              @click:prepend="addTag()"
+              @keyup.enter="addTag"
+              @click:prepend="addTag"
             >
             </v-text-field>
           </v-col>
@@ -212,8 +212,8 @@ export default {
       this.tags = await this.$services.tag.list(this.projectId)
     },
 
-    addTag() {
-      this.$services.tag.create(this.projectId, this.tagInput)
+    async addTag() {
+      await this.$services.tag.create(this.projectId, this.tagInput)
       this.tagInput = ''
       this.getTags()
     },
