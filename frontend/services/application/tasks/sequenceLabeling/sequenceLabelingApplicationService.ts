@@ -1,6 +1,6 @@
 import { APISequenceLabelingRepository } from '@/repositories/tasks/apiSequenceLabeling'
 import { APIRelationRepository } from '@/repositories/tasks/apiRelationRepository'
-import { Span } from '@/domain/models/tasks/sequenceLabeling'
+import { Span } from '@/domain/models/tasks/span'
 import { Relation } from '@/domain/models/tasks/relation'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { RelationDTO } from './relationData'

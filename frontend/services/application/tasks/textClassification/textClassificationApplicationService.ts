@@ -1,4 +1,4 @@
-import { Category } from '@/domain/models/tasks/textClassification'
+import { Category } from '@/domain/models/tasks/category'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { TextClassificationDTO } from './textClassificationData'
 

@@ -1,4 +1,4 @@
-import { Category } from '@/domain/models/tasks/textClassification'
+import { Category } from '@/domain/models/tasks/category'
 
 export class TextClassificationDTO {
   id: number

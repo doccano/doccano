@@ -1,5 +1,5 @@
 import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
-import { TextLabel } from '@/domain/models/tasks/seq2seq'
+import { TextLabel } from '@/domain/models/tasks/textLabel'
 
 export class APISeq2seqRepository extends AnnotationRepository<TextLabel> {
   labelName = 'texts'

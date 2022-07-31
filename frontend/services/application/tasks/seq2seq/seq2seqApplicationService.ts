@@ -1,4 +1,4 @@
-import { TextLabel } from '@/domain/models/tasks/seq2seq'
+import { TextLabel } from '@/domain/models/tasks/textLabel'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { Seq2seqDTO } from './seq2seqData'
 

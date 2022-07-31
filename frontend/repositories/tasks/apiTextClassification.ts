@@ -1,5 +1,5 @@
 import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
-import { Category } from '@/domain/models/tasks/textClassification'
+import { Category } from '@/domain/models/tasks/category'
 
 export class APITextClassificationRepository extends AnnotationRepository<Category> {
   labelName = 'categories'

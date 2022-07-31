@@ -1,5 +1,5 @@
 import { AnnotationRepository } from '@/domain/models/tasks/annotationRepository'
-import { Span } from '@/domain/models/tasks/sequenceLabeling'
+import { Span } from '@/domain/models/tasks/span'
 
 export class APISequenceLabelingRepository extends AnnotationRepository<Span> {
   labelName = 'spans'

@@ -1,4 +1,4 @@
-import { TextLabel } from '@/domain/models/tasks/seq2seq'
+import { TextLabel } from '@/domain/models/tasks/textLabel'
 
 export class Seq2seqDTO {
   id: number
