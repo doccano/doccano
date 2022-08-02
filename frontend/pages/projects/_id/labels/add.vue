@@ -18,8 +18,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { LabelDTO } from '~/services/application/label/labelData'
 import { ProjectDTO } from '~/services/application/project/projectData'
+import { LabelItem } from '~/domain/models/label/label'
+import { LabelRepository } from '~/domain/models/label/labelRepository'
 import FormCreate from '~/components/label/FormCreate.vue'
 
 export default Vue.extend({
@@ -43,21 +44,8 @@ export default Vue.extend({
 
   data() {
     return {
-      editedItem: {
-        text: '',
-        prefixKey: null,
-        suffixKey: null,
-        backgroundColor: '#73D8FF',
-        textColor: '#ffffff'
-      } as LabelDTO,
-      defaultItem: {
-        text: '',
-        prefixKey: null,
-        suffixKey: null,
-        backgroundColor: '#73D8FF',
-        textColor: '#ffffff'
-      } as LabelDTO,
-      items: [] as LabelDTO[]
+      editedItem: LabelItem.create(),
+      items: [] as LabelItem[]
     }
   },
 
@@ -66,32 +54,26 @@ export default Vue.extend({
       return this.$route.params.id
     },
 
-    service(): any {
+    repository(): LabelRepository {
       const type = this.$route.query.type
-      if (type === 'category') {
-        return this.$services.categoryType
-      } else if (type === 'span') {
-        return this.$services.spanType
-      } else {
-        return this.$services.relationType
-      }
+      return this.$repositories[`${type}Type`]
     }
   },
 
   async created() {
-    this.items = await this.service.list(this.projectId)
+    this.items = await this.repository.list(this.projectId)
   },
 
   methods: {
     async save() {
-      await this.service.create(this.projectId, this.editedItem)
+      await this.repository.create(this.projectId, this.editedItem)
       this.$router.push(`/projects/${this.projectId}/labels`)
     },
 
     async saveAndAnother() {
-      await this.service.create(this.projectId, this.editedItem)
-      this.editedItem = Object.assign({}, this.defaultItem)
-      this.items = await this.service.list(this.projectId)
+      await this.repository.create(this.projectId, this.editedItem)
+      this.editedItem = LabelItem.create()
+      this.items = await this.repository.list(this.projectId)
     }
   }
 })

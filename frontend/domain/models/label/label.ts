@@ -1,18 +1,18 @@
 export class LabelItem {
   constructor(
-    readonly id: number,
-    readonly text: string,
-    readonly prefixKey: string | null,
-    readonly suffixKey: string | null,
-    readonly backgroundColor: string,
-    readonly textColor: string = '#ffffff'
+    public id: number,
+    public text: string = '',
+    public prefixKey: string | null = null,
+    public suffixKey: string | null = null,
+    public backgroundColor: string = '#73D8FF',
+    public textColor: string = '#ffffff'
   ) {}
 
   static create(
-    text: string,
-    prefixKey: string | null,
-    suffixKey: string | null,
-    backgroundColor: string
+    text: string = '',
+    prefixKey: string | null = null,
+    suffixKey: string | null = null,
+    backgroundColor: string = '#73D8FF'
   ): LabelItem {
     return new LabelItem(0, text, prefixKey, suffixKey, backgroundColor)
   }
