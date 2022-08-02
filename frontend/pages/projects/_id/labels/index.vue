@@ -1,14 +1,7 @@
 <template>
   <v-card>
-    <v-tabs v-if="hasMultiType" v-model="tab">
-      <template v-if="isIntentDetectionAndSlotFilling">
-        <v-tab class="text-capitalize">Category</v-tab>
-        <v-tab class="text-capitalize">Span</v-tab>
-      </template>
-      <template v-else>
-        <v-tab class="text-capitalize">Span</v-tab>
-        <v-tab class="text-capitalize">Relation</v-tab>
-      </template>
+    <v-tabs v-if="labelTypes.length > 1" v-model="tab">
+      <v-tab v-for="label in labelTypes" :key="label" class="text-capitalize">{{ label }}</v-tab>
     </v-tabs>
     <v-card-title>
       <action-menu
@@ -46,6 +39,7 @@ export default Vue.extend({
     FormDelete,
     LabelList
   },
+
   layout: 'project',
 
   validate({ params, app }) {
@@ -77,47 +71,39 @@ export default Vue.extend({
       return this.$route.params.id
     },
 
-    hasMultiType(): boolean {
-      if ('projectType' in this.project) {
-        return this.isIntentDetectionAndSlotFilling || !!this.project.useRelation
-      } else {
-        return false
+    labelTypes(): string[] {
+      const types: string[] = []
+      if (this.project.canDefineCategory) {
+        types.push('category')
       }
-    },
-
-    isIntentDetectionAndSlotFilling(): boolean {
-      return this.project.projectType === 'IntentDetectionAndSlotFilling'
+      if (this.project.canDefineSpan) {
+        types.push('span')
+      }
+      if (this.project.canDefineRelation) {
+        types.push('relation')
+      }
+      return types
     },
 
     labelType(): string {
-      if (this.hasMultiType) {
-        if (this.isIntentDetectionAndSlotFilling) {
-          return ['category', 'span'][this.tab!]
-        } else {
-          return ['span', 'relation'][this.tab!]
-        }
-      } else if (this.project.canDefineCategory) {
-        return 'category'
-      } else {
-        return 'span'
-      }
+      return this.labelTypes[this.tab]
     },
 
     service(): any {
       if (!('projectType' in this.project)) {
         return
       }
-      if (this.hasMultiType) {
-        if (this.isIntentDetectionAndSlotFilling) {
-          return [this.$services.categoryType, this.$services.spanType][this.tab!]
-        } else {
-          return [this.$services.spanType, this.$services.relationType][this.tab!]
-        }
-      } else if (this.project.canDefineCategory) {
-        return this.$services.categoryType
-      } else {
-        return this.$services.spanType
+      const services = []
+      if (this.project.canDefineCategory) {
+        services.push(this.$services.categoryType)
       }
+      if (this.project.canDefineSpan) {
+        services.push(this.$services.spanType)
+      }
+      if (this.project.canDefineRelation) {
+        services.push(this.$services.relationType)
+      }
+      return services[this.tab]
     }
   },
 

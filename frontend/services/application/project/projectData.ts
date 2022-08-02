@@ -15,6 +15,7 @@ export class ProjectDTO {
   canDefineLabel: boolean
   canDefineRelation: boolean
   canDefineCategory: boolean
+  canDefineSpan: boolean
   isTextProject: boolean
   allowOverlapping: boolean
   graphemeMode: boolean
@@ -36,8 +37,9 @@ export class ProjectDTO {
     this.pageLink = item.annotationPageLink
     this.tags = item.tags
     this.canDefineLabel = item.canDefineLabel
-    this.canDefineRelation = item.canDefineRelation
+    this.canDefineRelation = item.useRelation
     this.canDefineCategory = item.canDefineCategory
+    this.canDefineSpan = item.canDefineSpan
     this.isTextProject = item.isTextProject
     this.allowOverlapping = item.allowOverlapping
     this.graphemeMode = item.graphemeMode
