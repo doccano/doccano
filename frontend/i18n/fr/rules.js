@@ -4,14 +4,18 @@ export default {
   },
   labelNameRules: {
     labelRequired: "Le nom de l'étiquette est obligatoire",
-    labelLessThan100Chars: "Le nom de l'étiquette doit comporter moins de 100 caractères"
+    labelLessThan100Chars: "Le nom de l'étiquette doit comporter moins de 100 caractères",
+    duplicated: 'Cette étiquette (label) est déja utilisé.'
+  },
+  keyNameRules: {
+    duplicated: 'La clé est déja utilisé.'
   },
   userNameRules: {
     userNameRequired: "Le nom d'utilisateur est requis",
     userNameLessThan30Chars: "Le nom d'utilisateur doit comporter moins de 30 caractères"
   },
   roleRules: {
-    roleRequired: 'Rôle est obligatoire'
+    roleRequired: 'Le rôle est obligatoire'
   },
   projectNameRules: {
     projectNameRequired: 'Le nom du projet est requis',

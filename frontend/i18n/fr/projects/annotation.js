@@ -7,6 +7,8 @@ export default {
   filterOption3: 'Non terminé',
   guidelineTooltip: 'Afficher la ligne directrice',
   guidelinePopupTitle: 'Ligne directrice pour les annotations',
+  commentTooltip: 'Cliquez pour commenter le document',
+  commentPopupTitle: 'Commentaire',
   metadataDefaultMessage: 'Aucune donnée disponible',
   key: 'Clé',
   value: 'Valeur',

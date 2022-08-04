@@ -3,13 +3,13 @@ export default {
   role: 'Rôle',
   updateRole: 'Mettre à jour le rôle',
   addMember: 'Ajouter un membre',
-  userSearchAPIs: "Rechercher des utilisateurs (avec l'IPA)",
+  userSearchAPIs: "Rechercher des utilisateurs (avec l'API)",
   userSearchPrompt: 'Commencez à taper pour rechercher',
   removeMember: 'Supprimer un membre',
   removePrompt: 'Êtes-vous sûr de vouloir supprimer ces membres ?',
   roles: {
     projectAdmin: "L'administrateur du projet",
-    annotator: 'Étiqueteuse',
+    annotator: 'Annotateur (étiqueteur)',
     annotationApprover: "Approbateur d'étiquettes",
     undefined: 'Aucun rôle défini'
   }
