@@ -42,13 +42,12 @@ export default Vue.extend({
 
   layout: 'project',
 
-  validate({ params, app }) {
-    if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id).then((res: ProjectDTO) => {
-        return res.canDefineLabel
-      })
+  async validate({ params, app }) {
+    if (!/^\d+$/.test(params.id)) {
+      return false
     }
-    return false
+    const project = await app.$services.project.findById(params.id)
+    return project.canDefineLabel
   },
 
   data() {

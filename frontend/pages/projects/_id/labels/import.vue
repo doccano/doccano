@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { ProjectDTO } from '~/services/application/project/projectData'
 import FormImport from '~/components/label/FormImport.vue'
+import { validateItemPage } from '~/plugins/labelType/validators'
 
 export default Vue.extend({
   components: {
@@ -14,17 +14,7 @@ export default Vue.extend({
 
   layout: 'project',
 
-  validate({ params, query, app }) {
-    if (!['category', 'span', 'relation'].includes(query.type as string)) {
-      return false
-    }
-    if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id).then((res: ProjectDTO) => {
-        return res.canDefineLabel
-      })
-    }
-    return false
-  },
+  validate: validateItemPage,
 
   data() {
     return {

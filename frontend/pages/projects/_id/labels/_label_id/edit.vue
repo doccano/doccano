@@ -8,9 +8,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { LabelDTO } from '~/services/application/label/labelData'
-import { ProjectDTO } from '~/services/application/project/projectData'
 import FormCreate from '~/components/label/FormCreate.vue'
+import { validateEditPage } from '~/plugins/labelType/validators'
+import { LabelItem } from '~/domain/models/label/label'
+import { LabelRepository } from '~/domain/models/label/labelRepository'
 
 export default Vue.extend({
   components: {
@@ -19,28 +20,12 @@ export default Vue.extend({
 
   layout: 'project',
 
-  validate({ params, query, app }) {
-    if (!['category', 'span', 'relation'].includes(query.type as string)) {
-      return false
-    }
-    if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id).then((res: ProjectDTO) => {
-        return res.canDefineLabel
-      })
-    }
-    return false
-  },
+  validate: validateEditPage,
 
   data() {
     return {
-      editedItem: {
-        text: '',
-        prefixKey: null,
-        suffixKey: null,
-        backgroundColor: '#73D8FF',
-        textColor: '#ffffff'
-      } as LabelDTO,
-      items: [] as LabelDTO[]
+      editedItem: LabelItem.create(),
+      items: [] as LabelItem[]
     }
   },
 
@@ -49,30 +34,27 @@ export default Vue.extend({
       return this.$route.params.id
     },
 
-    labelId(): string {
-      return this.$route.params.label_id
-    },
-
-    service(): any {
+    repository(): LabelRepository {
       const type = this.$route.query.type
       if (type === 'category') {
-        return this.$services.categoryType
+        return this.$repositories.categoryType
       } else if (type === 'span') {
-        return this.$services.spanType
+        return this.$repositories.spanType
       } else {
-        return this.$services.relationType
+        return this.$repositories.relationType
       }
     }
   },
 
   async created() {
-    this.items = await this.service.list(this.projectId)
-    this.editedItem = await this.service.findById(this.projectId, this.labelId)
+    const labelId = this.$route.params.label_id
+    this.items = await this.repository.list(this.projectId)
+    this.editedItem = await this.repository.findById(this.projectId, parseInt(labelId))
   },
 
   methods: {
     async save() {
-      await this.service.update(this.projectId, this.editedItem)
+      await this.repository.update(this.projectId, this.editedItem)
       this.$router.push(`/projects/${this.projectId}/labels`)
     }
   }
