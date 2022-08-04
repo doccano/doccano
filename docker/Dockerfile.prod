@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION="3.8.12-slim-buster"
+ARG PYTHON_VERSION="3.8.13-slim-bullseye"
 FROM python:${PYTHON_VERSION}
 
 CMD ["python3"]
@@ -18,7 +18,7 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     netcat=1.* \
-    libpq-dev=11.* \
+    libpq-dev=13.* \
     unixodbc-dev=2.* \
     g++=4:* \
     curl \

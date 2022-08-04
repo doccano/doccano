@@ -1,5 +1,5 @@
-ARG PYTHON_VERSION="3.8.12-slim-buster"
-ARG NODE_VERSION="16.14-buster-slim"
+ARG PYTHON_VERSION="3.8.13-slim-bullseye"
+ARG NODE_VERSION="16.16-bullseye-slim"
 FROM node:${NODE_VERSION} AS frontend-builder
 
 COPY frontend/ /frontend/
@@ -20,7 +20,7 @@ FROM python:${PYTHON_VERSION} AS backend-builder
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     netcat=1.* \
-    libpq-dev=11.* \
+    libpq-dev=13.* \
     unixodbc-dev=2.* \
     g++=4:* \
     libssl-dev=1.* \
@@ -44,7 +44,7 @@ FROM python:${PYTHON_VERSION} AS runtime
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    libpq-dev=11.* \
+    libpq-dev=13.* \
     unixodbc-dev=2.* \
     libssl-dev=1.* \
  && apt-get clean \
