@@ -14,5 +14,11 @@ export default {
   demoNER: 'Named Entity Recognition',
   demoSent: 'Sentiment Analysis',
   demoTranslation: 'Translation',
-  demoTextToSQL: 'Text to SQL'
+  demoTextToSQL: 'Text to SQL',
+  demoIntenDetectSlotFil: 'Intent Detection and Slot Filling',
+  demoImageClas: 'Image Classification',
+  demoImageCapt: 'Image Captioning',
+  demoObjDetect: 'Object Detection',
+  demoPolygSegm: 'Polygon Segmentation',
+  demoSTT: 'Speech to Text'
 }

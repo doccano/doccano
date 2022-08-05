@@ -5,6 +5,7 @@ export default {
   textClassification: 'Text Classification',
   sequenceLabeling: 'Sequence Labeling',
   sequenceToSequence: 'Sequence to sequence',
+  allowSingleLabel: 'Allow single label',
   randomizeDocOrder: 'Randomize document order',
   shareAnnotations: 'Share annotations across all users',
   delete: 'Delete',
