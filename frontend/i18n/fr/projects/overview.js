@@ -5,10 +5,13 @@ export default {
   textClassification: 'Classification des textes',
   sequenceLabeling: 'Étiquetage des séquences',
   sequenceToSequence: 'Séquence à séquence',
+  allowSingleLabel: 'Autoriser un seul label',
   randomizeDocOrder: "Randomiser l'ordre des documents",
   shareAnnotations: 'Partager les annotations entre tous les utilisateurs',
+  delete: 'Supprimer',
   deleteProjectTitle: 'Supprimer le projet',
   deleteProjectMessage: 'Êtes-vous sûr de vouloir supprimer ces projets ?',
+  search: 'Recherche',
   projectTypes: [
     'Classification des textes',
     'Étiquetage des séquences',
@@ -18,6 +21,6 @@ export default {
     "Sous-titrage d'images",
     "Détection d'objets",
     'Segmentation',
-    'De la parole au texte'
+    'Reconnaissance vocale'
   ]
 }

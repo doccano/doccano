@@ -10,6 +10,7 @@ export default {
   upload: 'Télécharger',
   add: 'Ajouter',
   delete: 'Supprimer',
+  deleteAll: 'Tout Supprimer',
   search: 'Recherchez',
   name: 'Nom',
   import: 'Importer',
