@@ -49,7 +49,7 @@
     <v-btn v-if="!isAuthenticated" outlined @click="$router.push(localePath('/auth'))">
       {{ $t('user.login') }}
     </v-btn>
-    <v-menu v-if="isAuthenticated" offset-y>
+    <v-menu v-if="isAuthenticated" offset-y z-index="200">
       <template #activator="{ on }">
         <v-btn on icon v-on="on">
           <v-icon>{{ mdiDotsVertical }}</v-icon>
