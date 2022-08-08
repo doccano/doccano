@@ -175,6 +175,15 @@ Then run the `dev` command to serve with hot reload at <localhost:3000>:
 yarn dev
 ```
 
+After you change the code, don't forget to run 
+the following commands to ensure code consistency:
+
+```bash
+yarn lintfix
+yarn precommit
+yarn fix:prettier
+```
+
 ### How to create a Python package
 
 During development, you may want to create a Python package and verify it works correctly. In such a case, you can create a package by running the following command in the root directory of your project:
