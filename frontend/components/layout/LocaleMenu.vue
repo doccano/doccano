@@ -1,5 +1,5 @@
 <template>
-  <v-menu open-on-hover offset-y>
+  <v-menu open-on-hover offset-y z-index="200">
     <template #activator="{ on }">
       <v-btn text v-on="on">
         {{ $i18n.locale }}
