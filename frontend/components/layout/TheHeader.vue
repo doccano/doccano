@@ -96,15 +96,15 @@ export default {
         { title: this.$t('home.demoSent'), link: 'sentiment-analysis' },
         { title: this.$t('home.demoTranslation'), link: 'translation' },
         {
-          title: 'Intent Detection and Slot Filling',
+          title: this.$t('home.demoIntenDetectSlotFil'),
           link: 'intent-detection-and-slot-filling'
         },
         { title: this.$t('home.demoTextToSQL'), link: 'text-to-sql' },
-        { title: 'Image Classification', link: 'image-classification' },
-        { title: 'Image Captioning', link: 'image-caption' },
-        { title: 'Object Detection', link: 'object-detection' },
-        { title: 'Polygon Segmentation', link: 'segmentation' },
-        { title: 'Speech to Text', link: 'speech-to-text' }
+        { title: this.$t('home.demoImageClas'), link: 'image-classification' },
+        { title: this.$t('home.demoImageCapt'), link: 'image-caption' },
+        { title: this.$t('home.demoObjDetect'), link: 'object-detection' },
+        { title: this.$t('home.demoPolygSegm'), link: 'segmentation' },
+        { title: this.$t('home.demoSTT'), link: 'speech-to-text' }
       ],
       mdiLogout,
       mdiDotsVertical,

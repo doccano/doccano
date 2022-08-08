@@ -62,7 +62,7 @@
         <v-checkbox
           v-if="hasSingleLabelOption"
           :value="singleClassClassification"
-          label="Allow single label"
+          :label="$t('overview.allowSingleLabel')"
           @change="updateValue('singleClassClassification', $event === true)"
         />
         <v-checkbox
