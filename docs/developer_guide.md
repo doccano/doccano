@@ -34,6 +34,17 @@ The `backend/` directory includes the backend's REST API code. These APIs are bu
 
 If you want to setup the backend environment, please see [Installation guide](./install_and_upgrade_doccano.md#install-from-source).
 
+Also, you can set the following environment variables:
+
+| Environment Variable   | Description                                                                                                                                                                                                                                                                                               |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SECRET_KEY             | A secret key for a particular doccano installation. This is used to provide cryptographic signing, and should be set to a unique, unpredictable value. You should change the fixed default value. See [SECRET_KEY](https://docs.djangoproject.com/en/4.1/ref/settings/#std-setting-SECRET_KEY) in detail. |
+| DEBUG                  | A boolean that turns on/off debug mode. If `DEBUG` is `True`, the detailed error message will be shown. The default value is `True`. See [DEBUG](https://docs.djangoproject.com/en/4.1/ref/settings/) in detail.                                                                                          |
+| DATABASE_URL           | A string to specify the database configuration. The string schema is in line with [dj-database-url](https://github.com/jazzband/dj-database-url). See the page for the detailed information.                                                                                                              |
+| IMPORT_BATCH_SIZE      | A number to specify the batch size for importing dataset. The larger the value, the faster the dataset imports. The default value is `1000`.                                                                                                                                                              |
+| MAX_UPLOAD_SIZE        | A number to specify the max upload file size. The default value is 1073741824(1024^3=1GB).                                                                                                                                                                                                                |
+| ENABLE_FILE_TYPE_CHECK | A boolean that turns on/off file type check on importing datasets. If `ENABLE_FILE_TYPE_CHECK` is `True`, the MIME types of the files are checked.                                                                                                                                                        |
+| CELERY_BROKER_URL      | A string to point to your broker’s service URL. See [Configuration and defaults](https://docs.celeryq.dev/en/stable/userguide/configuration.html) in detail.                                                                                                                                              |
 
 ## docker
 
