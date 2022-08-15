@@ -47,6 +47,12 @@
       >
         <pre>{{ example }}</pre>
       </v-sheet>
+      <div v-if="selected === 'JSONL(Relation)'">
+        <p class="body-1">For readability, the above format can be displayed as follows:</p>
+        <v-sheet :dark="!$vuetify.theme.dark" :light="$vuetify.theme.dark" class="mb-5 pa-5">
+          <pre>{{ JSON.stringify(JSON.parse(example.replaceAll("'", '"')), null, 4) }}</pre>
+        </v-sheet>
+      </div>
       <file-pond
         v-if="selected && acceptedFileTypes !== '*'"
         ref="pond"
