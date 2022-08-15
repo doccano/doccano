@@ -60,9 +60,17 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.nginx
     image: doccano_nginx:prod
+    command: >
+      /bin/sh -c
+      "envsubst '
+      $${WORKER_PROCESSES}
+      '< /etc/nginx/nginx.conf.template
+      > /etc/nginx/nginx.conf
+      && nginx -g 'daemon off;'"
     environment:
       API_URL: "http://backend:8000"
       GOOGLE_TRACKING_ID: ""
+      WORKER_PROCESSES: "auto"
     volumes:
       - static_volume:/static
       - media:/media
