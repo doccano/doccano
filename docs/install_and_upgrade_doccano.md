@@ -2,12 +2,23 @@
 
 Install doccano on local or in the cloud. Choose the installation method that works best for your environment:
 
-- [Install with pip](#install-with-pip)
-- [Install with Docker](#install-with-docker)
-- [Install with Docker Compose](#install-with-docker-compose)
-- [Install from source](#install-from-source)
-- [Install to cloud](#install-to-cloud)
-- [Upgrade doccano](#upgrade-doccano)
+- [Install doccano](#install-doccano)
+  - [System requirements](#system-requirements)
+    - [Web browser support](#web-browser-support)
+    - [Port requirements](#port-requirements)
+  - [Install with pip](#install-with-pip)
+    - [Use PostgreSQL](#use-postgresql)
+  - [Install with Docker](#install-with-docker)
+    - [Build a local image with Docker](#build-a-local-image-with-docker)
+  - [Install with Docker Compose](#install-with-docker-compose)
+  - [Install from source](#install-from-source)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
+    - [How to create a Python package](#how-to-create-a-python-package)
+  - [Install to cloud](#install-to-cloud)
+  - [Upgrade doccano](#upgrade-doccano)
+    - [After v1.6.0](#after-v160)
+    - [Before v1.6.0](#before-v160)
 
 ## System requirements
 
@@ -53,6 +64,36 @@ doccano task
 ```
 
 Open <http://localhost:8000/>.
+
+### Use PostgreSQL
+
+By default, SQLite 3 is used for the default database system. You can also use other database systems like PostgreSQL, MySQL, and so on. Here we will show you how to use PostgreSQL.
+
+First, you need to install `psycopg2-binary` as an additional dependency:
+
+```bash
+pip install psycopg2-binary
+```
+
+Next, set up PostgreSQL. You can set up PostgreSQL directly, but here we will use Docker. Let's run the `docker run` command with the user name(`POSTGRES_USER`), password(`POSTGRES_PASSWORD`), and database name(`POSTGRES_DB`). For other options, please refer to the [official documentation](https://hub.docker.com/_/postgres).
+
+```bash
+docker run -d \
+  --name doccano-postgres \
+  -e POSTGRES_USER=doccano_admin \
+  -e POSTGRES_PASSWORD=doccano_pass \
+  -e POSTGRES_DB=doccano \
+  -v doccano-db:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  postgres:13.8-alpine
+```
+
+Then, set `DATABASE_URL` environment variable according to your PostgreSQL credentials. The schema is in line with dj-database-url. Please refer to the [official documentation](https://github.com/jazzband/dj-database-url) for the detailed information.
+
+```bash
+# export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
+export DATABASE_URL="postgres://doccano_admin:doccano_pass@localhost:5432/doccano?sslmode=disable"
+```
 
 ## Install with Docker
 
