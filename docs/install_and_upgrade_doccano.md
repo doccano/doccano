@@ -7,7 +7,8 @@ Install doccano on local or in the cloud. Choose the installation method that wo
     - [Web browser support](#web-browser-support)
     - [Port requirements](#port-requirements)
   - [Install with pip](#install-with-pip)
-    - [Use PostgreSQL](#use-postgresql)
+    - [Use PostgreSQL as a database](#use-postgresql-as-a-database)
+    - [Use RabbitMQ as a message broker](#use-rabbitmq-as-a-message-broker)
   - [Install with Docker](#install-with-docker)
     - [Build a local image with Docker](#build-a-local-image-with-docker)
   - [Install with Docker Compose](#install-with-docker-compose)
@@ -65,7 +66,7 @@ doccano task
 
 Open <http://localhost:8000/>.
 
-### Use PostgreSQL
+### Use PostgreSQL as a database
 
 By default, SQLite 3 is used for the default database system. You can also use other database systems like PostgreSQL, MySQL, and so on. Here we will show you how to use PostgreSQL.
 
@@ -94,6 +95,33 @@ Then, set `DATABASE_URL` environment variable according to your PostgreSQL crede
 # export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
 export DATABASE_URL="postgres://doccano_admin:doccano_pass@localhost:5432/doccano?sslmode=disable"
 ```
+
+That's it. Now you can start by running the `doccano init` command.
+
+### Use RabbitMQ as a message broker
+
+doccano uses Celery and a message broker to handle long tasks like importing/exxporting datasets. By default, SQLite3 is used for the default message broker. You can also use other message brokers like RabbitMQ, Redis, and so on. Here we will show you how to use RabbitMQ.
+
+First, set up RabbitMQ. You can set up RabbitMQ directly, but here we will use Docker. Let's run the `docker run` command with the user name(`RABBITMQ_DEFAULT_USER`), password(`RABBITMQ_DEFAULT_PASS`). For other options, please refer to the [official documentation](https://hub.docker.com/_/rabbitmq).
+
+```bash
+docker run -d \
+  --hostname doccano \
+  --name doccano-rabbit \
+  -e RABBITMQ_DEFAULT_USER=doccano_rabit \
+  -e RABBITMQ_DEFAULT_PASS=doccano_pass \
+  -p 5672:5672 \
+  rabbitmq:3.10.7-alpine
+```
+
+Then, set `CELERY_BROKER_URL` environment variable according to your RabbitMQ credentials. If you want to know the schema, please refer to the [official documentation](https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-settings).
+
+```bash
+# export CELERY_BROKER_URL='amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@localhost:5672//'
+export CELERY_BROKER_URL='amqp://doccano_rabit:doccano_pass@localhost:5672//'
+```
+
+That's it. Now you can start webserver and task queue by running the `doccano webserver` and `doccano task` command. Notice that the both commands needs `DATABASE_URL` and `CELERY_BROKER_URL` environment variables if you would change them.
 
 ## Install with Docker
 
