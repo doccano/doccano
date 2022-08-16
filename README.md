@@ -49,7 +49,9 @@ By default, SQLite 3 is used for the default database. If you want to use Postgr
 ```bash
 pip install 'doccano[postgresql]'
 ```
+
 and set `DATABASE_URL` environment variable according to your PostgreSQL credentials:
+
 ```bash
 DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
 ```
