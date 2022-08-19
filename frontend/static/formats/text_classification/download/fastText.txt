@@ -1,2 +1,0 @@
-__label__pet dog cat
-__label__car VW BMW

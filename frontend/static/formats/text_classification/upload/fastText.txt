@@ -1,2 +1,0 @@
-__label__[label name] text
-__label_president Obama Trump
