@@ -29,6 +29,11 @@
         filled
       />
     </template>
+    <template #[`item.isConfirmed`]="{ item }">
+      <v-chip :color="item.isConfirmed ? 'success' : 'warning'" text small>
+        {{ item.isConfirmed ? 'Finished' : 'In progress' }}
+      </v-chip>
+    </template>
     <template #[`item.fileUrl`]="{ item }">
       <v-img
         :src="item.fileUrl"
@@ -97,6 +102,11 @@ export default Vue.extend({
         {
           text: 'ID',
           value: 'id',
+          sortable: false
+        },
+        {
+          text: 'Status',
+          value: 'isConfirmed',
           sortable: false
         },
         {

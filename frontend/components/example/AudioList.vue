@@ -29,6 +29,11 @@
         filled
       />
     </template>
+    <template #[`item.isConfirmed`]="{ item }">
+      <v-chip :color="item.isConfirmed ? 'success' : 'warning'" text small>
+        {{ item.isConfirmed ? 'Finished' : 'In progress' }}
+      </v-chip>
+    </template>
     <template #[`item.fileUrl`]="{ item }">
       <audio controls :src="item.fileUrl" class="mt-2">
         Your browser does not support the
@@ -93,6 +98,11 @@ export default Vue.extend({
         {
           text: 'ID',
           value: 'id',
+          sortable: false
+        },
+        {
+          text: 'Status',
+          value: 'isConfirmed',
           sortable: false
         },
         {
