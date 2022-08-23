@@ -18,9 +18,8 @@ Parameters:
   InstanceType:
     Description: WebServer EC2 instance type
     Type: String
-    Default: t2.small
+    Default: t2.medium
     AllowedValues:
-      - t2.small
       - t2.medium
       - t2.large
     ConstraintDescription: must be a valid EC2 instance type.
