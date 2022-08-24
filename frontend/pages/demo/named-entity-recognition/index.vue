@@ -182,15 +182,17 @@ export default {
     updateEntity(annotationId, labelId) {
       const index = this.currentDoc.annotations.findIndex((item) => item.id === annotationId)
       this.currentDoc.annotations[index].label = labelId
+      this.currentDoc.annotations = [...this.currentDoc.annotations]
     },
     addEntity(startOffset, endOffset, labelId) {
+      console.log(startOffset, endOffset, labelId)
       const payload = {
         id: Math.floor(Math.random() * Math.floor(Number.MAX_SAFE_INTEGER)),
         startOffset,
         endOffset,
         label: labelId
       }
-      this.currentDoc.annotations.push(payload)
+      this.currentDoc.annotations = [...this.currentDoc.annotations, payload]
     },
     deleteRelation(relationId) {
       this.relations = this.relations.filter((item) => item.id !== relationId)
@@ -204,6 +206,6 @@ export default {
   font-weight: 500;
   line-height: 2rem;
   font-family: 'Roboto', sans-serif !important;
-  opacity: 0.6;
+  opacity: 0.8;
 }
 </style>

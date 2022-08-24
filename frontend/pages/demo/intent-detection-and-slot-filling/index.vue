@@ -173,6 +173,7 @@ export default {
     updateEntity(annotationId, labelId) {
       const index = this.currentDoc.annotations.findIndex((item) => item.id === annotationId)
       this.currentDoc.annotations[index].label = labelId
+      this.currentDoc.annotations = [...this.currentDoc.annotations]
     },
 
     addEntity(startOffset, endOffset, labelId) {
@@ -182,7 +183,7 @@ export default {
         endOffset,
         label: labelId
       }
-      this.currentDoc.annotations.push(payload)
+      this.currentDoc.annotations = [...this.currentDoc.annotations, payload]
     },
 
     removeLabel(annotationId) {
