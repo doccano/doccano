@@ -9,8 +9,10 @@ Install doccano on local or in the cloud. Choose the installation method that wo
   - [Install with pip](#install-with-pip)
     - [Use PostgreSQL as a database](#use-postgresql-as-a-database)
     - [Use RabbitMQ as a message broker](#use-rabbitmq-as-a-message-broker)
+    - [Use Flower to monitor Celery tasks](#use-flower-to-monitor-celery-tasks)
   - [Install with Docker](#install-with-docker)
     - [Build a local image with Docker](#build-a-local-image-with-docker)
+    - [Use Flower](#use-flower)
   - [Install with Docker Compose](#install-with-docker-compose)
   - [Install from source](#install-from-source)
     - [Backend](#backend)
@@ -123,6 +125,14 @@ export CELERY_BROKER_URL='amqp://doccano_rabit:doccano_pass@localhost:5672//'
 
 That's it. Now you can start webserver and task queue by running the `doccano webserver` and `doccano task` command. Notice that the both commands needs `DATABASE_URL` and `CELERY_BROKER_URL` environment variables if you would change them.
 
+### Use Flower to monitor Celery tasks
+
+If you want to monitor and manage celery tasks, you can use [Flower](https://flower.readthedocs.io/en/latest/index.html). The `–basic_auth` option accepts _user:password_ pairs separated by a comma. If configured, any client trying to access this Flower instance will be prompted to provide the credentials specified in this argument:
+
+```bash
+doccano flower --basic_auth=user1:password1,user2:password2
+```
+
 ## Install with Docker
 
 doccano is also available as a [Docker](https://www.docker.com/) container. Make sure you have Docker installed on your machine.
@@ -154,6 +164,20 @@ If you want to build a local image, run:
 
 ```bash
 docker build -t doccano:latest . -f docker/Dockerfile
+```
+
+### Use Flower
+
+Set `FLOWER_BASIC_AUTH` environment variable and open `5555` port. The variable accepts _user:password_ pairs separated by a comma.
+
+```bash
+docker container create --name doccano \
+  -e "ADMIN_USERNAME=admin" \
+  -e "ADMIN_EMAIL=admin@example.com" \
+  -e "ADMIN_PASSWORD=password" \
+  -e "FLOWER_BASIC_AUTH=username:password"
+  -v doccano-db:/data \
+  -p 8000:8000 -p 5555:5555 doccano/doccano
 ```
 
 ## Install with Docker Compose
