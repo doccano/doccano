@@ -133,6 +133,8 @@ If you want to monitor and manage celery tasks, you can use [Flower](https://flo
 doccano flower --basic_auth=user1:password1,user2:password2
 ```
 
+Open <http://localhost:5555/>.
+
 ## Install with Docker
 
 doccano is also available as a [Docker](https://www.docker.com/) container. Make sure you have Docker installed on your machine.
