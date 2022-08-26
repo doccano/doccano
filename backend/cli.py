@@ -110,6 +110,18 @@ def command_run_task_queue(args):
     app.worker_main(argv=argv)
 
 
+def command_run_flower(args):
+    print("Starting flower.")
+    argv = [
+        "--app=config",
+        "--workdir={}".format(base),
+        "flower",
+    ]
+    if args.basic_auth:
+        argv.append("--basic_auth={}".format(args.basic_auth))
+    app.worker_main(argv=argv)
+
+
 def command_help(args):
     print(parser.parse_args([args.command, "--help"]))
 
@@ -143,8 +155,13 @@ def main():
     # Create a parser for task queue.
     parser_queue = subparsers.add_parser("task", help="see `task -h`")
     parser_queue.add_argument("--concurrency", type=int, default=2, help="concurrency")
-    parser_queue.add_argument("--env_file", type=str, help="read in a file of environment variables")
+    parser_queue.add_argument("--env_file", type=str, default="", help="read in a file of environment variables")
     parser_queue.set_defaults(handler=command_run_task_queue)
+
+    parser_flower = subparsers.add_parser("flower", help="see `flower -h`")
+    parser_flower.add_argument("--env_file", type=str, help="read in a file of environment variables")
+    parser_flower.add_argument("--basic_auth", type=str, help="username and password for basic authentication")
+    parser_flower.set_defaults(handler=command_run_flower)
 
     # Create a parser for help.
     parser_help = subparsers.add_parser("help", help="see `help -h`")

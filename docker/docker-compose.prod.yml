@@ -45,6 +45,26 @@ services:
     networks:
       - network-backend
 
+  flower:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.prod
+    image: doccano_flower:prod
+    entrypoint: ["/opt/bin/prod-flower.sh"]
+    environment:
+      PYTHONUNBUFFERED: "1"
+      CELERY_BROKER_URL: "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq"
+      DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+      DJANGO_SETTINGS_MODULE: "config.settings.production"
+      FLOWER_BASIC_AUTH: "${FLOWER_BASIC_AUTH}" # Format "username:password"
+    depends_on:
+      - celery
+    ports:
+      - 5555:5555
+    networks:
+      - network-backend
+      - network-frontend
+
   rabbitmq:
     image: rabbitmq:3.10.7-alpine
     environment:

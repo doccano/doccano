@@ -79,6 +79,7 @@ The `tools` directory contains some shell scripts. They are mainly used in Docke
 | create-package.sh | This script creates doccano's Python package. Note that yarn and poetry must already be installed.                   |
 | heroku.sh         | This script is used to create django's superuser in Heroku.                                                          |
 | prod-celery.sh    | This script is used to run celery in `docker-compose.prod.yml`.                                                      |
+| prod-flower.sh    | This script is used to run Flower in `docker-compose.prod.yml`.                                                      |
 | prod-django.sh    | This script is used to run gunicorn in `docker-compose.prod.yml`. In addition, create roles, superuser, and migrate. |
 | run.sh            | This script is used in `Dockerfile`. After creating roles and superuser, run gunicorn and celery.                    |
 

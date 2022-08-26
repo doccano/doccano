@@ -39,8 +39,14 @@ echo "Starting django"
 gunicorn --bind="0.0.0.0:${PORT:-8000}" --workers="${WORKERS:-1}" config.wsgi --timeout=300 &
 gunicorn_pid="$!"
 
+echo "Starting celery"
 celery --app=config worker --loglevel=INFO --concurrency="${CELERY_WORKERS:-1}" &
 celery_pid="$!"
+
+echo "Starting flower"
+if [[ -n "${FLOWER_BASIC_AUTH}" ]]; then
+  celery --app=config flower --basic_auth="${FLOWER_BASIC_AUTH}" &
+fi
 
 while :; do
   if [[ ! -e "/proc/${celery_pid}" ]]; then
