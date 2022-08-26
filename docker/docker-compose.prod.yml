@@ -56,7 +56,7 @@ services:
       CELERY_BROKER_URL: "amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@rabbitmq"
       DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
       DJANGO_SETTINGS_MODULE: "config.settings.production"
-      FLOWER_BASIC_AUTH: "username:password"
+      FLOWER_BASIC_AUTH: "${FLOWER_BASIC_AUTH}" # Format "username:password"
     depends_on:
       - celery
     ports:
