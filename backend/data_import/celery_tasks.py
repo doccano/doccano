@@ -46,7 +46,7 @@ def check_uploaded_files(upload_ids: List[str], file_format: Format):
     return cleaned_ids, errors
 
 
-@shared_task
+@shared_task(autoretry_for=(Exception,), retry_backoff=True, retry_jitter=True)
 def import_dataset(user_id, project_id, file_format: str, upload_ids: List[str], task: str, **kwargs):
     project = get_object_or_404(Project, pk=project_id)
     user = get_object_or_404(get_user_model(), pk=user_id)
