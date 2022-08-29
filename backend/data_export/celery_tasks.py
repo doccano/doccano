@@ -55,7 +55,7 @@ def create_individual_dataset(project: Project, dirpath: str, confirmed_only: bo
         service.export(filepath)
 
 
-@shared_task
+@shared_task(autoretry_for=(Exception,), retry_backoff=True, retry_jitter=True)
 def export_dataset(project_id, file_format: str, confirmed_only=False):
     project = get_object_or_404(Project, pk=project_id)
     dirpath = os.path.join(settings.MEDIA_ROOT, str(uuid.uuid4()))
