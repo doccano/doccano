@@ -22,9 +22,9 @@ RUN apt-get update \
     unixodbc-dev=2.* \
     g++=4:* \
     curl \
- && pip install --upgrade --no-cache-dir pip \
- && curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python - \
- && PATH="${PATH}:$HOME/.poetry/bin" \
+ && pip install --upgrade --no-cache-dir pip==22.2.2 \
+ && curl -sSL https://install.python-poetry.org | python - \
+ && export PATH="/root/.local/bin:$PATH" \
  && poetry config virtualenvs.create false \
  && poetry install --no-dev --no-root \
  && poetry add psycopg2-binary \
