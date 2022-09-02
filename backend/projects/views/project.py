@@ -13,6 +13,8 @@ class ProjectList(generics.ListCreateAPIView):
     serializer_class = ProjectPolymorphicSerializer
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ("name", "description")
+    ordering_fields = "__all__"
+    ordering = ["-created_at"]
 
     def get_permissions(self):
         if self.request.method == "GET":
