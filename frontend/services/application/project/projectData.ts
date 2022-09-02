@@ -6,7 +6,9 @@ export class ProjectDTO {
   description: string
   guideline: string
   projectType: ProjectType
+  createdAt: string
   updatedAt: string
+  author: string
   enableRandomOrder: boolean
   enableShareAnnotation: boolean
   singleClassClassification: boolean
@@ -29,7 +31,9 @@ export class ProjectDTO {
     this.description = item.description
     this.guideline = item.guideline
     this.projectType = item.projectType
+    this.createdAt = item.createdAt
     this.updatedAt = item.updatedAt
+    this.author = item.author
     this.enableRandomOrder = item.randomOrder
     this.enableShareAnnotation = item.collaborativeAnnotation
     this.singleClassClassification = item.exclusiveCategories

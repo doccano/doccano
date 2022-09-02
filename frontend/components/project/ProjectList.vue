@@ -34,9 +34,9 @@
         <span>{{ item.name }}</span>
       </nuxt-link>
     </template>
-    <template #[`item.updatedAt`]="{ item }">
+    <template #[`item.createdAt`]="{ item }">
       <span>{{
-        item.updatedAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm')
+        item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm')
       }}</span>
     </template>
     <template #[`item.tags`]="{ item }">
@@ -93,7 +93,8 @@ export default Vue.extend({
         { text: this.$t('generic.name'), value: 'name' },
         { text: this.$t('generic.description'), value: 'description' },
         { text: this.$t('generic.type'), value: 'projectType' },
-        { text: 'Updated', value: 'updatedAt' },
+        { text: 'Created', value: 'createdAt' },
+        { text: 'Author', value: 'author' },
         { text: 'Tags', value: 'tags' }
       ]
     }

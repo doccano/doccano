@@ -49,6 +49,13 @@ class TagSerializer(serializers.ModelSerializer):
 
 class ProjectSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, required=False)
+    author = serializers.SerializerMethodField()
+
+    @classmethod
+    def get_author(cls, instance):
+        if instance.created_by:
+            return instance.created_by.username
+        return ""
 
     class Meta:
         model = Project
@@ -58,9 +65,10 @@ class ProjectSerializer(serializers.ModelSerializer):
             "description",
             "guideline",
             "project_type",
+            "created_at",
             "updated_at",
             "random_order",
-            "created_by",
+            "author",
             "collaborative_annotation",
             "single_class_classification",
             "is_text_project",
@@ -71,7 +79,9 @@ class ProjectSerializer(serializers.ModelSerializer):
             "tags",
         ]
         read_only_fields = (
+            "created_at",
             "updated_at",
+            "author",
             "is_text_project",
             "can_define_label",
             "can_define_relation",
