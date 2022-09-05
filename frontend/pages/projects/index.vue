@@ -31,7 +31,11 @@ import _ from 'lodash'
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import ProjectList from '@/components/project/ProjectList.vue'
-import { ProjectDTO, ProjectListDTO } from '~/services/application/project/projectData'
+import {
+  ProjectDTO,
+  ProjectListDTO,
+  SearchQueryData
+} from '~/services/application/project/projectData'
 import FormDelete from '~/components/project/FormDelete.vue'
 
 export default Vue.extend({
@@ -54,7 +58,9 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.projects = await this.$services.project.list(this.$route.query)
+    this.projects = await this.$services.project.list(
+      this.$route.query as unknown as SearchQueryData
+    )
     this.isLoading = false
   },
 
