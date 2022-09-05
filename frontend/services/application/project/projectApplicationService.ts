@@ -1,13 +1,14 @@
-import { ProjectDTO, ProjectWriteDTO, ProjectListDTO } from './projectData'
-import { ProjectRepository, SearchOption } from '~/domain/models/project/projectRepository'
+import { ProjectDTO, ProjectWriteDTO, ProjectListDTO, SearchQueryData } from './projectData'
+import { ProjectRepository, SearchQuery } from '~/domain/models/project/projectRepository'
 import { ProjectWriteItem } from '~/domain/models/project/project'
 
 export class ProjectApplicationService {
   constructor(private readonly repository: ProjectRepository) {}
 
-  public async list(options: SearchOption): Promise<ProjectListDTO> {
+  public async list(q: SearchQueryData): Promise<ProjectListDTO> {
     try {
-      const items = await this.repository.list(options)
+      const query = new SearchQuery(q.limit, q.offset, q.q, q.sortBy, q.sortDesc)
+      const items = await this.repository.list(query)
       return new ProjectListDTO(items)
     } catch (e: any) {
       throw new Error(e.response.data.detail)

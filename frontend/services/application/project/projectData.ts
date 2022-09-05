@@ -80,3 +80,11 @@ export class ProjectListDTO {
     this.items = item.items.map((_) => new ProjectDTO(_))
   }
 }
+
+export interface SearchQueryData {
+  limit: string
+  offset: string
+  q?: string
+  sortBy?: string
+  sortDesc?: string
+}
