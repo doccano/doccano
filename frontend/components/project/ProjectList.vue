@@ -34,9 +34,9 @@
         <span>{{ item.name }}</span>
       </nuxt-link>
     </template>
-    <template #[`item.updatedAt`]="{ item }">
+    <template #[`item.createdAt`]="{ item }">
       <span>{{
-        item.updatedAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm')
+        item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm')
       }}</span>
     </template>
     <template #[`item.tags`]="{ item }">
@@ -88,13 +88,14 @@ export default Vue.extend({
   },
 
   computed: {
-    headers() {
+    headers(): { text: any; value: string; sortable?: boolean }[] {
       return [
         { text: this.$t('generic.name'), value: 'name' },
-        { text: this.$t('generic.description'), value: 'description' },
+        { text: this.$t('generic.description'), value: 'description', sortable: false },
         { text: this.$t('generic.type'), value: 'projectType' },
-        { text: 'Updated', value: 'updatedAt' },
-        { text: 'Tags', value: 'tags' }
+        { text: 'Created', value: 'createdAt' },
+        { text: 'Author', value: 'author' },
+        { text: 'Tags', value: 'tags', sortable: false }
       ]
     }
   },
@@ -102,32 +103,38 @@ export default Vue.extend({
   watch: {
     options: {
       handler() {
-        const self: any = this
-        self.updateQuery({
+        this.updateQuery({
           query: {
-            limit: self.options.itemsPerPage.toString(),
-            offset: ((self.options.page - 1) * self.options.itemsPerPage).toString(),
-            q: self.search
+            limit: this.options.itemsPerPage.toString(),
+            offset: ((this.options.page - 1) * this.options.itemsPerPage).toString(),
+            q: this.search
           }
         })
       },
       deep: true
     },
     search() {
-      const self: any = this
-      self.updateQuery({
+      this.updateQuery({
         query: {
-          limit: self.options.itemsPerPage.toString(),
+          limit: this.options.itemsPerPage.toString(),
           offset: '0',
-          q: self.search
+          q: this.search
         }
       })
-      self.options.page = 1
+      this.options.page = 1
     }
   },
 
   methods: {
     updateQuery(payload: any) {
+      const { sortBy, sortDesc } = this.options
+      if (sortBy.length === 1 && sortDesc.length === 1) {
+        payload.query.sortBy = sortBy[0]
+        payload.query.sortDesc = sortDesc[0]
+      } else {
+        payload.query.sortBy = 'createdAt'
+        payload.query.sortDesc = true
+      }
       this.$emit('update:query', payload)
     }
   }

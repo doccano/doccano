@@ -1,5 +1,5 @@
 import ApiService from '@/services/api.service'
-import { ProjectRepository, SearchOption } from '@/domain/models/project/projectRepository'
+import { ProjectRepository, SearchQuery } from '@/domain/models/project/projectRepository'
 import { ProjectReadItem, ProjectWriteItem, ProjectItemList } from '@/domain/models/project/project'
 
 function toModel(item: { [key: string]: any }): ProjectReadItem {
@@ -11,7 +11,9 @@ function toModel(item: { [key: string]: any }): ProjectReadItem {
     item.users,
     item.tags,
     item.project_type,
+    item.created_at,
     item.updated_at,
+    item.author,
     item.random_order,
     item.collaborative_annotation,
     item.single_class_classification,
@@ -48,8 +50,16 @@ function toPayload(item: ProjectWriteItem): { [key: string]: any } {
 export class APIProjectRepository implements ProjectRepository {
   constructor(private readonly request = ApiService) {}
 
-  async list({ limit = '10', offset = '0', q = '' }: SearchOption): Promise<ProjectItemList> {
-    const url = `/projects?limit=${limit}&offset=${offset}&q=${q}`
+  async list(query: SearchQuery): Promise<ProjectItemList> {
+    const fieldMapper = {
+      name: 'name',
+      createdAt: 'created_at',
+      projectType: 'project_type',
+      author: 'created_by'
+    }
+    const sortBy = fieldMapper[query.sortBy]
+    const ordering = query.sortDesc ? `-${sortBy}` : `${sortBy}`
+    const url = `/projects?limit=${query.limit}&offset=${query.offset}&q=${query.q}&ordering=${ordering}`
     const response = await this.request.get(url)
     return new ProjectItemList(
       response.data.count,
