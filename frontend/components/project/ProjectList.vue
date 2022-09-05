@@ -131,6 +131,9 @@ export default Vue.extend({
       if (sortBy.length === 1 && sortDesc.length === 1) {
         payload.query.sortBy = sortBy[0]
         payload.query.sortDesc = sortDesc[0]
+      } else {
+        payload.query.sortBy = 'createdAt'
+        payload.query.sortDesc = true
       }
       this.$emit('update:query', payload)
     }
