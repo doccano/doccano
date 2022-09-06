@@ -1,0 +1,32 @@
+name: Test installation and doccano commands
+
+on:
+  schedule:
+    - cron: "15 22 * * *"
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        python-version: ["3.8", "3.9", "3.10"]
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Enabling JSON1 extension on SQLite
+      if: ${{ startsWith(matrix.os, 'windows') && matrix.python-version == '3.8' }}
+      shell: bash
+      run: |
+        export VERSION=`python -V | cut -f2 -d " "`
+        curl -LO https://www.sqlite.org/2022/sqlite-dll-win64-x64-3390300.zip
+        unzip sqlite-dll-win64-x64-3390300.zip
+        mv sqlite3.dll /c/hostedtoolcache/windows/Python/$VERSION/x64/DLLs/
+    - name: Test installation
+      run: pip install doccano
+    - name: Test doccano init command
+      run: doccano init
+    - name: Test doccano createuser command
+      run: doccano createuser --username admin --password pass
