@@ -89,7 +89,7 @@ On development, edit `docker-compose.dev.yml` file: change `8000:8000` substring
 
 The following commands are the procedure for 2~3.
 
-```
+```bash
 ❯ docker volume ls
 DRIVER              VOLUME NAME
 local               doccano_node_modules
@@ -100,3 +100,11 @@ local               doccano_www
 ❯ docker volume rm doccano_node_modules doccano_static_volume doccano_venv doccano_www
 ❯ docker-compose -f docker-compose.prod.yml build --no-cache
 ```
+
+## django.db.utils.OperationalError: no such function: JSON_VALID
+
+doccano uses JSONField on SQLite. So you need to enable the JSON1 extension on Python's sqlite3 library. If the extension is not enabled on your installation, a system error will be raised. This is especially related to the user who uses macOS and Python which is less than 3.7, Windows and Python which is less than 3.9.
+
+If you have this problem, please try the following:
+
+- [Enabling JSON1 extension on SQLite](https://code.djangoproject.com/wiki/JSON1Extension)
