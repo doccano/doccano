@@ -13,8 +13,16 @@ class Command(createsuperuser.Command):
         password = options.get("password")
         username = options.get("username")
 
-        if password and not username:
+        if not username:
+            self.stderr.write("Error: Blank username isn't allowed.")
             raise CommandError("--username is required if specifying --password")
+
+        if not password:
+            self.stderr.write("Error: Blank password isn't allowed.")
+            raise CommandError("--password is required")
+
+        if password == "password":
+            self.stdout.write(self.style.WARNING("Warning: You should change the default password."))
 
         try:
             super().handle(*args, **options)
@@ -24,10 +32,10 @@ class Command(createsuperuser.Command):
             else:
                 raise
 
-        if password:
-            database = options.get("database")
-            db = self.UserModel._default_manager.db_manager(database)
-            user = db.get(username=username)
-            user.set_password(password)
-            self.stderr.write(f"Setting password for User {username}.")
-            user.save()
+        database = options.get("database")
+        db = self.UserModel._default_manager.db_manager(database)
+        user = db.get(username=username)
+        user.set_password(password)
+        message = f"Setting password for User {username}."
+        self.stdout.write(self.style.SUCCESS(message))
+        user.save()
