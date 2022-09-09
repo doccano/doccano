@@ -45,3 +45,21 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
+
+      - name: Build a backend image and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./docker/Dockerfile.prod
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: doccano/doccano:backend
+          labels: ${{ steps.docker_meta.outputs.labels }}
+      
+      - name: Build a frontend image and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./docker/Dockerfile.nginx
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: doccano/doccano:frontend
+          labels: ${{ steps.docker_meta.outputs.labels }}
