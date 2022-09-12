@@ -164,6 +164,12 @@ class TestAutomatedLabeling(CRUDMixin):
         self.assertEqual(Category.objects.count(), 1)
         self.assertEqual(Category.objects.first().label, self.category_pos)
 
+    @patch("auto_labeling.views.execute_pipeline", return_value=Categories([{"label": "NEUTRAL"}]))
+    def test_nonexistent_category(self, mock):
+        mommy.make("AutoLabelingConfig", task_type="Category", project=self.project.item)
+        self.assert_create(self.project.admin, status.HTTP_201_CREATED)
+        self.assertEqual(Category.objects.count(), 0)
+
     @patch(
         "auto_labeling.views.execute_pipeline",
         side_effect=[Categories([{"label": "POS"}]), Categories([{"label": "NEG"}])],
