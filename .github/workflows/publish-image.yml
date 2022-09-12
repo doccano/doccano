@@ -41,6 +41,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           file: ./docker/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker_meta.outputs.tags }}
@@ -50,6 +51,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           file: ./docker/Dockerfile.prod
           push: ${{ github.event_name != 'pull_request' }}
           tags: doccano/doccano:backend
@@ -59,6 +61,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           file: ./docker/Dockerfile.nginx
           push: ${{ github.event_name != 'pull_request' }}
           tags: doccano/doccano:frontend
