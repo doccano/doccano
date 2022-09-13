@@ -12,13 +12,15 @@ The tutorial is divided into several sections:
 
 In this tutorial, we will show you how to set up auto-labeling using Amazon Comprehend Sentiment Analysis as an example. Therefore, we assume that you have a text classification project in doccano, an AWS account and be able to generate access keys.
 
-## Select a Template
+## Use pre-defined service
+
+### Select a Template
 
 First, move to the "settings" page and open "Auto Labeling" tab. The new tab should display a "Create" button and an empty table. Click the button and select "Amazon Comprehend Sentiment Analysis" from the dropdown menu:
 
 ![](../images/auto-labeling/select_template.png)
 
-## Set Request Parameters
+### Set Request Parameters
 
 Next, you need to set parameters to send an API request. In the case of Amazon Comprehend Sentiment Analysis, the following parameters are required:
 
@@ -35,7 +37,7 @@ Then, we will test them using the sample text to make sure whether the parameter
 
 ![](../images/auto-labeling/test_parameters.png)
 
-## Specify Response Mapping
+### Specify Response Mapping
 
 Now, you can successfully fetch the API response. Next, you need to convert it to doccano format(below) with the mapping template([Jinja2](https://jinja.palletsprojects.com/en/2.11.x/) format).
 
@@ -64,7 +66,7 @@ After setting the template, we will test them using the sample response. This re
 
 ![](../images/auto-labeling/test_mapping_template.png)
 
-## Specify Label Mapping
+### Specify Label Mapping
 
 Once you specify the mapping template, you need to convert the label in the response into the one you defined at the label page.
 
@@ -76,10 +78,84 @@ After adding the label mapping, we will test them using the sample response:
 
 ![](../images/auto-labeling/test_label_mapping.png)
 
-## Enable the Feature
+### Enable the Feature
 
 Finally, move to the "annotation" page and click "Auto Labeling" button. It should display a "Slide" button for switching enable/disable auto-labeling feature. Try to enable it:
 
 ![](../images/auto-labeling/enable.png)
 
 Each time you view a new document, it will be labeled automatically.
+
+## Use your own API
+
+First, select "Custom REST Request":
+
+![](../images/auto-labeling/custom_rest_request_template.png)
+
+Next, you need to build your own API. Any framework can be used. Here we will use [Flask](https://flask.palletsprojects.com/en/2.2.x/) to create a minimal application. This application always returns the same label（`{"label": "NEG"}`）. We also call `get_json` method and output its return value to make sure we can receive the data.
+
+```bash
+from flask import Flask, request
+
+app = Flask(__name__)
+
+@app.route("/", methods=["POST"])
+def predict():
+    print(request.get_json())
+    return {"label": "NEG"}
+```
+
+Save it as `hello.py` or something similar. Make sure to not call your application `flask.py` because this would conflict with Flask itself.
+
+To run the application, use the `flask` command. You need to tell the Flask where your application is with the `--app` option.
+
+```bash
+$ flask --app hello run
+ * Serving Flask app 'hello'
+ * Debug mode: off
+ * Running on http://127.0.0.1:5000
+Press CTRL+C to quit
+```
+
+OK. Let's return to doccano.
+
+Next, you need to set parameters(`url` and `method`). Let's set the Flask application's URL and method:
+
+![](../images/auto-labeling/custom_rest_request_parameters.png)
+
+Next, select the add button next to Body. Enter `text` as key and `{{ text }}` as value. This value is a placeholder and will actually be replaced by your own text.
+
+![](../images/auto-labeling/custom_rest_request_body.png)
+
+Then, test the parameters with the sample text. If it is working correctly, it should return `{"label": "NEG"}`.
+
+![](../images/auto-labeling/custom_rest_request_test_parameters.png)
+
+You should also see the following in the console:
+
+```bash
+127.0.0.1 - - [13/Sep/2022 15:19:57] "GET / HTTP/1.1" 405 -
+{'text': 'This is a test sentence.'}
+```
+
+Next, convert the response from your API into a format that doccano can handle. We can access the response by the `input` variable. The mapping template looks like the following:
+
+```bash
+[
+  {
+    "label": "{{ input.label }}"
+  }
+]
+```
+
+Test the mapping template. If it is working correctly, it should be as follows:
+
+```bash
+[
+    {
+        "label": "NEG"
+    }
+]
+```
+
+The rest is the same as when using a predefined service.
