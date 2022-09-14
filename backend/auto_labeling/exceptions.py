@@ -24,3 +24,7 @@ class SampleDataException(ValidationError):
 
 class TemplateMappingError(ValidationError):
     default_detail = "The response cannot be mapped. You might need to change the template."
+
+
+class ResponseJSONDecodeError(ValidationError):
+    default_detail = "The response cannot be decoded." "Please try to return the response in dictionary or list format."

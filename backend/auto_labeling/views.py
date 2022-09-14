@@ -17,6 +17,7 @@ from rest_framework.views import APIView
 
 from .exceptions import (
     AWSTokenError,
+    ResponseJSONDecodeError,
     SampleDataException,
     TemplateMappingError,
     URLConnectionError,
@@ -94,6 +95,8 @@ class RestAPIRequestTesting(APIView):
             raise URLConnectionError
         except botocore.exceptions.ClientError:
             raise AWSTokenError()
+        except json.decoder.JSONDecodeError:
+            raise ResponseJSONDecodeError()
         except Exception as e:
             raise e
 
