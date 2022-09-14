@@ -1,1 +1,1 @@
-FROM doccano/doccano:master
+FROM doccano/doccano:nightly
