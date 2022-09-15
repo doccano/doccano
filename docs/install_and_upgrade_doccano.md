@@ -102,7 +102,7 @@ That's it. Now you can start by running the `doccano init` command.
 
 ### Use RabbitMQ as a message broker
 
-doccano uses Celery and a message broker to handle long tasks like importing/exxporting datasets. By default, SQLite3 is used for the default message broker. You can also use other message brokers like RabbitMQ, Redis, and so on. Here we will show you how to use RabbitMQ.
+doccano uses Celery and a message broker to handle long tasks like importing/exporting datasets. By default, SQLite3 is used for the default message broker. You can also use other message brokers like RabbitMQ, Redis, and so on. Here we will show you how to use RabbitMQ.
 
 First, set up RabbitMQ. You can set up RabbitMQ directly, but here we will use Docker. Let's run the `docker run` command with the user name(`RABBITMQ_DEFAULT_USER`), password(`RABBITMQ_DEFAULT_PASS`). For other options, please refer to the [official documentation](https://hub.docker.com/_/rabbitmq).
 
