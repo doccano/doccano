@@ -56,7 +56,7 @@ def run_on_nix(args):
         "workers": args.workers,
         "chdir": base,
         "capture_output": True,
-        "loglevel": "debug",
+        "loglevel": "info",
     }
     StandaloneApplication(options).run()
 
