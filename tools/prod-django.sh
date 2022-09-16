@@ -31,4 +31,10 @@ if [[ -n "${ADMIN_USERNAME}" ]] && [[ -n "${ADMIN_PASSWORD}" ]] && [[ -n "${ADMI
 fi
 
 echo "Starting django"
-gunicorn --bind="${HOST:-0.0.0.0}:${PORT:-8000}" --workers="${WORKERS:-4}" config.wsgi --timeout 300
+gunicorn \
+  --bind="${HOST:-0.0.0.0}:${PORT:-8000}" \
+  --workers="${WORKERS:-4}" \
+  --timeout=300 \
+  --capture-output \
+  --log-level info \
+  config.wsgi
