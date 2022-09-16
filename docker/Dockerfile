@@ -9,7 +9,7 @@ ENV PUBLIC_PATH="/static/_nuxt/"
 RUN apt-get update \
  && apt-get install -y --no-install-recommends git python3 make g++ ca-certificates \
  && git config --global url."https://github.com/".insteadOf git://github.com/ \
- && yarn install \
+ && yarn install --network-timeout 1000000 \
  && yarn build \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
