@@ -30,6 +30,10 @@ SECRET_KEY = env("SECRET_KEY", "v8sk33sy82!uw3ty=!jjv5vp7=s2phrzw(m(hrn^f7e_#1h2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", True)
 
+BASE_URL = env("BASE_URL", "/")
+
+USE_X_FORWARDED_HOST = env.bool("USE_X_FORWARDED_HOST", False)
+
 # Application definition
 INSTALLED_APPS = [
     "whitenoise.runserver_nostatic",
@@ -103,7 +107,7 @@ TEMPLATES = [
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
-STATIC_URL = "/static/"
+STATIC_URL = BASE_URL + "static/"
 STATIC_ROOT = path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [
     path.join(BASE_DIR, "client/dist/static"),
@@ -179,9 +183,9 @@ USE_TZ = True
 TEST_RUNNER = "xmlrunner.extra.djangotestrunner.XMLTestRunner"
 TEST_OUTPUT_DIR = path.join(BASE_DIR, "junitxml")
 
-LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/projects/"
-LOGOUT_REDIRECT_URL = "/"
+LOGIN_URL = BASE_URL + "login/"
+LOGIN_REDIRECT_URL = BASE_URL + "projects/"
+LOGOUT_REDIRECT_URL = BASE_URL
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -245,7 +249,7 @@ if not EMAIL_HOST:
 
 # User media files
 MEDIA_ROOT = env("MEDIA_ROOT", path.join(BASE_DIR, "media"))
-MEDIA_URL = "/media/"
+MEDIA_URL = BASE_URL + "/media/"
 
 # Filepond settings
 DJANGO_DRF_FILEPOND_UPLOAD_TMP = path.join(BASE_DIR, "filepond-temp-uploads")
