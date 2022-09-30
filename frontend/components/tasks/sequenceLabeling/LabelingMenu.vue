@@ -16,8 +16,9 @@
           small-chips
         />
       </v-list-item>
-      <v-list-item v-for="(label, i) in labels" :key="i" @click="onLabelSelected(label.id)">
-        <v-list-item-action v-if="hasAnySuffixKey">
+     
+      <v-list-item v-for="(label, i) in labels" :key="i" @click="onLabelSelected(label.id)" >
+        <!-- <v-list-item-action v-if="hasAnySuffixKey">
           <v-chip
             v-if="label.suffixKey"
             :color="label.backgroundColor"
@@ -26,11 +27,12 @@
             v-text="label.suffixKey"
           />
           <span v-else class="mr-8" />
-        </v-list-item-action>
+        </v-list-item-action> -->
         <v-list-item-content>
-          <v-list-item-title v-text="label.text" />
+          <v-list-item-title v-text="label.text"/>
         </v-list-item-content>
       </v-list-item>
+    
     </v-list>
   </v-menu>
 </template>
