@@ -16,14 +16,18 @@
           small-chips
         />
       </v-list-item>
+<<<<<<< HEAD
       <v-list-item v-for="(label, i) in labels" :key="i" @click="onLabelSelected(label.id)">
+=======
+      <v-list-item v-for="(label, i) in labels.slice(0,100)" :key="i" @click="onLabelSelected(label.id)">
+>>>>>>> da50a415 (Limited label dropdown to display first 100 labels)
         <v-list-item-action v-if="hasAnySuffixKey">
           <v-chip
             v-if="label.suffixKey"
             :color="label.backgroundColor"
             outlined
             small
-            v-text="label.suffixKey"
+            text="#"
           />
           <span v-else class="mr-8" />
         </v-list-item-action>
