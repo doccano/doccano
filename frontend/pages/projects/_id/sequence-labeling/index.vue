@@ -40,8 +40,8 @@
     </template>
     <template #sidebar>
       <annotation-progress :progress="progress" />
-      <v-card class="mt-4">
-        <v-card-title>Label Types</v-card-title>
+      <!-- <v-card class="mt-4">
+        <v-card-title>L=This needs to go</v-card-title>
         <v-card-text>
           <v-switch v-if="useRelationLabeling" v-model="relationMode">
             <template #label>
@@ -71,8 +71,8 @@
             </v-chip>
           </v-chip-group>
         </v-card-text>
-      </v-card>
-      <list-metadata :metadata="doc.meta" class="mt-4" />
+      </v-card> -->
+      <!-- <list-metadata :metadata="doc.meta" class="mt-4" /> -->
     </template>
   </layout-text>
 </template>
