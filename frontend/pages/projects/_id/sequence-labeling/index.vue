@@ -72,7 +72,7 @@
           </v-chip-group>
         </v-card-text>
       </v-card> -->
-      <list-metadata :metadata="doc.meta" class="mt-4" />
+      <!-- <list-metadata :metadata="doc.meta" class="mt-4" /> -->
     </template>
   </layout-text>
 </template>
