@@ -17,10 +17,14 @@
         />
       </v-list-item>
 <<<<<<< HEAD
+<<<<<<< HEAD
       <v-list-item v-for="(label, i) in labels" :key="i" @click="onLabelSelected(label.id)">
 =======
       <v-list-item v-for="(label, i) in labels.slice(0,100)" :key="i" @click="onLabelSelected(label.id)">
 >>>>>>> da50a415 (Limited label dropdown to display first 100 labels)
+=======
+      <!-- <v-list-item v-for="(label, i) in labels.slice(0,100)" :key="i" @click="onLabelSelected(label.id)">
+>>>>>>> 8d1f4d31 (Removed remaining labels from the dropdown menu)
         <v-list-item-action v-if="hasAnySuffixKey">
           <v-chip
             v-if="label.suffixKey"
@@ -34,7 +38,7 @@
         <v-list-item-content>
           <v-list-item-title v-text="label.text" />
         </v-list-item-content>
-      </v-list-item>
+      </v-list-item> -->
     </v-list>
   </v-menu>
 </template>
