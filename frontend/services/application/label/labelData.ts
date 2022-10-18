@@ -6,6 +6,7 @@ export class LabelDTO {
   prefixKey: string | null
   suffixKey: string | null
   backgroundColor: string
+  description: string
   textColor: string
 
   constructor(item: LabelItem) {
@@ -14,6 +15,7 @@ export class LabelDTO {
     this.prefixKey = item.prefixKey
     this.suffixKey = item.suffixKey
     this.backgroundColor = item.backgroundColor
+    this.description = item.description
     this.textColor = '#ffffff'
   }
 }

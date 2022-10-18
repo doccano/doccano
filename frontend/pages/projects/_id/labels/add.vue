@@ -48,6 +48,7 @@ export default Vue.extend({
         prefixKey: null,
         suffixKey: null,
         backgroundColor: '#73D8FF',
+        description: '',
         textColor: '#ffffff'
       } as LabelDTO,
       defaultItem: {
@@ -55,6 +56,7 @@ export default Vue.extend({
         prefixKey: null,
         suffixKey: null,
         backgroundColor: '#73D8FF',
+        description: '',
         textColor: '#ffffff'
       } as LabelDTO,
       items: [] as LabelDTO[]

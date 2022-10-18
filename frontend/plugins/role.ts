@@ -1,5 +1,4 @@
 import Vue from 'vue'
-
 declare module 'vue/types/vue' {
   interface Vue {
     $translateRole(role: string, mappings: object): string

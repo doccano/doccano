@@ -80,6 +80,7 @@ export default Vue.extend({
         { text: this.$t('generic.name'), value: 'text' },
         { text: this.$t('labels.shortkey'), value: 'suffixKey' },
         { text: this.$t('labels.color'), value: 'backgroundColor' },
+        { text: this.$t('labels.description'), value: 'description' },
         { text: 'Actions', value: 'actions', sortable: false }
       ]
     }
