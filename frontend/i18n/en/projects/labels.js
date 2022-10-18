@@ -7,6 +7,7 @@ export default {
   exportLabels: 'Export Labels',
   labelName: 'Label name',
   labelMessage: 'Label name is required',
+  description: 'Description',
   createLink: 'Create Link',
   linkName: 'Link name',
   linkMessage: 'Link name is required',

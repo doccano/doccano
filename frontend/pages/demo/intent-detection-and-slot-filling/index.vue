@@ -15,15 +15,17 @@
             </v-card-title>
             <v-divider />
             <div class="annotation-text pa-4">
-              <entity-editor
-                :dark="$vuetify.theme.dark"
-                :text="currentDoc.text"
-                :entities="currentDoc.annotations"
-                :entity-labels="entityLabels"
-                @addEntity="addEntity"
-                @click:entity="updateEntity"
-                @contextmenu:entity="deleteEntity"
-              />
+              <KeepAlive>
+                <entity-editor
+                  :dark="$vuetify.theme.dark"
+                  :text="currentDoc.text"
+                  :entities="currentDoc.annotations"
+                  :entity-labels="entityLabels"
+                  @addEntity="addEntity"
+                  @click:entity="updateEntity"
+                  @contextmenu:entity="deleteEntity"
+                />
+              </KeepAlive>
             </div>
           </v-card>
         </v-col>

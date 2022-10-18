@@ -2,6 +2,11 @@ import colors from 'vuetify/es5/util/colors'
 import i18n from './i18n'
 
 export default {
+  generate: {
+    target: 'static',
+    devtools: true,
+  },
+
   ssr: false,
   /*
    ** Headers of the page

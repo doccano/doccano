@@ -81,10 +81,12 @@ export default Vue.extend({
 
   computed: {
     headers() {
-      const headers = [
-        { text: this.$t('generic.name'), value: 'text', sortable: true },
-        { text: this.$t('labels.shortkey'), value: 'suffixKey', sortable: true },
-        { text: this.$t('labels.color'), value: 'backgroundColor', sortable: true }
+      return [
+        { text: this.$t('generic.name'), value: 'text' },
+        { text: this.$t('labels.shortkey'), value: 'suffixKey' },
+        { text: this.$t('labels.color'), value: 'backgroundColor' },
+        { text: this.$t('labels.description'), value: 'description' },
+        { text: 'Actions', value: 'actions', sortable: false }
       ]
       if (!this.disableEdit) {
         headers.push({ text: 'Actions', value: 'actions', sortable: false })

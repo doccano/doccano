@@ -63,12 +63,14 @@ export default Vue.extend({
           text: 'Dog',
           suffix_key: 'a',
           background_color: '#FF0000',
+          description: 'Canis lupus',
           text_color: '#ffffff'
         },
         {
           text: 'Cat',
           suffix_key: 'c',
           background_color: '#FF0000',
+          description: 'Felis catus',
           text_color: '#ffffff'
         }
       ]
