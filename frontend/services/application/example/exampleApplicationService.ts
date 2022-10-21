@@ -19,14 +19,16 @@ export class ExampleApplicationService {
     projectId: string,
     page: string,
     q: string,
-    isChecked: string
+    isChecked: string,
+    ordering: string
   ): Promise<ExampleListDTO> {
     const offset = (parseInt(page, 10) - 1).toString()
     const options: SearchOption = {
       limit: '1',
       offset,
       q,
-      isChecked
+      isChecked,
+      ordering
     }
     return await this.list(projectId, options)
   }
