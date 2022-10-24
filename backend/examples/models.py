@@ -18,6 +18,7 @@ class Example(models.Model):
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name="examples")
     annotations_approved_by = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True, blank=True)
     text = models.TextField(null=True, blank=True)
+    score = models.FloatField(default=100)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 
