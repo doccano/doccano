@@ -52,7 +52,7 @@ dj-database-url = "^0.5.0"
 pyexcel-xlsx = "^0.6.0"
 gunicorn = "^20.1.0"
 auto-labeling-pipeline = "^0.1.21"
-dj-rest-auth = "^2.2.3"
+dj-rest-auth = {extras = ["with_social"], version = "^2.2.5"}
 django-drf-filepond = "^0.4.1"
 celery = "^5.2.3"
 django-celery-results = "2.4.0"
