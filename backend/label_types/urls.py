@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views import (
     CategoryTypeDetail,
@@ -13,6 +13,7 @@ from .views import (
 )
 
 urlpatterns = [
+    path('__debug__/', include('debug_toolbar.urls')),
     path(route="category-types", view=CategoryTypeList.as_view(), name="category_types"),
     path(route="category-types/<int:label_id>", view=CategoryTypeDetail.as_view(), name="category_type"),
     path(route="span-types", view=SpanTypeList.as_view(), name="span_types"),

@@ -1,3 +1,4 @@
+from pydoc import describe
 import random
 import string
 
@@ -29,6 +30,7 @@ class LabelType(models.Model):
     )
     background_color = models.CharField(max_length=7, default=generate_random_hex_color)
     text_color = models.CharField(max_length=7, default="#ffffff")
+    description = models.CharField(null=True, max_length=200)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     updated_at = models.DateTimeField(auto_now=True)
 

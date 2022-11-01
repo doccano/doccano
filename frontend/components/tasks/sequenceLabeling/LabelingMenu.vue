@@ -16,7 +16,7 @@
           small-chips
         />
       </v-list-item>
-      <!-- <v-list-item v-for="(label, i) in labels.slice(0,100)" :key="i" @click="onLabelSelected(label.id)">
+      <v-list-item v-for="(label, i) in labels.slice(0,100)" :key="i" @click="onLabelSelected(label.id)">
         <v-list-item-action v-if="hasAnySuffixKey">
           <v-chip
             v-if="label.suffixKey"
@@ -30,7 +30,7 @@
         <v-list-item-content>
           <v-list-item-title v-text="label.text" />
         </v-list-item-content>
-      </v-list-item> -->
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>

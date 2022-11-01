@@ -15,6 +15,7 @@
     </template>
     <template #content>
       <v-card>
+        <KeepAlive>
         <div class="annotation-text pa-4">
           <entity-editor
             :dark="$vuetify.theme.dark"
@@ -36,6 +37,7 @@
             @contextmenu:relation="deleteRelation"
           />
         </div>
+        </KeepAlive>
       </v-card>
     </template>
     <template #sidebar>

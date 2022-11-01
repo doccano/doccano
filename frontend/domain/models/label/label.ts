@@ -5,15 +5,17 @@ export class LabelItem {
     readonly prefixKey: string | null,
     readonly suffixKey: string | null,
     readonly backgroundColor: string,
-    readonly textColor: string = '#ffffff'
+    readonly description: string,
+    readonly textColor: string = '#ffffff',
   ) {}
 
   static create(
     text: string,
     prefixKey: string | null,
     suffixKey: string | null,
-    backgroundColor: string
+    backgroundColor: string,
+    description: string,
   ): LabelItem {
-    return new LabelItem(0, text, prefixKey, suffixKey, backgroundColor)
+    return new LabelItem(0, text, prefixKey, suffixKey, backgroundColor, description)
   }
 }

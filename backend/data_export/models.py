@@ -56,6 +56,7 @@ class ExportedSpan(Span):
             "label": self.label.text,
             "start_offset": self.start_offset,
             "end_offset": self.end_offset,
+            "description": self.description,
         }
 
     def to_tuple(self):

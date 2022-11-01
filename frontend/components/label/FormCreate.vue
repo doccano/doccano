@@ -26,7 +26,17 @@
             />
           </v-col>
         </v-row>
-
+        <v-row>
+          <v-col cols="12" sm="12">
+            <v-text-field
+              :value="description"
+              :counter="200"
+              :label="$t('labels.description')"
+              outlined
+              @input="$emit('update:description', $event)"
+            />
+          </v-col>
+        </v-row>
         <v-row>
           <v-col cols="12" sm="12">
             <v-text-field
@@ -98,6 +108,10 @@ export default Vue.extend({
       default: undefined
     },
     text: {
+      type: String,
+      required: true
+    },
+    description: {
       type: String,
       required: true
     },

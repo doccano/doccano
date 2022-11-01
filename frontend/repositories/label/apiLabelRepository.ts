@@ -9,6 +9,7 @@ function toModel(item: { [key: string]: any }): LabelItem {
     item.prefix_key,
     item.suffix_key,
     item.background_color,
+    item.description,
     item.text_color
   )
 }
@@ -20,6 +21,7 @@ function toPayload(item: LabelItem): { [key: string]: any } {
     prefix_key: item.prefixKey,
     suffix_key: item.suffixKey,
     background_color: item.backgroundColor,
+    description: item.description,
     text_color: item.textColor
   }
 }
