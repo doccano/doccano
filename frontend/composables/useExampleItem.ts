@@ -14,9 +14,14 @@ export const useExampleItem = () => {
 
   const getExample = async (
     projectId: string,
-    { page, q, isChecked }: { page: string; q: string; isChecked: string }
+    {
+      page,
+      q,
+      isChecked,
+      ordering
+    }: { page: string; q: string; isChecked: string; ordering: string }
   ) => {
-    const examples = await exampleService.fetchOne(projectId, page, q, isChecked)
+    const examples = await exampleService.fetchOne(projectId, page, q, isChecked, ordering)
     state.totalExample = examples.count
     if (!_.isEmpty(examples) && examples.items.length !== 0) {
       state.example = examples.items[0]

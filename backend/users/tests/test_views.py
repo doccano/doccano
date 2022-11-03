@@ -38,3 +38,22 @@ class TestMeAPI(APITestCase):
     def test_does_not_return_information_to_unauthenticated_user(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TestUserCreationAPI(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.staff = make_user(username="bob", is_staff=True)
+        cls.non_staff = make_user(username="tom", is_staff=False)
+        cls.url = reverse(viewname="user_create")
+        cls.payload = {"username": "hironsan", "password1": "foobarbaz", "password2": "foobarbaz"}
+
+    def test_staff_can_create_user(self):
+        self.client.force_login(self.staff)
+        response = self.client.post(self.url, data=self.payload)
+        self.assertEqual(response.data["username"], "hironsan")
+
+    def test_non_staff_cannot_create_user(self):
+        self.client.force_login(self.non_staff)
+        response = self.client.post(self.url, data=self.payload)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

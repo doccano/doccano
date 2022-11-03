@@ -126,7 +126,8 @@ export default {
       this.projectId,
       this.$route.query.page,
       this.$route.query.q,
-      this.$route.query.isChecked
+      this.$route.query.isChecked,
+      this.$route.query.ordering
     )
     const doc = this.docs.items[0]
     if (this.enableAutoLabeling && !doc.isConfirmed) {

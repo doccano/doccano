@@ -18,7 +18,7 @@ class ExampleList(generics.ListCreateAPIView):
     serializer_class = ExampleSerializer
     permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    ordering_fields = ("created_at", "updated_at")
+    ordering_fields = ("created_at", "updated_at", "score")
     search_fields = ("text", "filename")
     model = Example
     filter_class = ExampleFilter
