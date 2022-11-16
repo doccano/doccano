@@ -95,6 +95,9 @@ export default {
       this.$route.query.ordering
     )
     const doc = this.docs.items[0]
+    if (this.enableAutoLabeling && !doc.isConfirmed) {
+      await this.autoLabel(doc.id)
+    }
     await this.listSpan(doc.id)
     await this.listCategory(doc.id)
   },
@@ -176,6 +179,14 @@ export default {
     async clear() {
       await this.$services.sequenceLabeling.clear(this.projectId, this.doc.id)
       await this.listSpan(this.doc.id)
+    },
+
+    async autoLabel(docId) {
+      try {
+        await this.$services.sequenceLabeling.autoLabel(this.projectId, docId)
+      } catch (e) {
+        console.log(e.response.data.detail)
+      }
     },
 
     async updateProgress() {
