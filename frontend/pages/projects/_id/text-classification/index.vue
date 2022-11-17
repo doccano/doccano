@@ -109,6 +109,12 @@ export default {
       }
     })
     watch(query, fetch)
+    watch(enableAutoLabeling, async (val) => {
+      if (val && !exampleState.example.isConfirmed) {
+        await autoLabel(exampleState.example.id)
+        await getTeacherList(exampleState.example.id)
+      }
+    })
 
     return {
       ...toRefs(labelState),

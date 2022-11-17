@@ -120,7 +120,14 @@ export default {
   },
 
   watch: {
-    '$route.query': '$fetch'
+    '$route.query': '$fetch',
+    async enableAutoLabeling(val) {
+      if (val && !this.doc.isConfirmed) {
+        await this.autoLabel(this.doc.id)
+        await this.listSpan(this.doc.id)
+        await this.listCategory(this.doc.id)
+      }
+    }
   },
 
   async created() {

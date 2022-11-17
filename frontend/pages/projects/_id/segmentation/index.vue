@@ -202,9 +202,10 @@ export default {
 
   watch: {
     '$route.query': '$fetch',
-    enableAutoLabeling(val) {
-      if (val) {
-        this.list(this.image.id)
+    async enableAutoLabeling(val) {
+      if (val && !this.image.isConfirmed) {
+        await this.autoLabel(this.image.id)
+        await this.list(this.image.id)
       }
     },
 
