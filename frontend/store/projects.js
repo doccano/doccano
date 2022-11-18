@@ -12,9 +12,6 @@ export const getters = {
   canViewApproveButton(state) {
     const role = state.current.current_users_role
     return role && !role.is_annotator
-  },
-  getLink(state) {
-    return state.current.pageLink
   }
 }
 

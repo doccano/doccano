@@ -1,4 +1,4 @@
-import { ProjectReadItem, ProjectType, ProjectItemList } from '~/domain/models/project/project'
+import { ProjectItemList, ProjectReadItem, ProjectType } from '~/domain/models/project/project'
 
 export class ProjectDTO {
   id: number
@@ -12,7 +12,6 @@ export class ProjectDTO {
   enableRandomOrder: boolean
   enableShareAnnotation: boolean
   singleClassClassification: boolean
-  pageLink: string
   tags: Object[] | string[]
   canDefineLabel: boolean
   canDefineRelation: boolean
@@ -37,7 +36,6 @@ export class ProjectDTO {
     this.enableRandomOrder = item.randomOrder
     this.enableShareAnnotation = item.collaborativeAnnotation
     this.singleClassClassification = item.exclusiveCategories
-    this.pageLink = item.annotationPageLink
     this.tags = item.tags
     this.canDefineLabel = item.canDefineLabel
     this.canDefineRelation = item.canDefineRelation

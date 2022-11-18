@@ -1,6 +1,11 @@
-import { ProjectDTO, ProjectWriteDTO, ProjectListDTO, SearchQueryData } from './projectData'
-import { ProjectRepository, SearchQuery } from '~/domain/models/project/projectRepository'
 import { ProjectWriteItem } from '~/domain/models/project/project'
+import { ProjectRepository, SearchQuery } from '~/domain/models/project/projectRepository'
+import {
+  ProjectDTO,
+  ProjectListDTO,
+  ProjectWriteDTO,
+  SearchQueryData
+} from '~/services/application/project/projectData'
 
 export class ProjectApplicationService {
   constructor(private readonly repository: ProjectRepository) {}

@@ -65,15 +65,16 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import _ from 'lodash'
 import DocumentList from '@/components/example/DocumentList.vue'
 import FormDelete from '@/components/example/FormDelete.vue'
 import FormDeleteBulk from '@/components/example/FormDeleteBulk.vue'
-import ImageList from '~/components/example/ImageList.vue'
-import AudioList from '~/components/example/AudioList.vue'
-import { ExampleListDTO, ExampleDTO } from '~/services/application/example/exampleData'
+import _ from 'lodash'
+import Vue from 'vue'
 import ActionMenu from '~/components/example/ActionMenu.vue'
+import AudioList from '~/components/example/AudioList.vue'
+import ImageList from '~/components/example/ImageList.vue'
+import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
+import { ExampleDTO, ExampleListDTO } from '~/services/application/example/exampleData'
 import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
@@ -163,8 +164,9 @@ export default Vue.extend({
       this.$router.push(query)
     },
     movePage(query: object) {
+      const link = getLinkToAnnotationPage(this.projectId, this.project.projectType)
       this.updateQuery({
-        path: this.localePath(this.project.pageLink),
+        path: this.localePath(link),
         query
       })
     }

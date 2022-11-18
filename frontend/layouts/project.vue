@@ -7,7 +7,7 @@
     </the-header>
 
     <v-navigation-drawer v-model="drawerLeft" app clipped color="">
-      <the-side-bar :link="getLink" :is-project-admin="isProjectAdmin" :project="currentProject" />
+      <the-side-bar :is-project-admin="isProjectAdmin" :project="currentProject" />
     </v-navigation-drawer>
 
     <v-main>
@@ -24,8 +24,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import TheSideBar from '~/components/layout/TheSideBar'
 import TheHeader from '~/components/layout/TheHeader'
+import TheSideBar from '~/components/layout/TheSideBar'
 
 export default {
   components: {
@@ -42,7 +42,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink', 'currentProject'])
+    ...mapGetters('projects', ['currentProject'])
   },
 
   async created() {

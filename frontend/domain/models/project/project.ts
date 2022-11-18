@@ -35,22 +35,6 @@ export class ProjectReadItem {
     readonly canDefineCategory: boolean
   ) {}
 
-  get annotationPageLink(): string {
-    const mapping = {
-      DocumentClassification: 'text-classification',
-      SequenceLabeling: 'sequence-labeling',
-      Seq2seq: 'sequence-to-sequence',
-      IntentDetectionAndSlotFilling: 'intent-detection-and-slot-filling',
-      ImageClassification: 'image-classification',
-      ImageCaptioning: 'image-captioning',
-      BoundingBox: 'object-detection',
-      Segmentation: 'segmentation',
-      Speech2text: 'speech-to-text'
-    }
-    const url = `/projects/${this.id}/${mapping[this.projectType]}`
-    return url
-  }
-
   get taskNames(): string[] {
     if (this.projectType === 'IntentDetectionAndSlotFilling') {
       return ['DocumentClassification', 'SequenceLabeling']

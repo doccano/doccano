@@ -29,24 +29,20 @@
 
 <script>
 import {
-  mdiHome,
-  mdiDatabase,
-  mdiCog,
-  mdiChartBar,
-  mdiBookOpenOutline,
-  mdiCommentAccountOutline,
-  mdiLabel,
   mdiAccount,
+  mdiBookOpenOutline,
+  mdiChartBar,
+  mdiCog,
+  mdiCommentAccountOutline,
+  mdiDatabase,
+  mdiHome,
+  mdiLabel,
   mdiPlayCircleOutline
 } from '@mdi/js'
+import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
 export default {
   props: {
-    link: {
-      type: String,
-      default: '',
-      required: true
-    },
     isProjectAdmin: {
       type: Boolean,
       default: false,
@@ -131,8 +127,9 @@ export default {
   methods: {
     toLabeling() {
       const query = this.$services.option.findOption(this.$route.params.id)
+      const link = getLinkToAnnotationPage(this.$route.params.id, this.project.projectType)
       this.$router.push({
-        path: this.localePath(this.link),
+        path: this.localePath(link),
         query
       })
     }
