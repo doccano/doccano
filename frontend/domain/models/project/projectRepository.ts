@@ -1,5 +1,5 @@
 import { Page } from '~/domain/models/page'
-import { ProjectReadItem, ProjectWriteItem } from '~/domain/models/project/project'
+import { ProjectReadItem } from '~/domain/models/project/project'
 
 const sortableFieldList = ['name', 'projectType', 'createdAt', 'author'] as const
 type SortableFields = typeof sortableFieldList[number]
@@ -27,9 +27,9 @@ export interface ProjectRepository {
 
   findById(id: string): Promise<ProjectReadItem>
 
-  create(item: ProjectWriteItem): Promise<ProjectReadItem>
+  create(item: ProjectReadItem): Promise<ProjectReadItem>
 
-  update(item: ProjectWriteItem): Promise<void>
+  update(item: ProjectReadItem): Promise<void>
 
   bulkDelete(projectIds: number[]): Promise<void>
 }

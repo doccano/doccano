@@ -1,4 +1,4 @@
-import { ProjectWriteItem } from '~/domain/models/project/project'
+import { ProjectReadItem } from '~/domain/models/project/project'
 import { ProjectRepository, SearchQuery } from '~/domain/models/project/projectRepository'
 import {
   ProjectDTO,
@@ -27,7 +27,7 @@ export class ProjectApplicationService {
 
   public async create(item: ProjectWriteDTO): Promise<ProjectDTO> {
     try {
-      const project = this.toWriteModel(item)
+      const project = this.toModel(item)
       const response = await this.repository.create(project)
       return new ProjectDTO(response)
     } catch (e: any) {
@@ -37,8 +37,8 @@ export class ProjectApplicationService {
 
   public async update(item: ProjectWriteDTO): Promise<void> {
     try {
-      const project = this.toWriteModel(item)
-      project.tags = []
+      item.tags = [] // TODO: somewhat hacky
+      const project = this.toModel(item)
       await this.repository.update(project)
     } catch (e: any) {
       throw new Error(e.response.data.detail)
@@ -50,8 +50,8 @@ export class ProjectApplicationService {
     return this.repository.bulkDelete(ids)
   }
 
-  private toWriteModel(item: ProjectWriteDTO): ProjectWriteItem {
-    return new ProjectWriteItem(
+  private toModel(item: ProjectWriteDTO): ProjectReadItem {
+    return ProjectReadItem.create(
       item.id,
       item.name,
       item.description,
@@ -63,7 +63,7 @@ export class ProjectApplicationService {
       item.allowOverlapping,
       item.graphemeMode,
       item.useRelation,
-      item.tags
+      item.tags.map((tag) => ({ text: tag }))
     )
   }
 }

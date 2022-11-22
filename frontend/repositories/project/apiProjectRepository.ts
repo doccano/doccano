@@ -1,5 +1,5 @@
 import { Page } from '@/domain/models/page'
-import { ProjectReadItem, ProjectWriteItem } from '@/domain/models/project/project'
+import { ProjectReadItem } from '@/domain/models/project/project'
 import { ProjectRepository, SearchQuery } from '@/domain/models/project/projectRepository'
 import ApiService from '@/services/api.service'
 
@@ -9,24 +9,23 @@ function toModel(item: { [key: string]: any }): ProjectReadItem {
     item.name,
     item.description,
     item.guideline,
-    item.users,
-    item.tags,
     item.project_type,
-    item.created_at,
-    item.updated_at,
-    item.author,
     item.random_order,
     item.collaborative_annotation,
     item.single_class_classification,
-    item.resourcetype,
     item.allow_overlapping,
     item.grapheme_mode,
     item.use_relation,
+    item.tags,
+    item.users,
+    item.created_at,
+    item.updated_at,
+    item.author,
     item.is_text_project
   )
 }
 
-function toPayload(item: ProjectWriteItem): { [key: string]: any } {
+function toPayload(item: ProjectReadItem): { [key: string]: any } {
   return {
     id: item.id,
     name: item.name,
@@ -39,7 +38,7 @@ function toPayload(item: ProjectWriteItem): { [key: string]: any } {
     allow_overlapping: item.allowOverlapping,
     grapheme_mode: item.graphemeMode,
     use_relation: item.useRelation,
-    tags: item.tags.map((tag) => ({ text: tag })),
+    tags: item.tags,
     resourcetype: item.resourceType
   }
 }
@@ -72,14 +71,14 @@ export class APIProjectRepository implements ProjectRepository {
     return toModel(response.data)
   }
 
-  async create(item: ProjectWriteItem): Promise<ProjectReadItem> {
+  async create(item: ProjectReadItem): Promise<ProjectReadItem> {
     const url = `/projects`
     const payload = toPayload(item)
     const response = await this.request.post(url, payload)
     return toModel(response.data)
   }
 
-  async update(item: ProjectWriteItem): Promise<void> {
+  async update(item: ProjectReadItem): Promise<void> {
     const url = `/projects/${item.id}`
     const payload = toPayload(item)
     await this.request.patch(url, payload)
