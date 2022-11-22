@@ -72,10 +72,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "collaborative_annotation",
             "single_class_classification",
             "is_text_project",
-            "can_define_label",
-            "can_define_relation",
-            "can_define_category",
-            "can_define_span",
             "tags",
         ]
         read_only_fields = (
@@ -83,10 +79,6 @@ class ProjectSerializer(serializers.ModelSerializer):
             "updated_at",
             "author",
             "is_text_project",
-            "can_define_label",
-            "can_define_relation",
-            "can_define_category",
-            "can_define_span",
         )
 
     def create(self, validated_data):

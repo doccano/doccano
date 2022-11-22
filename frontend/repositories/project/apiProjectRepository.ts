@@ -1,6 +1,6 @@
-import ApiService from '@/services/api.service'
+import { ProjectItemList, ProjectReadItem, ProjectWriteItem } from '@/domain/models/project/project'
 import { ProjectRepository, SearchQuery } from '@/domain/models/project/projectRepository'
-import { ProjectReadItem, ProjectWriteItem, ProjectItemList } from '@/domain/models/project/project'
+import ApiService from '@/services/api.service'
 
 function toModel(item: { [key: string]: any }): ProjectReadItem {
   return new ProjectReadItem(
@@ -21,11 +21,7 @@ function toModel(item: { [key: string]: any }): ProjectReadItem {
     item.allow_overlapping,
     item.grapheme_mode,
     item.use_relation,
-    item.is_text_project,
-    item.can_define_label,
-    item.can_define_relation,
-    item.can_define_span,
-    item.can_define_category
+    item.is_text_project
   )
 }
 

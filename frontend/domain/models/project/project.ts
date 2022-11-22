@@ -1,13 +1,23 @@
+const DocumentClassification = 'DocumentClassification'
+const SequenceLabeling = 'SequenceLabeling'
+const Seq2seq = 'Seq2seq'
+const IntentDetectionAndSlotFilling = 'IntentDetectionAndSlotFilling'
+const ImageClassification = 'ImageClassification'
+const ImageCaptioning = 'ImageCaptioning'
+const BoundingBox = 'BoundingBox'
+const Segmentation = 'Segmentation'
+const Speech2text = 'Speech2text'
+
 export type ProjectType =
-  | 'DocumentClassification'
-  | 'SequenceLabeling'
-  | 'Seq2seq'
-  | 'IntentDetectionAndSlotFilling'
-  | 'ImageClassification'
-  | 'ImageCaptioning'
-  | 'BoundingBox'
-  | 'Segmentation'
-  | 'Speech2text'
+  | typeof DocumentClassification
+  | typeof SequenceLabeling
+  | typeof Seq2seq
+  | typeof IntentDetectionAndSlotFilling
+  | typeof ImageClassification
+  | typeof ImageCaptioning
+  | typeof BoundingBox
+  | typeof Segmentation
+  | typeof Speech2text
 
 export class ProjectReadItem {
   constructor(
@@ -28,16 +38,37 @@ export class ProjectReadItem {
     readonly allowOverlapping: boolean,
     readonly graphemeMode: boolean,
     readonly useRelation: boolean,
-    readonly isTextProject: boolean,
-    readonly canDefineLabel: boolean,
-    readonly canDefineRelation: boolean,
-    readonly canDefineSpan: boolean,
-    readonly canDefineCategory: boolean
+    readonly isTextProject: boolean
   ) {}
 
+  get canDefineLabel(): boolean {
+    return this.canDefineCategory || this.canDefineSpan
+  }
+
+  get canDefineCategory(): boolean {
+    return (
+      this.projectType in
+      [
+        DocumentClassification,
+        IntentDetectionAndSlotFilling,
+        ImageClassification,
+        BoundingBox,
+        Segmentation
+      ]
+    )
+  }
+
+  get canDefineSpan(): boolean {
+    return this.projectType in [SequenceLabeling, IntentDetectionAndSlotFilling]
+  }
+
+  get canDefineRelation(): boolean {
+    return this.useRelation
+  }
+
   get taskNames(): string[] {
-    if (this.projectType === 'IntentDetectionAndSlotFilling') {
-      return ['DocumentClassification', 'SequenceLabeling']
+    if (this.projectType === IntentDetectionAndSlotFilling) {
+      return [DocumentClassification, SequenceLabeling]
     }
     return [this.projectType]
   }
