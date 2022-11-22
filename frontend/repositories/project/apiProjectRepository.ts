@@ -33,10 +33,10 @@ function toPayload(item: Project): { [key: string]: any } {
     guideline: item.guideline,
     project_type: item.projectType,
     random_order: item.randomOrder,
-    collaborative_annotation: item.collaborativeAnnotation,
+    collaborative_annotation: item.enableSharingMode,
     single_class_classification: item.exclusiveCategories,
-    allow_overlapping: item.allowOverlapping,
-    grapheme_mode: item.graphemeMode,
+    allow_overlapping: item.allowOverlappingSpans,
+    grapheme_mode: item.enableGraphemeMode,
     use_relation: item.useRelation,
     tags: item.tags,
     resourcetype: item.resourceType
