@@ -1,4 +1,5 @@
-import { ProjectItemList, ProjectReadItem, ProjectWriteItem } from '@/domain/models/project/project'
+import { Page } from '@/domain/models/page'
+import { ProjectReadItem, ProjectWriteItem } from '@/domain/models/project/project'
 import { ProjectRepository, SearchQuery } from '@/domain/models/project/projectRepository'
 import ApiService from '@/services/api.service'
 
@@ -46,7 +47,7 @@ function toPayload(item: ProjectWriteItem): { [key: string]: any } {
 export class APIProjectRepository implements ProjectRepository {
   constructor(private readonly request = ApiService) {}
 
-  async list(query: SearchQuery): Promise<ProjectItemList> {
+  async list(query: SearchQuery): Promise<Page<ProjectReadItem>> {
     const fieldMapper = {
       name: 'name',
       createdAt: 'created_at',
@@ -57,7 +58,7 @@ export class APIProjectRepository implements ProjectRepository {
     const ordering = query.sortDesc ? `-${sortBy}` : `${sortBy}`
     const url = `/projects?limit=${query.limit}&offset=${query.offset}&q=${query.q}&ordering=${ordering}`
     const response = await this.request.get(url)
-    return new ProjectItemList(
+    return new Page(
       response.data.count,
       response.data.next,
       response.data.previous,

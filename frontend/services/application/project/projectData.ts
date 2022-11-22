@@ -1,4 +1,5 @@
-import { ProjectItemList, ProjectReadItem, ProjectType } from '~/domain/models/project/project'
+import { Page } from '~/domain/models/page'
+import { ProjectReadItem, ProjectType } from '~/domain/models/project/project'
 
 export class ProjectDTO {
   id: number
@@ -71,7 +72,7 @@ export class ProjectListDTO {
   prev: string | null
   items: ProjectDTO[]
 
-  constructor(item: ProjectItemList) {
+  constructor(item: Page<ProjectReadItem>) {
     this.count = item.count
     this.next = item.next
     this.prev = item.prev

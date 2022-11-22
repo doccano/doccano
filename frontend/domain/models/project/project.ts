@@ -74,15 +74,6 @@ export class ProjectReadItem {
   }
 }
 
-export class ProjectItemList {
-  constructor(
-    readonly count: number,
-    readonly next: string | null,
-    readonly prev: string | null,
-    readonly items: ProjectReadItem[]
-  ) {}
-}
-
 export class ProjectWriteItem {
   constructor(
     public id: number,
