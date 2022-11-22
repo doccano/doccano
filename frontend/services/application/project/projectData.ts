@@ -1,5 +1,5 @@
 import { Page } from '~/domain/models/page'
-import { ProjectReadItem, ProjectType } from '~/domain/models/project/project'
+import { Project, ProjectType } from '~/domain/models/project/project'
 
 export class ProjectDTO {
   id: number
@@ -25,7 +25,7 @@ export class ProjectDTO {
   taskNames: string[]
   useRelation: boolean
 
-  constructor(item: ProjectReadItem) {
+  constructor(item: Project) {
     this.id = item.id
     this.name = item.name
     this.description = item.description
@@ -72,7 +72,7 @@ export class ProjectListDTO {
   prev: string | null
   items: ProjectDTO[]
 
-  constructor(item: Page<ProjectReadItem>) {
+  constructor(item: Page<Project>) {
     this.count = item.count
     this.next = item.next
     this.prev = item.prev

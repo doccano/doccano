@@ -19,7 +19,7 @@ export type ProjectType =
   | typeof Segmentation
   | typeof Speech2text
 
-export class ProjectReadItem {
+export class Project {
   constructor(
     readonly id: number,
     readonly name: string,
@@ -54,7 +54,7 @@ export class ProjectReadItem {
     useRelation: boolean,
     tags: Object[]
   ) {
-    return new ProjectReadItem(
+    return new Project(
       id,
       name,
       description,

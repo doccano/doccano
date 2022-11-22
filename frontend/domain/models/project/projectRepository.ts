@@ -1,5 +1,5 @@
 import { Page } from '~/domain/models/page'
-import { ProjectReadItem } from '~/domain/models/project/project'
+import { Project } from '~/domain/models/project/project'
 
 const sortableFieldList = ['name', 'projectType', 'createdAt', 'author'] as const
 type SortableFields = typeof sortableFieldList[number]
@@ -23,13 +23,13 @@ export class SearchQuery {
 }
 
 export interface ProjectRepository {
-  list(query: SearchQuery): Promise<Page<ProjectReadItem>>
+  list(query: SearchQuery): Promise<Page<Project>>
 
-  findById(id: string): Promise<ProjectReadItem>
+  findById(id: string): Promise<Project>
 
-  create(item: ProjectReadItem): Promise<ProjectReadItem>
+  create(item: Project): Promise<Project>
 
-  update(item: ProjectReadItem): Promise<void>
+  update(item: Project): Promise<void>
 
   bulkDelete(projectIds: number[]): Promise<void>
 }

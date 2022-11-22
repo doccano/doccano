@@ -1,10 +1,10 @@
 import { Page } from '@/domain/models/page'
-import { ProjectReadItem } from '@/domain/models/project/project'
+import { Project } from '@/domain/models/project/project'
 import { ProjectRepository, SearchQuery } from '@/domain/models/project/projectRepository'
 import ApiService from '@/services/api.service'
 
-function toModel(item: { [key: string]: any }): ProjectReadItem {
-  return new ProjectReadItem(
+function toModel(item: { [key: string]: any }): Project {
+  return new Project(
     item.id,
     item.name,
     item.description,
@@ -25,7 +25,7 @@ function toModel(item: { [key: string]: any }): ProjectReadItem {
   )
 }
 
-function toPayload(item: ProjectReadItem): { [key: string]: any } {
+function toPayload(item: Project): { [key: string]: any } {
   return {
     id: item.id,
     name: item.name,
@@ -46,7 +46,7 @@ function toPayload(item: ProjectReadItem): { [key: string]: any } {
 export class APIProjectRepository implements ProjectRepository {
   constructor(private readonly request = ApiService) {}
 
-  async list(query: SearchQuery): Promise<Page<ProjectReadItem>> {
+  async list(query: SearchQuery): Promise<Page<Project>> {
     const fieldMapper = {
       name: 'name',
       createdAt: 'created_at',
@@ -65,20 +65,20 @@ export class APIProjectRepository implements ProjectRepository {
     )
   }
 
-  async findById(id: string): Promise<ProjectReadItem> {
+  async findById(id: string): Promise<Project> {
     const url = `/projects/${id}`
     const response = await this.request.get(url)
     return toModel(response.data)
   }
 
-  async create(item: ProjectReadItem): Promise<ProjectReadItem> {
+  async create(item: Project): Promise<Project> {
     const url = `/projects`
     const payload = toPayload(item)
     const response = await this.request.post(url, payload)
     return toModel(response.data)
   }
 
-  async update(item: ProjectReadItem): Promise<void> {
+  async update(item: Project): Promise<void> {
     const url = `/projects/${item.id}`
     const payload = toPayload(item)
     await this.request.patch(url, payload)

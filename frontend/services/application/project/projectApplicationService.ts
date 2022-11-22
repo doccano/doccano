@@ -1,4 +1,4 @@
-import { ProjectReadItem } from '~/domain/models/project/project'
+import { Project } from '~/domain/models/project/project'
 import { ProjectRepository, SearchQuery } from '~/domain/models/project/projectRepository'
 import {
   ProjectDTO,
@@ -50,8 +50,8 @@ export class ProjectApplicationService {
     return this.repository.bulkDelete(ids)
   }
 
-  private toModel(item: ProjectWriteDTO): ProjectReadItem {
-    return ProjectReadItem.create(
+  private toModel(item: ProjectWriteDTO): Project {
+    return Project.create(
       item.id,
       item.name,
       item.description,
