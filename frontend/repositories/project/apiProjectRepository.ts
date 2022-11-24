@@ -1,7 +1,27 @@
 import { Page } from '@/domain/models/page'
 import { Project } from '@/domain/models/project/project'
-import { ProjectRepository, SearchQuery } from '@/domain/models/project/projectRepository'
 import ApiService from '@/services/api.service'
+
+const sortableFieldList = ['name', 'projectType', 'createdAt', 'author'] as const
+type SortableFields = typeof sortableFieldList[number]
+
+export class SearchQuery {
+  readonly limit: number = 10
+  readonly offset: number = 0
+  readonly q: string = ''
+  readonly sortBy: SortableFields = 'createdAt'
+  readonly sortDesc: boolean = false
+
+  constructor(_limit: string, _offset: string, _q?: string, _sortBy?: string, _sortDesc?: string) {
+    this.limit = /^\d+$/.test(_limit) ? parseInt(_limit) : 10
+    this.offset = /^\d+$/.test(_offset) ? parseInt(_offset) : 0
+    this.q = _q || ''
+    this.sortBy = (
+      _sortBy && sortableFieldList.includes(_sortBy as SortableFields) ? _sortBy : 'createdAt'
+    ) as SortableFields
+    this.sortDesc = _sortDesc === 'true'
+  }
+}
 
 function toModel(item: { [key: string]: any }): Project {
   return new Project(
@@ -43,7 +63,7 @@ function toPayload(item: Project): { [key: string]: any } {
   }
 }
 
-export class APIProjectRepository implements ProjectRepository {
+export class APIProjectRepository {
   constructor(private readonly request = ApiService) {}
 
   async list(query: SearchQuery): Promise<Page<Project>> {

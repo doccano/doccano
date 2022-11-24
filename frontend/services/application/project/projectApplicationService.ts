@@ -1,6 +1,6 @@
 import { Page } from '~/domain/models/page'
 import { Project } from '~/domain/models/project/project'
-import { ProjectRepository, SearchQuery } from '~/domain/models/project/projectRepository'
+import { APIProjectRepository, SearchQuery } from '~/repositories/project/apiProjectRepository'
 
 type Options = {
   name: string
@@ -25,7 +25,7 @@ export interface SearchQueryData {
 }
 
 export class ProjectApplicationService {
-  constructor(private readonly repository: ProjectRepository) {}
+  constructor(private readonly repository: APIProjectRepository) {}
 
   public async list(q: SearchQueryData): Promise<Page<Project>> {
     try {
