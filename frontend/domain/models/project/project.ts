@@ -1,31 +1,34 @@
-const DocumentClassification = 'DocumentClassification'
-const SequenceLabeling = 'SequenceLabeling'
-const Seq2seq = 'Seq2seq'
-const IntentDetectionAndSlotFilling = 'IntentDetectionAndSlotFilling'
-const ImageClassification = 'ImageClassification'
-const ImageCaptioning = 'ImageCaptioning'
-const BoundingBox = 'BoundingBox'
-const Segmentation = 'Segmentation'
-const Speech2text = 'Speech2text'
+export const DocumentClassification = 'DocumentClassification'
+export const SequenceLabeling = 'SequenceLabeling'
+export const Seq2seq = 'Seq2seq'
+export const IntentDetectionAndSlotFilling = 'IntentDetectionAndSlotFilling'
+export const ImageClassification = 'ImageClassification'
+export const ImageCaptioning = 'ImageCaptioning'
+export const BoundingBox = 'BoundingBox'
+export const Segmentation = 'Segmentation'
+export const Speech2text = 'Speech2text'
 
-export type ProjectType =
-  | typeof DocumentClassification
-  | typeof SequenceLabeling
-  | typeof Seq2seq
-  | typeof IntentDetectionAndSlotFilling
-  | typeof ImageClassification
-  | typeof ImageCaptioning
-  | typeof BoundingBox
-  | typeof Segmentation
-  | typeof Speech2text
+export const allProjectTypes = <const>[
+  DocumentClassification,
+  SequenceLabeling,
+  Seq2seq,
+  IntentDetectionAndSlotFilling,
+  ImageClassification,
+  ImageCaptioning,
+  BoundingBox,
+  Segmentation,
+  Speech2text
+]
+export type ProjectType = typeof allProjectTypes[number]
 
 export class Project {
+  projectType: ProjectType
   constructor(
     readonly id: number,
     readonly name: string,
     readonly description: string,
     readonly guideline: string,
-    readonly projectType: ProjectType,
+    readonly _projectType: string,
     readonly randomOrder: boolean,
     readonly enableSharingMode: boolean,
     readonly exclusiveCategories: boolean,
@@ -38,19 +41,24 @@ export class Project {
     readonly updatedAt: string = '',
     readonly author: string = '',
     readonly isTextProject: boolean = false
-  ) {}
+  ) {
+    if (!allProjectTypes.includes(_projectType as ProjectType)) {
+      throw new Error(`Invalid project type: ${_projectType}`)
+    }
+    this.projectType = _projectType as ProjectType
+  }
 
   static create(
     id: number,
     name: string,
     description: string,
     guideline: string,
-    projectType: ProjectType,
+    projectType: string,
     randomOrder: boolean,
-    collaborativeAnnotation: boolean,
+    enableSharingMode: boolean,
     exclusiveCategories: boolean,
-    allowOverlapping: boolean,
-    graphemeMode: boolean,
+    allowOverlappingSpans: boolean,
+    enableGraphemeMode: boolean,
     useRelation: boolean,
     tags: Object[]
   ) {
@@ -61,10 +69,10 @@ export class Project {
       guideline,
       projectType,
       randomOrder,
-      collaborativeAnnotation,
+      enableSharingMode,
       exclusiveCategories,
-      allowOverlapping,
-      graphemeMode,
+      allowOverlappingSpans,
+      enableGraphemeMode,
       useRelation,
       tags
     )
@@ -75,20 +83,17 @@ export class Project {
   }
 
   get canDefineCategory(): boolean {
-    return (
-      this.projectType in
-      [
-        DocumentClassification,
-        IntentDetectionAndSlotFilling,
-        ImageClassification,
-        BoundingBox,
-        Segmentation
-      ]
-    )
+    return [
+      DocumentClassification,
+      IntentDetectionAndSlotFilling,
+      ImageClassification,
+      BoundingBox,
+      Segmentation
+    ].includes(this.projectType)
   }
 
   get canDefineSpan(): boolean {
-    return this.projectType in [SequenceLabeling, IntentDetectionAndSlotFilling]
+    return [SequenceLabeling, IntentDetectionAndSlotFilling].includes(this.projectType)
   }
 
   get canDefineRelation(): boolean {
@@ -103,17 +108,9 @@ export class Project {
   }
 
   get resourceType(): string {
-    const mapping = {
-      DocumentClassification: 'TextClassificationProject',
-      SequenceLabeling: 'SequenceLabelingProject',
-      Seq2seq: 'Seq2seqProject',
-      IntentDetectionAndSlotFilling: 'IntentDetectionAndSlotFillingProject',
-      ImageClassification: 'ImageClassificationProject',
-      ImageCaptioning: 'ImageCaptioningProject',
-      BoundingBox: 'BoundingBoxProject',
-      Segmentation: 'SegmentationProject',
-      Speech2text: 'Speech2textProject'
+    if (this.projectType === DocumentClassification) {
+      return 'TextClassificationProject'
     }
-    return mapping[this.projectType]
+    return `${this.projectType}Project`
   }
 }

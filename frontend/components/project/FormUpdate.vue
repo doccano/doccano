@@ -5,13 +5,7 @@
         <v-row>
           <v-col cols="12" sm="6">
             <h3>Name</h3>
-            <v-text-field
-              v-model="project.name"
-              label="Add project name"
-              :rules="projectNameRules($t('rules.projectNameRules'))"
-              :disabled="!edit.name"
-              single-line
-            />
+            <project-name-field v-model="project.name" :disabled="!edit.name" single-line />
           </v-col>
           <v-col cols="12" sm="6">
             <v-btn
@@ -46,10 +40,8 @@
         <v-row>
           <v-col cols="12" sm="6">
             <h3>Description</h3>
-            <v-text-field
+            <project-description-field
               v-model="project.description"
-              label="Add description"
-              :rules="descriptionRules($t('rules.descriptionRules'))"
               :disabled="!edit.desc"
               single-line
             />
@@ -108,17 +100,14 @@
         <v-row>
           <v-col cols="12" sm="6">
             <h3>Shuffle</h3>
-            <v-checkbox
-              v-model="project.enableRandomOrder"
-              :label="$t('overview.randomizeDocOrder')"
-            />
+            <v-checkbox v-model="project.randomOrder" :label="$t('overview.randomizeDocOrder')" />
           </v-col>
         </v-row>
         <v-row>
           <v-col cols="12" sm="6">
             <h3>Collaboration</h3>
             <v-checkbox
-              v-model="project.enableShareAnnotation"
+              v-model="project.enableSharingMode"
               :label="$t('overview.shareAnnotations')"
             />
           </v-col>
@@ -130,9 +119,15 @@
 
 <script>
 import { mdiPlusCircle } from '@mdi/js'
-import { projectNameRules, descriptionRules } from '@/rules/index'
+import ProjectDescriptionField from './ProjectDescriptionField.vue'
+import ProjectNameField from './ProjectNameField.vue'
 
 export default {
+  components: {
+    ProjectNameField,
+    ProjectDescriptionField
+  },
+
   data() {
     return {
       project: {},
@@ -143,8 +138,6 @@ export default {
         name: false,
         desc: false
       },
-      projectNameRules,
-      descriptionRules,
       valid: false,
       mdiPlusCircle
     }
@@ -164,10 +157,10 @@ export default {
   },
 
   watch: {
-    'project.enableRandomOrder'() {
+    'project.randomOrder'() {
       this.doneEdit()
     },
-    'project.enableShareAnnotation'() {
+    'project.enableSharingMode'() {
       this.doneEdit()
     }
   },
@@ -196,7 +189,7 @@ export default {
         return
       }
       try {
-        await this.$services.project.update(this.project)
+        await this.$services.project.update(this.projectId, this.project)
         this.beforeEditCache = {}
         this.$fetch()
       } finally {

@@ -28,14 +28,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 import { templateNameRules } from '@/rules/index'
-import { ProjectDTO } from '~/services/application/project/projectData'
+import Vue from 'vue'
+import { Project } from '~/domain/models/project/project'
 
 export default Vue.extend({
   data() {
     return {
-      project: {} as ProjectDTO,
+      project: {} as Project,
       selectedTask: '',
       templateName: null,
       templateNames: [] as string[],

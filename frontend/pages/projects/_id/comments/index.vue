@@ -29,9 +29,9 @@ import CommentList from '@/components/comment/CommentList.vue'
 import _ from 'lodash'
 import Vue from 'vue'
 import FormDelete from '~/components/comment/FormDelete.vue'
+import { Project } from '~/domain/models/project/project'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 import { CommentListDTO, CommentReadDTO } from '~/services/application/comment/commentData'
-import { ProjectDTO } from '~/services/application/project/projectData'
 
 export default Vue.extend({
   components: {
@@ -47,7 +47,7 @@ export default Vue.extend({
   data() {
     return {
       dialogDelete: false,
-      project: {} as ProjectDTO,
+      project: {} as Project,
       item: {} as CommentListDTO,
       selected: [] as CommentReadDTO[],
       isLoading: false

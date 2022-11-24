@@ -46,12 +46,12 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import { mdiMagnify } from '@mdi/js'
-import { DataOptions } from 'vuetify/types'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
-import { ProjectDTO } from '~/services/application/project/projectData'
+import Vue, { PropType } from 'vue'
+import { DataOptions } from 'vuetify/types'
+import { Project } from '~/domain/models/project/project'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
@@ -63,12 +63,12 @@ export default Vue.extend({
       required: true
     },
     items: {
-      type: Array as PropType<ProjectDTO[]>,
+      type: Array as PropType<Project[]>,
       default: () => [],
       required: true
     },
     value: {
-      type: Array as PropType<ProjectDTO[]>,
+      type: Array as PropType<Project[]>,
       default: () => [],
       required: true
     },

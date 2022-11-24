@@ -46,14 +46,14 @@
   </layout-text>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
-import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
