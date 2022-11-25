@@ -5,7 +5,6 @@
         {{ mdiPlayCircleOutline }}
       </v-icon>
       {{ $t('home.startAnnotation') }}
-      {{ project }}
     </v-btn>
     <v-list-item-group v-model="selected" mandatory>
       <v-list-item

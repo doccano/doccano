@@ -20,13 +20,6 @@ export const roleRules = (msg) => {
 }
 
 // Rules for a project.
-export const projectNameRules = (msg) => {
-  return [
-    (v) => !!v || msg.projectNameRequired,
-    (v) => (v && v.length <= 30) || msg.projectNameLessThan30Chars
-  ]
-}
-
 export const descriptionRules = (msg) => {
   return [
     (v) => !!v || msg.descriptionRequired,

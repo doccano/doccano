@@ -15,7 +15,7 @@ export default {
   },
   projectNameRules: {
     projectNameRequired: 'Projektname wird benötigt',
-    projectNameLessThan30Chars: 'Projektname muss kürzer als 30 Zeichen sein'
+    projectNameLessThan100Chars: 'Projektname muss kürzer als 100 Zeichen sein'
   },
   descriptionRules: {
     descriptionRequired: 'Beschreibung wird benötigt',

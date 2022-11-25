@@ -19,7 +19,7 @@ export default {
   },
   projectNameRules: {
     projectNameRequired: '请输入项目名称',
-    projectNameLessThan30Chars: '项目名称必须少于30个字符'
+    projectNameLessThan100Chars: '项目名称必须少于100个字符'
   },
   descriptionRules: {
     descriptionRequired: '请输入描述',

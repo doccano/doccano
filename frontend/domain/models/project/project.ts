@@ -21,12 +21,23 @@ export const allProjectTypes = <const>[
 ]
 export type ProjectType = typeof allProjectTypes[number]
 
+export const isEmptyText = (text: string): boolean => {
+  return text.trim() === ''
+}
+
+const MAX_PROJECT_NAME_LENGTH = 100
+export const projectNameMustBeLessThan100Characters = (name: string): boolean => {
+  return name.trim().length <= MAX_PROJECT_NAME_LENGTH
+}
+
 export class Project {
+  name: string
+  description: string
   projectType: ProjectType
   constructor(
     readonly id: number,
-    readonly name: string,
-    readonly description: string,
+    readonly _name: string,
+    readonly _description: string,
     readonly guideline: string,
     readonly _projectType: string,
     readonly randomOrder: boolean,
@@ -42,9 +53,20 @@ export class Project {
     readonly author: string = '',
     readonly isTextProject: boolean = false
   ) {
+    if (isEmptyText(_name)) {
+      throw new Error('Project name is required')
+    }
+    if (!projectNameMustBeLessThan100Characters(_name)) {
+      throw new Error('Project name must be less than 100 characters')
+    }
+    if (isEmptyText(_description)) {
+      throw new Error('Project description is required')
+    }
     if (!allProjectTypes.includes(_projectType as ProjectType)) {
       throw new Error(`Invalid project type: ${_projectType}`)
     }
+    this.name = _name.trim()
+    this.description = _description.trim()
     this.projectType = _projectType as ProjectType
   }
 
