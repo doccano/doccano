@@ -27,11 +27,9 @@ export default Vue.extend({
   data() {
     return {
       projectNameRules: [
+        (text: string) => !isEmptyText(text) || this.$t('rules.projectName.required'),
         (text: string) =>
-          !isEmptyText(text) || this.$t('rules.projectNameRules.projectNameRequired'),
-        (text: string) =>
-          projectNameMustBeLessThan100Characters(text) ||
-          this.$t('rules.projectNameRules.projectNameLessThan100Chars')
+          projectNameMustBeLessThan100Characters(text) || this.$t('rules.projectName.maxLength')
       ]
     }
   }

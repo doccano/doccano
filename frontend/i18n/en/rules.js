@@ -17,12 +17,12 @@ export default {
   roleRules: {
     roleRequired: 'Role is required'
   },
-  projectNameRules: {
-    projectNameRequired: 'Project name is required',
-    projectNameLessThan100Chars: 'Project name must be less than 100 characters'
+  projectName: {
+    required: 'Project name is required',
+    maxLength: 'Project name must be less than 100 characters'
   },
-  descriptionRules: {
-    descriptionRequired: 'Description is required'
+  description: {
+    required: 'Description is required'
   },
   fileFormatRules: {
     fileFormatRequired: 'File format is required'

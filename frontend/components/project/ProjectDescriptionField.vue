@@ -24,8 +24,7 @@ export default Vue.extend({
   data() {
     return {
       descriptionRules: [
-        (text: string) =>
-          !isEmptyText(text) || this.$t('rules.descriptionRules.descriptionRequired')
+        (text: string) => !isEmptyText(text) || this.$t('rules.description.required')
       ]
     }
   }

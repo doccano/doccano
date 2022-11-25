@@ -17,12 +17,12 @@ export default {
   roleRules: {
     roleRequired: '请输入角色'
   },
-  projectNameRules: {
-    projectNameRequired: '请输入项目名称',
-    projectNameLessThan100Chars: '项目名称必须少于100个字符'
+  projectName: {
+    required: '请输入项目名称',
+    maxLength: '项目名称必须少于100个字符'
   },
-  descriptionRules: {
-    descriptionRequired: '请输入描述'
+  description: {
+    required: '请输入描述'
   },
   fileFormatRules: {
     fileFormatRequired: '请输入文件类型'
