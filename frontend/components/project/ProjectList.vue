@@ -36,7 +36,7 @@
     </template>
     <template #[`item.createdAt`]="{ item }">
       <span>{{
-        item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm')
+        dateFormat(dateParse(item.createdAt, 'YYYY-MM-DDTHH:mm:ss'), 'YYYY/MM/DD HH:mm')
       }}</span>
     </template>
     <template #[`item.tags`]="{ item }">
@@ -47,13 +47,11 @@
 
 <script lang="ts">
 import { mdiMagnify } from '@mdi/js'
-import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
-import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
+import { dateFormat } from '@vuejs-community/vue-filter-date-format'
+import { dateParse } from '@vuejs-community/vue-filter-date-parse'
 import Vue, { PropType } from 'vue'
 import { DataOptions } from 'vuetify/types'
 import { Project } from '~/domain/models/project/project'
-Vue.use(VueFilterDateFormat)
-Vue.use(VueFilterDateParse)
 
 export default Vue.extend({
   props: {
@@ -83,7 +81,9 @@ export default Vue.extend({
     return {
       search: this.$route.query.q,
       options: {} as DataOptions,
-      mdiMagnify
+      mdiMagnify,
+      dateFormat,
+      dateParse
     }
   },
 
