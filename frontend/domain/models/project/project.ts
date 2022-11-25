@@ -20,13 +20,14 @@ export const allProjectTypes = <const>[
   Speech2text
 ]
 export type ProjectType = typeof allProjectTypes[number]
+const MIN_LENGTH = 1
+const MAX_PROJECT_NAME_LENGTH = 100
 
-export const isEmptyText = (text: string): boolean => {
-  return text.trim() === ''
+export const validateMinLength = (text: string): boolean => {
+  return text.trim().length >= MIN_LENGTH
 }
 
-const MAX_PROJECT_NAME_LENGTH = 100
-export const projectNameMustBeLessThan100Characters = (name: string): boolean => {
+export const validateNameMaxLength = (name: string): boolean => {
   return name.trim().length <= MAX_PROJECT_NAME_LENGTH
 }
 
@@ -53,13 +54,13 @@ export class Project {
     readonly author: string = '',
     readonly isTextProject: boolean = false
   ) {
-    if (isEmptyText(_name)) {
+    if (!validateMinLength(_name)) {
       throw new Error('Project name is required')
     }
-    if (!projectNameMustBeLessThan100Characters(_name)) {
+    if (!validateNameMaxLength(_name)) {
       throw new Error('Project name must be less than 100 characters')
     }
-    if (isEmptyText(_description)) {
+    if (!validateMinLength(_description)) {
       throw new Error('Project description is required')
     }
     if (!allProjectTypes.includes(_projectType as ProjectType)) {

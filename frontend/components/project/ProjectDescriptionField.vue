@@ -11,7 +11,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { isEmptyText } from '~/domain/models/project/project'
+import { validateMinLength } from '~/domain/models/project/project'
 
 export default Vue.extend({
   props: {
@@ -24,7 +24,7 @@ export default Vue.extend({
   data() {
     return {
       descriptionRules: [
-        (text: string) => !isEmptyText(text) || this.$t('rules.description.required')
+        (text: string) => validateMinLength(text) || this.$t('rules.description.required')
       ]
     }
   }

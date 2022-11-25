@@ -11,10 +11,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {
-  isEmptyText,
-  projectNameMustBeLessThan100Characters
-} from '~/domain/models/project/project'
+import { validateMinLength, validateNameMaxLength } from '~/domain/models/project/project'
 
 export default Vue.extend({
   props: {
@@ -27,9 +24,8 @@ export default Vue.extend({
   data() {
     return {
       projectNameRules: [
-        (text: string) => !isEmptyText(text) || this.$t('rules.projectName.required'),
-        (text: string) =>
-          projectNameMustBeLessThan100Characters(text) || this.$t('rules.projectName.maxLength')
+        (text: string) => validateMinLength(text) || this.$t('rules.projectName.required'),
+        (text: string) => validateNameMaxLength(text) || this.$t('rules.projectName.maxLength')
       ]
     }
   }
