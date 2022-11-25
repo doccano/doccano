@@ -22,11 +22,7 @@ export default {
     projectNameLessThan100Chars: '项目名称必须少于100个字符'
   },
   descriptionRules: {
-    descriptionRequired: '请输入描述',
-    descriptionLessThan30Chars: '描述必须少于100个字符'
-  },
-  projectTypeRules: {
-    projectTypeRequired: '请输入项目类型'
+    descriptionRequired: '请输入描述'
   },
   fileFormatRules: {
     fileFormatRequired: '请输入文件类型'

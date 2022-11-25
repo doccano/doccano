@@ -2,7 +2,7 @@
   <v-text-field
     v-bind="$attrs"
     :value="value"
-    :rules="descriptionRules($t('rules.descriptionRules'))"
+    :rules="descriptionRules"
     :label="$t('generic.description')"
     required
     @input="$emit('input', $event)"
@@ -10,8 +10,8 @@
 </template>
 
 <script lang="ts">
-import { descriptionRules } from '@/rules/index'
 import Vue from 'vue'
+import { isEmptyText } from '~/domain/models/project/project'
 
 export default Vue.extend({
   props: {
@@ -23,7 +23,10 @@ export default Vue.extend({
   },
   data() {
     return {
-      descriptionRules
+      descriptionRules: [
+        (text: string) =>
+          !isEmptyText(text) || this.$t('rules.descriptionRules.descriptionRequired')
+      ]
     }
   }
 })

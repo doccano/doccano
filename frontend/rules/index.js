@@ -19,18 +19,6 @@ export const roleRules = (msg) => {
   return [(v) => !!v || msg.roleRequired]
 }
 
-// Rules for a project.
-export const descriptionRules = (msg) => {
-  return [
-    (v) => !!v || msg.descriptionRequired,
-    (v) => (v && v.length <= 100) || msg.descriptionLessThan30Chars
-  ]
-}
-
-export const projectTypeRules = (msg) => {
-  return [(v) => !!v || msg.projectTypeRequired]
-}
-
 // Rules for Document.
 export const fileFormatRules = (msg) => {
   return [(v) => !!v || msg.fileFormatRequired]

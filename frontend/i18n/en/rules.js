@@ -22,11 +22,7 @@ export default {
     projectNameLessThan100Chars: 'Project name must be less than 100 characters'
   },
   descriptionRules: {
-    descriptionRequired: 'Description is required',
-    descriptionLessThan30Chars: 'Description must be less than 100 characters'
-  },
-  projectTypeRules: {
-    projectTypeRequired: 'Project type is required'
+    descriptionRequired: 'Description is required'
   },
   fileFormatRules: {
     fileFormatRequired: 'File format is required'
