@@ -1668,7 +1668,7 @@ postgresql = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a93579bf687bac1c8f4132105b0beb395c14e4151d40f81cd9bdbd490faf2c2c"
+content-hash = "2797ae177fb05e897521d8a44cf2b7bad8c1feb28d9df2b951c85f124b53a454"
 
 [metadata.files]
 amqp = [
