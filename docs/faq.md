@@ -108,3 +108,16 @@ doccano uses JSONField on SQLite. So you need to enable the JSON1 extension on P
 If you have this problem, please try the following:
 
 - [Enabling JSON1 extension on SQLite](https://code.djangoproject.com/wiki/JSON1Extension)
+
+## CSRF failed
+
+If you have this problem, please set `CSRF_TRUSTED_ORIGINS` environment variable to your domain name. For example, if your domain name is `example.com`, please set `CSRF_TRUSTED_ORIGINS=example.com`. In the debug mode, the default value is `http://127.0.0.1:3000`, `http://0.0.0.0:3000`, and `http://localhost:3000`. If you are using Docker Compose, please set `CSRF_TRUSTED_ORIGINS` in `docker-compose.prod.yml`:
+
+```yaml
+backend:
+    image: doccano/doccano:backend
+    environment:
+      ...
+      DJANGO_SETTINGS_MODULE: "config.settings.production"
+      CSRF_TRUSTED_ORIGINS: "http://192.168.10.3:3000"
+```
