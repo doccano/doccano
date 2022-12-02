@@ -53,7 +53,7 @@ urlpatterns += [
     path("admin/", admin.site.urls),
     path("api-auth/", include("rest_framework.urls")),
     path('social/', include("social.urls")),
-    path('v1/social/', include("social.urls")),
+    path('v1/social/', include("social.v1_urls")),
     path("v1/health/", include("health_check.urls")),
     path("v1/", include("api.urls")),
     path("v1/", include("roles.urls")),
