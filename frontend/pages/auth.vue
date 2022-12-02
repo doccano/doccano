@@ -5,8 +5,8 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <form-login :login="authenticateUser" />
-            
-            <social-login :fetch-social-link='fetchSocialLink' />
+
+            <social-login :fetch-social-link="fetchSocialLink" />
           </v-col>
         </v-row>
       </v-container>
@@ -23,7 +23,7 @@ import SocialLogin from '@/components/auth/SocialLogin.vue'
 export default Vue.extend({
   components: {
     FormLogin,
-    SocialLogin,
+    SocialLogin
   },
 
   methods: {

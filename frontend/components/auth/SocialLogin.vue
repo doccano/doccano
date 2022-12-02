@@ -8,7 +8,7 @@
       color="secondary"
       :href="item.href"
     >
-      Login With {{item.provider}}
+      Login With {{ item.provider }}
     </v-btn>
   </div>
 </template>
@@ -29,16 +29,17 @@ export default Vue.extend({
     }
   },
   async mounted() {
-    const response = await this.fetchSocialLink();
+    const response = await this.fetchSocialLink()
     this.social = Object.entries(response)
       .map(([key, value]: any) => ({
         provider: key,
-        value,
-      })).filter((item) => !!item.value?.authorize_url)
+        value
+      }))
+      .filter((item) => !!item.value?.authorize_url)
       .map((item: any) => ({
         ...item,
-        href: `${item.value.authorize_url}&redirect_uri=${location.origin}${item.value.redirect_path}`,
-      }));
-  },
+        href: `${item.value.authorize_url}&redirect_uri=${location.origin}${item.value.redirect_path}`
+      }))
+  }
 })
 </script>

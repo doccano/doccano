@@ -16,7 +16,7 @@ export class APIAuthRepository implements AuthRepository {
 
   async socialLink(): Promise<any[]> {
     const url = '/social/links/'
-    const response = await this.request.get(url);
+    const response = await this.request.get(url)
     return response.data
   }
 }
