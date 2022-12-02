@@ -125,7 +125,8 @@ known_first_party = [
     "metrics",
     "projects",
     "roles",
-    "users"
+    "users",
+    "social"
 ]
 known_local_folder = [
     "api",
@@ -139,7 +140,8 @@ known_local_folder = [
     "metrics",
     "projects",
     "roles",
-    "users"
+    "users",
+    "social"
 ]
 
 [tool.taskipy.tasks]

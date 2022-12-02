@@ -5,5 +5,5 @@ from dj_rest_auth.registration.views import SocialLoginView
 
 class OktaLogin(SocialLoginView):
     adapter_class = OktaOAuth2Adapter
-    callback_url = '/projects'
+    callback_url = "/projects"
     client_class = OAuth2Client
