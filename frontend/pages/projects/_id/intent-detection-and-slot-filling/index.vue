@@ -14,7 +14,7 @@
       <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
-      <v-card>
+      <v-card v-shortkey="shortKeys" @shortkey="addOrRemoveCategory">
         <v-card-title>
           <label-group
             :labels="categoryTypes"
@@ -46,14 +46,14 @@
   </layout-text>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
-import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -108,6 +108,10 @@ export default {
 
     projectId() {
       return this.$route.params.id
+    },
+
+    shortKeys() {
+      return Object.fromEntries(this.categoryTypes.map((item) => [item.id, [item.suffixKey]]))
     },
 
     doc() {
@@ -181,6 +185,16 @@ export default {
     async addCategory(labelId) {
       await this.$services.textClassification.create(this.projectId, this.doc.id, labelId)
       await this.listCategory(this.doc.id)
+    },
+
+    async addOrRemoveCategory(event) {
+      const labelId = parseInt(event.srcKey, 10)
+      const category = this.categories.find((item) => item.label === labelId)
+      if (category) {
+        await this.removeCategory(category.id)
+      } else {
+        await this.addCategory(labelId)
+      }
     },
 
     async clear() {
