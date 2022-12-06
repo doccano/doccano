@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-10">
+  <div>
     <v-btn
       v-for="item in social"
       :key="item.provider"
@@ -7,8 +7,9 @@
       elevation="2"
       color="secondary"
       :href="item.href"
+      class="mt-5"
     >
-      Login With {{ item.provider }}
+      {{ $t('user.socialLogin', { provider: item.provider }) }}
     </v-btn>
   </div>
 </template>
