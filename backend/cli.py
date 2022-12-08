@@ -155,7 +155,7 @@ def main():
     # Create a parser for task queue.
     parser_queue = subparsers.add_parser("task", help="see `task -h`")
     parser_queue.add_argument("--concurrency", type=int, default=2, help="concurrency")
-    parser_queue.add_argument("--env_file", type=str, default="", help="read in a file of environment variables")
+    parser_queue.add_argument("--env_file", type=str, help="read in a file of environment variables")
     parser_queue.set_defaults(handler=command_run_task_queue)
 
     parser_flower = subparsers.add_parser("flower", help="see `flower -h`")
