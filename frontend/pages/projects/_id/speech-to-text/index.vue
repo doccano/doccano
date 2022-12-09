@@ -102,9 +102,10 @@ export default {
 
   watch: {
     '$route.query': '$fetch',
-    enableAutoLabeling(val) {
-      if (val) {
-        this.list(this.item.id)
+    async enableAutoLabeling(val) {
+      if (val && !this.item.isConfirmed) {
+        await this.autoLabel(this.item.id)
+        await this.list(this.item.id)
       }
     }
   },
