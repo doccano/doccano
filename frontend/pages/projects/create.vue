@@ -6,17 +6,7 @@
         <project-type-field v-model="editedItem.projectType" />
         <project-name-field v-model="editedItem.name" outlined autofocus />
         <project-description-field v-model="editedItem.description" outlined />
-        <v-combobox
-          v-model="editedItem.tags"
-          :items="editedItem.tags"
-          label="Tags"
-          multiple
-          chips
-          outlined
-          dense
-          deletable-chips
-          hide-selected
-        />
+        <tag-list v-model="editedItem.tags" />
         <v-checkbox
           v-if="showExclusiveCategories"
           v-model="editedItem.exclusiveCategories"
@@ -77,6 +67,7 @@ import ProjectNameField from '~/components/project/ProjectNameField.vue'
 import ProjectTypeField from '~/components/project/ProjectTypeField.vue'
 import RandomOrderField from '~/components/project/RandomOrderField.vue'
 import SharingModeField from '~/components/project/SharingModeField.vue'
+import TagList from '~/components/project/TagList.vue'
 import {
   DocumentClassification,
   ImageClassification,
@@ -105,7 +96,8 @@ export default Vue.extend({
     ProjectNameField,
     ProjectDescriptionField,
     RandomOrderField,
-    SharingModeField
+    SharingModeField,
+    TagList
   },
 
   layout: 'projects',
