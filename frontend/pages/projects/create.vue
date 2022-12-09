@@ -57,10 +57,7 @@
           v-model="editedItem.enableRandomOrder"
           :label="$t('overview.randomizeDocOrder')"
         />
-        <v-checkbox
-          v-model="editedItem.enableSharingMode"
-          :label="$t('overview.shareAnnotations')"
-        />
+        <sharing-mode-field v-model="editedItem.enableSharingMode" />
       </v-form>
     </v-card-text>
     <v-card-actions class="ps-4">
@@ -81,6 +78,7 @@ import Vue from 'vue'
 import ProjectDescriptionField from '~/components/project/ProjectDescriptionField.vue'
 import ProjectNameField from '~/components/project/ProjectNameField.vue'
 import ProjectTypeField from '~/components/project/ProjectTypeField.vue'
+import SharingModeField from '~/components/project/SharingModeField.vue'
 import {
   DocumentClassification,
   ImageClassification,
@@ -107,7 +105,8 @@ export default Vue.extend({
   components: {
     ProjectTypeField,
     ProjectNameField,
-    ProjectDescriptionField
+    ProjectDescriptionField,
+    SharingModeField
   },
 
   layout: 'projects',

@@ -106,10 +106,7 @@
         <v-row>
           <v-col cols="12" sm="6">
             <h3>Collaboration</h3>
-            <v-checkbox
-              v-model="project.enableSharingMode"
-              :label="$t('overview.shareAnnotations')"
-            />
+            <sharing-mode-field v-model="project.enableSharingMode" />
           </v-col>
         </v-row>
       </v-form>
@@ -121,11 +118,13 @@
 import { mdiPlusCircle } from '@mdi/js'
 import ProjectDescriptionField from './ProjectDescriptionField.vue'
 import ProjectNameField from './ProjectNameField.vue'
+import SharingModeField from './SharingModeField.vue'
 
 export default {
   components: {
     ProjectNameField,
-    ProjectDescriptionField
+    ProjectDescriptionField,
+    SharingModeField
   },
 
   data() {
