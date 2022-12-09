@@ -10,4 +10,8 @@ export class AuthApplicationService {
   public async logout() {
     await this.repository.logout()
   }
+
+  public async socialLink() {
+    return await this.repository.socialLink()
+  }
 }

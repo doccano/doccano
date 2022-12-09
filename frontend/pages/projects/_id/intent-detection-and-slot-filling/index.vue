@@ -14,7 +14,7 @@
       <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
-      <v-card>
+      <v-card v-shortkey="shortKeys" @shortkey="addOrRemoveCategory">
         <v-card-title>
           <label-group
             :labels="categoryTypes"
@@ -46,14 +46,14 @@
   </layout-text>
 </template>
 <script>
-import { mapGetters } from 'vuex'
-import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
-import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -95,6 +95,9 @@ export default {
       this.$route.query.ordering
     )
     const doc = this.docs.items[0]
+    if (this.enableAutoLabeling && !doc.isConfirmed) {
+      await this.autoLabel(doc.id)
+    }
     await this.listSpan(doc.id)
     await this.listCategory(doc.id)
   },
@@ -107,6 +110,10 @@ export default {
       return this.$route.params.id
     },
 
+    shortKeys() {
+      return Object.fromEntries(this.categoryTypes.map((item) => [item.id, [item.suffixKey]]))
+    },
+
     doc() {
       if (_.isEmpty(this.docs) || this.docs.items.length === 0) {
         return {}
@@ -117,7 +124,14 @@ export default {
   },
 
   watch: {
-    '$route.query': '$fetch'
+    '$route.query': '$fetch',
+    async enableAutoLabeling(val) {
+      if (val && !this.doc.isConfirmed) {
+        await this.autoLabel(this.doc.id)
+        await this.listSpan(this.doc.id)
+        await this.listCategory(this.doc.id)
+      }
+    }
   },
 
   async created() {
@@ -173,9 +187,27 @@ export default {
       await this.listCategory(this.doc.id)
     },
 
+    async addOrRemoveCategory(event) {
+      const labelId = parseInt(event.srcKey, 10)
+      const category = this.categories.find((item) => item.label === labelId)
+      if (category) {
+        await this.removeCategory(category.id)
+      } else {
+        await this.addCategory(labelId)
+      }
+    },
+
     async clear() {
       await this.$services.sequenceLabeling.clear(this.projectId, this.doc.id)
       await this.listSpan(this.doc.id)
+    },
+
+    async autoLabel(docId) {
+      try {
+        await this.$services.sequenceLabeling.autoLabel(this.projectId, docId)
+      } catch (e) {
+        console.log(e.response.data.detail)
+      }
     },
 
     async updateProgress() {

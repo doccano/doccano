@@ -13,4 +13,10 @@ export class APIAuthRepository implements AuthRepository {
     const url = '/auth/logout/'
     await this.request.post(url)
   }
+
+  async socialLink(): Promise<any[]> {
+    const url = '/social/links/'
+    const response = await this.request.get(url)
+    return response.data
+  }
 }

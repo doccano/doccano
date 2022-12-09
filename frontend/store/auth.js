@@ -47,6 +47,9 @@ export const actions = {
       throw new Error('The credential is invalid')
     }
   },
+  async fetchSocialLink() {
+    return await this.$services.auth.socialLink()
+  },
   async initAuth({ commit }) {
     try {
       const user = await this.$services.user.getMyProfile()

@@ -82,6 +82,7 @@
 <script>
 import _ from 'lodash'
 import { mapGetters } from 'vuex'
+import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
@@ -117,7 +118,10 @@ export default {
       rtl: false,
       selectedLabelIndex: null,
       progress: {},
-      relationMode: false
+      relationMode: false,
+      showLabelTypes: true,
+      mdiChevronUp,
+      mdiChevronDown
     }
   },
 
@@ -183,9 +187,10 @@ export default {
 
   watch: {
     '$route.query': '$fetch',
-    enableAutoLabeling(val) {
-      if (val) {
-        this.list(this.doc.id)
+    async enableAutoLabeling(val) {
+      if (val && !this.doc.isConfirmed) {
+        await this.autoLabel(this.doc.id)
+        await this.list(this.doc.id)
       }
     }
   },

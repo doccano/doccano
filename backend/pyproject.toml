@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "doccano"
-version = "1.8.0"
+version = "1.8.3"
 description = "doccano, text annotation tool for machine learning practitioners"
 authors = ["Hironsan <hiroki.nakayama.py@gmail.com>"]
 license = "MIT"
@@ -65,6 +65,7 @@ django-cleanup = "^6.0.0"
 filetype = "^1.0.10"
 pandas = "^1.4.2"
 flower = "^1.2.0"
+django-allauth = "0.50.0"
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"
@@ -125,7 +126,8 @@ known_first_party = [
     "metrics",
     "projects",
     "roles",
-    "users"
+    "users",
+    "social"
 ]
 known_local_folder = [
     "api",
@@ -139,7 +141,8 @@ known_local_folder = [
     "metrics",
     "projects",
     "roles",
-    "users"
+    "users",
+    "social"
 ]
 
 [tool.taskipy.tasks]
