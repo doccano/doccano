@@ -59,8 +59,10 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "allauth.socialaccount.providers.okta",
     "dj_rest_auth",
     "dj_rest_auth.registration",
+    "django.contrib.sites",
     "django_celery_results",
     "django_drf_filepond",
     "health_check",
@@ -280,3 +282,11 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+SOCIALACCOUNT_PROVIDERS = {
+    "okta": {
+        "OKTA_BASE_URL": env("OAUTH_OKTA_OAUTH2_API_URL", ""),
+        "OAUTH_PKCE_ENABLED": True,
+        "APP": {"client_id": env("OAUTH_OKTA_OAUTH2_KEY", ""), "secret": env("OAUTH_OKTA_OAUTH2_SECRET", "")},
+    }
+}
