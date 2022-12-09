@@ -100,7 +100,7 @@
         <v-row>
           <v-col cols="12" sm="6">
             <h3>Shuffle</h3>
-            <v-checkbox v-model="project.randomOrder" :label="$t('overview.randomizeDocOrder')" />
+            <random-order-field v-model="project.enableRandomOrder" />
           </v-col>
         </v-row>
         <v-row>
@@ -118,12 +118,14 @@
 import { mdiPlusCircle } from '@mdi/js'
 import ProjectDescriptionField from './ProjectDescriptionField.vue'
 import ProjectNameField from './ProjectNameField.vue'
+import RandomOrderField from './RandomOrderField.vue'
 import SharingModeField from './SharingModeField.vue'
 
 export default {
   components: {
     ProjectNameField,
     ProjectDescriptionField,
+    RandomOrderField,
     SharingModeField
   },
 
@@ -143,6 +145,7 @@ export default {
   },
   async fetch() {
     this.project = await this.$services.project.findById(this.projectId)
+    console.log(this.project)
     this.getTags()
   },
 
@@ -156,7 +159,7 @@ export default {
   },
 
   watch: {
-    'project.randomOrder'() {
+    'project.enableRandomOrder'() {
       this.doneEdit()
     },
     'project.enableSharingMode'() {

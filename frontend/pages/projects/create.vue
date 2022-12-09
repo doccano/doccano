@@ -53,10 +53,7 @@
             </template>
           </v-checkbox>
         </template>
-        <v-checkbox
-          v-model="editedItem.enableRandomOrder"
-          :label="$t('overview.randomizeDocOrder')"
-        />
+        <random-order-field v-model="editedItem.enableRandomOrder" />
         <sharing-mode-field v-model="editedItem.enableSharingMode" />
       </v-form>
     </v-card-text>
@@ -78,6 +75,7 @@ import Vue from 'vue'
 import ProjectDescriptionField from '~/components/project/ProjectDescriptionField.vue'
 import ProjectNameField from '~/components/project/ProjectNameField.vue'
 import ProjectTypeField from '~/components/project/ProjectTypeField.vue'
+import RandomOrderField from '~/components/project/RandomOrderField.vue'
 import SharingModeField from '~/components/project/SharingModeField.vue'
 import {
   DocumentClassification,
@@ -106,6 +104,7 @@ export default Vue.extend({
     ProjectTypeField,
     ProjectNameField,
     ProjectDescriptionField,
+    RandomOrderField,
     SharingModeField
   },
 

@@ -52,7 +52,7 @@ function toPayload(item: Project): { [key: string]: any } {
     description: item.description,
     guideline: item.guideline,
     project_type: item.projectType,
-    random_order: item.randomOrder,
+    random_order: item.enableRandomOrder,
     collaborative_annotation: item.enableSharingMode,
     single_class_classification: item.exclusiveCategories,
     allow_overlapping: item.allowOverlappingSpans,
