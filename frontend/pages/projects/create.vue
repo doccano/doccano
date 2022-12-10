@@ -6,7 +6,7 @@
         <project-type-field v-model="editedItem.projectType" />
         <project-name-field v-model="editedItem.name" outlined autofocus />
         <project-description-field v-model="editedItem.description" outlined />
-        <tag-list v-model="editedItem.tags" />
+        <tag-list v-model="editedItem.tags" outlined />
         <v-checkbox
           v-if="showExclusiveCategories"
           v-model="editedItem.exclusiveCategories"

@@ -87,7 +87,7 @@ export class ProjectApplicationService {
       enableGraphemeMode,
       useRelation,
       guideline = ''
-    }: Options
+    }: Omit<Options, 'tags'>
   ): Promise<void> {
     const project = Project.create(
       projectId,

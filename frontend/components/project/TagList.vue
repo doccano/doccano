@@ -6,10 +6,9 @@
     label="Tags"
     multiple
     chips
-    outlined
-    dense
     deletable-chips
     hide-selected
+    hide-details
     @change="$emit('input', $event)"
   />
 </template>
