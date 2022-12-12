@@ -3,7 +3,7 @@ import { Project } from '~/domain/models/project/project'
 import { TagItem } from '~/domain/models/tag/tag'
 import { APIProjectRepository, SearchQuery } from '~/repositories/project/apiProjectRepository'
 
-type Options = {
+type ProjectFields = {
   name: string
   description: string
   guideline: string
@@ -53,7 +53,7 @@ export class ProjectApplicationService {
     useRelation,
     tags,
     guideline = ''
-  }: Options): Promise<Project> {
+  }: ProjectFields): Promise<Project> {
     const project = Project.create(
       0,
       name,
@@ -88,7 +88,7 @@ export class ProjectApplicationService {
       enableGraphemeMode,
       useRelation,
       guideline = ''
-    }: Omit<Options, 'tags'>
+    }: Omit<ProjectFields, 'tags'>
   ): Promise<void> {
     const project = Project.create(
       projectId,
@@ -106,7 +106,6 @@ export class ProjectApplicationService {
     )
 
     try {
-      // item.tags = [] // TODO: somewhat hacky
       await this.repository.update(project)
     } catch (e: any) {
       throw new Error(e.response.data.detail)
