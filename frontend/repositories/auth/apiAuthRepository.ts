@@ -1,5 +1,5 @@
-import ApiService from '@/services/api.service'
 import { AuthRepository } from '@/domain/models/auth/authRepository'
+import ApiService from '@/services/api.service'
 
 export class APIAuthRepository implements AuthRepository {
   constructor(private readonly request = ApiService) {}
