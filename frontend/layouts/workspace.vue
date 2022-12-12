@@ -7,7 +7,7 @@
     </the-header>
 
     <v-navigation-drawer v-model="drawerLeft" app clipped>
-      <the-side-bar :link="getLink" :is-project-admin="isProjectAdmin" :project="currentProject" />
+      <the-side-bar :is-project-admin="isProjectAdmin" :project="currentProject" />
     </v-navigation-drawer>
 
     <v-main class="pb-0">
@@ -36,7 +36,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['getLink', 'currentProject'])
+    ...mapGetters('projects', ['currentProject'])
   },
 
   watch: {

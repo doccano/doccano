@@ -3,7 +3,7 @@ import { TagItem } from '~/domain/models/tag/tag'
 export class TagDTO {
   id: number
   text: string
-  project: string
+  project: string | number
 
   constructor(item: TagItem) {
     this.id = item.id

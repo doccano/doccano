@@ -17,16 +17,12 @@ export default {
   roleRules: {
     roleRequired: 'Le rôle est obligatoire'
   },
-  projectNameRules: {
-    projectNameRequired: 'Le nom du projet est requis',
-    projectNameLessThan30Chars: 'Le nom du projet doit comporter moins de 30 caractères'
+  projectName: {
+    required: 'Le nom du projet est requis',
+    maxLength: 'Le nom du projet doit comporter moins de 100 caractères'
   },
-  descriptionRules: {
-    descriptionRequired: 'Une description est requise',
-    descriptionLessThan30Chars: 'La description doit comporter moins de 100 caractères'
-  },
-  projectTypeRules: {
-    projectTypeRequired: 'Le type de projet est requis'
+  description: {
+    required: 'Une description est requise'
   },
   fileFormatRules: {
     fileFormatRequired: 'Le format de fichier est requis'

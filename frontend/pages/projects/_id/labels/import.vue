@@ -4,8 +4,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { ProjectDTO } from '~/services/application/project/projectData'
 import FormImport from '~/components/label/FormImport.vue'
+import { Project } from '~/domain/models/project/project'
 
 export default Vue.extend({
   components: {
@@ -19,7 +19,7 @@ export default Vue.extend({
       return false
     }
     if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id).then((res: ProjectDTO) => {
+      return app.$services.project.findById(params.id).then((res: Project) => {
         return res.canDefineLabel
       })
     }

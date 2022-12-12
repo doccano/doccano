@@ -10,12 +10,12 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import 'tui-editor/dist/tui-editor.css'
-import 'tui-editor/dist/tui-editor-contents.css'
-import 'codemirror/lib/codemirror.css'
-import { Editor } from '@toast-ui/vue-editor'
 import '@/assets/style/editor.css'
+import { Editor } from '@toast-ui/vue-editor'
+import 'codemirror/lib/codemirror.css'
+import _ from 'lodash'
+import 'tui-editor/dist/tui-editor-contents.css'
+import 'tui-editor/dist/tui-editor.css'
 
 export default {
   components: {
@@ -49,7 +49,7 @@ export default {
     updateProject: _.debounce(function () {
       if (this.mounted) {
         this.project.guideline = this.$refs.toastuiEditor.invoke('getMarkdown')
-        this.$services.project.update(this.project)
+        this.$services.project.update(this.$route.params.id, this.project)
       }
     }, 1000)
   }

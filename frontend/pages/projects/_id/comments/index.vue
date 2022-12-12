@@ -25,12 +25,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import _ from 'lodash'
 import CommentList from '@/components/comment/CommentList.vue'
-import { CommentReadDTO, CommentListDTO } from '~/services/application/comment/commentData'
-import { ProjectDTO } from '~/services/application/project/projectData'
+import _ from 'lodash'
+import Vue from 'vue'
 import FormDelete from '~/components/comment/FormDelete.vue'
+import { Project } from '~/domain/models/project/project'
+import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
+import { CommentListDTO, CommentReadDTO } from '~/services/application/comment/commentData'
 
 export default Vue.extend({
   components: {
@@ -46,7 +47,7 @@ export default Vue.extend({
   data() {
     return {
       dialogDelete: false,
-      project: {} as ProjectDTO,
+      project: {} as Project,
       item: {} as CommentListDTO,
       selected: [] as CommentReadDTO[],
       isLoading: false
@@ -87,8 +88,9 @@ export default Vue.extend({
       this.$router.push(query)
     },
     movePage(query: object) {
+      const link = getLinkToAnnotationPage(this.projectId, this.project.projectType)
       this.updateQuery({
-        path: this.localePath(this.project.pageLink),
+        path: this.localePath(link),
         query
       })
     }
