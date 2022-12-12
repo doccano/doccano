@@ -1,3 +1,5 @@
+import { TagItem } from '~/domain/models/tag/tag'
+
 export const DocumentClassification = 'DocumentClassification'
 export const SequenceLabeling = 'SequenceLabeling'
 export const Seq2seq = 'Seq2seq'
@@ -47,7 +49,7 @@ export class Project {
     readonly allowOverlappingSpans: boolean,
     readonly enableGraphemeMode: boolean,
     readonly useRelation: boolean,
-    readonly tags: Object[],
+    readonly tags: TagItem[],
     readonly users: number[] = [],
     readonly createdAt: string = '',
     readonly updatedAt: string = '',
@@ -83,7 +85,7 @@ export class Project {
     allowOverlappingSpans: boolean,
     enableGraphemeMode: boolean,
     useRelation: boolean,
-    tags: Object[]
+    tags: TagItem[]
   ) {
     return new Project(
       id,

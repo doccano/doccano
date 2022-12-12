@@ -71,7 +71,7 @@ export default Vue.extend({
   async fetch() {
     const projectId = this.$route.params.id
     this.project = await this.$services.project.findById(projectId)
-    this.tags = this.project.tags.map((item: any) => item.text)
+    this.tags = this.project.tags.map((item) => item.text)
     this.isEditing = false
   },
 

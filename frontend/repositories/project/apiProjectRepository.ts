@@ -1,6 +1,7 @@
 import { Page } from '@/domain/models/page'
 import { Project } from '@/domain/models/project/project'
 import ApiService from '@/services/api.service'
+import { TagItem } from '~/domain/models/tag/tag'
 
 const sortableFieldList = ['name', 'projectType', 'createdAt', 'author'] as const
 type SortableFields = typeof sortableFieldList[number]
@@ -36,7 +37,7 @@ function toModel(item: { [key: string]: any }): Project {
     item.allow_overlapping,
     item.grapheme_mode,
     item.use_relation,
-    item.tags,
+    item.tags.map((tag: { [key: string]: any }) => new TagItem(tag.id, tag.text, tag.project)),
     item.users,
     item.created_at,
     item.updated_at,
