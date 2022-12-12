@@ -76,9 +76,25 @@ Please check the following list.
 
 ## I want to change port number
 
-On production, edit `docker-compose.prod.yml` file: change `80:80` substring in `nginx`/`ports` section to `<your_port>:80`.
+In the case of Docker Compose, you can change the port number by editing `docker-compose.prod.yml`. First, you change `80:8080` to `<your_port>:8080` in `nginx`/`ports` section as follows:
 
-On development, edit `docker-compose.dev.yml` file: change `8000:8000` substring in `backend`/`ports` section to `<your_port>:8000`.
+```yaml
+nginx:
+  image: doccano/doccano:frontend
+  ports:
+    - <your_port>:8080
+```
+
+Then, you need to add `CSRF_TRUSTED_ORIGINS` environment variable to `backend`/`environment` section as follows:
+
+```yaml
+backend:
+    image: doccano/doccano:backend
+    environment:
+      ...
+      DJANGO_SETTINGS_MODULE: "config.settings.production"
+      CSRF_TRUSTED_ORIGINS: "http://127.0.0.1:<your_port>"
+```
 
 ## I want to update to the latest doccano image
 
