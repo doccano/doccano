@@ -24,7 +24,7 @@
     </template>
     <template #content>
       <v-card>
-        <v-img contain :src="image.fileUrl" :max-height="imageSize.height" class="grey lighten-2" />
+        <v-img contain :src="image.url" :max-height="imageSize.height" class="grey lighten-2" />
         <seq2seq-box
           :annotations="annotations"
           @delete:annotation="remove"
@@ -41,15 +41,15 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import { mdiText, mdiFormatListBulleted } from '@mdi/js'
-import { toRefs, useContext } from '@nuxtjs/composition-api'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import { useLabelList } from '@/composables/useLabelList'
-import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import { mdiFormatListBulleted, mdiText } from '@mdi/js'
+import { toRefs, useContext } from '@nuxtjs/composition-api'
+import _ from 'lodash'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
@@ -202,7 +202,7 @@ export default {
         self.imageSize.height = this.height
         self.imageSize.width = this.width
       }
-      img.src = val.fileUrl
+      img.src = val.url
     }
   }
 }

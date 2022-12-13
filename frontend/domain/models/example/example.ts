@@ -12,8 +12,7 @@ export class ExampleItem {
 
   get url() {
     const l = this.fileUrl.indexOf('media/')
-    const r = this.fileUrl.indexOf('media/', l + 1)
-    return this.fileUrl.slice(0, l) + this.fileUrl.slice(r)
+    return this.fileUrl.slice(l - 1)
   }
 }
 

@@ -34,9 +34,9 @@
         {{ item.isConfirmed ? 'Finished' : 'In progress' }}
       </v-chip>
     </template>
-    <template #[`item.fileUrl`]="{ item }">
+    <template #[`item.url`]="{ item }">
       <v-img
-        :src="item.fileUrl"
+        :src="item.url"
         aspect-ratio="1"
         height="150"
         max-height="150"
@@ -59,8 +59,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import { mdiMagnify } from '@mdi/js'
+import Vue, { PropType } from 'vue'
 import { DataOptions } from 'vuetify/types'
 import { ExampleDTO } from '~/services/application/example/exampleData'
 
@@ -111,7 +111,7 @@ export default Vue.extend({
         },
         {
           text: 'Image',
-          value: 'fileUrl',
+          value: 'url',
           sortable: false
         },
         {
