@@ -89,6 +89,9 @@ def command_migrate(args):
 
 
 def command_run_webserver(args):
+    import sys
+
+    sys.exit(1)
     print(f"Starting server with port {args.port}.")
     if is_windows():
         run_on_windows(args)

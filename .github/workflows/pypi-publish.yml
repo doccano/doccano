@@ -1,8 +1,9 @@
 name: Upload Python Package
 
-on:
-  release:
-    types: [created]
+# on:
+#   release:
+#     types: [created]
+on: [push, pull_request]
 
 jobs:
   deploy:
@@ -45,9 +46,16 @@ jobs:
       run: |
         sed -e "s/, from = \"..\"//g" backend/pyproject.toml > pyproject.toml
         poetry build
-    - name: Publish a Python distribution to PyPI
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: ${{ secrets.PYPI_USERNAME }}
-        password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: ./dist/
+    - name: Test installation
+      run: |
+        pip install dist/doccano*whl
+        doccano init
+        doccano createuser --username admin --password pass
+        doccano webserver &
+        sleep 10
+    # - name: Publish a Python distribution to PyPI
+    #   uses: pypa/gh-action-pypi-publish@master
+    #   with:
+    #     user: ${{ secrets.PYPI_USERNAME }}
+    #     password: ${{ secrets.PYPI_PASSWORD }}
+    #     packages_dir: ./dist/
