@@ -25,7 +25,7 @@ class TestLabel(TestCase):
     def setUp(self):
         self.project = prepare_project(self.task)
         self.user = self.project.admin
-        self.example = mommy.make("Example", project=self.project.item)
+        self.example = mommy.make("Example", project=self.project.item, text="hello world")
 
 
 class TestCategoryLabel(TestLabel):
@@ -166,12 +166,12 @@ class TestRelationLabel(TestLabel):
         self.assertEqual(relation_type.text, "A")
 
     def test_create(self):
-        relation = RelationLabel(type="A", from_id=0, to_id=1, example_uuid=uuid.uuid4())
+        relation = RelationLabel(type="A", from_id=0, to_id=1, example_uuid=self.example.uuid)
         types = MagicMock()
         types.__getitem__.return_value = mommy.make(RelationType, project=self.project.item)
         id_to_span = {
-            0: mommy.make(SpanModel, start_offset=0, end_offset=1),
-            1: mommy.make(SpanModel, start_offset=2, end_offset=3),
+            (0, str(self.example.uuid)): mommy.make(SpanModel, start_offset=0, end_offset=1, example=self.example),
+            (1, str(self.example.uuid)): mommy.make(SpanModel, start_offset=2, end_offset=3, example=self.example),
         }
         relation_model = relation.create(self.user, self.example, types, id_to_span=id_to_span)
         self.assertIsInstance(relation_model, RelationModel)
