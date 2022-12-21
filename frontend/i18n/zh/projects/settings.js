@@ -1,3 +1,3 @@
 export default {
-  title: 'Settings'
+  title: '设置'
 }

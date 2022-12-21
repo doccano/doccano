@@ -10,6 +10,7 @@ export default {
   upload: '上传',
   add: '增加',
   delete: '删除',
+  deleteAll: '全部删除',
   search: '搜索',
   name: '名称',
   import: '导入',
