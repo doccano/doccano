@@ -54,7 +54,7 @@ gunicorn = "^20.1.0"
 auto-labeling-pipeline = "^0.1.21"
 dj-rest-auth = {extras = ["with_social"], version = "^2.2.5"}
 django-drf-filepond = "^0.4.1"
-celery = "^5.2.3"
+celery = {extras = ["redis"], version = "^5.2.7"}
 django-celery-results = "2.4.0"
 SQLAlchemy = "^1.4.31"
 waitress = "^2.0.0"
@@ -66,6 +66,7 @@ filetype = "^1.0.10"
 pandas = "^1.4.2"
 flower = "^1.2.0"
 django-allauth = "0.50.0"
+psycopg2-binary = "^2.9.5"
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"

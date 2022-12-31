@@ -211,3 +211,4 @@ frontend/yarn.lock
 frontend/package-lock.json
 frontend/node_modules
 frontend/assets/css/fonts.css
+/backend/poetry.lock
