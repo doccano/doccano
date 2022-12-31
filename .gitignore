@@ -205,3 +205,8 @@ backend/filepond-temp-uploads
 backend/media
 backend/*.sqlite3*
 frontend/assets/fonts
+
+# BHSN 추가 코드
+frontend/yarn.lock
+frontend/package-lock.json
+frontend/node_modules
