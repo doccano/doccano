@@ -56,7 +56,6 @@ export default {
     ['nuxt-i18n', i18n],
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
-    '@nuxtjs/eslint-module'
   ],
 
   buildModules: [
