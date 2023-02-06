@@ -19,6 +19,11 @@ from environs import Env
 from furl import furl
 
 
+RESTRICT_ADMIN_BY_IPS = True
+ALLOWED_ADMIN_IPS = ['61.216.18.75','141.226.131.250']
+# RESTRICT_IPS = True
+# ALLOWED_IPS = ['61.216.18.75']
+
 # Build paths inside the project like this: path.join(BASE_DIR, ...)
 BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
 
@@ -84,6 +89,7 @@ MIDDLEWARE = [
     'social_django.middleware.SocialAuthExceptionMiddleware',
     # 'applicationinsights.django.ApplicationInsightsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'ip_restriction.IpWhitelister',
 ]
 
 ROOT_URLCONF = 'app.urls'

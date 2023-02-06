@@ -32,6 +32,7 @@ dependencies:
     - defusedxml==0.6.0
     - dj-database-url==0.5.0
     - django==2.1.7
+    - django-ip-restriction==1.1.1
     - django-cloud-browser==0.5.0
     - django-filter==2.0.0
     - django-heroku==0.3.1

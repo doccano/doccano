@@ -23,6 +23,7 @@ required = [
     'dj-database-url>=0.5.0',
     'django-cors-headers>=3.5.0',
     'django-filter>=2.4.0',
+    'django-ip-restriction>=1.1.1'
     'django-rest-polymorphic>=0.1.9',
     'djangorestframework-csv>=2.1.0',
     'djangorestframework-xml>=2.0.0',
