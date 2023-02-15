@@ -66,6 +66,7 @@ filetype = "^1.0.10"
 pandas = "^1.4.2"
 flower = "^1.2.0"
 django-allauth = "0.50.0"
+psycopg2-binary = {version = "^2.9.5", extras = ["postgresql"]}
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"
