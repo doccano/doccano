@@ -55,7 +55,8 @@ class TestExampleState(TestCase):
         expected_progress = [{"user": member.username, "done": 0} for member in self.project.members]
         expected_progress[0]["done"] = 1
         expected_progress[1]["done"] = 1
-        self.assertEqual(progress, {"total": 2, "progress": expected_progress})
+        self.assertEqual(progress["total"], 2)
+        self.assertCountEqual(progress["progress"], expected_progress)
 
 
 class TestExample(TestCase):
