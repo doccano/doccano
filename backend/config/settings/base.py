@@ -290,3 +290,5 @@ SOCIALACCOUNT_PROVIDERS = {
         "APP": {"client_id": env("OAUTH_OKTA_OAUTH2_KEY", ""), "secret": env("OAUTH_OKTA_OAUTH2_SECRET", "")},
     }
 }
+
+SITE_ID = 1
