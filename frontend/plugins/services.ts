@@ -1,3 +1,5 @@
+import { Plugin } from '@nuxt/types'
+import { repositories } from './repositories'
 import { AuthApplicationService } from '@/services/application/auth/authApplicationService'
 import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
 import { TemplateApplicationService } from '@/services/application/autoLabeling/templateApplicationService'
@@ -21,8 +23,6 @@ import { TextClassificationService } from '@/services/application/tasks/textClas
 import { CatalogApplicationService } from '@/services/application/upload/catalogApplicationService'
 import { ParseApplicationService } from '@/services/application/upload/parseApplicationService'
 import { UserApplicationService } from '@/services/application/user/userApplicationService'
-import { Plugin } from '@nuxt/types'
-import { repositories } from './repositories'
 
 export interface Services {
   categoryType: LabelApplicationService

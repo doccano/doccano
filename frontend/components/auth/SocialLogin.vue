@@ -15,7 +15,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 
 export default Vue.extend({
   props: {

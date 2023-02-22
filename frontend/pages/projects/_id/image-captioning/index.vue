@@ -41,15 +41,15 @@
 </template>
 
 <script>
+import { mdiFormatListBulleted, mdiText } from '@mdi/js'
+import { toRefs, useContext } from '@nuxtjs/composition-api'
+import _ from 'lodash'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import { useLabelList } from '@/composables/useLabelList'
-import { mdiFormatListBulleted, mdiText } from '@mdi/js'
-import { toRefs, useContext } from '@nuxtjs/composition-api'
-import _ from 'lodash'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {

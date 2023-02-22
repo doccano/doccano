@@ -16,7 +16,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import BarChart from '@/components/metrics/ChartBar.vue'
 import { Distribution } from '~/domain/models/metrics/metrics'
 import { LabelDTO } from '~/services/application/label/labelData'

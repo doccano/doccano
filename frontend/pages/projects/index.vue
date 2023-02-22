@@ -27,10 +27,10 @@
 </template>
 
 <script lang="ts">
-import ProjectList from '@/components/project/ProjectList.vue'
 import _ from 'lodash'
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
+import ProjectList from '@/components/project/ProjectList.vue'
 import FormDelete from '~/components/project/FormDelete.vue'
 import { Page } from '~/domain/models/page'
 import { Project } from '~/domain/models/project/project'

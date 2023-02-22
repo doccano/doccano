@@ -49,7 +49,8 @@
 import { mdiMagnify } from '@mdi/js'
 import { dateFormat } from '@vuejs-community/vue-filter-date-format'
 import { dateParse } from '@vuejs-community/vue-filter-date-parse'
-import Vue, { PropType } from 'vue'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import { DataOptions } from 'vuetify/types'
 import { Project } from '~/domain/models/project/project'
 

@@ -25,9 +25,9 @@
 </template>
 
 <script lang="ts">
-import CommentList from '@/components/comment/CommentList.vue'
 import _ from 'lodash'
 import Vue from 'vue'
+import CommentList from '@/components/comment/CommentList.vue'
 import FormDelete from '~/components/comment/FormDelete.vue'
 import { Project } from '~/domain/models/project/project'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'

@@ -21,7 +21,7 @@ export const allProjectTypes = <const>[
   Segmentation,
   Speech2text
 ]
-export type ProjectType = typeof allProjectTypes[number]
+export type ProjectType = (typeof allProjectTypes)[number]
 const MIN_LENGTH = 1
 const MAX_PROJECT_NAME_LENGTH = 100
 

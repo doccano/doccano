@@ -1,6 +1,6 @@
-import { Segment } from '@/domain/models/tasks/segmentation'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { SegmentationDTO } from './segmentationData'
+import { Segment } from '@/domain/models/tasks/segmentation'
 
 export class SegmentationApplicationService extends AnnotationApplicationService<Segment> {
   public async list(projectId: string, exampleId: number): Promise<SegmentationDTO[]> {

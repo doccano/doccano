@@ -1,6 +1,6 @@
-import { BoundingBox } from '@/domain/models/tasks/boundingBox'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { BoundingBoxDTO } from './boundingBoxData'
+import { BoundingBox } from '@/domain/models/tasks/boundingBox'
 
 export class BoundingBoxApplicationService extends AnnotationApplicationService<BoundingBox> {
   public async list(projectId: string, exampleId: number): Promise<BoundingBoxDTO[]> {
