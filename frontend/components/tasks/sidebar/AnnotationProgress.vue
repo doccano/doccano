@@ -22,7 +22,8 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import { MyProgress } from '@/domain/models/metrics/metrics'
 
 export default Vue.extend({

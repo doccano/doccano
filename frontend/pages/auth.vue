@@ -14,10 +14,10 @@
 </template>
 
 <script lang="ts">
-import FormLogin from '@/components/auth/FormLogin.vue'
-import SocialLogin from '@/components/auth/SocialLogin.vue'
 import Vue from 'vue'
 import { mapActions } from 'vuex'
+import FormLogin from '@/components/auth/FormLogin.vue'
+import SocialLogin from '@/components/auth/SocialLogin.vue'
 
 export default Vue.extend({
   components: {

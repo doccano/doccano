@@ -1,6 +1,6 @@
-import { Category } from '@/domain/models/tasks/category'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { TextClassificationDTO } from './textClassificationData'
+import { Category } from '@/domain/models/tasks/category'
 
 export class TextClassificationService extends AnnotationApplicationService<Category> {
   public async list(projectId: string, docId: number): Promise<TextClassificationDTO[]> {

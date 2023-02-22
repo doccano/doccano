@@ -71,6 +71,9 @@
 </template>
 
 <script>
+import { mdiFormatListBulleted, mdiText } from '@mdi/js'
+import { toRefs, useContext } from '@nuxtjs/composition-api'
+import _ from 'lodash'
 import RegionList from '@/components/tasks/image/RegionList.vue'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
@@ -80,9 +83,6 @@ import ButtonZoom from '@/components/tasks/toolbar/buttons/ButtonZoom.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import { useLabelList } from '@/composables/useLabelList'
-import { mdiFormatListBulleted, mdiText } from '@mdi/js'
-import { toRefs, useContext } from '@nuxtjs/composition-api'
-import _ from 'lodash'
 
 export default {
   components: {

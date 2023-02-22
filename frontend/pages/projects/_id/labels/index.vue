@@ -33,10 +33,10 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import ActionMenu from '@/components/label/ActionMenu.vue'
 import FormDelete from '@/components/label/FormDelete.vue'
 import LabelList from '@/components/label/LabelList.vue'
-import Vue from 'vue'
 import { Project } from '~/domain/models/project/project'
 import { LabelDTO } from '~/services/application/label/labelData'
 

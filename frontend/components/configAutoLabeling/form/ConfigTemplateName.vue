@@ -28,8 +28,8 @@
 </template>
 
 <script lang="ts">
-import { templateNameRules } from '@/rules/index'
 import Vue from 'vue'
+import { templateNameRules } from '@/rules/index'
 import { Project } from '~/domain/models/project/project'
 
 export default Vue.extend({

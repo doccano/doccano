@@ -29,9 +29,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import Polygon from '@/domain/models/tasks/segmentation/Polygon'
 import VPolygon from './VPolygon.vue'
 import VPoint from './VPoint.vue'
+import Polygon from '@/domain/models/tasks/segmentation/Polygon'
 
 export default Vue.extend({
   components: {

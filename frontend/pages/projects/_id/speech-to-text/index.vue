@@ -34,12 +34,12 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import _ from 'lodash'
 import AudioViewer from '~/components/tasks/audio/AudioViewer'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 

@@ -1,9 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
 import Flatten from '@flatten-js/core'
-import LabelProps from '@/domain/models/tasks/shared/LabelProps'
 import LineSegment from './LineSegment'
 import PolygonProps from './PolygonProps'
 import ValidationError from './errors'
+import LabelProps from '@/domain/models/tasks/shared/LabelProps'
 import Point = Flatten.Point
 import Vector = Flatten.Vector
 

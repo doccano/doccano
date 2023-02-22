@@ -20,8 +20,9 @@
 </template>
 
 <script lang="ts">
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
-import Vue, { PropType } from 'vue'
 import { Project } from '~/domain/models/project/project'
 
 export default Vue.extend({

@@ -4,7 +4,7 @@ import ApiService from '@/services/api.service'
 import { TagItem } from '~/domain/models/tag/tag'
 
 const sortableFieldList = ['name', 'projectType', 'createdAt', 'author'] as const
-type SortableFields = typeof sortableFieldList[number]
+type SortableFields = (typeof sortableFieldList)[number]
 
 export class SearchQuery {
   readonly limit: number = 10

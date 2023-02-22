@@ -50,9 +50,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import ConfigCreationForm from './ConfigCreationForm.vue'
 import { ConfigItemResponse } from '@/repositories/autoLabeling/config/apiConfigRepository'
 import ConfirmForm from '@/components/utils/ConfirmForm.vue'
-import ConfigCreationForm from './ConfigCreationForm.vue'
 import { ConfigItemList } from '~/domain/models/autoLabeling/config'
 
 export default Vue.extend({

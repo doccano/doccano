@@ -49,11 +49,12 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import { mdiMagnify } from '@mdi/js'
-import { DataOptions } from 'vuetify/types'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
+import type { PropType } from 'vue'
+import Vue from 'vue'
+import { DataOptions } from 'vuetify/types'
 import { CommentReadDTO } from '~/services/application/comment/commentData'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)

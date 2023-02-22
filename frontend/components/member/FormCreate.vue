@@ -52,12 +52,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import { mdiAccount, mdiCreditCardOutline } from '@mdi/js'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
-import { UserDTO } from '~/services/application/user/userData'
-import { RoleDTO } from '~/services/application/role/roleData'
 import { MemberDTO } from '~/services/application/member/memberData'
+import { RoleDTO } from '~/services/application/role/roleData'
+import { UserDTO } from '~/services/application/user/userData'
 
 export default Vue.extend({
   components: {

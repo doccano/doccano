@@ -36,15 +36,16 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import Konva from 'konva'
 import { Box } from 'konva/lib/shapes/Transformer.d'
-import LabelProps from '@/domain/models/tasks/shared/LabelProps'
-import BaseImage from '@/components/tasks/image/BaseImage.vue'
-import RectangleProps from '@/domain/models/tasks/boundingbox/RectangleProps'
-import Rectangle from '@/domain/models/tasks/boundingbox/Rectangle'
-import { transform, inverseTransform } from '@/domain/models/tasks/shared/Scaler'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import VRectangle from './VRectangle.vue'
+import BaseImage from '@/components/tasks/image/BaseImage.vue'
+import Rectangle from '@/domain/models/tasks/boundingbox/Rectangle'
+import RectangleProps from '@/domain/models/tasks/boundingbox/RectangleProps'
+import LabelProps from '@/domain/models/tasks/shared/LabelProps'
+import { inverseTransform, transform } from '@/domain/models/tasks/shared/Scaler'
 
 export default Vue.extend({
   name: 'VBoundingBox',
