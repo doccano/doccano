@@ -46,6 +46,7 @@ export default {
     '~/plugins/vue-shortkey.js',
     '~/plugins/vue-konva.js',
     '~/plugins/services.ts',
+    '~/plugins/repositories.ts',
     '~/plugins/color.ts',
     '~/plugins/role.ts'
   ],

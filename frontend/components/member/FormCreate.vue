@@ -56,9 +56,9 @@ import { mdiAccount, mdiCreditCardOutline } from '@mdi/js'
 import type { PropType } from 'vue'
 import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
+import { UserItem } from '~/domain/models/user/user'
 import { MemberDTO } from '~/services/application/member/memberData'
 import { RoleDTO } from '~/services/application/role/roleData'
-import { UserDTO } from '~/services/application/user/userData'
 
 export default Vue.extend({
   components: {
@@ -80,11 +80,11 @@ export default Vue.extend({
     return {
       isLoading: false,
       valid: false,
-      users: [] as UserDTO[],
+      users: [] as UserItem[],
       roles: [] as RoleDTO[],
       username: '',
       rules: {
-        userRequired: (v: UserDTO) => (!!v && !!v.username) || 'Required',
+        userRequired: (v: UserItem) => (!!v && !!v.username) || 'Required',
         roleRequired: (v: RoleDTO) => (!!v && !!v.rolename) || 'Required'
       },
       mdiAccount,
@@ -94,17 +94,18 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.users = await this.$services.user.list(this.username)
+    this.users = await this.$repositories.user.list(this.username)
     this.isLoading = false
   },
 
   computed: {
     user: {
-      get(): UserDTO {
+      get(): UserItem {
         return {
           id: this.value.user,
           username: this.value.username,
-          isStaff: false
+          isStaff: false,
+          isSuperuser: false
         }
       },
       set(val: MemberDTO) {

@@ -20,9 +20,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import BaseCard from '@/components/utils/BaseCard.vue'
 import Comment from '@/components/comment/Comment.vue'
 import FormCreate from '@/components/comment/FormCreate.vue'
+import BaseCard from '@/components/utils/BaseCard.vue'
+import { UserItem } from '~/domain/models/user/user'
 import { CommentReadDTO } from '~/services/application/comment/commentData'
 
 export default Vue.extend({
@@ -41,7 +42,7 @@ export default Vue.extend({
 
   data() {
     return {
-      user: {},
+      user: {} as UserItem,
       comments: [] as CommentReadDTO[]
     }
   },
@@ -59,7 +60,7 @@ export default Vue.extend({
   },
 
   async created() {
-    this.user = await this.$services.user.getMyProfile()
+    this.user = await this.$repositories.user.getProfile()
   },
 
   methods: {

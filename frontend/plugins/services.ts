@@ -22,14 +22,12 @@ import { SequenceLabelingApplicationService } from '@/services/application/tasks
 import { TextClassificationService } from '@/services/application/tasks/textClassification/textClassificationApplicationService'
 import { CatalogApplicationService } from '@/services/application/upload/catalogApplicationService'
 import { ParseApplicationService } from '@/services/application/upload/parseApplicationService'
-import { UserApplicationService } from '@/services/application/user/userApplicationService'
 
 export interface Services {
   categoryType: LabelApplicationService
   spanType: LabelApplicationService
   relationType: LabelApplicationService
   member: MemberApplicationService
-  user: UserApplicationService
   role: RoleApplicationService
   project: ProjectApplicationService
   comment: CommentApplicationService
@@ -64,7 +62,6 @@ const plugin: Plugin = (_, inject) => {
     spanType: new LabelApplicationService(repositories.spanType),
     relationType: new LabelApplicationService(repositories.relationType),
     member: new MemberApplicationService(repositories.member),
-    user: new UserApplicationService(repositories.user),
     role: new RoleApplicationService(repositories.role),
     project: new ProjectApplicationService(repositories.project),
     comment: new CommentApplicationService(repositories.comment),
