@@ -52,7 +52,7 @@ export const actions = {
   },
   async initAuth({ commit }) {
     try {
-      const user = await this.$services.user.getMyProfile()
+      const user = await this.$repositories.user.getProfile()
       commit('setAuthenticated', true)
       commit('setUsername', user.username)
       commit('setUserId', user.id)

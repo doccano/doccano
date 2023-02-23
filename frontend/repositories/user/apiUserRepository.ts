@@ -1,15 +1,14 @@
-import ApiService from '@/services/api.service'
-import { UserRepository } from '@/domain/models/user/userRepository'
 import { UserItem } from '@/domain/models/user/user'
+import ApiService from '@/services/api.service'
 
 function toModel(item: { [key: string]: any }): UserItem {
   return new UserItem(item.id, item.username, item.is_superuser, item.is_staff)
 }
 
-export class APIUserRepository implements UserRepository {
+export class APIUserRepository {
   constructor(private readonly request = ApiService) {}
 
-  async getMe(): Promise<UserItem> {
+  async getProfile(): Promise<UserItem> {
     const url = '/me'
     const response = await this.request.get(url)
     return toModel(response.data)
