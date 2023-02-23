@@ -1,6 +1,5 @@
 import { Plugin } from '@nuxt/types'
 import { repositories } from './repositories'
-import { AuthApplicationService } from '@/services/application/auth/authApplicationService'
 import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
 import { TemplateApplicationService } from '@/services/application/autoLabeling/templateApplicationService'
 import { TaskStatusApplicationService } from '@/services/application/celery/taskStatusApplicationService'
@@ -39,7 +38,6 @@ export interface Services {
   option: OptionApplicationService
   config: ConfigApplicationService
   template: TemplateApplicationService
-  auth: AuthApplicationService
   catalog: CatalogApplicationService
   parse: ParseApplicationService
   taskStatus: TaskStatusApplicationService
@@ -76,7 +74,6 @@ const plugin: Plugin = (_, inject) => {
     option: new OptionApplicationService(repositories.option),
     config: new ConfigApplicationService(repositories.config),
     template: new TemplateApplicationService(repositories.template),
-    auth: new AuthApplicationService(repositories.auth),
     catalog: new CatalogApplicationService(repositories.catalog),
     parse: new ParseApplicationService(repositories.parse),
     taskStatus: new TaskStatusApplicationService(repositories.taskStatus),
