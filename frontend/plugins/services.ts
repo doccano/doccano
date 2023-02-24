@@ -12,7 +12,6 @@ import { MemberApplicationService } from '@/services/application/member/memberAp
 import { MetricsApplicationService } from '@/services/application/metrics/metricsApplicationService'
 import { OptionApplicationService } from '@/services/application/option/optionApplicationService'
 import { ProjectApplicationService } from '@/services/application/project/projectApplicationService'
-import { RoleApplicationService } from '@/services/application/role/roleApplicationService'
 import { TagApplicationService } from '@/services/application/tag/tagApplicationService'
 import { BoundingBoxApplicationService } from '@/services/application/tasks/boundingBox/boundingBoxApplicationService'
 import { SegmentationApplicationService } from '@/services/application/tasks/segmentation/segmentationApplicationService'
@@ -27,7 +26,6 @@ export interface Services {
   spanType: LabelApplicationService
   relationType: LabelApplicationService
   member: MemberApplicationService
-  role: RoleApplicationService
   project: ProjectApplicationService
   comment: CommentApplicationService
   metrics: MetricsApplicationService
@@ -60,7 +58,6 @@ const plugin: Plugin = (_, inject) => {
     spanType: new LabelApplicationService(repositories.spanType),
     relationType: new LabelApplicationService(repositories.relationType),
     member: new MemberApplicationService(repositories.member),
-    role: new RoleApplicationService(repositories.role),
     project: new ProjectApplicationService(repositories.project),
     comment: new CommentApplicationService(repositories.comment),
     metrics: new MetricsApplicationService(repositories.metrics),

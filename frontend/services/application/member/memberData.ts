@@ -1,11 +1,11 @@
 import { MemberItem } from '~/domain/models/member/member'
-
+import { RoleName } from '~/domain/models/role/role'
 export class MemberDTO {
   id: number
   user: number
   role: number
   username: string
-  rolename: string
+  rolename: RoleName
 
   constructor(item: MemberItem) {
     this.id = item.id
