@@ -25,7 +25,7 @@
         <v-select
           v-model="role"
           :items="roles"
-          item-text="rolename"
+          item-text="name"
           item-value="id"
           :label="$t('members.role')"
           :rules="[rules.roleRequired]"
@@ -33,10 +33,10 @@
           :prepend-icon="mdiCreditCardOutline"
         >
           <template #item="props">
-            {{ $translateRole(props.item.rolename, $t('members.roles')) }}
+            {{ $translateRole(props.item.name, $t('members.roles')) }}
           </template>
           <template #selection="props">
-            {{ $translateRole(props.item.rolename, $t('members.roles')) }}
+            {{ $translateRole(props.item.name, $t('members.roles')) }}
           </template>
         </v-select>
         <v-alert v-show="errorMessage" prominent type="error">
@@ -56,9 +56,9 @@ import { mdiAccount, mdiCreditCardOutline } from '@mdi/js'
 import type { PropType } from 'vue'
 import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
+import { RoleItem } from '~/domain/models/role/role'
 import { UserItem } from '~/domain/models/user/user'
 import { MemberDTO } from '~/services/application/member/memberData'
-import { RoleDTO } from '~/services/application/role/roleData'
 
 export default Vue.extend({
   components: {
@@ -81,11 +81,11 @@ export default Vue.extend({
       isLoading: false,
       valid: false,
       users: [] as UserItem[],
-      roles: [] as RoleDTO[],
+      roles: [] as RoleItem[],
       username: '',
       rules: {
         userRequired: (v: UserItem) => (!!v && !!v.username) || 'Required',
-        roleRequired: (v: RoleDTO) => (!!v && !!v.rolename) || 'Required'
+        roleRequired: (v: RoleItem) => (!!v && !!v.name) || 'Required'
       },
       mdiAccount,
       mdiCreditCardOutline
@@ -115,14 +115,14 @@ export default Vue.extend({
       }
     },
     role: {
-      get(): RoleDTO {
+      get(): RoleItem {
         return {
           id: this.value.role,
-          rolename: this.value.rolename
+          name: this.value.rolename
         }
       },
-      set(val: MemberDTO) {
-        const role = { role: val.id, rolename: val.rolename }
+      set(val: RoleItem) {
+        const role = { role: val.id, rolename: val.name }
         this.$emit('input', { ...this.value, ...role })
       }
     }
@@ -141,7 +141,7 @@ export default Vue.extend({
   },
 
   async created() {
-    this.roles = await this.$services.role.list()
+    this.roles = await this.$repositories.role.list()
   }
 })
 </script>
