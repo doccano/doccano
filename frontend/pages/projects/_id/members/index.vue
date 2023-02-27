@@ -30,8 +30,8 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import MemberList from '@/components/member/MemberList.vue'
 import FormDelete from '@/components/member/FormDelete.vue'
+import MemberList from '@/components/member/MemberList.vue'
 import FormCreate from '~/components/member/FormCreate.vue'
 import { MemberDTO } from '~/services/application/member/memberData'
 
@@ -56,13 +56,13 @@ export default Vue.extend({
         user: -1,
         role: -1,
         username: '',
-        rolename: ''
+        rolename: 'annotator'
       } as MemberDTO,
       defaultItem: {
         user: -1,
         role: -1,
         username: '',
-        rolename: ''
+        rolename: 'annotator'
       } as MemberDTO,
       items: [] as MemberDTO[],
       selected: [] as MemberDTO[],
