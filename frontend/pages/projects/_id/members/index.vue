@@ -97,7 +97,7 @@ export default Vue.extend({
         await this.$services.member.create(this.projectId, this.editedItem)
         this.close()
         this.$fetch()
-      } catch (e) {
+      } catch (e: any) {
         this.errorMessage = e.message
       }
     },
@@ -107,7 +107,7 @@ export default Vue.extend({
         await this.$services.member.update(this.projectId, this.editedItem)
         this.close()
         this.$fetch()
-      } catch (e) {
+      } catch (e: any) {
         this.errorMessage = e.message
       }
     },

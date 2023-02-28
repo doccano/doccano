@@ -14,15 +14,17 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { Progress } from '~/domain/models/metrics/metrics'
+
 export default Vue.extend({
   data() {
     return {
-      stats: {}
+      stats: {} as Progress
     }
   },
 
   async created() {
-    this.stats = await this.$services.metrics.fetchMemberProgress(this.$route.params.id)
+    this.stats = await this.$repositories.metrics.fetchMemberProgress(this.$route.params.id)
   },
 
   methods: {
