@@ -93,7 +93,7 @@ export default Vue.extend({
 
     async downloadRequest() {
       this.isProcessing = true
-      this.taskId = await this.$services.download.request(
+      this.taskId = await this.$repositories.download.prepare(
         this.projectId,
         this.selectedFormat,
         this.exportApproved
@@ -107,7 +107,7 @@ export default Vue.extend({
         if (this.taskId) {
           const res = await this.$repositories.taskStatus.get(this.taskId)
           if (res.ready) {
-            this.$services.download.download(this.projectId, this.taskId)
+            this.$repositories.download.download(this.projectId, this.taskId)
             this.reset()
           }
         }

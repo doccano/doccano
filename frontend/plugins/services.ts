@@ -2,7 +2,6 @@ import { Plugin } from '@nuxt/types'
 import { repositories } from './repositories'
 import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
 import { CommentApplicationService } from '@/services/application/comment/commentApplicationService'
-import { DownloadApplicationService } from '@/services/application/download/downloadApplicationService'
 import { ExampleApplicationService } from '@/services/application/example/exampleApplicationService'
 import { LabelApplicationService } from '@/services/application/label/labelApplicationService'
 import { MemberApplicationService } from '@/services/application/member/memberApplicationService'
@@ -28,7 +27,6 @@ export interface Services {
   seq2seq: Seq2seqApplicationService
   option: OptionApplicationService
   config: ConfigApplicationService
-  download: DownloadApplicationService
   tag: TagApplicationService
   bbox: BoundingBoxApplicationService
   segmentation: SegmentationApplicationService
@@ -57,7 +55,6 @@ const plugin: Plugin = (_, inject) => {
     seq2seq: new Seq2seqApplicationService(repositories.textLabel),
     option: new OptionApplicationService(repositories.option),
     config: new ConfigApplicationService(repositories.config),
-    download: new DownloadApplicationService(repositories.download),
     tag: new TagApplicationService(repositories.tag),
     bbox: new BoundingBoxApplicationService(repositories.boundingBox),
     segmentation: new SegmentationApplicationService(repositories.segmentation)
