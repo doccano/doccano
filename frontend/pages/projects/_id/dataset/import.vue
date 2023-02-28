@@ -210,7 +210,7 @@ export default {
   },
 
   async created() {
-    this.catalog = await this.$services.catalog.list(this.$route.params.id)
+    this.catalog = await this.$repositories.catalog.list(this.$route.params.id)
     this.pollData()
   },
 

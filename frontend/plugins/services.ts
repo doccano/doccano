@@ -15,7 +15,6 @@ import { SegmentationApplicationService } from '@/services/application/tasks/seg
 import { Seq2seqApplicationService } from '@/services/application/tasks/seq2seq/seq2seqApplicationService'
 import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
 import { TextClassificationService } from '@/services/application/tasks/textClassification/textClassificationApplicationService'
-import { CatalogApplicationService } from '@/services/application/upload/catalogApplicationService'
 import { ParseApplicationService } from '@/services/application/upload/parseApplicationService'
 
 export interface Services {
@@ -31,7 +30,6 @@ export interface Services {
   seq2seq: Seq2seqApplicationService
   option: OptionApplicationService
   config: ConfigApplicationService
-  catalog: CatalogApplicationService
   parse: ParseApplicationService
   downloadFormat: DownloadFormatApplicationService
   download: DownloadApplicationService
@@ -63,7 +61,6 @@ const plugin: Plugin = (_, inject) => {
     seq2seq: new Seq2seqApplicationService(repositories.textLabel),
     option: new OptionApplicationService(repositories.option),
     config: new ConfigApplicationService(repositories.config),
-    catalog: new CatalogApplicationService(repositories.catalog),
     parse: new ParseApplicationService(repositories.parse),
     downloadFormat: new DownloadFormatApplicationService(repositories.downloadFormat),
     download: new DownloadApplicationService(repositories.download),
