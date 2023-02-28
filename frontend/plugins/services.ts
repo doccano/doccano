@@ -9,7 +9,6 @@ import { DownloadFormatApplicationService } from '@/services/application/downloa
 import { ExampleApplicationService } from '@/services/application/example/exampleApplicationService'
 import { LabelApplicationService } from '@/services/application/label/labelApplicationService'
 import { MemberApplicationService } from '@/services/application/member/memberApplicationService'
-import { MetricsApplicationService } from '@/services/application/metrics/metricsApplicationService'
 import { OptionApplicationService } from '@/services/application/option/optionApplicationService'
 import { ProjectApplicationService } from '@/services/application/project/projectApplicationService'
 import { TagApplicationService } from '@/services/application/tag/tagApplicationService'
@@ -28,7 +27,6 @@ export interface Services {
   member: MemberApplicationService
   project: ProjectApplicationService
   comment: CommentApplicationService
-  metrics: MetricsApplicationService
   example: ExampleApplicationService
   textClassification: TextClassificationService
   sequenceLabeling: SequenceLabelingApplicationService
@@ -60,7 +58,6 @@ const plugin: Plugin = (_, inject) => {
     member: new MemberApplicationService(repositories.member),
     project: new ProjectApplicationService(repositories.project),
     comment: new CommentApplicationService(repositories.comment),
-    metrics: new MetricsApplicationService(repositories.metrics),
     example: new ExampleApplicationService(repositories.example),
     textClassification: new TextClassificationService(repositories.category),
     sequenceLabeling: new SequenceLabelingApplicationService(
