@@ -202,7 +202,7 @@ export default {
       }
       this.myFiles = []
       for (const file of this.uploadedFiles) {
-        this.$services.parse.revert(file.serverId)
+        this.$repositories.parse.revert(file.serverId)
       }
       this.uploadedFiles = []
       this.errors = []
@@ -235,7 +235,7 @@ export default {
     async importDataset() {
       this.isImporting = true
       const item = this.catalog.find((item) => item.displayName === this.selected)
-      this.taskId = await this.$services.parse.analyze(
+      this.taskId = await this.$repositories.parse.analyze(
         this.$route.params.id,
         item.name,
         item.taskId,
