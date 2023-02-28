@@ -1,7 +1,6 @@
 import { Plugin } from '@nuxt/types'
 import { repositories } from './repositories'
 import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
-import { TemplateApplicationService } from '@/services/application/autoLabeling/templateApplicationService'
 import { TaskStatusApplicationService } from '@/services/application/celery/taskStatusApplicationService'
 import { CommentApplicationService } from '@/services/application/comment/commentApplicationService'
 import { DownloadApplicationService } from '@/services/application/download/downloadApplicationService'
@@ -33,7 +32,6 @@ export interface Services {
   seq2seq: Seq2seqApplicationService
   option: OptionApplicationService
   config: ConfigApplicationService
-  template: TemplateApplicationService
   catalog: CatalogApplicationService
   parse: ParseApplicationService
   taskStatus: TaskStatusApplicationService
@@ -67,7 +65,6 @@ const plugin: Plugin = (_, inject) => {
     seq2seq: new Seq2seqApplicationService(repositories.textLabel),
     option: new OptionApplicationService(repositories.option),
     config: new ConfigApplicationService(repositories.config),
-    template: new TemplateApplicationService(repositories.template),
     catalog: new CatalogApplicationService(repositories.catalog),
     parse: new ParseApplicationService(repositories.parse),
     taskStatus: new TaskStatusApplicationService(repositories.taskStatus),
