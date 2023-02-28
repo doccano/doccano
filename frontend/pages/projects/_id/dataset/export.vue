@@ -39,7 +39,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import { fileFormatRules } from '@/rules/index'
-import { FormatDTO } from '~/services/application/download/formatData'
+import { Format } from '~/domain/models/download/format'
 
 export default Vue.extend({
   layout: 'project',
@@ -53,7 +53,7 @@ export default Vue.extend({
       exportApproved: false,
       file: null,
       fileFormatRules,
-      formats: [] as FormatDTO[],
+      formats: [] as Format[],
       isProcessing: false,
       polling: null,
       selectedFormat: null as any,
@@ -68,13 +68,13 @@ export default Vue.extend({
     },
 
     example(): string {
-      const item = this.formats.find((item: FormatDTO) => item.name === this.selectedFormat)
+      const item = this.formats.find((item: Format) => item.name === this.selectedFormat)
       return item!.example.trim()
     }
   },
 
   async created() {
-    this.formats = await this.$services.downloadFormat.list(this.projectId)
+    this.formats = await this.$repositories.downloadFormat.list(this.projectId)
   },
 
   beforeDestroy() {
