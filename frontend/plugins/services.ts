@@ -1,7 +1,6 @@
 import { Plugin } from '@nuxt/types'
 import { repositories } from './repositories'
 import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
-import { TaskStatusApplicationService } from '@/services/application/celery/taskStatusApplicationService'
 import { CommentApplicationService } from '@/services/application/comment/commentApplicationService'
 import { DownloadApplicationService } from '@/services/application/download/downloadApplicationService'
 import { DownloadFormatApplicationService } from '@/services/application/download/downloadFormatApplicationService'
@@ -34,7 +33,6 @@ export interface Services {
   config: ConfigApplicationService
   catalog: CatalogApplicationService
   parse: ParseApplicationService
-  taskStatus: TaskStatusApplicationService
   downloadFormat: DownloadFormatApplicationService
   download: DownloadApplicationService
   tag: TagApplicationService
@@ -67,7 +65,6 @@ const plugin: Plugin = (_, inject) => {
     config: new ConfigApplicationService(repositories.config),
     catalog: new CatalogApplicationService(repositories.catalog),
     parse: new ParseApplicationService(repositories.parse),
-    taskStatus: new TaskStatusApplicationService(repositories.taskStatus),
     downloadFormat: new DownloadFormatApplicationService(repositories.downloadFormat),
     download: new DownloadApplicationService(repositories.download),
     tag: new TagApplicationService(repositories.tag),

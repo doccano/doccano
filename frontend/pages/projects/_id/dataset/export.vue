@@ -105,7 +105,7 @@ export default Vue.extend({
       // @ts-ignore
       this.polling = setInterval(async () => {
         if (this.taskId) {
-          const res = await this.$services.taskStatus.get(this.taskId)
+          const res = await this.$repositories.taskStatus.get(this.taskId)
           if (res.ready) {
             this.$services.download.download(this.projectId, this.taskId)
             this.reset()

@@ -92,10 +92,10 @@
 </template>
 
 <script>
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
+import 'filepond/dist/filepond.min.css'
 import Cookies from 'js-cookie'
 import vueFilePond from 'vue-filepond'
-import 'filepond/dist/filepond.min.css'
-import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type'
 const FilePond = vueFilePond(FilePondPluginFileValidateType)
 
 export default {
@@ -246,7 +246,7 @@ export default {
     pollData() {
       this.polling = setInterval(async () => {
         if (this.taskId) {
-          const res = await this.$services.taskStatus.get(this.taskId)
+          const res = await this.$repositories.taskStatus.get(this.taskId)
           if (res.ready) {
             this.taskId = null
             this.errors = res.result.error
