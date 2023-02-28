@@ -1,7 +1,6 @@
 import ApiService from '@/services/api.service'
-import { DownloadRepository } from '@/domain/models/download/downloadRepository'
 
-export class APIDownloadRepository implements DownloadRepository {
+export class APIDownloadRepository {
   constructor(private readonly request = ApiService) {}
 
   async prepare(projectId: string, format: string, exportApproved: boolean): Promise<string> {

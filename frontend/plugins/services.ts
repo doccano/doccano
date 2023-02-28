@@ -1,11 +1,7 @@
 import { Plugin } from '@nuxt/types'
 import { repositories } from './repositories'
 import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
-import { TemplateApplicationService } from '@/services/application/autoLabeling/templateApplicationService'
-import { TaskStatusApplicationService } from '@/services/application/celery/taskStatusApplicationService'
 import { CommentApplicationService } from '@/services/application/comment/commentApplicationService'
-import { DownloadApplicationService } from '@/services/application/download/downloadApplicationService'
-import { DownloadFormatApplicationService } from '@/services/application/download/downloadFormatApplicationService'
 import { ExampleApplicationService } from '@/services/application/example/exampleApplicationService'
 import { LabelApplicationService } from '@/services/application/label/labelApplicationService'
 import { MemberApplicationService } from '@/services/application/member/memberApplicationService'
@@ -17,8 +13,6 @@ import { SegmentationApplicationService } from '@/services/application/tasks/seg
 import { Seq2seqApplicationService } from '@/services/application/tasks/seq2seq/seq2seqApplicationService'
 import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
 import { TextClassificationService } from '@/services/application/tasks/textClassification/textClassificationApplicationService'
-import { CatalogApplicationService } from '@/services/application/upload/catalogApplicationService'
-import { ParseApplicationService } from '@/services/application/upload/parseApplicationService'
 
 export interface Services {
   categoryType: LabelApplicationService
@@ -33,12 +27,6 @@ export interface Services {
   seq2seq: Seq2seqApplicationService
   option: OptionApplicationService
   config: ConfigApplicationService
-  template: TemplateApplicationService
-  catalog: CatalogApplicationService
-  parse: ParseApplicationService
-  taskStatus: TaskStatusApplicationService
-  downloadFormat: DownloadFormatApplicationService
-  download: DownloadApplicationService
   tag: TagApplicationService
   bbox: BoundingBoxApplicationService
   segmentation: SegmentationApplicationService
@@ -67,12 +55,6 @@ const plugin: Plugin = (_, inject) => {
     seq2seq: new Seq2seqApplicationService(repositories.textLabel),
     option: new OptionApplicationService(repositories.option),
     config: new ConfigApplicationService(repositories.config),
-    template: new TemplateApplicationService(repositories.template),
-    catalog: new CatalogApplicationService(repositories.catalog),
-    parse: new ParseApplicationService(repositories.parse),
-    taskStatus: new TaskStatusApplicationService(repositories.taskStatus),
-    downloadFormat: new DownloadFormatApplicationService(repositories.downloadFormat),
-    download: new DownloadApplicationService(repositories.download),
     tag: new TagApplicationService(repositories.tag),
     bbox: new BoundingBoxApplicationService(repositories.boundingBox),
     segmentation: new SegmentationApplicationService(repositories.segmentation)
