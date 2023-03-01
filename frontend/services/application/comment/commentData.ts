@@ -1,4 +1,5 @@
-import { CommentItem, CommentItemList } from '~/domain/models/comment/comment'
+import { Page } from '@/domain/models/page'
+import { CommentItem } from '~/domain/models/comment/comment'
 
 export class CommentReadDTO {
   id: number
@@ -24,7 +25,7 @@ export class CommentListDTO {
   prev: string | null
   items: CommentReadDTO[]
 
-  constructor(item: CommentItemList) {
+  constructor(item: Page<CommentItem>) {
     this.count = item.count
     this.next = item.next
     this.prev = item.prev

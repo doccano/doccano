@@ -1,6 +1,7 @@
-import ApiService from '@/services/api.service'
+import { CommentItem } from '@/domain/models/comment/comment'
 import { CommentRepository, SearchOption } from '@/domain/models/comment/commentRepository'
-import { CommentItem, CommentItemList } from '@/domain/models/comment/comment'
+import { Page } from '@/domain/models/page'
+import ApiService from '@/services/api.service'
 
 function toModel(item: { [key: string]: any }): CommentItem {
   return new CommentItem(
@@ -27,10 +28,10 @@ export class APICommentRepository implements CommentRepository {
   async listAll(
     projectId: string,
     { limit = '10', offset = '0', q = '' }: SearchOption
-  ): Promise<CommentItemList> {
+  ): Promise<Page<CommentItem>> {
     const url = `/projects/${projectId}/comments?q=${q}&limit=${limit}&offset=${offset}`
     const response = await this.request.get(url)
-    return new CommentItemList(
+    return new Page(
       response.data.count,
       response.data.next,
       response.data.previous,

@@ -12,12 +12,3 @@ export class CommentItem {
     return this.user === userId
   }
 }
-
-export class CommentItemList {
-  constructor(
-    readonly count: number,
-    readonly next: string | null,
-    readonly prev: string | null,
-    readonly items: CommentItem[]
-  ) {}
-}
