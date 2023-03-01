@@ -56,9 +56,9 @@ import { mdiAccount, mdiCreditCardOutline } from '@mdi/js'
 import type { PropType } from 'vue'
 import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
+import { MemberItem } from '~/domain/models/member/member'
 import { RoleItem } from '~/domain/models/role/role'
 import { UserItem } from '~/domain/models/user/user'
-import { MemberDTO } from '~/services/application/member/memberData'
 
 export default Vue.extend({
   components: {
@@ -67,7 +67,7 @@ export default Vue.extend({
 
   props: {
     value: {
-      type: Object as PropType<MemberDTO>,
+      type: Object as PropType<MemberItem>,
       required: true
     },
     errorMessage: {
@@ -108,7 +108,7 @@ export default Vue.extend({
           isSuperuser: false
         }
       },
-      set(val: MemberDTO) {
+      set(val: MemberItem) {
         if (val === undefined) return
         const user = { user: val.id, username: val.username }
         this.$emit('input', { ...this.value, ...user })
