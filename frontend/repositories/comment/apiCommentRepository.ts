@@ -1,7 +1,8 @@
 import { CommentItem } from '@/domain/models/comment/comment'
-import { CommentRepository, SearchOption } from '@/domain/models/comment/commentRepository'
 import { Page } from '@/domain/models/page'
 import ApiService from '@/services/api.service'
+
+export type SearchOption = { [key: string]: string | (string | null)[] }
 
 function toModel(item: { [key: string]: any }): CommentItem {
   return new CommentItem(
@@ -22,7 +23,7 @@ function toPayload(item: CommentItem): { [key: string]: any } {
   }
 }
 
-export class APICommentRepository implements CommentRepository {
+export class APICommentRepository {
   constructor(private readonly request = ApiService) {}
 
   async listAll(
@@ -55,20 +56,21 @@ export class APICommentRepository implements CommentRepository {
     return toModel(response.data)
   }
 
-  async update(projectId: string, item: CommentItem): Promise<CommentItem> {
-    const url = `/projects/${projectId}/comments/${item.id}`
-    const payload = toPayload(item)
+  async update(projectId: string, comment: CommentItem): Promise<CommentItem> {
+    const url = `/projects/${projectId}/comments/${comment.id}`
+    const payload = toPayload(comment)
     const response = await this.request.put(url, payload)
     return toModel(response.data)
   }
 
-  async delete(projectId: string, commentId: number): Promise<void> {
-    const url = `/projects/${projectId}/comments/${commentId}`
+  async delete(projectId: string, comment: CommentItem): Promise<void> {
+    const url = `/projects/${projectId}/comments/${comment.id}`
     await this.request.delete(url)
   }
 
-  async deleteBulk(projectId: string, items: number[]): Promise<void> {
+  async deleteBulk(projectId: string, comments: CommentItem[]): Promise<void> {
     const url = `/projects/${projectId}/comments`
-    await this.request.delete(url, { ids: items })
+    const ids = comments.map((comment) => comment.id)
+    await this.request.delete(url, { ids })
   }
 }

@@ -66,10 +66,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 import { mdiAccountCircle, mdiDotsVertical } from '@mdi/js'
 import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
 import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
+import type { PropType } from 'vue'
+import Vue from 'vue'
+import { CommentItem } from '~/domain/models/comment/comment'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
@@ -77,7 +79,7 @@ export default Vue.extend({
   props: {
     comment: {
       required: true,
-      type: Object
+      type: Object as PropType<CommentItem>
     },
     userId: {
       required: true,
