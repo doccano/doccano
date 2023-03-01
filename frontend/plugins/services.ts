@@ -3,7 +3,6 @@ import { repositories } from './repositories'
 import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
 import { ExampleApplicationService } from '@/services/application/example/exampleApplicationService'
 import { LabelApplicationService } from '@/services/application/label/labelApplicationService'
-import { MemberApplicationService } from '@/services/application/member/memberApplicationService'
 import { OptionApplicationService } from '@/services/application/option/optionApplicationService'
 import { ProjectApplicationService } from '@/services/application/project/projectApplicationService'
 import { TagApplicationService } from '@/services/application/tag/tagApplicationService'
@@ -17,7 +16,6 @@ export interface Services {
   categoryType: LabelApplicationService
   spanType: LabelApplicationService
   relationType: LabelApplicationService
-  member: MemberApplicationService
   project: ProjectApplicationService
   example: ExampleApplicationService
   textClassification: TextClassificationService
@@ -41,7 +39,6 @@ const plugin: Plugin = (_, inject) => {
     categoryType: new LabelApplicationService(repositories.categoryType),
     spanType: new LabelApplicationService(repositories.spanType),
     relationType: new LabelApplicationService(repositories.relationType),
-    member: new MemberApplicationService(repositories.member),
     project: new ProjectApplicationService(repositories.project),
     example: new ExampleApplicationService(repositories.example),
     textClassification: new TextClassificationService(repositories.category),

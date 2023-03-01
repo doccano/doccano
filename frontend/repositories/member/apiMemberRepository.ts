@@ -1,6 +1,5 @@
-import ApiService from '@/services/api.service'
-import { MemberRepository } from '@/domain/models/member/memberRepository'
 import { MemberItem } from '@/domain/models/member/member'
+import ApiService from '@/services/api.service'
 
 function toModel(item: { [key: string]: any }): MemberItem {
   return new MemberItem(item.id, item.user, item.role, item.username, item.rolename)
@@ -16,7 +15,7 @@ function toPayload(item: MemberItem): { [key: string]: any } {
   }
 }
 
-export class APIMemberRepository implements MemberRepository {
+export class APIMemberRepository {
   constructor(private readonly request = ApiService) {}
 
   async list(projectId: string): Promise<MemberItem[]> {
@@ -39,9 +38,10 @@ export class APIMemberRepository implements MemberRepository {
     return toModel(response.data)
   }
 
-  async bulkDelete(projectId: string, memberIds: number[]): Promise<void> {
+  async bulkDelete(projectId: string, members: MemberItem[]): Promise<void> {
     const url = `/projects/${projectId}/members`
-    await this.request.delete(url, { ids: memberIds })
+    const ids = members.map((member) => member.id)
+    await this.request.delete(url, { ids })
   }
 
   async fetchMyRole(projectId: string): Promise<MemberItem> {

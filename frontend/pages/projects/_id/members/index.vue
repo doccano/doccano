@@ -33,7 +33,7 @@ import Vue from 'vue'
 import FormDelete from '@/components/member/FormDelete.vue'
 import MemberList from '@/components/member/MemberList.vue'
 import FormCreate from '~/components/member/FormCreate.vue'
-import { MemberDTO } from '~/services/application/member/memberData'
+import { MemberItem } from '~/domain/models/member/member'
 
 export default Vue.extend({
   components: {
@@ -57,15 +57,15 @@ export default Vue.extend({
         role: -1,
         username: '',
         rolename: 'annotator'
-      } as MemberDTO,
+      } as MemberItem,
       defaultItem: {
         user: -1,
         role: -1,
         username: '',
         rolename: 'annotator'
-      } as MemberDTO,
-      items: [] as MemberDTO[],
-      selected: [] as MemberDTO[],
+      } as MemberItem,
+      items: [] as MemberItem[],
+      selected: [] as MemberItem[],
       isLoading: false,
       errorMessage: ''
     }
@@ -74,7 +74,7 @@ export default Vue.extend({
   async fetch() {
     this.isLoading = true
     try {
-      this.items = await this.$services.member.list(this.projectId)
+      this.items = await this.$repositories.member.list(this.projectId)
     } catch (e) {
       this.$router.push(`/projects/${this.projectId}`)
     } finally {
@@ -94,21 +94,21 @@ export default Vue.extend({
   methods: {
     async create() {
       try {
-        await this.$services.member.create(this.projectId, this.editedItem)
+        await this.$repositories.member.create(this.projectId, this.editedItem)
         this.close()
         this.$fetch()
       } catch (e: any) {
-        this.errorMessage = e.message
+        this.errorMessage = e.response.data.detail
       }
     },
 
     async update() {
       try {
-        await this.$services.member.update(this.projectId, this.editedItem)
+        await this.$repositories.member.update(this.projectId, this.editedItem)
         this.close()
         this.$fetch()
       } catch (e: any) {
-        this.errorMessage = e.message
+        this.errorMessage = e.response.data.detail
       }
     },
 
@@ -130,13 +130,13 @@ export default Vue.extend({
     },
 
     async remove() {
-      await this.$services.member.bulkDelete(this.projectId, this.selected)
+      await this.$repositories.member.bulkDelete(this.projectId, this.selected)
       this.$fetch()
       this.dialogDelete = false
       this.selected = []
     },
 
-    editItem(item: MemberDTO) {
+    editItem(item: MemberItem) {
       this.editedIndex = this.items.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogCreate = true

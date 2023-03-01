@@ -46,7 +46,8 @@ export default {
   },
 
   async created() {
-    this.isProjectAdmin = await this.$services.member.isProjectAdmin(this.$route.params.id)
+    const member = await this.$repositories.member.fetchMyRole(this.$route.params.id)
+    this.isProjectAdmin = member.isProjectAdmin
   }
 }
 </script>
