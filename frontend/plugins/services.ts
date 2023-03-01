@@ -1,7 +1,6 @@
 import { Plugin } from '@nuxt/types'
 import { repositories } from './repositories'
 import { ConfigApplicationService } from '@/services/application/autoLabeling/configApplicationService'
-import { CommentApplicationService } from '@/services/application/comment/commentApplicationService'
 import { ExampleApplicationService } from '@/services/application/example/exampleApplicationService'
 import { LabelApplicationService } from '@/services/application/label/labelApplicationService'
 import { MemberApplicationService } from '@/services/application/member/memberApplicationService'
@@ -20,7 +19,6 @@ export interface Services {
   relationType: LabelApplicationService
   member: MemberApplicationService
   project: ProjectApplicationService
-  comment: CommentApplicationService
   example: ExampleApplicationService
   textClassification: TextClassificationService
   sequenceLabeling: SequenceLabelingApplicationService
@@ -45,7 +43,6 @@ const plugin: Plugin = (_, inject) => {
     relationType: new LabelApplicationService(repositories.relationType),
     member: new MemberApplicationService(repositories.member),
     project: new ProjectApplicationService(repositories.project),
-    comment: new CommentApplicationService(repositories.comment),
     example: new ExampleApplicationService(repositories.example),
     textClassification: new TextClassificationService(repositories.category),
     sequenceLabeling: new SequenceLabelingApplicationService(

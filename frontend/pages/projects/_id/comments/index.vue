@@ -29,9 +29,10 @@ import _ from 'lodash'
 import Vue from 'vue'
 import CommentList from '@/components/comment/CommentList.vue'
 import FormDelete from '~/components/comment/FormDelete.vue'
+import { CommentItem } from '~/domain/models/comment/comment'
+import { Page } from '~/domain/models/page'
 import { Project } from '~/domain/models/project/project'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
-import { CommentListDTO, CommentReadDTO } from '~/services/application/comment/commentData'
 
 export default Vue.extend({
   components: {
@@ -48,8 +49,8 @@ export default Vue.extend({
     return {
       dialogDelete: false,
       project: {} as Project,
-      item: {} as CommentListDTO,
-      selected: [] as CommentReadDTO[],
+      item: {} as Page<CommentItem>,
+      selected: [] as CommentItem[],
       isLoading: false
     }
   },
@@ -57,7 +58,7 @@ export default Vue.extend({
   async fetch() {
     this.isLoading = true
     this.project = await this.$services.project.findById(this.projectId)
-    this.item = await this.$services.comment.listProjectComment(this.projectId, this.$route.query)
+    this.item = await this.$repositories.comment.listAll(this.projectId, this.$route.query)
     this.isLoading = false
   },
 
@@ -79,7 +80,7 @@ export default Vue.extend({
 
   methods: {
     async remove() {
-      await this.$services.comment.deleteBulk(this.projectId, this.selected)
+      await this.$repositories.comment.deleteBulk(this.projectId, this.selected)
       this.$fetch()
       this.dialogDelete = false
       this.selected = []

@@ -55,7 +55,7 @@ import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
 import type { PropType } from 'vue'
 import Vue from 'vue'
 import { DataOptions } from 'vuetify/types'
-import { CommentReadDTO } from '~/services/application/comment/commentData'
+import { CommentItem } from '~/domain/models/comment/comment'
 Vue.use(VueFilterDateFormat)
 Vue.use(VueFilterDateParse)
 
@@ -67,12 +67,12 @@ export default Vue.extend({
       required: true
     },
     items: {
-      type: Array as PropType<CommentReadDTO[]>,
+      type: Array as PropType<CommentItem[]>,
       default: () => [],
       required: true
     },
     value: {
-      type: Array as PropType<CommentReadDTO[]>,
+      type: Array as PropType<CommentItem[]>,
       default: () => [],
       required: true
     },
