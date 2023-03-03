@@ -54,6 +54,7 @@ import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vu
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+import { Category } from '~/domain/models/tasks/category'
 
 export default {
   components: {
@@ -174,16 +175,17 @@ export default {
     },
 
     async listCategory(id) {
-      this.categories = await this.$services.textClassification.list(this.projectId, id)
+      this.categories = await this.$repositories.category.list(this.projectId, id)
     },
 
     async removeCategory(id) {
-      await this.$services.textClassification.delete(this.projectId, this.doc.id, id)
+      await this.$repositories.category.delete(this.projectId, this.doc.id, id)
       await this.listCategory(this.doc.id)
     },
 
     async addCategory(labelId) {
-      await this.$services.textClassification.create(this.projectId, this.doc.id, labelId)
+      const category = Category.create(labelId)
+      await this.$repositories.category.create(this.projectId, this.doc.id, category)
       await this.listCategory(this.doc.id)
     },
 
@@ -198,8 +200,10 @@ export default {
     },
 
     async clear() {
+      await this.$repositories.category.clear(this.projectId, this.doc.id)
       await this.$services.sequenceLabeling.clear(this.projectId, this.doc.id)
       await this.listSpan(this.doc.id)
+      await this.listCategory(this.doc.id)
     },
 
     async autoLabel(docId) {
