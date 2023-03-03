@@ -65,6 +65,7 @@ import LabelSelect from '@/components/tasks/textClassification/LabelSelect'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import { useLabelList } from '@/composables/useLabelList'
+import { Category } from '~/domain/models/tasks/category'
 
 export default {
   components: {
@@ -157,16 +158,17 @@ export default {
 
   methods: {
     async list(imageId) {
-      this.annotations = await this.$services.textClassification.list(this.projectId, imageId)
+      this.annotations = await this.$repositories.category.list(this.projectId, imageId)
     },
 
     async remove(id) {
-      await this.$services.textClassification.delete(this.projectId, this.image.id, id)
+      await this.$repositories.category.delete(this.projectId, this.image.id, id)
       await this.list(this.image.id)
     },
 
     async add(labelId) {
-      await this.$services.textClassification.create(this.projectId, this.image.id, labelId)
+      const category = Category.create(labelId)
+      await this.$repositories.category.create(this.projectId, this.image.id, category)
       await this.list(this.image.id)
     },
 
@@ -181,13 +183,13 @@ export default {
     },
 
     async clear() {
-      await this.$services.textClassification.clear(this.projectId, this.image.id)
+      await this.$repositories.category.clear(this.projectId, this.image.id)
       await this.list(this.image.id)
     },
 
     async autoLabel(imageId) {
       try {
-        await this.$services.textClassification.autoLabel(this.projectId, imageId)
+        await this.$repositories.category.autoLabel(this.projectId, imageId)
       } catch (e) {
         console.log(e.response.data.detail)
       }
