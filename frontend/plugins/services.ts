@@ -9,7 +9,6 @@ import { BoundingBoxApplicationService } from '@/services/application/tasks/boun
 import { SegmentationApplicationService } from '@/services/application/tasks/segmentation/segmentationApplicationService'
 import { Seq2seqApplicationService } from '@/services/application/tasks/seq2seq/seq2seqApplicationService'
 import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
-import { TextClassificationService } from '@/services/application/tasks/textClassification/textClassificationApplicationService'
 
 export interface Services {
   categoryType: LabelApplicationService
@@ -17,7 +16,6 @@ export interface Services {
   relationType: LabelApplicationService
   project: ProjectApplicationService
   example: ExampleApplicationService
-  textClassification: TextClassificationService
   sequenceLabeling: SequenceLabelingApplicationService
   seq2seq: Seq2seqApplicationService
   option: OptionApplicationService
@@ -39,7 +37,6 @@ const plugin: Plugin = (_, inject) => {
     relationType: new LabelApplicationService(repositories.relationType),
     project: new ProjectApplicationService(repositories.project),
     example: new ExampleApplicationService(repositories.example),
-    textClassification: new TextClassificationService(repositories.category),
     sequenceLabeling: new SequenceLabelingApplicationService(
       repositories.span,
       repositories.relation
