@@ -1,31 +1,33 @@
 import { reactive } from '@nuxtjs/composition-api'
+import { Category } from '~/domain/models/tasks/category'
 
-export const useTeacherList = (service: any) => {
+export const useTeacherList = (repository: any) => {
   const state = reactive({
     teacherList: []
   })
 
   const getTeacherList = async (projectId: string, exampleId: number) => {
-    state.teacherList = await service.list(projectId, exampleId)
+    state.teacherList = await repository.list(projectId, exampleId)
   }
 
   const removeTeacher = async (projectId: string, exampleId: number, teacherId: number) => {
-    await service.delete(projectId, exampleId, teacherId)
+    await repository.delete(projectId, exampleId, teacherId)
     await getTeacherList(projectId, exampleId)
   }
 
   const annotateLabel = async (projectId: string, exampleId: number, labelId: number) => {
-    await service.create(projectId, exampleId, labelId)
+    const category = Category.create(labelId)
+    await repository.create(projectId, exampleId, category)
     await getTeacherList(projectId, exampleId)
   }
 
   const clearTeacherList = async (projectId: string, exampleId: number) => {
-    await service.clear(projectId, exampleId)
+    await repository.clear(projectId, exampleId)
     await getTeacherList(projectId, exampleId)
   }
 
   const autoLabel = async (projectId: string, exampleId: number) => {
-    await service.autoLabel(projectId, exampleId)
+    await repository.autoLabel(projectId, exampleId)
     await getTeacherList(projectId, exampleId)
   }
 
