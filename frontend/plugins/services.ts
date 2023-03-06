@@ -7,7 +7,6 @@ import { ProjectApplicationService } from '@/services/application/project/projec
 import { TagApplicationService } from '@/services/application/tag/tagApplicationService'
 import { BoundingBoxApplicationService } from '@/services/application/tasks/boundingBox/boundingBoxApplicationService'
 import { SegmentationApplicationService } from '@/services/application/tasks/segmentation/segmentationApplicationService'
-import { Seq2seqApplicationService } from '@/services/application/tasks/seq2seq/seq2seqApplicationService'
 import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
 
 export interface Services {
@@ -17,7 +16,6 @@ export interface Services {
   project: ProjectApplicationService
   example: ExampleApplicationService
   sequenceLabeling: SequenceLabelingApplicationService
-  seq2seq: Seq2seqApplicationService
   option: OptionApplicationService
   tag: TagApplicationService
   bbox: BoundingBoxApplicationService
@@ -41,7 +39,6 @@ const plugin: Plugin = (_, inject) => {
       repositories.span,
       repositories.relation
     ),
-    seq2seq: new Seq2seqApplicationService(repositories.textLabel),
     option: new OptionApplicationService(repositories.option),
     tag: new TagApplicationService(repositories.tag),
     bbox: new BoundingBoxApplicationService(repositories.boundingBox),
