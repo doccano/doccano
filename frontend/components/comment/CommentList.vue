@@ -91,7 +91,8 @@ export default Vue.extend({
         { text: this.$t('dataset.text'), value: 'text' },
         { text: this.$t('user.username'), value: 'username' },
         { text: this.$t('comments.created_at'), value: 'createdAt' },
-        { text: this.$t('dataset.action'), value: 'action' }
+        { text: this.$t('dataset.action'), value: 'action' },
+        { text: this.$t('comments.document'), value: 'example' }
       ],
       mdiMagnify
     }
