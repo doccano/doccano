@@ -51,6 +51,7 @@ import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import { useLabelList } from '@/composables/useLabelList'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
+import { TextLabel } from '~/domain/models/tasks/textLabel'
 
 export default {
   components: {
@@ -154,32 +155,35 @@ export default {
 
   methods: {
     async list(imageId) {
-      this.annotations = await this.$services.seq2seq.list(this.projectId, imageId)
+      this.annotations = await this.$repositories.textLabel.list(this.projectId, imageId)
     },
 
     async remove(id) {
-      await this.$services.seq2seq.delete(this.projectId, this.image.id, id)
+      await this.$repositories.textLabel.delete(this.projectId, this.image.id, id)
       await this.list(this.image.id)
     },
 
     async add(text) {
-      await this.$services.seq2seq.create(this.projectId, this.image.id, text)
+      const label = TextLabel.create(text)
+      await this.$repositories.textLabel.create(this.projectId, this.image.id, label)
       await this.list(this.image.id)
     },
 
     async update(annotationId, text) {
-      await this.$services.seq2seq.changeText(this.projectId, this.image.id, annotationId, text)
+      const label = this.annotations.find((a) => a.id === annotationId)
+      label.updateText(text)
+      await this.$repositories.textLabel.update(this.projectId, this.image.id, annotationId, label)
       await this.list(this.image.id)
     },
 
     async clear() {
-      await this.$services.seq2seq.clear(this.projectId, this.image.id)
+      await this.$repositories.textLabel.clear(this.projectId, this.image.id)
       await this.list(this.image.id)
     },
 
     async autoLabel(imageId) {
       try {
-        await this.$services.seq2seq.autoLabel(this.projectId, imageId)
+        await this.$repositories.textLabel.autoLabel(this.projectId, imageId)
       } catch (e) {
         console.log(e.response.data.detail)
       }
