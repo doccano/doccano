@@ -40,6 +40,7 @@ import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vu
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
+import { TextLabel } from '~/domain/models/tasks/textLabel'
 
 export default {
   components: {
@@ -106,37 +107,40 @@ export default {
 
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
-    this.progress = await this.$$repositories.metrics.fetchMyProgress(this.projectId)
+    this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
     async list(docId) {
-      this.annotations = await this.$services.seq2seq.list(this.projectId, docId)
+      this.annotations = await this.$repositories.textLabel.list(this.projectId, docId)
     },
 
     async remove(id) {
-      await this.$services.seq2seq.delete(this.projectId, this.doc.id, id)
+      await this.$repositories.textLabel.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
     },
 
     async add(text) {
-      await this.$services.seq2seq.create(this.projectId, this.doc.id, text)
+      const label = TextLabel.create(text)
+      await this.$repositories.textLabel.create(this.projectId, this.doc.id, label)
       await this.list(this.doc.id)
     },
 
     async update(annotationId, text) {
-      await this.$services.seq2seq.changeText(this.projectId, this.doc.id, annotationId, text)
+      const label = this.annotations.find((a) => a.id === annotationId)
+      label.updateText(text)
+      await this.$repositories.textLabel.update(this.projectId, this.doc.id, annotationId, label)
       await this.list(this.doc.id)
     },
 
     async clear() {
-      await this.$services.seq2seq.clear(this.projectId, this.doc.id)
+      await this.$repositories.textLabel.clear(this.projectId, this.doc.id)
       await this.list(this.doc.id)
     },
 
     async autoLabel(docId) {
       try {
-        await this.$services.seq2seq.autoLabel(this.projectId, docId)
+        await this.$repositories.textLabel.autoLabel(this.projectId, docId)
       } catch (e) {
         console.log(e.response.data.detail)
       }
