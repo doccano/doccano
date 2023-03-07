@@ -65,16 +65,17 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 import _ from 'lodash'
+import Vue from 'vue'
 import DocumentList from '@/components/example/DocumentList.vue'
 import FormDelete from '@/components/example/FormDelete.vue'
 import FormDeleteBulk from '@/components/example/FormDeleteBulk.vue'
-import ImageList from '~/components/example/ImageList.vue'
-import AudioList from '~/components/example/AudioList.vue'
-import { ExampleListDTO, ExampleDTO } from '~/services/application/example/exampleData'
 import ActionMenu from '~/components/example/ActionMenu.vue'
-import { ProjectDTO } from '~/services/application/project/projectData'
+import AudioList from '~/components/example/AudioList.vue'
+import ImageList from '~/components/example/ImageList.vue'
+import { Project } from '~/domain/models/project/project'
+import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
+import { ExampleDTO, ExampleListDTO } from '~/services/application/example/exampleData'
 
 export default Vue.extend({
   components: {
@@ -97,7 +98,7 @@ export default Vue.extend({
     return {
       dialogDelete: false,
       dialogDeleteAll: false,
-      project: {} as ProjectDTO,
+      project: {} as Project,
       item: {} as ExampleListDTO,
       selected: [] as ExampleDTO[],
       isLoading: false,
@@ -143,7 +144,8 @@ export default Vue.extend({
 
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
-    this.isProjectAdmin = await this.$services.member.isProjectAdmin(this.projectId)
+    const member = await this.$repositories.member.fetchMyRole(this.projectId)
+    this.isProjectAdmin = member.isProjectAdmin
   },
 
   methods: {
@@ -163,8 +165,9 @@ export default Vue.extend({
       this.$router.push(query)
     },
     movePage(query: object) {
+      const link = getLinkToAnnotationPage(this.projectId, this.project.projectType)
       this.updateQuery({
-        path: this.localePath(this.project.pageLink),
+        path: this.localePath(link),
         query
       })
     }

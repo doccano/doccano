@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
-import LabelProps from '@/domain/models/tasks/shared/LabelProps'
 import RectangleProps from './RectangleProps'
+import LabelProps from '@/domain/models/tasks/shared/LabelProps'
 
 export default class Rectangle {
   constructor(

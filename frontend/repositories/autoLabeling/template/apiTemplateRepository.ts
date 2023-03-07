@@ -1,8 +1,7 @@
 import ApiService from '@/services/api.service'
-import { TemplateRepository } from '~/domain/models/autoLabeling/templateRepository'
-import { ConfigTemplateItem, ConfigResponse } from '~/domain/models/autoLabeling/template'
+import { ConfigResponse, ConfigTemplateItem } from '~/domain/models/autoLabeling/template'
 
-export class APITemplateRepository implements TemplateRepository {
+export class APITemplateRepository {
   constructor(private readonly request = ApiService) {}
 
   async list(projectId: string, taskName: string): Promise<string[]> {

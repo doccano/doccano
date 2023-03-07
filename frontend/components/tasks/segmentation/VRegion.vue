@@ -66,11 +66,11 @@
 import Vue from 'vue'
 import Konva from 'konva'
 import Flatten from '@flatten-js/core'
+import VPolygon from './VPolygon.vue'
+import VPoint from './VPoint.vue'
 import Polygon from '@/domain/models/tasks/segmentation/Polygon'
 import LineSegment from '@/domain/models/tasks/segmentation/LineSegment'
 import { transform } from '@/domain/models/tasks/shared/Scaler'
-import VPolygon from './VPolygon.vue'
-import VPoint from './VPoint.vue'
 import Point = Flatten.Point
 
 export default Vue.extend({

@@ -1,7 +1,6 @@
 import abc
 
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError
 from django.test import TestCase
 from model_mommy import mommy
 
@@ -142,15 +141,15 @@ class TestSpan(TestCase):
         self.user = self.project.admin
 
     def test_start_offset_is_not_negative(self):
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError):
             mommy.make("Span", start_offset=-1, end_offset=0)
 
     def test_end_offset_is_not_negative(self):
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError):
             mommy.make("Span", start_offset=-2, end_offset=-1)
 
     def test_start_offset_is_less_than_end_offset(self):
-        with self.assertRaises(IntegrityError):
+        with self.assertRaises(ValidationError):
             mommy.make("Span", start_offset=0, end_offset=0)
 
     def test_unique_constraint(self):

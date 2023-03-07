@@ -1,6 +1,5 @@
 import ApiService from '@/services/api.service'
-import { ConfigRepository, ConfigTestResponse } from '~/domain/models/autoLabeling/configRepository'
-import { ConfigItemList, ConfigItem } from '~/domain/models/autoLabeling/config'
+import { ConfigItem, ConfigItemList } from '~/domain/models/autoLabeling/config'
 
 export interface ConfigItemResponse {
   id: number
@@ -11,7 +10,12 @@ export interface ConfigItemResponse {
   task_type: string
 }
 
-export class APIConfigRepository implements ConfigRepository {
+export interface ConfigTestResponse {
+  valid: boolean
+  labels: object[]
+}
+
+export class APIConfigRepository {
   constructor(private readonly request = ApiService) {}
 
   async list(projectId: string): Promise<ConfigItemList> {

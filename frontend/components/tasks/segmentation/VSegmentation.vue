@@ -42,15 +42,16 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import Konva from 'konva'
+import type { PropType } from 'vue'
+import Vue from 'vue'
+import VEditingRegion from './VEditingRegion.vue'
+import VRegion from './VRegion.vue'
+import BaseImage from '@/components/tasks/image/BaseImage.vue'
 import Polygon from '@/domain/models/tasks/segmentation/Polygon'
 import PolygonProps from '@/domain/models/tasks/segmentation/PolygonProps'
 import LabelProps from '@/domain/models/tasks/shared/LabelProps'
-import BaseImage from '@/components/tasks/image/BaseImage.vue'
 import { transform } from '@/domain/models/tasks/shared/Scaler'
-import VEditingRegion from './VEditingRegion.vue'
-import VRegion from './VRegion.vue'
 
 export default Vue.extend({
   name: 'VSegmentation',

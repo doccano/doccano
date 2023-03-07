@@ -75,8 +75,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import ObjectField from './ObjectField.vue'
 import FileField from './FileField.vue'
+import ObjectField from './ObjectField.vue'
+import { Project } from '~/domain/models/project/project'
 
 export default Vue.extend({
   components: {
@@ -110,7 +111,7 @@ export default Vue.extend({
   data() {
     return {
       payload: '',
-      project: {}
+      project: {} as Project
     }
   },
 

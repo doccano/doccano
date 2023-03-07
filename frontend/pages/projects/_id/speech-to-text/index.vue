@@ -17,7 +17,7 @@
       <v-overlay :value="isLoading">
         <v-progress-circular indeterminate size="64" />
       </v-overlay>
-      <audio-viewer :source="item.fileUrl" class="mb-5" />
+      <audio-viewer :source="item.url" class="mb-5" />
       <seq2seq-box
         :text="item.text"
         :annotations="annotations"
@@ -37,11 +37,11 @@
 import _ from 'lodash'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
-import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 import AudioViewer from '~/components/tasks/audio/AudioViewer'
+import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 
 export default {
   components: {
@@ -112,7 +112,7 @@ export default {
 
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
-    this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+    this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
@@ -149,7 +149,7 @@ export default {
     },
 
     async updateProgress() {
-      this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+      this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
     },
 
     async confirm() {

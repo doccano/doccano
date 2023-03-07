@@ -25,12 +25,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 import _ from 'lodash'
+import Vue from 'vue'
 import CommentList from '@/components/comment/CommentList.vue'
-import { CommentReadDTO, CommentListDTO } from '~/services/application/comment/commentData'
-import { ProjectDTO } from '~/services/application/project/projectData'
 import FormDelete from '~/components/comment/FormDelete.vue'
+import { CommentItem } from '~/domain/models/comment/comment'
+import { Page } from '~/domain/models/page'
+import { Project } from '~/domain/models/project/project'
+import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
 export default Vue.extend({
   components: {
@@ -46,9 +48,9 @@ export default Vue.extend({
   data() {
     return {
       dialogDelete: false,
-      project: {} as ProjectDTO,
-      item: {} as CommentListDTO,
-      selected: [] as CommentReadDTO[],
+      project: {} as Project,
+      item: {} as Page<CommentItem>,
+      selected: [] as CommentItem[],
       isLoading: false
     }
   },
@@ -56,7 +58,7 @@ export default Vue.extend({
   async fetch() {
     this.isLoading = true
     this.project = await this.$services.project.findById(this.projectId)
-    this.item = await this.$services.comment.listProjectComment(this.projectId, this.$route.query)
+    this.item = await this.$repositories.comment.listAll(this.projectId, this.$route.query)
     this.isLoading = false
   },
 
@@ -78,7 +80,7 @@ export default Vue.extend({
 
   methods: {
     async remove() {
-      await this.$services.comment.deleteBulk(this.projectId, this.selected)
+      await this.$repositories.comment.deleteBulk(this.projectId, this.selected)
       this.$fetch()
       this.dialogDelete = false
       this.selected = []
@@ -87,8 +89,9 @@ export default Vue.extend({
       this.$router.push(query)
     },
     movePage(query: object) {
+      const link = getLinkToAnnotationPage(this.projectId, this.project.projectType)
       this.updateQuery({
-        path: this.localePath(this.project.pageLink),
+        path: this.localePath(link),
         query
       })
     }

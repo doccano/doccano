@@ -18,9 +18,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { LabelDTO } from '~/services/application/label/labelData'
-import { ProjectDTO } from '~/services/application/project/projectData'
 import FormCreate from '~/components/label/FormCreate.vue'
+import { Project } from '~/domain/models/project/project'
+import { LabelDTO } from '~/services/application/label/labelData'
 
 export default Vue.extend({
   components: {
@@ -34,7 +34,7 @@ export default Vue.extend({
       return false
     }
     if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id).then((res: ProjectDTO) => {
+      return app.$services.project.findById(params.id).then((res: Project) => {
         return res.canDefineLabel
       })
     }

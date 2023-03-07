@@ -20,10 +20,11 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import Konva from 'konva'
+import type { PropType } from 'vue'
+import Vue from 'vue'
+import { inverseTransform, transform } from '@/domain/models/tasks/shared/Scaler'
 import Rectangle from '@/domain/models/tasks/boundingbox/Rectangle'
-import { transform, inverseTransform } from '@/domain/models/tasks/shared/Scaler'
 
 export default Vue.extend({
   props: {

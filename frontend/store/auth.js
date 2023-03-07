@@ -41,18 +41,18 @@ export const getters = {
 export const actions = {
   async authenticateUser({ commit }, authData) {
     try {
-      await this.$services.auth.login(authData.username, authData.password)
+      await this.$repositories.auth.login(authData.username, authData.password)
       commit('setAuthenticated', true)
     } catch (error) {
       throw new Error('The credential is invalid')
     }
   },
   async fetchSocialLink() {
-    return await this.$services.auth.socialLink()
+    return await this.$repositories.auth.socialLink()
   },
   async initAuth({ commit }) {
     try {
-      const user = await this.$services.user.getMyProfile()
+      const user = await this.$repositories.user.getProfile()
       commit('setAuthenticated', true)
       commit('setUsername', user.username)
       commit('setUserId', user.id)
@@ -63,7 +63,7 @@ export const actions = {
     }
   },
   async logout({ commit }) {
-    await this.$services.auth.logout()
+    await this.$repositories.auth.logout()
     commit('setAuthenticated', false)
     commit('setIsStaff', false)
     commit('clearUsername')

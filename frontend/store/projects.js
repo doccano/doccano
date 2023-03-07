@@ -12,23 +12,26 @@ export const getters = {
   canViewApproveButton(state) {
     const role = state.current.current_users_role
     return role && !role.is_annotator
-  },
-  getLink(state) {
-    return state.current.pageLink
   }
 }
 
 export const mutations = {
   setCurrent(state, payload) {
-    state.current = payload
+    state.current = {
+      ...payload,
+      canDefineCategory: payload.canDefineCategory,
+      canDefineLabel: payload.canDefineLabel,
+      canDefineRelation: payload.canDefineRelation,
+      canDefineSpan: payload.canDefineSpan
+    }
   }
 }
 
 export const actions = {
   async setCurrentProject({ commit }, projectId) {
     try {
-      const response = await this.$services.project.findById(projectId)
-      commit('setCurrent', response)
+      const project = await this.$services.project.findById(projectId)
+      commit('setCurrent', project)
     } catch (error) {
       throw new Error(error)
     }

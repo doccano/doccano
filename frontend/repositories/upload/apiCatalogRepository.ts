@@ -1,5 +1,4 @@
 import ApiService from '@/services/api.service'
-import { CatalogRepository } from '@/domain/models/upload/catalogRepository'
 import { Catalog } from '~/domain/models/upload/catalog'
 
 function toModel(item: { [key: string]: any }): Catalog {
@@ -13,7 +12,7 @@ function toModel(item: { [key: string]: any }): Catalog {
   )
 }
 
-export class APICatalogRepository implements CatalogRepository {
+export class APICatalogRepository {
   constructor(private readonly request = ApiService) {}
 
   async list(projectId: string): Promise<Catalog[]> {

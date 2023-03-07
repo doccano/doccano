@@ -41,7 +41,7 @@
         <v-divider />
         <v-segmentation
           :highlight-id="highlightId"
-          :image-url="image.fileUrl"
+          :image-url="image.url"
           :labels="bboxLabels"
           :polygons="filteredRegions"
           :selected-label="selectedLabel"
@@ -71,18 +71,18 @@
 </template>
 
 <script>
-import _ from 'lodash'
-import { mdiText, mdiFormatListBulleted } from '@mdi/js'
+import { mdiFormatListBulleted, mdiText } from '@mdi/js'
 import { toRefs, useContext } from '@nuxtjs/composition-api'
+import _ from 'lodash'
+import RegionList from '@/components/tasks/image/RegionList.vue'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
+import VSegmentation from '@/components/tasks/segmentation/VSegmentation.vue'
+import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import ButtonZoom from '@/components/tasks/toolbar/buttons/ButtonZoom.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import { useLabelList } from '@/composables/useLabelList'
-import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
-import VSegmentation from '@/components/tasks/segmentation/VSegmentation.vue'
-import RegionList from '@/components/tasks/image/RegionList.vue'
-import ButtonZoom from '@/components/tasks/toolbar/buttons/ButtonZoom.vue'
 
 export default {
   components: {
@@ -226,7 +226,7 @@ export default {
   async created() {
     this.getLabelList(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
-    this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+    this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
@@ -283,7 +283,7 @@ export default {
     },
 
     async updateProgress() {
-      this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+      this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
     },
 
     async confirm() {

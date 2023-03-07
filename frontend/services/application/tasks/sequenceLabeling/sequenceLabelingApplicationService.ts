@@ -1,10 +1,10 @@
+import { AnnotationApplicationService } from '../annotationApplicationService'
+import { RelationDTO } from './relationData'
+import { SpanDTO } from './sequenceLabelingData'
 import { APISpanRepository } from '@/repositories/tasks/apiSpanRepository'
 import { APIRelationRepository } from '@/repositories/tasks/apiRelationRepository'
 import { Span } from '@/domain/models/tasks/span'
 import { Relation } from '@/domain/models/tasks/relation'
-import { AnnotationApplicationService } from '../annotationApplicationService'
-import { RelationDTO } from './relationData'
-import { SpanDTO } from './sequenceLabelingData'
 
 export class SequenceLabelingApplicationService extends AnnotationApplicationService<Span> {
   constructor(

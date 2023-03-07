@@ -42,13 +42,13 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { StepCounter } from '@/domain/models/utils/stepper'
 import ConfigHeader from './form/ConfigHeader.vue'
-import ConfigTemplateName from './form/ConfigTemplateName.vue'
-import ConfigTemplate from './form/ConfigTemplate.vue'
-import ConfigParameters from './form/ConfigParameters.vue'
 import ConfigLabelMapping from './form/ConfigLabelMapping.vue'
-import { ConfigItem, Fields } from '~/domain/models/autoLabeling/config'
+import ConfigParameters from './form/ConfigParameters.vue'
+import ConfigTemplate from './form/ConfigTemplate.vue'
+import ConfigTemplateName from './form/ConfigTemplateName.vue'
+import { StepCounter } from '@/domain/models/utils/stepper'
+import { ConfigItem, Fields } from '@/domain/models/autoLabeling/config'
 
 export default Vue.extend({
   components: {
@@ -114,7 +114,7 @@ export default Vue.extend({
           this.errors = []
         })
         .catch((error) => {
-          this.errors = [error.message]
+          this.errors = [error.response.data]
         })
         .finally(() => {
           this.isLoading = false
@@ -123,27 +123,31 @@ export default Vue.extend({
     testParameters(text: string) {
       const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
-      const promise = this.$services.config.testParameters(projectId, item, text)
+      const promise = this.$repositories.config.testParameters(projectId, item, text)
       this.testConfig(promise, 'parameter')
     },
     testTemplate() {
       const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
-      const promise = this.$services.config.testTemplate(projectId, this.response.parameter, item)
+      const promise = this.$repositories.config.testTemplate(
+        projectId,
+        this.response.parameter,
+        item
+      )
       this.testConfig(promise, 'template')
     },
     testMapping() {
       const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
-      const promise = this.$services.config.testMapping(projectId, item, this.response.template)
+      const promise = this.$repositories.config.testMapping(projectId, item, this.response.template)
       this.testConfig(promise, 'mapping')
     },
     saveConfig() {
       const projectId = this.$route.params.id
       const item = ConfigItem.parseFromUI(this.fields)
       this.isLoading = true
-      this.$services.config
-        .save(projectId, item)
+      this.$repositories.config
+        .create(projectId, item)
         .then(() => {
           this.step.first()
           this.$emit('onCreate')

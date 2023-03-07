@@ -142,6 +142,6 @@ class RelationLabel(Label):
             user=user,
             example=example,
             type=types[self.type],
-            from_id=kwargs["id_to_span"][self.from_id],
-            to_id=kwargs["id_to_span"][self.to_id],
+            from_id=kwargs["id_to_span"][(self.from_id, str(self.example_uuid))],
+            to_id=kwargs["id_to_span"][(self.to_id, str(self.example_uuid))],
         )

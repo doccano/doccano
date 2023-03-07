@@ -39,11 +39,12 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import VAnnotator from 'v-annotator'
+import type { PropType } from 'vue'
+import Vue from 'vue'
+import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 import LabelingMenu from './LabelingMenu.vue'
 import { SpanDTO } from '~/services/application/tasks/sequenceLabeling/sequenceLabelingData'
-import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 
 export default Vue.extend({
   components: {

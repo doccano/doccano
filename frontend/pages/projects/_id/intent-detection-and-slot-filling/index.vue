@@ -46,6 +46,7 @@
   </layout-text>
 </template>
 <script>
+import { mapGetters } from 'vuex'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
@@ -53,7 +54,7 @@ import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vu
 import LabelGroup from '@/components/tasks/textClassification/LabelGroup'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import { mapGetters } from 'vuex'
+import { Category } from '~/domain/models/tasks/category'
 
 export default {
   components: {
@@ -138,7 +139,7 @@ export default {
     this.spanTypes = await this.$services.spanType.list(this.projectId)
     this.categoryTypes = await this.$services.categoryType.list(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
-    this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+    this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
@@ -174,16 +175,17 @@ export default {
     },
 
     async listCategory(id) {
-      this.categories = await this.$services.textClassification.list(this.projectId, id)
+      this.categories = await this.$repositories.category.list(this.projectId, id)
     },
 
     async removeCategory(id) {
-      await this.$services.textClassification.delete(this.projectId, this.doc.id, id)
+      await this.$repositories.category.delete(this.projectId, this.doc.id, id)
       await this.listCategory(this.doc.id)
     },
 
     async addCategory(labelId) {
-      await this.$services.textClassification.create(this.projectId, this.doc.id, labelId)
+      const category = Category.create(labelId)
+      await this.$repositories.category.create(this.projectId, this.doc.id, category)
       await this.listCategory(this.doc.id)
     },
 
@@ -198,8 +200,10 @@ export default {
     },
 
     async clear() {
+      await this.$repositories.category.clear(this.projectId, this.doc.id)
       await this.$services.sequenceLabeling.clear(this.projectId, this.doc.id)
       await this.listSpan(this.doc.id)
+      await this.listCategory(this.doc.id)
     },
 
     async autoLabel(docId) {
@@ -211,7 +215,7 @@ export default {
     },
 
     async updateProgress() {
-      this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+      this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
     },
 
     async confirm() {

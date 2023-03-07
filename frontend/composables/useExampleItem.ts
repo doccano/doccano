@@ -1,5 +1,5 @@
-import _ from 'lodash'
 import { reactive, useContext } from '@nuxtjs/composition-api'
+import _ from 'lodash'
 import { ExampleDTO } from '@/services/application/example/exampleData'
 
 export const useExampleItem = () => {
@@ -33,7 +33,7 @@ export const useExampleItem = () => {
   }
 
   const updateProgress = async (projectId: string) => {
-    state.progress = await app.$services.metrics.fetchMyProgress(projectId)
+    state.progress = await app.$repositories.metrics.fetchMyProgress(projectId)
   }
 
   const confirm = async (projectId: string) => {

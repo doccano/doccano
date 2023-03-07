@@ -51,6 +51,7 @@ export default {
     '~/plugins/vue-shortkey.js',
     '~/plugins/vue-konva.js',
     '~/plugins/services.ts',
+    '~/plugins/repositories.ts',
     '~/plugins/color.ts',
     '~/plugins/role.ts'
   ],
@@ -108,6 +109,9 @@ export default {
   proxy: {
     // Use a fake value for use at build-time
     '/v1/': {
+      target: process.env.API_URL || 'http://127.0.0.1:8000'
+    },
+    '/media': {
       target: process.env.API_URL || 'http://127.0.0.1:8000'
     }
   },

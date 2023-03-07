@@ -1,7 +1,6 @@
 import ApiService from '@/services/api.service'
-import { ParseRepository } from '@/domain/models/upload/parseRepository'
 
-export class APIParseRepository implements ParseRepository {
+export class APIParseRepository {
   constructor(private readonly request = ApiService) {}
 
   async analyze(

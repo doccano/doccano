@@ -1,9 +1,9 @@
 import { reactive, useContext } from '@nuxtjs/composition-api'
-import { ProjectDTO } from '@/services/application/project/projectData'
+import { Project } from '~/domain/models/project/project'
 
 export const useProjectItem = () => {
   const state = reactive({
-    project: {} as ProjectDTO
+    project: {} as Project
   })
 
   const { app } = useContext()

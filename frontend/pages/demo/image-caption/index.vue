@@ -63,8 +63,8 @@
 </template>
 
 <script>
-import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import { mdiPencil, mdiDeleteOutline } from '@mdi/js'
+import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 
 export default {
   components: {

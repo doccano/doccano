@@ -146,7 +146,7 @@ class TestRelations(TestCase):
         self.project = prepare_project(SEQUENCE_LABELING, use_relation=True)
         self.user = self.project.admin
         example_uuid = uuid.uuid4()
-        example = mommy.make("Example", project=self.project.item, uuid=example_uuid)
+        example = mommy.make("Example", project=self.project.item, uuid=example_uuid, text="hello world")
         from_span = mommy.make("Span", example=example, start_offset=0, end_offset=1)
         to_span = mommy.make("Span", example=example, start_offset=2, end_offset=3)
         labels = [
@@ -154,7 +154,7 @@ class TestRelations(TestCase):
         ]
         self.relations = Relations(labels, self.types)
         self.spans = MagicMock()
-        self.spans.id_to_span = {from_span.id: from_span, to_span.id: to_span}
+        self.spans.id_to_span = {(from_span.id, str(example_uuid)): from_span, (to_span.id, str(example_uuid)): to_span}
         self.examples = MagicMock()
         self.examples.__getitem__.return_value = example
         self.examples.__contains__.return_value = True

@@ -14,5 +14,11 @@ export default {
   demoNER: '命名实体识别',
   demoSent: '情感分析',
   demoTranslation: '文本翻译',
-  demoTextToSQL: '语义解析Text-to-SQL'
+  demoTextToSQL: '语义解析Text-to-SQL',
+  demoIntenDetectSlotFil: '意图识别与槽位填充',
+  demoImageClas: '图像分类',
+  demoImageCapt: '图像描述',
+  demoObjDetect: '目标检测',
+  demoPolygSegm: '多边形图像分割',
+  demoSTT: '语音识别'
 }

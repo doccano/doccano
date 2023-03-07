@@ -6,11 +6,11 @@ export default _.debounce(async function ({ app, store, route, redirect }) {
   } catch (e) {
     redirect('/projects')
   }
-  const isProjectAdmin = await app.$services.member.isProjectAdmin(route.params.id)
+  const member = await app.$repositories.member.fetchMyRole(route.params.id)
   const projectRoot = app.localePath('/projects/' + route.params.id)
   const path = route.fullPath.replace(/\/$/g, '')
 
-  if (isProjectAdmin || path === projectRoot || path.startsWith(projectRoot + '/dataset')) {
+  if (member.isProjectAdmin || path === projectRoot || path.startsWith(projectRoot + '/dataset')) {
     return
   }
 

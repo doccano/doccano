@@ -25,7 +25,7 @@
         <v-select
           v-model="role"
           :items="roles"
-          item-text="rolename"
+          item-text="name"
           item-value="id"
           :label="$t('members.role')"
           :rules="[rules.roleRequired]"
@@ -33,10 +33,10 @@
           :prepend-icon="mdiCreditCardOutline"
         >
           <template #item="props">
-            {{ $translateRole(props.item.rolename, $t('members.roles')) }}
+            {{ $translateRole(props.item.name, $t('members.roles')) }}
           </template>
           <template #selection="props">
-            {{ $translateRole(props.item.rolename, $t('members.roles')) }}
+            {{ $translateRole(props.item.name, $t('members.roles')) }}
           </template>
         </v-select>
         <v-alert v-show="errorMessage" prominent type="error">
@@ -52,12 +52,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import { mdiAccount, mdiCreditCardOutline } from '@mdi/js'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
-import { UserDTO } from '~/services/application/user/userData'
-import { RoleDTO } from '~/services/application/role/roleData'
-import { MemberDTO } from '~/services/application/member/memberData'
+import { MemberItem } from '~/domain/models/member/member'
+import { RoleItem } from '~/domain/models/role/role'
+import { UserItem } from '~/domain/models/user/user'
 
 export default Vue.extend({
   components: {
@@ -66,7 +67,7 @@ export default Vue.extend({
 
   props: {
     value: {
-      type: Object as PropType<MemberDTO>,
+      type: Object as PropType<MemberItem>,
       required: true
     },
     errorMessage: {
@@ -79,12 +80,12 @@ export default Vue.extend({
     return {
       isLoading: false,
       valid: false,
-      users: [] as UserDTO[],
-      roles: [] as RoleDTO[],
+      users: [] as UserItem[],
+      roles: [] as RoleItem[],
       username: '',
       rules: {
-        userRequired: (v: UserDTO) => (!!v && !!v.username) || 'Required',
-        roleRequired: (v: RoleDTO) => (!!v && !!v.rolename) || 'Required'
+        userRequired: (v: UserItem) => (!!v && !!v.username) || 'Required',
+        roleRequired: (v: RoleItem) => (!!v && !!v.name) || 'Required'
       },
       mdiAccount,
       mdiCreditCardOutline
@@ -93,34 +94,35 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.users = await this.$services.user.list(this.username)
+    this.users = await this.$repositories.user.list(this.username)
     this.isLoading = false
   },
 
   computed: {
     user: {
-      get(): UserDTO {
+      get(): UserItem {
         return {
           id: this.value.user,
           username: this.value.username,
-          isStaff: false
+          isStaff: false,
+          isSuperuser: false
         }
       },
-      set(val: MemberDTO) {
+      set(val: MemberItem) {
         if (val === undefined) return
         const user = { user: val.id, username: val.username }
         this.$emit('input', { ...this.value, ...user })
       }
     },
     role: {
-      get(): RoleDTO {
+      get(): RoleItem {
         return {
           id: this.value.role,
-          rolename: this.value.rolename
+          name: this.value.rolename
         }
       },
-      set(val: MemberDTO) {
-        const role = { role: val.id, rolename: val.rolename }
+      set(val: RoleItem) {
+        const role = { role: val.id, rolename: val.name }
         this.$emit('input', { ...this.value, ...role })
       }
     }
@@ -139,7 +141,7 @@ export default Vue.extend({
   },
 
   async created() {
-    this.roles = await this.$services.role.list()
+    this.roles = await this.$repositories.role.list()
   }
 })
 </script>

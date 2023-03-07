@@ -34,8 +34,8 @@
         {{ item.isConfirmed ? 'Finished' : 'In progress' }}
       </v-chip>
     </template>
-    <template #[`item.fileUrl`]="{ item }">
-      <audio controls :src="item.fileUrl" class="mt-2">
+    <template #[`item.url`]="{ item }">
+      <audio controls :src="item.url" class="mt-2">
         Your browser does not support the
         <code>audio</code> element.
       </audio>
@@ -55,8 +55,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import { mdiMagnify } from '@mdi/js'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import { DataOptions } from 'vuetify/types'
 import { ExampleDTO } from '~/services/application/example/exampleData'
 
@@ -107,7 +108,7 @@ export default Vue.extend({
         },
         {
           text: 'Audio',
-          value: 'fileUrl',
+          value: 'url',
           sortable: false
         },
         {

@@ -36,7 +36,7 @@
     </template>
     <template #[`item.createdAt`]="{ item }">
       <span>{{
-        item.createdAt | dateParse('YYYY-MM-DDTHH:mm:ss') | dateFormat('DD/MM/YYYY HH:mm')
+        dateFormat(dateParse(item.createdAt, 'YYYY-MM-DDTHH:mm:ss'), 'YYYY/MM/DD HH:mm')
       }}</span>
     </template>
     <template #[`item.tags`]="{ item }">
@@ -46,14 +46,13 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import { mdiMagnify } from '@mdi/js'
+import { dateFormat } from '@vuejs-community/vue-filter-date-format'
+import { dateParse } from '@vuejs-community/vue-filter-date-parse'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import { DataOptions } from 'vuetify/types'
-import VueFilterDateFormat from '@vuejs-community/vue-filter-date-format'
-import VueFilterDateParse from '@vuejs-community/vue-filter-date-parse'
-import { ProjectDTO } from '~/services/application/project/projectData'
-Vue.use(VueFilterDateFormat)
-Vue.use(VueFilterDateParse)
+import { Project } from '~/domain/models/project/project'
 
 export default Vue.extend({
   props: {
@@ -63,12 +62,12 @@ export default Vue.extend({
       required: true
     },
     items: {
-      type: Array as PropType<ProjectDTO[]>,
+      type: Array as PropType<Project[]>,
       default: () => [],
       required: true
     },
     value: {
-      type: Array as PropType<ProjectDTO[]>,
+      type: Array as PropType<Project[]>,
       default: () => [],
       required: true
     },
@@ -83,7 +82,9 @@ export default Vue.extend({
     return {
       search: this.$route.query.q,
       options: {} as DataOptions,
-      mdiMagnify
+      mdiMagnify,
+      dateFormat,
+      dateParse
     }
   },
 

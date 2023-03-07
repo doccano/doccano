@@ -20,9 +20,10 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
-import { ProjectDTO } from '~/services/application/project/projectData'
+import { Project } from '~/domain/models/project/project'
 
 export default Vue.extend({
   components: {
@@ -31,7 +32,7 @@ export default Vue.extend({
 
   props: {
     selected: {
-      type: Array as PropType<ProjectDTO[]>,
+      type: Array as PropType<Project[]>,
       default: () => []
     }
   }

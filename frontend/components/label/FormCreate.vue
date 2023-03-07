@@ -92,8 +92,9 @@
 </template>
 
 <script lang="ts">
-import Vue, { PropType } from 'vue'
 import { mdiReload } from '@mdi/js'
+import type { PropType } from 'vue'
+import Vue from 'vue'
 import { LabelDTO } from '~/services/application/label/labelData'
 
 export default Vue.extend({

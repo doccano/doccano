@@ -1,64 +1,119 @@
-import { ProjectDTO, ProjectWriteDTO, ProjectListDTO, SearchQueryData } from './projectData'
-import { ProjectRepository, SearchQuery } from '~/domain/models/project/projectRepository'
-import { ProjectWriteItem } from '~/domain/models/project/project'
+import { Page } from '~/domain/models/page'
+import { Project } from '~/domain/models/project/project'
+import { TagItem } from '~/domain/models/tag/tag'
+import { APIProjectRepository, SearchQuery } from '~/repositories/project/apiProjectRepository'
+
+type ProjectFields = {
+  name: string
+  description: string
+  guideline: string
+  projectType: string
+  enableRandomOrder: boolean
+  enableSharingMode: boolean
+  exclusiveCategories: boolean
+  tags: string[]
+  allowOverlappingSpans: boolean
+  enableGraphemeMode: boolean
+  useRelation: boolean
+}
+
+export interface SearchQueryData {
+  limit: string
+  offset: string
+  q?: string
+  sortBy?: string
+  sortDesc?: string
+}
 
 export class ProjectApplicationService {
-  constructor(private readonly repository: ProjectRepository) {}
+  constructor(private readonly repository: APIProjectRepository) {}
 
-  public async list(q: SearchQueryData): Promise<ProjectListDTO> {
+  public async list(q: SearchQueryData): Promise<Page<Project>> {
     try {
       const query = new SearchQuery(q.limit, q.offset, q.q, q.sortBy, q.sortDesc)
-      const items = await this.repository.list(query)
-      return new ProjectListDTO(items)
+      return await this.repository.list(query)
     } catch (e: any) {
       throw new Error(e.response.data.detail)
     }
   }
 
-  public async findById(id: string): Promise<ProjectDTO> {
-    const item = await this.repository.findById(id)
-    return new ProjectDTO(item)
+  public async findById(id: string): Promise<Project> {
+    return await this.repository.findById(id)
   }
 
-  public async create(item: ProjectWriteDTO): Promise<ProjectDTO> {
+  public async create({
+    name,
+    description,
+    projectType,
+    enableRandomOrder,
+    enableSharingMode,
+    exclusiveCategories,
+    allowOverlappingSpans,
+    enableGraphemeMode,
+    useRelation,
+    tags,
+    guideline = ''
+  }: ProjectFields): Promise<Project> {
+    const project = Project.create(
+      0,
+      name,
+      description,
+      guideline,
+      projectType,
+      enableRandomOrder,
+      enableSharingMode,
+      exclusiveCategories,
+      allowOverlappingSpans,
+      enableGraphemeMode,
+      useRelation,
+      tags.map((tag) => TagItem.create(tag))
+    )
     try {
-      const project = this.toWriteModel(item)
-      const response = await this.repository.create(project)
-      return new ProjectDTO(response)
+      return await this.repository.create(project)
     } catch (e: any) {
       throw new Error(e.response.data.detail)
     }
   }
 
-  public async update(item: ProjectWriteDTO): Promise<void> {
+  public async update(
+    projectId: number,
+    {
+      name,
+      description,
+      projectType,
+      enableRandomOrder,
+      enableSharingMode,
+      exclusiveCategories,
+      allowOverlappingSpans,
+      enableGraphemeMode,
+      useRelation,
+      guideline = ''
+    }: Omit<ProjectFields, 'tags'>
+  ): Promise<void> {
+    const project = Project.create(
+      projectId,
+      name,
+      description,
+      guideline,
+      projectType,
+      enableRandomOrder,
+      enableSharingMode,
+      exclusiveCategories,
+      allowOverlappingSpans,
+      enableGraphemeMode,
+      useRelation,
+      []
+    )
+
     try {
-      const project = this.toWriteModel(item)
-      project.tags = []
       await this.repository.update(project)
     } catch (e: any) {
       throw new Error(e.response.data.detail)
     }
   }
 
-  public bulkDelete(items: ProjectDTO[]): Promise<void> {
-    const ids = items.map((item) => item.id)
+  public bulkDelete(projects: Project[]): Promise<void> {
+    const ids = projects.map((project) => project.id)
     return this.repository.bulkDelete(ids)
-  }
-
-  private toWriteModel(item: ProjectWriteDTO): ProjectWriteItem {
-    return new ProjectWriteItem(
-      item.id,
-      item.name,
-      item.description,
-      item.guideline,
-      item.projectType,
-      item.enableRandomOrder,
-      item.enableShareAnnotation,
-      item.singleClassClassification,
-      item.allowOverlapping,
-      item.graphemeMode,
-      item.useRelation,
-      item.tags
-    )
   }
 }

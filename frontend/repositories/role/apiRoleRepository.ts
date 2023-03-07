@@ -1,12 +1,11 @@
-import ApiService from '@/services/api.service'
-import { RoleRepository } from '@/domain/models/role/roleRepository'
 import { RoleItem } from '@/domain/models/role/role'
+import ApiService from '@/services/api.service'
 
 function toModel(item: { [key: string]: any }): RoleItem {
   return new RoleItem(item.id, item.name)
 }
 
-export class APIRoleRepository implements RoleRepository {
+export class APIRoleRepository {
   constructor(private readonly request = ApiService) {}
 
   async list(): Promise<RoleItem[]> {

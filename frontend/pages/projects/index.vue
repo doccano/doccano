@@ -31,12 +31,10 @@ import _ from 'lodash'
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import ProjectList from '@/components/project/ProjectList.vue'
-import {
-  ProjectDTO,
-  ProjectListDTO,
-  SearchQueryData
-} from '~/services/application/project/projectData'
 import FormDelete from '~/components/project/FormDelete.vue'
+import { Page } from '~/domain/models/page'
+import { Project } from '~/domain/models/project/project'
+import { SearchQueryData } from '~/services/application/project/projectApplicationService'
 
 export default Vue.extend({
   components: {
@@ -50,8 +48,8 @@ export default Vue.extend({
   data() {
     return {
       dialogDelete: false,
-      projects: {} as ProjectListDTO,
-      selected: [] as ProjectDTO[],
+      projects: {} as Page<Project>,
+      selected: [] as Project[],
       isLoading: false
     }
   },

@@ -1,6 +1,6 @@
-import { TextLabel } from '@/domain/models/tasks/textLabel'
 import { AnnotationApplicationService } from '../annotationApplicationService'
 import { Seq2seqDTO } from './seq2seqData'
+import { TextLabel } from '@/domain/models/tasks/textLabel'
 
 export class Seq2seqApplicationService extends AnnotationApplicationService<TextLabel> {
   public async list(projectId: string, exampleId: number): Promise<Seq2seqDTO[]> {

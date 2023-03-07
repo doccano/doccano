@@ -50,9 +50,9 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { ConfigItemResponse } from '@/repositories/autoLabeling/config/apiConfigRepository'
-import ConfirmForm from '@/components/utils/ConfirmForm.vue'
 import ConfigCreationForm from './ConfigCreationForm.vue'
+import ConfirmForm from '@/components/utils/ConfirmForm.vue'
+import { ConfigItemResponse } from '@/repositories/autoLabeling/config/apiConfigRepository'
 import { ConfigItemList } from '~/domain/models/autoLabeling/config'
 
 export default Vue.extend({
@@ -81,7 +81,7 @@ export default Vue.extend({
 
   async created(): Promise<void> {
     this.isLoading = true
-    this.items = await this.$services.config.list(this.$route.params.id)
+    this.items = await this.$repositories.config.list(this.$route.params.id)
     this.isLoading = false
   },
 
@@ -90,9 +90,9 @@ export default Vue.extend({
       this.isLoading = true
       const projectId = this.$route.params.id
       for (const item of this.selected) {
-        await this.$services.config.delete(projectId, item.id)
+        await this.$repositories.config.delete(projectId, item.id)
       }
-      this.items = await this.$services.config.list(projectId)
+      this.items = await this.$repositories.config.list(projectId)
       this.selected = []
       this.isLoading = false
     },
@@ -101,7 +101,7 @@ export default Vue.extend({
     },
     async onCreate() {
       this.isLoading = true
-      this.items = await this.$services.config.list(this.$route.params.id)
+      this.items = await this.$repositories.config.list(this.$route.params.id)
       this.isLoading = false
     }
   }

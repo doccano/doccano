@@ -25,8 +25,8 @@
             :entity-labels="spanTypes"
             :relations="relations"
             :relation-labels="relationTypes"
-            :allow-overlapping="project.allowOverlapping"
-            :grapheme-mode="project.graphemeMode"
+            :allow-overlapping="project.allowOverlappingSpans"
+            :grapheme-mode="project.enableGraphemeMode"
             :selected-label="selectedLabel"
             :relation-mode="relationMode"
             @addEntity="addSpan"
@@ -80,15 +80,15 @@
 </template>
 
 <script>
+import { mdiChevronDown, mdiChevronUp } from '@mdi/js'
 import _ from 'lodash'
 import { mapGetters } from 'vuex'
-import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
-import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
-import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
+import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 
 export default {
   components: {
@@ -199,7 +199,7 @@ export default {
     this.spanTypes = await this.$services.spanType.list(this.projectId)
     this.relationTypes = await this.$services.relationType.list(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
-    this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+    this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
@@ -287,7 +287,7 @@ export default {
     },
 
     async updateProgress() {
-      this.progress = await this.$services.metrics.fetchMyProgress(this.projectId)
+      this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
     },
 
     async confirm() {

@@ -1,6 +1,6 @@
 import abc
 from itertools import groupby
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from .examples import Examples
 from .label import Label
@@ -70,11 +70,11 @@ class Spans(Labels):
         self.labels = spans
 
     @property
-    def id_to_span(self) -> Dict[int, SpanModel]:
-        span_uuids = [str(label.uuid) for label in self.labels]
-        spans = SpanModel.objects.filter(uuid__in=span_uuids)
+    def id_to_span(self) -> Dict[Tuple[int, str], SpanModel]:
+        uuids = [str(span.uuid) for span in self.labels]
+        spans = SpanModel.objects.filter(uuid__in=uuids)
         uuid_to_span = {span.uuid: span for span in spans}
-        return {span.id: uuid_to_span[span.uuid] for span in self.labels}
+        return {(span.id, str(span.example_uuid)): uuid_to_span[span.uuid] for span in self.labels}
 
 
 class Texts(Labels):
