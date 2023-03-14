@@ -8,7 +8,7 @@
         :is-reviewd="image.isConfirmed"
         :total="images.count"
         class="d-none d-sm-block"
-        @click:clear-label="clear"
+        @click:clear-label="clear(image.id)"
         @click:review="confirm"
       >
         <v-btn-toggle v-model="labelOption" mandatory class="ms-2">
@@ -23,13 +23,20 @@
       <toolbar-mobile :total="images.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
+      <v-snackbar
+        :value="!!error"
+        color="error"
+        timeout="2000"
+      >
+        {{ error }}
+      </v-snackbar>
       <v-card>
         <v-img contain :src="image.url" :max-height="imageSize.height" class="grey lighten-2" />
         <seq2seq-box
-          :annotations="annotations"
-          @delete:annotation="remove"
-          @update:annotation="update"
-          @create:annotation="add"
+          :annotations="labels"
+          @delete:annotation="(labelId) => remove(image.id, labelId)"
+          @update:annotation="(labelId, text) => update(image.id, labelId, text)"
+          @create:annotation="(text) => add(image.id, text)"
         />
       </v-card>
     </template>
@@ -49,9 +56,8 @@ import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
-import { useLabelList } from '@/composables/useLabelList'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
-import { TextLabel } from '~/domain/models/tasks/textLabel'
+import { useTextLabel } from '~/composables/useTextLabel'
 
 export default {
   components: {
@@ -62,6 +68,7 @@ export default {
     ToolbarLaptop,
     ToolbarMobile
   },
+  
   layout: 'workspace',
 
   validate({ params, query }) {
@@ -69,19 +76,26 @@ export default {
   },
 
   setup() {
-    const { app } = useContext()
-    const { state, getLabelList, shortKeys } = useLabelList(app.$services.categoryType)
+    const { app, params } = useContext()
+    const { state, error, autoLabel, list, clear, remove, add, update } = useTextLabel(
+      app.$repositories.textLabel,
+      params.value.id
+    )
 
     return {
       ...toRefs(state),
-      getLabelList,
-      shortKeys
+      error,
+      add,
+      autoLabel,
+      list,
+      clear,
+      remove,
+      update
     }
   },
 
   data() {
     return {
-      annotations: [],
       images: [],
       project: {},
       enableAutoLabeling: false,
@@ -92,19 +106,7 @@ export default {
       },
       mdiText,
       mdiFormatListBulleted,
-      progress: {},
-      headers: [
-        {
-          text: 'Text',
-          align: 'left',
-          value: 'text'
-        },
-        {
-          text: 'Actions',
-          align: 'right',
-          value: 'action'
-        }
-      ]
+      progress: {}
     }
   },
 
@@ -120,8 +122,9 @@ export default {
     this.setImageSize(image)
     if (this.enableAutoLabeling) {
       await this.autoLabel(image.id)
+    } else {
+      await this.list(image.id)
     }
-    await this.list(image.id)
   },
 
   computed: {
@@ -142,53 +145,16 @@ export default {
     async enableAutoLabeling(val) {
       if (val && !this.image.isConfirmed) {
         await this.autoLabel(this.image.id)
-        await this.list(this.image.id)
       }
     }
   },
 
   async created() {
-    this.getLabelList(this.projectId)
     this.project = await this.$services.project.findById(this.projectId)
     this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
   },
 
   methods: {
-    async list(imageId) {
-      this.annotations = await this.$repositories.textLabel.list(this.projectId, imageId)
-    },
-
-    async remove(id) {
-      await this.$repositories.textLabel.delete(this.projectId, this.image.id, id)
-      await this.list(this.image.id)
-    },
-
-    async add(text) {
-      const label = TextLabel.create(text)
-      await this.$repositories.textLabel.create(this.projectId, this.image.id, label)
-      await this.list(this.image.id)
-    },
-
-    async update(annotationId, text) {
-      const label = this.annotations.find((a) => a.id === annotationId)
-      label.updateText(text)
-      await this.$repositories.textLabel.update(this.projectId, this.image.id, annotationId, label)
-      await this.list(this.image.id)
-    },
-
-    async clear() {
-      await this.$repositories.textLabel.clear(this.projectId, this.image.id)
-      await this.list(this.image.id)
-    },
-
-    async autoLabel(imageId) {
-      try {
-        await this.$repositories.textLabel.autoLabel(this.projectId, imageId)
-      } catch (e) {
-        console.log(e.response.data.detail)
-      }
-    },
-
     async updateProgress() {
       this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
     },
