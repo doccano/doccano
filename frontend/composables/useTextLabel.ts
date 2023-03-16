@@ -1,16 +1,16 @@
-import { reactive, ref } from '@nuxtjs/composition-api'
+import { reactive } from '@nuxtjs/composition-api'
 import { TextLabel } from '~/domain/models/tasks/textLabel'
 
 export const useTextLabel = (repository: any, projectId: string) => {
   const state = reactive({
     labels: [] as TextLabel[],
+    error: ''
   })
-  const error = ref("")
 
   const validateText = (text: string) => {
     if (state.labels.some((label) => label.text === text)) {
-        error.value = "The label already exists."
-        return false
+      state.error = 'The label already exists.'
+      return false
     }
     return true
   }
@@ -18,13 +18,13 @@ export const useTextLabel = (repository: any, projectId: string) => {
   const add = async (exampleId: number, text: string) => {
     const textLabel = TextLabel.create(text)
     if (!validateText(textLabel.text)) {
-        return
+      return
     }
     try {
-        await repository.create(projectId, exampleId, textLabel)
-        await list(exampleId)
+      await repository.create(projectId, exampleId, textLabel)
+      await list(exampleId)
     } catch (e: any) {
-        error.value = e.response.data.detail
+      state.error = e.response.data.detail
     }
   }
 
@@ -34,15 +34,15 @@ export const useTextLabel = (repository: any, projectId: string) => {
 
   const update = async (exampleId: number, labelId: number, text: string) => {
     if (!validateText(text)) {
-        return
+      return
     }
     const label = state.labels.find((label) => label.id === labelId)!
     label.updateText(text)
     try {
-        await repository.update(projectId, exampleId, labelId, label)
-        await list(exampleId)
+      await repository.update(projectId, exampleId, labelId, label)
+      await list(exampleId)
     } catch (e: any) {
-        error.value = e.response.data.detail
+      state.error = e.response.data.detail
     }
   }
 
@@ -58,16 +58,15 @@ export const useTextLabel = (repository: any, projectId: string) => {
 
   const autoLabel = async (exampleId: number) => {
     try {
-        await repository.autoLabel(projectId, exampleId)
-        await list(exampleId)
+      await repository.autoLabel(projectId, exampleId)
+      await list(exampleId)
     } catch (e: any) {
-        error.value = e.response.data.detail
+      state.error = e.response.data.detail
     }
   }
 
   return {
     state,
-    error,
     add,
     list,
     update,
