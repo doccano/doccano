@@ -43,6 +43,7 @@ import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
 import { useExampleItem } from '~/composables/useExampleItem'
+import { useProjectItem } from '~/composables/useProjectItem'
 import { useTextLabel } from '~/composables/useTextLabel'
 
 export default {
@@ -64,6 +65,7 @@ export default {
   setup() {
     const { app, params, query } = useContext()
     const projectId = params.value.id
+    const { state: projectState, getProjectById } = useProjectItem()
     const { state, autoLabel, list, clear, remove, add, update } = useTextLabel(
       app.$repositories.textLabel,
       projectId
@@ -75,6 +77,7 @@ export default {
       width: 0
     })
 
+    getProjectById(projectId)
     updateProgress(projectId)
 
     const setImageSize = (val) => {
@@ -109,6 +112,7 @@ export default {
     return {
       ...toRefs(state),
       ...toRefs(exampleState),
+      ...toRefs(projectState),
       add,
       autoLabel,
       list,
@@ -118,25 +122,9 @@ export default {
       confirm,
       getExample,
       enableAutoLabeling,
-      imageSize
+      imageSize,
+      projectId
     }
-  },
-
-  data() {
-    return {
-      project: {},
-    }
-  },
-
-  computed: {
-    projectId() {
-      return this.$route.params.id
-    },
-  },
-
-  async created() {
-    this.project = await this.$services.project.findById(this.projectId)
-    this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
-  },
+  }
 }
 </script>
