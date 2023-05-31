@@ -66,10 +66,15 @@ export default {
     const { app, params, query } = useContext()
     const projectId = params.value.id
     const { state: projectState, getProjectById } = useProjectItem()
-    const { state, autoLabel, list, clear, remove, add, update } = useTextLabel(
-      app.$repositories.textLabel,
-      projectId
-    )
+    const {
+      state: labelState,
+      autoLabel,
+      list,
+      clear,
+      remove,
+      add,
+      update
+    } = useTextLabel(app.$repositories.textLabel, projectId)
     const { state: exampleState, confirm, getExample, updateProgress } = useExampleItem()
     const enableAutoLabeling = ref(false)
     const imageSize = reactive({
@@ -110,17 +115,15 @@ export default {
     })
 
     return {
-      ...toRefs(state),
+      ...toRefs(labelState),
       ...toRefs(exampleState),
       ...toRefs(projectState),
       add,
-      autoLabel,
       list,
       clear,
       remove,
       update,
       confirm,
-      getExample,
       enableAutoLabeling,
       imageSize,
       projectId
