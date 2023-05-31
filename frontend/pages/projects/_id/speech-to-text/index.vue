@@ -1,40 +1,40 @@
 <template>
-  <layout-text v-if="item.id">
+  <layout-text v-if="example.id">
     <template #header>
       <toolbar-laptop
-        :doc-id="item.id"
+        :doc-id="example.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
-        :is-reviewd="item.isConfirmed"
-        :total="items.count"
+        :is-reviewd="example.isConfirmed"
+        :total="totalExample"
         class="d-none d-sm-block"
-        @click:clear-label="clear"
-        @click:review="confirm"
+        @click:clear-label="clear(example.id)"
+        @click:review="confirm(projectId)"
       />
-      <toolbar-mobile :total="items.count" class="d-flex d-sm-none" />
+      <toolbar-mobile :total="totalExample" class="d-flex d-sm-none" />
     </template>
     <template #content>
       <v-overlay :value="isLoading">
         <v-progress-circular indeterminate size="64" />
       </v-overlay>
-      <audio-viewer :source="item.url" class="mb-5" />
+      <audio-viewer :source="example.url" class="mb-5" />
       <seq2seq-box
-        :text="item.text"
-        :annotations="annotations"
-        @delete:annotation="remove"
-        @update:annotation="update"
-        @create:annotation="add"
+        :text="example.text"
+        :annotations="labels"
+        @delete:annotation="(labelId) => remove(example.id, labelId)"
+        @update:annotation="(labelId, text) => update(example.id, labelId, text)"
+        @create:annotation="(text) => add(example.id, text)"
       />
     </template>
     <template #sidebar>
       <annotation-progress :progress="progress" />
-      <list-metadata :metadata="item.meta" class="mt-4" />
+      <list-metadata :metadata="example.meta" class="mt-4" />
     </template>
   </layout-text>
 </template>
 
 <script>
-import _ from 'lodash'
+import { ref, toRefs, useContext, useFetch, watch } from '@nuxtjs/composition-api'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
@@ -42,6 +42,9 @@ import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import AudioViewer from '~/components/tasks/audio/AudioViewer'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
+import { useExampleItem } from '~/composables/useExampleItem'
+import { useProjectItem } from '~/composables/useProjectItem'
+import { useTextLabel } from '~/composables/useTextLabel'
 
 export default {
   components: {
@@ -59,110 +62,61 @@ export default {
     return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   },
 
-  data() {
-    return {
-      annotations: [],
-      items: [],
-      project: {},
-      enableAutoLabeling: false,
-      isLoading: false,
-      progress: {}
-    }
-  },
+  setup() {
+    const { app, params, query } = useContext()
+    const projectId = params.value.id
+    const { state: projectState, getProjectById } = useProjectItem()
+    const {
+      state: labelState,
+      autoLabel,
+      list,
+      clear,
+      remove,
+      add,
+      update
+    } = useTextLabel(app.$repositories.textLabel, projectId)
+    const { state: exampleState, confirm, getExample, updateProgress } = useExampleItem()
+    const enableAutoLabeling = ref(false)
+    const isLoading = ref(false)
 
-  async fetch() {
-    this.isLoading = true
-    this.items = await this.$services.example.fetchOne(
-      this.projectId,
-      this.$route.query.page,
-      this.$route.query.q,
-      this.$route.query.isChecked,
-      this.$route.query.ordering
-    )
-    const item = this.items.items[0]
-    if (this.enableAutoLabeling) {
-      await this.autoLabel(item.id)
-    }
-    await this.list(item.id)
-    this.isLoading = false
-  },
+    getProjectById(projectId)
+    updateProgress(projectId)
 
-  computed: {
-    projectId() {
-      return this.$route.params.id
-    },
-    item() {
-      if (_.isEmpty(this.items) || this.items.items.length === 0) {
-        return {}
+    const { fetch } = useFetch(async () => {
+      isLoading.value = true
+      await getExample(projectId, query.value)
+      if (enableAutoLabeling.value) {
+        try {
+          await autoLabel(projectId, exampleState.example.id)
+        } catch (e) {
+          enableAutoLabeling.value = false
+        }
       } else {
-        return this.items.items[0]
+        await list(exampleState.example.id)
       }
-    }
-  },
-
-  watch: {
-    '$route.query': '$fetch',
-    async enableAutoLabeling(val) {
-      if (val && !this.item.isConfirmed) {
-        await this.autoLabel(this.item.id)
-        await this.list(this.item.id)
+      isLoading.value = false
+    })
+    watch(query, fetch)
+    watch(enableAutoLabeling, async (val) => {
+      if (val && !exampleState.example.isConfirmed) {
+        await autoLabel(exampleState.example.id)
       }
-    }
-  },
+    })
 
-  async created() {
-    this.project = await this.$services.project.findById(this.projectId)
-    this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
-  },
-
-  methods: {
-    async list(itemId) {
-      this.annotations = await this.$services.seq2seq.list(this.projectId, itemId)
-    },
-
-    async remove(id) {
-      await this.$services.seq2seq.delete(this.projectId, this.item.id, id)
-      await this.list(this.item.id)
-    },
-
-    async add(text) {
-      await this.$services.seq2seq.create(this.projectId, this.item.id, text)
-      await this.list(this.item.id)
-    },
-
-    async update(annotationId, text) {
-      await this.$services.seq2seq.changeText(this.projectId, this.item.id, annotationId, text)
-      await this.list(this.item.id)
-    },
-
-    async clear() {
-      await this.$services.seq2seq.clear(this.projectId, this.item.id)
-      await this.list(this.item.id)
-    },
-
-    async autoLabel(itemId) {
-      try {
-        await this.$services.seq2seq.autoLabel(this.projectId, itemId)
-      } catch (e) {
-        console.log(e.response.data.detail)
-      }
-    },
-
-    async updateProgress() {
-      this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
-    },
-
-    async confirm() {
-      await this.$services.example.confirm(this.projectId, this.item.id)
-      await this.$fetch()
-      this.updateProgress()
+    return {
+      ...toRefs(labelState),
+      ...toRefs(exampleState),
+      ...toRefs(projectState),
+      add,
+      list,
+      clear,
+      remove,
+      update,
+      confirm,
+      enableAutoLabeling,
+      projectId,
+      isLoading
     }
   }
 }
 </script>
-
-<style scoped>
-.text-pre-wrap {
-  white-space: pre-wrap !important;
-}
-</style>

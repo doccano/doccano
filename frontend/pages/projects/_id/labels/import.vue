@@ -54,7 +54,7 @@ export default Vue.extend({
       try {
         await this.service.upload(this.projectId, file)
         this.$router.push(`/projects/${this.projectId}/labels`)
-      } catch (e) {
+      } catch (e: any) {
         this.errorMessage = e.message
       }
     },

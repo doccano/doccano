@@ -1,45 +1,48 @@
 <template>
-  <layout-text v-if="doc.id">
+  <layout-text v-if="example.id">
     <template #header>
       <toolbar-laptop
-        :doc-id="doc.id"
+        :doc-id="example.id"
         :enable-auto-labeling.sync="enableAutoLabeling"
         :guideline-text="project.guideline"
-        :is-reviewd="doc.isConfirmed"
-        :total="docs.count"
+        :is-reviewd="example.isConfirmed"
+        :total="totalExample"
         class="d-none d-sm-block"
-        @click:clear-label="clear"
-        @click:review="confirm"
+        @click:clear-label="clear(example.id)"
+        @click:review="confirm(projectId)"
       />
-      <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
+      <toolbar-mobile :total="totalExample" class="d-flex d-sm-none" />
     </template>
     <template #content>
       <v-card class="mb-5">
-        <v-card-text class="title text-pre-wrap" v-text="doc.text" />
+        <v-card-text class="title text-pre-wrap">{{ example.text }}</v-card-text>
       </v-card>
       <seq2seq-box
-        :text="doc.text"
-        :annotations="annotations"
-        @delete:annotation="remove"
-        @update:annotation="update"
-        @create:annotation="add"
+        :text="example.text"
+        :annotations="labels"
+        @delete:annotation="(labelId) => remove(example.id, labelId)"
+        @update:annotation="(labelId, text) => update(example.id, labelId, text)"
+        @create:annotation="(text) => add(example.id, text)"
       />
     </template>
     <template #sidebar>
       <annotation-progress :progress="progress" />
-      <list-metadata :metadata="doc.meta" class="mt-4" />
+      <list-metadata :metadata="example.meta" class="mt-4" />
     </template>
   </layout-text>
 </template>
 
 <script>
-import _ from 'lodash'
+import { ref, toRefs, useContext, useFetch, watch } from '@nuxtjs/composition-api'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import Seq2seqBox from '~/components/tasks/seq2seq/Seq2seqBox'
+import { useExampleItem } from '~/composables/useExampleItem'
+import { useProjectItem } from '~/composables/useProjectItem'
+import { useTextLabel } from '~/composables/useTextLabel'
 
 export default {
   components: {
@@ -56,100 +59,56 @@ export default {
     return /^\d+$/.test(params.id) && /^\d+$/.test(query.page)
   },
 
-  data() {
-    return {
-      annotations: [],
-      docs: [],
-      project: {},
-      enableAutoLabeling: false,
-      progress: {}
-    }
-  },
+  setup() {
+    const { app, params, query } = useContext()
+    const projectId = params.value.id
+    const { state: projectState, getProjectById } = useProjectItem()
+    const {
+      state: labelState,
+      autoLabel,
+      list,
+      clear,
+      remove,
+      add,
+      update
+    } = useTextLabel(app.$repositories.textLabel, projectId)
+    const { state: exampleState, confirm, getExample, updateProgress } = useExampleItem()
+    const enableAutoLabeling = ref(false)
 
-  async fetch() {
-    this.docs = await this.$services.example.fetchOne(
-      this.projectId,
-      this.$route.query.page,
-      this.$route.query.q,
-      this.$route.query.isChecked,
-      this.$route.query.ordering
-    )
-    const doc = this.docs.items[0]
-    if (this.enableAutoLabeling) {
-      await this.autoLabel(doc.id)
-    }
-    await this.list(doc.id)
-  },
+    getProjectById(projectId)
+    updateProgress(projectId)
 
-  computed: {
-    projectId() {
-      return this.$route.params.id
-    },
-    doc() {
-      if (_.isEmpty(this.docs) || this.docs.items.length === 0) {
-        return {}
+    const { fetch } = useFetch(async () => {
+      await getExample(projectId, query.value)
+      if (enableAutoLabeling.value) {
+        try {
+          await autoLabel(projectId, exampleState.example.id)
+        } catch (e) {
+          enableAutoLabeling.value = false
+        }
       } else {
-        return this.docs.items[0]
+        await list(exampleState.example.id)
       }
-    }
-  },
-
-  watch: {
-    '$route.query': '$fetch',
-    async enableAutoLabeling(val) {
-      if (val && !this.doc.isConfirmed) {
-        await this.autoLabel(this.doc.id)
-        await this.list(this.doc.id)
+    })
+    watch(query, fetch)
+    watch(enableAutoLabeling, async (val) => {
+      if (val && !exampleState.example.isConfirmed) {
+        await autoLabel(exampleState.example.id)
       }
-    }
-  },
+    })
 
-  async created() {
-    this.project = await this.$services.project.findById(this.projectId)
-    this.progress = await this.$$repositories.metrics.fetchMyProgress(this.projectId)
-  },
-
-  methods: {
-    async list(docId) {
-      this.annotations = await this.$services.seq2seq.list(this.projectId, docId)
-    },
-
-    async remove(id) {
-      await this.$services.seq2seq.delete(this.projectId, this.doc.id, id)
-      await this.list(this.doc.id)
-    },
-
-    async add(text) {
-      await this.$services.seq2seq.create(this.projectId, this.doc.id, text)
-      await this.list(this.doc.id)
-    },
-
-    async update(annotationId, text) {
-      await this.$services.seq2seq.changeText(this.projectId, this.doc.id, annotationId, text)
-      await this.list(this.doc.id)
-    },
-
-    async clear() {
-      await this.$services.seq2seq.clear(this.projectId, this.doc.id)
-      await this.list(this.doc.id)
-    },
-
-    async autoLabel(docId) {
-      try {
-        await this.$services.seq2seq.autoLabel(this.projectId, docId)
-      } catch (e) {
-        console.log(e.response.data.detail)
-      }
-    },
-
-    async updateProgress() {
-      this.progress = await this.$repositories.metrics.fetchMyProgress(this.projectId)
-    },
-
-    async confirm() {
-      await this.$services.example.confirm(this.projectId, this.doc.id)
-      await this.$fetch()
-      this.updateProgress()
+    return {
+      ...toRefs(labelState),
+      ...toRefs(exampleState),
+      ...toRefs(projectState),
+      add,
+      list,
+      clear,
+      remove,
+      update,
+      confirm,
+      enableAutoLabeling,
+      projectId
     }
   }
 }
