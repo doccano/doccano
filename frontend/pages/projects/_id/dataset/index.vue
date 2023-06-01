@@ -60,6 +60,7 @@
       :total="item.count"
       @update:query="updateQuery"
       @click:labeling="movePage"
+      @edit="editItem"
     />
   </v-card>
 </template>
@@ -116,16 +117,20 @@ export default Vue.extend({
     canDelete(): boolean {
       return this.selected.length > 0
     },
+
     projectId(): string {
       return this.$route.params.id
     },
+
     isImageTask(): boolean {
       const imageTasks = ['ImageClassification', 'ImageCaptioning', 'BoundingBox', 'Segmentation']
       return imageTasks.includes(this.project.projectType)
     },
+
     isAudioTask(): boolean {
       return this.project.projectType === 'Speech2text'
     },
+
     itemKey(): string {
       if (this.isImageTask || this.isAudioTask) {
         return 'filename'
@@ -155,21 +160,28 @@ export default Vue.extend({
       this.dialogDelete = false
       this.selected = []
     },
+
     async removeAll() {
       await this.$services.example.bulkDelete(this.projectId, [])
       this.$fetch()
       this.dialogDeleteAll = false
       this.selected = []
     },
+
     updateQuery(query: object) {
       this.$router.push(query)
     },
+
     movePage(query: object) {
       const link = getLinkToAnnotationPage(this.projectId, this.project.projectType)
       this.updateQuery({
         path: this.localePath(link),
         query
       })
+    },
+
+    editItem(item: ExampleDTO) {
+      this.$router.push(`dataset/${item.id}/edit`)
     }
   }
 })
