@@ -138,4 +138,14 @@ export class Project {
     }
     return `${this.projectType}Project`
   }
+
+  get isImageProject(): boolean {
+    return [ImageClassification, ImageCaptioning, BoundingBox, Segmentation].includes(
+      this.projectType
+    )
+  }
+
+  get isAudioProject(): boolean {
+    return [Speech2text].includes(this.projectType)
+  }
 }

@@ -35,7 +35,7 @@
       </v-dialog>
     </v-card-title>
     <image-list
-      v-if="isImageTask"
+      v-if="project.isImageProject"
       v-model="selected"
       :items="item.items"
       :is-loading="isLoading"
@@ -44,7 +44,7 @@
       @click:labeling="movePage"
     />
     <audio-list
-      v-else-if="isAudioTask"
+      v-else-if="project.isAudioProject"
       v-model="selected"
       :items="item.items"
       :is-loading="isLoading"
@@ -122,17 +122,8 @@ export default Vue.extend({
       return this.$route.params.id
     },
 
-    isImageTask(): boolean {
-      const imageTasks = ['ImageClassification', 'ImageCaptioning', 'BoundingBox', 'Segmentation']
-      return imageTasks.includes(this.project.projectType)
-    },
-
-    isAudioTask(): boolean {
-      return this.project.projectType === 'Speech2text'
-    },
-
     itemKey(): string {
-      if (this.isImageTask || this.isAudioTask) {
+      if (this.project.isImageProject || this.project.isAudioProject) {
         return 'filename'
       } else {
         return 'text'
