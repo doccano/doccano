@@ -88,10 +88,10 @@ export default Vue.extend({
       search: '',
       options: {} as DataOptions,
       headers: [
-        { text: this.$t('dataset.text'), value: 'text' },
-        { text: this.$t('user.username'), value: 'username' },
-        { text: this.$t('comments.created_at'), value: 'createdAt' },
-        { text: this.$t('dataset.action'), value: 'action' },
+        { text: this.$t('dataset.text'), value: 'text', sortable: false },
+        { text: this.$t('user.username'), value: 'username', sortable: false },
+        { text: this.$t('comments.created_at'), value: 'createdAt', sortable: false },
+        { text: this.$t('dataset.action'), value: 'action', sortable: false },
         { text: this.$t('comments.document'), value: 'example' }
       ],
       mdiMagnify
@@ -101,7 +101,7 @@ export default Vue.extend({
   watch: {
     options: {
       handler() {
-        this.$emit('update:query', {
+        this.updateQuery({
           query: {
             limit: this.options.itemsPerPage.toString(),
             offset: ((this.options.page - 1) * this.options.itemsPerPage).toString(),
@@ -112,7 +112,7 @@ export default Vue.extend({
       deep: true
     },
     search() {
-      this.$emit('update:query', {
+      this.updateQuery({
         query: {
           limit: this.options.itemsPerPage.toString(),
           offset: '0',
@@ -120,6 +120,20 @@ export default Vue.extend({
         }
       })
       this.options.page = 1
+    }
+  },
+
+  methods: {
+    updateQuery(payload: any) {
+      const { sortBy, sortDesc } = this.options
+      if (sortBy.length === 1 && sortDesc.length === 1) {
+        payload.query.sortBy = sortBy[0]
+        payload.query.sortDesc = sortDesc[0]
+      } else {
+        payload.query.sortBy = 'createdAt'
+        payload.query.sortDesc = true
+      }
+      this.$emit('update:query', payload)
     }
   }
 
