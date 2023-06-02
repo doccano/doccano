@@ -12,9 +12,10 @@ from projects.permissions import IsProjectMember
 class CommentList(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated & IsProjectMember]
     serializer_class = CommentSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_fields = ["example"]
     search_fields = ("text",)
+    ordering_fields = ("created_at", "example")
 
     def get_queryset(self):
         queryset = Comment.objects.filter(example__project_id=self.kwargs["project_id"])
