@@ -1,4 +1,5 @@
 import abc
+import uuid
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -59,6 +60,54 @@ class Project(PolymorphicModel):
     @abc.abstractmethod
     def is_text_project(self) -> bool:
         return False
+
+    def clone(self) -> "Project":
+        """Clone the project.
+        See https://docs.djangoproject.com/en/4.2/topics/db/queries/#copying-model-instances
+
+        Returns:
+            The cloned project.
+        """
+        project = Project.objects.get(pk=self.pk)
+        project.pk = None
+        project.id = None
+        project._state.adding = True
+        project.save()
+
+        def bulk_clone(queryset: models.QuerySet, field_initializers: dict = None):
+            """Clone the queryset.
+
+            Args:
+                queryset: The queryset to clone.
+                field_initializers: The field initializers.
+            """
+            if field_initializers is None:
+                field_initializers = {}
+            items = []
+            for item in queryset:
+                item.id = None
+                item.pk = None
+                for field, value_or_callable in field_initializers.items():
+                    if callable(value_or_callable):
+                        value_or_callable = value_or_callable()
+                    setattr(item, field, value_or_callable)
+                item.project = project
+                item._state.adding = True
+                items.append(item)
+            queryset.model.objects.bulk_create(items)
+
+        bulk_clone(self.role_mappings.all())
+        bulk_clone(self.tags.all())
+
+        # clone examples
+        bulk_clone(self.examples.all(), field_initializers={"uuid": uuid.uuid4})
+
+        # clone label types
+        bulk_clone(self.categorytype_set.all())
+        bulk_clone(self.spantype_set.all())
+        bulk_clone(self.relationtype_set.all())
+
+        return project
 
     def __str__(self):
         return self.name
