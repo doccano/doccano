@@ -109,4 +109,10 @@ export class APIProjectRepository {
     const url = `/projects`
     await this.request.delete(url, { ids: projectIds })
   }
+
+  async clone(project: Project): Promise<Project> {
+    const url = `/projects/${project.id}/clone`
+    const response = await this.request.post(url)
+    return toModel(response.data)
+  }
 }
