@@ -116,4 +116,12 @@ export class ProjectApplicationService {
     const ids = projects.map((project) => project.id)
     return this.repository.bulkDelete(ids)
   }
+
+  public async clone(project: Project): Promise<Project> {
+    try {
+      return await this.repository.clone(project)
+    } catch (e: any) {
+      throw new Error(e.response.data.detail)
+    }
+  }
 }
