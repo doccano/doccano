@@ -4,13 +4,13 @@ from django.test import TestCase
 
 from data_import.pipeline.examples import Examples
 from examples.models import Example
-from projects.models import DOCUMENT_CLASSIFICATION
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
 class TestExamples(TestCase):
     def setUp(self):
-        self.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         self.example_uuid = uuid.uuid4()
         example = Example(uuid=self.example_uuid, text="A", project=self.project.item)
         self.examples = Examples([example])

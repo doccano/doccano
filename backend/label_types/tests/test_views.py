@@ -7,7 +7,7 @@ from rest_framework.test import APITestCase
 
 from .utils import make_label
 from api.tests.utils import CRUDMixin
-from projects.models import DOCUMENT_CLASSIFICATION
+from projects.models import ProjectType
 from projects.tests.utils import make_project, prepare_project
 from users.tests.utils import make_user
 
@@ -18,7 +18,7 @@ class TestLabelList(CRUDMixin):
     @classmethod
     def setUpTestData(cls):
         cls.non_member = make_user()
-        cls.project_a = prepare_project(DOCUMENT_CLASSIFICATION)
+        cls.project_a = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         cls.label = make_label(cls.project_a.item)
         cls.url = reverse(viewname="category_types", args=[cls.project_a.item.id])
 
@@ -41,7 +41,7 @@ class TestLabelList(CRUDMixin):
 
 class TestLabelSearch(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         make_label(self.project.item)
         self.url = reverse(viewname="category_types", args=[self.project.item.id])
 
@@ -54,7 +54,7 @@ class TestLabelSearch(CRUDMixin):
 class TestLabelCreate(CRUDMixin):
     @classmethod
     def setUpTestData(cls):
-        cls.non_member = make_user(DOCUMENT_CLASSIFICATION)
+        cls.non_member = make_user(ProjectType.DOCUMENT_CLASSIFICATION)
         cls.project = prepare_project()
         cls.url = reverse(viewname="category_types", args=[cls.project.item.id])
         cls.data = {"text": "example"}
@@ -77,7 +77,7 @@ class TestLabelDetailAPI(CRUDMixin):
     @classmethod
     def setUpTestData(cls):
         cls.non_member = make_user()
-        cls.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        cls.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         cls.label = make_label(cls.project.item)
         cls.url = reverse(viewname="category_type", args=[cls.project.item.id, cls.label.id])
         cls.data = {"text": "example"}
@@ -125,7 +125,7 @@ class TestLabelUploadAPI(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.non_member = make_user()
-        cls.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        cls.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         cls.url = reverse(viewname="category_type_upload", args=[cls.project.item.id])
 
     def assert_upload_file(self, filename, user=None, expected_status=status.HTTP_403_FORBIDDEN):

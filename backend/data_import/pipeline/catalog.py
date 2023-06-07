@@ -7,17 +7,7 @@ from pydantic import BaseModel
 from typing_extensions import Literal
 
 from .exceptions import FileFormatException
-from projects.models import (
-    BOUNDING_BOX,
-    DOCUMENT_CLASSIFICATION,
-    IMAGE_CAPTIONING,
-    IMAGE_CLASSIFICATION,
-    INTENT_DETECTION_AND_SLOT_FILLING,
-    SEGMENTATION,
-    SEQ2SEQ,
-    SEQUENCE_LABELING,
-    SPEECH2TEXT,
-)
+from projects.models import ProjectType
 
 # Define the example directories
 EXAMPLE_DIR = Path(__file__).parent.resolve() / "examples"
@@ -287,7 +277,12 @@ class Options:
 
 
 # Text tasks
-text_tasks = [DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, INTENT_DETECTION_AND_SLOT_FILLING]
+text_tasks = [
+    ProjectType.DOCUMENT_CLASSIFICATION,
+    ProjectType.SEQUENCE_LABELING,
+    ProjectType.SEQ2SEQ,
+    ProjectType.INTENT_DETECTION_AND_SLOT_FILLING,
+]
 for task_id in text_tasks:
     Options.register(
         Option(
@@ -312,7 +307,7 @@ for task_id in text_tasks:
 Options.register(
     Option(
         display_name=CSV.name,
-        task_id=DOCUMENT_CLASSIFICATION,
+        task_id=ProjectType.DOCUMENT_CLASSIFICATION,
         file_format=CSV,
         arg=ArgDelimiter,
         file=TEXT_CLASSIFICATION_DIR / "example.csv",
@@ -321,7 +316,7 @@ Options.register(
 Options.register(
     Option(
         display_name=FastText.name,
-        task_id=DOCUMENT_CLASSIFICATION,
+        task_id=ProjectType.DOCUMENT_CLASSIFICATION,
         file_format=FastText,
         arg=ArgEncoding,
         file=TEXT_CLASSIFICATION_DIR / "example.txt",
@@ -330,7 +325,7 @@ Options.register(
 Options.register(
     Option(
         display_name=JSON.name,
-        task_id=DOCUMENT_CLASSIFICATION,
+        task_id=ProjectType.DOCUMENT_CLASSIFICATION,
         file_format=JSON,
         arg=ArgColumn,
         file=TEXT_CLASSIFICATION_DIR / "example.json",
@@ -339,7 +334,7 @@ Options.register(
 Options.register(
     Option(
         display_name=JSONL.name,
-        task_id=DOCUMENT_CLASSIFICATION,
+        task_id=ProjectType.DOCUMENT_CLASSIFICATION,
         file_format=JSONL,
         arg=ArgColumn,
         file=TEXT_CLASSIFICATION_DIR / "example.jsonl",
@@ -348,7 +343,7 @@ Options.register(
 Options.register(
     Option(
         display_name=Excel.name,
-        task_id=DOCUMENT_CLASSIFICATION,
+        task_id=ProjectType.DOCUMENT_CLASSIFICATION,
         file_format=Excel,
         arg=ArgColumn,
         file=TEXT_CLASSIFICATION_DIR / "example.csv",
@@ -359,7 +354,7 @@ Options.register(
 Options.register(
     Option(
         display_name=JSONL.name,
-        task_id=SEQUENCE_LABELING,
+        task_id=ProjectType.SEQUENCE_LABELING,
         file_format=JSONL,
         arg=ArgColumn,
         file=SEQUENCE_LABELING_DIR / "example.jsonl",
@@ -368,7 +363,7 @@ Options.register(
 Options.register(
     Option(
         display_name=CoNLL.name,
-        task_id=SEQUENCE_LABELING,
+        task_id=ProjectType.SEQUENCE_LABELING,
         file_format=CoNLL,
         arg=ArgCoNLL,
         file=SEQUENCE_LABELING_DIR / "example.txt",
@@ -390,7 +385,7 @@ Options.register(
 Options.register(
     Option(
         display_name=CSV.name,
-        task_id=SEQ2SEQ,
+        task_id=ProjectType.SEQ2SEQ,
         file_format=CSV,
         arg=ArgDelimiter,
         file=SEQ2SEQ_DIR / "example.csv",
@@ -399,7 +394,7 @@ Options.register(
 Options.register(
     Option(
         display_name=JSON.name,
-        task_id=SEQ2SEQ,
+        task_id=ProjectType.SEQ2SEQ,
         file_format=JSON,
         arg=ArgColumn,
         file=SEQ2SEQ_DIR / "example.json",
@@ -408,7 +403,7 @@ Options.register(
 Options.register(
     Option(
         display_name=JSONL.name,
-        task_id=SEQ2SEQ,
+        task_id=ProjectType.SEQ2SEQ,
         file_format=JSONL,
         arg=ArgColumn,
         file=SEQ2SEQ_DIR / "example.jsonl",
@@ -417,7 +412,7 @@ Options.register(
 Options.register(
     Option(
         display_name=Excel.name,
-        task_id=SEQ2SEQ,
+        task_id=ProjectType.SEQ2SEQ,
         file_format=Excel,
         arg=ArgColumn,
         file=SEQ2SEQ_DIR / "example.csv",
@@ -428,7 +423,7 @@ Options.register(
 Options.register(
     Option(
         display_name=JSONL.name,
-        task_id=INTENT_DETECTION_AND_SLOT_FILLING,
+        task_id=ProjectType.INTENT_DETECTION_AND_SLOT_FILLING,
         file_format=JSONL,
         arg=ArgNone,
         file=INTENT_DETECTION_DIR / "example.jsonl",
@@ -436,7 +431,12 @@ Options.register(
 )
 
 # Image tasks
-image_tasks = [IMAGE_CLASSIFICATION, IMAGE_CAPTIONING, BOUNDING_BOX, SEGMENTATION]
+image_tasks = [
+    ProjectType.IMAGE_CLASSIFICATION,
+    ProjectType.IMAGE_CAPTIONING,
+    ProjectType.BOUNDING_BOX,
+    ProjectType.SEGMENTATION,
+]
 for task_name in image_tasks:
     Options.register(
         Option(
@@ -452,7 +452,7 @@ for task_name in image_tasks:
 Options.register(
     Option(
         display_name=AudioFile.name,
-        task_id=SPEECH2TEXT,
+        task_id=ProjectType.SPEECH2TEXT,
         file_format=AudioFile,
         arg=ArgNone,
         file=SPEECH_TO_TEXT_DIR / "audio_files.txt",

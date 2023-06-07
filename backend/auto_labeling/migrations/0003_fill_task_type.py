@@ -1,17 +1,17 @@
 from django.db import migrations
 
-from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING, SEQ2SEQ, SPEECH2TEXT, IMAGE_CLASSIFICATION
+from projects.models import ProjectType
 
 
 def fill_task_type(apps, schema_editor):
     AutoLabelingConfig = apps.get_model("auto_labeling", "AutoLabelingConfig")
     for config in AutoLabelingConfig.objects.all():
         project = config.project
-        if project.project_type in [DOCUMENT_CLASSIFICATION, IMAGE_CLASSIFICATION]:
+        if project.project_type in [ProjectType.DOCUMENT_CLASSIFICATION, ProjectType.IMAGE_CLASSIFICATION]:
             config.task_type = "Category"
-        elif project.project_type in [SEQ2SEQ, SPEECH2TEXT]:
+        elif project.project_type in [ProjectType.SEQ2SEQ, ProjectType.SPEECH2TEXT]:
             config.task_type = "Text"
-        elif project.project_type in [SEQUENCE_LABELING]:
+        elif project.project_type in [ProjectType.SEQUENCE_LABELING]:
             config.task_type = "Span"
         else:
             config.task_type = "Category"

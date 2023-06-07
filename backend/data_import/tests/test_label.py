@@ -15,7 +15,7 @@ from labels.models import Category as CategoryModel
 from labels.models import Relation as RelationModel
 from labels.models import Span as SpanModel
 from labels.models import TextLabel as TextModel
-from projects.models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
@@ -29,7 +29,7 @@ class TestLabel(TestCase):
 
 
 class TestCategoryLabel(TestLabel):
-    task = DOCUMENT_CLASSIFICATION
+    task = ProjectType.DOCUMENT_CLASSIFICATION
 
     def test_comparison(self):
         category1 = CategoryLabel(label="A", example_uuid=uuid.uuid4())
@@ -61,7 +61,7 @@ class TestCategoryLabel(TestLabel):
 
 
 class TestSpanLabel(TestLabel):
-    task = SEQUENCE_LABELING
+    task = ProjectType.SEQUENCE_LABELING
 
     def test_comparison(self):
         span1 = SpanLabel(label="A", start_offset=0, end_offset=1, example_uuid=uuid.uuid4())
@@ -110,7 +110,7 @@ class TestSpanLabel(TestLabel):
 
 
 class TestTextLabel(TestLabel):
-    task = SEQ2SEQ
+    task = ProjectType.SEQ2SEQ
 
     def test_comparison(self):
         text1 = TextLabel(text="A", example_uuid=uuid.uuid4())
@@ -140,7 +140,7 @@ class TestTextLabel(TestLabel):
 
 
 class TestRelationLabel(TestLabel):
-    task = SEQUENCE_LABELING
+    task = ProjectType.SEQUENCE_LABELING
 
     def test_comparison(self):
         relation1 = RelationLabel(type="A", from_id=0, to_id=1, example_uuid=uuid.uuid4())

@@ -5,13 +5,13 @@ from rest_framework.reverse import reverse
 from api.tests.utils import CRUDMixin
 from examples.tests.utils import make_doc
 from label_types.tests.utils import make_label
-from projects.models import DOCUMENT_CLASSIFICATION
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
 class TestMemberProgress(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         self.example = make_doc(self.project.item)
         self.url = reverse(viewname="member_progress", args=[self.project.item.id])
 
@@ -32,7 +32,9 @@ class TestProgressHelper(CRUDMixin):
     collaborative_annotation = False
 
     def setUp(self):
-        self.project = prepare_project(DOCUMENT_CLASSIFICATION, collaborative_annotation=self.collaborative_annotation)
+        self.project = prepare_project(
+            ProjectType.DOCUMENT_CLASSIFICATION, collaborative_annotation=self.collaborative_annotation
+        )
         self.example = make_doc(self.project.item)
         mommy.make("ExampleState", example=self.example, confirmed_by=self.project.admin)
         self.url = reverse(viewname="progress", args=[self.project.item.id])
@@ -65,7 +67,7 @@ class TestProgressOnCollaborativeAnnotation(TestProgressHelper):
 
 class TestCategoryDistribution(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         self.example = make_doc(self.project.item)
         self.label = make_label(self.project.item, text="label")
         mommy.make("Category", example=self.example, label=self.label, user=self.project.admin)

@@ -5,14 +5,14 @@ from rest_framework.reverse import reverse
 
 from .utils import make_doc, make_example_state
 from api.tests.utils import CRUDMixin
-from projects.models import DOCUMENT_CLASSIFICATION
+from projects.models import ProjectType
 from projects.tests.utils import assign_user_to_role, prepare_project
 from users.tests.utils import make_user
 
 
 class TestExampleListAPI(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.non_member = make_user()
         self.example = make_doc(self.project.item)
         self.data = {"text": "example"}
@@ -60,7 +60,7 @@ class TestExampleListAPI(CRUDMixin):
 
 class TestExampleListCollaborative(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.example = make_doc(self.project.item)
         self.url = reverse(viewname="example_list", args=[self.project.item.id])
 
@@ -89,7 +89,7 @@ class TestExampleListCollaborative(CRUDMixin):
 
 class TestExampleListFilter(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.example = make_doc(self.project.item)
         make_example_state(self.example, self.project.admin)
 
@@ -129,7 +129,7 @@ class TestExampleListFilter(CRUDMixin):
 
 class TestExampleDetail(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.non_member = make_user()
         doc = make_doc(self.project.item)
         self.data = {"text": "example"}

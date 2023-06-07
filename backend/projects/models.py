@@ -10,26 +10,17 @@ from polymorphic.models import PolymorphicModel
 
 from roles.models import Role
 
-DOCUMENT_CLASSIFICATION = "DocumentClassification"
-SEQUENCE_LABELING = "SequenceLabeling"
-SEQ2SEQ = "Seq2seq"
-SPEECH2TEXT = "Speech2text"
-IMAGE_CLASSIFICATION = "ImageClassification"
-BOUNDING_BOX = "BoundingBox"
-SEGMENTATION = "Segmentation"
-IMAGE_CAPTIONING = "ImageCaptioning"
-INTENT_DETECTION_AND_SLOT_FILLING = "IntentDetectionAndSlotFilling"
-PROJECT_CHOICES = (
-    (DOCUMENT_CLASSIFICATION, "document classification"),
-    (SEQUENCE_LABELING, "sequence labeling"),
-    (SEQ2SEQ, "sequence to sequence"),
-    (INTENT_DETECTION_AND_SLOT_FILLING, "intent detection and slot filling"),
-    (SPEECH2TEXT, "speech to text"),
-    (IMAGE_CLASSIFICATION, "image classification"),
-    (BOUNDING_BOX, "bounding box"),
-    (SEGMENTATION, "segmentation"),
-    (IMAGE_CAPTIONING, "image captioning"),
-)
+
+class ProjectType(models.TextChoices):
+    DOCUMENT_CLASSIFICATION = "DocumentClassification"
+    SEQUENCE_LABELING = "SequenceLabeling"
+    SEQ2SEQ = "Seq2seq"
+    INTENT_DETECTION_AND_SLOT_FILLING = "IntentDetectionAndSlotFilling"
+    SPEECH2TEXT = "Speech2text"
+    IMAGE_CLASSIFICATION = "ImageClassification"
+    BOUNDING_BOX = "BoundingBox"
+    SEGMENTATION = "Segmentation"
+    IMAGE_CAPTIONING = "ImageCaptioning"
 
 
 class Project(PolymorphicModel):
@@ -43,7 +34,7 @@ class Project(PolymorphicModel):
         on_delete=models.SET_NULL,
         null=True,
     )
-    project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
+    project_type = models.CharField(max_length=30, choices=ProjectType.choices)
     random_order = models.BooleanField(default=False)
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)

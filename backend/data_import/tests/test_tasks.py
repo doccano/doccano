@@ -12,13 +12,7 @@ from data_import.pipeline.catalog import RELATION_EXTRACTION
 from examples.models import Example
 from label_types.models import SpanType
 from labels.models import Category, Span
-from projects.models import (
-    DOCUMENT_CLASSIFICATION,
-    IMAGE_CLASSIFICATION,
-    INTENT_DETECTION_AND_SLOT_FILLING,
-    SEQ2SEQ,
-    SEQUENCE_LABELING,
-)
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
@@ -57,7 +51,7 @@ class TestImportData(TestCase):
 
 @override_settings(MAX_UPLOAD_SIZE=0)
 class TestMaxFileSize(TestImportData):
-    task = DOCUMENT_CLASSIFICATION
+    task = ProjectType.DOCUMENT_CLASSIFICATION
 
     def test_jsonl(self):
         filename = "text_classification/example.jsonl"
@@ -69,7 +63,7 @@ class TestMaxFileSize(TestImportData):
 
 
 class TestInvalidFileFormat(TestImportData):
-    task = DOCUMENT_CLASSIFICATION
+    task = ProjectType.DOCUMENT_CLASSIFICATION
 
     def test_invalid_file_format(self):
         filename = "text_classification/example.csv"
@@ -79,7 +73,7 @@ class TestInvalidFileFormat(TestImportData):
 
 
 class TestImportClassificationData(TestImportData):
-    task = DOCUMENT_CLASSIFICATION
+    task = ProjectType.DOCUMENT_CLASSIFICATION
 
     def assert_examples(self, dataset):
         with self.subTest():
@@ -180,7 +174,7 @@ class TestImportClassificationData(TestImportData):
 
 
 class TestImportSequenceLabelingData(TestImportData):
-    task = SEQUENCE_LABELING
+    task = ProjectType.SEQUENCE_LABELING
 
     def assert_examples(self, dataset):
         self.assertEqual(Example.objects.count(), len(dataset))
@@ -223,7 +217,7 @@ class TestImportSequenceLabelingData(TestImportData):
 
 
 class TestImportRelationExtractionData(TestImportData):
-    task = SEQUENCE_LABELING
+    task = ProjectType.SEQUENCE_LABELING
 
     def setUp(self):
         self.project = prepare_project(self.task, use_relation=True)
@@ -259,7 +253,7 @@ class TestImportRelationExtractionData(TestImportData):
 
 
 class TestImportSeq2seqData(TestImportData):
-    task = SEQ2SEQ
+    task = ProjectType.SEQ2SEQ
 
     def assert_examples(self, dataset):
         self.assertEqual(Example.objects.count(), len(dataset))
@@ -291,7 +285,7 @@ class TestImportSeq2seqData(TestImportData):
 
 
 class TestImportIntentDetectionAndSlotFillingData(TestImportData):
-    task = INTENT_DETECTION_AND_SLOT_FILLING
+    task = ProjectType.INTENT_DETECTION_AND_SLOT_FILLING
 
     def assert_examples(self, dataset):
         self.assertEqual(Example.objects.count(), len(dataset))
@@ -316,7 +310,7 @@ class TestImportIntentDetectionAndSlotFillingData(TestImportData):
 
 
 class TestImportImageClassificationData(TestImportData):
-    task = IMAGE_CLASSIFICATION
+    task = ProjectType.IMAGE_CLASSIFICATION
 
     def test_example(self):
         filename = "images/1500x500.jpeg"
@@ -327,7 +321,7 @@ class TestImportImageClassificationData(TestImportData):
 
 @override_settings(ENABLE_FILE_TYPE_CHECK=True)
 class TestFileTypeChecking(TestImportData):
-    task = IMAGE_CLASSIFICATION
+    task = ProjectType.IMAGE_CLASSIFICATION
 
     def test_example(self):
         filename = "images/example.ico"
