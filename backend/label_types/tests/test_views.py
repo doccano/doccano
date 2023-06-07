@@ -73,6 +73,19 @@ class TestLabelCreate(CRUDMixin):
         self.assert_create(expected=status.HTTP_403_FORBIDDEN)
 
 
+class TestAllowMemberToCreateLabelType(CRUDMixin):
+    @classmethod
+    def setUpTestData(cls):
+        cls.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION, allow_member_to_create_label_type=True)
+        cls.url = reverse(viewname="category_types", args=[cls.project.item.id])
+        cls.data = {"text": "example"}
+
+    def test_allows_member_to_create_label_type(self):
+        for member in self.project.members:
+            self.data["text"] = member.username
+            self.assert_create(member, status.HTTP_201_CREATED)
+
+
 class TestLabelDetailAPI(CRUDMixin):
     @classmethod
     def setUpTestData(cls):
