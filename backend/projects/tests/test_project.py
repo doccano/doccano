@@ -6,7 +6,7 @@ from rest_framework.reverse import reverse
 from api.tests.utils import CRUDMixin
 from examples.tests.utils import make_doc
 from label_types.tests.utils import make_label
-from projects.models import DOCUMENT_CLASSIFICATION, Member, Project
+from projects.models import Member, Project, ProjectType
 from projects.tests.utils import prepare_project
 from roles.tests.utils import create_default_roles
 from users.tests.utils import make_user
@@ -141,12 +141,9 @@ class TestProjectModel(TestCase):
 
 
 class TestCloneProject(CRUDMixin):
-    task = DOCUMENT_CLASSIFICATION
-    view_name = "annotation_list"
-
     @classmethod
     def setUpTestData(cls):
-        project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         cls.project = project.item
         cls.user = project.admin
         make_doc(cls.project)

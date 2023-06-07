@@ -2,14 +2,14 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from model_mommy import mommy
 
-from projects.models import SEQUENCE_LABELING
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
 class TestRelationLabeling(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.project = prepare_project(SEQUENCE_LABELING)
+        cls.project = prepare_project(ProjectType.SEQUENCE_LABELING)
         cls.example = mommy.make("Example", project=cls.project.item)
         cls.label_type = mommy.make("RelationType", project=cls.project.item)
         cls.user = cls.project.admin

@@ -7,17 +7,7 @@ from model_mommy import mommy
 
 from ..celery_tasks import export_dataset
 from data_export.models import DATA
-from projects.models import (
-    BOUNDING_BOX,
-    DOCUMENT_CLASSIFICATION,
-    IMAGE_CAPTIONING,
-    IMAGE_CLASSIFICATION,
-    INTENT_DETECTION_AND_SLOT_FILLING,
-    SEGMENTATION,
-    SEQ2SEQ,
-    SEQUENCE_LABELING,
-    SPEECH2TEXT,
-)
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
@@ -59,7 +49,7 @@ class TestExport(TestCase):
 
 class TestExportCategory(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(DOCUMENT_CLASSIFICATION, collaborative_annotation=collaborative)
+        self.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="example1")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="example2")
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
@@ -129,7 +119,7 @@ class TestExportCategory(TestExport):
 
 class TestExportSeq2seq(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(SEQ2SEQ, collaborative_annotation=collaborative)
+        self.project = prepare_project(ProjectType.SEQ2SEQ, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.text1 = mommy.make("TextLabel", example=self.example1, user=self.project.admin)
@@ -201,7 +191,9 @@ class TestExportSeq2seq(TestExport):
 
 class TestExportIntentDetectionAndSlotFilling(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(INTENT_DETECTION_AND_SLOT_FILLING, collaborative_annotation=collaborative)
+        self.project = prepare_project(
+            ProjectType.INTENT_DETECTION_AND_SLOT_FILLING, collaborative_annotation=collaborative
+        )
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
@@ -293,7 +285,7 @@ class TestExportIntentDetectionAndSlotFilling(TestExport):
 
 class TestExportSequenceLabeling(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(SEQUENCE_LABELING, collaborative_annotation=collaborative)
+        self.project = prepare_project(ProjectType.SEQUENCE_LABELING, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.span1 = mommy.make(
             "ExportedSpan", example=self.example1, user=self.project.admin, start_offset=0, end_offset=1
@@ -369,7 +361,7 @@ class TestExportSequenceLabeling(TestExport):
 
 class TestExportSpeechToText(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(SPEECH2TEXT, collaborative_annotation=collaborative)
+        self.project = prepare_project(ProjectType.SPEECH2TEXT, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.text1 = mommy.make("TextLabel", example=self.example1, user=self.project.admin)
@@ -441,7 +433,7 @@ class TestExportSpeechToText(TestExport):
 
 class TestExportImageClassification(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(IMAGE_CLASSIFICATION, collaborative_annotation=collaborative)
+        self.project = prepare_project(ProjectType.IMAGE_CLASSIFICATION, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)
@@ -511,7 +503,7 @@ class TestExportImageClassification(TestExport):
 
 class TestExportBoundingBox(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(BOUNDING_BOX, collaborative_annotation=collaborative)
+        self.project = prepare_project(ProjectType.BOUNDING_BOX, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
@@ -589,7 +581,7 @@ class TestExportBoundingBox(TestExport):
 
 class TestExportSegmentation(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(SEGMENTATION, collaborative_annotation=collaborative)
+        self.project = prepare_project(ProjectType.SEGMENTATION, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
@@ -662,7 +654,7 @@ class TestExportSegmentation(TestExport):
 
 class TestExportImageCaptioning(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(IMAGE_CAPTIONING, collaborative_annotation=collaborative)
+        self.project = prepare_project(ProjectType.IMAGE_CAPTIONING, collaborative_annotation=collaborative)
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="confirmed")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.comment1 = mommy.make("ExportedComment", example=self.example1, user=self.project.admin)
@@ -735,7 +727,9 @@ class TestExportImageCaptioning(TestExport):
 
 class TestExportRelation(TestExport):
     def prepare_data(self, collaborative=False):
-        self.project = prepare_project(SEQUENCE_LABELING, use_relation=True, collaborative_annotation=collaborative)
+        self.project = prepare_project(
+            ProjectType.SEQUENCE_LABELING, use_relation=True, collaborative_annotation=collaborative
+        )
         self.example1 = mommy.make("ExportedExample", project=self.project.item, text="example")
         self.example2 = mommy.make("ExportedExample", project=self.project.item, text="unconfirmed")
         self.span1 = mommy.make(

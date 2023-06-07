@@ -5,7 +5,7 @@ from django.test import TestCase
 from model_mommy import mommy
 
 from labels.models import TextLabel
-from projects.models import SEQ2SEQ
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
@@ -14,7 +14,7 @@ class TestTextLabeling(abc.ABC, TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        cls.project = prepare_project(SEQ2SEQ, collaborative_annotation=cls.collaborative)
+        cls.project = prepare_project(ProjectType.SEQ2SEQ, collaborative_annotation=cls.collaborative)
         cls.example = mommy.make("Example", project=cls.project.item)
         cls.user = cls.project.admin
         cls.another_user = cls.project.approver

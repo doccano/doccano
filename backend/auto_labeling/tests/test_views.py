@@ -11,7 +11,7 @@ from api.tests.utils import CRUDMixin
 from auto_labeling.pipeline.labels import Categories, Spans, Texts
 from examples.tests.utils import make_doc
 from labels.models import Category, Span, TextLabel
-from projects.models import DOCUMENT_CLASSIFICATION, SEQ2SEQ, SEQUENCE_LABELING
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 data_dir = pathlib.Path(__file__).parent / "data"
@@ -19,7 +19,7 @@ data_dir = pathlib.Path(__file__).parent / "data"
 
 class TestTemplateList(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.url = reverse(viewname="auto_labeling_templates", args=[self.project.item.id])
 
     def test_allow_admin_to_fetch_template_list(self):
@@ -47,7 +47,7 @@ class TestTemplateList(CRUDMixin):
 
 class TestConfigParameter(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.data = {
             "model_name": "GCP Entity Analysis",
             "model_attrs": {"key": "hoge", "type": "PLAIN_TEXT", "language": "en"},
@@ -78,7 +78,7 @@ class TestConfigParameter(CRUDMixin):
 
 class TestTemplateMapping(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.data = {
             "response": {
                 "Sentiment": "NEUTRAL",
@@ -106,7 +106,7 @@ class TestTemplateMapping(CRUDMixin):
 
 class TestLabelMapping(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.data = {
             "response": [{"label": "NEGATIVE"}],
             "label_mapping": {"NEGATIVE": "Negative"},
@@ -122,7 +122,7 @@ class TestLabelMapping(CRUDMixin):
 
 class TestConfigCreation(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.data = {
             "model_name": "Amazon Comprehend Sentiment Analysis",
             "model_attrs": {
@@ -149,7 +149,7 @@ class TestConfigCreation(CRUDMixin):
 
 class TestAutomatedLabeling(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION, single_class_classification=False)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION, single_class_classification=False)
         self.example = make_doc(self.project.item)
         self.category_pos = mommy.make("CategoryType", project=self.project.item, text="POS")
         self.category_neg = mommy.make("CategoryType", project=self.project.item, text="NEG")
@@ -215,7 +215,7 @@ class TestAutomatedLabeling(CRUDMixin):
 
 class TestAutomatedSpanLabeling(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=SEQUENCE_LABELING)
+        self.project = prepare_project(task=ProjectType.SEQUENCE_LABELING)
         self.example = make_doc(self.project.item)
         self.loc = mommy.make("SpanType", project=self.project.item, text="LOC")
         self.url = reverse(viewname="auto_labeling", args=[self.project.item.id])
@@ -237,7 +237,7 @@ class TestAutomatedSpanLabeling(CRUDMixin):
 
 class TestAutomatedTextLabeling(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=SEQ2SEQ)
+        self.project = prepare_project(task=ProjectType.SEQ2SEQ)
         self.example = make_doc(self.project.item)
         self.url = reverse(viewname="auto_labeling", args=[self.project.item.id])
         self.url += f"?example={self.example.id}"

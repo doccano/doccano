@@ -3,13 +3,13 @@ from model_mommy import mommy
 
 from data_import.pipeline.label_types import LabelTypes
 from label_types.models import CategoryType
-from projects.models import DOCUMENT_CLASSIFICATION
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
 class TestCategoryLabel(TestCase):
     def setUp(self):
-        self.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         self.user = self.project.admin
         self.example = mommy.make("Example", project=self.project.item)
 
