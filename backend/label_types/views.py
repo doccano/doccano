@@ -44,7 +44,7 @@ class LabelList(generics.ListCreateAPIView):
 
     def get_permissions(self):
         project = get_object_or_404(Project, pk=self.kwargs["project_id"])
-        if project.allow_member_to_create_label_type:
+        if project.allow_member_to_create_label_type and self.request.method == "POST":
             self.permission_classes = [IsAuthenticated & IsProjectMember]
         else:
             self.permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
