@@ -12,11 +12,13 @@
     </v-tabs>
     <v-card-title>
       <action-menu
+        :add-only="canOnlyAdd"
         @create="$router.push('labels/add?type=' + labelType)"
         @upload="$router.push('labels/import?type=' + labelType)"
         @download="download"
       />
       <v-btn
+        v-if="!canOnlyAdd"
         class="text-capitalize ms-2"
         :disabled="!canDelete"
         outlined
@@ -28,7 +30,13 @@
         <form-delete :selected="selected" @cancel="dialogDelete = false" @remove="remove" />
       </v-dialog>
     </v-card-title>
-    <label-list v-model="selected" :items="items" :is-loading="isLoading" @edit="editItem" />
+    <label-list
+      v-model="selected"
+      :items="items"
+      :is-loading="isLoading"
+      :disable-edit="canOnlyAdd"
+      @edit="editItem"
+    />
   </v-card>
 </template>
 
@@ -39,6 +47,7 @@ import FormDelete from '@/components/label/FormDelete.vue'
 import LabelList from '@/components/label/LabelList.vue'
 import { Project } from '~/domain/models/project/project'
 import { LabelDTO } from '~/services/application/label/labelData'
+import { MemberItem } from '~/domain/models/member/member'
 
 export default Vue.extend({
   components: {
@@ -46,12 +55,21 @@ export default Vue.extend({
     FormDelete,
     LabelList
   },
+
   layout: 'project',
 
   validate({ params, app }) {
     if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id).then((res: Project) => {
-        return res.canDefineLabel
+      return app.$services.project.findById(params.id).then((project: Project) => {
+        if (!project.canDefineLabel) {
+          return false
+        }
+        return app.$repositories.member.fetchMyRole(params.id).then((member: MemberItem) => {
+          if (member.isProjectAdmin) {
+            return true
+          }
+          return project.allowMemberToCreateLabelType
+        })
       })
     }
     return false
@@ -64,11 +82,19 @@ export default Vue.extend({
       selected: [] as LabelDTO[],
       isLoading: false,
       tab: 0,
-      project: {} as Project
+      project: {} as Project,
+      member: {} as MemberItem
     }
   },
 
   computed: {
+    canOnlyAdd(): boolean {
+      if (this.member.isProjectAdmin) {
+        return false
+      }
+      return this.project.allowMemberToCreateLabelType
+    },
+
     canDelete(): boolean {
       return this.selected.length > 0
     },
@@ -129,6 +155,7 @@ export default Vue.extend({
 
   async created() {
     this.project = await this.$services.project.findById(this.projectId)
+    this.member = await this.$repositories.member.fetchMyRole(this.projectId)
     await this.list()
   },
 

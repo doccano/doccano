@@ -27,6 +27,8 @@ import { ExampleDTO } from '~/services/application/example/exampleData'
 export default Vue.extend({
   layout: 'project',
 
+  middleware: ['isProjectAdmin'],
+
   validate({ params, app }) {
     if (/^\d+$/.test(params.id) && /^\d+$/.test(params.example_id)) {
       return app.$services.project.findById(params.id).then((res: Project) => {

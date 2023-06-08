@@ -14,6 +14,8 @@ export default Vue.extend({
 
   layout: 'project',
 
+  middleware: ['isProjectAdmin'],
+
   validate({ params, query, app }) {
     if (!['category', 'span', 'relation'].includes(query.type as string)) {
       return false
