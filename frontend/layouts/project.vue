@@ -33,8 +33,6 @@ export default {
     TheHeader
   },
 
-  middleware: ['check-auth', 'auth', 'setCurrentProject'],
-
   data() {
     return {
       drawerLeft: null,

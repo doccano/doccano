@@ -44,7 +44,7 @@ export default Vue.extend({
 
   layout: 'project',
 
-  middleware: ['isProjectAdmin'],
+  middleware: ['check-auth', 'auth', 'setCurrentProject', 'isProjectAdmin'],
 
   validate({ params }) {
     return /^\d+$/.test(params.id)
