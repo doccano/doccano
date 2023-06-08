@@ -58,6 +58,8 @@ export default Vue.extend({
 
   layout: 'project',
 
+  middleware: ['check-auth', 'auth', 'setCurrentProject'],
+
   validate({ params, app }) {
     if (/^\d+$/.test(params.id)) {
       return app.$services.project.findById(params.id).then((project: Project) => {

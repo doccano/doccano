@@ -90,6 +90,8 @@ export default Vue.extend({
 
   layout: 'project',
 
+  middleware: ['check-auth', 'auth', 'setCurrentProject'],
+
   validate({ params, query }) {
     // @ts-ignore
     return /^\d+$/.test(params.id) && /^\d+|$/.test(query.limit) && /^\d+|$/.test(query.offset)

@@ -29,6 +29,8 @@ export default Vue.extend({
 
   layout: 'project',
 
+  middleware: ['check-auth', 'auth', 'setCurrentProject'],
+
   validate({ params, query, app }) {
     if (!['category', 'span', 'relation'].includes(query.type as string)) {
       return false
