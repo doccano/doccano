@@ -39,7 +39,10 @@ export default Vue.extend({
     CommentList,
     FormDelete
   },
+
   layout: 'project',
+
+  middleware: ['isProjectAdmin'],
 
   validate({ params }) {
     return /^\d+$/.test(params.id)

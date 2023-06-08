@@ -39,6 +39,8 @@ export default {
 
   layout: 'project',
 
+  middleware: ['isProjectAdmin'],
+
   validate({ params }) {
     return /^\d+$/.test(params.id)
   },

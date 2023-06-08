@@ -28,7 +28,10 @@ export default Vue.extend({
     ConfigList,
     FormUpdate
   },
+
   layout: 'project',
+
+  middleware: ['isProjectAdmin'],
 
   validate({ params }) {
     return /^\d+$/.test(params.id)

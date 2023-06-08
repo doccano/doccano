@@ -64,6 +64,10 @@ export default Vue.extend({
       type: Array as PropType<LabelDTO[]>,
       default: () => [],
       required: true
+    },
+    disableEdit: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -77,12 +81,15 @@ export default Vue.extend({
 
   computed: {
     headers() {
-      return [
-        { text: this.$t('generic.name'), value: 'text' },
-        { text: this.$t('labels.shortkey'), value: 'suffixKey' },
-        { text: this.$t('labels.color'), value: 'backgroundColor' },
-        { text: 'Actions', value: 'actions', sortable: false }
+      const headers = [
+        { text: this.$t('generic.name'), value: 'text', sortable: true },
+        { text: this.$t('labels.shortkey'), value: 'suffixKey', sortable: true },
+        { text: this.$t('labels.color'), value: 'backgroundColor', sortable: true }
       ]
+      if (!this.disableEdit) {
+        headers.push({ text: 'Actions', value: 'actions', sortable: false })
+      }
+      return headers
     }
   }
 })

@@ -38,6 +38,7 @@ class Project(PolymorphicModel):
     random_order = models.BooleanField(default=False)
     collaborative_annotation = models.BooleanField(default=False)
     single_class_classification = models.BooleanField(default=False)
+    allow_member_to_create_label_type = models.BooleanField(default=False)
 
     def add_admin(self):
         admin_role = Role.objects.get(name=settings.ROLE_PROJECT_ADMIN)
