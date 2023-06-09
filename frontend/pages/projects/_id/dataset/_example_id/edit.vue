@@ -29,11 +29,10 @@ export default Vue.extend({
 
   middleware: ['check-auth', 'auth', 'setCurrentProject', 'isProjectAdmin'],
 
-  validate({ params, app }) {
+  validate({ params, store }) {
     if (/^\d+$/.test(params.id) && /^\d+$/.test(params.example_id)) {
-      return app.$services.project.findById(params.id).then((res: Project) => {
-        return res.isTextProject
-      })
+      const project = store.getters['project/project'] as Project
+      return project.isTextProject
     }
     return false
   },
