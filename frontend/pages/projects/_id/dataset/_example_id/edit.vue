@@ -31,7 +31,7 @@ export default Vue.extend({
 
   validate({ params, store }) {
     if (/^\d+$/.test(params.id) && /^\d+$/.test(params.example_id)) {
-      const project = store.getters['project/project'] as Project
+      const project = store.getters['projects/project'] as Project
       return project.isTextProject
     }
     return false
