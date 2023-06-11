@@ -26,7 +26,7 @@ export default Vue.extend({
       return false
     }
     if (/^\d+$/.test(params.id)) {
-      const project = store.getters['project/project'] as Project
+      const project = store.getters['projects/project'] as Project
       return project.canDefineLabel
     }
     return false
