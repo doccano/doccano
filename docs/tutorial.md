@@ -17,13 +17,11 @@ Here is a JSON file named `books.json` containing lots of science fiction book d
 To start, let's create a new project for this task.
 
 1. Log in to doccano with the superuser account.
-
-   ![Sign in as a superuser.](./images/tutorial/signin.png)
-
-2. To create your project, go to the project list page and click **Create**
+      ![Sign in as a superuser.](./images/tutorial/signin.png)
+2. To create your project, go to the project list page and click **Create**.
 3. Fill out the project details. For this tutorial, name the project `sequence labeling for books`, write a description, and choose the sequence labeling task type.
 
-   ![Creating a project.](./images/tutorial/create_project.png)
+![Creating a project.](./images/tutorial/create_project.png)
 
 ## Import a dataset
 
@@ -32,10 +30,8 @@ After creating a project, the **Dataset** page appears.
 To import a dataset:
 
 1. Click **Actions** > **Import Dataset**. You should see the following screen:
-
-   ![Importing a dataset.](./images/tutorial/import_dataset.png)
-
-2. Choose **JSON** and click **Select a file.
+      ![Importing a dataset.](./images/tutorial/import_dataset.png)
+2. Choose **JSON** and click **Select a file**.
 3. Click **books.json** and it will load automatically.
 
 ## Define labels
@@ -45,20 +41,16 @@ Define the labels to use for your annotation project:
 1. Click **Labels** in the left side menu. You should see the label editor page. 
 2. On the label editor page, create labels by specifying label text, a shortcut key, background color, and text color. For this tutorial, let's create some entities related to science fiction, as shown below.
 
-  ![Defining labels.](./images/tutorial/define_labels.png)
+![Defining labels.](./images/tutorial/define_labels.png)
 
 ## Add members
 
 Members are users who can participate in labeling activities. To add members:
 
 1. Click **Members** in the left side menu. If you are not the project administrator, the button won't appear.
-
-   ![](images/faq/add_annotator/select_members.png)
-
+      ![](images/faq/add_annotator/select_members.png)
 2. Click **Add** to display the Add Member form. 
-
-   ![](images/faq/add_annotator/select_user.png)
-
+      ![](images/faq/add_annotator/select_user.png)
 3. Fill in the form with the user name and role you want to add to the project. If there is no user to select, you need to create the user first. See the [FAQ](./faq.md) for instructions.
 4. Click **Save**.
 
