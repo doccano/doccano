@@ -33,7 +33,7 @@
             @addRelation="addRelation"
             @click:entity="updateSpan"
             @click:relation="updateRelation"
-            @contextmenu:entity="deleteSpan"
+            @contextmenu:entity="confirmDeleteSpan"
             @contextmenu:relation="deleteRelation"
           />
         </div>
@@ -225,6 +225,13 @@ export default {
       await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
     },
+
+      // Function to confirm before deleting the span
+      async confirmDeleteSpan(id) {
+        if(confirm("Are you sure you want to delete this span?")) {
+          await this.deleteSpan(id)
+        }
+      },
 
     async addSpan(startOffset, endOffset, labelId) {
       await this.$services.sequenceLabeling.create(
