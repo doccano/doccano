@@ -7,17 +7,17 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/35ac8625a2bc4eddbff23dbc61bc6abb)](https://www.codacy.com/gh/doccano/doccano/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=doccano/doccano&amp;utm_campaign=Badge_Grade)
 [![doccano CI](https://github.com/doccano/doccano/actions/workflows/ci.yml/badge.svg)](https://github.com/doccano/doccano/actions/workflows/ci.yml)
 
-doccano is an open source text annotation tool for humans. It provides annotation features for text classification, sequence labeling and sequence to sequence tasks. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create a project, upload data and start annotating. You can build a dataset in hours.
+doccano is an open-source text annotation tool for humans. It provides annotation features for text classification, sequence labeling, and sequence to sequence tasks. You can create labeled data for sentiment analysis, named entity recognition, text summarization, and so on. Just create a project, upload data, and start annotating. You can build a dataset in hours.
 
 ## Demo
 
-You can try the [annotation demo](http://doccano.herokuapp.com).
+Try the [annotation demo](http://doccano.herokuapp.com).
 
 ![Demo image](https://raw.githubusercontent.com/doccano/doccano/master/docs/images/demo/demo.gif)
 
 ## Documentation
 
-Read the documentation at the <https://doccano.github.io/doccano/>.
+Read the documentation at <https://doccano.github.io/doccano/>.
 
 ## Features
 
@@ -30,7 +30,7 @@ Read the documentation at the <https://doccano.github.io/doccano/>.
 
 ## Usage
 
-Three options to run doccano:
+There are three options to run doccano:
 
 - pip (Python 3.8+)
 - Docker
@@ -38,7 +38,7 @@ Three options to run doccano:
 
 ### pip
 
-To install doccano, simply run:
+To install doccano, run:
 
 ```bash
 pip install doccano
@@ -50,7 +50,7 @@ By default, SQLite 3 is used for the default database. If you want to use Postgr
 pip install 'doccano[postgresql]'
 ```
 
-and set `DATABASE_URL` environment variable according to your PostgreSQL credentials:
+and set the `DATABASE_URL` environment variable according to your PostgreSQL credentials:
 
 ```bash
 DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
@@ -67,7 +67,7 @@ doccano createuser --username admin --password pass
 doccano webserver --port 8000
 ```
 
-In another terminal, run the following command:
+In another terminal, run the command:
 
 ```bash
 # Start the task queue to handle file upload/download.
@@ -100,7 +100,7 @@ Go to <http://127.0.0.1:8000/>.
 
 To stop the container, run `docker container stop doccano -t 5`. All data created in the container will persist across restarts.
 
-If you want to use the latest features, please specify `nightly` tag:
+If you want to use the latest features, specify the `nightly` tag:
 
 ```bash
 docker pull doccano/doccano:nightly
@@ -108,7 +108,7 @@ docker pull doccano/doccano:nightly
 
 ### Docker Compose
 
-You need to install Git and to clone the repository:
+You need to install Git and clone the repository:
 
 ```bash
 git clone https://github.com/doccano/doccano.git
@@ -189,4 +189,4 @@ Here are some tips might be helpful. [How to Contribute to Doccano Project](http
 
 ## Contact
 
-For help and feedback, please feel free to contact [the author](https://github.com/Hironsan).
+For help and feedback, feel free to contact [the author](https://github.com/Hironsan).

@@ -1,6 +1,6 @@
 # Developer Guide
 
-The important directories are as follows:
+The important doccano directories are:
 
 ```bash
 ├── backend/
@@ -11,7 +11,7 @@ The important directories are as follows:
 
 ## backend
 
-The `backend/` directory includes the backend's REST API code. These APIs are built by [Python 3.8+](https://www.python.org/) and [Django 4.0+](https://www.djangoproject.com). The all of the packages are managed by Poetry, Python packaging and dependency management software. The directory structure of the backend follows mainly [Django](https://www.djangoproject.com) one. The following table shows the main files and directories:
+The `backend/` directory includes the backend's REST API code. These APIs are built by [Python 3.8+](https://www.python.org/) and [Django 4.0+](https://www.djangoproject.com). All of the packages are managed by Poetry, Python packaging, and dependency management software. The directory structure of the backend follows mainly the [Django](https://www.djangoproject.com) structure. The following table shows the main files and directories:
 
 | file or directory |                                                                                                                                            description                                                                                                                                             |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -32,7 +32,7 @@ The `backend/` directory includes the backend's REST API code. These APIs are bu
 | poetry.lock       | Related to Poetry. This file prevents you from automatically getting the latest versions of your dependencies. See [Basic usage](https://python-poetry.org/docs/basic-usage/) in Poetry documentation.                                                                                             |
 | pyproject.toml    | This file contains build system requirements and information, which are used by pip to build the package. See [pyproject.toml](https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/) and [The pyproject.toml file in Poetry](https://python-poetry.org/docs/pyproject/) in detail. |
 
-If you want to setup the backend environment, please see [Installation guide](./install_and_upgrade_doccano.md#install-from-source).
+If you want to set up the backend environment, see the [Installation guide](./install_and_upgrade_doccano.md#install-from-source).
 
 Also, you can set the following environment variables:
 
@@ -68,7 +68,7 @@ On the other hand, the one of the `Dockerfile` is as follows:
 
 ## frontend
 
-The `frontend/` directory contains frontend code. The `frontent` directory structure follows [Nuxt.js](https://ru.nuxtjs.org) one. See the [Nuxt.js documentation](https://nuxtjs.org/guide/directory-structure/) in details.
+The `frontend/` directory contains frontend code. The `frontend` directory structure follows the [Nuxt.js](https://ru.nuxtjs.org) structure. See the [Nuxt.js documentation](https://nuxtjs.org/guide/directory-structure/) for details.
 
 ## tools
 
