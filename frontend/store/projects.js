@@ -14,13 +14,7 @@ export const getters = {
 
 export const mutations = {
   setCurrent(state, payload) {
-    state.current = {
-      ...payload,
-      canDefineCategory: payload.canDefineCategory,
-      canDefineLabel: payload.canDefineLabel,
-      canDefineRelation: payload.canDefineRelation,
-      canDefineSpan: payload.canDefineSpan
-    }
+    state.current = payload
   }
 }
 
