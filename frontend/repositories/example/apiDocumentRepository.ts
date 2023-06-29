@@ -25,6 +25,29 @@ function toPayload(item: ExampleItem): { [key: string]: any } {
   }
 }
 
+function buildQueryParams(
+  limit: any,
+  offset: string,
+  q: string,
+  isChecked: string,
+  ordering: string
+): string {
+  const params = new URLSearchParams()
+  params.append('limit', limit)
+  params.append('offset', offset)
+  params.append('confirmed', isChecked)
+  params.append('ordering', ordering)
+
+  const pattern = /label:(".+?"|\S+)/
+  if (pattern.test(q)) {
+    const label = pattern.exec(q)![1]
+    params.append('label', label.replace(/"/g, ''))
+    q = q.replace(pattern, '')
+  }
+  params.append('q', q)
+  return params.toString()
+}
+
 export class APIExampleRepository implements ExampleRepository {
   constructor(private readonly request = ApiService) {}
 
@@ -32,7 +55,9 @@ export class APIExampleRepository implements ExampleRepository {
     projectId: string,
     { limit = '10', offset = '0', q = '', isChecked = '', ordering = '' }: SearchOption
   ): Promise<ExampleItemList> {
-    const url = `/projects/${projectId}/examples?limit=${limit}&offset=${offset}&q=${q}&confirmed=${isChecked}&ordering=${ordering}`
+    // @ts-ignore
+    const params = buildQueryParams(limit, offset, q, isChecked, ordering)
+    const url = `/projects/${projectId}/examples?${params}`
     const response = await this.request.get(url)
     return new ExampleItemList(
       response.data.count,
