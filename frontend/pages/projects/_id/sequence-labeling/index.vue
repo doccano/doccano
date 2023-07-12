@@ -40,7 +40,7 @@
     </template>
     <template #sidebar>
       <annotation-progress :progress="progress" />
-      <v-card class="mt-4">
+      <!-- <v-card class="mt-4">
         <v-card-title>
           Label Types
           <v-spacer />
@@ -80,7 +80,7 @@
           </v-card-text>
         </v-expand-transition>
       </v-card>
-      <list-metadata :metadata="doc.meta" class="mt-4" />
+      <list-metadata :metadata="doc.meta" class="mt-4" /> -->
     </template>
   </layout-text>
 </template>
