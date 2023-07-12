@@ -3,19 +3,7 @@ from typing import List
 from django.conf import settings
 from model_mommy import mommy
 
-from projects.models import (
-    BOUNDING_BOX,
-    DOCUMENT_CLASSIFICATION,
-    IMAGE_CAPTIONING,
-    IMAGE_CLASSIFICATION,
-    INTENT_DETECTION_AND_SLOT_FILLING,
-    SEGMENTATION,
-    SEQ2SEQ,
-    SEQUENCE_LABELING,
-    SPEECH2TEXT,
-    Member,
-    Role,
-)
+from projects.models import Member, ProjectType, Role
 from roles.tests.utils import create_default_roles
 from users.tests.utils import make_user
 
@@ -65,15 +53,15 @@ def make_project(task: str, users: List[str], roles: List[str], collaborative_an
 
     # create a project.
     project_model = {
-        DOCUMENT_CLASSIFICATION: "TextClassificationProject",
-        SEQUENCE_LABELING: "SequenceLabelingProject",
-        SEQ2SEQ: "Seq2seqProject",
-        SPEECH2TEXT: "Speech2TextProject",
-        IMAGE_CLASSIFICATION: "ImageClassificationProject",
-        INTENT_DETECTION_AND_SLOT_FILLING: "IntentDetectionAndSlotFillingProject",
-        BOUNDING_BOX: "BoundingBoxProject",
-        SEGMENTATION: "SegmentationProject",
-        IMAGE_CAPTIONING: "ImageCaptioningProject",
+        ProjectType.DOCUMENT_CLASSIFICATION: "TextClassificationProject",
+        ProjectType.SEQUENCE_LABELING: "SequenceLabelingProject",
+        ProjectType.SEQ2SEQ: "Seq2seqProject",
+        ProjectType.SPEECH2TEXT: "Speech2TextProject",
+        ProjectType.IMAGE_CLASSIFICATION: "ImageClassificationProject",
+        ProjectType.INTENT_DETECTION_AND_SLOT_FILLING: "IntentDetectionAndSlotFillingProject",
+        ProjectType.BOUNDING_BOX: "BoundingBoxProject",
+        ProjectType.SEGMENTATION: "SegmentationProject",
+        ProjectType.IMAGE_CAPTIONING: "ImageCaptioningProject",
     }.get(task, "Project")
     project = mommy.make(
         _model=project_model,

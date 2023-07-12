@@ -5,7 +5,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import FormImport from '~/components/label/FormImport.vue'
-import { Project } from '~/domain/models/project/project'
 
 export default Vue.extend({
   components: {
@@ -14,14 +13,15 @@ export default Vue.extend({
 
   layout: 'project',
 
-  validate({ params, query, app }) {
+  middleware: ['check-auth', 'auth', 'setCurrentProject', 'isProjectAdmin'],
+
+  validate({ params, query, store }) {
     if (!['category', 'span', 'relation'].includes(query.type as string)) {
       return false
     }
     if (/^\d+$/.test(params.id)) {
-      return app.$services.project.findById(params.id).then((res: Project) => {
-        return res.canDefineLabel
-      })
+      const project = store.getters['projects/project']
+      return project.canDefineLabel
     }
     return false
   },
@@ -54,7 +54,7 @@ export default Vue.extend({
       try {
         await this.service.upload(this.projectId, file)
         this.$router.push(`/projects/${this.projectId}/labels`)
-      } catch (e) {
+      } catch (e: any) {
         this.errorMessage = e.message
       }
     },

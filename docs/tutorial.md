@@ -1,8 +1,10 @@
 # Tutorial
 
+This tutorial demonstrates how to use doccano to complete a named entity recognition annotation task for an example science fiction dataset.
+
 ## Dataset
 
-Here we take named entity recognition annotation task for science fiction to give you a brief tutorial on doccano. Below is a JSON file named `books.json` containing lots of science fictions description with different languages. We need to annotate some entities like person name, book title, date and so on.
+Here is a JSON file named `books.json` containing lots of science fiction book descriptions in different languages. We need to annotate some entities like names, book titles, dates, and so on.
 
 ```json
 {"text": "The Hitchhiker's Guide to the Galaxy (sometimes referred to as HG2G, HHGTTGor H2G2) is a comedy science fiction series created by Douglas Adams. Originally a radio comedy broadcast on BBC Radio 4 in 1978, it was later adapted to other formats, including stage shows, novels, comic books, a 1981 TV series, a 1984 video game, and 2005 feature film."}
@@ -12,55 +14,65 @@ Here we take named entity recognition annotation task for science fiction to giv
 
 ## Create a project
 
-We need to create a new project for this task. Log in with the superuser account.
+To start, let's create a new project for this task.
 
-![Sign in as a superuser.](./images/tutorial/signin.png)
-
-To create your project, make sure you're in the project list page and click `Create` button. As for this tutorial, we name the project as `sequence labeling for books`, write some description, choose the sequence labeling task type.
+1. Log in to doccano with the superuser account.
+      ![Sign in as a superuser.](./images/tutorial/signin.png)
+2. To create your project, go to the project list page and click **Create**.
+3. Fill out the project details. For this tutorial, name the project `sequence labeling for books`, write a description, and choose the sequence labeling task type.
 
 ![Creating a project.](./images/tutorial/create_project.png)
 
 ## Import a dataset
 
-After creating a project, we will see the `Dataset` page, and click `Import dataset` button in the `Actions` menu. We should see the following screen:
+After creating a project, the **Dataset** page appears. 
 
-![Importing a dataset.](./images/tutorial/import_dataset.png)
+To import a dataset:
 
-We choose `JSON` and click `Select a file` button. Select `books.json` and it would be loaded automatically. 
+1. Click **Actions** > **Import Dataset**. You should see the following screen:
+      ![Importing a dataset.](./images/tutorial/import_dataset.png)
+2. Choose **JSON** and click **Select a file**.
+3. Click **books.json** and it will load automatically.
 
 ## Define labels
 
-Click `Labels` button in the left left side menu to define our labels. We should see the label editor page. In label editor page, you can create labels by specifying label text, shortcut key, background color and text color.
+Define the labels to use for your annotation project:
+
+1. Click **Labels** in the left side menu. You should see the label editor page. 
+2. On the label editor page, create labels by specifying label text, a shortcut key, background color, and text color. For this tutorial, let's create some entities related to science fiction, as shown below.
 
 ![Defining labels.](./images/tutorial/define_labels.png)
 
-As for the tutorial, we created some entities related to science fictions.
-
 ## Add members
 
-Click `Members` button in the left side menu. If you are not the project administrator, the button won't be displayed.
+Members are users who can participate in labeling activities. To add members:
 
-![](images/faq/add_annotator/select_members.png)
-
-Then, select the `Add` button to display the form. Fill in this form with the user name and role you want to add to the project. Then, select the `Save` button.
-
-![](images/faq/add_annotator/select_user.png)
-
-If there is no user to select, please create users(see [FAQ](./faq.md)).
+1. Click **Members** in the left side menu. If you are not the project administrator, the button won't appear.
+      ![](images/faq/add_annotator/select_members.png)
+2. Click **Add** to display the Add Member form. 
+      ![](images/faq/add_annotator/select_user.png)
+3. Fill in the form with the user name and role you want to add to the project. If there is no user to select, you need to create the user first. See the [FAQ](./faq.md) for instructions.
+4. Click **Save**.
 
 ## Annotation
 
-Next, we are ready to annotate the texts. Just click the `Start annotation` button in the navigation bar, we can start to annotate the documents.
+Next, let's annotate the texts. 
+
+Click **Start annotation** in the navigation bar to start annotating the documents.
 
 ![Annotating named entities.](./images/tutorial/annotation.png)
 
 ## Export the dataset
 
-After the annotation step, we can download the annotated data. Go to the `Dataset` page and click the `Export dataset` button in the `Action` menu. After selecting an export format, click `Export`. You should see the following screen:
+After finishing the annotation step, let's download the annotated data. 
+
+1. Go to the **Dataset** page and click **Action** > **Export Dataset**.
+2. Select an export format. For this tutorial choose the JSONL format.
+3. Click **Export**. You should see this screen:
 
 ![Exporting a dataset.](./images/tutorial/export_dataset.png)
 
-Here we choose JSONL file to download the data by clicking the button. Below is the annotated result for our tutorial project.
+ Below is the annotated result for this tutorial.
 
 `sequence_labeling_for_books.json`
 
@@ -71,4 +83,4 @@ Here we choose JSONL file to download the data by clicking the button. Below is 
  "username": "admin"}
 ```
 
-Congratulation! You just mastered how to use doccano for a sequence labeling project.
+Congratulations! You just explored how to use doccano for a sequence labeling project.

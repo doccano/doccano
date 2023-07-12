@@ -26,12 +26,12 @@
 
 <script lang="ts">
 import _ from 'lodash'
+import { mapGetters } from 'vuex'
 import Vue from 'vue'
 import CommentList from '@/components/comment/CommentList.vue'
 import FormDelete from '~/components/comment/FormDelete.vue'
 import { CommentItem } from '~/domain/models/comment/comment'
 import { Page } from '~/domain/models/page'
-import { Project } from '~/domain/models/project/project'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
 export default Vue.extend({
@@ -39,7 +39,10 @@ export default Vue.extend({
     CommentList,
     FormDelete
   },
+
   layout: 'project',
+
+  middleware: ['check-auth', 'auth', 'setCurrentProject', 'isProjectAdmin'],
 
   validate({ params }) {
     return /^\d+$/.test(params.id)
@@ -48,7 +51,6 @@ export default Vue.extend({
   data() {
     return {
       dialogDelete: false,
-      project: {} as Project,
       item: {} as Page<CommentItem>,
       selected: [] as CommentItem[],
       isLoading: false
@@ -57,16 +59,17 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.project = await this.$services.project.findById(this.projectId)
     this.item = await this.$repositories.comment.listAll(this.projectId, this.$route.query)
     this.isLoading = false
   },
 
   computed: {
+    ...mapGetters('projects', ['project']),
+
     canDelete(): boolean {
       return this.selected.length > 0
     },
-    projectId() {
+    projectId(): string {
       return this.$route.params.id
     }
   },

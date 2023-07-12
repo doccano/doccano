@@ -3,13 +3,13 @@ from model_mommy import mommy
 
 from ..pipeline.labels import Categories
 from data_export.models import ExportedExample
-from projects.models import DOCUMENT_CLASSIFICATION
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
 class TestLabels(TestCase):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.example1 = mommy.make("ExportedExample", project=self.project.item)
         self.example2 = mommy.make("ExportedExample", project=self.project.item)
         self.category1 = mommy.make("ExportedCategory", example=self.example1, user=self.project.admin)

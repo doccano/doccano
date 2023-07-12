@@ -32,7 +32,6 @@ export default {
     TheSideBar,
     TheHeader
   },
-  middleware: ['check-auth', 'auth', 'check-admin'],
 
   data() {
     return {

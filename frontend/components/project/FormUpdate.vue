@@ -9,33 +9,31 @@
             <tag-list v-model="tags" />
             <random-order-field v-model="project.enableRandomOrder" />
             <sharing-mode-field v-model="project.enableSharingMode" />
+            <v-checkbox
+              v-if="project.canDefineLabel"
+              v-model="project.allowMemberToCreateLabelType"
+              label="Allow project members to create label types"
+            />
           </v-col>
         </v-row>
       </v-form>
     </v-card-text>
     <v-card-actions class="ps-4 pt-0">
-      <v-btn
-        v-if="!isEditing"
-        color="primary"
-        class="text-capitalize"
-        @click="isEditing = true"
-        v-text="`Edit`"
-      />
+      <v-btn v-if="!isEditing" color="primary" class="text-capitalize" @click="isEditing = true">
+        Edit
+      </v-btn>
       <v-btn
         v-show="isEditing"
         color="primary"
         :disabled="!valid || isUpdating"
         class="mr-4 text-capitalize"
         @click="save"
-        v-text="$t('generic.save')"
-      />
-      <v-btn
-        v-show="isEditing"
-        :disabled="isUpdating"
-        class="text-capitalize"
-        @click="cancel"
-        v-text="$t('generic.cancel')"
-      />
+      >
+        {{ $t('generic.save') }}
+      </v-btn>
+      <v-btn v-show="isEditing" :disabled="isUpdating" class="text-capitalize" @click="cancel">
+        {{ $t('generic.cancel') }}
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>

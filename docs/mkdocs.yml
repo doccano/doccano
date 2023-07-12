@@ -38,8 +38,8 @@ nav:
   - Advanced:
       - AWS HTTPS settings: advanced/aws_https_settings.md
       - OAuth2 settings: advanced/oauth2_settings.md
-      - Auto Labeling settings: advanced/auto_labelling_config.md
-  - Developer Guide: developer_guide.md
+      - Auto labeling settings: advanced/auto_labelling_config.md
+  - Developer guide: developer_guide.md
   - FAQ: faq.md
-  - Code of Conduct: CODE_OF_CONDUCT.md
+  - Code of conduct: CODE_OF_CONDUCT.md
   - Roadmap: roadmap.md

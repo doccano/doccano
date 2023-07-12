@@ -2,6 +2,7 @@ import json
 import re
 
 from django.db import IntegrityError, transaction
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status
 from rest_framework.exceptions import ParseError
@@ -18,7 +19,12 @@ from .serializers import (
     RelationTypeSerializer,
     SpanTypeSerializer,
 )
-from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
+from projects.models import Project
+from projects.permissions import (
+    IsProjectAdmin,
+    IsProjectMember,
+    IsProjectStaffAndReadOnly,
+)
 
 
 def camel_to_snake(name):
@@ -35,7 +41,14 @@ class LabelList(generics.ListCreateAPIView):
     filter_backends = [DjangoFilterBackend]
     serializer_class = LabelSerializer
     pagination_class = None
-    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
+
+    def get_permissions(self):
+        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
+        if project.allow_member_to_create_label_type and self.request.method == "POST":
+            self.permission_classes = [IsAuthenticated & IsProjectMember]
+        else:
+            self.permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
+        return super().get_permissions()
 
     def get_queryset(self):
         return self.model.objects.filter(project=self.kwargs["project_id"])

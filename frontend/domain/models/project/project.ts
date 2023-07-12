@@ -33,6 +33,24 @@ export const validateNameMaxLength = (name: string): boolean => {
   return name.trim().length <= MAX_PROJECT_NAME_LENGTH
 }
 
+export const canDefineCategory = (projectType: ProjectType): boolean => {
+  return [
+    DocumentClassification,
+    IntentDetectionAndSlotFilling,
+    ImageClassification,
+    BoundingBox,
+    Segmentation
+  ].includes(projectType)
+}
+
+export const canDefineSpan = (projectType: ProjectType): boolean => {
+  return [SequenceLabeling, IntentDetectionAndSlotFilling].includes(projectType)
+}
+
+export const canDefineLabel = (projectType: ProjectType): boolean => {
+  return canDefineCategory(projectType) || canDefineSpan(projectType)
+}
+
 export class Project {
   name: string
   description: string
@@ -50,6 +68,7 @@ export class Project {
     readonly enableGraphemeMode: boolean,
     readonly useRelation: boolean,
     readonly tags: TagItem[],
+    readonly allowMemberToCreateLabelType: boolean = false,
     readonly users: number[] = [],
     readonly createdAt: string = '',
     readonly updatedAt: string = '',
@@ -85,7 +104,8 @@ export class Project {
     allowOverlappingSpans: boolean,
     enableGraphemeMode: boolean,
     useRelation: boolean,
-    tags: TagItem[]
+    tags: TagItem[],
+    allowMemberToCreateLabelType: boolean
   ) {
     return new Project(
       id,
@@ -99,26 +119,21 @@ export class Project {
       allowOverlappingSpans,
       enableGraphemeMode,
       useRelation,
-      tags
+      tags,
+      allowMemberToCreateLabelType
     )
   }
 
   get canDefineLabel(): boolean {
-    return this.canDefineCategory || this.canDefineSpan
+    return canDefineLabel(this.projectType)
   }
 
   get canDefineCategory(): boolean {
-    return [
-      DocumentClassification,
-      IntentDetectionAndSlotFilling,
-      ImageClassification,
-      BoundingBox,
-      Segmentation
-    ].includes(this.projectType)
+    return canDefineCategory(this.projectType)
   }
 
   get canDefineSpan(): boolean {
-    return [SequenceLabeling, IntentDetectionAndSlotFilling].includes(this.projectType)
+    return canDefineSpan(this.projectType)
   }
 
   get canDefineRelation(): boolean {
@@ -137,5 +152,15 @@ export class Project {
       return 'TextClassificationProject'
     }
     return `${this.projectType}Project`
+  }
+
+  get isImageProject(): boolean {
+    return [ImageClassification, ImageCaptioning, BoundingBox, Segmentation].includes(
+      this.projectType
+    )
+  }
+
+  get isAudioProject(): boolean {
+    return [Speech2text].includes(this.projectType)
   }
 }

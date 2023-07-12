@@ -2,13 +2,13 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 
 from api.tests.utils import CRUDMixin
-from projects.models import DOCUMENT_CLASSIFICATION
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
 class TestImportCatalog(CRUDMixin):
     def setUp(self):
-        self.project = prepare_project(task=DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
         self.url = reverse(viewname="catalog", args=[self.project.item.id])
 
     def test_allows_project_admin_to_list_catalog(self):

@@ -2,13 +2,13 @@ from django.test import TestCase
 from model_mommy import mommy
 
 from examples.models import ExampleState
-from projects.models import IMAGE_CLASSIFICATION, SEQUENCE_LABELING
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
 class TestExampleState(TestCase):
     def setUp(self):
-        self.project = prepare_project(SEQUENCE_LABELING)
+        self.project = prepare_project(ProjectType.SEQUENCE_LABELING)
         self.example = mommy.make("Example", project=self.project.item)
         self.other = mommy.make("Example", project=self.project.item)
         self.examples = self.project.item.examples.all()
@@ -61,11 +61,11 @@ class TestExampleState(TestCase):
 
 class TestExample(TestCase):
     def test_text_project_returns_text_as_data_property(self):
-        project = prepare_project(SEQUENCE_LABELING)
+        project = prepare_project(ProjectType.SEQUENCE_LABELING)
         example = mommy.make("Example", project=project.item)
         self.assertEqual(example.text, example.data)
 
     def test_image_project_returns_filename_as_data_property(self):
-        project = prepare_project(IMAGE_CLASSIFICATION)
+        project = prepare_project(ProjectType.IMAGE_CLASSIFICATION)
         example = mommy.make("Example", project=project.item)
         self.assertEqual(str(example.filename), example.data)

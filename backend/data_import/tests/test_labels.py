@@ -16,14 +16,14 @@ from data_import.pipeline.labels import Categories, Relations, Spans, Texts
 from label_types.models import CategoryType, RelationType, SpanType
 from labels.models import Category, Relation, Span
 from labels.models import TextLabel as TextLabelModel
-from projects.models import DOCUMENT_CLASSIFICATION, SEQUENCE_LABELING
+from projects.models import ProjectType
 from projects.tests.utils import prepare_project
 
 
 class TestCategories(TestCase):
     def setUp(self):
         self.types = LabelTypes(CategoryType)
-        self.project = prepare_project(DOCUMENT_CLASSIFICATION)
+        self.project = prepare_project(ProjectType.DOCUMENT_CLASSIFICATION)
         self.user = self.project.admin
         example_uuid = uuid.uuid4()
         labels = [
@@ -59,7 +59,7 @@ class TestCategories(TestCase):
 class TestSpans(TestCase):
     def setUp(self):
         self.types = LabelTypes(SpanType)
-        self.project = prepare_project(SEQUENCE_LABELING, allow_overlapping=True)
+        self.project = prepare_project(ProjectType.SEQUENCE_LABELING, allow_overlapping=True)
         self.user = self.project.admin
         example_uuid = uuid.uuid4()
         labels = [
@@ -113,7 +113,7 @@ class TestSpans(TestCase):
 class TestTexts(TestCase):
     def setUp(self):
         self.types = LabelTypes(DummyLabelType)
-        self.project = prepare_project(SEQUENCE_LABELING)
+        self.project = prepare_project(ProjectType.SEQUENCE_LABELING)
         self.user = self.project.admin
         example_uuid = uuid.uuid4()
         labels = [
@@ -143,7 +143,7 @@ class TestTexts(TestCase):
 class TestRelations(TestCase):
     def setUp(self):
         self.types = LabelTypes(RelationType)
-        self.project = prepare_project(SEQUENCE_LABELING, use_relation=True)
+        self.project = prepare_project(ProjectType.SEQUENCE_LABELING, use_relation=True)
         self.user = self.project.admin
         example_uuid = uuid.uuid4()
         example = mommy.make("Example", project=self.project.item, uuid=example_uuid, text="hello world")

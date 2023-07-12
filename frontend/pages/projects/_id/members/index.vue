@@ -41,7 +41,10 @@ export default Vue.extend({
     FormCreate,
     FormDelete
   },
+
   layout: 'project',
+
+  middleware: ['check-auth', 'auth', 'setCurrentProject', 'isProjectAdmin'],
 
   validate({ params }) {
     return /^\d+$/.test(params.id)

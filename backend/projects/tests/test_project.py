@@ -1,9 +1,12 @@
 from django.conf import settings
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 
 from api.tests.utils import CRUDMixin
-from projects.models import Member
+from examples.tests.utils import make_doc
+from label_types.tests.utils import make_label
+from projects.models import Member, Project, ProjectType
 from projects.tests.utils import prepare_project
 from roles.tests.utils import create_default_roles
 from users.tests.utils import make_user
@@ -124,3 +127,43 @@ class TestProjectDetailAPI(CRUDMixin):
 
     def test_denies_non_member_to_delete_project(self):
         self.assert_delete(self.non_member, status.HTTP_403_FORBIDDEN)
+
+
+class TestProjectModel(TestCase):
+    def setUp(self):
+        self.project = prepare_project().item
+
+    def test_clone_project(self):
+        project = self.project.clone()
+        self.assertNotEqual(project.id, self.project.id)
+        self.assertEqual(project.name, self.project.name)
+        self.assertEqual(project.role_mappings.count(), self.project.role_mappings.count())
+
+
+class TestCloneProject(CRUDMixin):
+    @classmethod
+    def setUpTestData(cls):
+        project = prepare_project(task=ProjectType.DOCUMENT_CLASSIFICATION)
+        cls.project = project.item
+        cls.user = project.admin
+        make_doc(cls.project)
+        cls.category_type = make_label(cls.project)
+        cls.url = reverse(viewname="clone_project", args=[cls.project.id])
+
+    def test_clone_project(self):
+        response = self.assert_create(self.user, status.HTTP_201_CREATED)
+
+        project = Project.objects.get(id=response.data["id"])
+
+        # assert project
+        self.assertNotEqual(project.id, self.project.id)
+        self.assertEqual(project.name, self.project.name)
+
+        # assert category type
+        category_type = project.categorytype_set.first()
+        self.assertEqual(category_type.text, self.category_type.text)
+
+        # assert example
+        example = self.project.examples.first()
+        cloned_example = project.examples.first()
+        self.assertEqual(example.text, cloned_example.text)

@@ -44,6 +44,8 @@ import { Format } from '~/domain/models/download/format'
 export default Vue.extend({
   layout: 'project',
 
+  middleware: ['check-auth', 'auth', 'setCurrentProject', 'isProjectAdmin'],
+
   validate({ params }) {
     return /^\d+$/.test(params.id)
   },

@@ -23,7 +23,7 @@
       <v-text-field
         v-model="search"
         :prepend-inner-icon="mdiMagnify"
-        :label="$t('generic.search')"
+        :label="$t('generic.search') + ' (e.g. label:positive)'"
         single-line
         hide-details
         filled
@@ -45,6 +45,9 @@
       <span> {{ item.commentCount }} </span>
     </template>
     <template #[`item.action`]="{ item }">
+      <v-btn class="me-1" small color="primary text-capitalize" @click="$emit('edit', item)"
+        >Edit</v-btn
+      >
       <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
         {{ $t('dataset.annotate') }}
       </v-btn>

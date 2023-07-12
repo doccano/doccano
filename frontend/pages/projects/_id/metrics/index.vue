@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import LabelDistribution from '~/components/metrics/LabelDistribution'
 import MemberProgress from '~/components/metrics/MemberProgress'
 
@@ -39,13 +40,14 @@ export default {
 
   layout: 'project',
 
+  middleware: ['check-auth', 'auth', 'setCurrentProject', 'isProjectAdmin'],
+
   validate({ params }) {
     return /^\d+$/.test(params.id)
   },
 
   data() {
     return {
-      project: {},
       categoryTypes: [],
       categoryDistribution: {},
       relationTypes: [],
@@ -56,13 +58,14 @@ export default {
   },
 
   computed: {
+    ...mapGetters('projects', ['project']),
+
     projectId() {
       return this.$route.params.id
     }
   },
 
   async created() {
-    this.project = await this.$services.project.findById(this.projectId)
     if (this.project.canDefineCategory) {
       this.categoryTypes = await this.$services.categoryType.list(this.projectId)
       this.categoryDistribution = await this.$repositories.metrics.fetchCategoryDistribution(

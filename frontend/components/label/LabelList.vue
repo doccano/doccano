@@ -64,6 +64,10 @@ export default Vue.extend({
       type: Array as PropType<LabelDTO[]>,
       default: () => [],
       required: true
+    },
+    disableEdit: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -84,6 +88,10 @@ export default Vue.extend({
         { text: this.$t('labels.description'), value: 'description' },
         { text: 'Actions', value: 'actions', sortable: false }
       ]
+      if (!this.disableEdit) {
+        headers.push({ text: 'Actions', value: 'actions', sortable: false })
+      }
+      return headers
     }
   }
 })

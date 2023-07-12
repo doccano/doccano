@@ -20,18 +20,7 @@ from .pipeline.readers import (
     Reader,
 )
 from label_types.models import CategoryType, LabelType, RelationType, SpanType
-from projects.models import (
-    BOUNDING_BOX,
-    DOCUMENT_CLASSIFICATION,
-    IMAGE_CAPTIONING,
-    IMAGE_CLASSIFICATION,
-    INTENT_DETECTION_AND_SLOT_FILLING,
-    SEGMENTATION,
-    SEQ2SEQ,
-    SEQUENCE_LABELING,
-    SPEECH2TEXT,
-    Project,
-)
+from projects.models import Project, ProjectType
 
 
 class Dataset(abc.ABC):
@@ -215,16 +204,16 @@ class CategoryAndSpanDataset(Dataset):
 
 def select_dataset(project: Project, task: str, file_format: Format) -> Type[Dataset]:
     mapping = {
-        DOCUMENT_CLASSIFICATION: TextClassificationDataset,
-        SEQUENCE_LABELING: SequenceLabelingDataset,
+        ProjectType.DOCUMENT_CLASSIFICATION: TextClassificationDataset,
+        ProjectType.SEQUENCE_LABELING: SequenceLabelingDataset,
         RELATION_EXTRACTION: RelationExtractionDataset,
-        SEQ2SEQ: Seq2seqDataset,
-        INTENT_DETECTION_AND_SLOT_FILLING: CategoryAndSpanDataset,
-        IMAGE_CLASSIFICATION: BinaryDataset,
-        IMAGE_CAPTIONING: BinaryDataset,
-        BOUNDING_BOX: BinaryDataset,
-        SEGMENTATION: BinaryDataset,
-        SPEECH2TEXT: BinaryDataset,
+        ProjectType.SEQ2SEQ: Seq2seqDataset,
+        ProjectType.INTENT_DETECTION_AND_SLOT_FILLING: CategoryAndSpanDataset,
+        ProjectType.IMAGE_CLASSIFICATION: BinaryDataset,
+        ProjectType.IMAGE_CAPTIONING: BinaryDataset,
+        ProjectType.BOUNDING_BOX: BinaryDataset,
+        ProjectType.SEGMENTATION: BinaryDataset,
+        ProjectType.SPEECH2TEXT: BinaryDataset,
     }
     if task not in mapping:
         task = project.project_type
