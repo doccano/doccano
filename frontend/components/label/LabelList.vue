@@ -81,7 +81,7 @@ export default Vue.extend({
 
   computed: {
     headers() {
-      return [
+      const headers = [
         { text: this.$t('generic.name'), value: 'text' },
         { text: this.$t('labels.shortkey'), value: 'suffixKey' },
         { text: this.$t('labels.color'), value: 'backgroundColor' },
