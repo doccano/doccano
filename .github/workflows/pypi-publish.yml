@@ -9,45 +9,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Preparation
-      run: |
-        mkdir backend/client
-    - name: Fix up git URLs
-      run: echo -e '[url "https://github.com/"]\n  insteadOf = "git@github.com:"' >> ~/.gitconfig
-    - name: Use Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12.x'
-    - name: Build with Node.js
-      run: |
-        yarn install
-        yarn build
-        cp -r dist ../backend/client/
-      working-directory: ./frontend
-      env:
-        PUBLIC_PATH: "/static/_nuxt/"
-    - name: Setup Python 3.8
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry poetry-dynamic-versioning
-        poetry install
-      working-directory: ./backend
-    - name: collectstatic
-      run: |
-        poetry run task collectstatic
-      working-directory: ./backend
-    - name: Build a binary wheel and a source tarball
-      run: |
-        sed -e "s/, from = \"..\"//g" backend/pyproject.toml > pyproject.toml
-        poetry build
-    - name: Publish a Python distribution to PyPI
-      uses: pypa/gh-action-pypi-publish@master
-      with:
-        user: ${{ secrets.PYPI_USERNAME }}
-        password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: ./dist/
+      - uses: actions/checkout@v2
+      - name: Preparation
+        run: |
+          mkdir backend/client
+      - name: Fix up git URLs
+        run: echo -e '[url "https://github.com/"]\n  insteadOf = "git@github.com:"' >> ~/.gitconfig
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16.x'
+      - name: Build with Node.js
+        run: |
+          yarn install
+          yarn build
+          cp -r dist ../backend/client/
+        working-directory: ./frontend
+        env:
+          PUBLIC_PATH: '/static/_nuxt/'
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry poetry-dynamic-versioning
+          poetry install
+        working-directory: ./backend
+      - name: collectstatic
+        run: |
+          poetry run task collectstatic
+        working-directory: ./backend
+      - name: Build a binary wheel and a source tarball
+        run: |
+          sed -e "s/, from = \"..\"//g" backend/pyproject.toml > pyproject.toml
+          poetry build
+      - name: Publish a Python distribution to PyPI
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: ${{ secrets.PYPI_USERNAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
+          packages_dir: ./dist/
