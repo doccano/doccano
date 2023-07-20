@@ -11,6 +11,8 @@ documentation = "https://doccano.github.io/doccano/"
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
 ]
 packages = [
     { include = "backend", from = ".." },
@@ -66,6 +68,7 @@ filetype = "^1.0.10"
 pandas = "^1.4.2"
 flower = "^1.2.0"
 django-allauth = "^0.52.0"
+pydantic = "^2.0.3"
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"
@@ -73,7 +76,7 @@ coverage = "^6.3.1"
 flake8 = "^4.0.1"
 isort = {extras = ["pyproject"], version = "^5.10.1"}
 autopep8 = "^1.6.0"
-mypy = "^0.931"
+mypy = "^1.4.1"
 watchdog = "^2.1.6"
 black = "^22.1.0"
 pyproject-flake8 = "^0.0.1-alpha.2"
