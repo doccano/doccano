@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Comment, Example, ExampleState
+from .models import Assignment, Comment, Example, ExampleState
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -48,6 +48,13 @@ class ExampleSerializer(serializers.ModelSerializer):
             "score",
         ]
         read_only_fields = ["filename", "is_confirmed", "upload_name"]
+
+
+class AssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Assignment
+        fields = ("id", "assignee", "example", "created_at", "updated_at")
+        read_only_fields = ("id", "created_at", "updated_at")
 
 
 class ExampleStateSerializer(serializers.ModelSerializer):
