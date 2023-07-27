@@ -1,7 +1,8 @@
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, generics
+from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView, Response
 
 from examples.models import Assignment
 from examples.serializers import AssignmentSerializer
@@ -33,3 +34,15 @@ class AssignmentDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AssignmentSerializer
     lookup_url_kwarg = "assignment_id"
     permission_classes = [IsAuthenticated & (IsProjectAdmin | IsProjectStaffAndReadOnly)]
+
+
+class ResetAssignment(APIView):
+    permission_classes = [IsAuthenticated & IsProjectAdmin]
+
+    @property
+    def project(self):
+        return get_object_or_404(Project, pk=self.kwargs["project_id"])
+
+    def delete(self, *args, **kwargs):
+        Assignment.objects.filter(project=self.project).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
