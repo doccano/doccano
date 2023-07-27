@@ -1,5 +1,6 @@
 import abc
 import dataclasses
+import enum
 import random
 from typing import List
 
@@ -10,6 +11,23 @@ import numpy as np
 class Assignment:
     user: int
     example: int
+
+
+class StrategyName(enum.Enum):
+    weighted_sequential = enum.auto()
+    weighted_random = enum.auto()
+    sampling_without_replacement = enum.auto()
+
+
+def create_assignment_strategy(strategy_name: StrategyName, dataset_size: int, weights: List[int]) -> "BaseStrategy":
+    if strategy_name == StrategyName.weighted_sequential:
+        return WeightedSequentialStrategy(dataset_size, weights)
+    elif strategy_name == StrategyName.weighted_random:
+        return WeightedRandomStrategy(dataset_size, weights)
+    elif strategy_name == StrategyName.sampling_without_replacement:
+        return SamplingWithoutReplacementStrategy(dataset_size, weights)
+    else:
+        raise ValueError(f"Unknown strategy name: {strategy_name}")
 
 
 class BaseStrategy(abc.ABC):
