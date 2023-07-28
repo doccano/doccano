@@ -83,13 +83,15 @@ class BulkAssignment(APIView):
         members = sorted(members, key=lambda m: workload_allocation.member_ids.index(m.id))
 
         dataset_size = project.examples.count()  # Todo: unassigned examples
-        strategy = create_assignment_strategy(strategy_name, dataset_size, workload_allocation.weights)
+        strategy = create_assignment_strategy(
+            strategy_name, dataset_size, workload_allocation.weights
+        )  # Todo: raise 400 if weights are not valid
         assignments = strategy.assign()
-        example_ids = project.examples.values_list("pk", flat=True)
+        examples = project.examples.all()
         assignments = [
             Assignment(
                 project=project,
-                example=example_ids[assignment.example],
+                example=examples[assignment.example],
                 assignee=members[assignment.user].user,
             )
             for assignment in assignments
