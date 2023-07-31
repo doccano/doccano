@@ -76,8 +76,9 @@ class BulkAssignment(APIView):
         try:
             bulk_assign(
                 project_id=self.kwargs["project_id"],
-                workload_allocation=workload_allocation,
                 strategy_name=strategy_name,
+                member_ids=workload_allocation.member_ids,
+                weights=workload_allocation.weights,
             )
         except ValueError as e:
             return Response(
