@@ -5,11 +5,12 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView, Response
 
-from examples.assignment.strategies import StrategyName, create_assignment_strategy
+from examples.assignment.strategies import StrategyName
+from examples.assignment.usecase import bulk_assign
 from examples.assignment.workload import WorkloadAllocation
 from examples.models import Assignment
 from examples.serializers import AssignmentSerializer
-from projects.models import Member, Project
+from projects.models import Project
 from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 
@@ -72,29 +73,15 @@ class BulkAssignment(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        project = get_object_or_404(Project, pk=self.kwargs["project_id"])
-        members = Member.objects.filter(project=project, pk__in=workload_allocation.member_ids)
-        if len(members) != len(workload_allocation.member_ids):
+        try:
+            bulk_assign(
+                project_id=self.kwargs["project_id"],
+                workload_allocation=workload_allocation,
+                strategy_name=strategy_name,
+            )
+        except ValueError as e:
             return Response(
-                {"detail": "Invalid member ids"},
+                {"detail": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # Sort members by workload_allocation.member_ids
-        members = sorted(members, key=lambda m: workload_allocation.member_ids.index(m.id))
-
-        dataset_size = project.examples.count()  # Todo: unassigned examples
-        strategy = create_assignment_strategy(
-            strategy_name, dataset_size, workload_allocation.weights
-        )  # Todo: raise 400 if weights are not valid
-        assignments = strategy.assign()
-        examples = project.examples.all()
-        assignments = [
-            Assignment(
-                project=project,
-                example=examples[assignment.example],
-                assignee=members[assignment.user].user,
-            )
-            for assignment in assignments
-        ]
-        Assignment.objects.bulk_create(assignments)
         return Response(status=status.HTTP_201_CREATED)

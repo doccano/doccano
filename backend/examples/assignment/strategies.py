@@ -38,7 +38,8 @@ class BaseStrategy(abc.ABC):
 
 class WeightedSequentialStrategy(BaseStrategy):
     def __init__(self, dataset_size: int, weights: List[int]):
-        assert sum(weights) == 100
+        if sum(weights) != 100:
+            raise ValueError("Sum of weights must be 100")
         self.dataset_size = dataset_size
         self.weights = weights
 
@@ -59,7 +60,8 @@ class WeightedSequentialStrategy(BaseStrategy):
 
 class WeightedRandomStrategy(BaseStrategy):
     def __init__(self, dataset_size: int, weights: List[int]):
-        assert sum(weights) == 100
+        if sum(weights) != 100:
+            raise ValueError("Sum of weights must be 100")
         self.dataset_size = dataset_size
         self.weights = weights
 
@@ -71,7 +73,8 @@ class WeightedRandomStrategy(BaseStrategy):
 
 class SamplingWithoutReplacementStrategy(BaseStrategy):
     def __init__(self, dataset_size: int, weights: List[int]):
-        assert 0 <= sum(weights) <= 100 * len(weights)
+        if not (0 <= sum(weights) <= 100 * len(weights)):
+            raise ValueError("Sum of weights must be between 0 and 100 x number of members")
         self.dataset_size = dataset_size
         self.weights = weights
 
