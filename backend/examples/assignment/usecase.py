@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404
 
 from examples.assignment.strategies import StrategyName, create_assignment_strategy
 from examples.assignment.workload import WorkloadAllocation
-from examples.models import Assignment
+from examples.models import Assignment, Example
 from projects.models import Member, Project
 
 
@@ -14,15 +14,15 @@ def bulk_assign(project_id: int, workload_allocation: WorkloadAllocation, strate
     # Sort members by workload_allocation.member_ids
     members = sorted(members, key=lambda m: workload_allocation.member_ids.index(m.id))
 
-    dataset_size = project.examples.count()  # Todo: unassigned examples
+    unassigned_examples = Example.objects.filter(project=project, assignments__isnull=True)
+    dataset_size = unassigned_examples.count()
 
     strategy = create_assignment_strategy(strategy_name, dataset_size, workload_allocation.weights)
     assignments = strategy.assign()
-    examples = project.examples.all()
     assignments = [
         Assignment(
             project=project,
-            example=examples[assignment.example],
+            example=unassigned_examples[assignment.example],
             assignee=members[assignment.user].user,
         )
         for assignment in assignments
