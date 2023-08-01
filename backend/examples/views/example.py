@@ -1,6 +1,3 @@
-import random
-
-from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, status
@@ -28,14 +25,7 @@ class ExampleList(generics.ListCreateAPIView):
         return get_object_or_404(Project, pk=self.kwargs["project_id"])
 
     def get_queryset(self):
-        queryset = self.model.objects.filter(project=self.project)
-        if self.project.random_order:
-            # Todo: fix the algorithm.
-            random.seed(self.request.user.id)
-            value = random.randrange(2, 20)
-            queryset = queryset.annotate(sort_id=F("id") % value).order_by("sort_id", "id")
-        else:
-            queryset = queryset.order_by("created_at")
+        queryset = self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
         return queryset
 
     def perform_create(self, serializer):
