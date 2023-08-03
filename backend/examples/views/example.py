@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from examples.filters import ExampleFilter
 from examples.models import Example
 from examples.serializers import ExampleSerializer
-from projects.models import Project
+from projects.models import Member, Project
 from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 
@@ -25,8 +25,10 @@ class ExampleList(generics.ListCreateAPIView):
         return get_object_or_404(Project, pk=self.kwargs["project_id"])
 
     def get_queryset(self):
-        queryset = self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
-        return queryset
+        member = get_object_or_404(Member, project=self.project, user=self.request.user)
+        if member.is_admin:
+            return self.model.objects.filter(project=self.project)
+        return self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(project=self.project)

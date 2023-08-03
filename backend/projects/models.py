@@ -210,6 +210,9 @@ class Member(models.Model):
             message = "This user is already assigned to a role in this project."
             raise ValidationError(message)
 
+    def is_admin(self):
+        return self.role.name == settings.ROLE_PROJECT_ADMIN
+
     @property
     def username(self):
         return self.user.username
