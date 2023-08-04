@@ -26,7 +26,7 @@ class ExampleList(generics.ListCreateAPIView):
 
     def get_queryset(self):
         member = get_object_or_404(Member, project=self.project, user=self.request.user)
-        if member.is_admin:
+        if member.is_admin():
             return self.model.objects.filter(project=self.project)
         return self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
 
