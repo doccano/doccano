@@ -38,29 +38,41 @@
       v-if="project.isImageProject"
       v-model="selected"
       :items="item.items"
+      :is-admin="user.isProjectAdmin"
       :is-loading="isLoading"
+      :members="members"
       :total="item.count"
       @update:query="updateQuery"
       @click:labeling="movePage"
+      @assign="assign"
+      @unassign="unassign"
     />
     <audio-list
       v-else-if="project.isAudioProject"
       v-model="selected"
       :items="item.items"
+      :is-admin="user.isProjectAdmin"
       :is-loading="isLoading"
+      :members="members"
       :total="item.count"
       @update:query="updateQuery"
       @click:labeling="movePage"
+      @assign="assign"
+      @unassign="unassign"
     />
     <document-list
       v-else
       v-model="selected"
       :items="item.items"
+      :is-admin="user.isProjectAdmin"
       :is-loading="isLoading"
+      :members="members"
       :total="item.count"
       @update:query="updateQuery"
       @click:labeling="movePage"
       @edit="editItem"
+      @assign="assign"
+      @unassign="unassign"
     />
   </v-card>
 </template>
@@ -78,6 +90,7 @@ import AudioList from '~/components/example/AudioList.vue'
 import ImageList from '~/components/example/ImageList.vue'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 import { ExampleDTO, ExampleListDTO } from '~/services/application/example/exampleData'
+import { MemberItem } from '~/domain/models/member/member'
 
 export default Vue.extend({
   components: {
@@ -103,6 +116,8 @@ export default Vue.extend({
       dialogDeleteAll: false,
       item: {} as ExampleListDTO,
       selected: [] as ExampleDTO[],
+      members: [] as MemberItem[],
+      user: {} as MemberItem,
       isLoading: false,
       isProjectAdmin: false
     }
@@ -111,6 +126,10 @@ export default Vue.extend({
   async fetch() {
     this.isLoading = true
     this.item = await this.$services.example.list(this.projectId, this.$route.query)
+    this.user = await this.$repositories.member.fetchMyRole(this.projectId)
+    if (this.user.isProjectAdmin) {
+      this.members = await this.$repositories.member.list(this.projectId)
+    }
     this.isLoading = false
   },
 
@@ -175,6 +194,16 @@ export default Vue.extend({
 
     editItem(item: ExampleDTO) {
       this.$router.push(`dataset/${item.id}/edit`)
+    },
+
+    async assign(exampleId: number, userId: number) {
+      await this.$repositories.assignment.assign(this.projectId, exampleId, userId)
+      this.item = await this.$services.example.list(this.projectId, this.$route.query)
+    },
+
+    async unassign(assignmentId: string) {
+      await this.$repositories.assignment.unassign(this.projectId, assignmentId)
+      this.item = await this.$services.example.list(this.projectId, this.$route.query)
     }
   }
 })
