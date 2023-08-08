@@ -112,12 +112,12 @@ export default Vue.extend({
   },
 
   methods: {
-    agree() {
+    async agree() {
       const workloads = this.workloadAllocation.map((weight, i) => ({
         weight,
         member_id: this.members[i].id
       }))
-      this.$repositories.assignment.bulkAssign(this.projectId, {
+      await this.$repositories.assignment.bulkAssign(this.projectId, {
         strategy_name: this.selectedStrategy,
         workloads
       })
