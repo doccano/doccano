@@ -15,4 +15,9 @@ export class APIAssignmentRepository {
     const url = `/projects/${projectId}/assignments/${assignmentId}`
     await this.request.delete(url)
   }
+
+  async bulkAssign(projectId: string, workloadAllocation: Object): Promise<void> {
+    const url = `/projects/${projectId}/assignments/bulk_assign`
+    await this.request.post(url, workloadAllocation)
+  }
 }

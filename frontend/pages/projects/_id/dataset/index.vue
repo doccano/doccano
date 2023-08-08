@@ -4,6 +4,7 @@
       <action-menu
         @upload="$router.push('dataset/import')"
         @download="$router.push('dataset/export')"
+        @assign="dialogAssignment = true"
       />
       <v-btn
         class="text-capitalize ms-2"
@@ -32,6 +33,9 @@
       </v-dialog>
       <v-dialog v-model="dialogDeleteAll">
         <form-delete-bulk @cancel="dialogDeleteAll = false" @remove="removeAll" />
+      </v-dialog>
+      <v-dialog v-model="dialogAssignment">
+        <form-assignment @assigned="assigned" @cancel="dialogAssignment = false" />
       </v-dialog>
     </v-card-title>
     <image-list
@@ -83,6 +87,7 @@ import { mapGetters } from 'vuex'
 import Vue from 'vue'
 import { NuxtAppOptions } from '@nuxt/types'
 import DocumentList from '@/components/example/DocumentList.vue'
+import FormAssignment from '~/components/example/FormAssignment.vue'
 import FormDelete from '@/components/example/FormDelete.vue'
 import FormDeleteBulk from '@/components/example/FormDeleteBulk.vue'
 import ActionMenu from '~/components/example/ActionMenu.vue'
@@ -98,6 +103,7 @@ export default Vue.extend({
     AudioList,
     DocumentList,
     ImageList,
+    FormAssignment,
     FormDelete,
     FormDeleteBulk
   },
@@ -114,6 +120,7 @@ export default Vue.extend({
     return {
       dialogDelete: false,
       dialogDeleteAll: false,
+      dialogAssignment: false,
       item: {} as ExampleListDTO,
       selected: [] as ExampleDTO[],
       members: [] as MemberItem[],
@@ -203,6 +210,11 @@ export default Vue.extend({
 
     async unassign(assignmentId: string) {
       await this.$repositories.assignment.unassign(this.projectId, assignmentId)
+      this.item = await this.$services.example.list(this.projectId, this.$route.query)
+    },
+
+    async assigned() {
+      this.dialogAssignment = false
       this.item = await this.$services.example.list(this.projectId, this.$route.query)
     }
   }

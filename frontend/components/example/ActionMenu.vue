@@ -5,12 +5,13 @@
     @create="$emit('create')"
     @upload="$emit('upload')"
     @download="$emit('download')"
+    @assign="$emit('assign')"
   />
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { mdiUpload, mdiDownload } from '@mdi/js'
+import { mdiAccountCheck, mdiUpload, mdiDownload } from '@mdi/js'
 import ActionMenu from '~/components/utils/ActionMenu.vue'
 
 export default Vue.extend({
@@ -30,6 +31,11 @@ export default Vue.extend({
           title: this.$t('dataset.exportDataset'),
           icon: mdiDownload,
           event: 'download'
+        },
+        {
+          title: 'Assign to member',
+          icon: mdiAccountCheck,
+          event: 'assign'
         }
       ]
     }
