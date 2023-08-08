@@ -5,6 +5,7 @@
         @upload="$router.push('dataset/import')"
         @download="$router.push('dataset/export')"
         @assign="dialogAssignment = true"
+        @reset="dialogReset = true"
       />
       <v-btn
         class="text-capitalize ms-2"
@@ -36,6 +37,9 @@
       </v-dialog>
       <v-dialog v-model="dialogAssignment">
         <form-assignment @assigned="assigned" @cancel="dialogAssignment = false" />
+      </v-dialog>
+      <v-dialog v-model="dialogReset">
+        <form-reset-assignment @cancel="dialogReset = false" @reset="resetAssignment" />
       </v-dialog>
     </v-card-title>
     <image-list
@@ -90,6 +94,7 @@ import DocumentList from '@/components/example/DocumentList.vue'
 import FormAssignment from '~/components/example/FormAssignment.vue'
 import FormDelete from '@/components/example/FormDelete.vue'
 import FormDeleteBulk from '@/components/example/FormDeleteBulk.vue'
+import FormResetAssignment from '~/components/example/FormResetAssignment.vue'
 import ActionMenu from '~/components/example/ActionMenu.vue'
 import AudioList from '~/components/example/AudioList.vue'
 import ImageList from '~/components/example/ImageList.vue'
@@ -105,7 +110,8 @@ export default Vue.extend({
     ImageList,
     FormAssignment,
     FormDelete,
-    FormDeleteBulk
+    FormDeleteBulk,
+    FormResetAssignment
   },
 
   layout: 'project',
@@ -121,6 +127,7 @@ export default Vue.extend({
       dialogDelete: false,
       dialogDeleteAll: false,
       dialogAssignment: false,
+      dialogReset: false,
       item: {} as ExampleListDTO,
       selected: [] as ExampleDTO[],
       members: [] as MemberItem[],
@@ -215,6 +222,12 @@ export default Vue.extend({
 
     async assigned() {
       this.dialogAssignment = false
+      this.item = await this.$services.example.list(this.projectId, this.$route.query)
+    },
+
+    async resetAssignment() {
+      this.dialogReset = false
+      await this.$repositories.assignment.reset(this.projectId)
       this.item = await this.$services.example.list(this.projectId, this.$route.query)
     }
   }

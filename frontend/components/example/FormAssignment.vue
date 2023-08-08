@@ -117,7 +117,6 @@ export default Vue.extend({
         weight,
         member_id: this.members[i].id
       }))
-      console.log(workloads)
       this.$repositories.assignment.bulkAssign(this.projectId, {
         strategy_name: this.selectedStrategy,
         workloads
