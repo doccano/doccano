@@ -14,8 +14,10 @@ def bulk_assign(project_id: int, strategy_name: StrategyName, member_ids: List[i
         raise ValueError("Invalid member ids")
     # Sort members by member_ids
     members = sorted(members, key=lambda m: member_ids.index(m.id))
+    index_to_user = {i: member.user for i, member in enumerate(members)}
 
     unassigned_examples = Example.objects.filter(project=project, assignments__isnull=True)
+    index_to_example = {i: example for i, example in enumerate(unassigned_examples)}
     dataset_size = unassigned_examples.count()
 
     strategy = create_assignment_strategy(strategy_name, dataset_size, weights)
@@ -23,8 +25,8 @@ def bulk_assign(project_id: int, strategy_name: StrategyName, member_ids: List[i
     assignments = [
         Assignment(
             project=project,
-            example=unassigned_examples[assignment.example],
-            assignee=members[assignment.user].user,
+            example=index_to_example[assignment.example],
+            assignee=index_to_user[assignment.user],
         )
         for assignment in assignments
     ]
