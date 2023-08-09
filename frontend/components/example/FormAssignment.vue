@@ -48,13 +48,16 @@
       <v-btn
         class="text-none"
         text
-        :disabled="!validateWeight"
+        :disabled="!validateWeight || isWaiting"
         data-test="delete-button"
         @click="agree"
       >
         Assign
       </v-btn>
     </v-card-actions>
+    <v-overlay :value="isWaiting">
+      <v-progress-circular indeterminate size="64" />
+    </v-overlay>
   </v-card>
 </template>
 
@@ -67,7 +70,8 @@ export default Vue.extend({
     return {
       members: [] as MemberItem[],
       workloadAllocation: [] as number[],
-      selectedStrategy: 'weighted_sequential'
+      selectedStrategy: 'weighted_sequential',
+      isWaiting: false
     }
   },
 
@@ -114,6 +118,7 @@ export default Vue.extend({
 
   methods: {
     async agree() {
+      this.isWaiting = true
       const workloads = this.workloadAllocation.map((weight, i) => ({
         weight,
         member_id: this.members[i].id
@@ -122,6 +127,7 @@ export default Vue.extend({
         strategy_name: this.selectedStrategy,
         workloads
       })
+      this.isWaiting = false
       this.$emit('assigned')
     },
     cancel() {
