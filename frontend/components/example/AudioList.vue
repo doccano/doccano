@@ -59,7 +59,14 @@
         solo
         style="width: 200px"
         @change="onAssignOrUnassign(item, $event)"
-      />
+      >
+        <template #selection="{ attrs, item, parent, selected }">
+          <v-chip v-bind="attrs" :input-value="selected" small class="mt-1 mb-1">
+            <span class="pr-1">{{ item.username }}</span>
+            <v-icon small @click="parent.selectItem(item)"> $delete </v-icon>
+          </v-chip>
+        </template>
+      </v-combobox>
     </template>
     <template #[`item.action`]="{ item }">
       <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
