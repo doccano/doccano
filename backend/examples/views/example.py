@@ -28,7 +28,11 @@ class ExampleList(generics.ListCreateAPIView):
         member = get_object_or_404(Member, project=self.project, user=self.request.user)
         if member.is_admin():
             return self.model.objects.filter(project=self.project)
-        return self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
+
+        queryset = self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
+        if self.project.random_order:
+            queryset = queryset.order_by("assignments__id")
+        return queryset
 
     def perform_create(self, serializer):
         serializer.save(project=self.project)

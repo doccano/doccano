@@ -18,7 +18,8 @@
               hide-details
             ></v-select>
             {{ strategies.find((strategy) => strategy.value === selectedStrategy)?.description }}
-            Note that assigning to an administrator does not make sense.
+            The project managers have access to all examples, regardless of whether they are
+            assigned or not.
           </v-col>
         </v-row>
         <v-row>
