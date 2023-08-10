@@ -15,3 +15,7 @@ def make_image(project, filepath):
 
 def make_example_state(example, user):
     return mommy.make("ExampleState", example=example, confirmed_by=user)
+
+
+def make_assignment(project, example, user):
+    return mommy.make("Assignment", project=project, example=example, assignee=user)

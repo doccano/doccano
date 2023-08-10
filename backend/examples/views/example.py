@@ -1,6 +1,3 @@
-import random
-
-from django.db.models import F
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, status
@@ -10,7 +7,7 @@ from rest_framework.response import Response
 from examples.filters import ExampleFilter
 from examples.models import Example
 from examples.serializers import ExampleSerializer
-from projects.models import Project
+from projects.models import Member, Project
 from projects.permissions import IsProjectAdmin, IsProjectStaffAndReadOnly
 
 
@@ -28,14 +25,13 @@ class ExampleList(generics.ListCreateAPIView):
         return get_object_or_404(Project, pk=self.kwargs["project_id"])
 
     def get_queryset(self):
-        queryset = self.model.objects.filter(project=self.project)
+        member = get_object_or_404(Member, project=self.project, user=self.request.user)
+        if member.is_admin():
+            return self.model.objects.filter(project=self.project)
+
+        queryset = self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
         if self.project.random_order:
-            # Todo: fix the algorithm.
-            random.seed(self.request.user.id)
-            value = random.randrange(2, 20)
-            queryset = queryset.annotate(sort_id=F("id") % value).order_by("sort_id", "id")
-        else:
-            queryset = queryset.order_by("created_at")
+            queryset = queryset.order_by("assignments__id")
         return queryset
 
     def perform_create(self, serializer):

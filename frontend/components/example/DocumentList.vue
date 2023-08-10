@@ -41,8 +41,30 @@
     <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
     </template>
-    <template #[`item.commentCount`]="{ item }">
-      <span> {{ item.commentCount }} </span>
+    <template #[`item.assignee`]="{ item }">
+      <v-combobox
+        :value="toSelected(item)"
+        :items="members"
+        item-text="username"
+        no-data-text="No one"
+        multiple
+        chips
+        dense
+        flat
+        hide-selected
+        hide-details
+        small-chips
+        solo
+        style="width: 200px"
+        @change="onAssignOrUnassign(item, $event)"
+      >
+        <template #selection="{ attrs, item, parent, selected }">
+          <v-chip v-bind="attrs" :input-value="selected" small class="mt-1 mb-1">
+            <span class="pr-1">{{ item.username }}</span>
+            <v-icon small @click="parent.selectItem(item)"> $delete </v-icon>
+          </v-chip>
+        </template>
+      </v-combobox>
     </template>
     <template #[`item.action`]="{ item }">
       <v-btn class="me-1" small color="primary text-capitalize" @click="$emit('edit', item)"
@@ -61,6 +83,7 @@ import type { PropType } from 'vue'
 import Vue from 'vue'
 import { DataOptions } from 'vuetify/types'
 import { ExampleDTO } from '~/services/application/example/exampleData'
+import { MemberItem } from '~/domain/models/member/member'
 
 export default Vue.extend({
   props: {
@@ -83,6 +106,15 @@ export default Vue.extend({
       type: Number,
       default: 0,
       required: true
+    },
+    members: {
+      type: Array as PropType<MemberItem[]>,
+      default: () => [],
+      required: true
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -96,12 +128,7 @@ export default Vue.extend({
 
   computed: {
     headers() {
-      return [
-        {
-          text: 'ID',
-          value: 'id',
-          sortable: false
-        },
+      const headers = [
         {
           text: 'Status',
           value: 'isConfirmed',
@@ -118,16 +145,19 @@ export default Vue.extend({
           sortable: false
         },
         {
-          text: this.$t('comments.comments'),
-          value: 'commentCount',
-          sortable: false
-        },
-        {
           text: this.$t('dataset.action'),
           value: 'action',
           sortable: false
         }
       ]
+      if (this.isAdmin) {
+        headers.splice(3, 0, {
+          text: 'Assignee',
+          value: 'assignee',
+          sortable: false
+        })
+      }
+      return headers
     }
   },
 
@@ -162,6 +192,31 @@ export default Vue.extend({
       const offset = (this.options.page - 1) * this.options.itemsPerPage
       const page = (offset + index + 1).toString()
       this.$emit('click:labeling', { page, q: this.search })
+    },
+
+    toSelected(item: ExampleDTO) {
+      const assigneeIds = item.assignments.map((assignment) => assignment.assignee_id)
+      return this.members.filter((member) => assigneeIds.includes(member.user))
+    },
+
+    onAssignOrUnassign(item: ExampleDTO, newAssignees: MemberItem[]) {
+      const newAssigneeIds = newAssignees.map((assignee) => assignee.user)
+      const oldAssigneeIds = item.assignments.map((assignment) => assignment.assignee_id)
+      if (oldAssigneeIds.length > newAssigneeIds.length) {
+        // unassign
+        for (const assignment of item.assignments) {
+          if (!newAssigneeIds.includes(assignment.assignee_id)) {
+            this.$emit('unassign', assignment.id)
+          }
+        }
+      } else {
+        // assign
+        for (const newAssigneeId of newAssigneeIds) {
+          if (!oldAssigneeIds.includes(newAssigneeId)) {
+            this.$emit('assign', item.id, newAssigneeId)
+          }
+        }
+      }
     }
   }
 })

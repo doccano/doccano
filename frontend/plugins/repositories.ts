@@ -1,4 +1,5 @@
 import { Plugin } from '@nuxt/types'
+import { APIAssignmentRepository } from '@/repositories/example/apiAssignmentRepository'
 import { APIAuthRepository } from '@/repositories/auth/apiAuthRepository'
 import { APIConfigRepository } from '@/repositories/autoLabeling/config/apiConfigRepository'
 import { APITemplateRepository } from '@/repositories/autoLabeling/template/apiTemplateRepository'
@@ -23,7 +24,6 @@ import { APICatalogRepository } from '@/repositories/upload/apiCatalogRepository
 import { APIParseRepository } from '@/repositories/upload/apiParseRepository'
 import { APIUserRepository } from '@/repositories/user/apiUserRepository'
 import { APISegmentationRepository } from '~/repositories/tasks/apiSegmentationRepository'
-
 export interface Repositories {
   // User
   auth: APIAuthRepository
@@ -41,6 +41,7 @@ export interface Repositories {
   taskStatus: APITaskStatusRepository
   metrics: APIMetricsRepository
   option: LocalStorageOptionRepository
+  assignment: APIAssignmentRepository
 
   // Auto Labeling
   config: APIConfigRepository
@@ -91,6 +92,7 @@ const repositories: Repositories = {
   taskStatus: new APITaskStatusRepository(),
   metrics: new APIMetricsRepository(),
   option: new LocalStorageOptionRepository(),
+  assignment: new APIAssignmentRepository(),
 
   // Auto Labeling
   config: new APIConfigRepository(),

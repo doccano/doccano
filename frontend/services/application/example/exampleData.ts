@@ -1,4 +1,4 @@
-import { ExampleItem, ExampleItemList } from '~/domain/models/example/example'
+import { ExampleItem, ExampleItemList, Assignment } from '~/domain/models/example/example'
 
 export class ExampleDTO {
   id: number
@@ -11,6 +11,7 @@ export class ExampleDTO {
   filename: string
   url: string
   isConfirmed: boolean
+  assignments: Assignment[]
 
   constructor(item: ExampleItem) {
     this.id = item.id
@@ -23,6 +24,7 @@ export class ExampleDTO {
     this.filename = item.filename
     this.url = item.url
     this.isConfirmed = item.isConfirmed
+    this.assignments = item.assignments
   }
 }
 
