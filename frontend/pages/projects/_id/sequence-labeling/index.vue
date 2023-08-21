@@ -16,27 +16,27 @@
     <template #content>
       <v-card>
         <KeepAlive>
-        <div class="annotation-text pa-4">
-          <entity-editor
-            :dark="$vuetify.theme.dark"
-            :rtl="isRTL"
-            :text="doc.text"
-            :entities="annotations"
-            :entity-labels="spanTypes"
-            :relations="relations"
-            :relation-labels="relationTypes"
-            :allow-overlapping="project.allowOverlappingSpans"
-            :grapheme-mode="project.enableGraphemeMode"
-            :selected-label="selectedLabel"
-            :relation-mode="relationMode"
-            @addEntity="addSpan"
-            @addRelation="addRelation"
-            @click:entity="updateSpan"
-            @click:relation="updateRelation"
-            @contextmenu:entity="confirmDeleteSpan"
-            @contextmenu:relation="deleteRelation"
-          />
-        </div>
+          <div class="annotation-text pa-4">
+            <entity-editor
+              :dark="$vuetify.theme.dark"
+              :rtl="isRTL"
+              :text="doc.text"
+              :entities="annotations"
+              :entity-labels="spanTypes"
+              :relations="relations"
+              :relation-labels="relationTypes"
+              :allow-overlapping="project.allowOverlappingSpans"
+              :grapheme-mode="project.enableGraphemeMode"
+              :selected-label="selectedLabel"
+              :relation-mode="relationMode"
+              @addEntity="addSpan"
+              @addRelation="addRelation"
+              @click:entity="updateSpan"
+              @click:relation="updateRelation"
+              @contextmenu:entity="confirmDeleteSpan"
+              @contextmenu:relation="deleteRelation"
+            />
+          </div>
         </KeepAlive>
       </v-card>
     </template>
@@ -81,14 +81,18 @@
 
 <script>
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js'
-import _ from 'lodash'
 import { mapGetters } from 'vuex'
+// import { ref } from 'vue'
+// import { useRefHistory } from '@vueuse/core'
 import LayoutText from '@/components/tasks/layout/LayoutText'
 // import ListMetadata from '@/components/tasks/metadata/ListMetadata'
 import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
 import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
+
+const snapshots = []
+let redo = []
 
 export default {
   components: {
@@ -139,7 +143,6 @@ export default {
     }
     await this.list(doc.id)
   },
-
   computed: {
     ...mapGetters('auth', ['isAuthenticated', 'getUsername', 'getUserId']),
     ...mapGetters('config', ['isRTL']),
@@ -194,7 +197,12 @@ export default {
       }
     }
   },
-
+  destroyed() {
+    document.removeEventListener('keyup', this.keyupHandler)
+  },
+  mounted() {
+    document.addEventListener('keyup', this.keyupHandler)
+  },
   async created() {
     this.spanTypes = await this.$services.spanType.list(this.projectId)
     this.relationTypes = await this.$services.relationType.list(this.projectId)
@@ -203,6 +211,99 @@ export default {
   },
 
   methods: {
+    keyupHandler(event) {
+      if (event.ctrlKey && event.key === 'z') {
+        this.undoHandler()
+      } else if (event.ctrlKey && event.key === 'y') {
+        this.redoHandler()
+      }
+    },
+    getFreshSpan(snapshot) {
+      const span = this.annotations.filter(function (annotation) {
+        return (
+          annotation.label === snapshot.label_id &&
+          annotation.endOffset === snapshot.end_offset &&
+          annotation.startOffset === snapshot.start_offset
+        )
+      })[0]
+      return span
+    },
+    async undo(snapshot) {
+      const action = snapshot.action
+      if (action === 'create') {
+        const span = this.getFreshSpan(snapshot)
+        await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, span.id)
+      } else if (action === 'delete') {
+        await this.$services.sequenceLabeling.create(
+          this.projectId,
+          this.doc.id,
+          snapshot.label_id,
+          snapshot.start_offset,
+          snapshot.end_offset
+        )
+      } else if (action === 'update') {
+        await this.$services.sequenceLabeling.changeLabel(
+          this.projectId,
+          this.doc.id,
+          snapshot.span_id,
+          snapshot.from_label
+        )
+      }
+      await this.list(this.doc.id)
+    },
+    async redo(snapshot) {
+      const action = snapshot.action
+      if (action === 'delete') {
+        const span = this.getFreshSpan(snapshot)
+        await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, span.id)
+      } else if (action === 'create') {
+        await this.$services.sequenceLabeling.create(
+          this.projectId,
+          this.doc.id,
+          snapshot.label_id,
+          snapshot.start_offset,
+          snapshot.end_offset
+        )
+      } else if (action === 'update') {
+        await this.$services.sequenceLabeling.changeLabel(
+          this.projectId,
+          this.doc.id,
+          snapshot.span_id,
+          snapshot.from_label
+        )
+      }
+      await this.list(this.doc.id)
+    },
+    undoHandler() {
+      if (snapshots.length > 0) {
+        const last_snapshot = snapshots.pop()
+        this.undo(last_snapshot)
+        if (last_snapshot.action === 'update') {
+          const to = last_snapshot.to_label
+          const from = last_snapshot.from_label
+          last_snapshot.to_label = from
+          last_snapshot.from_label = to
+        }
+        redo.push(last_snapshot)
+      } else {
+        console.log('Nothing to undo.')
+      }
+    },
+    redoHandler() {
+      if (redo.length > 0) {
+        const last_snapshot = redo.pop()
+        this.redo(last_snapshot)
+        if (last_snapshot.action === 'update') {
+          const to = last_snapshot.to_label
+          const from = last_snapshot.from_label
+          last_snapshot.to_label = from
+          last_snapshot.from_label = to
+        }
+        snapshots.push(last_snapshot)
+      } else {
+        console.log('Nothing to redo.')
+      }
+    },
     async maybeFetchSpanTypes(annotations) {
       const labelIds = new Set(this.spanTypes.map((label) => label.id))
       if (annotations.some((item) => !labelIds.has(item.label))) {
@@ -220,20 +321,35 @@ export default {
       this.annotations = annotations
       this.relations = relations
     },
-
+    recordSnapshot(action) {
+      snapshots.push(action)
+    },
     async deleteSpan(id) {
+      redo = []
+      const span = this.annotations.filter(function (annotation) {
+        return annotation.id === id
+      })[0]
+      const snapshot = {
+        action: 'delete',
+        span_id: span.id,
+        label_id: span.label,
+        start_offset: span.startOffset,
+        end_offset: span.endOffset
+      }
       await this.$services.sequenceLabeling.delete(this.projectId, this.doc.id, id)
       await this.list(this.doc.id)
+      this.recordSnapshot(snapshot)
     },
 
-      // Function to confirm before deleting the span
-      async confirmDeleteSpan(id) {
-        if(confirm("Are you sure you want to delete this span?")) {
-          await this.deleteSpan(id)
-        }
-      },
+    // Function to confirm before deleting the span
+    async confirmDeleteSpan(id) {
+      if (confirm('Are you sure you want to delete this span?')) {
+        await this.deleteSpan(id)
+      }
+    },
 
     async addSpan(startOffset, endOffset, labelId) {
+      redo = []
       await this.$services.sequenceLabeling.create(
         this.projectId,
         this.doc.id,
@@ -242,9 +358,28 @@ export default {
         endOffset
       )
       await this.list(this.doc.id)
+      const span = this.annotations.filter(function (annotation) {
+        return (
+          annotation.label === labelId &&
+          annotation.endOffset === endOffset &&
+          annotation.startOffset === startOffset
+        )
+      })[0]
+      const snapshot = {
+        action: 'create',
+        span_id: span.id,
+        label_id: span.label,
+        start_offset: span.startOffset,
+        end_offset: span.endOffset
+      }
+      this.recordSnapshot(snapshot)
     },
 
     async updateSpan(annotationId, labelId) {
+      redo = []
+      const span = this.annotations.filter(function (annotation) {
+        return annotation.id === annotationId
+      })[0]
       await this.$services.sequenceLabeling.changeLabel(
         this.projectId,
         this.doc.id,
@@ -252,6 +387,13 @@ export default {
         labelId
       )
       await this.list(this.doc.id)
+      const snapshot = {
+        action: 'update',
+        span_id: annotationId,
+        to_label: labelId,
+        from_label: span.label
+      }
+      this.recordSnapshot(snapshot)
     },
 
     async addRelation(fromId, toId, typeId) {
