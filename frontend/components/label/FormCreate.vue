@@ -16,11 +16,9 @@
             />
           </v-col>
           <v-col cols="12" sm="6">
-            <v-select
-              :value="suffixKey"
-              :items="availableSuffixKeys"
-              :label="$t('labels.key')"
-              :rules="[rules.keyDuplicated]"
+            <v-text-field
+              :value="suffixKey" 
+              :counter="100"                           
               outlined
               @input="$emit('update:suffixKey', $event)"
             />
@@ -123,10 +121,7 @@ export default Vue.extend({
         ) => (v && v.length <= 100) || this.$t('rules.labelNameRules').labelLessThan100Chars,
         nameDuplicated: (
           v: string // @ts-ignore
-        ) => !this.isUsedName(v) || this.$t('rules.labelNameRules').duplicated,
-        keyDuplicated: (
-          v: string // @ts-ignore
-        ) => !this.isUsedSuffixKey(v) || this.$t('rules.keyNameRules').duplicated,
+        ) => !this.isUsedName(v) || this.$t('rules.labelNameRules').duplicated,        
         validColor: (v: string) =>
           /^#[0-9A-F]{6}$/i.test(v) || 'This string is NOT a valid hex color.'
       },
@@ -136,6 +131,7 @@ export default Vue.extend({
 
   computed: {
     availableSuffixKeys(): string[] {
+      
       const usedSuffixKeys = this.items
         .map((item) => item.suffixKey)
         .filter((item) => item !== this.suffixKey)
@@ -191,7 +187,7 @@ export default Vue.extend({
       if (key === null) {
         return false
       }
-      return this.items.filter((item) => item.id !== this.id && item.suffixKey === key).length > 0
+    // return this.items.filter((item) => item.id !== this.id && item.suffixKey === key).length > 0
     },
 
     setRandomColor() {

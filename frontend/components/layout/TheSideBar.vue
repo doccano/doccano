@@ -85,14 +85,7 @@ export default {
             (this.isProjectAdmin || this.project.allowMemberToCreateLabelType) &&
             this.project.canDefineLabel
         },
-        {
-          icon: mdiLabel,
-          text: 'Relations',
-          link: 'links',
-          isVisible:
-            (this.isProjectAdmin || this.project.allowMemberToCreateLabelType) &&
-            this.project.canDefineRelation
-        },
+      
         {
           icon: mdiAccount,
           text: this.$t('members.members'),

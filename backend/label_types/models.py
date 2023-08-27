@@ -17,11 +17,10 @@ class LabelType(models.Model):
         max_length=10,
         blank=True,
         null=True,
-        choices=(("ctrl", "ctrl"), ("shift", "shift"), ("ctrl shift", "ctrl shift")),
     )
     suffix_key = models.CharField(
-        max_length=1, blank=True, null=True, choices=tuple((c, c) for c in string.digits + string.ascii_lowercase)
-    )
+        max_length=256, blank=True, null=True)
+    
     project = models.ForeignKey(
         to=Project,
         on_delete=models.CASCADE,
@@ -42,7 +41,7 @@ class LabelType(models.Model):
     def clean(self):
         # Don't allow shortcut key not to have a suffix key.
         if self.prefix_key and not self.suffix_key:
-            message = "Shortcut key may not have a suffix key."
+            message = "Shortcut key may not have a suffix key. but we will accept it this time"
             raise ValidationError(message)
 
         # each shortcut (prefix key + suffix key) can only be assigned to one label

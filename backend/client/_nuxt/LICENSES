@@ -1,0 +1,314 @@
+/*!
+ * @toast-ui/editor
+ * @version 2.5.4 | Tue Nov 30 2021
+ * @author NHN FE Development Lab <dl_javascript@nhn.com>
+ * @license MIT
+ */
+
+/*!
+ * to-mark
+ * @version 1.0.1 | Tue Apr 13 2021
+ */
+
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+/*! http://mths.be/fromcodepoint v0.2.1 by @mathias */
+
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
+ * @license  MIT
+ */
+
+/*!
+ * vue-client-only v0.0.0-semantic-release
+ * (c) 2021-present egoist <0x142857@gmail.com>
+ * Released under the MIT License.
+ */
+
+/*!
+ * vue-i18n v8.26.8 
+ * (c) 2021 kazuya kawaguchi
+ * Released under the MIT License.
+ */
+
+/*!
+ * vue-konva v2.1.7 - https://github.com/konvajs/vue-konva#readme
+ * MIT Licensed
+ */
+
+/*!
+ * vue-no-ssr v1.1.1
+ * (c) 2018-present egoist <0x142857@gmail.com>
+ * Released under the MIT License.
+ */
+
+/*!
+ * vue-youtube v1.4.0
+ * (c) 2019 Antério Vieira
+ * Released under the MIT License.
+ */
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/**
+ * @license
+ * Lodash <https://lodash.com/>
+ * Copyright OpenJS Foundation and other contributors <https://openjsf.org/>
+ * Released under MIT license <https://lodash.com/license>
+ * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
+ * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ */
+
+/**
+* @link https://github.com/gajus/sister for the canonical source repository
+* @license https://github.com/gajus/sister/blob/master/LICENSE BSD 3-Clause
+*/
+
+
+/*! http://mths.be/fromcodepoint v0.2.1 by @mathias */
+
+
+/*!
+ * Chart.js v2.9.4
+ * https://www.chartjs.org
+ * (c) 2020 Chart.js Contributors
+ * Released under the MIT License
+ */
+
+//! moment.js
+
+//! moment.js locale configuration
+
+
+/*!
+ * FilePond 4.30.4
+ * Licensed under MIT, https://opensource.org/licenses/MIT/
+ * Please visit https://pqina.nl/filepond/ for details.
+ */
+
+/*!
+ * FilePondPluginFileValidateType 1.2.8
+ * Licensed under MIT, https://opensource.org/licenses/MIT/
+ * Please visit https://pqina.nl/filepond/ for details.
+ */
+
+/*!
+ * vue-filepond v6.0.3
+ * A handy FilePond adapter component for Vue
+ * 
+ * Copyright (c) 2020 PQINA
+ * https://pqina.nl/filepond
+ * 
+ * Licensed under the MIT license.
+ */
+
+
+/*!
+ * JavaScript Cookie v2.2.1
+ * https://github.com/js-cookie/js-cookie
+ *
+ * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
+ * Released under the MIT license
+ */
+
+/*!
+ * Vue.js v2.7.14
+ * (c) 2014-2022 Evan You
+ * Released under the MIT License.
+ */
+
+/*!
+ * cookie
+ * Copyright(c) 2012-2014 Roman Shtylman
+ * Copyright(c) 2015 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+
+/*!
+ * vuex v3.6.2
+ * (c) 2021 Evan You
+ * @license MIT
+ */
+
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+
+/*!
+ * wavesurfer.js 5.2.0 (2021-08-16)
+ * https://wavesurfer-js.org
+ * @license BSD-3-Clause
+ */
+
+/*! ./absMax */
+
+/*! ./clamp */
+
+/*! ./drawer */
+
+/*! ./drawer.canvasentry */
+
+/*! ./drawer.multicanvas */
+
+/*! ./fetch */
+
+/*! ./frame */
+
+/*! ./get-id */
+
+/*! ./max */
+
+/*! ./mediaelement */
+
+/*! ./mediaelement-webaudio */
+
+/*! ./min */
+
+/*! ./observer */
+
+/*! ./orientation */
+
+/*! ./peakcache */
+
+/*! ./prevent-click */
+
+/*! ./request-animation-frame */
+
+/*! ./silence-mode */
+
+/*! ./style */
+
+/*! ./util */
+
+/*! ./util/get-id */
+
+/*! ./util/style */
+
+/*! ./webaudio */
+
+/*! debounce */
+
+/*!***********************!*\
+  !*** ./src/drawer.js ***!
+  \***********************/
+
+/*!*************************!*\
+  !*** ./src/util/max.js ***!
+  \*************************/
+
+/*!*************************!*\
+  !*** ./src/util/min.js ***!
+  \*************************/
+
+/*!*************************!*\
+  !*** ./src/webaudio.js ***!
+  \*************************/
+
+/*!**************************!*\
+  !*** ./src/peakcache.js ***!
+  \**************************/
+
+/*!***************************!*\
+  !*** ./src/util/clamp.js ***!
+  \***************************/
+
+/*!***************************!*\
+  !*** ./src/util/fetch.js ***!
+  \***************************/
+
+/*!***************************!*\
+  !*** ./src/util/frame.js ***!
+  \***************************/
+
+/*!***************************!*\
+  !*** ./src/util/index.js ***!
+  \***************************/
+
+/*!***************************!*\
+  !*** ./src/util/style.js ***!
+  \***************************/
+
+/*!***************************!*\
+  !*** ./src/wavesurfer.js ***!
+  \***************************/
+
+/*!****************************!*\
+  !*** ./src/util/absMax.js ***!
+  \****************************/
+
+/*!****************************!*\
+  !*** ./src/util/get-id.js ***!
+  \****************************/
+
+/*!*****************************!*\
+  !*** ./src/mediaelement.js ***!
+  \*****************************/
+
+/*!******************************!*\
+  !*** ./src/util/observer.js ***!
+  \******************************/
+
+/*!*********************************!*\
+  !*** ./src/util/orientation.js ***!
+  \*********************************/
+
+/*!**********************************!*\
+  !*** ./src/util/silence-mode.js ***!
+  \**********************************/
+
+/*!***********************************!*\
+  !*** ./src/drawer.canvasentry.js ***!
+  \***********************************/
+
+/*!***********************************!*\
+  !*** ./src/drawer.multicanvas.js ***!
+  \***********************************/
+
+/*!***********************************!*\
+  !*** ./src/util/prevent-click.js ***!
+  \***********************************/
+
+/*!**************************************!*\
+  !*** ./src/mediaelement-webaudio.js ***!
+  \**************************************/
+
+/*!****************************************!*\
+  !*** ./node_modules/debounce/index.js ***!
+  \****************************************/
+
+/*!*********************************************!*\
+  !*** ./src/util/request-animation-frame.js ***!
+  \*********************************************/

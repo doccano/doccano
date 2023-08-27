@@ -44,7 +44,7 @@ export default Vue.extend({
   props: {
     errorMessage: {
       type: String,
-      default: ''
+      default: 'The format of the file is incorrect.'
     }
   },
 
@@ -61,13 +61,13 @@ export default Vue.extend({
       const data = [
         {
           text: 'Dog',
-          suffix_key: 'a',
+          suffix_key: '23',
           background_color: '#FF0000',
           text_color: '#ffffff'
         },
         {
           text: 'Cat',
-          suffix_key: 'c',
+          suffix_key: '12',
           background_color: '#FF0000',
           text_color: '#ffffff'
         }

@@ -2,7 +2,7 @@ version: "3.7"
 services:
 
   backend:
-    image: doccano/doccano:backend
+    image:  mydoccano:backend
     volumes:
       - static_volume:/backend/staticfiles
       - media:/backend/media
@@ -23,7 +23,7 @@ services:
       - network-frontend
 
   celery:
-    image: doccano/doccano:backend
+    image: mydoccano:backend
     volumes:
       - media:/backend/media
       - tmp_file:/backend/filepond-temp-uploads
@@ -40,7 +40,7 @@ services:
       - network-backend
 
   flower:
-    image: doccano/doccano:backend
+    image: mydoccano:backend
     entrypoint: ["/opt/bin/prod-flower.sh"]
     environment:
       PYTHONUNBUFFERED: "1"
@@ -65,9 +65,9 @@ services:
       - 5672:5672
     networks:
       - network-backend
-
+  
   nginx:
-    image: doccano/doccano:frontend
+    image: mydoccano:frontend
     command: >
       /bin/sh -c
       "envsubst '

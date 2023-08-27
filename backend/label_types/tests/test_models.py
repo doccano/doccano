@@ -13,7 +13,7 @@ class TestLabel(TestCase):
             mommy.make("CategoryType", project=label.project, text=label.text)
 
     def test_keys_uniqueness(self):
-        label = mommy.make("CategoryType", prefix_key="ctrl", suffix_key="a")
+        label = mommy.make("CategoryType", prefix_key="ctrl", suffix_key="abc")
         with self.assertRaises(ValidationError):
             CategoryType(
                 project=label.project, text="example", prefix_key=label.prefix_key, suffix_key=label.suffix_key
