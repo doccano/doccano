@@ -1,0 +1,120 @@
+# Default values for doccano-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: doccano/doccano
+  tag: "1.8"
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsUser: 1000
+  fsGroup: 1000
+  
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8000 # ingress port (but ingress is disabled since we're using istio virtualservice)
+  containerPort: 8000 # should be same as the one below
+
+doccanoconfig: 
+  admin_username: change
+  admin_email: change@me.com
+  admin_password: ChangeMe1234
+  db_url: "postgres://postgres_username:postgres_password@doccano-app-postgresql:5432/postgres_db?sslmode=disable"
+  # format: "postgres://postgres_username:postgres_password@postgres_host:postgres_port/postgres_db?sslmode=disable"
+  debug: True
+  standalone: True
+  secret_key: change-me-in-production-or-dont
+  port: 8000
+  workers: 3
+  celery_workers: 3
+  google_tracking_id: ""
+  django_settings_module: config.settings.production
+  persistant_storage_size: 2Gi
+
+
+postgresql:
+  #See https://github.com/bitnami/charts/blob/master/bitnami/postgresql/ for more info
+  enabled: true # If using your own hosted server disable this, and then modify doccanoconfig.db_url with your auth data
+  # If not external following config will be applied 
+  auth:
+    existingSecret: "{{ .Release.Name }}-postgres-secret"
+    username: postgres_username
+    database: postgres_db
+  service:
+    ports:
+      postgresql: 5432
+  secret:
+    create: true
+    name: "{{ .Release.Name }}-postgres-secret"
+    password: postgres_password
+    postgres_password: postgres_password_postgres
+    replication_password: postgres_password_replica
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: doccano-app.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  #tls:
+  #  - secretName: chart-example-tls
+  #   hosts:
+  #     - doccano-app
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 2
+    memory: 4Gi
+  requests:
+    cpu: 1
+    memory: 2Gi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
