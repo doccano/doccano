@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-persistant-volume
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: microk8s-hostpath
+  resources:
+    requests:
+      storage: {{ .Values.doccanoconfig.persistant_storage_size }}

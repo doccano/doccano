@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "doccano-app.fullname" . }}
+  labels:
+    {{- include "doccano-app.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "doccano-app.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "doccano-app.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "doccano-app.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: doccano-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-persistant-volume
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.containerPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 120
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 30
+          env:
+          - name: ADMIN_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key:  admin_username
+                name: {{ .Release.Name }}-auth
+          - name: ADMIN_EMAIL
+            valueFrom:
+              secretKeyRef:
+                key:  admin_email
+                name: {{ .Release.Name }}-auth
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key:  admin_password
+                name: {{ .Release.Name }}-auth
+          - name: DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                key:  db_url
+                name: {{ .Release.Name }}-auth
+          - name: DEBUG
+            value: "{{ .Values.doccanoconfig.debug }}"
+          - name: STANDALONE
+            value: "{{ .Values.doccanoconfig.standalone }}"
+          - name: SECRET_KEY
+            value: {{ .Values.doccanoconfig.secret_key  }}
+          - name: PORT
+            value: "{{ .Values.doccanoconfig.port  }}"
+          - name: WORKERS
+            value: "{{ .Values.doccanoconfig.workers  }}"
+          - name: CELERY_WORKERS
+            value: "{{ .Values.doccanoconfig.celery_workers  }}"
+          - name: GOOGLE_TRACKING_ID
+            value: {{ .Values.doccanoconfig.google_tracking_id  }}
+          - name: DJANGO_SETTINGS_MODULE
+            value: {{ .Values.doccanoconfig.django_settings_module  }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /doccano/backend/media
+              name: doccano-data
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
