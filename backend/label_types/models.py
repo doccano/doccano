@@ -20,7 +20,7 @@ class LabelType(models.Model):
         choices=(("ctrl", "ctrl"), ("shift", "shift"), ("ctrl shift", "ctrl shift")),
     )
     suffix_key = models.CharField(
-        max_length=256, blank=True, null=True, choices=tuple((c, c) for c in string.digits + string.ascii_lowercase)
+        max_length=1, blank=True, null=True, choices=tuple((c, c) for c in string.digits + string.ascii_lowercase)
     )
     project = models.ForeignKey(
         to=Project,
