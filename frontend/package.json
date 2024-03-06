@@ -39,7 +39,7 @@
     "js-cookie": "^2.2.1",
     "konva": "^8.3.10",
     "lodash": "^4.17.21",
-    "nuxt": "^2.15.7",
+    "nuxt": "^3.4.3",
     "nuxt-i18n": "^6.27.3",
     "papaparse": "^5.3.1",
     "reflect-metadata": "^0.1.13",
