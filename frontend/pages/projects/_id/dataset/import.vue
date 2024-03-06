@@ -127,7 +127,7 @@ export default {
       ],
       requiredRules: [(v) => !!v || 'Field value is required'],
       server: {
-        url: '/v1/fp',
+        url: `${process.env.baseUrl}/fp`,
         headers: {
           'X-CSRFToken': Cookies.get('csrftoken')
         },

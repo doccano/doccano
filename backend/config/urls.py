@@ -69,3 +69,6 @@ urlpatterns += [
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     re_path("", TemplateView.as_view(template_name="index.html")),
 ]
+
+if settings.BASE_URL:
+    urlpatterns = [path(f'{settings.BASE_URL.strip("/")}/', include(urlpatterns))]
