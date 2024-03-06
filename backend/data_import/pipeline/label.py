@@ -26,7 +26,7 @@ class Label(BaseModel, abc.ABC):
 
     @abc.abstractmethod
     def __lt__(self, other):
-        raise NotImplementedError()
+        return NotImplemented
 
     @classmethod
     def parse(cls, example_uuid: UUID4, obj: Any):
