@@ -3268,9 +3268,9 @@
   integrity sha512-fUjAAI/1qzJPR6AYoK00TBA6/aRYKTXjLY/rSYsWV4G5nwywKfrpOYOJi5exWyzozohyV6nrzliDlWcl32+IPg==
 
 "@vuejs-community/vue-filter-date-parse@^1.1.6":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@vuejs-community/vue-filter-date-parse/-/vue-filter-date-parse-1.1.6.tgz#8679a990af0f74b24c58d210ff2341e5b884a059"
-  integrity sha512-OzeiL5wrq+5+sw9hJfcfaIxcG953lpe37Lf0JnRKzVvfBRTHX2t8SIVxtDmgLhSGoGx9B4bGbpv4NaIqeEofXA==
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@vuejs-community/vue-filter-date-parse/-/vue-filter-date-parse-1.2.0.tgz#6528ddf7cc6b01a708d9ed45d5cb01b10e8f7264"
+  integrity sha512-428XND/lS1vTyrWU++Laiebu7hu2jspE/SZHNNoM4IqFN8Wey2OtKLPE3LrBDQ1ixT4w6Zrs94ai3NwkNNgAfg==
 
 "@webassemblyjs/ast@1.9.0":
   version "1.9.0"
