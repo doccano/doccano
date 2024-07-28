@@ -7,6 +7,7 @@ from .models import Example
 class ExampleFilter(FilterSet):
     confirmed = BooleanFilter(field_name="states", method="filter_by_state")
     label = CharFilter(method="filter_by_label")
+    assignee = CharFilter(method="filter_by_assignee")
 
     def filter_by_state(self, queryset, field_name, is_confirmed: bool):
         queryset = queryset.annotate(
@@ -51,6 +52,9 @@ class ExampleFilter(FilterSet):
         )
         return queryset
 
+    def filter_by_assignee(self, queryset: QuerySet, field_name: str, assignee: str) -> QuerySet:
+        return queryset.filter(assignments__assignee__username=assignee)
+
     class Meta:
         model = Example
-        fields = ("project", "text", "created_at", "updated_at", "label")
+        fields = ("project", "text", "created_at", "updated_at", "label", "assignee")
