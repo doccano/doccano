@@ -13,6 +13,4 @@ GS_PROJECT_ID = env("GS_PROJECT_ID")
 # https://django-storages.readthedocs.io/en/latest/backends/gcloud.html#authentication-settings
 _google_application_credentials = env("GOOGLE_APPLICATION_CREDENTIALS", "")
 if _google_application_credentials:
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
-        _google_application_credentials
-    )
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(_google_application_credentials)
