@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Docker meta
         id: docker_meta
@@ -56,7 +56,7 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: doccano/doccano:backend
           labels: ${{ steps.docker_meta.outputs.labels }}
-      
+
       - name: Build a frontend image and push
         uses: docker/build-push-action@v3
         with:
