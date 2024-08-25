@@ -1,5 +1,5 @@
 ARG PYTHON_VERSION="3.8.13-slim-bullseye"
-ARG NODE_VERSION="16.16-bullseye-slim"
+ARG NODE_VERSION="18.20-bullseye-slim"
 FROM node:${NODE_VERSION} AS frontend-builder
 
 COPY frontend/ /frontend/
