@@ -61,7 +61,7 @@ function buildQueryParams(
   let updatedQuery: string = q
   customParams.forEach((param: string) => {
     let value: string | null
-    [updatedQuery, value] = extractParamFromQuery(updatedQuery, param)
+    ;[updatedQuery, value] = extractParamFromQuery(updatedQuery, param)
     if (value !== null) {
       params.append(param, value)
     }
