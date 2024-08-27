@@ -26,6 +26,24 @@ function toPayload(item: ExampleItem): { [key: string]: any } {
   }
 }
 
+/**
+ * Extracts a parameter value from a query string.
+ *
+ * @param {string} q - The query string to extract the parameter from.
+ * @param {string} name - The name of the parameter to extract.
+ * @return {Array} - A tuple containing the updated query string and the extracted parameter value.
+ *                  - If the parameter is not found, the extracted value will be null.
+ */
+function extractParamFromQuery(q: string, name: string): [string, string | null] {
+  const pattern = new RegExp(`${name}:(".+?"|\\S+)`)
+  if (pattern.test(q)) {
+    const value = pattern.exec(q)![1]
+    q = q.replace(pattern, '')
+    return [q, value]
+  }
+  return [q, null]
+}
+
 function buildQueryParams(
   limit: any,
   offset: string,
@@ -39,13 +57,17 @@ function buildQueryParams(
   params.append('confirmed', isChecked)
   params.append('ordering', ordering)
 
-  const pattern = /label:(".+?"|\S+)/
-  if (pattern.test(q)) {
-    const label = pattern.exec(q)![1]
-    params.append('label', label.replace(/"/g, ''))
-    q = q.replace(pattern, '')
-  }
-  params.append('q', q)
+  const customParams = ['label', 'assignee']
+  let updatedQuery: string = q
+  customParams.forEach((param: string) => {
+    let value: string | null
+    ;[updatedQuery, value] = extractParamFromQuery(updatedQuery, param)
+    if (value !== null) {
+      params.append(param, value)
+    }
+  })
+
+  params.append('q', updatedQuery)
   return params.toString()
 }
 
