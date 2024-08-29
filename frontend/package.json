@@ -56,7 +56,7 @@
     "vue-youtube": "^1.4.0",
     "vuetify": "^2.*",
     "wavesurfer.js": "^5.1.0",
-    "webpack": "^4.46.0",
+    "webpack": "^5.94.0",
     "yarn": "^1.22.10"
   },
   "devDependencies": {
