@@ -91,6 +91,13 @@ export default Vue.extend({
       }
       return headers
     }
+    groupedItems() {
+      return this.items.sort((a, b) => {
+        if (a.backgroundColor < b.backgroundColor) return -1;
+        if (a.backgroundColor > b.backgroundColor) return 1;
+        return 0;
+      });
+    }
   }
 })
 </script>
