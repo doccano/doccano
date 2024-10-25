@@ -46,7 +46,7 @@
     "tui-editor": "^1.4.10",
     "uuid": "^8.3.2",
     "v-annotator": "0.1.28",
-    "vue": "^2.6.14",
+    "vue": "^3.0.0",
     "vue-chartjs": "^3",
     "vue-filepond": "^6.0.3",
     "vue-konva": "2",
