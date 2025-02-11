@@ -1,0 +1,3 @@
+# Force LF for all shell scripts (because windows git might autoconvert LF to CRLF)
+*.sh text eol=lf
+

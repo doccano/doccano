@@ -115,12 +115,6 @@ git clone https://github.com/doccano/doccano.git
 cd doccano
 ```
 
-_Note for Windows developers:_ Be sure to configure git to correctly handle line endings or you may encounter `status code 127` errors while running the services in future steps. Running with the git config options below will ensure your git directory correctly handles line endings.
-
-```bash
-git clone https://github.com/doccano/doccano.git --config core.autocrlf=input
-```
-
 Then, create an `.env` file with variables in the following format (see [./docker/.env.example](https://github.com/doccano/doccano/blob/master/docker/.env.example)):
 
 ```plain
