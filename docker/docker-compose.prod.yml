@@ -68,6 +68,9 @@ services:
 
   nginx:
     image: doccano/doccano:frontend
+    build:
+      context: ../ 
+      dockerfile: docker/Dockerfile.nginx
     command: >
       /bin/sh -c
       "envsubst '
