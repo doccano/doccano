@@ -1,24 +1,17 @@
+!#/bin/bash
+# Step 1: Get the container ID
+
+CONTAINER_ID=$(docker ps -q --filter "name=docker-postgres-1")
 
 
+# Step 2: Check if the container ID was found
+if [ -z "$CONTAINER_ID" ]; then
+  echo "Container not found!"
+  exit 1
+fi
 
+# Step 3: Extract the IP address
+IP_ADDRESS=$(docker inspect $CONTAINER_ID | grep -i "ipaddress" | awk -F'"' '{print $4}')
 
-function docker_container_names() {
-    docker ps -a --format "{{.Names}}" | xargs
-}
-
-# Get the IP address of a particular container
-dip() {
-    local network
-    network='YOUR-NETWORK-HERE'
-    docker inspect --format "{{ .NetworkSettings.Networks.$network.IPAddress }}" "$@"
-}
-
-dipall() {
-    for container_name in $(docker_container_names);
-    do
-        local container_ip=$(dip $container_name)
-        if [[ -n "$container_ip" ]]; then
-            echo $(dip $container_name) " $container_name"
-        fi
-    done | sort -t . -k 3,3n -k 4,4n
-}
+# Step 4: Use the IP address in another command
+echo "The container's IP address is: $IP_ADDRESS"
