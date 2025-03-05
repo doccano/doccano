@@ -32,7 +32,7 @@ As principais divisões incluem a gestão de utilizadores, a gestão de desacord
 - Editar utilizador.
     - Listagem de utilizadores com opção de edição.
     - Alteração de nome, e-mail ou papel no sistema.
-    - Atualização no banco de dados.
+    - Atualização na base de dados.
 - Remover utilizador.
     - Botão para exclusão de utilizador.
     - Confirmação antes da remoção.
