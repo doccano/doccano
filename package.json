@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@nuxt/types": "^2.18.1",
+    "@types/node": "^22.13.5",
+    "@types/vue": "^1.0.31",
+    "nuxt-i18n": "^6.28.1"
+  }
+}

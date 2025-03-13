@@ -28,7 +28,7 @@ env.read_env(path.join(BASE_DIR, ".env"), recurse=False)
 SECRET_KEY = env("SECRET_KEY", "v8sk33sy82!uw3ty=!jjv5vp7=s2phrzw(m(hrn^f7e_#1h2al")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG", True)
+DEBUG = env.bool("DEBUG", False)
 
 # Application definition
 INSTALLED_APPS = [
@@ -86,6 +86,7 @@ MIDDLEWARE = [
 ]
 
 
+
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -96,6 +97,7 @@ TEMPLATES = [
         "DIRS": [path.join(BASE_DIR, "client/dist")],
         "APP_DIRS": True,
         "OPTIONS": {
+            
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -225,14 +227,14 @@ if DATABASES["default"].get("ENGINE") == "sql_server.pyodbc":
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", False)
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", False)
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", [])
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost:3000", "http://127.0.0.1:3000", "http://0.0.0.0:3000"])
 
 # Allow all host headers
 ALLOWED_HOSTS = ["*"]
 
 if DEBUG:
     CORS_ORIGIN_ALLOW_ALL = True
-    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000"]
+    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000", "http://127.0.0.1:000"]
     CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
 # Batch size for importing data

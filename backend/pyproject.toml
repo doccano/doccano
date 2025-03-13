@@ -69,6 +69,7 @@ pandas = "^1.4.2"
 flower = "^1.2.0"
 django-allauth = "^0.52.0"
 pydantic = "^2.0.3"
+psycopg2 = "^2.9.10"
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"

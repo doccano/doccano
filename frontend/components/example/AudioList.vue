@@ -29,23 +29,23 @@
         filled
       />
     </template>
-    <template #[`item.isConfirmed`]="{ item }">
-      <v-chip :color="item.isConfirmed ? 'success' : 'warning'" text small>
-        {{ item.isConfirmed ? 'Finished' : 'In progress' }}
+    <template #[`item.isConfirmed`]="{ item: rowItem }">
+      <v-chip :color="rowItem.isConfirmed ? 'success' : 'warning'" text small>
+        {{ rowItem.isConfirmed ? 'Finished' : 'In progress' }}
       </v-chip>
     </template>
-    <template #[`item.url`]="{ item }">
-      <audio controls :src="item.url" class="mt-2">
+    <template #[`item.url`]="{ item: rowItem }">
+      <audio controls :src="rowItem.url" class="mt-2">
         Your browser does not support the
         <code>audio</code> element.
       </audio>
     </template>
-    <template #[`item.meta`]="{ item }">
-      {{ JSON.stringify(item.meta, null, 4) }}
+    <template #[`item.meta`]="{ item: rowItem }">
+      {{ JSON.stringify(rowItem.meta, null, 4) }}
     </template>
-    <template #[`item.assignee`]="{ item }">
+    <template #[`item.assignee`]="{ item: rowItem }">
       <v-combobox
-        :value="toSelected(item)"
+        :value="toSelected(rowItem)"
         :items="members"
         item-text="username"
         no-data-text="No one"
@@ -58,18 +58,18 @@
         small-chips
         solo
         style="width: 200px"
-        @change="onAssignOrUnassign(item, $event)"
+        @change="onAssignOrUnassign(rowItem, $event)"
       >
-        <template #selection="{ attrs, item, parent, selected }">
+        <template #selection="{ attrs, item: chipItem, parent, selected }">
           <v-chip v-bind="attrs" :input-value="selected" small class="mt-1 mb-1">
-            <span class="pr-1">{{ item.username }}</span>
-            <v-icon small @click="parent.selectItem(item)"> $delete </v-icon>
+            <span class="pr-1">{{ chipItem.username }}</span>
+            <v-icon small @click="parent.selectItem(chipItem)"> $delete </v-icon>
           </v-chip>
         </template>
       </v-combobox>
     </template>
-    <template #[`item.action`]="{ item }">
-      <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
+    <template #[`item.action`]="{ item: rowItem }">
+      <v-btn small color="primary text-capitalize" @click="toLabeling(rowItem)">
         {{ $t('dataset.annotate') }}
       </v-btn>
     </template>
