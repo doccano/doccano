@@ -2308,7 +2308,7 @@ jinja2 = ["ruamel.yaml.jinja2 (>=0.2)"]
 
 [[package]]
 name = "ruamel.yaml.clib"
-version = "0.2.6"
+version = "0.2.8"
 description = "C version of reader, parser and emitter for ruamel.yaml derived from libyaml"
 optional = false
 python-versions = ">=3.5"
