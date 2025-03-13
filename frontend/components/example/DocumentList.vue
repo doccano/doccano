@@ -58,10 +58,10 @@
         style="width: 200px"
         @change="onAssignOrUnassign(item, $event)"
       >
-        <template #selection="{ attrs, item, parent, selected }">
+        <template #selection="{ attrs, item: selectedItem, parent, selected }">
           <v-chip v-bind="attrs" :input-value="selected" small class="mt-1 mb-1">
-            <span class="pr-1">{{ item.username }}</span>
-            <v-icon small @click="parent.selectItem(item)"> $delete </v-icon>
+            <span class="pr-1">{{ selectedItem.username }}</span>
+            <v-icon small @click="parent.selectItem(selectedItem)"> $delete </v-icon>
           </v-chip>
         </template>
       </v-combobox>

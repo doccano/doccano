@@ -29,14 +29,14 @@
         filled
       />
     </template>
-    <template #[`item.isConfirmed`]="{ item }">
-      <v-chip :color="item.isConfirmed ? 'success' : 'warning'" text small>
-        {{ item.isConfirmed ? 'Finished' : 'In progress' }}
+    <template #[`item.isConfirmed`]="{ item: row }">
+      <v-chip :color="row.isConfirmed ? 'success' : 'warning'" text small>
+        {{ row.isConfirmed ? 'Finished' : 'In progress' }}
       </v-chip>
     </template>
-    <template #[`item.url`]="{ item }">
+    <template #[`item.url`]="{ item: row }">
       <v-img
-        :src="item.url"
+        :src="row.url"
         aspect-ratio="1"
         height="150"
         max-height="150"
@@ -44,12 +44,12 @@
         class="grey lighten-2"
       />
     </template>
-    <template #[`item.meta`]="{ item }">
-      {{ JSON.stringify(item.meta, null, 4) }}
+    <template #[`item.meta`]="{ item: row }">
+      {{ JSON.stringify(row.meta, null, 4) }}
     </template>
-    <template #[`item.assignee`]="{ item }">
+    <template #[`item.assignee`]="{ item: row }">
       <v-combobox
-        :value="toSelected(item)"
+        :value="toSelected(row)"
         :items="members"
         item-text="username"
         no-data-text="No one"
@@ -62,18 +62,18 @@
         small-chips
         solo
         style="width: 200px"
-        @change="onAssignOrUnassign(item, $event)"
+        @change="onAssignOrUnassign(row, $event)"
       >
-        <template #selection="{ attrs, item, parent, selected }">
+        <template #selection="{ attrs, item: selectedItem, parent, selected }">
           <v-chip v-bind="attrs" :input-value="selected" small class="mt-1 mb-1">
-            <span class="pr-1">{{ item.username }}</span>
-            <v-icon small @click="parent.selectItem(item)"> $delete </v-icon>
+            <span class="pr-1">{{ selectedItem.username }}</span>
+            <v-icon small @click="parent.selectItem(selectedItem)"> $delete </v-icon>
           </v-chip>
         </template>
       </v-combobox>
     </template>
-    <template #[`item.action`]="{ item }">
-      <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
+    <template #[`item.action`]="{ item: row }">
+      <v-btn small color="primary text-capitalize" @click="toLabeling(row)">
         {{ $t('dataset.annotate') }}
       </v-btn>
     </template>
@@ -195,24 +195,24 @@ export default Vue.extend({
   },
 
   methods: {
-    toLabeling(item: ExampleDTO) {
-      const index = this.items.indexOf(item)
+    toLabeling(record: ExampleDTO) {
+      const index = this.items.indexOf(record)
       const offset = (this.options.page - 1) * this.options.itemsPerPage
       const page = (offset + index + 1).toString()
       this.$emit('click:labeling', { page, q: this.search })
     },
 
-    toSelected(item: ExampleDTO) {
-      const assigneeIds = item.assignments.map((assignment) => assignment.assignee_id)
+    toSelected(record: ExampleDTO) {
+      const assigneeIds = record.assignments.map((assignment) => assignment.assignee_id)
       return this.members.filter((member) => assigneeIds.includes(member.user))
     },
 
-    onAssignOrUnassign(item: ExampleDTO, newAssignees: MemberItem[]) {
+    onAssignOrUnassign(record: ExampleDTO, newAssignees: MemberItem[]) {
       const newAssigneeIds = newAssignees.map((assignee) => assignee.user)
-      const oldAssigneeIds = item.assignments.map((assignment) => assignment.assignee_id)
+      const oldAssigneeIds = record.assignments.map((assignment) => assignment.assignee_id)
       if (oldAssigneeIds.length > newAssigneeIds.length) {
         // unassign
-        for (const assignment of item.assignments) {
+        for (const assignment of record.assignments) {
           if (!newAssigneeIds.includes(assignment.assignee_id)) {
             this.$emit('unassign', assignment.id)
           }
@@ -221,7 +221,7 @@ export default Vue.extend({
         // assign
         for (const newAssigneeId of newAssigneeIds) {
           if (!oldAssigneeIds.includes(newAssigneeId)) {
-            this.$emit('assign', item.id, newAssigneeId)
+            this.$emit('assign', record.id, newAssigneeId)
           }
         }
       }
