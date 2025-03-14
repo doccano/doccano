@@ -49,9 +49,12 @@
     <v-btn v-if="!isAuthenticated" outlined @click="$router.push(localePath('/auth'))">
       {{ $t('user.login') }}
     </v-btn>
-    <v-btn v-if="!isAuthenticated" style="margin-left: 0.5vw;" outlined
-    @click="$router.push(localePath('/signup'))">
-      {{ $t('sign up') }}
+    <v-btn 
+      v-if="!isAuthenticated" outlined 
+      style="margin-left: 20px;" 
+      @click="$router.push(localePath('/create-user'))"
+    >
+      Create User
     </v-btn>
     <v-menu v-if="isAuthenticated" offset-y z-index="200">
       <template #activator="{ on }">
