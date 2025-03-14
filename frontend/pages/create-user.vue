@@ -5,7 +5,7 @@
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
             <v-card class="pa-0 overflow-hidden rounded-lg" width="100%">
-              <!-- Título padronizado com o Login -->
+        
               <v-sheet color="primary" class="py-3 px-4 rounded-t">
                 <div class="text-h6 font-weight-medium text-white">
                   Create User
@@ -41,7 +41,6 @@
                     required
                   ></v-text-field>
                   
-                  <!-- Espaçamento extra para o botão -->
                   <v-row justify="center" class="mt-5">
                     <v-col cols="12">
                       <v-btn

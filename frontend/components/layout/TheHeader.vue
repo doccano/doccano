@@ -51,7 +51,7 @@
     </v-btn>
     <v-btn 
       v-if="!isAuthenticated" outlined 
-      style="margin-left: 20px;" 
+      style="margin-left: 0.5vw;" 
       @click="$router.push(localePath('/create-user'))"
     >
       Create User
