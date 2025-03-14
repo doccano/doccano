@@ -4,42 +4,59 @@
       <v-container class="fill-height" fluid>
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="4">
-            <v-card class="pa-5" width="100%">
-              <!-- Título centralizado -->
-              <v-card-title class="text-h5 d-flex justify-center">Create User</v-card-title>
-              <v-form v-model="valid" @submit.prevent="submitForm">
-                <v-alert v-show="showError" v-model="showError" type="error" dismissible>
-                  {{ errorMessage }}
-                </v-alert>
-                <v-text-field
-                  v-model="name"
-                  :rules="nameRules"
-                  label="Name"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  v-model="email"
-                  :rules="emailRules"
-                  label="Email"
-                  type="email"
-                  required
-                ></v-text-field>
-                <v-text-field
-                  v-model="password"
-                  :rules="passwordRules"
-                  label="Password"
-                  type="password"
-                  required
-                ></v-text-field>
-                <v-btn
-                  type="submit"
-                  color="primary"
-                  block
-                  :disabled="!valid"
-                >
-                  Register
-                </v-btn>
-              </v-form>
+            <v-card class="pa-0 overflow-hidden rounded-lg" width="100%">
+              <!-- Título padronizado com o Login -->
+              <v-sheet color="primary" class="py-3 px-4 rounded-t">
+                <div class="text-h6 font-weight-medium text-white">
+                  Create User
+                </div>
+              </v-sheet>
+
+              <v-card-text class="pa-6">
+                <v-form v-model="valid" @submit.prevent="submitForm">
+                  <v-alert v-show="showError" v-model="showError" type="error" dismissible>
+                    {{ errorMessage }}
+                  </v-alert>
+                  
+                  <v-text-field
+                    v-model="name"
+                    :rules="nameRules"
+                    label="Name"
+                    required
+                  ></v-text-field>
+                  
+                  <v-text-field
+                    v-model="email"
+                    :rules="emailRules"
+                    label="Email"
+                    type="email"
+                    required
+                  ></v-text-field>
+                  
+                  <v-text-field
+                    v-model="password"
+                    :rules="passwordRules"
+                    label="Password"
+                    type="password"
+                    required
+                  ></v-text-field>
+                  
+                  <!-- Espaçamento extra para o botão -->
+                  <v-row justify="center" class="mt-5">
+                    <v-col cols="12">
+                      <v-btn
+                        type="submit"
+                        color="primary"
+                        block
+                        :disabled="!valid"
+                      >
+                        Register
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+
+                </v-form>
+              </v-card-text>
             </v-card>
           </v-col>
         </v-row>
