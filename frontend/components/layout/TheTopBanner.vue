@@ -1,7 +1,7 @@
 <template>
   <section>
     <v-parallax :src="require(`~/assets/vbanner.jpg`)" height="400" dark>
-      <v-layout wrap align-center justify-center class="white--text">
+      <v-layout wrap align-center justify-center class="black--text">
         <v-flex text-right class="mr-5">
           <img src="~/assets/icon.png" alt="doccano" height="200" />
         </v-flex>
@@ -10,13 +10,13 @@
             {{ $t('home.mainTitle') }}
           </h1>
           <div class="mt-4">
-            <v-btn large outlined color="white" href="https://github.com/GONCALOUNI/Software-Engineering-Lab">
+            <v-btn large outlined color="black" href="https://github.com/GONCALOUNI/Software-Engineering-Lab">
               <v-icon left>
                 {{ mdiGithub }}
               </v-icon>
               GitHub
             </v-btn>
-            <v-btn class="blue lighten-2 ml-5" dark large :href="localePath('/auth')">
+            <v-btn class="black lighten-2 ml-5" dark large :href="localePath('/auth')">
               {{ $t('home.getStarted') }}
             </v-btn>
           </div>

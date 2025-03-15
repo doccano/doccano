@@ -7,7 +7,7 @@
             <v-card class="pa-0 overflow-hidden rounded-lg" width="100%">
         
               <v-sheet color="primary" class="py-3 px-4 rounded-t">
-                <div class="text-h6 font-weight-medium text-white">
+                <div class="text-h6 font-weight-medium text-black">
                   Create User
                 </div>
               </v-sheet>
@@ -21,7 +21,7 @@
                   <v-text-field
                     v-model="name"
                     :rules="nameRules"
-                    label="Name"
+                    label="Username"
                     required
                   ></v-text-field>
                   
