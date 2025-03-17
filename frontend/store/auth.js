@@ -67,5 +67,12 @@ export const actions = {
     commit('setAuthenticated', false)
     commit('setIsStaff', false)
     commit('clearUsername')
+  },
+  async registerUser(_, userData) {
+    try {
+      return await this.$repositories.user.register(userData)
+    } catch (error) {
+      throw new Error('User registration failed')
+    }
   }
 }
