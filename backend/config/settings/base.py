@@ -283,6 +283,8 @@ except EnvError:
 REST_AUTH_REGISTER_SERIALIZERS = {
     'REGISTER_SERIALIZER': 'users.custom_serializers.CustomRegisterSerializer'
 }
+
+ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
