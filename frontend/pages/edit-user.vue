@@ -72,7 +72,7 @@ export default {
     methods: {
         async fetchUsers() {
             try {
-                const response = await this.$axios.get('/api/users/')
+                const response = await this.$axios.get('/v1/users/')
                 this.users = response.data
             } catch (error) {
                 console.error('Error fetching users:', error)
