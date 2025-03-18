@@ -56,6 +56,13 @@
     >
       Create User
     </v-btn>
+    <v-btn 
+      v-if="isAuthenticated" outlined 
+      style="margin-left: 0.5vw;" 
+      @click="$router.push(localePath('/edit-user'))"
+    >
+      Edit User
+    </v-btn>
     <v-menu v-if="isAuthenticated" offset-y z-index="200">
       <template #activator="{ on }">
         <v-btn on icon v-on="on">

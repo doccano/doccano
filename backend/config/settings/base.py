@@ -233,10 +233,9 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost:3000"
 # Allow all host headers
 ALLOWED_HOSTS = ["*"]
 
-if DEBUG:
-    CORS_ORIGIN_ALLOW_ALL = True
-    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000", "http://127.0.0.1:000"]
-    CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
+CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000", "http://127.0.0.1:000", "http://192.168.101.18:3000"]
+CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
 # Batch size for importing data
 IMPORT_BATCH_SIZE = env.int("IMPORT_BATCH_SIZE", 1000)
