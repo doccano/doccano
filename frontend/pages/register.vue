@@ -16,9 +16,9 @@
                     v-show="showError"
                     v-model="showError"
                     type="error"
-                    dismissible
-                    v-html="errorMessage"
-                  ></v-alert>
+                    dismissible>
+                    {{ errorMessage }}
+                  </v-alert>
                   
                   <v-text-field
                     v-model="name"
