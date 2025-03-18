@@ -49,7 +49,7 @@ export default Vue.extend({
   props: {
     login: {
       type: Function,
-      default: () => Promise
+      required: true
     }
   },
   data() {

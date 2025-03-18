@@ -35,8 +35,8 @@
       </v-chip>
     </template>
     <template #[`item.text`]="{ item }">
-      <span class="d-flex d-sm-none">{{ item.text | truncate(50) }}</span>
-      <span class="d-none d-sm-flex">{{ item.text | truncate(200) }}</span>
+      <span class="d-flex d-sm-none">{{ truncate(item.text, 50) }}</span>
+      <span class="d-none d-sm-flex">{{ truncate(item.text, 200) }}</span>
     </template>
     <template #[`item.meta`]="{ item }">
       {{ JSON.stringify(item.meta, null, 4) }}
@@ -58,18 +58,18 @@
         style="width: 200px"
         @change="onAssignOrUnassign(item, $event)"
       >
-        <template #selection="{ attrs, item, parent, selected }">
+        <template #selection="{ attrs, item: selectedItem, parent, selected }">
           <v-chip v-bind="attrs" :input-value="selected" small class="mt-1 mb-1">
-            <span class="pr-1">{{ item.username }}</span>
-            <v-icon small @click="parent.selectItem(item)"> $delete </v-icon>
+            <span class="pr-1">{{ selectedItem.username }}</span>
+            <v-icon small @click="parent.selectItem(selectedItem)"> $delete </v-icon>
           </v-chip>
         </template>
       </v-combobox>
     </template>
     <template #[`item.action`]="{ item }">
-      <v-btn class="me-1" small color="primary text-capitalize" @click="$emit('edit', item)"
-        >Edit</v-btn
-      >
+      <v-btn class="me-1" small color="primary text-capitalize" @click="$emit('edit', item)">
+        Edit
+      </v-btn>
       <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
         {{ $t('dataset.annotate') }}
       </v-btn>
@@ -129,33 +129,13 @@ export default Vue.extend({
   computed: {
     headers() {
       const headers = [
-        {
-          text: 'Status',
-          value: 'isConfirmed',
-          sortable: false
-        },
-        {
-          text: this.$t('dataset.text'),
-          value: 'text',
-          sortable: false
-        },
-        {
-          text: this.$t('dataset.metadata'),
-          value: 'meta',
-          sortable: false
-        },
-        {
-          text: this.$t('dataset.action'),
-          value: 'action',
-          sortable: false
-        }
+        { text: 'Status', value: 'isConfirmed', sortable: false },
+        { text: this.$t('dataset.text'), value: 'text', sortable: false },
+        { text: this.$t('dataset.metadata'), value: 'meta', sortable: false },
+        { text: this.$t('dataset.action'), value: 'action', sortable: false }
       ]
       if (this.isAdmin) {
-        headers.splice(3, 0, {
-          text: 'Assignee',
-          value: 'assignee',
-          sortable: false
-        })
+        headers.splice(3, 0, { text: 'Assignee', value: 'assignee', sortable: false })
       }
       return headers
     }
@@ -195,28 +175,33 @@ export default Vue.extend({
     },
 
     toSelected(item: ExampleDTO) {
-      const assigneeIds = item.assignments.map((assignment) => assignment.assignee_id)
-      return this.members.filter((member) => assigneeIds.includes(member.user))
+      const assigneeIds = item.assignments.map(assignment => assignment.assignee_id)
+      return this.members.filter(member => assigneeIds.includes(member.user))
     },
 
     onAssignOrUnassign(item: ExampleDTO, newAssignees: MemberItem[]) {
-      const newAssigneeIds = newAssignees.map((assignee) => assignee.user)
-      const oldAssigneeIds = item.assignments.map((assignment) => assignment.assignee_id)
+      const newAssigneeIds = newAssignees.map(assignee => assignee.user)
+      const oldAssigneeIds = item.assignments.map(assignment => assignment.assignee_id)
       if (oldAssigneeIds.length > newAssigneeIds.length) {
-        // unassign
         for (const assignment of item.assignments) {
           if (!newAssigneeIds.includes(assignment.assignee_id)) {
             this.$emit('unassign', assignment.id)
           }
         }
       } else {
-        // assign
         for (const newAssigneeId of newAssigneeIds) {
           if (!oldAssigneeIds.includes(newAssigneeId)) {
             this.$emit('assign', item.id, newAssigneeId)
           }
         }
       }
+    },
+
+    // Método para truncar textos
+    truncate(value: string, length: number): string {
+      if (!value) return ''
+      if (value.length <= length) return value
+      return value.substring(0, length) + '...'
     }
   }
 })

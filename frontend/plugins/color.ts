@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-declare module 'vue/types/vue' {
+declare module 'vue' {
   interface Vue {
     $contrastColor(hexString: string): string
   }

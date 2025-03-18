@@ -5,7 +5,7 @@
       <img src="~/assets/icon.png" height="48" />
     </nuxt-link>
     <v-toolbar-title v-if="!isAuthenticated" class="ml-2 d-none d-sm-flex">
-      doccano
+      doccana
     </v-toolbar-title>
     <v-btn
       v-if="isAuthenticated && isIndividualProject"
@@ -48,6 +48,20 @@
     </v-menu>
     <v-btn v-if="!isAuthenticated" outlined @click="$router.push(localePath('/auth'))">
       {{ $t('user.login') }}
+    </v-btn>
+    <v-btn 
+      v-if="!isAuthenticated" outlined 
+      style="margin-left: 0.5vw;" 
+      @click="$router.push(localePath('/create-user'))"
+    >
+      Create User
+    </v-btn>
+    <v-btn 
+      v-if="isAuthenticated" outlined 
+      style="margin-left: 0.5vw;" 
+      @click="$router.push(localePath('/edit-user'))"
+    >
+      Edit User
     </v-btn>
     <v-menu v-if="isAuthenticated" offset-y z-index="200">
       <template #activator="{ on }">

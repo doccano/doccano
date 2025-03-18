@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "@types/vue": "^1.0.31"
+  },
+  "dependencies": {
+    "vuetify": "^3.7.16"
+  }
+}
