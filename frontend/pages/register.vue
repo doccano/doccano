@@ -16,7 +16,8 @@
                     v-show="showError"
                     v-model="showError"
                     type="error"
-                    dismissible>
+                    dismissible
+                    class="error-message">
                     {{ errorMessage }}
                   </v-alert>
                   
@@ -154,13 +155,13 @@ export default {
         this.showError = true;
         let errorDetail = '';
         if (error.response && error.response.data) {
-          for (const [field, messages] of Object.entries(error.response.data)) {
-            if (Array.isArray(messages)) {
-              errorDetail += `<strong>${field}:</strong> ${messages.join(', ')}<br/>`;
-            } else {
-              errorDetail += `<strong>${field}:</strong> ${messages}<br/>`;
+          const errors = [];
+            for (const [field, messages] of Object.entries(error.response.data)) {
+            const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+            const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages;
+            errors.push(`${fieldName}: ${formattedMessages.replace(/^\n+/, '')}`);
             }
-          }
+          errorDetail = errors.join('\n\n');
         } else {
           errorDetail = 'User registration failed';
         }
@@ -171,3 +172,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.error-message {
+  white-space: pre-line;
+}
+</style>
