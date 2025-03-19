@@ -11,13 +11,17 @@ User = get_user_model()
 @receiver(post_save, sender=User)
 def send_registration_email(sender, instance, created, **kwargs):
     if created:
-        subject = 'Welcome to Our Service!'
+        subject = 'Welcome to Doccana! 🦭'
         message = (
-            f"Hello {instance.username},\n\n"
-            "Thank you for registering with us. Your account has been successfully created.\n\n"
-            "You can now log in and start using our service.\n\n"
-            "Best regards,\nThe Team"
-        )
+            "Hello! 😊\n\n"
+            "Here are your access credentials to our Doccana web-app:\n\n"
+            f"• **Username:** {instance.username}\n"
+            f"• **Password:** {instance.password}\n\n"
+            "Please keep these details in a safe place 🔒. If you have"
+            "any doubts or face any issues while logging in, feel free to reach out to us! 📩\n\n"
+            "Best regards,\n"
+            "The Doccana Team 💻✨"
+        ).format(username=instance.username)
         try:
             send_mail(
                 subject,
