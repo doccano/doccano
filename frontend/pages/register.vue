@@ -1,37 +1,82 @@
 <template>
   <v-app id="inspire">
-      <v-main>
-          <v-container class="fill-height" fluid>
-              <!-- New section to display all users -->
-              <v-row align="center" justify="center" class="mt-5">
-                  <v-col cols="12" sm="8" md="6">
-                      <v-card class="pa-0 overflow-hidden rounded-lg" width="100%">
-                          <v-sheet color="primary" class="py-3 px-4 rounded-t">
-                              <div class="text-h6 font-weight-medium text-black">
-                                  All Users
-                              </div>
-                          </v-sheet>
-                          <v-card-text class="pa-6">
-                              <v-list>
-                                  <v-list-item-group>
-                                      <v-list-item v-for="user in sortedUsers" :key="user.id">
-                                          <v-list-item-content>
-                                            <v-list-item-title>
-                                              {{ user.username }}
-                                            </v-list-item-title>
-                                              <v-list-item-subtitle>
-                                                  {{ user.email }}
-                                              </v-list-item-subtitle>
-                                          </v-list-item-content>
-                                      </v-list-item>
-                                  </v-list-item-group>
-                              </v-list>
-                          </v-card-text>
-                      </v-card>
-                  </v-col>
-              </v-row>
-          </v-container>
-      </v-main>
+    <v-main>
+      <v-container class="fill-height" fluid>
+        <v-row align="center" justify="center">
+          <v-col cols="12" sm="8" md="4">
+            <v-card class="pa-0 overflow-hidden rounded-lg" width="100%">
+              <v-sheet color="primary" class="py-3 px-4 rounded-t">
+                <div class="text-h6 font-weight-medium text-black">
+                  Register User
+                </div>
+              </v-sheet>
+              <v-card-text class="pa-6">
+                <v-form v-model="valid" @submit.prevent="submitForm">
+                  <v-alert
+                    v-show="showError"
+                    v-model="showError"
+                    type="error"
+                    dismissible>
+                    {{ errorMessage }}
+                  </v-alert>
+                  
+                  <v-text-field
+                    v-model="name"
+                    :rules="nameRules"
+                    label="Username"
+                    required
+                    prepend-icon="mdi-account"
+                  ></v-text-field>
+                  
+                  <v-text-field
+                    v-model="email"
+                    :rules="emailRules"
+                    label="Email"
+                    type="email"
+                    required
+                    prepend-icon="mdi-email"
+                  ></v-text-field>
+
+                  <v-text-field
+                    v-model="password"
+                    :rules="passwordRules"
+                    label="Password"
+                    type="password"
+                    required
+                    prepend-icon="mdi-lock"
+                  ></v-text-field>
+
+                  <v-text-field
+                    v-model="confirmPassword"
+                    :rules="confirmPasswordRules"
+                    label="Confirm Password"
+                    type="password"
+                    required
+                    prepend-icon="mdi-lock-check"
+                  ></v-text-field>
+
+                  <v-select
+                    v-model="role"
+                    :items="roleOptions"
+                    label="Role"
+                    required
+                    prepend-icon="mdi-account-key"
+                  ></v-select>
+                  
+                  <v-row justify="center" class="mt-5">
+                    <v-col cols="12">
+                      <v-btn type="submit" color="primary" block :disabled="!valid">
+                        Register
+                      </v-btn>
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
   </v-app>
 </template>
 
@@ -64,6 +109,7 @@ export default {
           (v && v.length <= 30) ||
           'Password must be less than 31 characters'
       ],
+
       confirmPasswordRules: [
         (v) => !!v || 'Please confirm your password',
         (v) => v === this.password || 'Passwords do not match'
@@ -71,36 +117,20 @@ export default {
       roleOptions: [
         { text: 'Admin', value: 'admin' },
         { text: 'Annotator', value: 'annotator' }
-      ],
-      users: []  // <-- add users array for listing users
-    }
-  },
-  computed: {
-    sortedUsers() {
-      return [...this.users].sort((a, b) => a.id - b.id)
+      ]
     }
   },
   watch: {
+    
     password() {
+     
       this.confirmPasswordRules = [
         (v) => !!v || 'Please confirm your password',
         (v) => v === this.password || 'Passwords do not match'
       ]
     }
   },
-  created() {
-    this.fetchUsers()
-  },
   methods: {
-    async fetchUsers() {
-      try {
-            const response = await this.$axios.get('/v1/users/')
-            console.log('Fetched users:', response.data);
-            this.users = response.data
-        } catch (error) {
-            console.error('Error fetching users:', error)
-        }
-    },
     async submitForm() {
       if (!this.valid) {
         this.showError = true;
@@ -119,6 +149,7 @@ export default {
         const result = await this.$repositories.user.register(userData);
         console.log('User registered successfully:', result);
         this.showError = false;
+     
       } catch (error) {
         this.showError = true;
         let errorDetail = '';
