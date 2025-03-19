@@ -28,6 +28,7 @@
 </template>
 
 <script>
+
 import {
   mdiAccount,
   mdiBookOpenOutline,
@@ -37,7 +38,8 @@ import {
   mdiDatabase,
   mdiHome,
   mdiLabel,
-  mdiPlayCircleOutline
+  mdiPlayCircleOutline,
+  mdiEyeSettings
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -121,6 +123,12 @@ export default {
           icon: mdiCog,
           text: this.$t('settings.title'),
           link: 'settings',
+          isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiEyeSettings,
+          text: this.$t('perspectives.perspectives'),
+          link: 'perspectives',
           isVisible: this.isProjectAdmin
         }
       ]

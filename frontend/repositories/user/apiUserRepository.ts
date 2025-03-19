@@ -21,7 +21,7 @@ export class APIUserRepository {
   }
 
   async delete(id: number): Promise<void> {
-    const url = `/users/remove/${id}`
+    const url = `/users/delete/${id}`
     await this.request.delete(url)
   }
 
