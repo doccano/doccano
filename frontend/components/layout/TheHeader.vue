@@ -29,6 +29,15 @@
     >
       {{ $t('header.projects') }}
     </v-btn>
+    <!--{{isAdmin}} --><!-- Para debug -->
+    <v-btn
+      v-if="isAuthenticated"
+      text
+      class="text-capitalize"
+      @click="$router.push(localePath('/users'))"
+    >
+      {{ $t('header.users') }}
+    </v-btn>
     <v-menu v-if="!isAuthenticated" open-on-hover offset-y>
       <template #activator="{ on }">
         <v-btn text v-on="on">
