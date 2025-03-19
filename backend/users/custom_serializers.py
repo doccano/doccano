@@ -15,14 +15,12 @@ class CustomRegisterSerializer(RegisterSerializer):
         return data
 
     def save(self, request):
-        # Create the user first with the default process.
         user = super().save(request)
-        # Now update the user based on our extra role field.
         role = self.validated_data.get("role", "")
         print("CustomRegisterSerializer save role:", role)
         if role == "admin":
             user.is_staff = True
-            user.is_superuser = True  # Enable only if you want full admin rights.
+            user.is_superuser = True
         else:
             user.is_staff = False
         user.save()
