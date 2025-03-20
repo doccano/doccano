@@ -150,7 +150,16 @@ export default {
         const result = await this.$repositories.user.register(userData);
         console.log('User registered successfully:', result);
         this.showError = false;
-     
+      
+        this.$router.push({
+        path: '/message',
+        query: {
+          message: 'User registered successfully! Redirecting...',
+          redirectPath: '/login',
+          duration: 99999
+        }
+      });
+        
       } catch (error) {
         this.showError = true;
         let errorDetail = '';
