@@ -56,18 +56,18 @@ export default {
                 (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
             ],
             roleOptions: [
-                { text: 'Admin', value: 'admin' },
-                { text: 'Annotator', value: 'annotator' }
+                { text: 'Annotator', value: 'annotator' },
+                { text: 'Admin', value: 'admin' }
             ]
         }
-    },
-    async created() {
-        await this.fetchUsers()
     },
     computed: {
         sortedUsers() {
             return [...this.users].sort((a, b) => a.id - b.id)
         }
+    },
+    async created() {
+        await this.fetchUsers()
     },
     methods: {
         async fetchUsers() {

@@ -90,7 +90,7 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
-      role: 'annotator',
+      role: '',
       showError: false,
       errorMessage: '',
       nameRules: [
@@ -116,8 +116,8 @@ export default {
         (v) => v === this.password || 'Passwords do not match'
       ],
       roleOptions: [
-        { text: 'Admin', value: 'admin' },
-        { text: 'Annotator', value: 'annotator' }
+        { text: 'Annotator', value: 'annotator' },
+        { text: 'Admin', value: 'admin' }
       ]
     }
   },
