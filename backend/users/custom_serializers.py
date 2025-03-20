@@ -25,3 +25,7 @@ class CustomRegisterSerializer(RegisterSerializer):
             user.is_staff = False
         user.save()
         return user
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        print("CustomRegisterSerializer initialized")
