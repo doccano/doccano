@@ -15,6 +15,7 @@ from os import path
 import dj_database_url
 from environs import Env, EnvError
 from furl import furl
+import os
 
 # Build paths inside the project like this: path.join(BASE_DIR, ...)
 BASE_DIR = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
@@ -136,6 +137,8 @@ ROLE_PROJECT_ADMIN = env("ROLE_PROJECT_ADMIN", "project_admin")
 ROLE_ANNOTATOR = env("ROLE_ANNOTATOR", "annotator")
 ROLE_ANNOTATION_APPROVER = env("ROLE_ANNOTATION_APPROVER", "annotation_approver")
 
+
+
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
@@ -207,8 +210,9 @@ DATABASES["default"].update(
         ssl_require="sslmode" not in furl(env("DATABASE_URL", "")).args,
     )
 )
+if not os.getenv("DATABASE_URL"):
+    os.environ["DATABASE_URL"] = "postgres://doccano_admin:doccano@localhost:5432/doccano_db?sslmode=disable"
 
-# work-around for dj-database-url: explicitly disable ssl for sqlite
 if DATABASES["default"].get("ENGINE") == "django.db.backends.sqlite3":
     DATABASES["default"].get("OPTIONS", {}).pop("sslmode", None)
 
@@ -234,7 +238,7 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost:3000"
 ALLOWED_HOSTS = ["*"]
 
 CORS_ORIGIN_ALLOW_ALL = True
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000", "http://127.0.0.1:000", "http://192.168.101.18:3000"]
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000", "http://127.0.0.1:000", "http://192.168.101.18:3000", "http://10.20.92.150:3000", "http://10.20.88.144:3000"]
 CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
 # Batch size for importing data
@@ -279,9 +283,7 @@ except EnvError:
     except EnvError:
         CELERY_BROKER_URL = "sqla+sqlite:///{}".format(DATABASES["default"]["NAME"])
 
-REST_AUTH_REGISTER_SERIALIZERS = {
-    'REGISTER_SERIALIZER': 'users.custom_serializers.CustomRegisterSerializer'
-}
+REST_AUTH_REGISTER_SERIALIZER = 'users.custom_serializers.CustomRegisterSerializer'
 
 ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
 CELERY_ACCEPT_CONTENT = ["application/json"]

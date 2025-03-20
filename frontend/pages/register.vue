@@ -7,7 +7,7 @@
             <v-card class="pa-0 overflow-hidden rounded-lg" width="100%">
               <v-sheet color="primary" class="py-3 px-4 rounded-t">
                 <div class="text-h6 font-weight-medium text-black">
-                  Create User
+                  Register User
                 </div>
               </v-sheet>
               <v-card-text class="pa-6">
@@ -17,8 +17,9 @@
                     v-model="showError"
                     type="error"
                     dismissible
-                    v-html="errorMessage"
-                  ></v-alert>
+                    class="error-message">
+                    {{ errorMessage }}
+                  </v-alert>
                   
                   <v-text-field
                     v-model="name"
@@ -89,7 +90,7 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
-      role: 'annotator',
+      role: '',
       showError: false,
       errorMessage: '',
       nameRules: [
@@ -115,8 +116,8 @@ export default {
         (v) => v === this.password || 'Passwords do not match'
       ],
       roleOptions: [
-        { text: 'Admin', value: 'admin' },
-        { text: 'Annotator', value: 'annotator' }
+        { text: 'Annotator', value: 'annotator' },
+        { text: 'Admin', value: 'admin' }
       ]
     }
   },
@@ -154,13 +155,13 @@ export default {
         this.showError = true;
         let errorDetail = '';
         if (error.response && error.response.data) {
-          for (const [field, messages] of Object.entries(error.response.data)) {
-            if (Array.isArray(messages)) {
-              errorDetail += `<strong>${field}:</strong> ${messages.join(', ')}<br/>`;
-            } else {
-              errorDetail += `<strong>${field}:</strong> ${messages}<br/>`;
+          const errors = [];
+            for (const [field, messages] of Object.entries(error.response.data)) {
+            const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+            const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages;
+            errors.push(`${fieldName}: ${formattedMessages.replace(/^\n+/, '')}`);
             }
-          }
+          errorDetail = errors.join('\n\n');
         } else {
           errorDetail = 'User registration failed';
         }
@@ -171,3 +172,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.error-message {
+  white-space: pre-line;
+}
+</style>

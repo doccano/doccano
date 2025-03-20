@@ -56,23 +56,23 @@ export default {
                 (v) => /.+@.+\..+/.test(v) || 'E-mail must be valid'
             ],
             roleOptions: [
-                { text: 'Admin', value: 'admin' },
-                { text: 'Annotator', value: 'annotator' }
+                { text: 'Annotator', value: 'annotator' },
+                { text: 'Admin', value: 'admin' }
             ]
         }
-    },
-    async created() {
-        await this.fetchUsers()
     },
     computed: {
         sortedUsers() {
             return [...this.users].sort((a, b) => a.id - b.id)
         }
     },
+    async created() {
+        await this.fetchUsers()
+    },
     methods: {
         async fetchUsers() {
             try {
-                const response = await this.$axios.get('/api/users/')
+                const response = await this.$axios.get('/v1/users/')
                 this.users = response.data
             } catch (error) {
                 console.error('Error fetching users:', error)

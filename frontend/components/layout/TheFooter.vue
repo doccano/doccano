@@ -4,7 +4,7 @@
       <v-row justify="space-between" align="center">
 
         <v-col cols="6" class="text-left">
-          &copy; 2025 Doccano, Software Engineering Lab
+          &copy; 2025 Doccana, Software Engineering Lab
         </v-col>
         
         <v-col cols="6" class="text-right">
