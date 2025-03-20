@@ -12,14 +12,16 @@ User = get_user_model()
 def send_registration_email(sender, instance, created, **kwargs):
     if created:
         password = getattr(instance, 'plain_password', '(Not Available)')
+        user_role = "Admin" if instance.is_superuser else "Annotator"
         subject = 'Your doccana access credentials! 🦭'
         message = (
             "Welcome to doccana! 😊\n\n"
             "Here are your access credentials to our Doccana web-app:\n\n"
             f"• Username: {instance.username}\n"
             f"• Password: {password}\n\n"
-            "Please keep these details in a safe place 🔒. If you have"
-            " any doubts or face any issues while logging in, feel free to reach out to us! 📩\n\n"
+            f"You are an {user_role}.\n\n"
+            "Please keep these details in a safe place 🔒. If you have "
+            "any doubts or face any issues while logging in, feel free to reach out to us! 📩\n\n"
             "Best regards,\n"
             "The doccana Team 💻✨"
         )
