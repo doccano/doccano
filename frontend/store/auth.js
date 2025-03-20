@@ -40,6 +40,7 @@ export const getters = {
 
 export const actions = {
   async authenticateUser({ commit }, authData) {
+    console.log('authData', authData)
     try {
       await this.$repositories.auth.login(authData.username, authData.password)
       commit('setAuthenticated', true)
@@ -67,5 +68,18 @@ export const actions = {
     commit('setAuthenticated', false)
     commit('setIsStaff', false)
     commit('clearUsername')
+  },
+  async registerUser(_,authData) {
+    console.log('authData', authData)
+    try {
+      await this.$repositories.auth.register(
+        authData.username, 
+        authData.email, 
+        authData.password1, 
+        authData.password2
+      )
+    } catch (error) {
+      throw new Error('Failed to register user')
+    }
   }
 }

@@ -2,7 +2,7 @@ from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, status
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -29,7 +29,7 @@ class Users(generics.ListAPIView):
 
 class UserCreation(generics.CreateAPIView):
     serializer_class = RegisterSerializer
-    permission_classes = [IsAuthenticated & IsAdminUser]
+    permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

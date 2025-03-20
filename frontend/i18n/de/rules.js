@@ -8,7 +8,8 @@ export default {
   },
   userNameRules: {
     userNameRequired: 'Benutzername wird benötigt',
-    userNameLessThan30Chars: 'Benutzername muss kürzer als 30 Zeichen sein'
+    userNameLessThan30Chars: 'Benutzername muss kürzer als 30 Zeichen sein',
+    minLength: 'Benutzername muss mindestens 3 Zeichen lang sein'
   },
   roleRules: {
     roleRequired: 'Rolle wird benötigt'
@@ -23,12 +24,18 @@ export default {
   fileFormatRules: {
     fileFormatRequired: 'Dateiformat wird benötigt'
   },
+  emailRules: {
+    required: 'E-Mail wird benötigt',
+    format: 'E-Mail muss gültig sein'
+  },
   uploadFileRules: {
     fileRequired: 'Datei(en) werden benötigt',
     fileLessThan1MB: 'Dateigröße muss kleiner als 100 MB sein!'
   },
   passwordRules: {
     passwordRequired: 'Passwort wird benötigt',
-    passwordLessThan30Chars: 'Passwort muss kürzer als 30 Zeichen sein'
+    passwordLessThan30Chars: 'Passwort muss kürzer als 30 Zeichen sein',
+    minLength: 'Passwort muss mindestens 8 Zeichen lang sein',
+    match: 'Passwörter müssen übereinstimmen',
   }
 }

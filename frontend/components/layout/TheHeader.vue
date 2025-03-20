@@ -46,8 +46,12 @@
         </v-list-item>
       </v-list>
     </v-menu>
-    <v-btn v-if="!isAuthenticated" outlined @click="$router.push(localePath('/auth'))">
+    <v-btn v-if="!isAuthenticated" outlined class="mr-2" @click="$router.push(localePath('/auth'))">
       {{ $t('user.login') }}
+    </v-btn>
+    <v-btn v-if="!isAuthenticated" outlined color="success" 
+    @click="$router.push(localePath('/register'))">
+      {{ $t('user.register') }}
     </v-btn>
     <v-menu v-if="isAuthenticated" offset-y z-index="200">
       <template #activator="{ on }">
