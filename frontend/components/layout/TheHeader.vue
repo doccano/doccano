@@ -29,6 +29,14 @@
     >
       {{ $t('header.projects') }}
     </v-btn>
+    <v-btn
+      v-if="isAuthenticated && isStaff"
+      text
+      class="text-capitalize"
+      @click="$router.push(localePath('/users'))"
+    >
+      {{ $t('header.users') }}
+    </v-btn>
     <v-menu v-if="!isAuthenticated" open-on-hover offset-y>
       <template #activator="{ on }">
         <v-btn text v-on="on">
@@ -118,7 +126,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('auth', ['isAuthenticated', 'getUsername']),
+    ...mapGetters('auth', ['isAuthenticated', 'isStaff', 'getUsername']),
     ...mapGetters('projects', ['currentProject']),
     ...mapGetters('config', ['isRTL']),
 

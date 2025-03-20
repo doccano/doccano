@@ -6,5 +6,8 @@ export default {
   password: 'Password',
   email: 'Email',
   confirmPassword: 'Confirm Password',
-  socialLogin: 'Login With {provider}'
+  socialLogin: 'Login With {provider}',
+  superUser: 'Super User',
+  staff: 'Staff',
+  active: 'Active',
 }
