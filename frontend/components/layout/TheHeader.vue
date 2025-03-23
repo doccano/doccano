@@ -56,9 +56,9 @@
     <v-btn 
       v-if="isAuthenticated" outlined 
       style="margin-left: 0.5vw;" 
-      @click="$router.push(localePath('/edit-user'))"
+      @click="$router.push(localePath('/list-user'))"
     >
-      Edit User
+      All Users
     </v-btn>
     <v-menu v-if="isAuthenticated" offset-y z-index="200">
       <template #activator="{ on }">
