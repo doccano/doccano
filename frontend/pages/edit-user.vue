@@ -24,29 +24,38 @@
                     
                   <v-data-table
                     :headers="headers"
-                    :items="sortedUsers"
+                    :items="paddedUsers"
                     :items-per-page="options.itemsPerPage"
                     item-key="id"
                     :loading="isLoading"
                     :loading-text="'Loading users...'"
+                    :item-class="getRowClass"
                     hide-default-footer
                   >
                     <template v-slot:[`item.username`]="{ item }">
-                      <span>{{ item.username }}</span>
+                      <span v-if="!item._empty">{{ item.username }}</span>
+                      <span v-else>&nbsp;</span>
                     </template>
     
                     <template v-slot:[`item.email`]="{ item }">
-                      <span>{{ item.email }}</span>
+                      <span v-if="!item._empty">{{ item.email }}</span>
+                      <span v-else>&nbsp;</span>
                     </template>
     
                     <template v-slot:[`item.role`]="{ item }">
-                      <v-chip :color="item.role === 'admin' ? '#FF2F00' : '#1976D2'" outlined>
+                      <v-chip 
+                        v-if="!item._empty" 
+                        :color="item.role === 'admin' ? '#FF2F00' : '#1976D2'" 
+                        outlined
+                      >
                         {{ item.role }}
                       </v-chip>
+                      <div v-else>&nbsp;</div>
                     </template>
     
                     <template v-slot:[`item.actions`]="{ item }">
                       <v-btn
+                        v-if="!item._empty"
                         depressed
                         small
                         :color="canEdit(item) ? 'primary' : 'grey'"
@@ -54,6 +63,7 @@
                       >
                         EDIT
                       </v-btn>
+                      <div v-else>&nbsp;</div>
                     </template>
 
                     <template #footer>
@@ -110,12 +120,12 @@
       }
     },
     computed: {
-      ...mapState('auth', ['id', 'username', 'isStaff']),
+      ...mapState('auth', ['id', 'username', 'isStaff', 'is_superuser']),
       currentUser() {
         return {
           id: this.id,
           username: this.username,
-          role: this.is_superuser && this.isStaff ? 'admin' : 'annotator'
+          role: (this.is_superuser || this.isStaff) ? 'admin' : 'annotator'
         }
       },
       sortedUsers() {
@@ -132,6 +142,13 @@
         const sorted = filtered.sort((a, b) => a.id - b.id)
         const start = (this.options.page - 1) * this.options.itemsPerPage
         return sorted.slice(start, start + this.options.itemsPerPage)
+      },
+      paddedUsers() {
+        const items = this.sortedUsers.slice()
+        while (items.length < this.options.itemsPerPage) {
+          items.push({ _empty: true })
+        }
+        return items
       }
     },
     async created() {
@@ -183,18 +200,23 @@
         }
       },
       canEdit(user) {
-        if (this.currentUser.role === 'admin') {
-          return user.role !== 'admin'
-        } else {
-          return user.id === this.currentUser.id
+        if (user.id === this.currentUser.id) {
+          return true;
         }
+        if (this.currentUser.role === 'admin') {
+          return user.role !== 'admin';
+        } else {
+          return false;
+        }
+      },
+      getRowClass(item) {
+        return item._empty ? 'dummy-row' : ''
       }
     }
   }
   </script>
     
   <style scoped>
-  /* Card Styles */
   .v-card {
     background-color: #ffffff;
     border-radius: 16px;
@@ -220,5 +242,9 @@
     
   .v-pagination {
     margin-top: 10px;
+  }
+
+  ::v-deep tr.dummy-row:hover {
+    background-color: transparent !important;
   }
   </style>
