@@ -54,31 +54,27 @@
                     <span v-else>&nbsp;</span>
                   </template>
 
-                  <!-- Email slot -->
                   <template v-slot:[`item.email`]="{ item }">
                     <span v-if="!item._empty">{{ item.email }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
 
-                  <!-- Role slot -->
                   <template v-slot:[`item.role`]="{ item }">
                     <v-chip
                       v-if="!item._empty"
                       :color="item.role === 'admin' ? '#FF2F00' : 'primary'"
                       outlined
                     >
-                      {{ item.role }}
+                      {{ item.role.charAt(0).toUpperCase() + item.role.slice(1) }}
                     </v-chip>
                     <div v-else>&nbsp;</div>
                   </template>
 
-                  <!-- Joined slot -->
                   <template v-slot:[`item.date_joined`]="{ item }">
                     <span v-if="!item._empty">{{ timeAgo(item.date_joined) }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
 
-                  <!-- Last Seen slot -->
                   <template v-slot:[`item.last_seen`]="{ item }">
                     <span v-if="!item._empty">
                       {{

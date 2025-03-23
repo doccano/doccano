@@ -57,7 +57,7 @@
                       :color="item.role === 'admin' ? '#FF2F00' : 'primary'"
                       outlined
                     >
-                      {{ item.role }}
+                        {{ item.role.charAt(0).toUpperCase() + item.role.slice(1) }}
                     </v-chip>
                     <div v-else>&nbsp;</div>
                   </template>
