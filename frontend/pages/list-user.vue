@@ -31,30 +31,25 @@
                   :options.sync="options"
                   hide-default-footer
                 >
-                  <!-- ID Column -->
                   <template v-slot:[`item.id`]="{ item }">
                     <span v-if="!item._empty">{{ item.id }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
   
-                  <!-- Username Column with online status -->
                   <template v-slot:[`item.username`]="{ item }">
                     <div v-if="!item._empty" class="d-flex align-center">
-                      <v-icon small :color="item.is_active ? 'green' : 'red'" class="mr-1">
-                        mdi-checkbox-blank-circle
-                      </v-icon>
+                      <span class="status-circle" :style="{ backgroundColor:
+                        getStatusColor(item) }"></span>
                       <span>{{ item.username }}</span>
                     </div>
                     <span v-else>&nbsp;</span>
                   </template>
   
-                  <!-- Email Column -->
                   <template v-slot:[`item.email`]="{ item }">
                     <span v-if="!item._empty">{{ item.email }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-  
-                  <!-- Role Column -->
+
                   <template v-slot:[`item.role`]="{ item }">
                     <v-chip
                       v-if="!item._empty"
@@ -66,16 +61,15 @@
                     <div v-else>&nbsp;</div>
                   </template>
   
-                  <!-- Joined Column (using timeAgo) -->
                   <template v-slot:[`item.date_joined`]="{ item }">
                     <span v-if="!item._empty">{{ timeAgo(item.date_joined) }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
   
-                  <!-- Last Seen Column (using timeAgo or 'Never') -->
                   <template v-slot:[`item.last_seen`]="{ item }">
                     <span v-if="!item._empty">
-                      {{ item.last_login ? timeAgo(item.last_login) : 'Never' }}
+                      {{ isCurrentUser(item) ? 'Currently online' : (item.last_login ?
+                      timeAgo(item.last_login) : 'Never') }}
                     </span>
                     <span v-else>&nbsp;</span>
                   </template>
@@ -108,6 +102,8 @@
   
 <script>
 import { mdiMagnify } from '@mdi/js'
+import { mapState } from 'vuex'
+
 export default {
   data() {
     return {
@@ -132,19 +128,24 @@ export default {
     }
   },
   computed: {
+    ...mapState('auth', ['id', 'username', 'isStaff', 'is_superuser']),
+    currentUser() {
+      return {
+        id: this.id,
+        username: this.username,
+        role: (this.is_superuser || this.isStaff) ? 'admin' : 'annotator'
+      }
+    },
     sortedUsers() {
-      // Map users and set role if missing.
       const usersWithRole = this.users.map(user => ({
         ...user,
         role: user.role || ((user.is_staff || user.is_superuser) ? 'admin' : 'annotator')
       }))
-      // Filter by search text.
       const filtered = usersWithRole.filter(user =>
         user.username.toLowerCase().includes(this.search.toLowerCase()) ||
         user.email.toLowerCase().includes(this.search.toLowerCase())
       )
       const sorted = filtered.slice()
-      // Use data table sort options if selected.
       if (this.options.sortBy && this.options.sortBy.length > 0) {
         const sortField = this.options.sortBy[0]
         const sortDesc = this.options.sortDesc[0]
@@ -164,7 +165,6 @@ export default {
           return sortDesc ? -comp : comp
         })
       } else {
-        // Default sorting by id ascending.
         sorted.sort((a, b) => a.id - b.id)
       }
       return sorted
@@ -231,6 +231,12 @@ export default {
       }
       const diffYears = Math.floor(diffMonths / 12)
       return diffYears + ' years ago'
+    },
+    isCurrentUser(user) {
+      return this.currentUser && user.id === this.currentUser.id
+    },
+    getStatusColor(user) {
+      return this.isCurrentUser(user) ? 'green' : 'red'
     }
   }
 }
@@ -266,5 +272,15 @@ export default {
 
 ::v-deep tr.dummy-row:hover {
   background-color: transparent !important;
+}
+
+.status-circle {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  position: relative;
+  z-index: 1;
 }
 </style>
