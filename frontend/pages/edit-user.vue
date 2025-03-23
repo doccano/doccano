@@ -45,7 +45,7 @@
                     <template v-slot:[`item.role`]="{ item }">
                       <v-chip 
                         v-if="!item._empty" 
-                        :color="item.role === 'admin' ? '#FF2F00' : '#1976D2'" 
+                        :color="item.role === 'admin' ? '#FF2F00' : 'primary'" 
                         outlined
                       >
                         {{ item.role }}

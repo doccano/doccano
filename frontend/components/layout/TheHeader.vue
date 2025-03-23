@@ -2,7 +2,7 @@
   <v-app-bar app clipped-left>
     <slot name="leftDrawerIcon" />
     <nuxt-link v-if="!isAuthenticated" to="/" style="line-height: 0">
-      <img src="/doccana-logo.png" height="48" />
+      <img src="/doccana-logo.png" height="48" draggable="false"/>
     </nuxt-link>
     <v-btn
       v-if="isAuthenticated && isIndividualProject"
