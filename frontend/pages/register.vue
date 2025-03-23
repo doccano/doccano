@@ -150,7 +150,7 @@ export default {
         const result = await this.$repositories.user.register(userData);
         console.log('User registered successfully:', result);
         this.showError = false;
-        this.$router.push({ path: '/auth', query: { successMessage: 'Registration Successful' } });
+        this.$router.push({ path: '/message', query: { message: 'Registration Successful! 🦭' } });
         
       } catch (error) {
         this.showError = true;
