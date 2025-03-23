@@ -4,10 +4,9 @@
         <v-container fluid class="pa-4">
           <v-row align="center" justify="center" class="mt-5">
             <v-col cols="12" sm="10" md="8">
-              <!-- Card for User List -->
               <v-card class="pa-0 overflow-hidden rounded-lg shadow-lg">
                 <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
-                  <div class="text-h5 font-weight-bold text-white">
+                  <div class="text-h6 font-weight-medium text--white">
                     Edit Users
                   </div>
                 </v-sheet>
@@ -56,8 +55,7 @@
                         EDIT
                       </v-btn>
                     </template>
-    
-                    <!-- Footer (only custom pagination will appear) -->
+
                     <template #footer>
                       <v-row>
                         <v-col class="d-flex justify-end">
@@ -81,6 +79,7 @@
     
   <script>
   import { mdiMagnify } from '@mdi/js'
+  import { mapState } from 'vuex'
     
   export default {
     data() {
@@ -108,14 +107,17 @@
         ],
         mdiMagnify,
       
-        currentUser: {
-          id: 1,
-          role: 'admin',
-          username: 'admin'
-        }
       }
     },
     computed: {
+      ...mapState('auth', ['id', 'username', 'isStaff']),
+      currentUser() {
+        return {
+          id: this.id,
+          username: this.username,
+          role: this.is_superuser && this.isStaff ? 'admin' : 'annotator'
+        }
+      },
       sortedUsers() {
         const usersWithRole = this.users.map(user => ({
           ...user,
@@ -126,7 +128,10 @@
           user.username.toLowerCase().includes(this.search.toLowerCase()) ||
           user.email.toLowerCase().includes(this.search.toLowerCase())
         )
-        return filtered.sort((a, b) => a.id - b.id)
+        
+        const sorted = filtered.sort((a, b) => a.id - b.id)
+        const start = (this.options.page - 1) * this.options.itemsPerPage
+        return sorted.slice(start, start + this.options.itemsPerPage)
       }
     },
     async created() {
@@ -177,13 +182,10 @@
           console.error('Update error:', error.response && error.response.data)
         }
       },
-      // Determines if the EDIT button should be enabled
       canEdit(user) {
         if (this.currentUser.role === 'admin') {
-          // Admin can edit annotators only (non-admins)
           return user.role !== 'admin'
         } else {
-          // Annotators can only edit their own record
           return user.id === this.currentUser.id
         }
       }

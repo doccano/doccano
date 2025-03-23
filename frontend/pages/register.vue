@@ -6,7 +6,7 @@
           <v-col cols="12" sm="8" md="4">
             <v-card class="pa-0 overflow-hidden rounded-lg" width="100%">
               <v-sheet color="primary" class="py-3 px-4 rounded-t">
-                <div class="text-h6 font-weight-medium text-black">
+                <div class="text-h6 font-weight-medium text--white">
                   Register User
                 </div>
               </v-sheet>
