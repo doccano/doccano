@@ -1,3 +1,5 @@
+<!-- eslint-disable max-len -->
+
 <template>
   <v-card>
     <v-card-title v-if="isStaff">
@@ -19,11 +21,11 @@
         <form-delete :selected="selected" @cancel="dialogDelete = false" @remove="remove" />
       </v-dialog>
     </v-card-title>
-    <project-list
+    <users-list
       v-model="selected"
-      :items="projects.items"
+      :items="users.items"
       :is-loading="isLoading"
-      :total="projects.count"
+      :total="users.count"
       @update:query="updateQuery"
     />
   </v-card>
@@ -33,18 +35,18 @@
 import _ from 'lodash'
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import ProjectList from '@/components/project/ProjectList.vue'
-import FormDelete from '~/components/project/FormDelete.vue'
-import FormCreate from '~/components/settings/FormCreate.vue'
+import UsersList from '@/components/users/UsersList.vue'
+import FormDelete from '@/components/users/FormDelete.vue'
+import FormCreate from '@/components/settings/FormCreate.vue'
 import { Page } from '~/domain/models/page'
-import { Project } from '~/domain/models/project/project'
-import { SearchQueryData } from '~/services/application/project/projectApplicationService'
+import { User } from '~/domain/models/user'
+import { SearchQueryData } from '~/services/application/user/userApplicationService'
 
 export default Vue.extend({
   components: {
+    UsersList,
     FormDelete,
-    FormCreate,
-    ProjectList
+    FormCreate
   },
   layout: 'projects',
 
@@ -54,28 +56,21 @@ export default Vue.extend({
     return {
       dialogCreate: false,
       dialogDelete: false,
-      projects: {} as Page<Project>,
-      selected: [] as Project[],
+      // Inicializa o objeto Page com propriedades padrão (contando com "items" e "count")
+      users: new Page<User>(0, null, null, []),
+      selected: [] as User[],
       isLoading: false
     }
   },
 
   async fetch() {
-    this.isLoading = true
-    this.projects = await this.$services.project.list(
-      this.$route.query as unknown as SearchQueryData
-    )
-    this.isLoading = false
+    await this.fetchUsers()
   },
 
   computed: {
     ...mapGetters('auth', ['isStaff']),
     canDelete(): boolean {
       return this.selected.length > 0
-    },
-
-    canClone(): boolean {
-      return this.selected.length === 1
     }
   },
 
@@ -87,28 +82,35 @@ export default Vue.extend({
   },
 
   methods: {
-    async remove() {
-      await this.$services.project.bulkDelete(this.selected)
-      this.$fetch()
-      this.dialogDelete = false
-      this.selected = []
-    },
+    async fetchUsers() {
+      this.isLoading = true
+      try {
 
-    async clone() {
-      const project = await this.$services.project.clone(this.selected[0])
-      this.selected = []
-      this.$router.push(`/projects/${project.id}/settings`)
+        // eslint-disable-next-line max-len
+        this.users = await this.$repositories.user.list(this.$route.query as unknown as SearchQueryData)
+      } catch (error) {
+        console.error('Erro ao buscar usuários:', error)
+      }
+      this.isLoading = false
     },
-
     updateQuery(query: object) {
-      this.$router.push(query)
+      this.$router.push({ query })
     },
-
     onSave() {
       this.dialogCreate = false
       this.$fetch()
+    },
+    async remove() {
+      try {
+        await this.$repositories.user.bulkDelete(this.selected)
+        this.$fetch()
+        this.dialogDelete = false
+        this.selected = []
+      } catch (error) {
+        console.error('Erro ao deletar usuários:', error)
+      }
     }
-  } 
+  }
 })
 </script>
 

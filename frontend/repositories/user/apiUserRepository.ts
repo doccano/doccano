@@ -24,16 +24,39 @@ export class APIUserRepository {
     return toModel(response.data)
   }
 
-  async list(query: string): Promise<Page<UserItem>> {
-    const url = `/users?q=${query}`
-    const response = await this.request.get(url)
-    return new Page(
-      response.data.count,
-      response.data.next,
-      response.data.previous,
-      response.data.results.map((item: { [key: string]: any }) => toModel(item))
-    )
+  async list(query: any): Promise<Page<UserItem>> {
+    try {
+      const queryString = new URLSearchParams(query).toString();
+      const url = queryString ? `/users?${queryString}` : `/users`;
+      const response = await this.request.get(url);
+    
+      let results, count, next, prev;
+      if (Array.isArray(response.data)) {
+        results = response.data;
+        count = results.length;
+        next = null;
+        prev = null;
+      } else {
+        results = response.data.results;
+        count = response.data.count;
+        next = response.data.next;
+        prev = response.data.previous;
+      }
+      return new Page(
+        count,
+        next,
+        prev,
+        results.map((item: { [key: string]: any }) => toModel(item))
+      );
+    } catch (error) {
+      console.error('Erro ao listar usuários:', error);
+      throw error;
+    }
   }
+  
+  
+  
+  
 
   async create(fields: { [key: string]: any }): Promise<UserItem> {
     const url = '/users/create'

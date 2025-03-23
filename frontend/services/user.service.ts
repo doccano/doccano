@@ -41,3 +41,4 @@ export class UserApplicationService {
       throw new Error(e.response.data.detail)
     }
 }
+}

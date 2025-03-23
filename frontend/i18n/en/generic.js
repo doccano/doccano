@@ -17,5 +17,13 @@ export default {
   export: 'Export',
   description: 'Description',
   type: 'Type',
-  loading: 'Loading... Please wait'
+  loading: 'Loading... Please wait',
+  Username : 'Nome de usuário',
+  Email : 'Email',
+  Password : 'Senha',
+  ConfirmPassword: 'Confirmar Senha',
+  generic: {
+    "error": "Ocorreu um erro.",
+    "success": "Operação realizada com sucesso."
+}
 }
