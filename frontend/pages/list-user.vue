@@ -29,6 +29,7 @@
                   loading-text="Loading users..."
                   :item-class="getRowClass"
                   :options.sync="options"
+                  :custom-sort="customSort"
                   hide-default-footer
                 >
                   <template v-slot:[`item.id`]="{ item }">
@@ -145,28 +146,7 @@ export default {
         user.username.toLowerCase().includes(this.search.toLowerCase()) ||
         user.email.toLowerCase().includes(this.search.toLowerCase())
       )
-      const sorted = filtered.slice()
-      if (this.options.sortBy && this.options.sortBy.length > 0) {
-        const sortField = this.options.sortBy[0]
-        const sortDesc = this.options.sortDesc[0]
-        sorted.sort((a, b) => {
-          let comp = 0
-          if (sortField === 'date_joined') {
-            comp = new Date(a.date_joined) - new Date(b.date_joined)
-          } else if (sortField === 'last_seen') {
-            comp = new Date(a.last_login) - new Date(b.last_login)
-          } else if (sortField === 'id') {
-            comp = a.id - b.id
-          } else if (typeof a[sortField] === 'string') {
-            comp = a[sortField].localeCompare(b[sortField])
-          } else {
-            comp = a[sortField] - b[sortField]
-          }
-          return sortDesc ? -comp : comp
-        })
-      } else {
-        sorted.sort((a, b) => a.id - b.id)
-      }
+      const sorted = this.customSort(filtered.slice(), this.options.sortBy, this.options.sortDesc)
       return sorted
     },
     pagedUsers() {
@@ -237,7 +217,35 @@ export default {
     },
     getStatusColor(user) {
       return this.isCurrentUser(user) ? 'green' : 'red'
-    }
+    },
+    customSort(items, sortBy, sortDesc) {
+      if (!sortBy.length) {
+        return items.sort((a, b) => {
+          if (a._empty && !b._empty) return 1;
+          if (!a._empty && b._empty) return -1;
+          return a.id - b.id;
+        });
+      }
+      return items.sort((a, b) => {
+        if (a._empty && !b._empty) return 1;
+        if (!a._empty && b._empty) return -1;
+  
+        const sortField = sortBy[0];
+        let comp = 0;
+        if (sortField === 'date_joined') {
+          comp = new Date(a.date_joined) - new Date(b.date_joined);
+        } else if (sortField === 'last_seen') {
+          comp = new Date(a.last_login) - new Date(b.last_login);
+        } else if (sortField === 'id') {
+          comp = a.id - b.id;
+        } else if (typeof a[sortField] === 'string') {
+          comp = a[sortField].localeCompare(b[sortField]);
+        } else {
+          comp = a[sortField] - b[sortField];
+        }
+        return sortDesc[0] ? -comp : comp;
+      });
+    },
   }
 }
 </script>
