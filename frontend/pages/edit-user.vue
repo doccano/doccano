@@ -122,15 +122,23 @@
             <v-card-text class="pa-4">
               <v-form ref="editForm">
                 <v-text-field
-                v-model="editingUser.username"
-                label="Username"
-                outlined></v-text-field>
-                <v-text-field v-model="editingUser.email" label="Email" outlined></v-text-field>
+                  v-model="editingUser.username"
+                  label="Username"
+                  outlined
+                  :prepend-icon="mdiAccount"
+                ></v-text-field>
+                <v-text-field
+                  v-model="editingUser.email"
+                  label="Email"
+                  outlined
+                  :prepend-icon="mdiEmail"
+                ></v-text-field>
                 <v-select
                   v-model="editingUser.role"
                   :items="roleOptions"
                   label="Role"
                   outlined
+                  :prepend-icon="mdiAccountKey"
                 ></v-select>
               </v-form>
             </v-card-text>
@@ -149,6 +157,7 @@
 import { mdiMagnify } from '@mdi/js'
 import { mdiChevronLeft } from '@mdi/js'
 import { mdiPencil } from '@mdi/js'
+import { mdiAccount, mdiEmail, mdiAccountKey } from '@mdi/js'
 import { mapState } from 'vuex'
   
 export default {
@@ -165,6 +174,9 @@ export default {
       },
       mdiChevronLeft,
       mdiPencil,
+      mdiAccount,
+      mdiEmail,
+      mdiAccountKey,
       headers: [
         { text: 'Username', value: 'username', sortable: true },
         { text: 'Email', value: 'email', sortable: true },
