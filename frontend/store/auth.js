@@ -20,6 +20,9 @@ export const mutations = {
   },
   setIsStaff(state, isStaff) {
     state.isStaff = isStaff
+  },
+  setIsSuperUser(state, isSuperUser) {
+    state.isSuperUser = isSuperUser
   }
 }
 
@@ -35,11 +38,15 @@ export const getters = {
   },
   isStaff(state) {
     return state.isStaff
+  },
+  isSuperUser(state) {
+    return state.isSuperUser
   }
 }
 
 export const actions = {
   async authenticateUser({ commit }, authData) {
+    console.log('authData', authData)
     try {
       await this.$repositories.auth.login(authData.username, authData.password)
       commit('setAuthenticated', true)
@@ -57,6 +64,7 @@ export const actions = {
       commit('setUsername', user.username)
       commit('setUserId', user.id)
       commit('setIsStaff', user.isStaff)
+      commit('setIsSuperUser', user.isSuperUser)
     } catch {
       commit('setAuthenticated', false)
       commit('setIsStaff', false)
@@ -67,5 +75,18 @@ export const actions = {
     commit('setAuthenticated', false)
     commit('setIsStaff', false)
     commit('clearUsername')
+  },
+  async registerUser(_,authData) {
+    console.log('authData', authData)
+    try {
+      await this.$repositories.auth.register(
+        authData.username, 
+        authData.email, 
+        authData.password1, 
+        authData.password2
+      )
+    } catch (error) {
+      throw new Error('Failed to register user')
+    }
   }
 }

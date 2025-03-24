@@ -12,7 +12,8 @@ export default {
   },
   userNameRules: {
     userNameRequired: 'User name is required',
-    userNameLessThan30Chars: 'User name must be less than 30 characters'
+    userNameLessThan30Chars: 'User name must be less than 30 characters',
+    min : 'User name must be at least 3 characters long',
   },
   roleRules: {
     roleRequired: 'Role is required'
@@ -27,12 +28,18 @@ export default {
   fileFormatRules: {
     fileFormatRequired: 'File format is required'
   },
+  emailRules: {
+    required: 'Email is required',
+    format: 'Email must be valid'
+  },
   uploadFileRules: {
     fileRequired: 'File is required',
     fileLessThan1MB: 'File size should be less than 100 MB!'
   },
   passwordRules: {
-    passwordRequired: 'Password is required',
-    passwordLessThan30Chars: 'Password must be less than 30 characters'
+    required: 'Password is required',
+    passwordLessThan30Chars: 'Password must be less than 30 characters',
+    minLength: 'Password must be at least 8 characters long',
+    match: 'Passwords must match'
   }
 }

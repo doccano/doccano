@@ -1,7 +1,13 @@
 export default {
   login: 'Login',
+  register: 'Register',
   signOut: 'Sign Out',
   username: 'Username',
   password: 'Password',
-  socialLogin: 'Login With {provider}'
+  email: 'Email',
+  confirmPassword: 'Confirm Password',
+  socialLogin: 'Login With {provider}',
+  superUser: 'Super User',
+  staff: 'Staff',
+  active: 'Active',
 }
