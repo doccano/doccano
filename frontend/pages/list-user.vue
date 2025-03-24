@@ -120,7 +120,6 @@ export default {
         sortDesc: []
       },
       headers: [
-        { text: 'ID', value: 'id', sortable: true },
         { text: 'Username', value: 'username', sortable: true },
         { text: 'Email', value: 'email', sortable: true },
         { text: 'Role', value: 'role', sortable: true },
@@ -229,25 +228,28 @@ export default {
         return items.sort((a, b) => {
           if (a._empty && !b._empty) return 1;
           if (!a._empty && b._empty) return -1;
-          return a.id - b.id;
+          return (a.id || 0) - (b.id || 0);
         });
       }
+      const field = sortBy[0];
       return items.sort((a, b) => {
         if (a._empty && !b._empty) return 1;
         if (!a._empty && b._empty) return -1;
-  
-        const sortField = sortBy[0];
+        if (a._empty && b._empty) return 0;
         let comp = 0;
-        if (sortField === 'date_joined') {
+        if (field === 'role') {
+          const order = { annotator: 0, admin: 1, owner: 2 };
+          comp = order[a.role] - order[b.role];
+        } else if (field === 'date_joined') {
           comp = new Date(a.date_joined) - new Date(b.date_joined);
-        } else if (sortField === 'last_seen') {
+        } else if (field === 'last_seen') {
           comp = new Date(a.last_login) - new Date(b.last_login);
-        } else if (sortField === 'id') {
-          comp = a.id - b.id;
-        } else if (typeof a[sortField] === 'string') {
-          comp = a[sortField].localeCompare(b[sortField]);
+        } else if (field === 'id') {
+          comp = (a.id || 0) - (b.id || 0);
+        } else if (typeof a[field] === 'string') {
+          comp = a[field].localeCompare(b[field]);
         } else {
-          comp = a[sortField] - b[sortField];
+          comp = (a[field] || 0) - (b[field] || 0);
         }
         return sortDesc[0] ? -comp : comp;
       });

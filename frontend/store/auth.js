@@ -1,8 +1,9 @@
 export const state = () => ({
-  username: null,
   id: null,
-  isAuthenticated: false,
+  username: '',
   isStaff: false,
+  is_superuser: false,
+  isAuthenticated: false,
   role: null
 })
 
@@ -26,10 +27,10 @@ export const mutations = {
     state.role = role
   },
   updateUser(state, user) {
-    state.username = user.username
-    state.id = user.id
-    state.isStaff = user.is_staff
-    state.role = user.is_staff ? 'admin' : 'annotator'
+    state.id = user.id;
+    state.username = user.username;
+    state.isStaff = user.is_staff || user.isStaff;
+    state.is_superuser = user.is_superuser || user.isSuperuser || false;
   }
 }
 
@@ -48,6 +49,11 @@ export const getters = {
   },
   getRole(state) {
     return state.role
+  },
+  currentUserRole(state) {
+    if (state.is_superuser && state.isStaff) return 'owner'
+    if (!state.is_superuser && state.isStaff) return 'admin'
+    return 'annotator'
   }
 }
 
@@ -65,16 +71,17 @@ export const actions = {
   },
   async initAuth({ commit }) {
     try {
-      const user = await this.$repositories.user.getProfile()
-      commit('setAuthenticated', true)
-      commit('setUsername', user.username)
-      commit('setUserId', user.id)
-      commit('setIsStaff', user.isStaff)
-      commit('setRole', user.isStaff ? 'admin' : 'annotator')
+      const user = await this.$repositories.user.getProfile();
+      commit('setAuthenticated', true);
+      commit('setUsername', user.username);
+      commit('setUserId', user.id);
+      commit('setIsStaff', user.is_staff || user.isStaff);
+      commit('updateUser', user);
+      commit('setRole', user.is_staff || user.isStaff ? 'admin' : 'annotator');
     } catch {
-      commit('setAuthenticated', false)
-      commit('setIsStaff', false)
-      commit('setRole', 'annotator')
+      commit('setAuthenticated', false);
+      commit('setIsStaff', false);
+      commit('setRole', null);
     }
   },
   async logout({ commit }) {
