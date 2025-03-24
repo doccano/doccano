@@ -117,7 +117,8 @@ export default {
       ],
       roleOptions: [
         { text: 'Annotator', value: 'annotator' },
-        { text: 'Admin', value: 'admin' }
+        { text: 'Admin', value: 'admin' },
+        { text: 'Owner', value: 'owner' }
       ]
     }
   },

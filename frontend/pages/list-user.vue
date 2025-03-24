@@ -54,7 +54,9 @@
                   <template v-slot:[`item.role`]="{ item }">
                     <v-chip
                       v-if="!item._empty"
-                      :color="item.role === 'admin' ? '#FF2F00' : 'primary'"
+                      :color="item.role === 'owner' ? '#a8c400'
+                      : (item.role === 'admin'
+                      ? '#FF2F00' : 'primary')"
                       outlined
                     >
                         {{ item.role.charAt(0).toUpperCase() + item.role.slice(1) }}
@@ -140,7 +142,11 @@ export default {
     sortedUsers() {
       const usersWithRole = this.users.map(user => ({
         ...user,
-        role: user.role || ((user.is_staff || user.is_superuser) ? 'admin' : 'annotator')
+        role: user.role || (
+          user.is_superuser && user.is_staff
+            ? 'owner'
+            : (user.is_staff ? 'admin' : 'annotator')
+        )
       }))
       const filtered = usersWithRole.filter(user =>
         user.username.toLowerCase().includes(this.search.toLowerCase()) ||

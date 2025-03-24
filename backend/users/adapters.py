@@ -9,9 +9,12 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         role = form.cleaned_data.get("role") or (hasattr(request, 'data') and request.data.get("role")) or ""
         print("CustomAccountAdapter role:", role)
         print("CustomAccountAdapter form.cleaned_data:", form.cleaned_data)
-        if role == "admin":
+        if role == "owner":
             user.is_staff = True
             user.is_superuser = True
+        elif role == "admin":
+            user.is_staff = True
+            user.is_superuser = False
         else:
             user.is_staff = False
 
