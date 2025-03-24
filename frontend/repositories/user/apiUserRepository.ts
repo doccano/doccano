@@ -57,6 +57,12 @@ export class APIUserRepository {
     }
   }
   
+  async bulkDelete(userIds: number[]): Promise<void> {
+    const url = '/users/delete'; // nova rota
+    await this.request.post(url, { ids: userIds }, { headers: { "Content-Type": "application/json" } });
+  }
+  
+  
   
   
   

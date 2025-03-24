@@ -5,6 +5,7 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.parsers import JSONParser
 
 from .serializers import UserSerializer
 from projects.permissions import IsProjectAdmin
@@ -50,3 +51,17 @@ class UserCreation(generics.CreateAPIView):
     def perform_create(self, serializer):
         user = serializer.save(self.request)
         return user
+
+
+
+class BulkDeleteUsers(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated & IsAdminUser]
+    parser_classes = [JSONParser]
+
+    # Alteramos para POST
+    def post(self, request, *args, **kwargs):
+        ids = request.data.get('ids', [])
+        if not isinstance(ids, list) or not ids:
+            return Response({"detail": "IDs not provided or invalid."}, status=status.HTTP_400_BAD_REQUEST)
+        User.objects.filter(id__in=ids).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -1,8 +1,8 @@
 <template>
     <v-card>
-      <v-card-title>{{ $t('generic.delete') }}</v-card-title>
+      <v-card-title>{{ $t('Delete') }}</v-card-title>
       <v-card-text>
-        <p>{{ $t('user.confirmDelete') }}</p>
+        <p>{{ $t('Are you absolutely certain you want to permanently remove this user?') }}</p>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
