@@ -132,7 +132,6 @@
                   label="Email"
                   outlined
                 ></v-text-field>
-                <!-- Added role field similar to register.vue -->
                 <v-select
                   v-model="editingUser.role"
                   :items="roleOptions"
@@ -193,18 +192,17 @@ export default {
     }
   },
   computed: {
-    ...mapState('auth', ['id', 'username', 'isStaff', 'is_superuser']),
-    currentUser() {
-      return {
-        id: this.id,
-        username: this.username,
-        role: (this.is_superuser || this.isStaff) ? 'admin' : 'annotator'
-      }
+    ...mapState('auth', ['id', 'isStaff', 'is_superuser']),
+    currentUserId() {
+      return this.id
+    },
+    currentUserRole() {
+      return (this.is_superuser || this.isStaff) ? 'admin' : 'annotator'
     },
     sortedUsers() {
       const usersWithRole = this.users.map(user => ({
         ...user,
-        role: user.role || ((user.is_staff || user.is_superuser) ? 'admin' : 'annotator'),
+        role: user.role || ((user.is_staff || user.is_superuser) ? 'admin' : 'annotator')
       }))
       const filtered = usersWithRole.filter(user =>
         user.username.toLowerCase().includes(this.search.toLowerCase()) ||
@@ -241,30 +239,50 @@ export default {
       return item._empty ? 'dummy-row' : ''
     },
     canEdit(user) {
-      if (this.currentUser.role === 'admin') {
-        return user.role === 'annotator' || user.id === this.currentUser.id
-      }
-      if (this.currentUser.role === 'annotator') {
-        return user.id === this.currentUser.id
-      }
-      return false
+      return this.currentUserRole === 'admin'
+        ? (user.role === 'annotator' || user.id === this.currentUserId)
+        : (user.id === this.currentUserId)
     },
     openEdit(item) {
       this.editingUser = { ...item }
       this.editDialog = true
     },
-    saveEdit() {
-      const index = this.users.findIndex(u => u.id === this.editingUser.id)
-      if (index !== -1) {
-        this.users.splice(index, 1, { ...this.editingUser })
+    async saveEdit() {
+      try {
+        if (this.editingUser.role === 'admin') {
+          this.editingUser.is_superuser = true
+          this.editingUser.is_staff = true
+        } else {
+          this.editingUser.is_superuser = false
+          this.editingUser.is_staff = false
+        }
+        let response
+        if (this.editingUser.id) {
+          response = await this.$axios.put(`/v1/users/${this.editingUser.id}/`, this.editingUser)
+          const index = this.users.findIndex(u => u.id === this.editingUser.id)
+          if (index !== -1) {
+            this.$set(this.users, index, response.data)
+          }
+          if (this.editingUser.id === this.currentUserId) {
+            this.$store.commit('auth/updateUser', response.data)
+          }
+        } else {
+          response = await this.$axios.post('/v1/users/', this.editingUser)
+          this.users.push(response.data)
+        }
+        this.$router.push({ 
+          path: '/message', 
+          query: { message: 'User changed successfully! 🦭', redirect: '/edit-user' } 
+        })
+      } catch (error) {
+        console.error('Error saving user:', error)
       }
-      this.editDialog = false
     },
     closeEdit() {
       this.editDialog = false
     },
     isCurrentUser(user) {
-      return this.currentUser && user.id === this.currentUser.id
+      return user.id === this.currentUserId
     },
     getStatusColor(user) {
       return this.isCurrentUser(user) ? 'green' : 'red'
@@ -275,29 +293,17 @@ export default {
       const past = new Date(dateStr)
       const diffMs = now - past
       const diffSeconds = Math.floor(diffMs / 1000)
-      if (diffSeconds < 0) {
-        return 'right now'
-      } else if (diffSeconds < 60) {
-        return diffSeconds + ' seconds ago'
-      }
+      if (diffSeconds < 0) return 'right now'
+      if (diffSeconds < 60) return diffSeconds + ' seconds ago'
       const diffMinutes = Math.floor(diffSeconds / 60)
-      if (diffMinutes < 60) {
-        return diffMinutes + ' minutes ago'
-      }
+      if (diffMinutes < 60) return diffMinutes + ' minutes ago'
       const diffHours = Math.floor(diffMinutes / 60)
-      if (diffHours < 24) {
-        return diffHours + ' hours ago'
-      }
+      if (diffHours < 24) return diffHours + ' hours ago'
       const diffDays = Math.floor(diffHours / 24)
-      if (diffDays < 7) {
-        return diffDays + ' days ago'
-      } else if (diffDays < 30) {
-        return diffDays + ' days ago'
-      }
+      if (diffDays < 7) return diffDays + ' days ago'
+      if (diffDays < 30) return diffDays + ' days ago'
       const diffMonths = Math.floor(diffDays / 30)
-      if (diffMonths < 12) {
-        return diffMonths + ' months ago'
-      }
+      if (diffMonths < 12) return diffMonths + ' months ago'
       const diffYears = Math.floor(diffMonths / 12)
       return diffYears + ' years ago'
     },

@@ -2,7 +2,8 @@ export const state = () => ({
   username: null,
   id: null,
   isAuthenticated: false,
-  isStaff: false
+  isStaff: false,
+  role: null
 })
 
 export const mutations = {
@@ -20,6 +21,15 @@ export const mutations = {
   },
   setIsStaff(state, isStaff) {
     state.isStaff = isStaff
+  },
+  setRole(state, role) {
+    state.role = role
+  },
+  updateUser(state, user) {
+    state.username = user.username
+    state.id = user.id
+    state.isStaff = user.is_staff
+    state.role = user.is_staff ? 'admin' : 'annotator'
   }
 }
 
@@ -35,6 +45,9 @@ export const getters = {
   },
   isStaff(state) {
     return state.isStaff
+  },
+  getRole(state) {
+    return state.role
   }
 }
 
@@ -57,9 +70,11 @@ export const actions = {
       commit('setUsername', user.username)
       commit('setUserId', user.id)
       commit('setIsStaff', user.isStaff)
+      commit('setRole', user.isStaff ? 'admin' : 'annotator')
     } catch {
       commit('setAuthenticated', false)
       commit('setIsStaff', false)
+      commit('setRole', 'annotator')
     }
   },
   async logout({ commit }) {
@@ -67,6 +82,7 @@ export const actions = {
     commit('setAuthenticated', false)
     commit('setIsStaff', false)
     commit('clearUsername')
+    commit('setRole', 'annotator')
   },
   async registerUser(_, userData) {
     try {
