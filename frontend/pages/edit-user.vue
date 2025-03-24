@@ -137,6 +137,7 @@
                   :items="roleOptions"
                   label="Role"
                   outlined
+                  :disabled="isEditingSelfAnnotator"
                 ></v-select>
               </v-form>
             </v-card-text>
@@ -199,6 +200,9 @@ export default {
     currentUserRole() {
       return (this.is_superuser || this.isStaff) ? 'admin' : 'annotator'
     },
+    isEditingSelfAnnotator() {
+      return this.editingUser.id === this.currentUserId && this.currentUserRole === 'annotator'
+    },
     sortedUsers() {
       const usersWithRole = this.users.map(user => ({
         ...user,
@@ -249,6 +253,11 @@ export default {
     },
     async saveEdit() {
       try {
+        if (this.editingUser.id === this.currentUserId && this.currentUserRole === 'annotator') {
+          this.editingUser.role = 'annotator'
+          this.editingUser.is_superuser = false
+          this.editingUser.is_staff = false
+        }
         if (this.editingUser.role === 'admin') {
           this.editingUser.is_superuser = true
           this.editingUser.is_staff = true
