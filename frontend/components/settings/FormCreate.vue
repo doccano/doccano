@@ -30,10 +30,15 @@
             type="password"
             required
           />
-          <!-- Adiciona o checkbox para superusuário -->
+          <!-- Checkbox para Superuser -->
           <v-checkbox
             v-model="isSuperuser"
             :label="$t('Superuser - If selected, this option grants the user full privileges automatically')"
+          />
+          <!-- Checkbox para Staff -->
+          <v-checkbox
+            v-model="isStaff"
+            :label="$t('Staff - If selected, the user will have staff status without full privileges')"
           />
         </v-form>
         <v-alert v-if="errorMessage" type="error" dense>{{ errorMessage }}</v-alert>
@@ -65,8 +70,9 @@
         email: '',
         password1: '',
         password2: '',
-        // Nova propriedade para o checkbox
+        // Propriedades dos checkboxes
         isSuperuser: false,
+        isStaff: false,
         errorMessage: '',
         usernameRules: [
           (v: string) => !!v || this.$t('user.usernameRequired'),
@@ -83,30 +89,32 @@
       }
     },
     methods: {
-        async create() {
-  if (!(this.$refs.form as Vue & { validate: () => boolean }).validate()) {
-    return
-  }
-  this.loading = true
-  this.errorMessage = ''
-  try {
-    await this.$repositories.user.create({
-      username: this.username,
-      email: this.email,
-      password1: this.password1,
-      password2: this.password2,
-      // Adiciona a propriedade is_superuser ao objeto de dados
-      is_superuser: this.isSuperuser
-      
-    })
-    this.$emit('save')
-  } catch (e: any) {
-    this.errorMessage = e.response?.data?.detail || this.$t('generic.error')
-  } finally {
-    this.loading = false
-  }
-}
-
+      async create() {
+        console.log('Método create chamado')
+        if (!(this.$refs.form as Vue & { validate: () => boolean }).validate()) {
+          return
+        }
+        this.loading = true
+        this.errorMessage = ''
+        try {
+          await this.$repositories.user.create({
+            username: this.username,
+            email: this.email,
+            password1: this.password1,
+            password2: this.password2,
+            // Se isSuperuser estiver selecionado, is_superuser será true e is_staff true;
+            // caso contrário, se isStaff estiver marcado, apenas is_staff será true.
+            is_superuser: this.isSuperuser,
+            is_staff: this.isSuperuser ? true : this.isStaff
+          })
+          this.$emit('save')
+        } catch (e: any) {
+          console.error("Erro ao criar usuário:", e)
+          this.errorMessage = e.response?.data?.detail || this.$t('generic.error')
+        } finally {
+          this.loading = false
+        }
+      }
     }
   })
   </script>
