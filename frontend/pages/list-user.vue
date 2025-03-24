@@ -80,10 +80,14 @@
                   <template #footer>
                     <v-row align="center">
                       <v-col class="d-flex justify-start">
-                        <v-btn color="primary" @click="goToEditUser">
+                        <v-btn color="primary" @click="$router.push('/list-user')">
+                          <v-icon left>{{ mdiChevronLeft }}</v-icon>
+                          Back
+                        </v-btn>
+                        <v-btn color="primary ml-5" @click="goToEditUser">
                           EDIT USER
                         </v-btn>
-                        <v-btn color="primary" class="ml-1" @click="goToDeleteUser">
+                        <v-btn color="red" class="ml-1 white--text" @click="goToDeleteUser">
                           DELETE USER
                         </v-btn>
                       </v-col>
@@ -108,6 +112,7 @@
   
 <script>
 import { mdiMagnify } from '@mdi/js'
+import { mdiChevronLeft } from '@mdi/js'
 import { mapState } from 'vuex'
 
 export default {
@@ -130,6 +135,7 @@ export default {
         { text: 'Last Seen', value: 'last_seen', sortable: true },
       ],
       mdiMagnify,
+      mdiChevronLeft
     }
   },
   computed: {
