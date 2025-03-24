@@ -39,9 +39,10 @@
                   </template>
                   <template v-slot:[`item.username`]="{ item }">
                     <div v-if="!item._empty" class="d-flex align-center">
-                      <span class="status-circle" :style="{ 
-                        backgroundColor: getStatusColor(item) 
-                        }"></span>
+                      <span
+                        class="status-circle"
+                        :style="{ backgroundColor: getStatusColor(item) }"
+                      ></span>
                       <span>{{ item.username }}</span>
                     </div>
                     <span v-else>&nbsp;</span>
@@ -53,9 +54,10 @@
                   <template v-slot:[`item.role`]="{ item }">
                     <v-chip
                       v-if="!item._empty"
-                      :color="item.role === 'owner' ? '#a8c400' : 
-                      (item.role === 'admin' ? 
-                      '#FF2F00' : 'primary')"
+                      :color="item.role === 'owner' ? '#a8c400'
+                      : (item.role === 'admin'
+                      ? '#FF2F00'
+                      : 'primary')"
                       outlined
                     >
                       {{ item.role.charAt(0).toUpperCase() + item.role.slice(1) }}
@@ -68,9 +70,9 @@
                   </template>
                   <template v-slot:[`item.last_seen`]="{ item }">
                     <span v-if="!item._empty">
-                      {{ isCurrentUser(item) ? 'Currently online' 
-                      : (item.last_login 
-                      ? timeAgo(item.last_login) 
+                      {{ isCurrentUser(item) ? 'Currently online'
+                      : (item.last_login
+                      ? timeAgo(item.last_login)
                       : 'Never') }}
                     </span>
                     <span v-else>&nbsp;</span>
@@ -120,15 +122,10 @@
             <v-card-text class="pa-4">
               <v-form ref="editForm">
                 <v-text-field
-                  v-model="editingUser.username"
-                  label="Username"
-                  outlined
-                ></v-text-field>
-                <v-text-field
-                  v-model="editingUser.email"
-                  label="Email"
-                  outlined
-                ></v-text-field>
+                v-model="editingUser.username"
+                label="Username"
+                outlined></v-text-field>
+                <v-text-field v-model="editingUser.email" label="Email" outlined></v-text-field>
                 <v-select
                   v-model="editingUser.role"
                   :items="roleOptions"
@@ -202,25 +199,45 @@ export default {
       return this.currentUser.role;
     },
     roleOptions() {
+      // Always show all three roles
       const options = [
-        { text: 'Annotator', value: 'annotator' },
-        { text: 'Admin', value: 'admin' }
+        { text: 'Annotator', value: 'annotator', disabled: false },
+        { text: 'Admin', value: 'admin', disabled: false },
+        { text: 'Owner', value: 'owner', disabled: false }
       ];
-      if (this.currentUserRole === 'owner') {
-        options.push({ text: 'Owner', value: 'owner' });
+      // Determine if the user being edited is the same as the current user
+      const editingSelf = this.editingUser && this.editingUser.id === this.currentUserId;
+  
+      if (this.currentUserRole === 'annotator') {
+        // Annotators cannot promote anyone—disable Admin and Owner
+        options.find(opt => opt.value === 'admin').disabled = true;
+        options.find(opt => opt.value === 'owner').disabled = true;
+      } else if (this.currentUserRole === 'admin') {
+        // Admins cannot assign Owner role to anyone
+        options.find(opt => opt.value === 'owner').disabled = true;
+        // And if editing self, disable the Admin option too
+        if (editingSelf) {
+          options.find(opt => opt.value === 'admin').disabled = true;
+        }
+      } else if (this.currentUserRole === 'owner') {
+        // Owners editing themselves should not be able to change their own role to Owner
+        if (editingSelf) {
+          options.find(opt => opt.value === 'owner').disabled = true;
+        }
+        // Otherwise (editing others) all options remain enabled
       }
+  
       return options;
     },
     sortedUsers() {
       const lowerSearch = this.search.toLowerCase();
       const usersWithRole = this.users.map(user => ({
         ...user,
-        role: user.role 
-          ? user.role 
-          : (user.is_staff && !user.is_superuser ? 'admin' 
+        role: user.role
+          ? user.role
+          : (user.is_staff && !user.is_superuser ? 'admin'
             : (user.is_superuser && user.is_staff ? 'owner' : 'annotator'))
       }));
-      // Use the search term in filtering so it always re-computes
       const filtered = usersWithRole.filter(user =>
         user.username.toLowerCase().includes(lowerSearch) ||
         user.email.toLowerCase().includes(lowerSearch)
@@ -259,17 +276,14 @@ export default {
     canEdit(user) {
       // Allow self-edit
       if (user.id === this.currentUserId) return true;
-      
       // Owners can edit anyone except other owners
       if (this.currentUserRole === 'owner') {
         return user.role !== 'owner';
       }
-      
       // Admins can only edit annotators
       if (this.currentUserRole === 'admin') {
         return user.role === 'annotator';
       }
-      
       return false;
     },
     openEdit(item) {
@@ -285,22 +299,17 @@ export default {
         if (this.editingUser.role === 'owner') {
           this.editingUser.is_superuser = true;
           this.editingUser.is_staff = true;
-          // role remains 'owner'
         } else if (this.editingUser.role === 'admin') {
-          // Allow assignment if current user is admin or owner
           if (this.currentUserRole === 'annotator') {
-            // annotators can only assign annotator
             this.editingUser.is_superuser = false;
             this.editingUser.is_staff = false;
             this.editingUser.role = 'annotator';
           } else {
-            // currentUser is admin or owner, so allow upgrading to admin
             this.editingUser.is_superuser = false;
             this.editingUser.is_staff = true;
             this.editingUser.role = 'admin';
           }
         } else {
-          // Assign annotator
           this.editingUser.is_superuser = false;
           this.editingUser.is_staff = false;
           this.editingUser.role = 'annotator';
@@ -311,6 +320,15 @@ export default {
           const index = this.users.findIndex(u => u.id === this.editingUser.id);
           if (index !== -1) {
             this.$set(this.users, index, response.data);
+          }
+          // If the updated user is the current user, update Vuex store.
+          if (this.editingUser.id === this.currentUserId) {
+            this.$store.commit('auth/updateUser', {
+              id: response.data.id,
+              username: response.data.username,
+              is_staff: response.data.is_staff,
+              is_superuser: response.data.is_superuser
+            });
           }
         } else {
           response = await this.$axios.post('/v1/users/', this.editingUser);
