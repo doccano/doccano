@@ -316,10 +316,7 @@ export default {
           response = await this.$axios.post('/v1/users/', this.editingUser);
           this.users.push(response.data);
         }
-        // Reset to first page so search filtering works correctly
         this.options.page = 1;
-        // Optionally, re-fetch users to ensure reactive data:
-        // await this.fetchUsers();
         this.editDialog = false;
       } catch (error) {
         console.error('Error saving user:', error);
