@@ -17,7 +17,8 @@
                     v-model="showError"
                     type="error"
                     dismissible
-                    class="error-message">
+                    class="error-message"
+                  >
                     {{ errorMessage }}
                   </v-alert>
                   
@@ -26,7 +27,7 @@
                     :rules="nameRules"
                     label="Username"
                     required
-                    prepend-icon="mdi-account"
+                    :prepend-icon="mdiAccount"
                   ></v-text-field>
                   
                   <v-text-field
@@ -35,7 +36,7 @@
                     label="Email"
                     type="email"
                     required
-                    prepend-icon="mdi-email"
+                    :prepend-icon="mdiEmail"
                   ></v-text-field>
 
                   <v-text-field
@@ -44,7 +45,7 @@
                     label="Password"
                     type="password"
                     required
-                    prepend-icon="mdi-lock"
+                    :prepend-icon="mdiLock"
                   ></v-text-field>
 
                   <v-text-field
@@ -53,15 +54,16 @@
                     label="Confirm Password"
                     type="password"
                     required
-                    prepend-icon="mdi-lock-check"
+                    :prepend-icon="mdiLockCheck"
                   ></v-text-field>
 
                   <v-select
                     v-model="role"
                     :items="roleOptions"
+                    :rules="roleRules"
                     label="Role"
                     required
-                    prepend-icon="mdi-account-key"
+                    :prepend-icon="mdiAccountKey"
                   ></v-select>
                   
                   <v-row justify="center" class="mt-5">
@@ -82,6 +84,8 @@
 </template>
 
 <script>
+import { mdiAccount, mdiEmail, mdiLock, mdiLockCheck, mdiAccountKey } from '@mdi/js'
+
 export default {
   data() {
     return {
@@ -93,6 +97,12 @@ export default {
       role: '',
       showError: false,
       errorMessage: '',
+      mdiAccount,
+      mdiEmail,
+      mdiLock,
+      mdiLockCheck,
+      mdiAccountKey,
+      commonPasswords: ['password', '12345678', 'qwertyui', '12345678', 'letmein!', 'software', 'password1'],
       nameRules: [
         (v) => !!v || 'Name is required',
         (v) => (v && v.length >= 3) || 'Name must be at least 3 characters'
@@ -103,17 +113,21 @@ export default {
       ],
       passwordRules: [
         (v) => !!v || 'Password is required',
-        (v) =>
-          (v && v.length >= 8) ||
-          'Password must be at least 8 characters',
-        (v) =>
-          (v && v.length <= 30) ||
-          'Password must be less than 31 characters'
+        (v) => (v && v.length >= 8) || 'Password must be at least 8 characters',
+        (v) => (v && v.length <= 30) || 'Password must be less than 31 characters',
+        (v) => !/^\d+$/.test(v) || 'Password cannot be entirely numerical',
+        (v) => !this.commonPasswords.includes(v.toLowerCase()) || 'Password is too common',
+        (v) => /[A-Z]/.test(v) || 'Password must contain at least one uppercase letter',
+        (v) => /[a-z]/.test(v) || 'Password must contain at least one lowercase letter',
+        (v) => /[0-9]/.test(v) || 'Password must include at least one digit',
+        (v) => /[@$!%*?&#]/.test(v) || 'Password must include at least one special character'
       ],
-
       confirmPasswordRules: [
         (v) => !!v || 'Please confirm your password',
         (v) => v === this.password || 'Passwords do not match'
+      ],
+      roleRules: [
+        (v) => !!v || 'Role is required'
       ],
       roleOptions: [
         { text: 'Annotator', value: 'annotator' },
@@ -123,9 +137,7 @@ export default {
     }
   },
   watch: {
-    
     password() {
-     
       this.confirmPasswordRules = [
         (v) => !!v || 'Please confirm your password',
         (v) => v === this.password || 'Passwords do not match'
@@ -151,18 +163,22 @@ export default {
         const result = await this.$repositories.user.register(userData);
         console.log('User registered successfully:', result);
         this.showError = false;
-        this.$router.push({ path: '/message', query: { message: 'Registration Successful! 🦭' } });
-        
+        this.$router.push({
+          path: '/message',
+          query: { message: 'Registration Successful! 🦭' }
+        });
       } catch (error) {
         this.showError = true;
         let errorDetail = '';
         if (error.response && error.response.data) {
           const errors = [];
-            for (const [field, messages] of Object.entries(error.response.data)) {
+          for (const [field, messages] of Object.entries(error.response.data)) {
             const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
-            const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages;
+            const formattedMessages = Array.isArray(messages)
+              ? messages.join(', ')
+              : messages;
             errors.push(`${fieldName}: ${formattedMessages.replace(/^\n+/, '')}`);
-            }
+          }
           errorDetail = errors.join('\n\n');
         } else {
           errorDetail = 'User registration failed';
