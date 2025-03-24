@@ -1,5 +1,7 @@
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth import get_user_model
+from allauth.account.adapter import get_adapter
+
 from rest_framework import serializers
 
 User = get_user_model()
@@ -11,14 +13,20 @@ class UserSerializer(serializers.ModelSerializer):
 
 # Novo serializer para criar usuário com is_superuser
 class CustomRegisterSerializer(RegisterSerializer):
-    # Define o campo no serializer
     is_superuser = serializers.BooleanField(required=False, default=False)
 
+    def get_cleaned_data(self):
+        data = super().get_cleaned_data()
+        data['is_superuser'] = self.validated_data.get('is_superuser', False)
+        return data
+
     def save(self, request):
-        user = super().save(request)
-        user.is_superuser = self.validated_data.get('is_superuser', False)
-        # Se for superusuário, pode ser útil definir is_staff = True também
-        if user.is_superuser:
+        adapter = get_adapter()
+        user = adapter.new_user(request)
+        self.cleaned_data = self.get_cleaned_data()
+        user = adapter.save_user(request, user, self)
+        if self.cleaned_data.get('is_superuser'):
+            user.is_superuser = True
             user.is_staff = True
         user.save()
         return user

@@ -11,7 +11,9 @@ function toPayload(item: { [key: string]: any }): { [key: string]: any } {
     username: item.username,
     email: item.email,
     password1: item.password1,
-    password2: item.password2
+    password2: item.password2,
+    is_superuser: item.is_superuser
+    
   }
 }
 

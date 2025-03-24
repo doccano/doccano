@@ -19,7 +19,7 @@ class Me(APIView):
 
 
 class Users(generics.ListAPIView):
-    queryset = User.objects.all()
+    queryset = User.objects.all()  
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated & IsProjectAdmin]
     pagination_class = None
@@ -28,13 +28,17 @@ class Users(generics.ListAPIView):
 
 
 class UserCreation(generics.CreateAPIView):
-    serializer_class = RegisterSerializer
+    serializer_class = RegisterSerializer 
     permission_classes = [IsAuthenticated & IsAdminUser]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = self.perform_create(serializer)
+        if request.data.get('is_superuser') in [True, 'true', 'True', 1]:
+            user.is_superuser = True
+            user.is_staff = True
+            user.save()
         headers = self.get_success_headers(serializer.data)
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED, headers=headers)
 

@@ -33,7 +33,7 @@
           <!-- Adiciona o checkbox para superusuário -->
           <v-checkbox
             v-model="isSuperuser"
-            :label="$t('user.superuser')"
+            :label="$t('Superuser - If selected, this option grants the user full privileges automatically')"
           />
         </v-form>
         <v-alert v-if="errorMessage" type="error" dense>{{ errorMessage }}</v-alert>
@@ -95,7 +95,9 @@
       email: this.email,
       password1: this.password1,
       password2: this.password2,
-      is_superuser: this.isSuperuser // importante: usar "is_superuser"
+      // Adiciona a propriedade is_superuser ao objeto de dados
+      is_superuser: this.isSuperuser
+      
     })
     this.$emit('save')
   } catch (e: any) {
