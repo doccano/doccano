@@ -5,14 +5,12 @@
         <v-row align="center" justify="center" class="mt-5">
           <v-col cols="12" sm="10" md="8">
             <v-card class="pa-0 overflow-hidden rounded-lg shadow-lg">
-              <!-- Top bar -->
               <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
                 <div class="text-h6 font-weight-medium text--white">
                   Edit Users
                 </div>
               </v-sheet>
-
-              <!-- Table and search -->
+  
               <v-card-text class="pa-4">
                 <v-text-field
                   v-model="search"
@@ -23,7 +21,7 @@
                   filled
                   class="mb-4"
                 />
-
+  
                 <v-data-table
                   :headers="headers"
                   :items="pagedUsers"
@@ -36,29 +34,25 @@
                   :custom-sort="customSort"
                   hide-default-footer
                 >
-                  <!-- ID slot -->
                   <template v-slot:[`item.id`]="{ item }">
                     <span v-if="!item._empty">{{ item.id }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-
-                  <!-- Username slot -->
+  
                   <template v-slot:[`item.username`]="{ item }">
                     <div v-if="!item._empty" class="d-flex align-center">
-                      <span
-                        class="status-circle"
-                        :style="{ backgroundColor: getStatusColor(item) }"
-                      ></span>
+                      <span class="status-circle" :style="{ backgroundColor:
+                        getStatusColor(item) }"></span>
                       <span>{{ item.username }}</span>
                     </div>
                     <span v-else>&nbsp;</span>
                   </template>
-
+  
                   <template v-slot:[`item.email`]="{ item }">
                     <span v-if="!item._empty">{{ item.email }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-
+  
                   <template v-slot:[`item.role`]="{ item }">
                     <v-chip
                       v-if="!item._empty"
@@ -69,38 +63,33 @@
                     </v-chip>
                     <div v-else>&nbsp;</div>
                   </template>
-
+  
                   <template v-slot:[`item.date_joined`]="{ item }">
                     <span v-if="!item._empty">{{ timeAgo(item.date_joined) }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-
+  
                   <template v-slot:[`item.last_seen`]="{ item }">
                     <span v-if="!item._empty">
-                      {{
-                        isCurrentUser(item)
-                          ? 'Currently online'
-                          : (item.last_login ? timeAgo(item.last_login) : 'Never')
-                      }}
+                      {{ isCurrentUser(item) ? 'Currently online' : (item.last_login ?
+                      timeAgo(item.last_login) : 'Never') }}
                     </span>
                     <span v-else>&nbsp;</span>
                   </template>
-
-                  <!-- Actions slot -->
+  
                   <template v-slot:[`item.actions`]="{ item }">
                     <v-btn
                       v-if="!item._empty"
                       color="primary"
                       small
                       :disabled="!canEdit(item)"
-                      @click="editUser(item)"
+                      @click="openEdit(item)"
                     >
                       EDIT
                     </v-btn>
                     <span v-else>&nbsp;</span>
                   </template>
-
-                  <!-- Footer with pagination and a back button -->
+  
                   <template #footer>
                     <v-row align="center">
                       <v-col class="d-flex justify-start">
@@ -123,16 +112,55 @@
             </v-card>
           </v-col>
         </v-row>
+  
+        <v-dialog v-model="editDialog" max-width="500px">
+          <v-card>
+            <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
+              <div class="text-h6 font-weight-medium text--white">
+                Edit User: {{ editingUser.username || 'New User' }}
+              </div>
+            </v-sheet>
+            <v-card-text class="pa-4">
+              <v-form ref="editForm">
+                <v-text-field
+                  v-model="editingUser.username"
+                  label="Username"
+                  outlined
+                ></v-text-field>
+                <v-text-field
+                  v-model="editingUser.email"
+                  label="Email"
+                  outlined
+                ></v-text-field>
+                <!-- Added role field similar to register.vue -->
+                <v-select
+                  v-model="editingUser.role"
+                  :items="roleOptions"
+                  label="Role"
+                  outlined
+                ></v-select>
+              </v-form>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" @click="saveEdit">
+                Save
+              </v-btn>
+              <v-btn text @click="closeEdit">
+                Cancel
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </v-container>
     </v-main>
   </v-app>
 </template>
-
+  
 <script>
 import { mdiMagnify } from '@mdi/js'
 import { mdiChevronLeft } from '@mdi/js'
 import { mapState } from 'vuex'
-
+  
 export default {
   data() {
     return {
@@ -156,11 +184,16 @@ export default {
         { text: 'Actions', value: 'actions', sortable: false },
       ],
       mdiMagnify,
+      editDialog: false,
+      editingUser: {},
+      roleOptions: [
+        { text: 'Annotator', value: 'annotator' },
+        { text: 'Admin', value: 'admin' }
+      ]
     }
   },
   computed: {
     ...mapState('auth', ['id', 'username', 'isStaff', 'is_superuser']),
-    // Identify the current user's role
     currentUser() {
       return {
         id: this.id,
@@ -168,26 +201,21 @@ export default {
         role: (this.is_superuser || this.isStaff) ? 'admin' : 'annotator'
       }
     },
-    // Sort and filter the entire dataset
     sortedUsers() {
       const usersWithRole = this.users.map(user => ({
         ...user,
         role: user.role || ((user.is_staff || user.is_superuser) ? 'admin' : 'annotator'),
       }))
-      // Apply search filter
       const filtered = usersWithRole.filter(user =>
         user.username.toLowerCase().includes(this.search.toLowerCase()) ||
         user.email.toLowerCase().includes(this.search.toLowerCase())
       )
-      // Sort using our custom logic
       return this.customSort(filtered.slice(), this.options.sortBy, this.options.sortDesc)
     },
-    // Slice for the current page, then add dummy rows
     pagedUsers() {
       const start = (this.options.page - 1) * this.options.itemsPerPage
       const end = start + this.options.itemsPerPage
       const pageItems = this.sortedUsers.slice(start, end)
-
       while (pageItems.length < this.options.itemsPerPage) {
         pageItems.push({ _empty: true })
       }
@@ -209,78 +237,70 @@ export default {
         this.isLoading = false
       }
     },
-
-    // Return a special row class for dummy rows
     getRowClass(item) {
       return item._empty ? 'dummy-row' : ''
     },
-
-    // Decide if the user can edit this row
     canEdit(user) {
-      // If current user is admin, they can edit any annotator or themselves
       if (this.currentUser.role === 'admin') {
         return user.role === 'annotator' || user.id === this.currentUser.id
       }
-      // If current user is annotator, they can only edit themselves
       if (this.currentUser.role === 'annotator') {
         return user.id === this.currentUser.id
       }
       return false
     },
-
-    editUser(item) {
-      this.$router.push(`/edit-user/${item.id}`)
+    openEdit(item) {
+      this.editingUser = { ...item }
+      this.editDialog = true
     },
-
+    saveEdit() {
+      const index = this.users.findIndex(u => u.id === this.editingUser.id)
+      if (index !== -1) {
+        this.users.splice(index, 1, { ...this.editingUser })
+      }
+      this.editDialog = false
+    },
+    closeEdit() {
+      this.editDialog = false
+    },
     isCurrentUser(user) {
       return this.currentUser && user.id === this.currentUser.id
     },
-
     getStatusColor(user) {
       return this.isCurrentUser(user) ? 'green' : 'red'
     },
-
-    // Convert a date string to "X minutes/hours/days ago"
     timeAgo(dateStr) {
       if (!dateStr) return ''
       const now = new Date()
       const past = new Date(dateStr)
       const diffMs = now - past
       const diffSeconds = Math.floor(diffMs / 1000)
-
       if (diffSeconds < 0) {
         return 'right now'
       } else if (diffSeconds < 60) {
         return diffSeconds + ' seconds ago'
       }
-
       const diffMinutes = Math.floor(diffSeconds / 60)
       if (diffMinutes < 60) {
         return diffMinutes + ' minutes ago'
       }
-
       const diffHours = Math.floor(diffMinutes / 60)
       if (diffHours < 24) {
         return diffHours + ' hours ago'
       }
-
       const diffDays = Math.floor(diffHours / 24)
       if (diffDays < 7) {
         return diffDays + ' days ago'
       } else if (diffDays < 30) {
         return diffDays + ' days ago'
       }
-
       const diffMonths = Math.floor(diffDays / 30)
       if (diffMonths < 12) {
         return diffMonths + ' months ago'
       }
-
       const diffYears = Math.floor(diffMonths / 12)
       return diffYears + ' years ago'
     },
-
-    // Custom sort that pushes dummy rows to the bottom
     customSort(items, sortBy, sortDesc) {
       if (!sortBy.length) {
         return items.sort((a, b) => {
@@ -289,13 +309,11 @@ export default {
           return (a.id || 0) - (b.id || 0)
         })
       }
-
       const field = sortBy[0]
       return items.sort((a, b) => {
         if (a._empty && !b._empty) return 1
         if (!a._empty && b._empty) return -1
         if (a._empty && b._empty) return 0
-
         let comp = 0
         if (field === 'date_joined') {
           comp = new Date(a.date_joined) - new Date(b.date_joined)
@@ -314,31 +332,25 @@ export default {
   }
 }
 </script>
-
+  
 <style scoped>
 .v-card {
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
 .v-container {
   padding: 20px;
 }
-
 .v-data-table {
   margin-top: 20px;
 }
-
 .v-pagination {
   margin-top: 10px;
 }
-
-/* Dummy rows won't highlight on hover */
 ::v-deep tr.dummy-row:hover {
   background-color: transparent !important;
 }
-
 .status-circle {
   display: inline-block;
   width: 8px;
