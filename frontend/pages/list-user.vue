@@ -83,6 +83,9 @@
                         <v-btn color="primary" @click="goToEditUser">
                           EDIT USER
                         </v-btn>
+                        <v-btn color="primary" class="ml-1" @click="goToDeleteUser">
+                          DELETE USER
+                        </v-btn>
                       </v-col>
                       <v-col class="d-flex justify-end">
                         <v-pagination
@@ -184,6 +187,9 @@ export default {
     },
     goToEditUser() {
       this.$router.push('/edit-user')
+    },
+    goToDeleteUser() {
+      this.$router.push('/delete-user')
     },
     timeAgo(dateStr) {
       if (!dateStr) return ''

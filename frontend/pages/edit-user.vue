@@ -80,12 +80,12 @@
                   <template v-slot:[`item.actions`]="{ item }">
                     <v-btn
                       v-if="!item._empty"
+                      icon
                       color="primary"
-                      small
                       :disabled="!canEdit(item)"
                       @click="openEdit(item)"
                     >
-                      EDIT
+                      <v-icon>{{ mdiPencil }}</v-icon>
                     </v-btn>
                     <span v-else>&nbsp;</span>
                   </template>
@@ -148,6 +148,7 @@
 <script>
 import { mdiMagnify } from '@mdi/js'
 import { mdiChevronLeft } from '@mdi/js'
+import { mdiPencil } from '@mdi/js'
 import { mapState } from 'vuex'
   
 export default {
@@ -163,6 +164,7 @@ export default {
         sortDesc: []
       },
       mdiChevronLeft,
+      mdiPencil,
       headers: [
         { text: 'Username', value: 'username', sortable: true },
         { text: 'Email', value: 'email', sortable: true },
