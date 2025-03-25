@@ -176,6 +176,12 @@ export default {
   async created() {
     await this.fetchUsers()
   },
+  watch: {
+    search() {
+      this.options.page = 1;
+      this.fetchUsers();
+    }
+  },
   methods: {
     async fetchUsers() {
       this.isLoading = true

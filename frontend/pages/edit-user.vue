@@ -421,6 +421,12 @@ export default {
         return sortDesc[0] ? -comp : comp;
       });
     }
+  },
+  watch: {
+    search() {
+      this.options.page = 1;
+      this.fetchUsers();
+    }
   }
 }
 </script>
