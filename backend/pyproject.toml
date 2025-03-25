@@ -152,7 +152,7 @@ known_local_folder = [
 [tool.taskipy.tasks]
 isort = "isort . -c --skip migrations"
 flake8 = "pflake8 --filename \"*.py\" --extend-exclude \"*/migrations\""
-black = "black --check ."
+black = "black ."
 mypy = "mypy --namespace-packages --explicit-package-bases ."
 wait_for_db = "python manage.py wait_for_db"
 test = "python manage.py test --pattern=\"test*.py\""

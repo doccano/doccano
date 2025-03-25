@@ -1,16 +1,17 @@
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from rest_framework import serializers
 
+
 class CustomRegisterSerializer(RegisterSerializer):
     ROLE_CHOICES = (
-        ('admin', 'Admin'),
-        ('annotator', 'Annotator'),
+        ("admin", "Admin"),
+        ("annotator", "Annotator"),
     )
     role = serializers.ChoiceField(choices=ROLE_CHOICES, required=True)
 
     def get_cleaned_data(self):
         data = super().get_cleaned_data()
-        data['role'] = self.validated_data.get("role", "")
+        data["role"] = self.validated_data.get("role", "")
         print("CustomRegisterSerializer cleaned data:", data)
         return data
 
@@ -25,7 +26,7 @@ class CustomRegisterSerializer(RegisterSerializer):
             user.is_staff = False
         user.save()
         return user
-    
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         print("CustomRegisterSerializer initialized")

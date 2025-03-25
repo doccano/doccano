@@ -8,12 +8,13 @@ import logging
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
+
 @receiver(post_save, sender=User)
 def send_registration_email(sender, instance, created, **kwargs):
     if created:
-        password = getattr(instance, 'plain_password', '(Not Available)')
+        password = getattr(instance, "plain_password", "(Not Available)")
         user_role = "Admin" if instance.is_superuser else "Annotator"
-        subject = 'Your doccana access credentials! 🦭'
+        subject = "Your doccana access credentials! 🦭"
         message = (
             "Welcome to doccana! 😊\n\n"
             "Here are your access credentials to our Doccana web-app:\n\n"

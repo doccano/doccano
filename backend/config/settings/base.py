@@ -88,7 +88,6 @@ MIDDLEWARE = [
 ]
 
 
-
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -99,7 +98,6 @@ TEMPLATES = [
         "DIRS": [path.join(BASE_DIR, "client/dist")],
         "APP_DIRS": True,
         "OPTIONS": {
-            
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -138,7 +136,6 @@ ROLE_ANNOTATOR = env("ROLE_ANNOTATOR", "annotator")
 ROLE_ANNOTATION_APPROVER = env("ROLE_ANNOTATION_APPROVER", "annotation_approver")
 
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
 # AUTH_PASSWORD_VALIDATORS = [
@@ -154,7 +151,7 @@ ROLE_ANNOTATION_APPROVER = env("ROLE_ANNOTATION_APPROVER", "annotation_approver"
 #    {
 #        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
 #    },
-#]
+# ]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -232,13 +229,24 @@ if DATABASES["default"].get("ENGINE") == "sql_server.pyodbc":
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", False)
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", False)
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost:3000", "http://127.0.0.1:3000", "http://0.0.0.0:3000"])
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS", ["http://localhost:3000", "http://127.0.0.1:3000", "http://0.0.0.0:3000"]
+)
 
 # Allow all host headers
 ALLOWED_HOSTS = ["*"]
 
 CORS_ORIGIN_ALLOW_ALL = True
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000", "http://127.0.0.1:000", "http://192.168.101.18:3000", "http://10.20.92.150:3000", "http://10.20.88.144:3000", "http://10.20.85.44:3000"]
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:3000",
+    "http://0.0.0.0:3000",
+    "http://localhost:3000",
+    "http://127.0.0.1:000",
+    "http://192.168.101.18:3000",
+    "http://10.20.92.150:3000",
+    "http://10.20.88.144:3000",
+    "http://10.20.85.44:3000",
+]
 CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
 # Batch size for importing data
@@ -283,9 +291,9 @@ except EnvError:
     except EnvError:
         CELERY_BROKER_URL = "sqla+sqlite:///{}".format(DATABASES["default"]["NAME"])
 
-REST_AUTH_REGISTER_SERIALIZER = 'users.custom_serializers.CustomRegisterSerializer'
+REST_AUTH_REGISTER_SERIALIZER = "users.custom_serializers.CustomRegisterSerializer"
 
-ACCOUNT_ADAPTER = 'users.adapters.CustomAccountAdapter'
+ACCOUNT_ADAPTER = "users.adapters.CustomAccountAdapter"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
