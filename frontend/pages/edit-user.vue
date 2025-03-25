@@ -6,7 +6,7 @@
           <v-col cols="12" sm="10" md="8">
             <v-card class="pa-0 overflow-hidden rounded-lg shadow-lg">
               <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
-                <div class="text-h6 font-weight-medium text--white">
+                <div class="text-h6 font-weight-medium" style="color: white;">
                   Edit Users
                 </div>
               </v-sheet>
@@ -113,8 +113,8 @@
         <v-dialog v-model="editDialog" max-width="500px">
           <v-card>
             <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
-              <div class="text-h6 font-weight-medium text--white">
-                Edit User: {{ editingUser.username || 'New User' }}
+              <div class="text-h6" style="color: white;">
+                Edit User: {{ editingUser.username || 'User' }}
               </div>
             </v-sheet>
             <v-card-text class="pa-4">

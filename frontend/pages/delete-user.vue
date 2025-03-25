@@ -6,7 +6,7 @@
             <v-col cols="12" sm="10" md="8">
               <v-card class="pa-0 overflow-hidden rounded-lg shadow-lg">
                 <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
-                  <div class="text-h6 font-weight-medium text--white">
+                  <div class="text-h6 font-weight-medium" style="color: white;">
                     Delete Users
                   </div>
                 </v-sheet>
@@ -109,7 +109,7 @@
           <v-dialog v-model="deleteDialog" max-width="500px">
             <v-card>
               <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
-                <div class="text-h6 font-weight-medium text--white">
+                <div class="text-h6 font-weight-medium" style="color: white;">
                   Delete User: {{ deletingUser.username || 'User' }}
                 </div>
               </v-sheet>
