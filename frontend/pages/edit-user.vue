@@ -461,7 +461,7 @@ export default {
 }
 
 .theme--dark .v-text-field {
-  background-color: #0F0F0F !important;
+  background-color: #1E1E1E !important;
   color: #ffffff;
 }
 
