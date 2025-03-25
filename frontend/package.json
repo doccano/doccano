@@ -57,7 +57,7 @@
     "vuetify": "^2.*",
     "wavesurfer.js": "^5.1.0",
     "webpack": "^4.46.0",
-    "yarn": "^1.22.10"
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@babel/core": "^7.14.8",
