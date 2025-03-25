@@ -23,7 +23,8 @@ function toPayload(item: { [key: string]: any }): { [key: string]: any } {
     email: item.email,
     password1: item.password1,
     password2: item.password2,
-    is_superuser: item.is_superuser
+    is_superuser: item.is_superuser,
+    is_staff: item.is_staff
   }
 }
 
@@ -66,6 +67,16 @@ export class APIUserRepository {
       throw error
     }
   }
+  
+  async bulkDelete(userIds: number[]): Promise<void> {
+    const url = '/users/delete'; // nova rota
+    await this.request.post(url, { ids: userIds }, { headers: { "Content-Type": "application/json" } });
+  }
+  
+  
+  
+  
+  
 
   async create(fields: { [key: string]: any }): Promise<UserItem> {
     const url = '/users/create'

@@ -106,14 +106,22 @@ export default Vue.extend({
 
     async remove() {
       try {
-        await this.$repositories.user.bulkDelete(this.selected)
-        this.$fetch()
-        this.dialogDelete = false
-        this.selected = []
+        console.log("Iniciando remoção de usuários. Selecionados:", this.selected);
+        const ids = this.selected.map(user => user.id);
+        console.log("IDs dos usuários a serem deletados:", ids);
+        await this.$repositories.user.bulkDelete(ids);
+        console.log("Exclusão em lote realizada com sucesso.");
+        await this.$fetch();
+        this.dialogDelete = false;
+        this.selected = [];
+        console.log("Dialog de deleção fechado e seleção limpa.");
       } catch (error) {
-        console.error('Erro ao deletar usuários:', error)
+        console.error("Erro ao deletar usuários:", error);
       }
-    }
+}
+
+
+
   }
 })
 </script>
