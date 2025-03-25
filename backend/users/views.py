@@ -5,6 +5,7 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.exceptions import PermissionDenied
 from .serializers import UserSerializer, UserDetailSerializer
 from projects.permissions import IsProjectAdmin
 
@@ -35,7 +36,6 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
         if instance == self.request.user:
             raise PermissionDenied("You cannot delete your own account.")
         instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class Users(generics.ListAPIView):
     queryset = User.objects.all()
