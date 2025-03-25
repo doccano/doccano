@@ -267,7 +267,7 @@
             this.$router.push({
               path: '/message',
               query: {
-                message: 'Your account has been deleted',
+                message: 'Your account has been deleted!',
                 redirect: '/'
               }
             })
