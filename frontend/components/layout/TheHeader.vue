@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app clipped-left>
     <slot name="leftDrawerIcon" />
-    <nuxt-link to="/" style="line-height: 0">
+    <nuxt-link to="/home" style="line-height: 0">
       <img src="/doccana-logo.png" height="48" draggable="false"/>
     </nuxt-link>
     <v-btn
