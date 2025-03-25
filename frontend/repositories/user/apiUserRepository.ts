@@ -3,8 +3,19 @@ import { UserItem } from '@/domain/models/user/user'
 import ApiService from '@/services/api.service'
 
 function toModel(item: { [key: string]: any }): UserItem {
-  return new UserItem(item.id, item.username, item.is_superuser, item.is_staff)
+  return new UserItem(
+    item.id,
+    item.username,
+    item.email,
+    item.is_superuser,
+    item.is_staff,
+    item.is_active,
+    item.first_name,
+    item.last_name
+  )
 }
+
+
 
 function toPayload(item: { [key: string]: any }): { [key: string]: any } {
   return {
@@ -14,7 +25,6 @@ function toPayload(item: { [key: string]: any }): { [key: string]: any } {
     password2: item.password2,
     is_superuser: item.is_superuser,
     is_staff: item.is_staff
-    
   }
 }
 
@@ -29,31 +39,32 @@ export class APIUserRepository {
 
   async list(query: any): Promise<Page<UserItem>> {
     try {
-      const queryString = new URLSearchParams(query).toString();
-      const url = queryString ? `/users?${queryString}` : `/users`;
-      const response = await this.request.get(url);
-    
-      let results, count, next, prev;
+      const queryString = new URLSearchParams(query).toString()
+      const url = queryString ? `/users?${queryString}` : `/users`
+      const response = await this.request.get(url)
+
+      let results, count, next, prev
       if (Array.isArray(response.data)) {
-        results = response.data;
-        count = results.length;
-        next = null;
-        prev = null;
+        results = response.data
+        count = results.length
+        next = null
+        prev = null
       } else {
-        results = response.data.results;
-        count = response.data.count;
-        next = response.data.next;
-        prev = response.data.previous;
+        results = response.data.results
+        count = response.data.count
+        next = response.data.next
+        prev = response.data.previous
       }
+
       return new Page(
         count,
         next,
         prev,
         results.map((item: { [key: string]: any }) => toModel(item))
-      );
+      )
     } catch (error) {
-      console.error('Erro ao listar usuários:', error);
-      throw error;
+      console.error('Erro ao listar usuários:', error)
+      throw error
     }
   }
   
