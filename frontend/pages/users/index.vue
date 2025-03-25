@@ -28,11 +28,13 @@ import _ from 'lodash'
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import UserList from '@/components/user/UserList.vue'
+import FormDelete from '~/components/user/FormDelete.vue'
 import { User } from '~/domain/models/user/user'
 
 export default Vue.extend({
   components: {
-    UserList
+    UserList,
+    FormDelete
   },
   layout: 'projects',
 

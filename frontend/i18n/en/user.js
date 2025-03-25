@@ -10,4 +10,5 @@ export default {
   superUser: 'Super User',
   staff: 'Staff',
   active: 'Active',
+  deleteConfirm: 'Are you sure you want to delete these users?',
 }
