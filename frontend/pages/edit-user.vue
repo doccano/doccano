@@ -2,7 +2,6 @@
   <v-app id="inspire">
     <v-main>
       <v-container fluid class="pa-4">
-        <!-- Main Card -->
         <v-row align="center" justify="center" class="mt-5">
           <v-col cols="12" sm="10" md="8">
             <v-card class="pa-0 overflow-hidden rounded-lg shadow-lg">
@@ -111,7 +110,6 @@
             </v-card>
           </v-col>
         </v-row>
-        <!-- Edit User Dialog -->
         <v-dialog v-model="editDialog" max-width="500px">
           <v-card>
             <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
@@ -139,6 +137,7 @@
                   label="Role"
                   outlined
                   :prepend-icon="mdiAccountKey"
+                  :color="selectedRoleColor"
                 ></v-select>
               </v-form>
             </v-card-text>
@@ -213,35 +212,30 @@ export default {
       return this.currentUser.role;
     },
     roleOptions() {
-      // Always show all three roles
       const options = [
         { text: 'Annotator', value: 'annotator', disabled: false },
         { text: 'Admin', value: 'admin', disabled: false },
         { text: 'Owner', value: 'owner', disabled: false }
       ];
-      // Determine if the user being edited is the same as the current user
-      const editingSelf = this.editingUser && this.editingUser.id === this.currentUserId;
   
       if (this.currentUserRole === 'annotator') {
-        // Annotators cannot promote anyone—disable Admin and Owner
         options.find(opt => opt.value === 'admin').disabled = true;
         options.find(opt => opt.value === 'owner').disabled = true;
       } else if (this.currentUserRole === 'admin') {
-        // Admins cannot assign Owner role to anyone
         options.find(opt => opt.value === 'owner').disabled = true;
-        // And if editing self, disable the Admin option too
-        if (editingSelf) {
-          options.find(opt => opt.value === 'admin').disabled = true;
-        }
-      } else if (this.currentUserRole === 'owner') {
-        // Owners editing themselves should not be able to change their own role to Owner
-        if (editingSelf) {
-          options.find(opt => opt.value === 'owner').disabled = true;
-        }
-        // Otherwise (editing others) all options remain enabled
-      }
+      } 
   
       return options;
+    },
+    selectedRoleColor() {
+      if (this.editingUser && this.editingUser.role) {
+        if (this.editingUser.role === 'admin') {
+          return '#FF2F00'
+        } else if (this.editingUser.role === 'owner') {
+          return '#a8c400'
+        }
+      }
+      return 'primary'
     },
     sortedUsers() {
       const lowerSearch = this.search.toLowerCase();
@@ -288,13 +282,10 @@ export default {
       return item._empty ? 'dummy-row' : '';
     },
     canEdit(user) {
-      // Allow self-edit
       if (user.id === this.currentUserId) return true;
-      // Owners can edit anyone except other owners
       if (this.currentUserRole === 'owner') {
         return user.role !== 'owner';
       }
-      // Admins can only edit annotators
       if (this.currentUserRole === 'admin') {
         return user.role === 'annotator';
       }
@@ -306,10 +297,6 @@ export default {
     },
     async saveEdit() {
       try {
-        if (this.editingUser.role === 'owner' && this.currentUserRole !== 'owner') {
-          alert("Only an owner can assign the Owner role.");
-          return;
-        }
         if (this.editingUser.role === 'owner') {
           this.editingUser.is_superuser = true;
           this.editingUser.is_staff = true;

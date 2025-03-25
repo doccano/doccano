@@ -2,7 +2,6 @@
     <v-app id="inspire">
       <v-main>
         <v-container fluid class="pa-4">
-          <!-- Delete Users Card -->
           <v-row align="center" justify="center" class="mt-5">
             <v-col cols="12" sm="10" md="8">
               <v-card class="pa-0 overflow-hidden rounded-lg shadow-lg">

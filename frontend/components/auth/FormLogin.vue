@@ -72,7 +72,13 @@ export default Vue.extend({
           username: this.username,
           password: this.password
         })
-        this.$router.push(this.localePath('/projects'))
+        this.$router.push({
+          path: '/message',
+          query: {
+            message: `Welcome back, ${this.username}!`,
+            redirect: '/projects'
+          }
+        })
       } catch {
         this.showError = true
       }

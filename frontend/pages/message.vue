@@ -4,6 +4,7 @@
       <v-container fluid class="fill-height">
         <v-row align="center" justify="center">
           <v-col cols="12" sm="8" md="6" class="text-center">
+            <transition name="fade">
               <v-alert
                 v-if="showAlert"
                 key="alert"
@@ -17,6 +18,7 @@
                   <span class="redirect-message">{{ redirectText }}</span>
                 </div>
               </v-alert>
+            </transition>
           </v-col>
         </v-row>
       </v-container>
@@ -76,5 +78,13 @@ export default {
 
 .redirect-message {
   font-size: 1.5rem;
+}
+
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

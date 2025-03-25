@@ -64,6 +64,7 @@
                     label="Role"
                     required
                     :prepend-icon="mdiAccountKey"
+                    :color="selectedRoleColor"
                   ></v-select>
                   
                   <v-row justify="center" class="mt-5">
@@ -102,7 +103,15 @@ export default {
       mdiLock,
       mdiLockCheck,
       mdiAccountKey,
-      commonPasswords: ['password', '12345678', 'qwertyui', '12345678', 'letmein!', 'software', 'password1'],
+      commonPasswords: [
+        'password',
+        '12345678',
+        'qwertyui',
+        '12345678',
+        'letmein!',
+        'software',
+        'password1'
+      ],
       nameRules: [
         (v) => !!v || 'Name is required',
         (v) => (v && v.length >= 3) || 'Name must be at least 3 characters'
@@ -134,6 +143,17 @@ export default {
         { text: 'Admin', value: 'admin' },
         { text: 'Owner', value: 'owner' }
       ]
+    }
+  },
+  computed: {
+    selectedRoleColor() {
+      if (this.role === 'admin') {
+        return '#FF2F00'
+      } else if (this.role === 'owner') {
+        return '#a8c400'
+      } else {
+        return 'primary'
+      }
     }
   },
   watch: {

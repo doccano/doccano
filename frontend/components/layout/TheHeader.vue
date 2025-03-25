@@ -142,8 +142,16 @@ export default {
     ...mapActions('auth', ['logout']),
     ...mapActions('config', ['toggleRTL']),
     signout() {
-      this.logout()
-      this.$router.push(this.localePath('/'))
+      this.$router.push({
+        path: '/message',
+        query: {
+          message: `Bye ${this.getUsername}, come back soon! 🥹`,
+          redirect: '/'
+        }
+      });
+      setTimeout(() => {
+        this.$store.dispatch('auth/logout');
+      }, 500);
     }
   }
 }
