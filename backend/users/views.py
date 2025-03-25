@@ -19,13 +19,26 @@ class Me(APIView):
         return Response(serializer.data)
 
 
+from rest_framework import filters  # já deve estar aí
+
 class Users(generics.ListAPIView):
-    queryset = User.objects.all()  
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated & IsProjectAdmin]
-    pagination_class = None
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+
+    filter_backends = (
+        DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter,
+    )
     search_fields = ("username",)
+
+    ordering_fields = ['username','first_name','last_name', 'is_staff', 'is_superuser', 'is_active']  # ADICIONADO
+    ordering = ['username']  # ORDEM PADRÃO
+
+
+    # (Opcional) Se quiser paginação customizada, define aqui
+    pagination_class = None
 
 
 class UserCreation(generics.CreateAPIView):
