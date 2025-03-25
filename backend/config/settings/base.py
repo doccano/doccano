@@ -10,12 +10,12 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
+import os
 from os import path
 
 import dj_database_url
 from environs import Env, EnvError
 from furl import furl
-import os
 
 # Build paths inside the project like this: path.join(BASE_DIR, ...)
 BASE_DIR = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))

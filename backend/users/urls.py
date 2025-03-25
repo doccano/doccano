@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from .views import Me, UserCreation, Users, UserDetail
+from .views import Me, UserCreation, UserDetail, Users
 
 urlpatterns = [
     path("me", Me.as_view(), name="me"),

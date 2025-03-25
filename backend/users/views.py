@@ -1,7 +1,7 @@
 from dj_rest_auth.registration.serializers import RegisterSerializer
 from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, generics, status, permissions
+from rest_framework import filters, generics, permissions, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView

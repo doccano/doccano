@@ -1,9 +1,10 @@
+import logging
+
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core.mail import BadHeaderError, send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.contrib.auth import get_user_model
-from django.core.mail import send_mail, BadHeaderError
-from django.conf import settings
-import logging
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
