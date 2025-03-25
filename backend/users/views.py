@@ -45,6 +45,10 @@ class UserCreation(generics.CreateAPIView):
             user.is_superuser = False
             user.is_staff = True
             user.save()
+        if request.data.get('is_staff' and "is_superuser") in [True, 'true', 'True', 1]:
+            user.is_superuser = True
+            user.is_staff = True
+            user.save()
         headers = self.get_success_headers(serializer.data)
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED, headers=headers)
 
