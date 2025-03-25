@@ -40,8 +40,8 @@ export default {
       return this.$route.query.message || 'Task successful!';
     },
     redirectText() {
-      const redirectPath = this.$route.query.redirect || '/';
-      if (redirectPath === '/') {
+      const redirectPath = this.$route.query.redirect || '/home';
+      if (redirectPath === '/home') {
         return ` You will be redirected to our homepage in ${this.countdown} seconds.`;
       } else if (redirectPath === '/edit-user') {
         return ` You will be redirected to the edit user list in ${this.countdown} seconds.`;
@@ -51,7 +51,7 @@ export default {
     }
   },
   mounted() {
-    const redirectPath = this.$route.query.redirect || '/';
+    const redirectPath = this.$route.query.redirect || '/home';
     const timer = setInterval(() => {
       if (this.countdown > 1) {
         this.countdown--;

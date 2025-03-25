@@ -114,9 +114,15 @@
                 </div>
               </v-sheet>
               <v-card-text class="pa-4">
-                <div>
+                <div v-if="deletingUser && deletingUser.id && (deletingUser.id === currentUserId)">
+                  Are you sure you want to delete your own account?
+                </div>
+                <div v-else-if="deletingUser && deletingUser.username">
                   Are you sure you want to delete user 
                   <strong>{{ deletingUser.username }}</strong>?
+                </div>
+                <div v-else>
+                  Are you sure you want to delete this user?
                 </div>
               </v-card-text>
               <v-card-actions>
@@ -268,7 +274,7 @@
               path: '/message',
               query: {
                 message: 'Your account has been deleted!',
-                redirect: '/'
+                redirect: '/home'
               }
             })
             setTimeout(() => {

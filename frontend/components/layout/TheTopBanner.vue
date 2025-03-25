@@ -16,7 +16,7 @@
               </v-icon>
               GitHub
             </v-btn>
-            <v-btn class="black lighten-2 ml-5" dark large :href="localePath('/auth')">
+            <v-btn class="black lighten-2 ml-5" dark large :href="localePath('/register')">
               {{ $t('home.getStarted') }}
             </v-btn>
           </div>
