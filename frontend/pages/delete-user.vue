@@ -261,11 +261,33 @@
       },
       async deleteUser() {
         try {
-          await this.$axios.delete(`/v1/users/${this.deletingUser.id}/`);
-          this.users = this.users.filter(u => u.id !== this.deletingUser.id);
-          this.deleteDialog = false;
+          await this.$axios.delete(`/v1/users/${this.deletingUser.id}/`)
+
+          if (this.deletingUser.id === this.currentUserId) {
+            this.deleteDialog = false
+            this.$router.push({
+              path: '/message',
+              query: {
+                message: 'Your account has been deleted',
+                redirect: '/'
+              }
+            })
+            setTimeout(() => {
+              this.$store.dispatch('auth/logout')
+            }, 500)
+          } else {
+            this.users = this.users.filter(u => u.id !== this.deletingUser.id)
+            this.deleteDialog = false
+            this.$router.push({
+              path: '/message',
+              query: {
+                message: 'User deleted successfully!',
+                redirect: '/delete-user'
+              }
+            })
+          }
         } catch (error) {
-          console.error('Error deleting user:', error);
+          console.error('Error deleting user:', error)
         }
       },
       closeDelete() {
@@ -358,4 +380,4 @@
     margin-right: 6px;
     position: relative;
   }
-  </style>  
+  </style>

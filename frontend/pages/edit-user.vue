@@ -335,7 +335,7 @@ export default {
           if (index !== -1) {
             this.$set(this.users, index, response.data);
           }
-          // If the updated user is the current user, update Vuex store.
+
           if (this.editingUser.id === this.currentUserId) {
             this.$store.commit('auth/updateUser', {
               id: response.data.id,
@@ -350,6 +350,13 @@ export default {
         }
         this.options.page = 1;
         this.editDialog = false;
+        this.$router.push({
+          path: '/message',
+          query: { 
+            message: 'User updated successfully!',
+            redirect: '/edit-user'
+          }
+        });
       } catch (error) {
         console.error('Error saving user:', error);
       }
