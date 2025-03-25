@@ -10,6 +10,18 @@
             required
           />
           <v-text-field
+            v-model="first_name"
+            :label="$t('First Name')"
+            :rules="nameRules"
+            required
+            />
+          <v-text-field
+            v-model="last_name"
+            :label="$t('Last Name')"
+            :rules="nameRules"
+            required
+            />
+          <v-text-field
             v-model="email"
             :label="$t('Email')"
             :rules="emailRules"
@@ -67,6 +79,8 @@
         valid: false,
         loading: false,
         username: '',
+        first_name: '',
+        last_name: '',
         email: '',
         password1: '',
         password2: '',
@@ -81,6 +95,10 @@
         emailRules: [
           (v: string) => !!v || this.$t('user.emailRequired'),
           (v: string) => /.+@.+\..+/.test(v) || this.$t('user.emailInvalid')
+        ],
+        nameRules: [
+          (v: string) => !!v || this.$t('name.nameRequired'),
+          (v: string) => /^[^\d]*$/.test(v) || this.$t('name.noNumbersAllowed')
         ],
         passwordRules: [
           (v: string) => !!v || this.$t('user.passwordRequired'),
@@ -100,6 +118,8 @@
           await this.$repositories.user.create({
             username: this.username,
             email: this.email,
+            first_name: this.first_name,
+            last_name: this.last_name,
             password1: this.password1,
             password2: this.password2,
             // Se isSuperuser estiver selecionado, is_superuser será true e is_staff true;
@@ -109,9 +129,10 @@
           })
           this.$emit('save')
         } catch (e: any) {
-          console.error("Erro ao criar usuário:", e)
-          this.errorMessage = e.response?.data?.detail || this.$t('generic.error')
-        } finally {
+            console.error("Erro ao criar usuário:", e.response?.data || e.message)
+            this.errorMessage = e.response?.data?.detail || JSON.stringify(e.response?.data) || this.$t('generic.error')
+        }
+ finally {
           this.loading = false
         }
       }
