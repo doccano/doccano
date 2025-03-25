@@ -445,4 +445,36 @@ export default {
   position: relative;
   z-index: 1;
 }
+
+.theme--dark .v-card {
+  background-color: #1E1E1E !important;
+  color: #ffffff;
+}
+
+.theme--dark .v-text-field input {
+  color: #ffffff;
+}
+
+.theme--dark .v-select .v-input__slot {
+  background-color: #0F0F0F !important;
+  color: #ffffff;
+}
+
+.theme--dark .v-text-field {
+  background-color: #0F0F0F !important;
+  color: #ffffff;
+}
+
+.theme--dark .v-text-field :hover {
+  background-color: #191919 !important;
+  color: #ffffff;
+}
+
+.theme--dark .v-text-field input {
+  color: #ffffff;
+}
+
+:deep(.theme--dark .v-data-table tbody tr:hover:not(.dummy-row)) {
+  background-color: #151515 !important;
+}
 </style>

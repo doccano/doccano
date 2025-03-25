@@ -10,7 +10,7 @@
           src="/doccana-logo.png"
           alt="Doccana Logo"
           class="indexViewLogo"
-        draggable="false"/>
+          draggable="false"/>
 
         <h1 class="indexViewTitle display-1 text-xs-center">
           Welcome to doccana!
@@ -87,6 +87,7 @@ export default {
   font-weight: 700;
   margin-bottom: 0.5rem;
   letter-spacing: 1px;
+  color: #000000;
 }
 
 .indexViewSubtitle {
@@ -95,17 +96,25 @@ export default {
   margin-bottom: 2rem;
   line-height: 1.6;
   opacity: 0.9;
+  color: #333333;
+}
+
+.theme--dark .indexViewTitle {
+  color: #ffffff;
+}
+
+.theme--dark .indexViewSubtitle {
+  color: #cccccc;
 }
 
 .indexViewButton {
   font-size: 1rem;
   padding: 0.75rem 2rem;
   border-radius: 4px;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.2);
 }
 
 .indexViewCopyright {
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   font-size: 0.9rem;
   font-weight: 300;
   color: #6C6C6C !important;
