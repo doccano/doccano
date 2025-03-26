@@ -104,13 +104,54 @@ export default {
       mdiLockCheck,
       mdiAccountKey,
       commonPasswords: [
-        'password',
-        '12345678',
-        'qwertyui',
-        '12345678',
-        'letmein!',
-        'software',
-        'password1'
+          'password',
+          '12345678',
+          'qwertyui',
+          '12345678',
+          'letmein!',
+          'software',
+          'password1',
+          'iloveyou',
+          'sunshine',
+          'football',
+          'princess',
+          'friend123',
+          'welcome1',
+          'charlie1',
+          'superman',
+          'baseball',
+          'dragon12',
+          'trustno1',
+          'freedom1',
+          'whatever',
+          'computer',
+          'michelle',
+          'jessica1',
+          'tiger123',
+          'password123',
+          'abc12345',
+          '123456789',
+          'sunflower',
+          'lovely12',
+          'secret77',
+          'admin123',
+          'qazwsxedc',
+          'passw0rd',
+          'starwars',
+          'master123',
+          'hello123',
+          'football1',
+          'qwerty123',
+          '1234567890',
+          '1q2w3e4r',
+          '87654321',
+          'loveyou1',
+          'password!',
+          'test1234',
+          'flower123',
+          'mustang1',
+          'shadow12',
+          'sunshine1'
       ],
       nameRules: [
         (v) => !!v || 'Name is required',
@@ -192,7 +233,11 @@ export default {
         let errorDetail = '';
         if (error.response && error.response.data) {
           const data = error.response.data;
-          if (typeof data === 'string' && data.trim().startsWith('<')) {
+          if (data.username) {
+            errorDetail = "Error: Username already exists in our database!";
+          } else if (data.email) {
+            errorDetail = "Error: Email already exists in our database!";
+          } else if (typeof data === 'string' && data.trim().startsWith('<')) {
             errorDetail = "Error: Can't access our database!";
           } else {
             const errors = [];

@@ -374,9 +374,9 @@ export default {
         if (error.response && error.response.data) {
           const data = error.response.data;
           if (data.username) {
-            errorDetail = "Error: Username already exists!";
+            errorDetail = "Error: Username already exists in our database!";
           } else if (data.email) {
-            errorDetail = "Error: Email already exists!";
+            errorDetail = "Error: Email already exists in our database!";
           } else if (typeof data === 'string' && data.trim().startsWith('<')) {
             errorDetail = "Error: Can't access our database!";
           } else {
