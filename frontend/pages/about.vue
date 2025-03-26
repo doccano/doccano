@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-main style="margin-top: -4rem;">
+    <v-main style="margin-top: -4rem; margin-bottom: -3rem;">
       <v-container class="aboutContainer my-10">
         <v-card class="pa-6 aboutCard" flat>
           <v-card-title class="subtitle text-center">
@@ -28,7 +28,7 @@
               the technologies we have mastered during this and previous units.
             </p>
             <h2 class="subtitle">
-              <b>Explaining our brand name:</b>
+              <b>Explaining our project name:</b>
             </h2>
             <p class="text-justify body-text">
               The name <b>doccana</b> is a playful and creative twist on the original
@@ -89,7 +89,7 @@
             </p>
             <p class="text-center final-text mt-6">
               <b>Thank you for visiting doccana.</b> We hope you enjoy your experience
-              on our platform and find everything you’re looking for. If you have any
+              on our app and find everything you’re looking for. If you have any
               feedback, please let us know! 🤗 We’d love to hear from you!
             </p>
           </v-card-text>
@@ -134,7 +134,7 @@ export default {
 .subtitle {
   font-family: 'Roboto', sans-serif;
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: 320;
   margin-top: 2rem;
   margin-bottom: 1rem;
   border-bottom: 2px solid #eeeeee;
@@ -151,7 +151,7 @@ export default {
   font-size: 1.05rem;
   line-height: 1.75;
   color: #424242;
-  margin-bottom: 1.5rem;
+  margin-bottom: 4rem;
 }
 
 .theme--dark .body-text {

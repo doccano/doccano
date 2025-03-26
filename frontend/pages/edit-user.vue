@@ -11,6 +11,9 @@
                 </div>
               </v-sheet>
               <v-card-text class="pa-4">
+                <v-alert v-if="errorMessage" type="error" dismissible class="mb-4">
+                  {{ errorMessage }}
+                </v-alert>
                 <v-text-field
                   v-model="search"
                   :prepend-inner-icon="mdiMagnify"
@@ -118,6 +121,9 @@
               </div>
             </v-sheet>
             <v-card-text class="pa-4">
+              <v-alert v-if="editErrorMessage" type="error" dismissible class="mb-4">
+                {{ editErrorMessage }}
+              </v-alert>
               <v-form ref="editForm">
                 <v-text-field
                   v-model="editingUser.username"
@@ -153,10 +159,7 @@
 </template>
   
 <script>
-import { mdiMagnify } from '@mdi/js'
-import { mdiChevronLeft } from '@mdi/js'
-import { mdiPencil } from '@mdi/js'
-import { mdiAccount, mdiEmail, mdiAccountKey } from '@mdi/js'
+import { mdiMagnify, mdiChevronLeft, mdiPencil, mdiAccount, mdiEmail, mdiAccountKey } from '@mdi/js'
 import { mapState } from 'vuex'
   
 export default {
@@ -165,17 +168,14 @@ export default {
       users: [],
       search: '',
       isLoading: false,
+      errorMessage: '',
+      editErrorMessage: '', // New property for errors in the edit dialog
       options: {
         itemsPerPage: 5,
         page: 1,
         sortBy: [],
         sortDesc: []
       },
-      mdiChevronLeft,
-      mdiPencil,
-      mdiAccount,
-      mdiEmail,
-      mdiAccountKey,
       headers: [
         { text: 'Username', value: 'username', sortable: true },
         { text: 'Email', value: 'email', sortable: true },
@@ -185,6 +185,11 @@ export default {
         { text: 'Actions', value: 'actions', sortable: false }
       ],
       mdiMagnify,
+      mdiChevronLeft,
+      mdiPencil,
+      mdiAccount,
+      mdiEmail,
+      mdiAccountKey,
       editDialog: false,
       editingUser: {}
     }
@@ -272,7 +277,25 @@ export default {
       try {
         const response = await this.$axios.get('/v1/users/');
         this.users = response.data;
+        this.errorMessage = '';
       } catch (error) {
+        if (error.response && error.response.data) {
+          const data = error.response.data;
+          if (typeof data === 'string' && data.trim().startsWith('<')) {
+            this.errorMessage = "Error: Can't access our database!";
+          } else {
+            const errors = [];
+            for (const [field, messages] of Object.entries(data)) {
+              const formattedMessages = Array.isArray(messages)
+                ? messages.join(', ')
+                : messages;
+              errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '')}`);
+            }
+            this.errorMessage = errors.join('\n\n');
+          }
+        } else {
+          this.errorMessage = 'Error fetching users';
+        }
         console.error('Error fetching users:', error);
       } finally {
         this.isLoading = false;
@@ -292,6 +315,7 @@ export default {
       return false;
     },
     openEdit(item) {
+      this.editErrorMessage = ''; // Clear previous errors
       this.editingUser = { ...item };
       this.editDialog = true;
     },
@@ -346,10 +370,34 @@ export default {
         });
       } catch (error) {
         console.error('Error saving user:', error);
+        let errorDetail = '';
+        if (error.response && error.response.data) {
+          const data = error.response.data;
+          if (data.username) {
+            errorDetail = "Error: Username already exists!";
+          } else if (data.email) {
+            errorDetail = "Error: Email already exists!";
+          } else if (typeof data === 'string' && data.trim().startsWith('<')) {
+            errorDetail = "Error: Can't access our database!";
+          } else {
+            const errors = [];
+            for (const [field, messages] of Object.entries(data)) {
+              const formattedMessages = Array.isArray(messages)
+                ? messages.join(', ')
+                : messages;
+              errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '')}`);
+            }
+            errorDetail = errors.join('\n\n');
+          }
+        } else {
+          errorDetail = 'Error saving user';
+        }
+        this.editErrorMessage = errorDetail;
       }
     },
     closeEdit() {
       this.editDialog = false;
+      this.editErrorMessage = '';
     },
     isCurrentUser(user) {
       return user.id === this.currentUserId;

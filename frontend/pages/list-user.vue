@@ -11,6 +11,10 @@
                 </div>
               </v-sheet>
               <v-card-text class="pa-4">
+                <v-alert v-if="errorMessage" type="error" dismissible class="mb-4">
+                  {{ errorMessage }}
+                </v-alert>
+                
                 <v-text-field
                   v-model="search"
                   :prepend-inner-icon="mdiMagnify"
@@ -121,6 +125,7 @@ export default {
       users: [],
       search: '',
       isLoading: false,
+      errorMessage: '', // Add error message property
       options: {
         itemsPerPage: 5,
         page: 1,
@@ -188,8 +193,26 @@ export default {
       try {
         const response = await this.$axios.get('/v1/users/')
         this.users = response.data
+        this.errorMessage = '';
       } catch (error) {
-        console.error('Error fetching users:', error)
+        if (error.response && error.response.data) {
+          const data = error.response.data;
+          if (typeof data === 'string' && data.trim().startsWith('<')) {
+            this.errorMessage = "Error: Can't access our database!";
+          } else {
+            const errors = [];
+            for (const [field, messages] of Object.entries(data)) {
+              const formattedMessages = Array.isArray(messages)
+                ? messages.join(', ')
+                : messages;
+              errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '')}`);
+            }
+            this.errorMessage = errors.join('\n\n');
+          }
+        } else {
+          this.errorMessage = 'Error fetching users';
+        }
+        console.error('Error fetching users:', error);
       } finally {
         this.isLoading = false
       }

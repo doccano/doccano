@@ -11,7 +11,7 @@
                 </div>
               </v-sheet>
               <v-card-text class="pa-6">
-                <v-form v-model="valid" @submit.prevent="submitForm">
+                <v-form ref="registerForm" v-model="valid" @submit.prevent="submitForm">
                   <v-alert
                     v-show="showError"
                     v-model="showError"
@@ -191,19 +191,35 @@ export default {
         this.showError = true;
         let errorDetail = '';
         if (error.response && error.response.data) {
-          const errors = [];
-          for (const [field, messages] of Object.entries(error.response.data)) {
-            const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
-            const formattedMessages = Array.isArray(messages)
-              ? messages.join(', ')
-              : messages;
-            errors.push(`${fieldName}: ${formattedMessages.replace(/^\n+/, '')}`);
+          const data = error.response.data;
+          if (typeof data === 'string' && data.trim().startsWith('<')) {
+            errorDetail = "Error: Can't access our database!";
+          } else {
+            const errors = [];
+            for (const [field, messages] of Object.entries(data)) {
+              const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
+              const formattedMessages = Array.isArray(messages)
+                ? messages.join(', ')
+                : messages;
+              errors.push(`${fieldName}: ${formattedMessages.replace(/^\n+/, '')}`);
+            }
+            errorDetail = errors.join('\n\n');
           }
-          errorDetail = errors.join('\n\n');
         } else {
           errorDetail = 'User registration failed';
         }
         this.errorMessage = errorDetail;
+        
+        this.name = '';
+        this.email = '';
+        this.password = '';
+        this.confirmPassword = '';
+        this.role = '';
+        
+        if (this.$refs.registerForm) {
+          this.$refs.registerForm.resetValidation();
+        }
+        
         console.error('Registration error:', error.response && error.response.data);
       }
     }

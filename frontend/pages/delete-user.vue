@@ -11,6 +11,10 @@
                   </div>
                 </v-sheet>
                 <v-card-text class="pa-4">
+                  <v-alert v-if="errorMessage" type="error" dismissible class="mb-4">
+                    {{ errorMessage }}
+                  </v-alert>
+                  
                   <v-text-field
                     v-model="search"
                     :prepend-inner-icon="mdiMagnify"
@@ -114,6 +118,9 @@
                 </div>
               </v-sheet>
               <v-card-text class="pa-4">
+                <v-alert v-if="deleteErrorMessage" type="error" dismissible class="mb-4">
+                  {{ deleteErrorMessage }}
+                </v-alert>
                 <div v-if="deletingUser && deletingUser.id && (deletingUser.id === currentUserId)">
                   Are you sure you want to delete your own account?
                 </div>
@@ -146,6 +153,8 @@
         users: [],
         search: '',
         isLoading: false,
+        errorMessage: '',
+        deleteErrorMessage: '',
         options: {
           itemsPerPage: 5,
           page: 1,
@@ -241,7 +250,25 @@
         try {
           const response = await this.$axios.get('/v1/users/');
           this.users = response.data;
+          this.errorMessage = '';
         } catch (error) {
+          if (error.response && error.response.data) {
+            const data = error.response.data;
+            if (typeof data === 'string' && data.trim().startsWith('<')) {
+              this.errorMessage = "Error: Can't access our database!";
+            } else {
+              const errors = [];
+              for (const [field, messages] of Object.entries(data)) {
+                const formattedMessages = Array.isArray(messages)
+                  ? messages.join(', ')
+                  : messages;
+                errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '')}`);
+              }
+              this.errorMessage = errors.join('\n\n');
+            }
+          } else {
+            this.errorMessage = 'Error fetching users';
+          }
           console.error('Error fetching users:', error);
         } finally {
           this.isLoading = false;
@@ -266,37 +293,32 @@
       },
       async deleteUser() {
         try {
-          await this.$axios.delete(`/v1/users/${this.deletingUser.id}/`)
-
+          // Clear any previous deletion errors
+          this.deleteErrorMessage = '';
+          await this.$axios.delete(`/v1/users/${this.deletingUser.id}/`);
           if (this.deletingUser.id === this.currentUserId) {
-            this.deleteDialog = false
+            this.deleteDialog = false;
             this.$router.push({
               path: '/message',
-              query: {
-                message: 'Your account has been deleted!',
-                redirect: '/home'
-              }
-            })
-            setTimeout(() => {
-              this.$store.dispatch('auth/logout')
-            }, 500)
+              query: { message: 'Your account has been deleted!', redirect: '/home' }
+            });
+            setTimeout(() => { this.$store.dispatch('auth/logout'); }, 500);
           } else {
-            this.users = this.users.filter(u => u.id !== this.deletingUser.id)
-            this.deleteDialog = false
+            this.users = this.users.filter(u => u.id !== this.deletingUser.id);
+            this.deleteDialog = false;
             this.$router.push({
               path: '/message',
-              query: {
-                message: 'User deleted successfully!',
-                redirect: '/delete-user'
-              }
-            })
+              query: { message: 'User deleted successfully!', redirect: '/delete-user' }
+            });
           }
         } catch (error) {
-          console.error('Error deleting user:', error)
+          console.error('Error deleting user:', error);
+          this.deleteErrorMessage = "Error: Can't access our database!";
         }
       },
       closeDelete() {
         this.deleteDialog = false;
+        this.deleteErrorMessage = '';
       },
       isCurrentUser(user) {
         return user.id === this.currentUserId;
