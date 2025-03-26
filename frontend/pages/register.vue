@@ -65,9 +65,15 @@
                     :color="selectedRoleColor"
                   ></v-select>
 
-                  <v-row justify="center" class="mt-5">
-                    <v-col cols="12">
-                      <v-btn type="submit" color="primary" block :disabled="!valid">
+                  <v-row justify="end" class="mt-5">
+                    <v-col cols="auto" class="pr-custom">
+                      <v-btn
+                        :disabled="!valid"
+                        class="text-none"
+                        text
+                        data-test="register-button"
+                        @click="submitForm"
+                      >
                         Register
                       </v-btn>
                     </v-col>
@@ -271,5 +277,10 @@ export default {
 <style scoped>
 .error-message {
   white-space: normal;
+}
+
+.pr-custom {
+  padding-bottom: -400px;
+  padding-right: -3000px;
 }
 </style>
