@@ -107,7 +107,7 @@ export default Vue.extend({
           username: this.value.username,
           email: '',
           isStaff: false,
-          isSuperuser: false,
+          isSuperUser: false,
           isActive: false,
         }
       },

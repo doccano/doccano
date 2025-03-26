@@ -50,7 +50,7 @@ class Users(generics.ListAPIView):
 
 class UserCreation(generics.CreateAPIView):
     serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated & (IsProjectAdmin | IsAdminUser)]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)

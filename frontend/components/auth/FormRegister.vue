@@ -102,7 +102,7 @@ export default Vue.extend({
           password1: this.password,
           password2: this.password2
         })
-        this.$router.push(this.localePath('/auth'))
+        this.$router.push(this.localePath('/users'))
       } catch (error: any) {
         this.showError = true
         this.errorMessage = error.message || this.$t('errors.invalidUserOrPass')

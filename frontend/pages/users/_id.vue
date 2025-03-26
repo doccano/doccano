@@ -27,7 +27,7 @@
                   Staff
                 </v-chip>
                 <v-chip
-                  v-if="user.isSuperuser"
+                  v-if="user.isSuperUser"
                   color="orange"
                   class="ml-2"
                   x-small
@@ -56,7 +56,7 @@
             </p>
             <p>Fist name: {{ user.firstName }}</p>
             <p>Last name: {{ user.lastName }}</p>
-            <p>Joined at: {{ user.dateJoined }}</p>
+            <p>Joined at: {{ new Date(user.dateJoined).toLocaleString() }}</p>
         </div>
         <v-divider class="mb-5"></v-divider>
         <v-form v-if="user" ref="form" @submit.prevent="updateUser">
@@ -73,7 +73,7 @@
             hint="User has staff privileges"
           ></v-switch>
           <v-switch
-            v-model="editedUser.isSuperuser"
+            v-model="editedUser.isSuperUser"
             color="orange"
             label="Administrator"
             hint="User has administrative privileges"
@@ -133,7 +133,7 @@ export default Vue.extend({
       editedUser: {
         username: '',
         isStaff: false,
-        isSuperuser: false
+        isSuperUser: false
       },
       loading: false,
       deleteLoading: false,
@@ -159,7 +159,7 @@ export default Vue.extend({
         this.editedUser = {
           username: this.user.username,
           isStaff: this.user.isStaff,
-          isSuperuser: this.user.isSuperuser
+          isSuperUser: this.user.isSuperUser
         }
       } catch (error) {
         this.errorMessage = error.message
@@ -178,7 +178,7 @@ export default Vue.extend({
         await userService.updateUser(id, {
           username: this.editedUser.username,
           is_staff: this.editedUser.isStaff,
-          is_superuser: this.editedUser.isSuperuser
+          is_superuser: this.editedUser.isSuperUser
         })
         
         this.successMessage = 'User profile updated successfully'

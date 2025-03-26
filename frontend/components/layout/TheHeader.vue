@@ -57,7 +57,7 @@
     <v-btn v-if="!isAuthenticated" outlined class="mr-2" @click="$router.push(localePath('/auth'))">
       {{ $t('user.login') }}
     </v-btn>
-    <v-btn v-if="!isAuthenticated" outlined color="success" 
+    <v-btn v-if="isStaff" outlined color="success" 
     @click="$router.push(localePath('/register'))">
       {{ $t('user.register') }}
     </v-btn>
