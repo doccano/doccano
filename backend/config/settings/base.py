@@ -292,8 +292,6 @@ except EnvError:
     except EnvError:
         CELERY_BROKER_URL = "sqla+sqlite:///{}".format(DATABASES["default"]["NAME"])
 
-REST_AUTH_REGISTER_SERIALIZER = "users.custom_serializers.CustomRegisterSerializer"
-
 ACCOUNT_ADAPTER = "users.adapters.CustomAccountAdapter"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
