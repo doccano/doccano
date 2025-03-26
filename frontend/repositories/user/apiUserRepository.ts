@@ -92,5 +92,4 @@ export class APIUserRepository {
   return toModel(response.data);
 
 }
-
 }
