@@ -6,15 +6,13 @@
           <v-col cols="12" sm="10" md="8">
             <v-card class="pa-0 overflow-hidden rounded-lg shadow-lg">
               <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
-                <div class="text-h6 font-weight-medium" style="color: white;">
-                  All Users
-                </div>
+                <div class="text-h6 font-weight-medium" style="color: white">All Users</div>
               </v-sheet>
               <v-card-text class="pa-4">
                 <v-alert v-if="errorMessage" type="error" dismissible class="mb-4">
                   {{ errorMessage }}
                 </v-alert>
-                
+
                 <v-text-field
                   v-model="search"
                   :prepend-inner-icon="mdiMagnify"
@@ -36,51 +34,62 @@
                   :custom-sort="customSort"
                   hide-default-footer
                 >
-                  <template v-slot:[`item.id`]="{ item }">
+                  <template #[`item.id`]="{ item }">
                     <span v-if="!item._empty">{{ item.id }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-  
-                  <template v-slot:[`item.username`]="{ item }">
+
+                  <template #[`item.username`]="{ item }">
                     <div v-if="!item._empty" class="d-flex align-center">
-                      <span class="status-circle" :style="{ backgroundColor:
-                        getStatusColor(item) }"></span>
+                      <span
+                        class="status-circle"
+                        :style="{ backgroundColor: getStatusColor(item) }"
+                      ></span>
                       <span>{{ item.username }}</span>
                     </div>
                     <span v-else>&nbsp;</span>
                   </template>
-  
-                  <template v-slot:[`item.email`]="{ item }">
+
+                  <template #[`item.email`]="{ item }">
                     <span v-if="!item._empty">{{ item.email }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
 
-                  <template v-slot:[`item.role`]="{ item }">
+                  <template #[`item.role`]="{ item }">
                     <v-chip
                       v-if="!item._empty"
-                      :color="item.role === 'owner' ? '#a8c400'
-                      : (item.role === 'admin'
-                      ? '#FF2F00' : 'primary')"
+                      :color="
+                        item.role === 'owner'
+                          ? '#a8c400'
+                          : item.role === 'admin'
+                          ? '#FF2F00'
+                          : 'primary'
+                      "
                       outlined
                     >
-                        {{ item.role.charAt(0).toUpperCase() + item.role.slice(1) }}
+                      {{ item.role.charAt(0).toUpperCase() + item.role.slice(1) }}
                     </v-chip>
                     <div v-else>&nbsp;</div>
                   </template>
-  
-                  <template v-slot:[`item.date_joined`]="{ item }">
+
+                  <template #[`item.date_joined`]="{ item }">
                     <span v-if="!item._empty">{{ timeAgo(item.date_joined) }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-  
-                  <template v-slot:[`item.last_seen`]="{ item }">
+
+                  <template #[`item.last_seen`]="{ item }">
                     <span v-if="!item._empty">
-                      {{ isCurrentUser(item) ? 'Currently online' : (item.last_login ?
-                      timeAgo(item.last_login) : 'Never') }}
+                      {{
+                        isCurrentUser(item)
+                          ? 'Currently online'
+                          : item.last_login
+                          ? timeAgo(item.last_login)
+                          : 'Never'
+                      }}
                     </span>
                     <span v-else>&nbsp;</span>
                   </template>
-  
+
                   <template #footer>
                     <v-row align="center">
                       <v-col class="d-flex justify-start">
@@ -88,9 +97,7 @@
                           <v-icon left>{{ mdiChevronLeft }}</v-icon>
                           Back
                         </v-btn>
-                        <v-btn color="primary ml-5" @click="goToEditUser">
-                          EDIT USER
-                        </v-btn>
+                        <v-btn color="primary ml-5" @click="goToEditUser"> EDIT USER </v-btn>
                         <v-btn color="red" class="ml-1 white--text" @click="goToDeleteUser">
                           DELETE USER
                         </v-btn>
@@ -113,10 +120,10 @@
     </v-main>
   </v-app>
 </template>
-  
+
 <script>
-import { mdiMagnify } from '@mdi/js'
-import { mdiChevronLeft } from '@mdi/js'
+import { mdiMagnify, mdiChevronLeft } from '@mdi/js'
+
 import { mapState } from 'vuex'
 
 export default {
@@ -137,7 +144,7 @@ export default {
         { text: 'Email', value: 'email', sortable: true },
         { text: 'Role', value: 'role', sortable: true },
         { text: 'Joined', value: 'date_joined', sortable: true },
-        { text: 'Last Seen', value: 'last_seen', sortable: true },
+        { text: 'Last Seen', value: 'last_seen', sortable: true }
       ],
       mdiMagnify,
       mdiChevronLeft
@@ -149,21 +156,20 @@ export default {
       return {
         id: this.id,
         username: this.username,
-        role: (this.is_superuser || this.isStaff) ? 'admin' : 'annotator'
+        role: this.is_superuser || this.isStaff ? 'admin' : 'annotator'
       }
     },
     sortedUsers() {
-      const usersWithRole = this.users.map(user => ({
+      const usersWithRole = this.users.map((user) => ({
         ...user,
-        role: user.role || (
-          user.is_superuser && user.is_staff
-            ? 'owner'
-            : (user.is_staff ? 'admin' : 'annotator')
-        )
+        role:
+          user.role ||
+          (user.is_superuser && user.is_staff ? 'owner' : user.is_staff ? 'admin' : 'annotator')
       }))
-      const filtered = usersWithRole.filter(user =>
-        user.username.toLowerCase().includes(this.search.toLowerCase()) ||
-        user.email.toLowerCase().includes(this.search.toLowerCase())
+      const filtered = usersWithRole.filter(
+        (user) =>
+          user.username.toLowerCase().includes(this.search.toLowerCase()) ||
+          user.email.toLowerCase().includes(this.search.toLowerCase())
       )
       const sorted = this.customSort(filtered.slice(), this.options.sortBy, this.options.sortDesc)
       return sorted
@@ -178,14 +184,14 @@ export default {
       return items
     }
   },
-  async created() {
-    await this.fetchUsers()
-  },
   watch: {
     search() {
-      this.options.page = 1;
-      this.fetchUsers();
+      this.options.page = 1
+      this.fetchUsers()
     }
+  },
+  async created() {
+    await this.fetchUsers()
   },
   methods: {
     async fetchUsers() {
@@ -193,26 +199,29 @@ export default {
       try {
         const response = await this.$axios.get('/v1/users/')
         this.users = response.data
-        this.errorMessage = '';
+        this.errorMessage = ''
       } catch (error) {
         if (error.response && error.response.data) {
-          const data = error.response.data;
+          const data = error.response.data
           if (typeof data === 'string' && data.trim().startsWith('<')) {
-            this.errorMessage = "Error: Can't access our database!";
+            this.errorMessage = "Error: Can't access our database!"
           } else {
-            const errors = [];
+            const errors = []
             for (const [field, messages] of Object.entries(data)) {
-              const formattedMessages = Array.isArray(messages)
-                ? messages.join(', ')
-                : messages;
-              errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '')}`);
+              const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages
+              errors.push(
+                `${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(
+                  /^\n+/,
+                  ''
+                )}`
+              )
             }
-            this.errorMessage = errors.join('\n\n');
+            this.errorMessage = errors.join('\n\n')
           }
         } else {
-          this.errorMessage = 'Error fetching users';
+          this.errorMessage = 'Error fetching users'
         }
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error)
       } finally {
         this.isLoading = false
       }
@@ -267,38 +276,38 @@ export default {
     customSort(items, sortBy, sortDesc) {
       if (!sortBy.length) {
         return items.sort((a, b) => {
-          if (a._empty && !b._empty) return 1;
-          if (!a._empty && b._empty) return -1;
-          return (a.id || 0) - (b.id || 0);
-        });
+          if (a._empty && !b._empty) return 1
+          if (!a._empty && b._empty) return -1
+          return (a.id || 0) - (b.id || 0)
+        })
       }
-      const field = sortBy[0];
+      const field = sortBy[0]
       return items.sort((a, b) => {
-        if (a._empty && !b._empty) return 1;
-        if (!a._empty && b._empty) return -1;
-        if (a._empty && b._empty) return 0;
-        let comp = 0;
+        if (a._empty && !b._empty) return 1
+        if (!a._empty && b._empty) return -1
+        if (a._empty && b._empty) return 0
+        let comp = 0
         if (field === 'role') {
-          const order = { annotator: 0, admin: 1, owner: 2 };
-          comp = order[a.role] - order[b.role];
+          const order = { annotator: 0, admin: 1, owner: 2 }
+          comp = order[a.role] - order[b.role]
         } else if (field === 'date_joined') {
-          comp = new Date(a.date_joined) - new Date(b.date_joined);
+          comp = new Date(a.date_joined) - new Date(b.date_joined)
         } else if (field === 'last_seen') {
-          comp = new Date(a.last_login) - new Date(b.last_login);
+          comp = new Date(a.last_login) - new Date(b.last_login)
         } else if (field === 'id') {
-          comp = (a.id || 0) - (b.id || 0);
+          comp = (a.id || 0) - (b.id || 0)
         } else if (typeof a[field] === 'string') {
-          comp = a[field].localeCompare(b[field]);
+          comp = a[field].localeCompare(b[field])
         } else {
-          comp = (a[field] || 0) - (b[field] || 0);
+          comp = (a[field] || 0) - (b[field] || 0)
         }
-        return sortDesc[0] ? -comp : comp;
-      });
-    },
+        return sortDesc[0] ? -comp : comp
+      })
+    }
   }
 }
 </script>
-  
+
 <style scoped>
 .v-card {
   background-color: #ffffff;
@@ -342,12 +351,12 @@ export default {
 }
 
 .theme--dark .v-card {
-  background-color: #1E1E1E !important;
+  background-color: #1e1e1e !important;
   color: #ffffff;
 }
 
 .theme--dark .v-text-field {
-  background-color: #0F0F0F !important;
+  background-color: #0f0f0f !important;
   color: #ffffff;
 }
 

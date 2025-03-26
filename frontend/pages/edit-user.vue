@@ -6,9 +6,7 @@
           <v-col cols="12" sm="10" md="8">
             <v-card class="pa-0 overflow-hidden rounded-lg shadow-lg">
               <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
-                <div class="text-h6 font-weight-medium" style="color: white;">
-                  Edit Users
-                </div>
+                <div class="text-h6 font-weight-medium" style="color: white">Edit Users</div>
               </v-sheet>
               <v-card-text class="pa-4">
                 <v-alert v-if="errorMessage" type="error" dismissible class="mb-4">
@@ -35,11 +33,11 @@
                   :custom-sort="customSort"
                   hide-default-footer
                 >
-                  <template v-slot:[`item.id`]="{ item }">
+                  <template #[`item.id`]="{ item }">
                     <span v-if="!item._empty">{{ item.id }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-                  <template v-slot:[`item.username`]="{ item }">
+                  <template #[`item.username`]="{ item }">
                     <div v-if="!item._empty" class="d-flex align-center">
                       <span
                         class="status-circle"
@@ -49,37 +47,43 @@
                     </div>
                     <span v-else>&nbsp;</span>
                   </template>
-                  <template v-slot:[`item.email`]="{ item }">
+                  <template #[`item.email`]="{ item }">
                     <span v-if="!item._empty">{{ item.email }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-                  <template v-slot:[`item.role`]="{ item }">
+                  <template #[`item.role`]="{ item }">
                     <v-chip
                       v-if="!item._empty"
-                      :color="item.role === 'owner' ? '#a8c400'
-                      : (item.role === 'admin'
-                      ? '#FF2F00'
-                      : 'primary')"
+                      :color="
+                        item.role === 'owner'
+                          ? '#a8c400'
+                          : item.role === 'admin'
+                          ? '#FF2F00'
+                          : 'primary'
+                      "
                       outlined
                     >
                       {{ item.role.charAt(0).toUpperCase() + item.role.slice(1) }}
                     </v-chip>
                     <div v-else>&nbsp;</div>
                   </template>
-                  <template v-slot:[`item.date_joined`]="{ item }">
+                  <template #[`item.date_joined`]="{ item }">
                     <span v-if="!item._empty">{{ timeAgo(item.date_joined) }}</span>
                     <span v-else>&nbsp;</span>
                   </template>
-                  <template v-slot:[`item.last_seen`]="{ item }">
+                  <template #[`item.last_seen`]="{ item }">
                     <span v-if="!item._empty">
-                      {{ isCurrentUser(item) ? 'Currently online'
-                      : (item.last_login
-                      ? timeAgo(item.last_login)
-                      : 'Never') }}
+                      {{
+                        isCurrentUser(item)
+                          ? 'Currently online'
+                          : item.last_login
+                          ? timeAgo(item.last_login)
+                          : 'Never'
+                      }}
                     </span>
                     <span v-else>&nbsp;</span>
                   </template>
-                  <template v-slot:[`item.actions`]="{ item }">
+                  <template #[`item.actions`]="{ item }">
                     <v-btn
                       v-if="!item._empty"
                       icon
@@ -116,7 +120,7 @@
         <v-dialog v-model="editDialog" max-width="500px">
           <v-card>
             <v-sheet color="primary" class="py-4 px-6 rounded-t-lg">
-              <div class="text-h6" style="color: white;">
+              <div class="text-h6" style="color: white">
                 Edit User: {{ editingUser.username || 'User' }}
               </div>
             </v-sheet>
@@ -157,11 +161,11 @@
     </v-main>
   </v-app>
 </template>
-  
+
 <script>
 import { mdiMagnify, mdiChevronLeft, mdiPencil, mdiAccount, mdiEmail, mdiAccountKey } from '@mdi/js'
 import { mapState } from 'vuex'
-  
+
 export default {
   data() {
     return {
@@ -196,41 +200,42 @@ export default {
   },
   computed: {
     ...mapState('auth', {
-      id: state => state.id,
-      isStaff: state => state.isStaff,
-      is_superuser: state => state.is_superuser
+      id: (state) => state.id,
+      isStaff: (state) => state.isStaff,
+      is_superuser: (state) => state.is_superuser
     }),
     currentUser() {
       return {
         id: this.id,
-        role: (this.is_superuser && this.isStaff)
-          ? 'owner'
-          : (!this.is_superuser && this.isStaff)
-          ? 'admin'
-          : 'annotator'
+        role:
+          this.is_superuser && this.isStaff
+            ? 'owner'
+            : !this.is_superuser && this.isStaff
+            ? 'admin'
+            : 'annotator'
       }
     },
     currentUserId() {
-      return this.currentUser.id;
+      return this.currentUser.id
     },
     currentUserRole() {
-      return this.currentUser.role;
+      return this.currentUser.role
     },
     roleOptions() {
       const options = [
         { text: 'Annotator', value: 'annotator', disabled: false },
         { text: 'Admin', value: 'admin', disabled: false },
         { text: 'Owner', value: 'owner', disabled: false }
-      ];
-  
+      ]
+
       if (this.currentUserRole === 'annotator') {
-        options.find(opt => opt.value === 'admin').disabled = true;
-        options.find(opt => opt.value === 'owner').disabled = true;
+        options.find((opt) => opt.value === 'admin').disabled = true
+        options.find((opt) => opt.value === 'owner').disabled = true
       } else if (this.currentUserRole === 'admin') {
-        options.find(opt => opt.value === 'owner').disabled = true;
-      } 
-  
-      return options;
+        options.find((opt) => opt.value === 'owner').disabled = true
+      }
+
+      return options
     },
     selectedRoleColor() {
       if (this.editingUser && this.editingUser.role) {
@@ -243,108 +248,121 @@ export default {
       return 'primary'
     },
     sortedUsers() {
-      const lowerSearch = this.search.toLowerCase();
-      const usersWithRole = this.users.map(user => ({
+      const lowerSearch = this.search.toLowerCase()
+      const usersWithRole = this.users.map((user) => ({
         ...user,
         role: user.role
           ? user.role
-          : (user.is_staff && !user.is_superuser ? 'admin'
-            : (user.is_superuser && user.is_staff ? 'owner' : 'annotator'))
-      }));
-      const filtered = usersWithRole.filter(user =>
-        user.username.toLowerCase().includes(lowerSearch) ||
-        user.email.toLowerCase().includes(lowerSearch)
-      );
-      return this.customSort(filtered, this.options.sortBy, this.options.sortDesc);
+          : user.is_staff && !user.is_superuser
+          ? 'admin'
+          : user.is_superuser && user.is_staff
+          ? 'owner'
+          : 'annotator'
+      }))
+      const filtered = usersWithRole.filter(
+        (user) =>
+          user.username.toLowerCase().includes(lowerSearch) ||
+          user.email.toLowerCase().includes(lowerSearch)
+      )
+      return this.customSort(filtered, this.options.sortBy, this.options.sortDesc)
     },
     pagedUsers() {
-      const start = (this.options.page - 1) * this.options.itemsPerPage;
-      const end = start + this.options.itemsPerPage;
-      const pageItems = this.sortedUsers.slice(start, end);
+      const start = (this.options.page - 1) * this.options.itemsPerPage
+      const end = start + this.options.itemsPerPage
+      const pageItems = this.sortedUsers.slice(start, end)
       while (pageItems.length < this.options.itemsPerPage) {
-        pageItems.push({ _empty: true });
+        pageItems.push({ _empty: true })
       }
-      return pageItems;
+      return pageItems
+    }
+  },
+  watch: {
+    search() {
+      this.options.page = 1
+      this.fetchUsers()
     }
   },
   async created() {
-    await this.fetchUsers();
-    console.log(this.$store.state.auth);
+    await this.fetchUsers()
+    console.log(this.$store.state.auth)
   },
   methods: {
     async fetchUsers() {
-      this.isLoading = true;
+      this.isLoading = true
       try {
-        const response = await this.$axios.get('/v1/users/');
-        this.users = response.data;
-        this.errorMessage = '';
+        const response = await this.$axios.get('/v1/users/')
+        this.users = response.data
+        this.errorMessage = ''
       } catch (error) {
         if (error.response && error.response.data) {
-          const data = error.response.data;
+          const data = error.response.data
           if (typeof data === 'string' && data.trim().startsWith('<')) {
-            this.errorMessage = "Error: Can't access our database!";
+            this.errorMessage = "Error: Can't access our database!"
           } else {
-            const errors = [];
+            const errors = []
             for (const [field, messages] of Object.entries(data)) {
-              const formattedMessages = Array.isArray(messages)
-                ? messages.join(', ')
-                : messages;
-              errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '')}`);
+              const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages
+              errors.push(
+                `${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(
+                  /^\n+/,
+                  ''
+                )}`
+              )
             }
-            this.errorMessage = errors.join('\n\n');
+            this.errorMessage = errors.join('\n\n')
           }
         } else {
-          this.errorMessage = 'Error fetching users';
+          this.errorMessage = 'Error fetching users'
         }
-        console.error('Error fetching users:', error);
+        console.error('Error fetching users:', error)
       } finally {
-        this.isLoading = false;
+        this.isLoading = false
       }
     },
     getRowClass(item) {
-      return item._empty ? 'dummy-row' : '';
+      return item._empty ? 'dummy-row' : ''
     },
     canEdit(user) {
-      if (user.id === this.currentUserId) return true;
+      if (user.id === this.currentUserId) return true
       if (this.currentUserRole === 'owner') {
-        return user.role !== 'owner';
+        return user.role !== 'owner'
       }
       if (this.currentUserRole === 'admin') {
-        return user.role === 'annotator';
+        return user.role === 'annotator'
       }
-      return false;
+      return false
     },
     openEdit(item) {
-      this.editErrorMessage = ''; // Clear previous errors
-      this.editingUser = { ...item };
-      this.editDialog = true;
+      this.editErrorMessage = '' // Clear previous errors
+      this.editingUser = { ...item }
+      this.editDialog = true
     },
     async saveEdit() {
       try {
         if (this.editingUser.role === 'owner') {
-          this.editingUser.is_superuser = true;
-          this.editingUser.is_staff = true;
+          this.editingUser.is_superuser = true
+          this.editingUser.is_staff = true
         } else if (this.editingUser.role === 'admin') {
           if (this.currentUserRole === 'annotator') {
-            this.editingUser.is_superuser = false;
-            this.editingUser.is_staff = false;
-            this.editingUser.role = 'annotator';
+            this.editingUser.is_superuser = false
+            this.editingUser.is_staff = false
+            this.editingUser.role = 'annotator'
           } else {
-            this.editingUser.is_superuser = false;
-            this.editingUser.is_staff = true;
-            this.editingUser.role = 'admin';
+            this.editingUser.is_superuser = false
+            this.editingUser.is_staff = true
+            this.editingUser.role = 'admin'
           }
         } else {
-          this.editingUser.is_superuser = false;
-          this.editingUser.is_staff = false;
-          this.editingUser.role = 'annotator';
+          this.editingUser.is_superuser = false
+          this.editingUser.is_staff = false
+          this.editingUser.role = 'annotator'
         }
-        let response;
+        let response
         if (this.editingUser.id) {
-          response = await this.$axios.put(`/v1/users/${this.editingUser.id}/`, this.editingUser);
-          const index = this.users.findIndex(u => u.id === this.editingUser.id);
+          response = await this.$axios.put(`/v1/users/${this.editingUser.id}/`, this.editingUser)
+          const index = this.users.findIndex((u) => u.id === this.editingUser.id)
           if (index !== -1) {
-            this.$set(this.users, index, response.data);
+            this.$set(this.users, index, response.data)
           }
 
           if (this.editingUser.id === this.currentUserId) {
@@ -353,119 +371,116 @@ export default {
               username: response.data.username,
               is_staff: response.data.is_staff,
               is_superuser: response.data.is_superuser
-            });
+            })
           }
         } else {
-          response = await this.$axios.post('/v1/users/', this.editingUser);
-          this.users.push(response.data);
+          response = await this.$axios.post('/v1/users/', this.editingUser)
+          this.users.push(response.data)
         }
-        this.options.page = 1;
-        this.editDialog = false;
+        this.options.page = 1
+        this.editDialog = false
         this.$router.push({
           path: '/message',
-          query: { 
+          query: {
             message: 'User updated successfully!',
             redirect: '/edit-user'
           }
-        });
+        })
       } catch (error) {
-        console.error('Error saving user:', error);
-        let errorDetail = '';
+        console.error('Error saving user:', error)
+        let errorDetail = ''
         if (error.response && error.response.data) {
-          const data = error.response.data;
+          const data = error.response.data
           if (data.username) {
-            errorDetail = "Error: Username already exists in our database!";
+            errorDetail = 'Error: Username already exists in our database!'
           } else if (data.email) {
-            errorDetail = "Error: Email already exists in our database!";
+            errorDetail = 'Error: Email already exists in our database!'
           } else if (typeof data === 'string' && data.trim().startsWith('<')) {
-            errorDetail = "Error: Can't access our database!";
+            errorDetail = "Error: Can't access our database!"
           } else {
-            const errors = [];
+            const errors = []
             for (const [field, messages] of Object.entries(data)) {
-              const formattedMessages = Array.isArray(messages)
-                ? messages.join(', ')
-                : messages;
-              errors.push(`${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '')}`);
+              const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages
+              errors.push(
+                `${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(
+                  /^\n+/,
+                  ''
+                )}`
+              )
             }
-            errorDetail = errors.join('\n\n');
+            errorDetail = errors.join('\n\n')
           }
         } else {
-          errorDetail = 'Error saving user';
+          errorDetail = 'Error saving user'
         }
-        this.editErrorMessage = errorDetail;
+        this.editErrorMessage = errorDetail
       }
     },
     closeEdit() {
-      this.editDialog = false;
-      this.editErrorMessage = '';
+      this.editDialog = false
+      this.editErrorMessage = ''
     },
     isCurrentUser(user) {
-      return user.id === this.currentUserId;
+      return user.id === this.currentUserId
     },
     getStatusColor(user) {
-      return this.isCurrentUser(user) ? 'green' : 'red';
+      return this.isCurrentUser(user) ? 'green' : 'red'
     },
     timeAgo(dateStr) {
-      if (!dateStr) return '';
-      const now = new Date();
-      const past = new Date(dateStr);
-      const diffMs = now - past;
-      const diffSeconds = Math.floor(diffMs / 1000);
-      if (diffSeconds < 0) return 'right now';
-      if (diffSeconds < 60) return diffSeconds + ' seconds ago';
-      const diffMinutes = Math.floor(diffSeconds / 60);
-      if (diffMinutes < 60) return diffMinutes + ' minutes ago';
-      const diffHours = Math.floor(diffMinutes / 60);
-      if (diffHours < 24) return diffHours + ' hours ago';
-      const diffDays = Math.floor(diffHours / 24);
-      if (diffDays < 7) return diffDays + ' days ago';
-      if (diffDays < 30) return diffDays + ' days ago';
-      const diffMonths = Math.floor(diffDays / 30);
-      if (diffMonths < 12) return diffMonths + ' months ago';
-      const diffYears = Math.floor(diffMonths / 12);
-      return diffYears + ' years ago';
+      if (!dateStr) return ''
+      const now = new Date()
+      const past = new Date(dateStr)
+      const diffMs = now - past
+      const diffSeconds = Math.floor(diffMs / 1000)
+      if (diffSeconds < 0) return 'right now'
+      if (diffSeconds < 60) return diffSeconds + ' seconds ago'
+      const diffMinutes = Math.floor(diffSeconds / 60)
+      if (diffMinutes < 60) return diffMinutes + ' minutes ago'
+      const diffHours = Math.floor(diffMinutes / 60)
+      if (diffHours < 24) return diffHours + ' hours ago'
+      const diffDays = Math.floor(diffHours / 24)
+      if (diffDays < 7) return diffDays + ' days ago'
+      if (diffDays < 30) return diffDays + ' days ago'
+      const diffMonths = Math.floor(diffDays / 30)
+      if (diffMonths < 12) return diffMonths + ' months ago'
+      const diffYears = Math.floor(diffMonths / 12)
+      return diffYears + ' years ago'
     },
     customSort(items, sortBy, sortDesc) {
       if (!sortBy.length) {
         return items.sort((a, b) => {
-          if (a._empty && !b._empty) return 1;
-          if (!a._empty && b._empty) return -1;
-          return (a.id || 0) - (b.id || 0);
-        });
+          if (a._empty && !b._empty) return 1
+          if (!a._empty && b._empty) return -1
+          return (a.id || 0) - (b.id || 0)
+        })
       }
-      const field = sortBy[0];
+      const field = sortBy[0]
       return items.sort((a, b) => {
-        if (a._empty && !b._empty) return 1;
-        if (!a._empty && b._empty) return -1;
-        if (a._empty && b._empty) return 0;
-        let comp = 0;
+        if (a._empty && !b._empty) return 1
+        if (!a._empty && b._empty) return -1
+        if (a._empty && b._empty) return 0
+        let comp = 0
         if (field === 'role') {
-          const order = { annotator: 0, admin: 1, owner: 2 };
-          comp = order[a.role] - order[b.role];
+          const order = { annotator: 0, admin: 1, owner: 2 }
+          comp = order[a.role] - order[b.role]
         } else if (field === 'date_joined') {
-          comp = new Date(a.date_joined) - new Date(b.date_joined);
+          comp = new Date(a.date_joined) - new Date(b.date_joined)
         } else if (field === 'last_seen') {
-          comp = new Date(a.last_login) - new Date(b.last_login);
+          comp = new Date(a.last_login) - new Date(b.last_login)
         } else if (field === 'id') {
-          comp = (a.id || 0) - (b.id || 0);
+          comp = (a.id || 0) - (b.id || 0)
         } else if (typeof a[field] === 'string') {
-          comp = a[field].localeCompare(b[field]);
+          comp = a[field].localeCompare(b[field])
         } else {
-          comp = (a[field] || 0) - (b[field] || 0);
+          comp = (a[field] || 0) - (b[field] || 0)
         }
-        return sortDesc[0] ? -comp : comp;
-      });
-    }
-  },
-  watch: {
-    search() {
-      this.options.page = 1;
-      this.fetchUsers();
+        return sortDesc[0] ? -comp : comp
+      })
     }
   }
 }
 </script>
-  
+
 <style scoped>
 .v-card {
   background-color: #ffffff;
@@ -495,7 +510,7 @@ export default {
 }
 
 .theme--dark .v-card {
-  background-color: #1E1E1E !important;
+  background-color: #1e1e1e !important;
   color: #ffffff;
 }
 
@@ -504,12 +519,12 @@ export default {
 }
 
 .theme--dark .v-select .v-input__slot {
-  background-color: #0F0F0F !important;
+  background-color: #0f0f0f !important;
   color: #ffffff;
 }
 
 .theme--dark .v-text-field {
-  background-color: #1E1E1E !important;
+  background-color: #1e1e1e !important;
   color: #ffffff;
 }
 

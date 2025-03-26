@@ -79,14 +79,14 @@
               If you have any questions, feedback, or collaboration
               ideas, feel free to reach out to us via email:
             </p>
-            <p class="text-center body-text">
+            <div class="text-center body-text">
               <ul class="contact-list">
                 <li><b>Daniel Palma:</b> a71177@ualg.pt</li>
                 <li><b>Gonçalo Cordeiro:</b> a76967@ualg.pt</li>
                 <li><b>Juary Neto:</b> a76931@ualg.pt</li>
                 <li><b>Steve Rocha:</b> a76924@ualg.pt</li>
               </ul>
-            </p>
+            </div>
             <p class="text-center final-text mt-6">
               <b>Thank you for visiting doccana.</b> We hope you enjoy your experience
               on our app and find everything you’re looking for. If you have any

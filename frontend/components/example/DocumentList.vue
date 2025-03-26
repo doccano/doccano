@@ -175,13 +175,13 @@ export default Vue.extend({
     },
 
     toSelected(item: ExampleDTO) {
-      const assigneeIds = item.assignments.map(assignment => assignment.assignee_id)
-      return this.members.filter(member => assigneeIds.includes(member.user))
+      const assigneeIds = item.assignments.map((assignment) => assignment.assignee_id)
+      return this.members.filter((member) => assigneeIds.includes(member.user))
     },
 
     onAssignOrUnassign(item: ExampleDTO, newAssignees: MemberItem[]) {
-      const newAssigneeIds = newAssignees.map(assignee => assignee.user)
-      const oldAssigneeIds = item.assignments.map(assignment => assignment.assignee_id)
+      const newAssigneeIds = newAssignees.map((assignee) => assignee.user)
+      const oldAssigneeIds = item.assignments.map((assignment) => assignment.assignee_id)
       if (oldAssigneeIds.length > newAssigneeIds.length) {
         for (const assignment of item.assignments) {
           if (!newAssigneeIds.includes(assignment.assignee_id)) {

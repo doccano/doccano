@@ -1,37 +1,20 @@
 <template>
   <v-app>
     <div class="indexViewContainer">
-
       <div class="indexViewBackground"></div>
 
       <div class="indexViewContent">
+        <img src="/doccana-logo.png" alt="Doccana Logo" class="indexViewLogo" draggable="false" />
 
-        <img
-          src="/doccana-logo.png"
-          alt="Doccana Logo"
-          class="indexViewLogo"
-          draggable="false"/>
+        <h1 class="indexViewTitle display-1 text-xs-center">Welcome to doccana!</h1>
 
-        <h1 class="indexViewTitle display-1 text-xs-center">
-          Welcome to doccana!
-        </h1>
+        <p class="indexViewSubtitle">Your go-to platform for document annotation and analysis..</p>
 
-        <p class="indexViewSubtitle">
-          Your go-to platform for document annotation and analysis..
-        </p>
-
-        <v-btn
-          color="primary"
-          large
-          class="indexViewButton"
-          @click="handleGetStartedClick"
-        >
+        <v-btn color="primary" large class="indexViewButton" @click="handleGetStartedClick">
           <strong>Start</strong>
         </v-btn>
 
-        <div class="xs12 md4 indexViewCopyright">
-          ©2025 Doccana, Software Engineering Lab
-        </div>
+        <div class="xs12 md4 indexViewCopyright">©2025 Doccana, Software Engineering Lab</div>
       </div>
     </div>
   </v-app>
@@ -39,11 +22,11 @@
 
 <script>
 export default {
+  name: 'Index',
   layout: 'custom-empty',
-  name: "index",
   methods: {
     handleGetStartedClick() {
-      this.$router.push("/home");
+      this.$router.push('/home')
     }
   }
 }
@@ -117,6 +100,6 @@ export default {
   margin-top: 2rem;
   font-size: 0.9rem;
   font-weight: 300;
-  color: #6C6C6C !important;
+  color: #6c6c6c !important;
 }
 </style>

@@ -14,7 +14,8 @@
                 prominent
               >
                 <div>
-                  <span class="base-message">{{ baseMessage }}</span><br>
+                  <span class="base-message">{{ baseMessage }}</span
+                  ><br />
                   <span class="redirect-message">{{ redirectText }}</span>
                 </div>
               </v-alert>
@@ -37,32 +38,32 @@ export default {
   },
   computed: {
     baseMessage() {
-      return this.$route.query.message || 'Task successful!';
+      return this.$route.query.message || 'Task successful!'
     },
     redirectText() {
-      const redirectPath = this.$route.query.redirect || '/home';
+      const redirectPath = this.$route.query.redirect || '/home'
       if (redirectPath === '/home') {
-        return ` You will be redirected to our homepage in ${this.countdown} seconds.`;
+        return ` You will be redirected to our homepage in ${this.countdown} seconds.`
       } else if (redirectPath === '/edit-user') {
-        return ` You will be redirected to the edit user list in ${this.countdown} seconds.`;
+        return ` You will be redirected to the edit user list in ${this.countdown} seconds.`
       } else {
-        return ` You will be redirected in ${this.countdown} seconds.`;
+        return ` You will be redirected in ${this.countdown} seconds.`
       }
     }
   },
   mounted() {
-    const redirectPath = this.$route.query.redirect || '/home';
+    const redirectPath = this.$route.query.redirect || '/home'
     const timer = setInterval(() => {
       if (this.countdown > 1) {
-        this.countdown--;
+        this.countdown--
       } else {
-        clearInterval(timer);
-        this.showAlert = false;
+        clearInterval(timer)
+        this.showAlert = false
         setTimeout(() => {
-          this.$router.push({ path: redirectPath });
-        }, 500);
+          this.$router.push({ path: redirectPath })
+        }, 500)
       }
-    }, 1000);
+    }, 1000)
   }
 }
 </script>

@@ -2,7 +2,7 @@
   <v-app-bar app clipped-left>
     <slot name="leftDrawerIcon" />
     <nuxt-link to="/home" style="line-height: 0">
-      <img src="/doccana-logo.png" height="48" draggable="false"/>
+      <img src="/doccana-logo.png" height="48" draggable="false" />
     </nuxt-link>
     <v-btn
       v-if="isAuthenticated && isIndividualProject"
@@ -46,16 +46,18 @@
     <v-btn v-if="!isAuthenticated" outlined @click="$router.push(localePath('/auth'))">
       {{ $t('user.login') }}
     </v-btn>
-    <v-btn 
-      v-if="!isAuthenticated" outlined 
-      style="margin-left: 0.5vw;" 
+    <v-btn
+      v-if="!isAuthenticated"
+      outlined
+      style="margin-left: 0.5vw"
       @click="$router.push(localePath('/register'))"
     >
       Register
     </v-btn>
-    <v-btn 
-      v-if="isAuthenticated" outlined 
-      style="margin-left: 0.5vw;" 
+    <v-btn
+      v-if="isAuthenticated"
+      outlined
+      style="margin-left: 0.5vw"
       @click="$router.push(localePath('/list-user'))"
     >
       All Users
@@ -148,10 +150,10 @@ export default {
           message: `Bye ${this.getUsername}, come back soon! 🥹`,
           redirect: '/home'
         }
-      });
+      })
       setTimeout(() => {
-        this.$store.dispatch('auth/logout');
-      }, 500);
+        this.$store.dispatch('auth/logout')
+      }, 500)
     }
   }
 }

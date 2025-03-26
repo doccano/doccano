@@ -10,7 +10,12 @@
             {{ $t('home.mainTitle') }}
           </h1>
           <div class="mt-4">
-            <v-btn large outlined color="black" href="https://github.com/GONCALOUNI/Software-Engineering-Lab">
+            <v-btn
+              large
+              outlined
+              color="black"
+              href="https://github.com/GONCALOUNI/Software-Engineering-Lab"
+            >
               <v-icon left>
                 {{ mdiGithub }}
               </v-icon>

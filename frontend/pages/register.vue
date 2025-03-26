@@ -6,9 +6,7 @@
           <v-col cols="12" sm="8" md="4">
             <v-card class="pa-0 overflow-hidden rounded-lg" width="100%">
               <v-sheet color="primary" class="py-3 px-4 rounded-t">
-                <div class="text-h6 font-weight-medium" style="color: white;">
-                  Register User
-                </div>
+                <div class="text-h6 font-weight-medium" style="color: white">Register User</div>
               </v-sheet>
               <v-card-text class="pa-6">
                 <v-form ref="registerForm" v-model="valid" @submit.prevent="submitForm">
@@ -21,7 +19,7 @@
                   >
                     {{ errorMessage }}
                   </v-alert>
-                  
+
                   <v-text-field
                     v-model="name"
                     :rules="nameRules"
@@ -29,7 +27,7 @@
                     required
                     :prepend-icon="mdiAccount"
                   ></v-text-field>
-                  
+
                   <v-text-field
                     v-model="email"
                     :rules="emailRules"
@@ -66,7 +64,7 @@
                     :prepend-icon="mdiAccountKey"
                     :color="selectedRoleColor"
                   ></v-select>
-                  
+
                   <v-row justify="center" class="mt-5">
                     <v-col cols="12">
                       <v-btn type="submit" color="primary" block :disabled="!valid">
@@ -104,54 +102,54 @@ export default {
       mdiLockCheck,
       mdiAccountKey,
       commonPasswords: [
-          'password',
-          '12345678',
-          'qwertyui',
-          '12345678',
-          'letmein!',
-          'software',
-          'password1',
-          'iloveyou',
-          'sunshine',
-          'football',
-          'princess',
-          'friend123',
-          'welcome1',
-          'charlie1',
-          'superman',
-          'baseball',
-          'dragon12',
-          'trustno1',
-          'freedom1',
-          'whatever',
-          'computer',
-          'michelle',
-          'jessica1',
-          'tiger123',
-          'password123',
-          'abc12345',
-          '123456789',
-          'sunflower',
-          'lovely12',
-          'secret77',
-          'admin123',
-          'qazwsxedc',
-          'passw0rd',
-          'starwars',
-          'master123',
-          'hello123',
-          'football1',
-          'qwerty123',
-          '1234567890',
-          '1q2w3e4r',
-          '87654321',
-          'loveyou1',
-          'password!',
-          'test1234',
-          'flower123',
-          'mustang1',
-          'shadow12',
-          'sunshine1'
+        'password',
+        '12345678',
+        'qwertyui',
+        '12345678',
+        'letmein!',
+        'software',
+        'password1',
+        'iloveyou',
+        'sunshine',
+        'football',
+        'princess',
+        'friend123',
+        'welcome1',
+        'charlie1',
+        'superman',
+        'baseball',
+        'dragon12',
+        'trustno1',
+        'freedom1',
+        'whatever',
+        'computer',
+        'michelle',
+        'jessica1',
+        'tiger123',
+        'password123',
+        'abc12345',
+        '123456789',
+        'sunflower',
+        'lovely12',
+        'secret77',
+        'admin123',
+        'qazwsxedc',
+        'passw0rd',
+        'starwars',
+        'master123',
+        'hello123',
+        'football1',
+        'qwerty123',
+        '1234567890',
+        '1q2w3e4r',
+        '87654321',
+        'loveyou1',
+        'password!',
+        'test1234',
+        'flower123',
+        'mustang1',
+        'shadow12',
+        'sunshine1'
       ],
       nameRules: [
         (v) => !!v || 'Name is required',
@@ -176,9 +174,7 @@ export default {
         (v) => !!v || 'Please confirm your password',
         (v) => v === this.password || 'Passwords do not match'
       ],
-      roleRules: [
-        (v) => !!v || 'Role is required'
-      ],
+      roleRules: [(v) => !!v || 'Role is required'],
       roleOptions: [
         { text: 'Annotator', value: 'annotator' },
         { text: 'Admin', value: 'admin' },
@@ -208,11 +204,11 @@ export default {
   methods: {
     async submitForm() {
       if (!this.valid) {
-        this.showError = true;
-        this.errorMessage = 'Please fill in all required fields correctly';
-        return;
+        this.showError = true
+        this.errorMessage = 'Please fill in all required fields correctly'
+        return
       }
-      
+
       try {
         const userData = {
           username: this.name,
@@ -220,52 +216,50 @@ export default {
           password1: this.password,
           password2: this.password,
           role: this.role
-        };
-        const result = await this.$repositories.user.register(userData);
-        console.log('User registered successfully:', result);
-        this.showError = false;
+        }
+        const result = await this.$repositories.user.register(userData)
+        console.log('User registered successfully:', result)
+        this.showError = false
         this.$router.push({
           path: '/message',
           query: { message: 'Registration Successful! 🦭' }
-        });
+        })
       } catch (error) {
-        this.showError = true;
-        let errorDetail = '';
+        this.showError = true
+        let errorDetail = ''
         if (error.response && error.response.data) {
-          const data = error.response.data;
+          const data = error.response.data
           if (data.username) {
-            errorDetail = "Error: Username already exists in our database!";
+            errorDetail = 'Error: Username already exists in our database!'
           } else if (data.email) {
-            errorDetail = "Error: Email already exists in our database!";
+            errorDetail = 'Error: Email already exists in our database!'
           } else if (typeof data === 'string' && data.trim().startsWith('<')) {
-            errorDetail = "Error: Can't access our database!";
+            errorDetail = "Error: Can't access our database!"
           } else {
-            const errors = [];
+            const errors = []
             for (const [field, messages] of Object.entries(data)) {
-              const fieldName = field.charAt(0).toUpperCase() + field.slice(1);
-              const formattedMessages = Array.isArray(messages)
-                ? messages.join(', ')
-                : messages;
-              errors.push(`${fieldName}: ${formattedMessages.replace(/^\n+/, '')}`);
+              const fieldName = field.charAt(0).toUpperCase() + field.slice(1)
+              const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages
+              errors.push(`${fieldName}: ${formattedMessages.replace(/^\n+/, '')}`)
             }
-            errorDetail = errors.join('\n\n');
+            errorDetail = errors.join('\n\n')
           }
         } else {
-          errorDetail = 'User registration failed';
+          errorDetail = 'User registration failed'
         }
-        this.errorMessage = errorDetail;
-        
-        this.name = '';
-        this.email = '';
-        this.password = '';
-        this.confirmPassword = '';
-        this.role = '';
-        
+        this.errorMessage = errorDetail
+
+        this.name = ''
+        this.email = ''
+        this.password = ''
+        this.confirmPassword = ''
+        this.role = ''
+
         if (this.$refs.registerForm) {
-          this.$refs.registerForm.resetValidation();
+          this.$refs.registerForm.resetValidation()
         }
-        
-        console.error('Registration error:', error.response && error.response.data);
+
+        console.error('Registration error:', error.response && error.response.data)
       }
     }
   }
