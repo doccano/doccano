@@ -146,7 +146,7 @@ export default {
         path: '/message',
         query: {
           message: `Bye ${this.getUsername}, come back soon! 🥹`,
-          redirect: '/'
+          redirect: '/home'
         }
       });
       setTimeout(() => {

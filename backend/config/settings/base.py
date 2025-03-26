@@ -245,6 +245,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://10.20.92.150:3000",
     "http://10.20.88.144:3000",
     "http://10.20.85.44:3000",
+    "http://10.20.81.58:3000",
 ]
 CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
@@ -289,8 +290,6 @@ except EnvError:
         CELERY_BROKER_URL = "sqla+{}".format(uri)
     except EnvError:
         CELERY_BROKER_URL = "sqla+sqlite:///{}".format(DATABASES["default"]["NAME"])
-
-REST_AUTH_REGISTER_SERIALIZER = "users.custom_serializers.CustomRegisterSerializer"
 
 ACCOUNT_ADAPTER = "users.adapters.CustomAccountAdapter"
 CELERY_ACCEPT_CONTENT = ["application/json"]
