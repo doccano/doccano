@@ -8,11 +8,10 @@
           </v-card-title>
           <v-card-text>
             <p class="text-justify body-text">
-              Welcome to <b>doccana</b>, your go-to platform for document annotation
-              and analysis. <b>GatewayShop&Trade®</b> is a fictional <b>modern
-              marketplace platform</b> created for users to ensure the simplicity
-              and intuitiveness of performing each transaction, regardless of the
-              product category at hand.
+                Welcome to <b>doccana</b>, your go-to platform for document annotation
+                and analysis. <b>Doccana</b> is a modern, user-friendly platform designed
+                to simplify and streamline the annotation process across various use cases: 
+                from academic research to real-world industry needs.
             </p>
             <h2 class="subtitle">
               <b>Who we are:</b>
