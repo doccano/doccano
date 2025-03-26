@@ -7,8 +7,8 @@ export default {
    ** Headers of the page
    */
   head: {
+    title: 'doccana',
     titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -98,7 +98,8 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    proxy: true
+    proxy: true,
+    baseURL: 'http://127.0.0.1:8000'
   },
 
   proxy: {
@@ -125,7 +126,7 @@ export default {
       success: colors.green.accent3,
       themes: {
         dark: {
-          primary: '#21CFF3',
+          primary: '#6376AB',
           accent: '#FF4081',
           secondary: '#ffe18d',
           success: '#4CAF50',
@@ -134,7 +135,7 @@ export default {
           error: '#FF5252'
         },
         light: {
-          primary: '#1976D2',
+          primary: '#6376AB',
           accent: '#e91e63',
           secondary: '#30b1dc',
           success: '#4CAF50',

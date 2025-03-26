@@ -2,7 +2,7 @@
   <section>
     <v-parallax :src="require(`~/assets/vbanner.jpg`)" height="400" dark>
       <v-container>
-        <v-layout wrap align-center justify-center class="white--text">
+        <v-layout wrap align-center justify-center class="black--text">
           <v-flex xs12 md7>
             <v-img :src="require(`~/assets/ner_demo.png`)" max-height="380" contain class="ma-5" />
           </v-flex>
@@ -13,7 +13,7 @@
             <div class="mt-4">
               <v-menu open-on-hover offset-y>
                 <template #activator="{ on }">
-                  <v-btn class="blue lighten-2" dark large v-on="on">
+                  <v-btn class="black lighten-2" dark large v-on="on">
                     {{ $t('home.demoDropDown') }}
                     <v-icon>{{ mdiMenuDown }}</v-icon>
                   </v-btn>

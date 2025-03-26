@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
+import os
 from os import path
 
 import dj_database_url
@@ -86,7 +87,6 @@ MIDDLEWARE = [
 ]
 
 
-
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
@@ -97,7 +97,6 @@ TEMPLATES = [
         "DIRS": [path.join(BASE_DIR, "client/dist")],
         "APP_DIRS": True,
         "OPTIONS": {
-            
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -135,22 +134,23 @@ ROLE_PROJECT_ADMIN = env("ROLE_PROJECT_ADMIN", "project_admin")
 ROLE_ANNOTATOR = env("ROLE_ANNOTATOR", "annotator")
 ROLE_ANNOTATION_APPROVER = env("ROLE_ANNOTATION_APPROVER", "annotation_approver")
 
+
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
-    },
-]
+# AUTH_PASSWORD_VALIDATORS = [
+#    {
+#        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+#    },
+#    {
+#        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+#    },
+#    {
+#        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+#    },
+#    {
+#        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+#    },
+# ]
 
 REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
@@ -206,8 +206,9 @@ DATABASES["default"].update(
         ssl_require="sslmode" not in furl(env("DATABASE_URL", "")).args,
     )
 )
+if not os.getenv("DATABASE_URL"):
+    os.environ["DATABASE_URL"] = "postgres://doccano_admin:doccano@localhost:5432/doccano_db?sslmode=disable"
 
-# work-around for dj-database-url: explicitly disable ssl for sqlite
 if DATABASES["default"].get("ENGINE") == "django.db.backends.sqlite3":
     DATABASES["default"].get("OPTIONS", {}).pop("sslmode", None)
 
@@ -227,15 +228,25 @@ if DATABASES["default"].get("ENGINE") == "sql_server.pyodbc":
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = env.bool("SESSION_COOKIE_SECURE", False)
 CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE", False)
-CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", ["http://localhost:3000", "http://127.0.0.1:3000", "http://0.0.0.0:3000"])
+CSRF_TRUSTED_ORIGINS = env.list(
+    "CSRF_TRUSTED_ORIGINS", ["http://localhost:3000", "http://127.0.0.1:3000", "http://0.0.0.0:3000"]
+)
 
 # Allow all host headers
 ALLOWED_HOSTS = ["*"]
 
-if DEBUG:
-    CORS_ORIGIN_ALLOW_ALL = True
-    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000", "http://127.0.0.1:000"]
-    CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
+CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:3000",
+    "http://0.0.0.0:3000",
+    "http://localhost:3000",
+    "http://127.0.0.1:000",
+    "http://192.168.101.18:3000",
+    "http://10.20.92.150:3000",
+    "http://10.20.88.144:3000",
+    "http://10.20.85.44:3000",
+]
+CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
 # Batch size for importing data
 IMPORT_BATCH_SIZE = env.int("IMPORT_BATCH_SIZE", 1000)
@@ -278,6 +289,10 @@ except EnvError:
         CELERY_BROKER_URL = "sqla+{}".format(uri)
     except EnvError:
         CELERY_BROKER_URL = "sqla+sqlite:///{}".format(DATABASES["default"]["NAME"])
+
+REST_AUTH_REGISTER_SERIALIZER = "users.custom_serializers.CustomRegisterSerializer"
+
+ACCOUNT_ADAPTER = "users.adapters.CustomAccountAdapter"
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"

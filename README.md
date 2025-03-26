@@ -28,7 +28,6 @@ As principais divisões incluem a gestão de utilizadores, a gestão de desacord
     - Formulário para inserir nome, e-mail e senha.
     - Escolha de permissões (Admin, Anotador).
     - Validação e criação no banco de dados.
-    - Envio de e-mail com credenciais.
 - Editar utilizador.
     - Listagem de utilizadores com opção de edição.
     - Alteração de nome, e-mail ou papel no sistema.
