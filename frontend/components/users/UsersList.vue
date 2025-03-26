@@ -118,8 +118,8 @@ export default Vue.extend({
     headers() {
   return [
     { text: 'Username', value: 'username', sortable: true },
-      { text: 'First_name', value: 'firstName' },
-      { text: 'Last_name', value: 'lastName' },
+      { text: 'First Name', value: 'firstName' },
+      { text: 'Last Name', value: 'lastName' },
     { text: 'Staff', value: 'isStaff' },
     { text: 'Superuser', value: 'isSuperuser' },
     { text: 'Active', value: 'isActive' },
