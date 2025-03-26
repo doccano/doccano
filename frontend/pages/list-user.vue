@@ -93,11 +93,7 @@
                   <template #footer>
                     <v-row align="center">
                       <v-col class="d-flex justify-start">
-                        <v-btn color="primary" @click="$router.push('/list-user')">
-                          <v-icon left>{{ mdiChevronLeft }}</v-icon>
-                          Back
-                        </v-btn>
-                        <v-btn color="primary ml-5" @click="goToEditUser"> EDIT USER </v-btn>
+                        <v-btn color="primary" @click="goToEditUser"> EDIT USER </v-btn>
                         <v-btn color="red" class="ml-1 white--text" @click="goToDeleteUser">
                           DELETE USER
                         </v-btn>
@@ -132,7 +128,7 @@ export default {
       users: [],
       search: '',
       isLoading: false,
-      errorMessage: '', // Add error message property
+      errorMessage: '',
       options: {
         itemsPerPage: 5,
         page: 1,

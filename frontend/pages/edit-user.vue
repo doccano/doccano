@@ -173,7 +173,7 @@ export default {
       search: '',
       isLoading: false,
       errorMessage: '',
-      editErrorMessage: '', // New property for errors in the edit dialog
+      editErrorMessage: '',
       options: {
         itemsPerPage: 5,
         page: 1,
@@ -195,7 +195,8 @@ export default {
       mdiEmail,
       mdiAccountKey,
       editDialog: false,
-      editingUser: {}
+      editingUser: {},
+      originalEditingUser: {}
     }
   },
   computed: {
@@ -333,7 +334,8 @@ export default {
       return false
     },
     openEdit(item) {
-      this.editErrorMessage = '' // Clear previous errors
+      this.editErrorMessage = ''
+      this.originalEditingUser = JSON.parse(JSON.stringify(item))
       this.editingUser = { ...item }
       this.editDialog = true
     },
@@ -388,32 +390,32 @@ export default {
         })
       } catch (error) {
         console.error('Error saving user:', error)
+        this.editingUser = { ...this.originalEditingUser }
         let errorDetail = ''
         if (error.response && error.response.data) {
           const data = error.response.data
           if (data.username) {
-            errorDetail = 'Error: Username already exists in our database!'
+            errorDetail = "Error: " + (Array.isArray(data.username) ? data.username.join(' ') : data.username)
           } else if (data.email) {
-            errorDetail = 'Error: Email already exists in our database!'
+            errorDetail = (Array.isArray(data.email) ? data.email.join(' ') : data.email)
           } else if (typeof data === 'string' && data.trim().startsWith('<')) {
             errorDetail = "Error: Can't access our database!"
           } else {
             const errors = []
             for (const [field, messages] of Object.entries(data)) {
-              const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages
+              const formattedMessages =
+                Array.isArray(messages) ? messages.join(' ') : messages
               errors.push(
-                `${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(
-                  /^\n+/,
-                  ''
-                )}`
+                `${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '')}`
               )
             }
-            errorDetail = errors.join('\n\n')
+            errorDetail = errors.join('\n')
           }
         } else {
           errorDetail = 'Error saving user'
         }
         this.editErrorMessage = errorDetail
+        console.error('Error details:', error.response && error.response.data)
       }
     },
     closeEdit() {

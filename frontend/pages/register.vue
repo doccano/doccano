@@ -222,7 +222,7 @@ export default {
         this.showError = false
         this.$router.push({
           path: '/message',
-          query: { message: 'Registration Successful! 🦭' }
+          query: { message: 'Register Successful! 🦭' }
         })
       } catch (error) {
         this.showError = true
@@ -230,22 +230,24 @@ export default {
         if (error.response && error.response.data) {
           const data = error.response.data
           if (data.username) {
-            errorDetail = 'Error: Username already exists in our database!'
+            errorDetail = "Error: A user with this username already exists in our database!"
           } else if (data.email) {
-            errorDetail = 'Error: Email already exists in our database!'
+            errorDetail = "Error: A user with this email already exists in our database!"
           } else if (typeof data === 'string' && data.trim().startsWith('<')) {
             errorDetail = "Error: Can't access our database!"
           } else {
             const errors = []
             for (const [field, messages] of Object.entries(data)) {
-              const fieldName = field.charAt(0).toUpperCase() + field.slice(1)
-              const formattedMessages = Array.isArray(messages) ? messages.join(', ') : messages
-              errors.push(`${fieldName}: ${formattedMessages.replace(/^\n+/, '')}`)
+              const formattedMessages =
+                Array.isArray(messages) ? messages.join(', ') : messages
+              errors.push(
+                `${field.charAt(0).toUpperCase() + field.slice(1)}: ${formattedMessages.replace(/^\n+/, '').trim()}`
+              )
             }
-            errorDetail = errors.join('\n\n')
+            errorDetail = errors.join('\n\n').trim()
           }
         } else {
-          errorDetail = 'User registration failed'
+          errorDetail = 'An error occurred'
         }
         this.errorMessage = errorDetail
 
@@ -268,6 +270,6 @@ export default {
 
 <style scoped>
 .error-message {
-  white-space: pre-line;
+  white-space: normal;
 }
 </style>
