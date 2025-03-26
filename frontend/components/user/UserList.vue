@@ -34,8 +34,8 @@
         <span>{{ item.username }}</span>
       </nuxt-link>
     </template>
-    <template #[`item.isSuperuser`]="{ item }">
-      <v-icon v-if="item.isSuperuser" color="primary">{{ mdiCheck }}</v-icon>
+    <template #[`item.isSuperUser`]="{ item }">
+      <v-icon v-if="item.isSuperUser" color="primary">{{ mdiCheck }}</v-icon>
       <v-icon v-else>{{ mdiClose }}</v-icon>
     </template>
     <template #[`item.isStaff`]="{ item }">
@@ -95,7 +95,7 @@ export default Vue.extend({
       return [
         { text: this.$t('user.username'), value: 'username' },
         { text: this.$t('user.email'), value: 'email' },
-        { text: this.$t('user.superUser'), value: 'isSuperuser', align: 'center' },
+        { text: this.$t('user.superUser'), value: 'isSuperUser', align: 'center' },
         { text: this.$t('user.staff'), value: 'isStaff', align: 'center' },
         { text: this.$t('user.active'), value: 'isActive' }
       ]

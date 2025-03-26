@@ -4,7 +4,7 @@ export class User {
     readonly username: string,
     readonly email: string,
     readonly isActive: boolean,
-    readonly isSuperuser: boolean,
+    readonly isSuperUser: boolean,
     readonly isStaff: boolean,
   ) {}
 }
@@ -17,10 +17,10 @@ export class UserDetails extends User {
     readonly firstName: string,
     readonly lastName: string,
     readonly isActive: boolean,
-    readonly isSuperuser: boolean,
+    readonly isSuperUser: boolean,
     readonly isStaff: boolean,
     readonly dateJoined: string
   ) {
-    super(id, username, email, isActive, isSuperuser, isStaff)
+    super(id, username, email, isActive, isSuperUser, isStaff)
   }
 }
