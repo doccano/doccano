@@ -6,10 +6,11 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser
-
+import logging
 from .serializers import UserSerializer
 from projects.permissions import IsProjectAdmin
 
+logger = logging.getLogger(__name__)
 
 class Me(APIView):
     permission_classes = (IsAuthenticated,)
@@ -49,6 +50,18 @@ class UserCreation(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = self.perform_create(serializer)
+
+        # Atualiza os campos first_name e last_name
+        # Log dos valores recebidos do payload
+        first_name = request.data.get('first_name', '')
+        last_name = request.data.get('last_name', '')
+        logger.debug(f"Received first_name: '{first_name}', last_name: '{last_name}'")
+
+        # Atribui os campos ao usuário
+        user.first_name = first_name
+        user.last_name = last_name
+        logger.debug(f"User fields before permission update: first_name='{user.first_name}', last_name='{user.last_name}'")
+
         if request.data.get('is_superuser') in [True, 'true', 'True', 1]:
             user.is_superuser = True
             user.is_staff = True
@@ -62,6 +75,8 @@ class UserCreation(generics.CreateAPIView):
             user.is_superuser = True
             user.is_staff = True
             user.save()
+
+        logger.debug(f"User fields after saving: first_name='{user.first_name}', last_name='{user.last_name}'")
         headers = self.get_success_headers(serializer.data)
         return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED, headers=headers)
 

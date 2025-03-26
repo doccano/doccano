@@ -3,6 +3,19 @@
       <v-card-title>{{ $t('generic.create') }}</v-card-title>
       <v-card-text>
         <v-form v-model="valid" ref="form">
+          <!-- Novos campos First name e Last name -->
+          <v-text-field
+            v-model="firstName"
+            :label="$t('First Name')"
+            :rules="firstNameRules"
+            required
+          />
+          <v-text-field
+            v-model="lastName"
+            :label="$t('Last Name')"
+            :rules="lastNameRules"
+            required
+          />
           <v-text-field
             v-model="username"
             :label="$t('Username')"
@@ -41,7 +54,9 @@
             :label="$t('Staff - If selected, the user will have staff status without full privileges')"
           />
         </v-form>
-        <v-alert v-if="errorMessage" type="error" dense>{{ errorMessage }}</v-alert>
+        <v-alert v-if="errorMessage" type="error" dense>
+          {{ errorMessage }}
+        </v-alert>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
@@ -66,21 +81,29 @@
       return {
         valid: false,
         loading: false,
+        firstName: '',
+        lastName: '',
         username: '',
         email: '',
         password1: '',
         password2: '',
-        // Propriedades dos checkboxes
         isSuperuser: false,
         isStaff: false,
         errorMessage: '',
+        firstNameRules: [
+          (v: string) => !!v || this.$t('First name')
+        ],
+        lastNameRules: [
+          (v: string) => !!v || this.$t('Last name')
+        ],
         usernameRules: [
-          (v: string) => !!v || this.$t('user.usernameRequired'),
-          (v: string) => v.length <= 30 || this.$t('user.usernameTooLong')
+          (v: string) => !!v || this.$t('User name is required'),
+          (v: string) => v.length <= 30 || this.$t('User name is required')
         ],
         emailRules: [
-          (v: string) => !!v || this.$t('user.emailRequired'),
-          (v: string) => /.+@.+\..+/.test(v) || this.$t('user.emailInvalid')
+          (v: string) => !!v || this.$t('User email is required'),
+          (v: string) => /.+@.+\..+/.test(v) || this.$t('User email must be valid'),
+          (v: string) => v.length <= 254 || this.$t('User email is too long'),
         ],
         passwordRules: [
           (v: string) => !!v || this.$t('user.passwordRequired'),
@@ -98,12 +121,12 @@
         this.errorMessage = ''
         try {
           await this.$repositories.user.create({
+            first_name: this.firstName,
+            last_name: this.lastName,
             username: this.username,
             email: this.email,
             password1: this.password1,
             password2: this.password2,
-            // Se isSuperuser estiver selecionado, is_superuser será true e is_staff true;
-            // caso contrário, se isStaff estiver marcado, apenas is_staff será true.
             is_superuser: this.isSuperuser,
             is_staff: this.isSuperuser ? true : this.isStaff
           })
