@@ -246,6 +246,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://10.20.92.150:3000",
     "http://10.20.88.144:3000",
     "http://10.20.85.44:3000",
+    "http://10.20.81.58:3000",
 ]
 CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
