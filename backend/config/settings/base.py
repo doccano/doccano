@@ -29,7 +29,7 @@ env.read_env(path.join(BASE_DIR, ".env"), recurse=False)
 SECRET_KEY = env("SECRET_KEY", "v8sk33sy82!uw3ty=!jjv5vp7=s2phrzw(m(hrn^f7e_#1h2al")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DEBUG", False)
+DEBUG = env.bool("DEBUG", True)
 
 # Application definition
 INSTALLED_APPS = [
@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "health_check.contrib.migrations",
     "health_check.contrib.celery",
     "django_cleanup",
+    "perspectives",
 ]
 
 
@@ -169,7 +170,7 @@ REST_FRAMEWORK = {
     "SEARCH_PARAM": "q",
     "DEFAULT_RENDERER_CLASSES": (
         "rest_framework.renderers.JSONRenderer",
-        "rest_framework.renderers.BrowsableAPIRenderer",
+        # "rest_framework.renderers.BrowsableAPIRenderer",
         "rest_framework_xml.renderers.XMLRenderer",
     ),
 }
