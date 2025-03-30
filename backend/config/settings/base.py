@@ -278,9 +278,9 @@ ENABLE_FILE_TYPE_CHECK = env.bool("ENABLE_FILE_TYPE_CHECK", False)
 
 # Celery settings
 DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191
-CELERY_RESULT_BACKEND = "django-db"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 try:
-    CELERY_BROKER_URL = env("CELERY_BROKER_URL")
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
 except EnvError:
     try:
         # quickfix for Heroku.

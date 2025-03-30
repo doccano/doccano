@@ -70,6 +70,7 @@ flower = "^1.2.0"
 django-allauth = "^0.52.0"
 pydantic = "^2.0.3"
 psycopg2 = "^2.9.10"
+redis = "^5.2.1"
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"
