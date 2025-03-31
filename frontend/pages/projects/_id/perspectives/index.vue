@@ -99,6 +99,7 @@
                       icon
                       small
                       color="primary"
+                      :disabled="user.role !== 'project_admin'"
                       @click="editAnnotation(item, ann)"
                     >
                       <v-icon>{{ icons.mdiPencil }}</v-icon>
@@ -106,7 +107,7 @@
                     <v-btn
                       icon
                       small
-                      :disabled="false"
+                      :disabled="!canDeleteAnnotation(ann)"
                       color="red"
                       @click="removeAnnotation(item, ann)"
                     >
@@ -222,8 +223,13 @@ export default Vue.extend({
   },
   computed: {
     ...mapGetters('projects', ['project']),
+    ...mapGetters('auth', ['getUsername', 'getRolename']),
     user() {
-      return { username: this.$store.state.auth.username || 'Unknown' }
+      return {
+        username: this.getUsername || 'Unknown',
+        // Make sure getRolename returns "project_admin", "annotation_approver", or "annotator"
+        role: this.getRolename || 'annotator'
+      }
     },
     canDelete(): boolean {
       return this.selected.length > 0
@@ -476,33 +482,44 @@ export default Vue.extend({
       )
     },
     editAnnotation(item: any, ann: any) {
-      const projectId = this.$route.params.id
-      let index = 0
-      if (item.linkedAnnotations && item.linkedAnnotations.length) {
-        const found = item.linkedAnnotations.findIndex(
-          (a: any) => a.uniqueId === ann.uniqueId
-        )
-        index = found !== -1 ? found : 0
+      if (this.user.role !== 'project_admin') {
+        console.error("Only project admins can edit linked annotations.")
+        return
       }
-      const page = index + 1
-      const link = getLinkToAnnotationPage(
-        projectId,
-        this.project.projectType
-      )
+      const projectId = this.$route.params.id
+      const found = item.linkedAnnotations.findIndex((a: any) => a.uniqueId === ann.uniqueId)
+      const page = (found !== -1 ? found : 0) + 1
+      const link = getLinkToAnnotationPage(projectId, this.project.projectType)
       this.$router.push({
         path: this.localePath(link),
         query: { page: page.toString() }
       })
     },
+    canDeleteAnnotation(annotation: any): boolean {
+      const role = this.user.role
+      if (role === 'project_admin') {
+        return true
+      } else if (role === 'annotation_approver') {
+        return (
+          annotation.linkedBy === this.user.username ||
+          annotation.linkedByRole === 'annotator'
+        )
+      } else if (role === 'annotator') {
+        return annotation.linkedBy === this.user.username
+      }
+      return false
+    },
     removeAnnotation(item: any, ann: any) {
+      if (!this.canDeleteAnnotation(ann)) {
+        console.error("You do not have permission to delete this annotation.")
+        return
+      }
       const updatedAnnotations = item.linkedAnnotations.filter(
         (a: any) => a.uniqueId !== ann.uniqueId
       )
-      const index = this.items.findIndex(
-        (it: any) => it.id === item.id
-      )
+      const index = this.items.findIndex((it: any) => it.id === item.id)
       if (index !== -1) {
-        this.$set(this.items, index, {
+        this.$set(this.items, index, { 
           ...item,
           linkedAnnotations: updatedAnnotations
         })
