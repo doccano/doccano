@@ -67,7 +67,7 @@ export default Vue.extend({
       form: {
         subject: '',
         text: '',
-        category: ''
+        category: 'subjective'
       },
       categories: [
         { text: this.$t('Cultural'), value: 'cultural' },
@@ -97,6 +97,7 @@ export default Vue.extend({
         text: this.form.text,
         category: this.form.category,
         user: userId,
+        project: projectId
       };
 
       console.log('Submitting perspective payload:', payload);
