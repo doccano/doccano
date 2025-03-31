@@ -183,7 +183,7 @@
 </template>
 
 <script lang="ts">
-/* eslint-disable */
+// @ts-nocheck
 import Vue from 'vue'
 import axios from 'axios'
 import { DataOptions } from 'vuetify/types'
