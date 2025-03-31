@@ -45,7 +45,7 @@
                 <!-- Annotation snippet block -->
                 <div v-if="item.linkedAnnotations && item.linkedAnnotations.length">
                   <v-divider class="my-2"></v-divider>
-                  <div v-for="ann in item.linkedAnnotations" :key="ann.id">
+                  <div v-for="ann in item.linkedAnnotations" :key="ann.uniqueId">
                     <strong>Annotation:</strong> {{ ann.text }}
                     <span v-if="ann.label"> ({{ ann.label }})</span>
                   </div>
@@ -82,6 +82,7 @@
             :item-text="getDatasetLabel"
             item-value="id"
             label="Choose a dataset item"
+            :item-disabled="isItemDisabled"
             dense
           />
         </v-card-text>
@@ -226,7 +227,12 @@ export default Vue.extend({
           this.datasetItems = response.data.results || []
           console.log('Dataset items:', this.datasetItems)
           if (this.datasetItems.length > 0 && !this.selectedDataset) {
-            this.selectedDataset = this.datasetItems[0].id
+            const available = this.datasetItems.find(item => !this.isItemDisabled(item));
+            if (available) {
+              this.selectedDataset = available.id;
+            } else {
+              this.selectedDataset = null;
+            }
           }
         })
         .catch((error: any) => {
@@ -256,20 +262,47 @@ export default Vue.extend({
         console.error('Dataset item not found.')
         return
       }
+      console.log("Dataset item category:", JSON.stringify(datasetItem.category))
+      console.log("Category types:", this.categoryTypes)
       const truncatedText = datasetItem.text.length > 50 
         ? datasetItem.text.substring(0, 50) + '...'
         : datasetItem.text
-      let labelText = ''
+      let label = '';
+      let categoryId = null;
       if (datasetItem.category && this.categoryTypes.length > 0) {
-        const category = this.categoryTypes.find((cat: any) => cat.id === datasetItem.category)
+        let category;
+        if (typeof datasetItem.category === 'object') {
+          category = this.categoryTypes.find((cat: any) =>
+            String(cat.id) === String(datasetItem.category.id)
+          );
+        } else {
+          category = this.categoryTypes.find((cat: any) =>
+            String(cat.id) === String(datasetItem.category)
+          );
+        }
         if (category) {
-          labelText = category.text
+          label = category.text;
+          categoryId = category.id;
         }
       }
-      const annotation = { id: datasetItem.id, text: truncatedText, label: labelText }
+      const annotation = {
+        id: datasetItem.id,
+        uniqueId: `${datasetItem.id}-${new Date().getTime()}`,
+        text: truncatedText,
+        label,       // shorthand since variable name is label
+        categoryId,  // shorthand as well
+      }
       
+      // Loop through the perspectives and add the annotation if it hasn't been linked already.
       this.items.forEach((item: any, index: number) => {
         if (item.id === this.currentPerspective.id) {
+          // Check for duplicate annotation based on dataset item id.
+          const duplicate = item.linkedAnnotations && item.linkedAnnotations.find(ann => ann.id
+          === datasetItem.id);
+          if (duplicate) {
+            console.warn(`Annotation for dataset item ${datasetItem.id} is already linked.`);
+            return;  // Skip adding duplicate annotation.
+          }
           const updatedAnnotations = item.linkedAnnotations
             ? [...item.linkedAnnotations, annotation]
             : [annotation]
@@ -288,6 +321,10 @@ export default Vue.extend({
           })
         }
       })
+      const fullCategory = this.categoryTypes.find((cat: any) =>
+        String(cat.id) === String(annotation.categoryId)
+      )
+      console.log('Full category:', fullCategory)
       this.closeLinkDialog()
     },
     closeLinkDialog() {
@@ -299,6 +336,12 @@ export default Vue.extend({
       const snippet = item.text ? item.text.substring(0, 50) + (item.text.length > 50 ? '...' : '') : ''
       const timeLabel = item.created_at ? this.formatTime(item.created_at) : item.upload_name || 'Unknown time'
       return `${snippet} (${timeLabel})`
+    },
+    isItemDisabled(item: any) {
+      if (!this.currentPerspective || !this.currentPerspective.linkedAnnotations) {
+        return false;
+      }
+      return this.currentPerspective.linkedAnnotations.some((ann: any) => ann.id === item.id);
     }
   },
   watch: {
