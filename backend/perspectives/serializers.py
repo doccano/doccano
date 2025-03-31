@@ -4,5 +4,7 @@ from .models import Perspective
 class PerspectiveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Perspective
-        fields = ['id', 'user', 'project', 'subject', 'category', 'text', 'created_at', 'updated_at']
-        read_only_fields = ['project']
+        fields = '__all__'
+        extra_kwargs = {
+            'linkedAnnotations': {'read_only': False},
+        }

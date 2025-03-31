@@ -24,6 +24,7 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+from label_types.views import CategoryTypeList, CategoryTypeDetail
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -69,4 +70,6 @@ urlpatterns += [
     path("v1/", include("perspectives.urls")),
     path("v1/projects/<int:project_id>/perspectives/", include("perspectives.urls")),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
+    path("v1/projects/<int:project_id>/category-types/", CategoryTypeList.as_view(), name="project_category_types"),
+    path("v1/projects/<int:project_id>/category-types/<int:label_id>/", CategoryTypeDetail.as_view(), name="project_category_type"),
 ]

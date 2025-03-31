@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from projects.models import Project
+from django.db.models import JSONField
 
 class Perspective(models.Model):
     CATEGORY_CHOICES = [
@@ -21,6 +22,7 @@ class Perspective(models.Model):
         on_delete=models.CASCADE,
         related_name="perspectives"
     )
+    linkedAnnotations = JSONField(default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

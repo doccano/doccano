@@ -4,21 +4,10 @@
       <v-btn class="text-capitalize ms-2" color="primary" @click="goToAdd">
         {{ $t('generic.add') }}
       </v-btn>
-      <v-btn
-        class="text-capitalize ms-2"
-        :disabled="!canDelete"
-        outlined
-        @click.stop="dialogDelete = true"
-      >
+      <v-btn class="text-capitalize ms-2" :disabled="!canDelete" outlined
+      @click.stop="dialogDelete = true">
         {{ $t('generic.delete') }}
       </v-btn>
-      <v-dialog v-model="dialogDelete" max-width="600px">
-        <form-delete-perspective
-          :selected="selected"
-          @cancel="dialogDelete = false"
-          @remove="remove"
-        />
-      </v-dialog>
     </v-card-title>
 
     <v-card-text>
@@ -31,18 +20,12 @@
         filled
         style="margin-bottom: 1rem"
       />
-      <v-progress-circular
-        v-if="isLoading"
-        indeterminate
-        color="primary"
-        class="ma-3"
-      />
+      <v-progress-circular v-if="isLoading" indeterminate color="primary" class="ma-3" />
 
       <div class="d-flex justify-center" v-if="!isLoading">
         <div style="max-width: 800px; width: 100%;">
           <div v-for="item in items" :key="item.id" class="mb-4">
             <v-card class="mx-auto" outlined elevation="2" rounded>
-              <!-- Header bar using v-sheet: shows "username: subject" -->
               <v-sheet color="primary" dark class="py-3 px-4 rounded-t-lg d-flex flex-column">
                 <div class="text-h6 font-weight-medium">
                   {{ item.user.username }}:<span v-if="item.subject"> {{ item.subject }}</span>
@@ -59,10 +42,22 @@
                 <div>
                   {{ item.text }}
                 </div>
+                <!-- Annotation snippet block -->
+                <div v-if="item.linkedAnnotations && item.linkedAnnotations.length">
+                  <v-divider class="my-2"></v-divider>
+                  <div v-for="ann in item.linkedAnnotations" :key="ann.id">
+                    <strong>Annotation:</strong> {{ ann.text }}
+                    <span v-if="ann.label"> ({{ ann.label }})</span>
+                  </div>
+                </div>
               </v-card-text>
 
               <v-card-actions>
                 <v-chip small>{{ item.category }}</v-chip>
+                <v-spacer></v-spacer>
+                <v-btn color="secondary" small @click="openLinkDialog(item)">
+                  Link Annotation
+                </v-btn>
               </v-card-actions>
             </v-card>
           </div>
@@ -73,6 +68,41 @@
         </div>
       </div>
     </v-card-text>
+
+    <!-- Link Annotation Dialog -->
+    <v-dialog v-model="dialogLink" persistent max-width="600px">
+      <v-card>
+        <v-card-title>
+          Select a Dataset item to link its annotations
+        </v-card-title>
+        <v-card-text>
+          <v-select
+            v-model="selectedDataset"
+            :items="datasetItems"
+            :item-text="getDatasetLabel"
+            item-value="id"
+            label="Choose a dataset item"
+            dense
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="secondary" text @click="confirmLink" :disabled="!selectedDataset">
+            Confirm
+          </v-btn>
+          <v-btn text @click="closeLinkDialog">Cancel</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Delete Perspective Dialog -->
+    <v-dialog v-model="dialogDelete" max-width="600px">
+      <form-delete-perspective
+        :selected="selected"
+        @cancel="dialogDelete = false"
+        @remove="remove"
+      />
+    </v-dialog>
   </v-card>
 </template>
 
@@ -88,6 +118,10 @@ export default Vue.extend({
   data() {
     return {
       dialogDelete: false,
+      dialogLink: false,
+      selectedDataset: null,
+      datasetItems: [] as any[],
+      currentPerspective: null as any,
       selected: [] as any[],
       search: '',
       options: {
@@ -100,6 +134,7 @@ export default Vue.extend({
       total: 0,
       isLoading: false,
       mdiMagnify,
+      categoryTypes: [] as any[], // Fetched category labels
     }
   },
   computed: {
@@ -132,19 +167,13 @@ export default Vue.extend({
           console.log('API Response:', response.data)
           const data = response.data
           const items = data.results || []
-          // For each perspective, if the user is a number, fetch user details.
           const promises = items.map((item: any) => {
             if (typeof item.user === 'number') {
               return axios.get(`/v1/users/${item.user}/`)
-                .then((userResponse: any) => {
-                  item.user = userResponse.data
-                })
-                .catch(() => {
-                  item.user = { username: 'N/A' }
-                })
-            } else {
-              return Promise.resolve()
+                .then((userResponse: any) => { item.user = userResponse.data })
+                .catch(() => { item.user = { username: 'N/A' } })
             }
+            return Promise.resolve()
           })
           Promise.all(promises).then(() => {
             console.log('Processed Items:', items)
@@ -155,19 +184,21 @@ export default Vue.extend({
         .catch((error: any) => {
           console.error('Error fetching perspectives:', error.response || error.message)
         })
-        .finally(() => {
-          this.isLoading = false
-        })
+        .finally(() => { this.isLoading = false })
     },
     updateQuery() {
       this.fetchPerspectives()
     },
-    // Simple relative time formatter.
     timeAgo(dateStr: string): string {
       if (!dateStr) return 'N/A'
-      const dateObj = new Date(dateStr)
+      const cleanDateStr = dateStr
+        .replace(' ', 'T')
+        .replace(/(\.\d{3})\d+/, '$1')
+        .replace(/([+-]\d{2})(\d{2})$/, '$1:$2')
+      const dateObj = new Date(cleanDateStr)
+      if (isNaN(dateObj.getTime())) return 'N/A'
       const now = new Date()
-      const diffMs = now.valueOf() - dateObj.valueOf()
+      const diffMs = now.getTime() - dateObj.getTime()
       const diffSeconds = Math.floor(diffMs / 1000)
       if (diffSeconds < 60) return `${diffSeconds} seconds ago`
       const diffMinutes = Math.floor(diffSeconds / 60)
@@ -175,7 +206,6 @@ export default Vue.extend({
       const diffHours = Math.floor(diffMinutes / 60)
       if (diffHours < 24) return `${diffHours} hours ago`
       const diffDays = Math.floor(diffHours / 24)
-      if (diffDays < 7) return `${diffDays} days ago`
       if (diffDays < 30) return `${diffDays} days ago`
       const diffMonths = Math.floor(diffDays / 30)
       if (diffMonths < 12) return `${diffMonths} months ago`
@@ -184,6 +214,91 @@ export default Vue.extend({
     },
     formatTime(time: string): string {
       return this.timeAgo(time)
+    },
+    openLinkDialog(perspective: any) {
+      this.currentPerspective = perspective
+      this.dialogLink = true
+      this.fetchDatasetItems()
+    },
+    fetchDatasetItems() {
+      axios.get(`/v1/projects/${this.$route.params.id}/examples?limit=10&offset=0`)
+        .then((response: any) => {
+          this.datasetItems = response.data.results || []
+          console.log('Dataset items:', this.datasetItems)
+          if (this.datasetItems.length > 0 && !this.selectedDataset) {
+            this.selectedDataset = this.datasetItems[0].id
+          }
+        })
+        .catch((error: any) => {
+          console.error('Error fetching dataset items:', error.response || error.message)
+        })
+    },
+    fetchCategoryTypes() {
+      const projectId = this.$route.params.id
+      axios.get(`/v1/projects/${projectId}/category-types/`)
+        .then((response: any) => {
+          this.categoryTypes = response.data.results || response.data || []
+          console.log('Fetched category types:', this.categoryTypes)
+        })
+        .catch((error: any) => {
+          console.error('Error fetching category types:', error.response || error.message)
+        })
+    },
+    confirmLink() {
+      if (!this.selectedDataset || !this.currentPerspective) {
+        console.error('selectedDataset or currentPerspective is not set.')
+        return
+      }
+      console.log('Selected dataset:', this.selectedDataset)
+      console.log('Current perspective:', this.currentPerspective)
+      const datasetItem = this.datasetItems.find(item => item.id === this.selectedDataset)
+      if (!datasetItem) {
+        console.error('Dataset item not found.')
+        return
+      }
+      const truncatedText = datasetItem.text.length > 50 
+        ? datasetItem.text.substring(0, 50) + '...'
+        : datasetItem.text
+      let labelText = ''
+      if (datasetItem.category && this.categoryTypes.length > 0) {
+        const category = this.categoryTypes.find((cat: any) => cat.id === datasetItem.category)
+        if (category) {
+          labelText = category.text
+        }
+      }
+      const annotation = { id: datasetItem.id, text: truncatedText, label: labelText }
+      
+      this.items.forEach((item: any, index: number) => {
+        if (item.id === this.currentPerspective.id) {
+          const updatedAnnotations = item.linkedAnnotations
+            ? [...item.linkedAnnotations, annotation]
+            : [annotation]
+          this.$set(this.items, index, { ...item, linkedAnnotations: updatedAnnotations })
+          console.log('Updated item with annotations:', this.items[index])
+          const projectId = this.$route.params.id
+          axios.patch(`/v1/projects/${projectId}/perspectives/${this.currentPerspective.id}/`, {
+            linkedAnnotations: updatedAnnotations
+          })
+          .then(response => {
+             console.log("Perspective updated:", response.data)
+             this.fetchPerspectives()
+          })
+          .catch(error => {
+             console.error("Error updating perspective:", error.response || error.message)
+          })
+        }
+      })
+      this.closeLinkDialog()
+    },
+    closeLinkDialog() {
+      this.dialogLink = false
+      this.selectedDataset = null
+      this.currentPerspective = null
+    },
+    getDatasetLabel(item: any): string {
+      const snippet = item.text ? item.text.substring(0, 50) + (item.text.length > 50 ? '...' : '') : ''
+      const timeLabel = item.created_at ? this.formatTime(item.created_at) : item.upload_name || 'Unknown time'
+      return `${snippet} (${timeLabel})`
     }
   },
   watch: {
@@ -200,6 +315,7 @@ export default Vue.extend({
   },
   mounted() {
     this.fetchPerspectives()
+    this.fetchCategoryTypes()
   }
 })
 </script>
