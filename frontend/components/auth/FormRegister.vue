@@ -3,13 +3,10 @@
     :disabled="!valid"
     :title="$t('user.register')"
     :agree-text="$t('user.register')"
-    :cancel-text="$t('cancel')"
     @agree="tryRegister"
-    @cancel="cancelRegister"
   >
     <template #content>
       <v-form v-model="valid">
-          
         <v-alert v-show="showError" v-model="showError" type="error" dismissible>
           {{ errorMessage }}
         </v-alert>
@@ -83,7 +80,7 @@ export default Vue.extend({
       errorMessage: '',
       mdiAccount,
       mdiLock,
-      mdiEmail,
+      mdiEmail
     }
   },
 
@@ -106,15 +103,11 @@ export default Vue.extend({
           password2: this.password2
         })
         this.$router.push(this.localePath('/users'))
-        
       } catch (error: any) {
         this.showError = true
         this.errorMessage = error.message || this.$t('errors.invalidUserOrPass')
       }
-    },
-    cancelRegister() {
-    this.$router.push(this.localePath('/users')) 
-  }
+    }
   }
 })
 </script>

@@ -6,15 +6,10 @@ export class MemberItem {
     readonly user: number,
     readonly role: number,
     readonly username: string,
-    readonly rolename: RoleName,
-    public perspectiveId?: number | null
+    readonly rolename: RoleName
   ) {}
 
   get isProjectAdmin(): boolean {
     return this.rolename === 'project_admin'
-  }
-
-  get isAnnotator(): boolean {
-    return this.rolename === 'annotator'
   }
 }

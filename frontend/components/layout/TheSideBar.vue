@@ -37,8 +37,7 @@ import {
   mdiDatabase,
   mdiHome,
   mdiLabel,
-  mdiPlayCircleOutline,
-  mdiCommentTextOutline
+  mdiPlayCircleOutline
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -99,12 +98,6 @@ export default {
           text: this.$t('members.members'),
           link: 'members',
           isVisible: this.isProjectAdmin
-        },
-        {
-          icon: mdiCommentTextOutline,
-          text: 'Perspective',
-          link: 'perspectives',
-          isVisible: true
         },
         {
           icon: mdiCommentAccountOutline,
