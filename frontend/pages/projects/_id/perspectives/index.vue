@@ -99,7 +99,7 @@
                       icon
                       small
                       color="primary"
-                      :disabled="user.role !== 'project_admin'"
+                      :disabled="user.username !== ann.linkedBy && !isProjectAdmin"
                       @click="editAnnotation(item, ann)"
                     >
                       <v-icon>{{ icons.mdiPencil }}</v-icon>
@@ -140,12 +140,16 @@
       </div>
     </v-card-text>
 
+    <!-- Link Annotation Dialog -->
     <v-dialog v-model="dialogLink" persistent max-width="600px">
       <v-card>
         <v-card-title>
           Select a Dataset item to link its annotations
         </v-card-title>
         <v-card-text>
+          <v-alert v-if="annotationFetchError" type="error" dense>
+            {{ annotationFetchError }}
+          </v-alert>
           <v-select
             v-model="selectedDataset"
             :items="datasetItems"
@@ -153,6 +157,7 @@
             item-value="id"
             label="Choose a dataset item"
             :item-disabled="isItemDisabled"
+            :disabled="!!annotationFetchError"
             dense
           />
         </v-card-text>
@@ -162,7 +167,7 @@
             color="secondary"
             text
             @click="confirmLink"
-            :disabled="!selectedDataset"
+            :disabled="!!annotationFetchError"
           >
             Confirm
           </v-btn>
@@ -173,6 +178,7 @@
       </v-card>
     </v-dialog>
 
+    <!-- Delete Perspective Dialog -->
     <v-dialog v-model="dialogDelete" max-width="600px">
       <form-delete-perspective
         :selected="selected"
@@ -201,6 +207,7 @@ export default Vue.extend({
       dialogLink: false,
       selectedDataset: null,
       datasetItems: [] as any[],
+      annotationFetchError: "",
       currentPerspective: null as any,
       selected: [] as any[],
       search: '',
@@ -227,9 +234,11 @@ export default Vue.extend({
     user() {
       return {
         username: this.getUsername || 'Unknown',
-        // Make sure getRolename returns "project_admin", "annotation_approver", or "annotator"
         role: this.getRolename || 'annotator'
       }
+    },
+    isProjectAdmin(): boolean {
+      return (this.user.role || '').toLowerCase() === 'project_admin'
     },
     canDelete(): boolean {
       return this.selected.length > 0
@@ -337,26 +346,20 @@ export default Vue.extend({
     openLinkDialog(perspective: any) {
       this.currentPerspective = perspective
       this.dialogLink = true
+      this.annotationFetchError = ""
       this.fetchDatasetItems()
     },
     fetchDatasetItems() {
-      axios.get(
-        `/v1/projects/${this.$route.params.id}/examples?limit=10&offset=0`
-      )
+      axios
+        .get(`/v1/projects/${this.$route.params.id}/examples?limit=10&offset=0`)
         .then((_response: any) => {
           this.datasetItems = _response.data.results || []
-          if (this.datasetItems.length > 0 && !this.selectedDataset) {
-            const available = this.datasetItems.find(
-              item => !this.isItemDisabled(item)
-            )
-            this.selectedDataset = available ? available.id : null
-          }
+          this.annotationFetchError = ""
         })
         .catch((error: any) => {
-          console.error(
-            'Error fetching dataset items:',
-            error.response || error.message
-          )
+          console.error('Error fetching dataset items:', error.response || error.message)
+          this.annotationFetchError = "Error: Can't access our database!"
+          this.selectedDataset = null
         })
     },
     fetchCategoryTypes() {
@@ -375,9 +378,7 @@ export default Vue.extend({
     },
     confirmLink() {
       if (!this.selectedDataset || !this.currentPerspective) {
-        console.error(
-          'selectedDataset or currentPerspective is not set.'
-        )
+        console.error('selectedDataset or currentPerspective is not set.')
         return
       }
       const datasetItem = this.datasetItems.find(
@@ -397,13 +398,11 @@ export default Vue.extend({
         let category
         if (typeof datasetItem.category === 'object') {
           category = this.categoryTypes.find(
-            (cat: any) =>
-              String(cat.id) === String(datasetItem.category.id)
+            (cat: any) => String(cat.id) === String(datasetItem.category.id)
           )
         } else {
           category = this.categoryTypes.find(
-            (cat: any) =>
-              String(cat.id) === String(datasetItem.category)
+            (cat: any) => String(cat.id) === String(datasetItem.category)
           )
         }
         if (category) {
@@ -428,9 +427,7 @@ export default Vue.extend({
               (ann: any) => ann.id === datasetItem.id
             )
           if (duplicate) {
-            console.warn(
-              `Annotation for dataset item ${datasetItem.id} is already linked.`
-            )
+            console.warn(`Annotation for dataset item ${datasetItem.id} is already linked.`)
             return
           }
           const updatedAnnotations = item.linkedAnnotations
@@ -447,16 +444,21 @@ export default Vue.extend({
           )
             .then((_response: any) => {
               this.fetchPerspectives()
+              this.closeLinkDialog()
+              // Navigate to the message page with a success message
+              this.$router.push({
+                path: '/message',
+                query: {
+                  message: 'Annotation linked successfully!',
+                  redirect: `/projects/${projectId}/perspectives`
+                }
+              })
             })
             .catch((error: any) => {
-              console.error(
-                "Error updating perspective:",
-                error.response || error.message
-              )
+              console.error("Error updating perspective:", error.response || error.message)
             })
         }
       })
-      this.closeLinkDialog()
     },
     closeLinkDialog() {
       this.dialogLink = false
@@ -465,8 +467,7 @@ export default Vue.extend({
     },
     getDatasetLabel(item: any): string {
       const snippet = item.text
-        ? item.text.substring(0, 50) +
-          (item.text.length > 50 ? '...' : '')
+        ? item.text.substring(0, 50) + (item.text.length > 50 ? '...' : '')
         : ''
       const timeLabel = item.created_at
         ? this.formatTime(item.created_at)
@@ -482,8 +483,8 @@ export default Vue.extend({
       )
     },
     editAnnotation(item: any, ann: any) {
-      if (this.user.role !== 'project_admin') {
-        console.error("Only project admins can edit linked annotations.")
+      if (this.user.username !== ann.linkedBy && !this.isProjectAdmin) {
+        console.error("Only project admins or the owner of the annotation can edit linked annotations.")
         return
       }
       const projectId = this.$route.params.id
@@ -519,7 +520,7 @@ export default Vue.extend({
       )
       const index = this.items.findIndex((it: any) => it.id === item.id)
       if (index !== -1) {
-        this.$set(this.items, index, { 
+        this.$set(this.items, index, {
           ...item,
           linkedAnnotations: updatedAnnotations
         })
@@ -530,12 +531,17 @@ export default Vue.extend({
       )
         .then((_response: any) => {
           this.fetchPerspectives()
+          // Navigate to the message page with a success message
+          this.$router.push({
+            path: '/message',
+            query: {
+              message: 'Annotation removed successfully!',
+              redirect: `/projects/${this.$route.params.id}/perspectives`
+            }
+          })
         })
         .catch((error: any) => {
-          console.error(
-            "Error removing annotation:",
-            error.response || error.message
-          )
+          console.error("Error removing annotation:", error.response || error.message)
         })
     },
     viewAnnotation(item: any, ann: any) {
@@ -557,7 +563,7 @@ export default Vue.extend({
         }
       })
     }
-  },
+  }
 })
 </script>
 
