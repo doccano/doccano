@@ -17,8 +17,8 @@ WORKDIR /tmp
 COPY backend/pyproject.toml backend/poetry.lock /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN pip install -U --no-cache-dir pip==22.2.2 \
- && curl -sSL https://install.python-poetry.org | python - \
+RUN pip install -U --no-cache-dir pip==23.0.1  setuptools==65.5.0 \
+ && curl -sSL https://install.python-poetry.org | python - --version 1.5.1 \
  && export PATH="/root/.local/bin:$PATH" \
  && poetry export --without-hashes -o /requirements.txt \
  && echo "psycopg2-binary==2.8.6" >> /requirements.txt \
@@ -44,6 +44,8 @@ COPY --from=backend-builder /usr/local/bin/celery /usr/local/bin/celery
 COPY --from=backend-builder /usr/local/bin/gunicorn /usr/local/bin/gunicorn
 COPY --chown=doccano:doccano tools/ /opt/bin/
 COPY --chown=doccano:doccano backend/ /backend/
+RUN sed -i 's/\r$//' /opt/bin/prod-django.sh 
+RUN find /opt/bin -type f -exec sed -i 's/\r$//' {} +
 RUN mkdir -p /backend/staticfiles \
   && mkdir -p /backend/client/dist/static \
   && mkdir -p /backend/media \
@@ -55,4 +57,4 @@ ENV PYTHONUNBUFFERED 1
 USER doccano:doccano
 VOLUME /backend/staticfiles
 
-ENTRYPOINT [ "/opt/bin/prod-django.sh" ]
+ENTRYPOINT ["/bin/bash", "/opt/bin/prod-django.sh"]

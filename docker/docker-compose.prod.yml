@@ -1,8 +1,10 @@
-version: "3.7"
 services:
 
   backend:
     image: doccano/doccano:backend
+    build: 
+      context: ../
+      dockerfile: ./docker/Dockerfile.prod
     volumes:
       - static_volume:/backend/staticfiles
       - media:/backend/media
@@ -68,6 +70,9 @@ services:
 
   nginx:
     image: doccano/doccano:frontend
+    build: 
+      context: ../
+      dockerfile: ./docker/Dockerfile.nginx
     command: >
       /bin/sh -c
       "envsubst '
@@ -93,6 +98,8 @@ services:
     image: postgres:13.3-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - 5433:5432
     environment:
       POSTGRES_USER: "${POSTGRES_USER}"
       POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"

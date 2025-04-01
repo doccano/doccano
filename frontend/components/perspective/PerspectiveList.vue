@@ -26,23 +26,28 @@
         filled
       />
     </template>
-    <template #[`item.rolename`]="{ item }">
-      {{ $translateRole(item.rolename, $t('members.roles')) }}
+    <template #[`item.questionsCount`]="{ item }">
+      <span>{{ item.questions ? item.questions.length : 0 }}</span>
+    </template>
+    <template #[`item.membersCount`]="{ item }">
+      <span>{{ item.members ? item.members.length : 0 }}</span>
     </template>
     <template #[`item.actions`]="{ item }">
       <v-icon small @click="$emit('edit', item)">
         {{ mdiPencil }}
       </v-icon>
     </template>
-    
   </v-data-table>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { mdiMagnify, mdiPencil } from '@mdi/js'
+import type { PropType } from 'vue'
+import { PerspectiveDTO } from '~/services/application/perspective/perspectiveData' // Ajuste o caminho conforme necessário
 
 export default Vue.extend({
+  name: 'PerspectiveList',
   props: {
     isLoading: {
       type: Boolean,
@@ -50,32 +55,46 @@ export default Vue.extend({
       required: true
     },
     items: {
-      type: Array,
+      type: Array as PropType<PerspectiveDTO[]>,
       default: () => [],
       required: true
     },
     value: {
-      type: Array,
+      type: Array as PropType<PerspectiveDTO[]>,
       default: () => [],
       required: true
+    },
+    disableEdit: {
+      type: Boolean,
+      default: false
     }
   },
+
   data() {
     return {
       search: '',
-      mdiMagnify,
-      mdiPencil
+      mdiPencil,
+      mdiMagnify
     }
   },
 
   computed: {
     headers() {
-      return [
-        { text: this.$t('generic.name'), value: 'username' },
-        { text: this.$t('members.role'), value: 'rolename' },
-        { text: 'Actions', value: 'actions', sortable: false }
+      const headers = [
+        { text: this.$t('ID'), value: 'id', sortable: true },
+        { text: this.$t('Project'), value: 'project_id', sortable: true },
+        { text: this.$t('Questions'), value: 'questionsCount', sortable: false },
+        { text: this.$t('Members'), value: 'membersCount', sortable: false }
       ]
+      if (!this.disableEdit) {
+        headers.push({ text: this.$t('Actions'), value: 'actions', sortable: false })
+      }
+      return headers
     }
   }
 })
 </script>
+
+<style scoped>
+/* Adicione aqui os estilos necessários */
+</style>

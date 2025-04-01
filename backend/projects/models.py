@@ -49,6 +49,9 @@ class Project(PolymorphicModel):
             role=admin_role,
         )
 
+    def get_perspectives(self):
+        return Perspective.objects.filter(project=self)
+
     @property
     @abc.abstractmethod
     def is_text_project(self) -> bool:
@@ -196,9 +199,17 @@ class MemberManager(Manager):
         return self.filter(project=project_id, user=user, role__name=role_name).exists()
 
 
+class Perspective(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    project = models.OneToOneField(Project, on_delete=models.CASCADE)
+
+
 class Member(models.Model):
     user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="role_mappings")
     project = models.ForeignKey(to=Project, on_delete=models.CASCADE, related_name="role_mappings")
+    perspective = models.ForeignKey(
+        to=Perspective, on_delete=models.SET_NULL, null=True, blank=True, related_name="members"
+    )
     role = models.ForeignKey(to=Role, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -219,3 +230,37 @@ class Member(models.Model):
 
     class Meta:
         unique_together = ("user", "project")
+
+
+class QuestionType(models.Model):
+    id = models.IntegerField(primary_key=True)
+    question_type = models.TextField()
+
+
+class OptionsGroup(models.Model):
+    name = models.TextField()
+
+
+class OptionQuestion(models.Model):
+    option = models.TextField()
+    options_group = models.ForeignKey(
+        OptionsGroup, null=True, blank=True, on_delete=models.CASCADE, related_name="option_questions"
+    )
+
+
+class Question(models.Model):
+    perspective = models.ForeignKey(Perspective, on_delete=models.CASCADE, related_name="questions")
+    question = models.TextField()
+    type = models.ForeignKey(QuestionType, on_delete=models.CASCADE, related_name="type")
+    options_group = models.ForeignKey(
+        OptionsGroup, null=True, blank=True, on_delete=models.CASCADE, related_name="options_group"
+    )
+
+
+class Answer(models.Model):
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
+    member = models.ForeignKey(Member, on_delete=models.CASCADE)
+    answer_text = models.TextField()
+    answer_option = models.ForeignKey(
+        OptionQuestion, on_delete=models.CASCADE, null=True, blank=True, related_name="answer_option"
+    )

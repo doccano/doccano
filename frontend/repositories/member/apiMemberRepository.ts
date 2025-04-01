@@ -2,7 +2,14 @@ import { MemberItem } from '@/domain/models/member/member'
 import ApiService from '@/services/api.service'
 
 function toModel(item: { [key: string]: any }): MemberItem {
-  return new MemberItem(item.id, item.user, item.role, item.username, item.rolename)
+  return new MemberItem(
+    item.id,
+    item.user,
+    item.role,
+    item.username,
+    item.rolename,
+    item.perspectiveId ?? null
+  )
 }
 
 function toPayload(item: MemberItem): { [key: string]: any } {
@@ -11,7 +18,8 @@ function toPayload(item: MemberItem): { [key: string]: any } {
     user: item.user,
     role: item.role,
     username: item.username,
-    rolename: item.rolename
+    rolename: item.rolename,
+    ...(item.perspectiveId !== null ? { perspectiveId: item.perspectiveId } : {})
   }
 }
 

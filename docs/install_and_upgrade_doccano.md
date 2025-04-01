@@ -201,7 +201,7 @@ To install and start doccano at <http://localhost>, run the following command:
 
 ```bash
 cd docker
-cp .env.example .env
+cp .env .env
 # Edit with the editor of your choice, in this example nano is used (ctrl+x, then "y" to save).
 nano .env
 docker-compose -f docker-compose.prod.yml --env-file .env up
