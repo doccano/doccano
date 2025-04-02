@@ -74,7 +74,6 @@ INSTALLED_APPS = [
     "django_cleanup",
     "perspectives",
     "annotations",
-    "disagreements",
 ]
 
 
