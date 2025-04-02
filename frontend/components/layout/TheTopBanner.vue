@@ -3,7 +3,7 @@
     <v-parallax :src="require(`~/assets/vbanner.jpg`)" height="400" dark>
       <v-layout wrap align-center justify-center class="black--text">
         <v-flex text-right class="mr-5">
-          <img src="~/assets/icon.png" alt="doccano" height="200" draggable="false" />
+          <img src="~/assets/icon.png" alt="doccana" height="200" draggable="false" />
         </v-flex>
         <v-flex>
           <h1 class="mb-2 display-1 text-xs-center">
