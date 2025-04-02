@@ -195,30 +195,15 @@
       </v-card>
     </v-dialog>
 
-    <!-- Updated Delete Confirmation Dialog -->
-    <v-dialog v-model="dialogDelete" max-width="400px">
-      <v-card>
-        <v-card-title class="headline">
-          Confirm Delete
-        </v-card-title>
-        <v-alert v-if="dbError" type="error" dense>
-          {{ dbError }}
-        </v-alert>
-        <v-card-text>
-          {{ deleteDialogText }}
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <!-- O botão Delete ficará desabilitado se isDeleting for true ou se houver dbError -->
-          <v-btn color="red" text @click="removePerspective" :disabled="isDeleting || !!dbError">
-            Delete
-          </v-btn>
-          <v-btn color="grey" text @click="closeDeleteDialog">
-            Cancel
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!-- Usa o componente DeleteDialog -->
+    <delete-dialog
+      v-model="dialogDelete"
+      :dbError="dbError"
+      :deleteDialogText="deleteDialogText"
+      :isDeleting="isDeleting"
+      @confirm-delete="removePerspective"
+      @cancel-delete="closeDeleteDialog"
+    />
   </v-card>
 </template>
 
@@ -230,9 +215,14 @@ import { DataOptions } from 'vuetify/types'
 import { mapGetters } from 'vuex'
 import { mdiMagnify, mdiPencil, mdiTrashCan } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
+import DeleteDialog from '~/pages/projects/_id/perspectives/delete.vue'
+
 export default Vue.extend({
   name: 'PerspectivesTable',
   layout: 'project',
+  components: {
+    DeleteDialog
+  },
   data() {
     return {
       dialogDelete: false,
