@@ -17,7 +17,7 @@ class Annotation(models.Model):
     additional_info = JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"Annotation on dataset item {self.dataset_item_id} by {self.annotator}"
 
@@ -44,7 +44,7 @@ def create_or_update_disagreement(sender, instance, created, **kwargs):
 
     if similar_annotations.exists():
         Disagreement = apps.get_model('disagreements', 'Disagreement')
-        disagreement, _ = Disagreement.objects.get_or_create(
+        disagreement, created_obj = Disagreement.objects.get_or_create(
             dataset_item_id=instance.dataset_item_id,
             signature=signature,
             defaults={'disagreement_details': snippet}
