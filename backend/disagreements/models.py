@@ -1,13 +1,11 @@
 from django.db import models
 from django.conf import settings
 from django.db.models import JSONField
-from annotations.models import Annotation
 
 class Disagreement(models.Model):
-
     dataset_item_id = models.IntegerField()
   
-    annotations = models.ManyToManyField(Annotation)
+    annotations = models.ManyToManyField("annotations.Annotation")
     
     disagreement_details = JSONField(null=True, blank=True)
    
