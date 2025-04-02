@@ -1,3 +1,5 @@
+import hashlib
+import json
 from django.db import models
 from django.conf import settings
 from django.db.models import JSONField
@@ -30,6 +32,10 @@ def create_or_update_disagreement(sender, instance, created, **kwargs):
     text_val = instance.additional_info['text']
     snippet = text_val[:100]
 
+    labels_json = json.dumps(instance.extracted_labels, sort_keys=True) if instance.extracted_labels else ''
+    signature_source = f"{instance.dataset_item_id}:{text_val}:{labels_json}"
+    signature = hashlib.sha256(signature_source.encode('utf-8')).hexdigest()
+
     similar_annotations = Annotation.objects.filter(
         dataset_item_id=instance.dataset_item_id,
         extracted_labels=instance.extracted_labels,
@@ -40,7 +46,8 @@ def create_or_update_disagreement(sender, instance, created, **kwargs):
         Disagreement = apps.get_model('disagreements', 'Disagreement')
         disagreement, _ = Disagreement.objects.get_or_create(
             dataset_item_id=instance.dataset_item_id,
-            disagreement_details=snippet
+            signature=signature,
+            defaults={'disagreement_details': snippet}
         )
         disagreement.annotations.add(instance)
         for ann in similar_annotations:
