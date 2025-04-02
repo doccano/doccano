@@ -1,7 +1,17 @@
 <template>
   <v-card>
     <v-card-title>
-      <span class="ml-4 headline">Disagreements</span>
+      <v-btn color="primary" class="text-capitalize ms-2" @click="goToAdd">
+        {{ $t('generic.add') }}
+      </v-btn>
+      <v-btn
+        class="text-capitalize ms-2"
+        :disabled="!canDelete"
+        outlined
+        @click.stop="dialogDelete = true"
+      >
+        {{ $t('generic.delete') }}
+      </v-btn>
     </v-card-title>
     <v-card-text>
       <v-text-field
@@ -11,7 +21,7 @@
         single-line
         hide-details
         filled
-        style="margin-bottom: 1rem"
+        class="mb-4"
       />
       <v-progress-circular
         v-if="isLoading"
@@ -19,44 +29,47 @@
         indeterminate
         color="primary"
       />
-      <v-alert v-if="error" type="error" dense outlined>
+      <v-alert v-if="error" type="error" dense outlined class="mb-4">
         {{ error }}
       </v-alert>
       <div v-if="!isLoading && disagreements.length === 0">
         <p>No disagreements found.</p>
       </div>
-      <div v-if="!isLoading && disagreements.length > 0" class="d-flex justify-center">
-        <div style="max-width: 800px; width: 100%;">
-          <div
-            v-for="group in filteredDisagreements"
-            :key="group.signature"
-            class="mb-4 d-flex align-center"
-          >
-            <v-card outlined elevation="2" class="flex-grow-1">
-              <v-sheet
-                color="primary"
-                dark
-                class="py-3 px-4 rounded-t-lg d-flex flex-column"
+      <div v-if="!isLoading && disagreements.length > 0" class="horizontal-scroll-container">
+        <div
+          v-for="disagreement in filteredDisagreements"
+          :key="disagreement.signature"
+          class="disagreement-block"
+        >
+          <v-card outlined class="pa-3">
+            <v-sheet color="primary" dark class="pa-2 mb-2 rounded-t-lg">
+              <div class="text-h6 font-weight-medium">
+                {{ disagreement.snippet }}
+              </div>
+            </v-sheet>
+
+            <div class="d-flex flex-wrap mb-2">
+              <v-chip
+                v-for="(label, idx) in disagreement.labels"
+                :key="idx"
+                :color="label.backgroundColor"
+                :text-color="contrastColor(label.backgroundColor)"
+                small
+                class="ma-1"
               >
-                <div class="text-h6 font-weight-medium">
-                  {{ group.snippet }}
-                </div>
-                <div class="text-body-2">
-                  Labels: {{ group.labels.join(', ') }}
-                </div>
-              </v-sheet>
-              <v-card-text>
-                <div>
-                  Annotation Count: {{ group.count }}
-                </div>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn color="secondary" small @click="checkDisagreement(group)">
-                  Check Disagreement
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </div>
+                {{ label.text }}
+              </v-chip>
+            </div>
+
+            <div class="mb-2 text-center">
+              <strong>Annotations in conflict:</strong> {{ disagreement.count }}
+            </div>
+            <v-card-actions class="justify-center">
+              <v-btn color="secondary" small @click="checkDisagreement(disagreement)">
+                Check Disagreement
+              </v-btn>
+            </v-card-actions>
+          </v-card>
         </div>
       </div>
     </v-card-text>
@@ -66,7 +79,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import axios from 'axios'
-import { mdiMagnify } from '@mdi/js'
+import { mdiMagnify, mdiAlertCircle } from '@mdi/js'
 
 interface LabelType {
   id: number;
@@ -76,7 +89,7 @@ interface LabelType {
 
 interface ExtractedLabels {
   text: string;
-  spans: any; // Adjust type if needed
+  spans: any;
   labelTypes: LabelType[];
 }
 
@@ -97,7 +110,7 @@ export default Vue.extend({
       disagreements: [] as Array<{
         signature: string;
         snippet: string;
-        labels: string[];
+        labels: Array<{ text: string; backgroundColor: string }>;
         count: number;
         annotations: Annotation[];
       }>,
@@ -105,19 +118,23 @@ export default Vue.extend({
       isLoading: false,
       error: '',
       icons: {
-        mdiMagnify
+        mdiMagnify,
+        mdiAlertCircle
       }
     }
   },
 
   layout: 'project',
-  
+
   computed: {
     filteredDisagreements() {
       if (!this.search) return this.disagreements;
-      return this.disagreements.filter(group =>
-        group.snippet.toLowerCase().includes(this.search.toLowerCase())
+      return this.disagreements.filter(disagreement =>
+        disagreement.snippet.toLowerCase().includes(this.search.toLowerCase())
       );
+    },
+    canDelete(): boolean {
+      return false;
     }
   },
   mounted() {
@@ -128,45 +145,45 @@ export default Vue.extend({
       this.isLoading = true;
       const projectId = Number(this.$route.params.id);
       try {
-        // Fetch all annotations for the project (adjust query params as needed)
         const response = await axios.get(`/v1/annotations/`, { params: { project: projectId } });
         const annotations: Annotation[] = response.data.results || response.data;
 
-        // Group annotations by common extracted text and labelTypes.
-        // We'll compute a signature from the text and a sorted JSON string of labelTypes.
-        const groupsMap: { [key: string]: any } = {};
+        const disagreementsMap: { [key: string]: any } = {};
 
         annotations.forEach(annotation => {
           const extracted = annotation.extracted_labels;
           if (!extracted || !extracted.text || !extracted.labelTypes) return;
 
-          // Sort labelTypes by id to ensure consistent ordering.
           const sortedLabels = [...extracted.labelTypes].sort((a, b) => a.id - b.id);
           const signatureKey = JSON.stringify({
             text: extracted.text,
             labelTypes: sortedLabels.map(label => ({ id: label.id, text: label.text }))
           });
 
-          if (!groupsMap[signatureKey]) {
-            groupsMap[signatureKey] = {
+          if (!disagreementsMap[signatureKey]) {
+            disagreementsMap[signatureKey] = {
               signature: signatureKey,
               snippet: extracted.text.substring(0, 100),
-              labels: sortedLabels.map(label => label.text),
+              labels: sortedLabels.map(label => ({
+                text: label.text,
+                backgroundColor: label.background_color
+              })),
               annotations: []
             };
           }
-          groupsMap[signatureKey].annotations.push(annotation);
+          disagreementsMap[signatureKey].annotations.push(annotation);
         });
-        const groups: any[] = [];
-        Object.keys(groupsMap).forEach(signature => {
-          const group = groupsMap[signature];
-          if (group.annotations.length < 2) return;
+
+        const disagreements: any[] = [];
+        Object.keys(disagreementsMap).forEach(signature => {
+          const disagreement = disagreementsMap[signature];
+          if (disagreement.annotations.length < 2) return;
 
           let spansDiffer = false;
-          for (let i = 0; i < group.annotations.length; i++) {
-            for (let j = i + 1; j < group.annotations.length; j++) {
-              const spans1 = group.annotations[i].extracted_labels.spans;
-              const spans2 = group.annotations[j].extracted_labels.spans;
+          for (let i = 0; i < disagreement.annotations.length; i++) {
+            for (let j = i + 1; j < disagreement.annotations.length; j++) {
+              const spans1 = disagreement.annotations[i].extracted_labels.spans;
+              const spans2 = disagreement.annotations[j].extracted_labels.spans;
               if (JSON.stringify(spans1) !== JSON.stringify(spans2)) {
                 spansDiffer = true;
                 break;
@@ -175,16 +192,16 @@ export default Vue.extend({
             if (spansDiffer) break;
           }
           if (spansDiffer) {
-            groups.push({
-              signature: group.signature,
-              snippet: group.snippet,
-              labels: group.labels,
-              count: group.annotations.length,
-              annotations: group.annotations
+            disagreements.push({
+              signature: disagreement.signature,
+              snippet: disagreement.snippet,
+              labels: disagreement.labels,
+              count: disagreement.annotations.length,
+              annotations: disagreement.annotations
             });
           }
         });
-        this.disagreements = groups;
+        this.disagreements = disagreements;
       } catch (err: any) {
         console.error('Error fetching annotations:', err.response || err.message);
         this.error = 'Failed to load disagreements.';
@@ -192,17 +209,43 @@ export default Vue.extend({
         this.isLoading = false;
       }
     },
-    checkDisagreement(group: any) {
-      // Navigate to a detail page for this disagreement group.
-      // Ensure a route named "DisagreementDetail" is configured.
-      this.$router.push({ name: 'DisagreementDetail', params: { signature: group.signature } });
+    checkDisagreement(disagreement: any) {
+      this.$router.push({ name: 'DisagreementDetail', params: { signature: disagreement.signature } });
+    },
+    goToAdd() {
+      this.$router.push({ name: 'AddDisagreement' });
+    },
+
+    contrastColor(hexColor: string): string {
+      if (!hexColor) return '#000000';
+      const color = hexColor.replace('#', '');
+      let r, g, b;
+      if (color.length === 3) {
+        r = parseInt(color[0] + color[0], 16);
+        g = parseInt(color[1] + color[1], 16);
+        b = parseInt(color[2] + color[2], 16);
+      } else {
+        r = parseInt(color.substring(0, 2), 16);
+        g = parseInt(color.substring(2, 4), 16);
+        b = parseInt(color.substring(4, 6), 16);
+      }
+      const brightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return brightness < 0.5 ? '#FFFFFF' : '#000000';
     }
   }
 });
 </script>
 
 <style scoped>
-.selected-card {
-  border: 2px solid #1976D2;
+.horizontal-scroll-container {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  padding: 8px;
+}
+.disagreement-block {
+  flex: 0 0 auto;
+  width: 300px;
+  margin-right: 16px;
 }
 </style>
