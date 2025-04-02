@@ -1,12 +1,16 @@
 <template>
   <v-card>
     <v-card-title>
+      <v-btn color="primary" class="text-capitalize ms-2" @click="goToAdd">
+        {{ $t('generic.add') }}
+      </v-btn>
       <v-btn
         class="text-capitalize ms-2"
-        color="primary"
-        @click="goToAdd"
+        :disabled="!canEdit"
+        outlined
+        @click="editPerspective"
       >
-        {{ $t('generic.add') }}
+        Edit
       </v-btn>
       <v-btn
         class="text-capitalize ms-2"
@@ -35,18 +39,31 @@
         color="primary"
       />
 
-      <div v-if="!isLoading" class="d-flex justify-center">
+      <v-alert v-if="dbError" type="error" dense>
+        {{ dbError }}
+      </v-alert>
+
+      <!-- Display perspectives with checkboxes on their left -->
+      <div v-if="!isLoading && !dbError" class="d-flex justify-center">
         <div style="max-width: 800px; width: 100%;">
           <div
             v-for="item in items"
             :key="item.id"
-            class="mb-4"
+            class="mb-4 d-flex align-center"
           >
+            <v-checkbox
+              v-model="selected"
+              :value="item"
+              hide-details
+              class="mr-2"
+              :ripple="false"
+            />
             <v-card
-              class="mx-auto"
+              class="flex-grow-1"
               outlined
               elevation="2"
               rounded
+              :class="{ 'selected-card': isSelected(item) }"
             >
               <v-sheet
                 color="primary"
@@ -178,13 +195,29 @@
       </v-card>
     </v-dialog>
 
-    <!-- Delete Perspective Dialog -->
-    <v-dialog v-model="dialogDelete" max-width="600px">
-      <form-delete-perspective
-        :selected="selected"
-        @cancel="dialogDelete = false"
-        @remove="remove"
-      />
+    <!-- Updated Delete Confirmation Dialog -->
+    <v-dialog v-model="dialogDelete" max-width="400px">
+      <v-card>
+        <v-card-title class="headline">
+          Confirm Delete
+        </v-card-title>
+        <v-alert v-if="dbError" type="error" dense>
+          {{ dbError }}
+        </v-alert>
+        <v-card-text>
+          {{ deleteDialogText }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <!-- O botão Delete ficará desabilitado se isDeleting for true ou se houver dbError -->
+          <v-btn color="red" text @click="removePerspective" :disabled="isDeleting || !!dbError">
+            Delete
+          </v-btn>
+          <v-btn color="grey" text @click="closeDeleteDialog">
+            Cancel
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
   </v-card>
 </template>
@@ -197,7 +230,6 @@ import { DataOptions } from 'vuetify/types'
 import { mapGetters } from 'vuex'
 import { mdiMagnify, mdiPencil, mdiTrashCan } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
-
 export default Vue.extend({
   name: 'PerspectivesTable',
   layout: 'project',
@@ -209,7 +241,7 @@ export default Vue.extend({
       datasetItems: [] as any[],
       annotationFetchError: "",
       currentPerspective: null as any,
-      selected: [] as any[],
+      selected: [] as any[], // holds the selected perspective(s)
       search: '',
       options: {
         page: 1,
@@ -221,6 +253,8 @@ export default Vue.extend({
       total: 0,
       isLoading: false,
       categoryTypes: [] as any[],
+      dbError: '',
+      isDeleting: false, // Flag para controlar o estado da deleção
       icons: {
         mdiMagnify,
         mdiPencil,
@@ -240,8 +274,22 @@ export default Vue.extend({
     isProjectAdmin(): boolean {
       return (this.user.role || '').toLowerCase() === 'project_admin'
     },
+    // List perspectives that you can delete (used previously; may be retained if needed)
+    deletablePerspectives(): any[] {
+      return this.items.filter((item: any) => item.user.username === this.user.username)
+    },
+    // Enable Edit and Delete only when exactly one perspective is selected
+    canEdit(): boolean {
+      return this.selected.length === 1
+    },
+    // Allow deletion when one or more items are selected
     canDelete(): boolean {
       return this.selected.length > 0
+    },
+    deleteDialogText(): string {
+      return this.selected.length > 1
+        ? "Are you sure you want to delete these perspectives?"
+        : "Are you sure you want to delete this perspective?"
     }
   },
   watch: {
@@ -267,10 +315,54 @@ export default Vue.extend({
         this.localePath(`/projects/${projectId}/perspectives/add`)
       )
     },
-    remove() {
-      this.$emit('remove', this.selected)
+    editPerspective() {
+      if (!this.canEdit) {
+        console.error("Select exactly one perspective to edit!")
+        return
+      }
+      const projectId = this.$route.params.id
+      const perspective = this.selected[0]
+      // Using query parameter to pass the perspective id.
+      // Adjust if you prefer a dynamic segment route.
+      this.$router.push(
+        this.localePath(
+          `/projects/${projectId}/perspectives/edit?perspectiveId=${perspective.id}`
+        )
+      )
+    },
+    closeDeleteDialog() {
       this.dialogDelete = false
-      this.selected = []
+    },
+    removePerspective() {
+      if (!this.canDelete) {
+        console.error("No perspective selected for deletion.")
+        return
+      }
+      const projectId = this.$route.params.id
+      this.isDeleting = true
+      const deletePromises = this.selected.map((perspective: any) =>
+        axios.delete(`/v1/projects/${projectId}/perspectives/${perspective.id}/`)
+      )
+      Promise.all(deletePromises)
+        .then(() => {
+          this.fetchPerspectives()
+          this.dialogDelete = false
+          this.selected = []
+          this.$router.push({
+            path: '/message',
+            query: {
+              message: 'Perspectives deleted successfully!',
+              redirect: `/projects/${projectId}/perspectives`
+            }
+          })
+        })
+        .catch((error: any) => {
+          console.error("Error deleting perspectives:", error.response || error.message)
+          this.dbError = "Can't access our database!"
+        })
+        .finally(() => {
+          this.isDeleting = false
+        })
     },
     fetchPerspectives() {
       const projectId = this.$route.params.id
@@ -283,6 +375,7 @@ export default Vue.extend({
         query.q = this.search
       }
       this.isLoading = true
+      this.dbError = '' // Clear previous DB error
       axios.get(`/v1/projects/${projectId}/perspectives/`, { params: query })
         .then((_response: any) => {
           const data = _response.data
@@ -309,6 +402,9 @@ export default Vue.extend({
             'Error fetching perspectives:',
             error.response || error.message
           )
+          // Set error message for display in v-alert
+          this.dbError = "Can't access our database!"
+          this.items = []
         })
         .finally(() => {
           this.isLoading = false
@@ -445,7 +541,6 @@ export default Vue.extend({
             .then((_response: any) => {
               this.fetchPerspectives()
               this.closeLinkDialog()
-              // Navigate to the message page with a success message
               this.$router.push({
                 path: '/message',
                 query: {
@@ -531,7 +626,6 @@ export default Vue.extend({
       )
         .then((_response: any) => {
           this.fetchPerspectives()
-          // Navigate to the message page with a success message
           this.$router.push({
             path: '/message',
             query: {
@@ -562,10 +656,27 @@ export default Vue.extend({
           offset: offset.toString()
         }
       })
+    },
+    getPerspectiveLabel(perspective: any): string {
+      return perspective.subject || perspective.text || 'Perspective'
+    },
+    selectPerspective(item: any) {
+      // If item is already selected, deselect it; otherwise, select it
+      if (this.isSelected(item)) {
+        this.selected = []
+      } else {
+        this.selected = [item]
+      }
+    },
+    isSelected(item: any): boolean {
+      return this.selected.length === 1 && this.selected[0].id === item.id
     }
   }
 })
 </script>
 
 <style scoped>
+.selected-card {
+  border: 2px solid #1976D2;
+}
 </style>

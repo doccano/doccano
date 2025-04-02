@@ -1,5 +1,8 @@
 <template>
   <v-card>
+    <v-alert v-if="dbError" type="error" dense>
+      {{ dbError }}
+    </v-alert>
     <v-card-title>
       <div>
         <template v-if="editingSubject">
@@ -54,8 +57,9 @@
 </template>
 
 <script lang="ts">
-import { mdiPencil } from '@mdi/js'
 import Vue from 'vue'
+import { mdiPencil } from '@mdi/js'
+import { mapGetters } from 'vuex'
 
 export default Vue.extend({
   name: 'CreatePerspective',
@@ -74,39 +78,51 @@ export default Vue.extend({
         { text: this.$t('Technic'), value: 'technic' },
         { text: this.$t('Subjective'), value: 'subjective' }
       ],
-      isValid: false
+      isValid: false,
+      dbError: ""
+    }
+  },
+  computed: {
+    ...mapGetters('auth', ['getUsername']),
+    userRole(): string {
+      return this.$store.state.auth.role || 'annotator'
     }
   },
   methods: {
     async submitPerspective() {
-      const projectId = Number(this.$route.params.id);
-
-      const userId = this.$store.state.auth.id;
+      const projectId = Number(this.$route.params.id)
+      const userId = this.$store.state.auth.id
       if (!userId) {
-        console.error('User ID is missing. Ensure the user is logged in.');
-        return;
+        console.error('User ID is missing. Ensure the user is logged in.')
+        return
       }
-
       if (!this.form.text || !this.form.category || !this.form.subject) {
-        console.error('Form is invalid. Ensure all required fields are filled.');
-        return;
+        console.error('Form is invalid. Ensure all required fields are filled.')
+        return
       }
-
       const payload = {
         subject: this.form.subject,
         text: this.form.text,
         category: this.form.category,
         user: userId,
-        project: projectId
-      };
-
-      console.log('Submitting perspective payload:', payload);
-
+        project: projectId,
+        roleOverride: true,
+        role: this.userRole
+      }
+      
+      console.log('Submitting perspective payload:', payload)
       try {
-        await this.$repositories.perspective.create(projectId, payload);
-        this.$router.push(this.localePath(`/projects/${projectId}/perspectives`));
+        await this.$repositories.perspective.create(projectId, payload)
+        this.$router.push({
+          path: '/message',
+          query: {
+            message: 'Perspective added successfully!',
+            redirect: `/projects/${projectId}/perspectives`
+          }
+        })
       } catch (error: any) {
-        console.error('Error submitting perspective:', error);
+        console.error('Error submitting perspective:', error.response || error.message)
+        this.dbError = "Can't access our database!"
       }
     },
     goBack() {
