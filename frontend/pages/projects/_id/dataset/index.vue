@@ -101,6 +101,7 @@ import ImageList from '~/components/example/ImageList.vue'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 import { ExampleDTO, ExampleListDTO } from '~/services/application/example/exampleData'
 import { MemberItem } from '~/domain/models/member/member'
+import { APIAnnotationRepository } from '@/repositories/annotation/apiAnnotationRepository'
 
 export default Vue.extend({
   components: {
@@ -133,7 +134,14 @@ export default Vue.extend({
       members: [] as MemberItem[],
       user: {} as MemberItem,
       isLoading: false,
-      isProjectAdmin: false
+      isProjectAdmin: false,
+      datasetItem: {
+        id: 0,
+        text: '',
+        category: '',
+        meta: {} as any,
+        spans: [] as Array<{ startOffset: number; endOffset: number; label: string }>
+      }
     }
   },
 
@@ -149,6 +157,10 @@ export default Vue.extend({
 
   computed: {
     ...mapGetters('projects', ['project']),
+
+    projectType(): string {
+      return (this.project && this.project.projectType) || "DocumentClassification"
+    },
 
     canDelete(): boolean {
       return this.selected.length > 0
@@ -229,6 +241,36 @@ export default Vue.extend({
       this.dialogReset = false
       await this.$repositories.assignment.reset(this.projectId)
       this.item = await this.$services.example.list(this.projectId, this.$route.query)
+    },
+
+    async annotate() {
+      const extractedLabels: { text: string; spans?: any[]; label?: string } = {
+        text: this.datasetItem.text
+      }
+
+      if (this.projectType === "SequenceLabeling") {
+        extractedLabels.spans = this.datasetItem.spans || []
+      } else if (this.projectType === "DocumentClassification") {
+        extractedLabels.label = (this.datasetItem.meta as any)?.category || ""
+      }
+
+      const annotationData = {
+        dataset_item_id: this.datasetItem.id,
+        extracted_labels: extractedLabels,
+        additional_info: {}
+      }
+
+      const repo = new APIAnnotationRepository()
+      try {
+        const existing = await repo.getByDatasetItem(this.datasetItem.id)
+        if (existing) {
+          await repo.update(existing.id, annotationData, { method: 'put' })
+        } else {
+          await repo.create(annotationData)
+        }
+      } catch (err) {
+        console.error('Error annotating dataset item:', err.response || err.message)
+      }
     }
   }
 })

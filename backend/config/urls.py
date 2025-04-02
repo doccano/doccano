@@ -68,6 +68,7 @@ urlpatterns += [
     path("v1/projects/<int:project_id>/", include("labels.urls")),
     path("v1/projects/<int:project_id>/", include("label_types.urls")),
     path("v1/", include("perspectives.urls")),
+    path('v1/annotations/', include('annotations.urls')),
     path("v1/projects/<int:project_id>/perspectives/", include("perspectives.urls")),
     path("swagger/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
     path("v1/projects/<int:project_id>/category-types/", CategoryTypeList.as_view(), name="project_category_types"),

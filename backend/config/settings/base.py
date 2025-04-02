@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "health_check.contrib.celery",
     "django_cleanup",
     "perspectives",
+    "annotations",
 ]
 
 
@@ -248,6 +249,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://10.20.85.44:3000",
     "http://10.20.81.58:3000",
     "http://172.24.64.1:3000",
+    "http://10.20.80.25:3000",
 ]
 CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 

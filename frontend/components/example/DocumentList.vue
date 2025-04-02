@@ -84,6 +84,7 @@ import Vue from 'vue'
 import { DataOptions } from 'vuetify/types'
 import { ExampleDTO } from '~/services/application/example/exampleData'
 import { MemberItem } from '~/domain/models/member/member'
+import { APIAnnotationRepository } from '@/repositories/annotation/apiAnnotationRepository'
 
 export default Vue.extend({
   props: {
@@ -167,9 +168,30 @@ export default Vue.extend({
   },
 
   methods: {
-    toLabeling(item: ExampleDTO) {
+    async toLabeling(item: ExampleDTO) {
+      const annotationData = {
+        dataset_item_id: item.id,
+        extracted_labels: {
+          label: (item.meta as any)?.category || '',
+          text_snippet: item.text ? item.text.substring(0, 50) : ''
+        },
+        additional_info: {}
+      }
+      const repo = new APIAnnotationRepository()
+      
+      try {
+        const existing = await repo.getByDatasetItem(item.id)
+        if (existing) {
+          await repo.update(existing.id, annotationData)
+        } else {
+          await repo.create(annotationData)
+        }
+      } catch (err) {
+        console.error('Error creating/updating annotation:', err.response || err.message)
+      }
+      // Proceed with your usual labeling navigation
       const index = this.items.indexOf(item)
-      const offset = (this.options.page - 1) * this.options.itemsPerPage
+      const offset = ((this.options?.page || 1) - 1) * (this.options?.itemsPerPage || 10)
       const page = (offset + index + 1).toString()
       this.$emit('click:labeling', { page, q: this.search })
     },
@@ -197,7 +219,6 @@ export default Vue.extend({
       }
     },
 
-    // Método para truncar textos
     truncate(value: string, length: number): string {
       if (!value) return ''
       if (value.length <= length) return value
