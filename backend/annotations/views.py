@@ -29,25 +29,65 @@ class AnnotationView(viewsets.ModelViewSet):
                 spans = list(example.spans.values("start_offset", "end_offset", "label"))
             else:
                 spans = []
-
             try:
                 span_types_qs = project.span_types.all()
             except AttributeError:
                 span_types_qs = project.spantype_set.all()
             label_types = list(span_types_qs.values("id", "text", "background_color"))
-
             aggregated = {
                 "text": example.text,
                 "spans": spans,
                 "labelTypes": label_types
             }
         elif project_type == "DocumentClassification":
+            try:
+                category_types_qs = project.category_types.all()
+                category_types = list(category_types_qs.values("id", "text", "background_color"))
+            except AttributeError:
+                category_types = []
+                
+            meta_data = {}
+            if hasattr(example, "meta") and example.meta:
+                if isinstance(example.meta, dict):
+                    meta_data = example.meta
+                else:
+                    try:
+                        import json
+                        meta_data = json.loads(example.meta)
+                    except Exception as e:
+                        print("Error parsing meta:", e)
+                        meta_data = {}
+
+            assigned_category = None
+            assigned_category_raw = meta_data.get("category", None)
+            if assigned_category_raw and isinstance(assigned_category_raw, str):
+                for ct in category_types:
+                    if ct["text"] == assigned_category_raw:
+                        assigned_category = ct
+                        break
+
+            if not assigned_category and hasattr(example, "categories") and example.categories.exists():
+                assigned_category = list(example.categories.values("id", "text", "background_color"))[0]
+
+            if not assigned_category:
+                print(f"WARNING: No assigned category found for example {example.id}")
+                for ct in category_types:
+                    if ct["text"] == "Plush":
+                        assigned_category = ct
+                        print(f"Defaulting to Plush for example {example.id}")
+                        break
+                if not assigned_category:
+                    assigned_category = {}
+
             aggregated = {
                 "text": example.text,
-                "label": example.meta.get("category") if example.meta else ""
+                "categories": category_types,
+                "assigned_category": assigned_category
             }
         else:
-            aggregated = {"text": example.text}
+            aggregated = {
+                "text": example.text
+            }
 
         return aggregated
 
