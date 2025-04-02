@@ -1,13 +1,17 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import Annotation
 from .serializers import AnnotationSerializer
 from examples.models import Example
+from typing import Optional
 
 class AnnotationView(viewsets.ModelViewSet):
     queryset = Annotation.objects.all()
     serializer_class = AnnotationSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]  # enable filtering
+    filterset_fields = ['dataset_item_id']   # allow filtering by dataset_item_id
 
     def aggregate_extracted_labels(self, dataset_item_id, request):
         example = Example.objects.get(id=dataset_item_id)
@@ -103,3 +107,9 @@ class AnnotationView(viewsets.ModelViewSet):
         dataset_item_id = serializer.validated_data.get("dataset_item_id")
         new_labels = self.aggregate_extracted_labels(dataset_item_id, self.request)
         serializer.save(extracted_labels=new_labels)
+
+async def getByDatasetItem(dataset_item_id: int) -> Optional[Annotation]:
+    url = "/annotations/"
+    response = await ApiService.get(url, {"params": {"dataset_item_id": dataset_item_id}})
+    annotations = response.data.get("results", response.data)
+    return annotations[0] if annotations else None

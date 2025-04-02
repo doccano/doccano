@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     "health_check",
     "health_check.cache",
     "health_check.storage",
-    "health_check.contrib.migratiaons",
+    "health_check.contrib.migrations",
     "health_check.contrib.celery",
     "django_cleanup",
     "perspectives",
