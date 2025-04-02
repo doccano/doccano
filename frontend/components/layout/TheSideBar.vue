@@ -38,7 +38,8 @@ import {
   mdiEyeOutline,
   mdiHome,
   mdiLabel,
-  mdiPlayCircleOutline
+  mdiPlayCircleOutline,
+  mdiThumbDownOutline,
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -59,7 +60,8 @@ export default {
   data() {
     return {
       selected: 0,
-      mdiPlayCircleOutline
+      mdiPlayCircleOutline,
+      mdiThumbDownOutline,
     }
   },
 
@@ -107,9 +109,15 @@ export default {
           isVisible: this.isProjectAdmin
         },
         {
-          icon: mdiEyeOutline,
+          icon: mdiEyeOutline, 
           text: 'Perspectives',
           link: 'perspectives',
+          isVisible: true
+        },
+        {
+          icon: this.mdiThumbDownOutline,
+          text: 'Disagreements',
+          link: 'disagreements',
           isVisible: true
         },
         {
