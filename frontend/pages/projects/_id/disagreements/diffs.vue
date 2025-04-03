@@ -112,6 +112,9 @@ export default Vue.extend({
   },
   layout: 'project',
   computed: {
+    navigationDisabled(): boolean {
+      return this.annotations.length === 2;
+    },
     leftAnnotation(): AnnotationTransformed | null {
       return this.annotations[this.leftIndex] || null;
     },
