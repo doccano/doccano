@@ -1,9 +1,6 @@
 <template>
   <v-card>
     <v-card-title>
-      <v-btn color="primary" class="text-capitalize ms-2" @click="goToAdd">
-        {{ $t('generic.add') }}
-      </v-btn>
       <v-btn
         class="text-capitalize ms-2"
         outlined
@@ -153,14 +150,32 @@ export default Vue.extend({
 
         annotations.forEach(annotation => {
           const extracted = annotation.extracted_labels;
-          if (!extracted || !extracted.text || !extracted.labelTypes) return;
+          if (!extracted || !extracted.text || !extracted.labelTypes || !extracted.spans) return;
 
-          const sortedLabels = [...extracted.labelTypes].sort((a, b) => a.id - b.id);
+          // Get the label IDs actually referenced in spans.
+          const usedLabelIds = extracted.spans.map((span: any) => span.label);
+          
+          // Filter the available labelTypes to only those used.
+          const usedLabels = extracted.labelTypes.filter(label => usedLabelIds.includes(label.id));
+          
+          // Deduplicate just in case (should not be necessary if spans are correct).
+          const dedupedUsedLabels = Array.from(new Set(
+            usedLabels.map(label => JSON.stringify({
+              id: label.id,
+              text: label.text,
+              background_color: label.background_color
+            }))
+          )).map(str => JSON.parse(str));
+          
+          // Sort the labels to ensure a consistent order.
+          const sortedLabels = dedupedUsedLabels.sort((a, b) => a.id - b.id);
+          
+          // Build a signature key based solely on the text and these used labels.
           const signatureKey = JSON.stringify({
             text: extracted.text,
             labelTypes: sortedLabels.map(label => ({ id: label.id, text: label.text }))
           });
-
+          
           if (!disagreementsMap[signatureKey]) {
             disagreementsMap[signatureKey] = {
               signature: signatureKey,

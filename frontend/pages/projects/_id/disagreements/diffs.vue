@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title class="black--text text-center">
-      <span class="headline">Diff Checker</span>
+      <span class="headline">Differences</span>
       <div class="label-legend">
         <div v-for="label in allLabels" :key="label.id" class="legend-item">
           <span class="legend-ball" :style="{ backgroundColor: label.color }"></span>
@@ -32,9 +32,10 @@
             v-html="formattedLeftText"></div>
           </v-card-text>
           <v-card-actions class="justify-center">
-            <v-btn small @click="prevLeft" :disabled="leftIndex === 0">Prev</v-btn>
-            <v-btn small @click="nextLeft" :disabled="leftIndex
-            === annotations.length - 1">Next</v-btn>
+            <v-btn small @click="prevLeft" :disabled="navigationDisabled ||
+            leftIndex === 0">Prev</v-btn>
+            <v-btn small @click="nextLeft" :disabled="navigationDisabled ||
+            leftIndex === annotations.length - 1">Next</v-btn>
           </v-card-actions>
         </v-card>
   
@@ -53,9 +54,10 @@
             v-html="formattedRightText"></div>
           </v-card-text>
           <v-card-actions class="justify-center">
-            <v-btn small @click="prevRight" :disabled="rightIndex === 0">Prev</v-btn>
-            <v-btn small @click="nextRight" :disabled="rightIndex
-            === annotations.length - 1">Next</v-btn>
+            <v-btn small @click="prevRight" :disabled="navigationDisabled ||
+            rightIndex === 0">Prev</v-btn>
+            <v-btn small @click="nextRight" :disabled="navigationDisabled ||
+            rightIndex === annotations.length - 1">Next</v-btn>
           </v-card-actions>
         </v-card>
       </div>
@@ -152,30 +154,68 @@ export default Vue.extend({
       try {
         const response = await axios.get(`/v1/annotations/`, { params: { project: this.$route.params.id } });
         const data: AnnotationBackend[] = response.data.results || response.data;
-        this.annotations = data.map(ann => {
-          const labels = ann.extracted_labels.labelTypes.map(label => ({
-            id: label.id,
-            text: label.text,
-            color: label.background_color,
-            textColor: label.text_color || '#ffffff',
-            suffixKey: label.suffixKey ? label.suffixKey : label.text
-          }));
-          return {
-            id: ann.id,
-            text: ann.extracted_labels.text,
-            entities: ann.extracted_labels.spans.map((span, i) => ({
-              id: i,
-              start: span.start_offset,
-              end: span.end_offset,
-              label: labels.find(l => l.id === span.label) || { id: span.label, text: '', color: '#000000', textColor: '#ffffff', suffixKey: '' }
-            })),
-            entityLabels: labels
+        const groups: { [signature: string]: AnnotationBackend[] } = {};
+
+        data.forEach(annotation => {
+          const extracted = annotation.extracted_labels;
+          if (!extracted || !extracted.text || !extracted.labelTypes || !extracted.spans) return;
+
+          // Get used label IDs from spans.
+          const usedLabelIds = new Set(extracted.spans.map((span: any) => span.label));
+          // Filter labelTypes to only those used.
+          const chosenLabels = extracted.labelTypes.filter(label => usedLabelIds.has(label.id));
+          // Sort (and optionally deduplicate) for a consistent order.
+          const sortedLabels = [...chosenLabels].sort((a, b) => a.id - b.id);
+
+          // Build a signature key based only on text and used labels.
+          const signatureKey = JSON.stringify({
+            text: extracted.text,
+            labelTypes: sortedLabels.map(label => ({ id: label.id, text: label.text }))
+          });
+          
+          if (!groups[signatureKey]) {
+            groups[signatureKey] = [];
           }
+          groups[signatureKey].push(annotation);
         });
-        if (this.annotations.length < 2) {
-          this.error = 'Not enough annotations to compare.';
-        } else if (this.leftIndex === this.rightIndex) {
+
+        const leftQuery = this.$route.query.left;
+        const rightQuery = this.$route.query.right;
+        const selectedGroup = Object.values(groups).find(group =>
+          group.some(ann => String(ann.id) === leftQuery) &&
+          group.some(ann => String(ann.id) === rightQuery)
+        );
+
+        if (selectedGroup && selectedGroup.length >= 2) {
+          this.annotations = selectedGroup.map(ann => {
+            const extracted = ann.extracted_labels;
+            const usedLabelIds = new Set(extracted.spans.map((span: any) => span.label));
+            const chosenLabels = extracted.labelTypes.filter(label => usedLabelIds.has(label.id));
+            const sortedLabels = [...chosenLabels].sort((a, b) => a.id - b.id);
+            const labels = sortedLabels.map(label => ({
+              id: label.id,
+              text: label.text,
+              color: label.background_color,
+              textColor: label.text_color || '#ffffff',
+              suffixKey: label.suffixKey ? label.suffixKey : label.text
+            }));
+            return {
+              id: ann.id,
+              text: extracted.text,
+              entities: extracted.spans.map((span, i) => ({
+                id: i,
+                start: span.start_offset,
+                end: span.end_offset,
+                label: labels.find(l => l.id === span.label) || { id: span.label, text: '', color: '#000000', textColor: '#ffffff', suffixKey: '' }
+              })),
+              entityLabels: labels
+            };
+          });
+          this.leftIndex = 0;
           this.rightIndex = 1;
+        } else {
+          this.error = 'No matching disagreement group found.';
+          this.annotations = [];
         }
       } catch (err: any) {
         console.error(err);

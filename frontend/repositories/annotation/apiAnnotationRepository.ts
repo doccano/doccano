@@ -108,4 +108,9 @@ export class APIAnnotationRepository {
 
     return result
   }
+
+  async deleteAllAnnotations(projectId: number): Promise<void> {
+    const annotations = await this.list({ project: projectId });
+    await Promise.all(annotations.map(annotation => this.delete(annotation.id)));
+  }
 }
