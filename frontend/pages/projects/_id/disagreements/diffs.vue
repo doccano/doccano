@@ -22,7 +22,7 @@
         color="primary"
         class="ma-3"
       />
-      <v-alert v-if="error" type="error" dense outlined class="mb-4">
+      <v-alert v-if="error" type="error" dense class="mb-4">
         {{ error }}
       </v-alert>
       <div v-if="!isLoading && annotations.length < 2">
@@ -222,7 +222,7 @@ export default Vue.extend({
         }
       } catch (err: any) {
         console.error(err);
-        this.error = 'Failed to load annotations for diff.';
+        this.error = "Error: Can't access our database!";
       } finally {
         this.isLoading = false;
       }

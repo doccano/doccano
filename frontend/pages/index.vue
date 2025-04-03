@@ -10,6 +10,16 @@
 
         <p class="indexViewSubtitle">Your go-to platform for document annotation and analysis..</p>
 
+        <v-text-field
+          v-model="search"
+          :prepend-inner-icon="icons.mdiMagnify"
+          label="Search"
+          single-line
+          hide-details
+          filled
+          class="mb-4"
+        />
+
         <v-btn color="primary" large class="indexViewButton" @click="handleGetStartedClick">
           <strong>Start</strong>
         </v-btn>
@@ -24,6 +34,12 @@
 export default {
   name: 'Index',
   layout: 'custom-empty',
+  data() {
+    return {
+      search: '',
+      disagreements: [] // each disagreement should have snippet, labels (array), and count.
+    }
+  },
   methods: {
     handleGetStartedClick() {
       this.$router.push('/home')
@@ -32,6 +48,44 @@ export default {
       if (!extracted.labelTypes || extracted.labelTypes.length === 0) {
         // nothing happens
       }
+    },
+    addDisagreement(group) {
+      this.disagreements.push({
+        signature: group.signature,
+        snippet: group.snippet,
+        labels: group.labels,
+        count: group.annotations.length,
+        annotations: group.annotations,
+        // plus the type if needed
+      });
+    }
+  },
+  computed: {
+    filteredDisagreements() {
+      // Make sure disagreements and search are defined
+      if (!this.search || !this.disagreements) return this.disagreements;
+      const query = this.search.toLowerCase().trim();
+      const queryNumber = Number(query);
+      
+      return this.disagreements.filter(disagreement => {
+        // Check snippet text match
+        const snippetMatch =
+          disagreement.snippet &&
+          disagreement.snippet.toLowerCase().includes(query);
+        
+        // Check each label's text match
+        const labelMatch =
+          disagreement.labels &&
+          disagreement.labels.some(label =>
+            label.text && label.text.toLowerCase().includes(query)
+          );
+        
+        // Check if the disagreement count matches a numeric query
+        const countMatch =
+          !isNaN(queryNumber) && disagreement.count === queryNumber;
+        
+        return snippetMatch || labelMatch || countMatch;
+      });
     }
   }
 }

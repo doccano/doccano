@@ -25,7 +25,7 @@
         indeterminate
         color="primary"
       />
-      <v-alert v-if="error" type="error" dense outlined class="mb-4">
+      <v-alert v-if="error" type="error" dense class="mb-4">
         {{ error }}
       </v-alert>
       <div v-if="!isLoading && disagreements.length === 0">
@@ -215,7 +215,7 @@ export default Vue.extend({
         this.disagreements = disagreements;
       } catch (err: any) {
         console.error('Error fetching annotations:', err.response || err.message);
-        this.error = 'Failed to load disagreements.';
+        this.error = "Error: Can't access our database!";
       } finally {
         this.isLoading = false;
       }
