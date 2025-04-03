@@ -152,13 +152,10 @@ export default Vue.extend({
           const extracted = annotation.extracted_labels;
           if (!extracted || !extracted.text || !extracted.labelTypes || !extracted.spans) return;
 
-          // Get the label IDs actually referenced in spans.
           const usedLabelIds = extracted.spans.map((span: any) => span.label);
           
-          // Filter the available labelTypes to only those used.
           const usedLabels = extracted.labelTypes.filter(label => usedLabelIds.includes(label.id));
           
-          // Deduplicate just in case (should not be necessary if spans are correct).
           const dedupedUsedLabels = Array.from(new Set(
             usedLabels.map(label => JSON.stringify({
               id: label.id,
@@ -167,10 +164,8 @@ export default Vue.extend({
             }))
           )).map(str => JSON.parse(str));
           
-          // Sort the labels to ensure a consistent order.
           const sortedLabels = dedupedUsedLabels.sort((a, b) => a.id - b.id);
           
-          // Build a signature key based solely on the text and these used labels.
           const signatureKey = JSON.stringify({
             text: extracted.text,
             labelTypes: sortedLabels.map(label => ({ id: label.id, text: label.text }))

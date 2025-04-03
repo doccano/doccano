@@ -2,12 +2,18 @@
   <v-card>
     <v-card-title class="black--text text-center">
       <span class="headline">Differences</span>
-      <div class="label-legend">
-        <div v-for="label in allLabels" :key="label.id" class="legend-item">
-          <span class="legend-ball" :style="{ backgroundColor: label.color }"></span>
-          <span class="legend-text">{{ label.text }}</span>
-        </div>
-      </div>
+      <v-chip-group column>
+        <v-chip
+          v-for="(label, idx) in allLabels"
+          :key="idx"
+          :color="label.color"
+          :text-color="contrastColor(label.color)"
+          small
+          class="ma-1 non-clickable"
+        >
+          {{ label.text }}
+        </v-chip>
+      </v-chip-group>
     </v-card-title>
     <v-card-text>
       <v-progress-circular
@@ -288,6 +294,13 @@ export default Vue.extend({
         path: `/projects/${projectId}/disagreements/diffs`,
         query: { left: leftId, right: rightId }
       });
+    },
+    contrastColor(color: string): string {
+      const r = parseInt(color.slice(1, 3), 16);
+      const g = parseInt(color.slice(3, 5), 16);
+      const b = parseInt(color.slice(5, 7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 125 ? 'black' : 'white';
     }
   }
 });
@@ -344,5 +357,8 @@ export default Vue.extend({
 }
 .legend-text {
   font-size: 0.8rem;
+}
+.non-clickable {
+  pointer-events: none;
 }
 </style>
