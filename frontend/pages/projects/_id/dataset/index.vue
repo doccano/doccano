@@ -87,6 +87,7 @@
 
 <script lang="ts">
 import _ from 'lodash'
+import axios from 'axios'
 import { mapGetters } from 'vuex'
 import Vue from 'vue'
 import { NuxtAppOptions } from '@nuxt/types'
@@ -200,10 +201,16 @@ export default Vue.extend({
     },
 
     async removeAll() {
-      await this.$services.example.bulkDelete(this.projectId, [])
-      this.$fetch()
-      this.dialogDeleteAll = false
-      this.selected = []
+      try {
+        await this.$services.example.bulkDelete(this.projectId, []);
+        await axios.delete(`/v1/annotations/`, { params: { project: this.projectId } });
+        this.$fetch();
+        this.dialogDeleteAll = false;
+        this.selected = [];
+      } catch (err: any) {
+        console.error('Error clearing items and annotations:', err.response || err.message);
+        this.error = 'Failed to delete all items and annotations.';
+      }
     },
 
     updateQuery(query: object) {
