@@ -70,6 +70,7 @@ flower = "^1.2.0"
 django-allauth = "^0.52.0"
 pydantic = "^2.0.3"
 psycopg2 = "^2.9.10"
+redis = "^5.2.1"
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"
@@ -152,7 +153,7 @@ known_local_folder = [
 [tool.taskipy.tasks]
 isort = "isort . -c --skip migrations"
 flake8 = "pflake8 --filename \"*.py\" --extend-exclude \"*/migrations\""
-black = "black --check ."
+black = "black ."
 mypy = "mypy --namespace-packages --explicit-package-bases ."
 wait_for_db = "python manage.py wait_for_db"
 test = "python manage.py test --pattern=\"test*.py\""

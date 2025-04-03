@@ -25,4 +25,10 @@ export class APIUserRepository {
     const response = await this.request.post(url, userData)
     return toModel(response.data)
   }
+
+  async get(userId: number): Promise<UserItem> {
+    const url = `/users/${userId}`
+    const response = await this.request.get(url)
+    return toModel(response.data)
+  }
 }

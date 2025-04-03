@@ -23,11 +23,16 @@ import { APITextLabelRepository } from '@/repositories/tasks/apiTextLabelReposit
 import { APICatalogRepository } from '@/repositories/upload/apiCatalogRepository'
 import { APIParseRepository } from '@/repositories/upload/apiParseRepository'
 import { APIUserRepository } from '@/repositories/user/apiUserRepository'
+import { APIPerspectiveRepository } from '@/repositories/perspective/apiPerspectiveRepository'
 import { APISegmentationRepository } from '~/repositories/tasks/apiSegmentationRepository'
+
 export interface Repositories {
   // User
   auth: APIAuthRepository
   user: APIUserRepository
+
+  // Perspective
+  perspective: APIPerspectiveRepository
 
   // Project
   project: APIProjectRepository
@@ -79,6 +84,9 @@ const repositories: Repositories = {
   // User
   auth: new APIAuthRepository(),
   user: new APIUserRepository(),
+
+  // Perspective
+  perspective: new APIPerspectiveRepository(),
 
   // Project
   project: new APIProjectRepository(),

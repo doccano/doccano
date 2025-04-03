@@ -1,12 +1,9 @@
 <template>
   <v-app-bar app clipped-left>
     <slot name="leftDrawerIcon" />
-    <nuxt-link v-if="!isAuthenticated" to="/" style="line-height: 0">
-      <img src="~/assets/icon.png" height="48" />
+    <nuxt-link to="/home" style="line-height: 0">
+      <img src="/doccana-logo.png" height="48" draggable="false" />
     </nuxt-link>
-    <v-toolbar-title v-if="!isAuthenticated" class="ml-2 d-none d-sm-flex">
-      doccana
-    </v-toolbar-title>
     <v-btn
       v-if="isAuthenticated && isIndividualProject"
       text
@@ -49,19 +46,21 @@
     <v-btn v-if="!isAuthenticated" outlined @click="$router.push(localePath('/auth'))">
       {{ $t('user.login') }}
     </v-btn>
-    <v-btn 
-      v-if="!isAuthenticated" outlined 
-      style="margin-left: 0.5vw;" 
+    <v-btn
+      v-if="!isAuthenticated"
+      outlined
+      style="margin-left: 0.5vw"
       @click="$router.push(localePath('/register'))"
     >
       Register
     </v-btn>
-    <v-btn 
-      v-if="isAuthenticated" outlined 
-      style="margin-left: 0.5vw;" 
-      @click="$router.push(localePath('/edit-user'))"
+    <v-btn
+      v-if="isAuthenticated"
+      outlined
+      style="margin-left: 0.5vw"
+      @click="$router.push(localePath('/list-user'))"
     >
-      Edit User
+      All Users
     </v-btn>
     <v-menu v-if="isAuthenticated" offset-y z-index="200">
       <template #activator="{ on }">
@@ -145,8 +144,16 @@ export default {
     ...mapActions('auth', ['logout']),
     ...mapActions('config', ['toggleRTL']),
     signout() {
-      this.logout()
-      this.$router.push(this.localePath('/'))
+      this.$router.push({
+        path: '/message',
+        query: {
+          message: `Bye ${this.getUsername}, come back soon! 🥹`,
+          redirect: '/home'
+        }
+      })
+      setTimeout(() => {
+        this.$store.dispatch('auth/logout')
+      }, 500)
     }
   }
 }

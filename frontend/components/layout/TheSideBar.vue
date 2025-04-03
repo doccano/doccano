@@ -35,9 +35,11 @@ import {
   mdiCog,
   mdiCommentAccountOutline,
   mdiDatabase,
+  mdiEyeOutline,
   mdiHome,
   mdiLabel,
-  mdiPlayCircleOutline
+  mdiPlayCircleOutline,
+  mdiThumbDownOutline,
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -58,7 +60,8 @@ export default {
   data() {
     return {
       selected: 0,
-      mdiPlayCircleOutline
+      mdiPlayCircleOutline,
+      mdiThumbDownOutline,
     }
   },
 
@@ -106,6 +109,18 @@ export default {
           isVisible: this.isProjectAdmin
         },
         {
+          icon: mdiEyeOutline, 
+          text: 'Perspectives',
+          link: 'perspectives',
+          isVisible: true
+        },
+        {
+          icon: this.mdiThumbDownOutline,
+          text: 'Disagreements',
+          link: 'disagreements',
+          isVisible: true
+        },
+        {
           icon: mdiBookOpenOutline,
           text: this.$t('guideline.guideline'),
           link: 'guideline',
@@ -122,7 +137,7 @@ export default {
           text: this.$t('settings.title'),
           link: 'settings',
           isVisible: this.isProjectAdmin
-        }
+        },
       ]
       return items.filter((item) => item.isVisible)
     }
