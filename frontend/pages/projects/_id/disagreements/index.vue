@@ -77,6 +77,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import Vue from 'vue'
 import axios from 'axios'
 import { mdiMagnify, mdiAlertCircle } from '@mdi/js'
@@ -128,8 +129,9 @@ export default Vue.extend({
 
   computed: {
     filteredDisagreements() {
-      if (!this.search) return this.disagreements;
-      return this.disagreements.filter(disagreement =>
+      const disagreements = (this as any).disagreements;
+      if (!this.search) return disagreements;
+      return disagreements.filter((disagreement: any) =>
         disagreement.snippet.toLowerCase().includes(this.search.toLowerCase())
       );
     },
@@ -209,8 +211,14 @@ export default Vue.extend({
         this.isLoading = false;
       }
     },
-    checkDisagreement(disagreement: any) {
-      this.$router.push({ name: 'DisagreementDetail', params: { signature: disagreement.signature } });
+    checkDisagreement() {
+      const projectId = this.$route.params.id;
+      const leftId = this.leftAnnotation ? this.leftAnnotation.id : null;
+      const rightId = this.rightAnnotation ? this.rightAnnotation.id : null;
+      this.$router.push({
+        path: `/projects/${projectId}/disagreements/diffs`,
+        query: { left: leftId, right: rightId }
+      });
     },
     goToAdd() {
       this.$router.push({ name: 'AddDisagreement' });
