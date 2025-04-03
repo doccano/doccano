@@ -29,13 +29,14 @@
         <p>Not enough annotations to compare.</p>
       </div>
       <div v-if="!isLoading && annotations.length >= 2" class="diff-container">
+
         <v-card class="diff-card" outlined>
           <v-card-title class="primary white--text text-center">
             Left
           </v-card-title>
           <v-card-text class="diff-canvas">
             <div class="diff-annotation-text" v-if="leftAnnotation"
-            v-html="formattedLeftText"></div>
+              v-html="formattedLeftText"></div>
           </v-card-text>
           <v-card-actions class="justify-center">
             <v-btn small @click="prevLeft" :disabled="navigationDisabled ||
@@ -44,20 +45,20 @@
             leftIndex === annotations.length - 1">Next</v-btn>
           </v-card-actions>
         </v-card>
-  
+
         <div class="switch-button">
           <v-btn icon @click="swapAnnotations">
             <v-icon>{{ icons.mdiSwapHorizontal }}</v-icon>
           </v-btn>
         </div>
-  
+
         <v-card class="diff-card" outlined>
           <v-card-title class="primary white--text text-center">
             Right
           </v-card-title>
           <v-card-text class="diff-canvas">
             <div class="diff-annotation-text" v-if="rightAnnotation"
-            v-html="formattedRightText"></div>
+              v-html="formattedRightText"></div>
           </v-card-text>
           <v-card-actions class="justify-center">
             <v-btn small @click="prevRight" :disabled="navigationDisabled ||
@@ -67,6 +68,7 @@
           </v-card-actions>
         </v-card>
       </div>
+      <v-checkbox v-model="showDifferences" label="Toggle Differences" class="mt-2"></v-checkbox>
     </v-card-text>
   </v-card>
 </template>
@@ -101,8 +103,8 @@ interface AnnotationTransformed {
     end: number;
     label: { id: number; text: string; color: string; textColor: string; suffixKey: string };
   }>;
-  entityLabels: Array<{ id: number; text: string; color:
-    string; textColor: string; suffixKey: string }>;
+  entityLabels: Array<{ id: number; text: string; color: string;
+    textColor: string; suffixKey: string }>;
 }
 
 export default Vue.extend({
@@ -115,7 +117,8 @@ export default Vue.extend({
       isLoading: false,
       error: '',
       icons: { mdiSwapHorizontal },
-      isRTL: false
+      isRTL: false,
+      showDifferences: false
     }
   },
   layout: 'project',
@@ -130,10 +133,10 @@ export default Vue.extend({
       return this.annotations[this.rightIndex] || null;
     },
     formattedLeftText(): string {
-      return this.leftAnnotation ? this.generateAnnotatedText(this.leftAnnotation) : "";
+      return (this.leftAnnotation && this.rightAnnotation) ? this.generateAnnotatedText(this.leftAnnotation, this.rightAnnotation) : "";
     },
     formattedRightText(): string {
-      return this.rightAnnotation ? this.generateAnnotatedText(this.rightAnnotation) : "";
+      return (this.rightAnnotation && this.leftAnnotation) ? this.generateAnnotatedText(this.rightAnnotation, this.leftAnnotation) : "";
     },
     allLabels(): Array<{ id: number; text: string; color: string }> {
       if (this.leftAnnotation && this.leftAnnotation.entityLabels) {
@@ -166,22 +169,16 @@ export default Vue.extend({
           const extracted = annotation.extracted_labels;
           if (!extracted || !extracted.text || !extracted.labelTypes || !extracted.spans) return;
 
-          // Get used label IDs from spans.
           const usedLabelIds = new Set(extracted.spans.map((span: any) => span.label));
-          // Filter labelTypes to only those used.
           const chosenLabels = extracted.labelTypes.filter(label => usedLabelIds.has(label.id));
-          // Sort (and optionally deduplicate) for a consistent order.
           const sortedLabels = [...chosenLabels].sort((a, b) => a.id - b.id);
 
-          // Build a signature key based only on text and used labels.
           const signatureKey = JSON.stringify({
             text: extracted.text,
             labelTypes: sortedLabels.map(label => ({ id: label.id, text: label.text }))
           });
           
-          if (!groups[signatureKey]) {
-            groups[signatureKey] = [];
-          }
+          if (!groups[signatureKey]) { groups[signatureKey] = []; }
           groups[signatureKey].push(annotation);
         });
 
@@ -230,23 +227,54 @@ export default Vue.extend({
         this.isLoading = false;
       }
     },
-    generateAnnotatedText(annotation: AnnotationTransformed): string {
-      const spans = annotation.entities.slice().sort((a, b) => a.start - b.start);
-      const text = annotation.text;
-      let html = "";
-      let lastIndex = 0;
+    generateAnnotatedText(annotation: AnnotationTransformed, other: AnnotationTransformed): string {
       const escapeHTML = (str: string) =>
-        str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        str.replace(/&/g, "&amp;")
+           .replace(/</g, "&lt;")
+           .replace(/>/g, "&gt;");
+      const text = annotation.text;
 
-      spans.forEach(span => {
-        html += escapeHTML(text.substring(lastIndex, span.start));
-        const spanText = escapeHTML(text.substring(span.start, span.end));
-        const color = span.label.color;
-        const labelText = span.label.text;
-        html += `<span style="border-bottom: 3px solid ${color};" title="${labelText}">${spanText}</span>`;
-        lastIndex = span.end;
+      // Gather all unique boundaries (start and end positions) from both annotations
+      const boundaries = new Set<number>();
+      annotation.entities.forEach(span => {
+        boundaries.add(span.start);
+        boundaries.add(span.end);
       });
-      html += escapeHTML(text.substring(lastIndex));
+      other.entities.forEach(span => {
+        boundaries.add(span.start);
+        boundaries.add(span.end);
+      });
+
+      const sortedBoundaries = Array.from(boundaries).sort((a, b) => a - b);
+      let html = "";
+
+      for (let i = 0; i < sortedBoundaries.length - 1; i++) {
+        const start = sortedBoundaries[i];
+        const end = sortedBoundaries[i + 1];
+        const segment = text.substring(start, end);
+
+        const currentSpan = annotation.entities.find(s => s.start <= start && s.end >= end);
+        const otherSpan = other.entities.find(s => s.start <= start && s.end >= end);
+
+        let style = "";
+        if (currentSpan) {
+          style = `border-bottom: 3px solid ${currentSpan.label.color};`;
+        }
+        if (this.showDifferences && otherSpan) {
+          if (!currentSpan || (currentSpan && currentSpan.label.id !== otherSpan.label.id)) {
+            style = 'border-bottom: 3px dashed #FF5252;';
+          }
+        }
+
+        html += `<span style="${style}" title="${currentSpan ? currentSpan.label.text : (otherSpan ? otherSpan.label.text : '')}">${escapeHTML(segment)}</span>`;
+      }
+
+      const firstBoundary = sortedBoundaries[0] || 0;
+      const prefix = text.substring(0, firstBoundary);
+      const lastBoundary = sortedBoundaries[sortedBoundaries.length - 1] || text.length;
+      const suffix = text.substring(lastBoundary);
+
+      html = (prefix ? escapeHTML(prefix) : "") + html + (suffix ? escapeHTML(suffix) : "");
       return html;
     },
     swapAnnotations() {
@@ -336,6 +364,8 @@ export default Vue.extend({
   line-height: 1.5rem;
   font-family: 'Roboto', sans-serif !important;
   color: black;
+  white-space: pre-wrap; /* Preserve spaces and line breaks */
+  word-wrap: break-word; /* Break long words if necessary */
 }
 .label-legend {
   display: flex;
