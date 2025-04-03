@@ -6,11 +6,10 @@
       </v-btn>
       <v-btn
         class="text-capitalize ms-2"
-        :disabled="!canDelete"
         outlined
-        @click.stop="dialogDelete = true"
+        @click="clearDisagreements"
       >
-        {{ $t('generic.delete') }}
+        Clear
       </v-btn>
     </v-card-title>
     <v-card-text>
@@ -211,10 +210,13 @@ export default Vue.extend({
         this.isLoading = false;
       }
     },
-    checkDisagreement() {
+    clearDisagreements() {
+      this.disagreements = [];
+    },
+    checkDisagreement(disagreement: any) {
       const projectId = this.$route.params.id;
-      const leftId = this.leftAnnotation ? this.leftAnnotation.id : null;
-      const rightId = this.rightAnnotation ? this.rightAnnotation.id : null;
+      const leftId = disagreement.annotations[0] ? disagreement.annotations[0].id : null;
+      const rightId = disagreement.annotations[1] ? disagreement.annotations[1].id : null;
       this.$router.push({
         path: `/projects/${projectId}/disagreements/diffs`,
         query: { left: leftId, right: rightId }

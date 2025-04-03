@@ -27,6 +27,11 @@ export default {
   methods: {
     handleGetStartedClick() {
       this.$router.push('/home')
+    },
+    validateLabelTypes(extracted) {
+      if (!extracted.labelTypes || extracted.labelTypes.length === 0) {
+        // nothing happens
+      }
     }
   }
 }

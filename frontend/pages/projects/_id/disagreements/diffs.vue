@@ -182,26 +182,21 @@ export default Vue.extend({
       }
     },
     generateAnnotatedText(annotation: AnnotationTransformed): string {
-      // Sort spans by start index
       const spans = annotation.entities.slice().sort((a, b) => a.start - b.start);
       const text = annotation.text;
       let html = "";
       let lastIndex = 0;
-      // Escape function for HTML special characters
       const escapeHTML = (str: string) =>
         str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
       spans.forEach(span => {
-        // Add text before the span
         html += escapeHTML(text.substring(lastIndex, span.start));
         const spanText = escapeHTML(text.substring(span.start, span.end));
         const color = span.label.color;
         const labelText = span.label.text;
-        // Wrap the span text with a span element styled with an underline
         html += `<span style="border-bottom: 3px solid ${color};" title="${labelText}">${spanText}</span>`;
         lastIndex = span.end;
       });
-      // Add the rest of the text
       html += escapeHTML(text.substring(lastIndex));
       return html;
     },
