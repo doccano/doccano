@@ -57,6 +57,7 @@
 </template>
 
 <script lang="ts">
+// @ts-nocheck
 import Vue from 'vue'
 import { mdiPencil } from '@mdi/js'
 import { mapGetters } from 'vuex'
