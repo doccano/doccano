@@ -209,7 +209,7 @@ DATABASES["default"].update(
     )
 )
 if not os.getenv("DATABASE_URL"):
-    os.environ["DATABASE_URL"] = "postgres://doccano_admin:doccano@localhost:5432/doccano_db?sslmode=disable"
+    os.environ["DATABASE_URL"] = "postgres://doccana_admin:doccana@localhost:5432/doccana_db?sslmode=disable"
 
 if DATABASES["default"].get("ENGINE") == "django.db.backends.sqlite3":
     DATABASES["default"].get("OPTIONS", {}).pop("sslmode", None)
