@@ -1,9 +1,11 @@
 <template>
-  <div>
+  <v-app>
     <nuxt />
-  </div>
+  </v-app>
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'CustomEmpty'
+}
 </script>
