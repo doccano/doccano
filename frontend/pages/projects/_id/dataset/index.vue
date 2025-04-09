@@ -201,6 +201,10 @@ export default Vue.extend({
 
     async removeAll() {
       await this.$services.example.bulkDelete(this.projectId, [])
+      
+      const annotationRepo = new APIAnnotationRepository()
+      await annotationRepo.deleteAllAnnotations(Number(this.projectId))
+      
       this.$fetch()
       this.dialogDeleteAll = false
       this.selected = []

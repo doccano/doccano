@@ -17,38 +17,34 @@ class Annotation(models.Model):
     additional_info = JSONField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return f"Annotation on dataset item {self.dataset_item_id} by {self.annotator}"
 
-@receiver(post_save, sender=Annotation)
-def create_or_update_disagreement(sender, instance, created, **kwargs):
-    if not created:
-        return
-
-    if not instance.additional_info or 'text' not in instance.additional_info:
-        return
-
-    text_val = instance.additional_info['text']
-    snippet = text_val[:100]
-
-    labels_json = json.dumps(instance.extracted_labels, sort_keys=True) if instance.extracted_labels else ''
-    signature_source = f"{instance.dataset_item_id}:{text_val}:{labels_json}"
-    signature = hashlib.sha256(signature_source.encode('utf-8')).hexdigest()
-
-    similar_annotations = Annotation.objects.filter(
-        dataset_item_id=instance.dataset_item_id,
-        extracted_labels=instance.extracted_labels,
-        additional_info__text=text_val
-    ).exclude(id=instance.id)
-
-    if similar_annotations.exists():
-        Disagreement = apps.get_model('disagreements', 'Disagreement')
-        disagreement, _ = Disagreement.objects.get_or_create(
-            dataset_item_id=instance.dataset_item_id,
-            signature=signature,
-            defaults={'disagreement_details': snippet}
-        )
-        disagreement.annotations.add(instance)
-        for ann in similar_annotations:
-            disagreement.annotations.add(ann)
+    def list_similar_annotations(self):
+        """
+        Returns a queryset of annotations that have:
+          - the exact same additional_info["text"],
+          - the same extracted_labels["text"] and extracted_labels["label"],
+          - but a different extracted_labels["spans"].
+        This identifies annotations made on different dataset items
+        that use the same text and label but have different spans.
+        """
+        if not self.additional_info or 'text' not in self.additional_info:
+            return Annotation.objects.none()
+        text_val = self.additional_info['text']
+        label_text = ""
+        label_val = None
+        current_spans = None
+        if self.extracted_labels:
+            label_text = self.extracted_labels.get("text", "")
+            label_val = self.extracted_labels.get("label")
+            current_spans = self.extracted_labels.get("spans")
+        qs = Annotation.objects.filter(
+            additional_info__text=text_val,
+            extracted_labels__text=label_text,
+            extracted_labels__label=label_val,
+        ).exclude(id=self.id)
+        if current_spans is not None:
+            qs = qs.exclude(extracted_labels__spans=current_spans)
+        return qs

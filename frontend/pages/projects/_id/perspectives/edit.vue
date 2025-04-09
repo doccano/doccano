@@ -70,13 +70,11 @@ export default Vue.extend({
       mdiPencil,
       editingSubject: false,
       isValid: false,
-      // Dados atuais do formulário
       form: {
         subject: '',
         text: '',
         category: 'subjective'
       },
-      // Guarda os dados originais para comparação
       originalForm: {
         subject: '',
         text: '',
@@ -99,23 +97,13 @@ export default Vue.extend({
       if (perspectiveId && this.$route.params.id) {
         axios.get(`/v1/projects/${this.$route.params.id}/perspectives/${perspectiveId}/`)
           .then((response: any) => {
-            // Carrega os dados reais da perspective
             this.form = { ...response.data }
-            // Salva os dados originais para comparação
             this.originalForm = { ...response.data }
           })
           .catch(error => console.error('Erro ao buscar perspective:', error.response || error.message))
       }
     },
     fetchCategories() {
-      // Exemplo real (descomente abaixo e ajuste conforme necessário):
-      // axios.get(`/v1/projects/${this.$route.params.id}/category-types/`)
-      //   .then((response: any) => { 
-      //     this.categories = response.data.results || [] 
-      //   })
-      //   .catch(error => console.error(error))
-      
-      // Fallback estático, equivalente ao add.vue:
       this.categories = [
         { text: this.$t('Cultural'), value: 'cultural' },
         { text: this.$t('Technic'), value: 'technic' },
@@ -125,7 +113,6 @@ export default Vue.extend({
     submitEdit() {
       const perspectiveId = this.$route.query.perspectiveId
       if (perspectiveId && this.$route.params.id) {
-        // Cria um objeto com os campos que foram alterados
         const patchData: any = {}
         if (this.form.subject !== this.originalForm.subject) {
           patchData.subject = this.form.subject
@@ -136,12 +123,10 @@ export default Vue.extend({
         if (this.form.category !== this.originalForm.category) {
           patchData.category = this.form.category
         }
-        // Se patchData estiver vazio, nada foi alterado
         if (Object.keys(patchData).length === 0) {
           console.log("Nenhuma alteração realizada.")
           return
         }
-        // Envia o PATCH para atualizar a perspective
         axios.patch(
           `/v1/projects/${this.$route.params.id}/perspectives/${perspectiveId}/`,
           patchData
