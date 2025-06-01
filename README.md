@@ -201,6 +201,24 @@ This repository contains scripts to easily set up and run a development environm
 - Poetry (Python package manager)
 - Yarn (JavaScript package manager)
 - Git
+- PostgreSQL (optional, configured by default)
+
+## Database Configuration
+
+The development environment is configured to use PostgreSQL with these default settings:
+
+```bash
+# Create a new role for development
+createuser doccano --pwprompt
+
+# Create a new database for development
+createdb doccano -O doccano
+
+# Grant all privileges on the database to the doccano role
+psql -c "GRANT ALL PRIVILEGES ON DATABASE doccano TO doccano;"
+```
+
+If you prefer to use a different database system, you can change the configuration in `docker-compose.override.yml` and update the `DATABASE_URL` in your `.env` file accordingly.
 
 ## Quick Start
 

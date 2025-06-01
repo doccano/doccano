@@ -81,6 +81,20 @@ poetry add setuptools || {
     }
 }
 
+# Install PostgreSQL adapter
+echo "Installing PostgreSQL adapter (psycopg2-binary)..."
+poetry add psycopg2-binary || {
+    echo "Failed to install psycopg2-binary through Poetry."
+    echo "Trying direct pip installation..."
+    poetry run pip install psycopg2-binary || {
+        echo "ERROR: Failed to install psycopg2-binary."
+        echo "Please make sure you have PostgreSQL development libraries installed."
+        echo "On Ubuntu/Debian: sudo apt-get install libpq-dev python3-dev"
+        echo "On macOS: brew install postgresql"
+        exit 1
+    }
+}
+
 echo "Installing Python dependencies with Poetry..."
 poetry install
 echo "Backend dependencies installed successfully."
