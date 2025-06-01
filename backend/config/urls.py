@@ -58,6 +58,7 @@ urlpatterns += [
     path("v1/", include("api.urls")),
     path("v1/", include("roles.urls")),
     path("v1/", include("users.urls")),
+    path("v1/", include("groups.urls")),
     path("v1/", include("data_import.urls")),
     path("v1/", include("data_export.urls")),
     path("v1/", include("projects.urls")),

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "projects",
     "metrics",
     "users",
+    "groups",
     "data_import",
     "data_export",
     "auto_labeling",
@@ -287,6 +288,29 @@ except EnvError:
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+
+# Fix for macOS Celery fork() issue
+import os
+import platform
+if platform.system() == 'Darwin':  # macOS
+    os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
+
+# Configure Celery to use 'spawn' instead of 'fork' on macOS
+CELERY_WORKER_CONCURRENCY = env.int('CELERY_WORKER_CONCURRENCY', 2)
+if platform.system() == 'Darwin':
+    CELERY_TASK_CREATE_MISSING_QUEUES = True
+    CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000
+    CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+    CELERY_WORKER_FORCE_EXECV = True
+    # Make Celery explicitly use spawn method on macOS
+    CELERY_WORKER_POOL = 'solo'  # Use 'solo' pool to avoid forking issues
+    
+    # SQLAlchemy broker options (remove incompatible options)
+    # CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}  # Remove this line
+    
+    # Also set these for command-line options
+    import multiprocessing
+    multiprocessing.set_start_method('spawn')
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
