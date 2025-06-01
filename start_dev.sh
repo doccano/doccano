@@ -42,13 +42,28 @@ if ! command -v poetry &> /dev/null; then
     cleanup
 fi
 
+# Check Python version in the Poetry environment
+PYTHON_VERSION=$(poetry run python --version 2>&1)
+echo "Using Python: ${PYTHON_VERSION}"
+
 # Check if setuptools/pkg_resources is installed in the poetry environment
 if ! poetry run python -c "import pkg_resources" 2>/dev/null; then
     echo "Warning: pkg_resources module not found. Installing setuptools..."
-    poetry add setuptools
-    if [ $? -ne 0 ]; then
-        echo "Failed to install setuptools. Please run setup.sh again."
-        cleanup
+    
+    # Try to install a compatible version of setuptools based on Python version
+    if echo "${PYTHON_VERSION}" | grep -q "3\.8\."; then
+        echo "Python 3.8 detected, using setuptools<80.0.0"
+        poetry add "setuptools<80.0.0"
+    elif echo "${PYTHON_VERSION}" | grep -q "3\.9\.|3\.10\.|3\.11\."; then
+        echo "Python 3.9+ detected, using latest setuptools"
+        poetry add setuptools
+    else
+        echo "Trying setuptools with relaxed version constraints..."
+        poetry add "setuptools<81.0.0" || {
+            echo "ERROR: Failed to install setuptools."
+            echo "Please run setup.sh to properly configure the environment."
+            cleanup
+        }
     fi
 fi
 

@@ -58,9 +58,28 @@ echo "Configuring Poetry to use Python 3.10..."
 PYTHON_PATH=$(which $PYTHON_CMD)
 poetry env use $PYTHON_PATH
 
-# Ensure setuptools (which provides pkg_resources) is installed
+# Update Python version in pyproject.toml to match setuptools requirements
+echo "Updating Python version in pyproject.toml..."
+if [ -f pyproject.toml ]; then
+    # Check if we need to modify the Python version constraint
+    if grep -q "python = \"\^3.8\"" pyproject.toml || grep -q "python = \">=3.8,<4.0\"" pyproject.toml; then
+        echo "Updating Python version constraint from 3.8 to 3.9..."
+        sed -i.bak 's/python = "\^3.8"/python = "^3.9"/g' pyproject.toml
+        sed -i.bak 's/python = ">=3.8,<4.0"/python = ">=3.9,<4.0"/g' pyproject.toml
+        rm -f pyproject.toml.bak
+    fi
+fi
+
+# Ensure setuptools is installed with a compatible version
 echo "Installing setuptools to provide pkg_resources module..."
-poetry add setuptools
+poetry add setuptools || {
+    echo "Failed to install latest setuptools. Trying with a version compatible with Python 3.9+..."
+    poetry add "setuptools<81.0.0" || {
+        echo "ERROR: Failed to install setuptools."
+        echo "Please make sure you're using Python 3.9+ and try running setup.sh again."
+        exit 1
+    }
+}
 
 echo "Installing Python dependencies with Poetry..."
 poetry install
