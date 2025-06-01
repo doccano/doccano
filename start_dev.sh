@@ -24,15 +24,7 @@ echo "Frontend directory: ${FRONTEND_DIR}"
 echo "Backend directory: ${BACKEND_DIR}"
 echo
 
-# Start frontend
-echo "Starting frontend..."
-cd "${FRONTEND_DIR}" || { echo "Error: Frontend directory not found"; exit 1; }
-yarn dev &
-FRONTEND_PID=$!
-echo "Frontend started with PID: ${FRONTEND_PID}"
-echo
-
-# Start backend
+# Start backend first
 echo "Starting backend services..."
 cd "${BACKEND_DIR}" || { echo "Error: Backend directory not found"; exit 1; }
 
@@ -72,20 +64,45 @@ echo "Configuring PostgreSQL database connection..."
 export DATABASE_URL="postgres://doccano_admin:doccano_pass@localhost:5432/doccano?sslmode=disable"
 echo "DATABASE_URL set to: ${DATABASE_URL}"
 
-# Start Celery worker
-echo "Starting Celery worker..."
-poetry run celery --app=config worker --loglevel=INFO --concurrency=1 &
-CELERY_PID=$!
-echo "Celery worker started with PID: ${CELERY_PID}"
+# Ensure the database is migrated before starting the server
+echo "Running database migrations..."
+poetry run python manage.py migrate
 
-# Start Django server
+# Start Django server first
 echo "Starting Django development server..."
 poetry run python manage.py runserver &
 DJANGO_PID=$!
 echo "Django server started with PID: ${DJANGO_PID}"
 
+# Wait a moment for Django to fully start
+echo "Waiting for Django server to initialize (5 seconds)..."
+sleep 5
+
+# Check if Django is actually running
+if ! curl -s http://127.0.0.1:8000/ > /dev/null; then
+    echo "ERROR: Django server failed to start properly."
+    echo "Check if port 8000 is already in use or if there's a database connection issue."
+    cleanup
+fi
+
+# Start Celery worker
+echo "Starting Celery worker..."
+DATABASE_URL="${DATABASE_URL}" poetry run celery --app=config worker --loglevel=INFO --concurrency=1 &
+CELERY_PID=$!
+echo "Celery worker started with PID: ${CELERY_PID}"
+
+# Now start the frontend after the backend is confirmed running
+echo "Starting frontend..."
+cd "${FRONTEND_DIR}" || { echo "Error: Frontend directory not found"; exit 1; }
+yarn dev &
+FRONTEND_PID=$!
+echo "Frontend started with PID: ${FRONTEND_PID}"
+echo
+
 echo
 echo "=== All services started ==="
+echo "Backend API: http://127.0.0.1:8000/"
+echo "Frontend UI: http://localhost:3000/"
 echo "Press Ctrl+C to stop all services"
 
 # Wait for all background processes to finish (or until we receive SIGINT)
