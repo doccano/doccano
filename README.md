@@ -190,3 +190,52 @@ Here are some tips might be helpful. [How to Contribute to Doccano Project](http
 ## Contact
 
 For help and feedback, feel free to contact [the author](https://github.com/Hironsan).
+
+# Doccano Development Environment
+
+This repository contains scripts to easily set up and run a development environment for Doccano.
+
+## Requirements
+
+- Python 3.10
+- Poetry (Python package manager)
+- Yarn (JavaScript package manager)
+- Git
+
+## Quick Start
+
+After cloning the repository, run the setup script to install all dependencies:
+
+```bash
+./setup.sh
+```
+
+This script will:
+1. Verify Python 3.10 is installed
+2. Configure Poetry to use Python 3.10
+3. Install backend Python dependencies using Poetry
+4. Install frontend JavaScript dependencies using Yarn
+5. Offer to start the development environment
+
+## Starting the Development Environment
+
+To start the development environment later, run:
+
+```bash
+./start_dev.sh
+```
+
+This will start:
+- Frontend development server with hot-reload
+- Django backend server
+- Celery worker
+
+## Components
+
+- **Frontend**: Nuxt.js application running at http://localhost:3000
+- **Backend**: Django application running at http://localhost:8000
+- **Task Queue**: Celery worker for handling background tasks
+
+## Development
+
+See the README files in the frontend and backend directories for more detailed information about each component.
