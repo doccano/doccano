@@ -42,6 +42,16 @@ if ! command -v poetry &> /dev/null; then
     cleanup
 fi
 
+# Check if setuptools/pkg_resources is installed in the poetry environment
+if ! poetry run python -c "import pkg_resources" 2>/dev/null; then
+    echo "Warning: pkg_resources module not found. Installing setuptools..."
+    poetry add setuptools
+    if [ $? -ne 0 ]; then
+        echo "Failed to install setuptools. Please run setup.sh again."
+        cleanup
+    fi
+fi
+
 # Start Celery worker
 echo "Starting Celery worker..."
 poetry run celery --app=config worker --loglevel=INFO --concurrency=1 &

@@ -58,6 +58,10 @@ echo "Configuring Poetry to use Python 3.10..."
 PYTHON_PATH=$(which $PYTHON_CMD)
 poetry env use $PYTHON_PATH
 
+# Ensure setuptools (which provides pkg_resources) is installed
+echo "Installing setuptools to provide pkg_resources module..."
+poetry add setuptools
+
 echo "Installing Python dependencies with Poetry..."
 poetry install
 echo "Backend dependencies installed successfully."
