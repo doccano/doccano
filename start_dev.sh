@@ -67,6 +67,11 @@ if ! poetry run python -c "import pkg_resources" 2>/dev/null; then
     fi
 fi
 
+# Set database environment variable for PostgreSQL
+echo "Configuring PostgreSQL database connection..."
+export DATABASE_URL="postgres://doccano_admin:doccano_pass@localhost:5432/doccano?sslmode=disable"
+echo "DATABASE_URL set to: ${DATABASE_URL}"
+
 # Start Celery worker
 echo "Starting Celery worker..."
 poetry run celery --app=config worker --loglevel=INFO --concurrency=1 &
