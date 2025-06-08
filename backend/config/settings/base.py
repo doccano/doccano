@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     "health_check.contrib.migrations",
     "health_check.contrib.celery",
     "django_cleanup",
+    "discussions",
 ]
 
 
@@ -323,3 +324,6 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SITE_ID = 1
+
+APPEND_SLASH = True
+
