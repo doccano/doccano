@@ -5,7 +5,7 @@ from rest_framework import filters, generics, status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ValidationError
 from .serializers import UserSerializer, UserDetailSerializer
 from projects.permissions import IsProjectAdmin
 
@@ -17,6 +17,7 @@ class Me(APIView):
         serializer = UserDetailSerializer(request.user, context={"request": request})
         return Response(serializer.data)
 
+
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
@@ -24,18 +25,26 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated & (IsProjectAdmin | IsAdminUser)]
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ("username",)
+
     def get_queryset(self):
         return self.queryset
+
     def perform_update(self, serializer):
         if serializer.validated_data.get("is_superuser") and not self.request.user.is_superuser:
             raise PermissionDenied("You do not have permission to make this user a superuser.")
         if serializer.validated_data.get("is_staff") and not self.request.user.is_superuser:
             raise PermissionDenied("You do not have permission to make this user a staff member.")
         return super().perform_update(serializer)
+
     def perform_destroy(self, instance):
         if instance == self.request.user:
             raise PermissionDenied("You cannot delete your own account.")
+        if instance.is_superuser:
+            raise ValidationError(f"User '{instance.username}' is an administrator and cannot be deleted.")
+        if instance.is_staff:
+            raise ValidationError(f"User '{instance.username}' is a staff member and cannot be deleted.")
         instance.delete()
+
 
 class Users(generics.ListAPIView):
     queryset = User.objects.all()
@@ -44,8 +53,7 @@ class Users(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ("username",)
     ordering_fields = ("username", "email", "is_staff", "is_superuser")
-    ordering = ("username",)  # Default ordering
-    # Direction can be controlled by using "-" prefix (e.g., "-username" for descending)
+    ordering = ("username",)
 
 
 class UserCreation(generics.CreateAPIView):
