@@ -1,12 +1,20 @@
 <template>
-  <v-card>
+  <v-card
+  max-width="500"
+  class="rounded-lg elevation-10 mx-auto"
+>
+    <!-- Topo azul com título -->
     <v-toolbar color="primary white--text" flat>
       <v-toolbar-title>{{ title }}</v-toolbar-title>
     </v-toolbar>
-    <v-card-text class="text--primary mt-3 pl-4">
+
+    <!-- Corpo do conteúdo -->
+    <v-card-text class="text--primary px-5 py-4">
       <slot name="content" />
     </v-card-text>
-    <v-card-actions>
+
+    <!-- Botões alinhados -->
+    <v-card-actions class="px-5 pb-4">
       <v-spacer />
       <v-btn
         v-if="cancelText"
@@ -23,6 +31,7 @@
         :disabled="disabled"
         class="text-none"
         text
+        color="error"
         data-test="delete-button"
         @click="agree"
       >
@@ -31,6 +40,7 @@
     </v-card-actions>
   </v-card>
 </template>
+
 
 <script lang="ts">
 import Vue from 'vue'
