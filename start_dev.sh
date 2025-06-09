@@ -24,6 +24,15 @@ echo "Frontend directory: ${FRONTEND_DIR}"
 echo "Backend directory: ${BACKEND_DIR}"
 echo
 
+# Load environment variables from .env file if it exists
+if [ -f "${ROOT_DIR}/.env" ]; then
+    echo "Loading environment variables from ${ROOT_DIR}/.env"
+    export $(grep -v '^#' "${ROOT_DIR}/.env" | xargs -0)
+elif [ -f "${BACKEND_DIR}/.env" ]; then
+    echo "Loading environment variables from ${BACKEND_DIR}/.env"
+    export $(grep -v '^#' "${BACKEND_DIR}/.env" | xargs -0)
+fi
+
 # Start backend first
 echo "Starting backend services..."
 cd "${BACKEND_DIR}" || { echo "Error: Backend directory not found"; exit 1; }
@@ -59,9 +68,11 @@ if ! poetry run python -c "import pkg_resources" 2>/dev/null; then
     fi
 fi
 
-# Set database environment variable for PostgreSQL
-echo "Configuring PostgreSQL database connection..."
-export DATABASE_URL="postgres://doccano_admin:doccano_pass@localhost:5432/doccano?sslmode=disable"
+# Set database environment variable for PostgreSQL if not already set
+if [ -z "$DATABASE_URL" ]; then
+    echo "DATABASE_URL not found in environment. Setting default..."
+    export DATABASE_URL="postgres://doccano_admin:doccano_pass@localhost:5432/doccano?sslmode=disable"
+fi
 echo "DATABASE_URL set to: ${DATABASE_URL}"
 
 # Ensure the database is migrated before starting the server
