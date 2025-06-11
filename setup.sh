@@ -98,6 +98,20 @@ poetry add psycopg2-binary || {
 echo "Installing Python dependencies with Poetry..."
 poetry install
 echo "Backend dependencies installed successfully."
+
+# Initialize Django database
+echo
+echo "=== Initializing Django Database ==="
+echo "Running database migrations..."
+poetry run python manage.py migrate
+
+echo "Creating user roles..."
+poetry run python manage.py create_roles
+
+echo "Creating admin user..."
+poetry run python manage.py create_admin --noinput --username "admin" --email "admin@example.com" --password "password"
+echo "Admin user created with username: admin and password: password"
+echo "Database initialization completed successfully."
 echo
 
 # Set up frontend
