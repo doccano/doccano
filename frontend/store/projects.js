@@ -15,6 +15,13 @@ export const getters = {
 export const mutations = {
   setCurrent(state, payload) {
     state.current = payload
+  },
+  setPageTitle(state, title) {
+    // Esta mutation pode ser usada para definir o título da página
+    // Por enquanto, apenas armazenamos no estado atual
+    if (state.current) {
+      state.current.pageTitle = title
+    }
   }
 }
 

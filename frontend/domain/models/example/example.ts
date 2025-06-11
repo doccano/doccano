@@ -4,6 +4,17 @@ export interface Assignment {
   assignee_id: number
 }
 
+export interface Annotation {
+  user: number
+  user_id?: number
+  created_by?: number
+  label?: string
+  start_offset?: number
+  end_offset?: number
+  text?: string
+  type?: string
+}
+
 export class ExampleItem {
   constructor(
     readonly id: number,
@@ -14,7 +25,8 @@ export class ExampleItem {
     readonly fileUrl: string,
     readonly isConfirmed: boolean,
     readonly filename: string,
-    readonly assignments: Assignment[]
+    readonly assignments: Assignment[],
+    readonly annotations: Annotation[] = []
   ) {}
 
   get url() {

@@ -38,7 +38,8 @@ import {
   mdiHome,
   mdiLabel,
   mdiPlayCircleOutline,
-  mdiChatOutline // ✅ ÍCONE ADICIONADO
+  mdiChatOutline, 
+  mdiAlertCircleOutline 
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -123,6 +124,12 @@ export default {
           text: 'Discussão de Critérios',
           link: 'discussions', // LEVA PARA /projects/:id/discussions
           isVisible: true
+        },
+        {
+          icon: mdiAlertCircleOutline, // ÍCONE DE DISCREPÂNCIAS
+          text: 'Discrepancies',
+          link: 'discrepancies', // LEVA PARA /projects/:id/discrepancies
+          isVisible: this.isProjectAdmin
         },
         {
           icon: mdiCog,
