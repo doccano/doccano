@@ -24,101 +24,6 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-:: Check for Python 3.9 or 3.10
-set PYTHON_CMD=
-set PY_VERSION=
-
-:: First, try python3.10 and python3.9 directly
-where python3.10 >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    set PYTHON_CMD=python3.10
-    set PY_VERSION=3.10
-    echo Found Python 3.10: python3.10
-    goto python_found
-)
-
-where python3.9 >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    set PYTHON_CMD=python3.9
-    set PY_VERSION=3.9
-    echo Found Python 3.9: python3.9
-    goto python_found
-)
-
-:: Try default python command
-where python >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    :: Check if the default python command is Python 3.9 or 3.10
-    echo Checking default 'python' command version...
-    
-    :: Create a temporary file to store Python version
-    set TEMP_FILE=%TEMP%\pyversion.txt
-    
-    :: Run Python to get version info and store in temp file
-    python -c "import sys; print('{}.{}'.format(sys.version_info.major, sys.version_info.minor))" > "%TEMP_FILE%" 2>nul
-    if %ERRORLEVEL% neq 0 (
-        echo Warning: Found python but couldn't determine version. Skipping.
-    ) else (
-        :: Read the version from the temp file
-        set /p PY_VERSION=<"%TEMP_FILE%"
-        del "%TEMP_FILE%"
-        
-        echo Default python version: %PY_VERSION%
-        
-        if "%PY_VERSION%" == "3.10" (
-            set PYTHON_CMD=python
-            goto python_found
-        ) else if "%PY_VERSION%" == "3.9" (
-            set PYTHON_CMD=python
-            goto python_found
-        ) else (
-            echo Default python version %PY_VERSION% is not 3.9 or 3.10. Skipping.
-        )
-    )
-)
-
-:: Try python3 command
-where python3 >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    :: Check if python3 command is Python 3.9 or 3.10
-    echo Checking 'python3' command version...
-    
-    :: Create a temporary file to store Python version
-    set TEMP_FILE=%TEMP%\pyversion.txt
-    
-    :: Run Python to get version info and store in temp file
-    python3 -c "import sys; print('{}.{}'.format(sys.version_info.major, sys.version_info.minor))" > "%TEMP_FILE%" 2>nul
-    if %ERRORLEVEL% neq 0 (
-        echo Warning: Found python3 but couldn't determine version. Skipping.
-    ) else (
-        :: Read the version from the temp file
-        set /p PY_VERSION=<"%TEMP_FILE%"
-        del "%TEMP_FILE%"
-        
-        echo Python3 version: %PY_VERSION%
-        
-        if "%PY_VERSION%" == "3.10" (
-            set PYTHON_CMD=python3
-            goto python_found
-        ) else if "%PY_VERSION%" == "3.9" (
-            set PYTHON_CMD=python3
-            goto python_found
-        ) else (
-            echo Python3 version %PY_VERSION% is not 3.9 or 3.10. Skipping.
-        )
-    )
-)
-
-:: No suitable Python version found
-echo Error: Python 3.9 or 3.10 is not installed or not in PATH
-echo Checked commands: python3.10, python3.9, python, python3
-echo Please install Python 3.9 or 3.10: https://www.python.org/downloads/
-exit /b 1
-
-:python_found
-for /f "tokens=*" %%i in ('where %PYTHON_CMD%') do set PYTHON_PATH=%%i
-echo Found Python %PY_VERSION%: %PYTHON_PATH%
-
 where poetry >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     echo Error: Poetry is not installed or not in PATH
@@ -132,6 +37,41 @@ if %ERRORLEVEL% neq 0 (
     echo Please install Yarn: https://yarnpkg.com/getting-started/install
     exit /b 1
 )
+
+:: Check Python version
+echo Checking Python version...
+where python >nul 2>&1
+if %ERRORLEVEL% neq 0 (
+    echo Error: Python is not installed or not in PATH
+    echo Please install Python 3.9 or higher: https://www.python.org/downloads/
+    exit /b 1
+)
+
+for /f "tokens=2 delims= " %%i in ('python --version') do set PYTHON_VERSION=%%i
+echo Found Python version: %PYTHON_VERSION%
+
+for /f "tokens=1,2 delims=." %%a in ("%PYTHON_VERSION%") do (
+    set PYTHON_MAJOR=%%a
+    set PYTHON_MINOR=%%b
+)
+
+if %PYTHON_MAJOR% LSS 3 (
+    echo Error: Python version 3.9 or higher is required.
+    echo Current version: %PYTHON_VERSION%
+    exit /b 1
+)
+
+if %PYTHON_MAJOR% EQU 3 (
+    if %PYTHON_MINOR% LSS 9 (
+        echo Error: Python version 3.9 or higher is required.
+        echo Current version: %PYTHON_VERSION%
+        exit /b 1
+    )
+)
+
+set PYTHON_PATH=python
+echo Python check passed. Using: %PYTHON_PATH%
+echo.
 
 :: Set up backend
 echo Setting up backend...
