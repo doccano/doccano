@@ -89,7 +89,7 @@ if exist pyproject.toml (
     findstr /C:"python = \"^3.8\"" pyproject.toml >nul
     if %ERRORLEVEL% equ 0 (
         echo Updating Python version constraint from 3.8 to 3.9...
-        powershell -Command "(Get-Content pyproject.toml) -replace 'python = \"\^3.8\"', 'python = \"^3.9\"' | Set-Content pyproject.toml"
+        powershell -Command "(Get-Content pyproject.toml) -replace 'python = \"\\^3.8\"', 'python = \"\\^3.9\"' | Set-Content pyproject.toml"
     )
     findstr /C:"python = \">=3.8,<4.0\"" pyproject.toml >nul
     if %ERRORLEVEL% equ 0 (
