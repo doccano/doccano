@@ -5,6 +5,7 @@ type UserUpdateFields = {
   username?: string
   is_superuser?: boolean
   is_staff?: boolean
+  groups?: number[]
   [key: string]: any
 }
 

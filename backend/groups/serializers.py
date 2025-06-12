@@ -1,54 +1,42 @@
 from rest_framework import serializers
-from .models import Group, GroupPermissions, Permission
+from django.contrib.auth.models import Group, Permission, ContentType
 
 class GroupSerializer(serializers.ModelSerializer):
+    permission_names = serializers.SerializerMethodField()
+    permissions = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        queryset=Permission.objects.all(),
+        required=False
+    )
+    
     class Meta:
         model = Group
-        fields = ['id', 'name']  # Include only the fields you need
-
-class GroupCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ['name']
-        extra_kwargs = {
-            'name': {'required': True}
-        }
-    def create(self, validated_data):
-        group = Group(**validated_data)
-        group.save()
-        return group
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.save()
-        return instance
-    def delete(self, instance):
-        instance.delete()
-        return instance
-    def validate(self, data):
-        if 'name' in data and not data['name']:
-            raise serializers.ValidationError("Group name cannot be empty.")
-        return data
-
-class GroupPermissionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GroupPermissions
-        fields = ['id', 'group_id', 'permission_id']  # Include only the fields you need
+        fields = ['id', 'name', 'permissions', 'permission_names']
+    
+    def get_permission_names(self, obj):
+        # Create a dictionary mapping permission IDs to their display names
+        permissions_dict = {}
+        for permission in Permission.objects.filter(group=obj):
+            permissions_dict[permission.id] = {
+                'name': permission.name,
+                'codename': permission.codename,
+                'content_type': permission.content_type.app_label + '.' + permission.content_type.model
+            }
+        return permissions_dict
 
 class PermissionSerializer(serializers.ModelSerializer):
+    label = serializers.SerializerMethodField()
+    
     class Meta:
         model = Permission
-        fields = ['id', 'name', 'content_type_id', 'codename']  # Include only the fields you need
-    extra_kwargs = {
-        'name': {'required': True},
-        'content_type_id': {'required': True},
-        'codename': {'required': True}
-    }
+        fields = '__all__'
+    
+    def get_label(self, obj):
+        if obj.content_type:
+            return f"{obj.content_type.app_label} | {obj.content_type.model} | {obj.name}"
+        return obj.name
 
 class ContentTypeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = 'ContentType'
-        fields = ['id', 'app_label', 'model']  # Include only the fields you need
-    extra_kwargs = {
-        'app_label': {'required': True},
-        'model': {'required': True}
-    }
+        model = ContentType
+        fields = '__all__'

@@ -1,66 +1,51 @@
-from django.shortcuts import render
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, generics
-from rest_framework.permissions import IsAuthenticated
-from .models import Group, GroupPermissions, Permission
-from .serializers import GroupSerializer, GroupCreateSerializer, GroupPermissionsSerializer, PermissionSerializer
-from projects.permissions import IsProjectAdmin
+from rest_framework import viewsets, permissions, filters
+from django.contrib.auth.models import Group, Permission, ContentType
+from .serializers import GroupSerializer, PermissionSerializer, ContentTypeSerializer
 
-class Groups(generics.ListAPIView):
+class AdminWritePermission(permissions.BasePermission):
+    """
+    Custom permission to allow only admins to create, update or delete objects.
+    All authenticated users can read.
+    """
+    def has_permission(self, request, view):
+        # Allow read-only for authenticated users
+        if request.method in permissions.SAFE_METHODS:
+            return request.user and request.user.is_authenticated
+        # For write operations, require admin status
+        return request.user and request.user.is_staff
+
+class GroupViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for managing user groups
+    """
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ("name",)
-    ordering_fields = ("id", "name")
-    ordering = ("name",)  # Default ordering
+    permission_classes = [AdminWritePermission]
+    swagger_tags = ['Groups']
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['id', 'name']
+    ordering = ['name']
 
-class GroupCreate(generics.CreateAPIView):
-    queryset = Group.objects.all()
-    serializer_class = GroupCreateSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-    
-class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-    lookup_field = 'id'
-
-class GroupPermissionsList(generics.ListAPIView):
-    queryset = GroupPermissions.objects.all()
-    serializer_class = GroupPermissionsSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    filterset_fields = ('group_id', 'permission_id')
-    ordering_fields = ('id',)
-
-class GroupPermissionsCreate(generics.CreateAPIView):
-    queryset = GroupPermissions.objects.all()
-    serializer_class = GroupPermissionsSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-
-class GroupPermissionsDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = GroupPermissions.objects.all()
-    serializer_class = GroupPermissionsSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-    lookup_field = 'id'
-
-class PermissionList(generics.ListAPIView):
+class PermissionViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for viewing permissions
+    """
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
-    search_fields = ('name', 'codename')
-    ordering_fields = ('id', 'name', 'codename')
-    ordering = ('name',)
+    permission_classes = [AdminWritePermission]
+    swagger_tags = ['Permissions']
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['id', 'name', 'codename', 'content_type']
+    ordering = ['content_type', 'codename']
 
-class PermissionCreate(generics.CreateAPIView):
-    queryset = Permission.objects.all()
-    serializer_class = PermissionSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-
-class PermissionDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Permission.objects.all()
-    serializer_class = PermissionSerializer
-    permission_classes = [IsAuthenticated & IsProjectAdmin]
-    lookup_field = 'id'
+class ContentTypeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for viewing content types
+    """
+    queryset = ContentType.objects.all()
+    serializer_class = ContentTypeSerializer
+    permission_classes = [AdminWritePermission]
+    swagger_tags = ['Content Types']
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['id', 'app_label', 'model']
+    ordering = ['app_label', 'model']

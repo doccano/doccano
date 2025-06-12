@@ -15,7 +15,9 @@ function toModel(item: { [key: string]: any }): User {
     item.email,
     item.is_active,
     item.is_superuser,
-    item.is_staff
+    item.is_staff,
+    item.groups,
+    item.groups_details
   )
 }
 
@@ -30,7 +32,9 @@ function toModelDetails(item: { [key: string]: any }): UserDetails {
     item.is_active,
     item.is_superuser,
     item.is_staff,
-    item.date_joined
+    item.date_joined,
+    item.groups,
+    item.groups_details
   )
 }
 
@@ -53,25 +57,25 @@ export class APIUserRepository {
   }
 
   async list(query: string): Promise<PaginatedResponse<User>> {
-    const url = `/users?${query}`
+    const url = `/users/?${query}`
     const response = await this.request.get(url)
     return toModelList(response.data);
   }
 
   async getUser(id: number): Promise<UserDetails> {
-    const url = `/users/${id}`
+    const url = `/users/${id}/`
     const response = await this.request.get(url)
     return toModelDetails(response.data)
   }
 
   async updateUser(id: number, data: { [key: string]: any }): Promise<User> {
-    const url = `/users/${id}`
+    const url = `/users/${id}/`
     const response = await this.request.patch(url, data)
     return toModel(response.data)
   }
 
   async deleteUser(id: number): Promise<void> {
-    const url = `/users/${id}`
+    const url = `/users/${id}/`
     await this.request.delete(url)
   }
 }
