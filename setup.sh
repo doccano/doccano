@@ -20,24 +20,26 @@ if ! command -v git &> /dev/null; then
     exit 1
 fi
 
-# Check for Python 3.10 specifically
+# Check for Python 3.9 or 3.10
 PYTHON_CMD=""
 if command -v python3.10 &> /dev/null; then
     PYTHON_CMD="python3.10"
+elif command -v python3.9 &> /dev/null; then
+    PYTHON_CMD="python3.9"
 elif command -v python3 &> /dev/null; then
     PY_VERSION=$(python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
-    if [[ "$PY_VERSION" == "3.10" ]]; then
+    if [[ "$PY_VERSION" == "3.10" || "$PY_VERSION" == "3.9" ]]; then
         PYTHON_CMD="python3"
     fi
 fi
 
 if [ -z "$PYTHON_CMD" ]; then
-    echo "Error: Python 3.10 is not installed or not in PATH"
-    echo "Please install Python 3.10: https://www.python.org/downloads/"
+    echo "Error: Python 3.9 or 3.10 is not installed or not in PATH"
+    echo "Please install Python 3.9 or 3.10: https://www.python.org/downloads/"
     exit 1
 fi
 
-echo "Found Python 3.10: $(which $PYTHON_CMD)"
+echo "Found Python $(${PYTHON_CMD} -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")'):  $(which $PYTHON_CMD)"
 
 if ! command -v poetry &> /dev/null; then
     echo "Error: Poetry is not installed or not in PATH"

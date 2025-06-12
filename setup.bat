@@ -24,31 +24,39 @@ if %ERRORLEVEL% neq 0 (
     exit /b 1
 )
 
-:: Check for Python 3.10 specifically
+:: Check for Python 3.9 or 3.10
 set PYTHON_CMD=
 where python3.10 >nul 2>&1
 if %ERRORLEVEL% equ 0 (
     set PYTHON_CMD=python3.10
 ) else (
-    where python >nul 2>&1
+    where python3.9 >nul 2>&1
     if %ERRORLEVEL% equ 0 (
-        for /f "tokens=*" %%i in ('python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"') do (
-            set PY_VERSION=%%i
-            if "!PY_VERSION!" == "3.10" (
-                set PYTHON_CMD=python
+        set PYTHON_CMD=python3.9
+    ) else (
+        where python >nul 2>&1
+        if %ERRORLEVEL% equ 0 (
+            for /f "tokens=*" %%i in ('python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"') do (
+                set PY_VERSION=%%i
+                if "!PY_VERSION!" == "3.10" (
+                    set PYTHON_CMD=python
+                ) else if "!PY_VERSION!" == "3.9" (
+                    set PYTHON_CMD=python
+                )
             )
         )
     )
 )
 
 if "%PYTHON_CMD%" == "" (
-    echo Error: Python 3.10 is not installed or not in PATH
-    echo Please install Python 3.10: https://www.python.org/downloads/
+    echo Error: Python 3.9 or 3.10 is not installed or not in PATH
+    echo Please install Python 3.9 or 3.10: https://www.python.org/downloads/
     exit /b 1
 )
 
 for /f "tokens=*" %%i in ('where %PYTHON_CMD%') do set PYTHON_PATH=%%i
-echo Found Python 3.10: %PYTHON_PATH%
+for /f "tokens=*" %%i in ('%PYTHON_CMD% -c "import sys; print(f\"Python {sys.version_info.major}.{sys.version_info.minor}\")"') do set PYTHON_VER=%%i
+echo Found %PYTHON_VER%: %PYTHON_PATH%
 
 where poetry >nul 2>&1
 if %ERRORLEVEL% neq 0 (
