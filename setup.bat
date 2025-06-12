@@ -26,52 +26,98 @@ if %ERRORLEVEL% neq 0 (
 
 :: Check for Python 3.9 or 3.10
 set PYTHON_CMD=
+set PY_VERSION=
+
+:: First, try python3.10 and python3.9 directly
 where python3.10 >nul 2>&1
 if %ERRORLEVEL% equ 0 (
     set PYTHON_CMD=python3.10
-) else (
-    where python3.9 >nul 2>&1
-    if %ERRORLEVEL% equ 0 (
-        set PYTHON_CMD=python3.9
+    set PY_VERSION=3.10
+    echo Found Python 3.10: python3.10
+    goto python_found
+)
+
+where python3.9 >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    set PYTHON_CMD=python3.9
+    set PY_VERSION=3.9
+    echo Found Python 3.9: python3.9
+    goto python_found
+)
+
+:: Try default python command
+where python >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    :: Check if the default python command is Python 3.9 or 3.10
+    echo Checking default 'python' command version...
+    
+    :: Create a temporary file to store Python version
+    set TEMP_FILE=%TEMP%\pyversion.txt
+    
+    :: Run Python to get version info and store in temp file
+    python -c "import sys; print('{}.{}'.format(sys.version_info.major, sys.version_info.minor))" > "%TEMP_FILE%" 2>nul
+    if %ERRORLEVEL% neq 0 (
+        echo Warning: Found python but couldn't determine version. Skipping.
     ) else (
-        where python >nul 2>&1
-        if %ERRORLEVEL% equ 0 (
-            for /f "tokens=*" %%i in ('python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"') do (
-                set PY_VERSION=%%i
-                if "!PY_VERSION!" == "3.10" (
-                    set PYTHON_CMD=python
-                ) else if "!PY_VERSION!" == "3.9" (
-                    set PYTHON_CMD=python
-                )
-            )
-        )
+        :: Read the version from the temp file
+        set /p PY_VERSION=<"%TEMP_FILE%"
+        del "%TEMP_FILE%"
         
-        if "!PYTHON_CMD!" == "" (
-            where python3 >nul 2>&1
-            if %ERRORLEVEL% equ 0 (
-                for /f "tokens=*" %%i in ('python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"') do (
-                    set PY_VERSION=%%i
-                    if "!PY_VERSION!" == "3.10" (
-                        set PYTHON_CMD=python3
-                    ) else if "!PY_VERSION!" == "3.9" (
-                        set PYTHON_CMD=python3
-                    )
-                )
-            )
+        echo Default python version: %PY_VERSION%
+        
+        if "%PY_VERSION%" == "3.10" (
+            set PYTHON_CMD=python
+            goto python_found
+        ) else if "%PY_VERSION%" == "3.9" (
+            set PYTHON_CMD=python
+            goto python_found
+        ) else (
+            echo Default python version %PY_VERSION% is not 3.9 or 3.10. Skipping.
         )
     )
 )
 
-if "%PYTHON_CMD%" == "" (
-    echo Error: Python 3.9 or 3.10 is not installed or not in PATH
-    echo Checked commands: python3.10, python3.9, python, python3
-    echo Please install Python 3.9 or 3.10: https://www.python.org/downloads/
-    exit /b 1
+:: Try python3 command
+where python3 >nul 2>&1
+if %ERRORLEVEL% equ 0 (
+    :: Check if python3 command is Python 3.9 or 3.10
+    echo Checking 'python3' command version...
+    
+    :: Create a temporary file to store Python version
+    set TEMP_FILE=%TEMP%\pyversion.txt
+    
+    :: Run Python to get version info and store in temp file
+    python3 -c "import sys; print('{}.{}'.format(sys.version_info.major, sys.version_info.minor))" > "%TEMP_FILE%" 2>nul
+    if %ERRORLEVEL% neq 0 (
+        echo Warning: Found python3 but couldn't determine version. Skipping.
+    ) else (
+        :: Read the version from the temp file
+        set /p PY_VERSION=<"%TEMP_FILE%"
+        del "%TEMP_FILE%"
+        
+        echo Python3 version: %PY_VERSION%
+        
+        if "%PY_VERSION%" == "3.10" (
+            set PYTHON_CMD=python3
+            goto python_found
+        ) else if "%PY_VERSION%" == "3.9" (
+            set PYTHON_CMD=python3
+            goto python_found
+        ) else (
+            echo Python3 version %PY_VERSION% is not 3.9 or 3.10. Skipping.
+        )
+    )
 )
 
+:: No suitable Python version found
+echo Error: Python 3.9 or 3.10 is not installed or not in PATH
+echo Checked commands: python3.10, python3.9, python, python3
+echo Please install Python 3.9 or 3.10: https://www.python.org/downloads/
+exit /b 1
+
+:python_found
 for /f "tokens=*" %%i in ('where %PYTHON_CMD%') do set PYTHON_PATH=%%i
-for /f "tokens=*" %%i in ('%PYTHON_CMD% -c "import sys; print(f\"Python {sys.version_info.major}.{sys.version_info.minor}\")"') do set PYTHON_VER=%%i
-echo Found %PYTHON_VER%: %PYTHON_PATH%
+echo Found Python %PY_VERSION%: %PYTHON_PATH%
 
 where poetry >nul 2>&1
 if %ERRORLEVEL% neq 0 (
