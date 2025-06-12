@@ -12,6 +12,8 @@ function toModel(item: { [key: string]: any }): User {
   return new User(
     item.id,
     item.username,
+    item.first_name || '',
+    item.last_name || '',
     item.email,
     item.is_active,
     item.is_superuser,
@@ -23,12 +25,11 @@ function toModel(item: { [key: string]: any }): User {
 
 function toModelDetails(item: { [key: string]: any }): UserDetails {
   return new UserDetails(
-
     item.id,
     item.username,
+    item.first_name || '',
+    item.last_name || '',
     item.email,
-    item.first_name,
-    item.last_name,
     item.is_active,
     item.is_superuser,
     item.is_staff,

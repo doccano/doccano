@@ -2,6 +2,8 @@ export class User {
   constructor(
     readonly id: number,
     readonly username: string,
+    readonly firstName: string,
+    readonly lastName: string,
     readonly email: string,
     readonly isActive: boolean,
     readonly isSuperUser: boolean,
@@ -15,9 +17,9 @@ export class UserDetails extends User {
   constructor(
     readonly id: number,
     readonly username: string,
-    readonly email: string,
     readonly firstName: string,
     readonly lastName: string,
+    readonly email: string,
     readonly isActive: boolean,
     readonly isSuperUser: boolean,
     readonly isStaff: boolean,
@@ -25,6 +27,6 @@ export class UserDetails extends User {
     readonly groups?: number[],
     readonly groupsDetails?: { [key: string]: { name: string } }
   ) {
-    super(id, username, email, isActive, isSuperUser, isStaff, groups, groupsDetails)
+    super(id, username, firstName, lastName, email, isActive, isSuperUser, isStaff, groups, groupsDetails)
   }
 }

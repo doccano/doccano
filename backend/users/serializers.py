@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ("id", "username", "email", "is_staff", "is_superuser", "is_active", "groups", "groups_details")
+        fields = ("id", "username", "first_name", "last_name", "email", "is_staff", "is_superuser", "is_active", "groups", "groups_details")
     
     def get_groups_details(self, obj):
         groups_dict = {}
@@ -47,10 +47,12 @@ class RegisterSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(required=True)
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True, required=True)
+    first_name = serializers.CharField(required=True, max_length=150)
+    last_name = serializers.CharField(required=True, max_length=150)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password_confirm')
+        fields = ('username', 'email', 'first_name', 'last_name', 'password', 'password_confirm')
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
@@ -69,6 +71,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
+            first_name=validated_data['first_name'],
+            last_name=validated_data['last_name'],
             password=validated_data['password']
         )
         

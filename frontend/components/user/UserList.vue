@@ -94,6 +94,8 @@ export default Vue.extend({
     headers(): { text: any; value: string; sortable?: boolean; align?: string }[] {
       return [
         { text: this.$t('user.username'), value: 'username' },
+        { text: 'Nome', value: 'firstName' },
+        { text: 'Apelido', value: 'lastName' },
         { text: this.$t('user.email'), value: 'email' },
         { text: this.$t('user.superUser'), value: 'isSuperUser', align: 'center' },
         { text: this.$t('user.staff'), value: 'isStaff', align: 'center' },
