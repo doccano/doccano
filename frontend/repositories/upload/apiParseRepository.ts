@@ -23,6 +23,6 @@ export class APIParseRepository {
 
   revert(serverId: string): void {
     const url = `/fp/revert/`
-    this.request.delete(url, serverId)
+    this.request.delete(url, { data: serverId })
   }
 }
