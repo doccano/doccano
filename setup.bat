@@ -45,11 +45,26 @@ if %ERRORLEVEL% equ 0 (
                 )
             )
         )
+        
+        if "!PYTHON_CMD!" == "" (
+            where python3 >nul 2>&1
+            if %ERRORLEVEL% equ 0 (
+                for /f "tokens=*" %%i in ('python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"') do (
+                    set PY_VERSION=%%i
+                    if "!PY_VERSION!" == "3.10" (
+                        set PYTHON_CMD=python3
+                    ) else if "!PY_VERSION!" == "3.9" (
+                        set PYTHON_CMD=python3
+                    )
+                )
+            )
+        )
     )
 )
 
 if "%PYTHON_CMD%" == "" (
     echo Error: Python 3.9 or 3.10 is not installed or not in PATH
+    echo Checked commands: python3.10, python3.9, python, python3
     echo Please install Python 3.9 or 3.10: https://www.python.org/downloads/
     exit /b 1
 )

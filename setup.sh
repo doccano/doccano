@@ -31,6 +31,11 @@ elif command -v python3 &> /dev/null; then
     if [[ "$PY_VERSION" == "3.10" || "$PY_VERSION" == "3.9" ]]; then
         PYTHON_CMD="python3"
     fi
+elif command -v python &> /dev/null; then
+    PY_VERSION=$(python -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")')
+    if [[ "$PY_VERSION" == "3.10" || "$PY_VERSION" == "3.9" ]]; then
+        PYTHON_CMD="python"
+    fi
 fi
 
 if [ -z "$PYTHON_CMD" ]; then
