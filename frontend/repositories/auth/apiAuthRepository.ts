@@ -22,10 +22,10 @@ export class APIAuthRepository {
   async register(
     username: string,
     email: string,
-    password1: string,
-    password2: string
+    password: string,
+    passwordConfirm: string
   ): Promise<void> {
-    const url = '/users/create/'
-    await this.request.post(url, { username, email, password1, password2 })
+    const url = '/register'
+    await this.request.post(url, { username, email, password, password_confirm: passwordConfirm })
   }
 }

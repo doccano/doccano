@@ -36,11 +36,11 @@
           type="password"
         />
         <v-text-field
-          id="password2"
-          v-model="password2"
+          id="passwordConfirm"
+          v-model="passwordConfirm"
           :rules="confirmPasswordRules"
           :label="$t('user.confirmPassword')"
-          name="password2"
+          name="passwordConfirm"
           :prepend-icon="mdiLock"
           type="password"
         />
@@ -72,7 +72,7 @@ export default Vue.extend({
       username: '',
       email: '',
       password: '',
-      password2: '',
+      passwordConfirm: '',
       userNameRules,
       passwordRules,
       emailRules,
@@ -99,8 +99,8 @@ export default Vue.extend({
         await this.register({
           username: this.username,
           email: this.email,
-          password1: this.password,
-          password2: this.password2
+          password: this.password,
+          passwordConfirm: this.passwordConfirm
         })
         this.$router.push(this.localePath('/users'))
       } catch (error: any) {

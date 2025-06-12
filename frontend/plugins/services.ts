@@ -9,6 +9,7 @@ import { BoundingBoxApplicationService } from '@/services/application/tasks/boun
 import { SegmentationApplicationService } from '@/services/application/tasks/segmentation/segmentationApplicationService'
 import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
 import { UserApplicationService } from '~/services/application/user/UserApplicationService'
+import { GroupApplicationService } from '~/services/application/group/GroupApplicationService'
 
 export interface Services {
   categoryType: LabelApplicationService
@@ -21,7 +22,8 @@ export interface Services {
   tag: TagApplicationService
   bbox: BoundingBoxApplicationService
   segmentation: SegmentationApplicationService,
-  user: UserApplicationService
+  user: UserApplicationService,
+  group: GroupApplicationService
 }
 
 declare module 'vue/types/vue' {
@@ -46,6 +48,7 @@ const plugin: Plugin = (_, inject) => {
     bbox: new BoundingBoxApplicationService(repositories.boundingBox),
     segmentation: new SegmentationApplicationService(repositories.segmentation),
     user: new UserApplicationService(repositories.user),
+    group: new GroupApplicationService(repositories.group)
   }
   inject('services', services)
 }

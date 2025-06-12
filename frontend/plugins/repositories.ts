@@ -24,11 +24,15 @@ import { APICatalogRepository } from '@/repositories/upload/apiCatalogRepository
 import { APIParseRepository } from '@/repositories/upload/apiParseRepository'
 import { APIUserRepository } from '@/repositories/user/apiUserRepository'
 import { APISegmentationRepository } from '~/repositories/tasks/apiSegmentationRepository'
+import { APIGroupRepository } from '~/repositories/group/apiGroupRepository'
 export interface Repositories {
   // User
   auth: APIAuthRepository
   user: APIUserRepository
 
+  // Group
+  group: APIGroupRepository
+  
   // Project
   project: APIProjectRepository
   member: APIMemberRepository
@@ -79,6 +83,9 @@ const repositories: Repositories = {
   // User
   auth: new APIAuthRepository(),
   user: new APIUserRepository(),
+  
+  // Group
+  group: new APIGroupRepository(),
 
   // Project
   project: new APIProjectRepository(),
