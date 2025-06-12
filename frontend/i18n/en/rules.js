@@ -13,7 +13,7 @@ export default {
   userNameRules: {
     userNameRequired: 'User name is required',
     userNameLessThan30Chars: 'User name must be less than 30 characters',
-    min : 'User name must be at least 3 characters long',
+    minLength : 'User name must be at least 3 characters long',
   },
   roleRules: {
     roleRequired: 'Role is required'
