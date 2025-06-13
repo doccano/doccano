@@ -72,6 +72,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             "collaborative_annotation",
             "single_class_classification",
             "allow_member_to_create_label_type",
+            "label_discrepancy_threshold",
             "is_text_project",
             "tags",
         ]
