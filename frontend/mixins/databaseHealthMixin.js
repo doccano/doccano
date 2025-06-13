@@ -33,10 +33,10 @@ export const databaseHealthMixin = {
       // Verificação inicial
       this.checkDatabaseHealth()
       
-      // Verificação a cada 10 segundos
+      // Verificação a cada 3 segundos
       this.healthCheckInterval = setInterval(() => {
         this.checkDatabaseHealth()
-      }, 10000)
+      }, 3000)
     },
 
     stopHealthCheck() {

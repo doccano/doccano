@@ -40,7 +40,8 @@ import {
   mdiPlayCircleOutline,
   mdiChatOutline,
   mdiAlertCircleOutline,
-  mdiEyeOutline
+  mdiEyeOutline,
+  mdiRobotOutline
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -137,6 +138,12 @@ export default {
           text: 'Perspectives',
           link: 'perspectives',
           isVisible: true
+        },
+        {
+          icon: mdiRobotOutline, // ÍCONE DE DISCREPÂNCIAS AUTOMÁTICAS
+          text: 'Automatic Discrepancies',
+          link: 'automatic-discrepancies', // LEVA PARA /projects/:id/automatic-discrepancies
+          isVisible: this.isProjectAdmin
         },
         {
           icon: mdiCog,
