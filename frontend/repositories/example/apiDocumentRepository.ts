@@ -82,10 +82,10 @@ export class APIExampleRepository implements ExampleRepository {
 
   async list(
     projectId: string,
-    { limit = '10', offset = '0', q = '', isChecked = '', ordering = '', include_annotation = false }: SearchOption
+    { limit = '10', offset = '0', q = '', isChecked = '', ordering = '', include_annotation = 'false' }: SearchOption
   ): Promise<ExampleItemList> {
     // @ts-ignore
-    const params = buildQueryParams(limit, offset, q, isChecked, ordering, include_annotation)
+    const params = buildQueryParams(limit, offset, q, isChecked, ordering, include_annotation === 'true')
     const url = `/projects/${projectId}/examples?${params}`
     const response = await this.request.get(url)
     return new ExampleItemList(
@@ -121,7 +121,7 @@ export class APIExampleRepository implements ExampleRepository {
   }
 
   async findById(projectId: string, exampleId: number): Promise<ExampleItem> {
-    const url = `/projects/${projectId}/examples/${exampleId}`
+    const url = `/projects/${projectId}/examples/${exampleId}?include_annotation=true`
     const response = await this.request.get(url)
     return toModel(response.data)
   }
