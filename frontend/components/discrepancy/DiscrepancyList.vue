@@ -13,6 +13,8 @@
     />
 
     <v-data-table
+      v-model="selectedItems"
+      show-select
       :items="processedItems"
       :headers="headers"
       :loading="isLoading"
@@ -139,10 +141,30 @@
   </v-chip>
 </template>
 
-
       <template #[`item.action`]="{ item }">
-        <v-btn small color="primary text-capitalize" @click="viewAnnotation(item)">
-          Annotate
+        <v-select
+          v-model="selectedUsersByItem[item.id]"
+          :items="getAvailableUsers(item)"
+          item-text="username"
+          item-value="id"
+          label="Select Users"
+          multiple
+          chips
+          small-chips
+          deletable-chips
+          dense
+          outlined
+          hide-details
+          class="mb-2"
+          :rules="[v => !v || v.length <= 2 || 'Select a maximum of 2 users']"
+        ></v-select>
+        <v-btn
+          small
+          color="primary text-capitalize"
+          :disabled="!selectedUsersByItem[item.id] || selectedUsersByItem[item.id].length !== 2"
+          @click="compareUsersForDocument(item.id, selectedUsersByItem[item.id])"
+        >
+          Compare Annotations
         </v-btn>
       </template>
     </v-data-table>
@@ -306,7 +328,9 @@ export default Vue.extend({
       selectedItemLabels: null as { [label: string]: number } | null,
       selectedItemText: '',
       selectedItemUserVotes: null as { [label: string]: { users: Array<{ id: number, name: string }> } } | null,
-      dialogTab: 0
+      dialogTab: 0,
+      selectedItems: [] as ExampleDTO[],
+      selectedUsersByItem: {} as { [itemId: number]: number[] }
     }
   },
 
@@ -330,6 +354,7 @@ export default Vue.extend({
   const result: Array<{
     id: number
     text: string
+    annotations: ExampleDTO['annotations']
     annotationsText: string
     hasDiscrepancy: boolean
     discrepancyDetails: string
@@ -390,7 +415,7 @@ export default Vue.extend({
     for (let i = 0; i < memberIds.length; i++) {
       const memberId = memberIds[i]
       const memberAnnotations = annotations[memberId]
-      const memberName = this.memberNames[memberId] || `Usuário ${memberId}`
+      const memberName = this.memberNames[memberId] || `User ${memberId}`
       annotationsText += `${memberName}: ${this.formatAnnotations(memberAnnotations)}\n`
 
       for (let j = i + 1; j < memberIds.length; j++) {
@@ -399,7 +424,7 @@ export default Vue.extend({
         const discrepancy = this.compareAnnotations(memberAnnotations, otherAnnotations)
         if (discrepancy) {
           hasDiscrepancy = true
-          const otherMemberName = this.memberNames[otherMemberId] || `Usuário ${otherMemberId}`
+          const otherMemberName = this.memberNames[otherMemberId] || `User ${otherMemberId}`
           discrepancyDetails += `Discrepancy between ${memberName} and ${otherMemberName}:\n${discrepancy}\n\n`
         }
       }
@@ -489,6 +514,7 @@ export default Vue.extend({
     result.push({
       id: docId,
       text: item.text,
+      annotations: item.annotations,
       annotationsText,
       hasDiscrepancy,
       discrepancyDetails,
@@ -519,6 +545,7 @@ export default Vue.extend({
   },
 
 mounted() {
+  console.log('DiscrepancyList - Members recebidos:', JSON.stringify(this.members, null, 2));
   this.loadMemberNames()
   this.loadLabelsIfNeeded()
 },
@@ -827,7 +854,40 @@ loadLabelsIfNeeded() {
         'BoundingBox': `/projects/${projectId}/object-detection`,
         'Segmentation': `/projects/${projectId}/segmentation`
       }
-      return mapping[projectType] || `/projects/${projectId}`
+      return mapping[projectType] || `/projects/${projectId}/text-classification`
+    },
+
+    getAvailableUsers(item: ExampleDTO): { id: number; username: string }[] {
+      const userIds = new Set<number>();
+      if (item.annotations) {
+        item.annotations.forEach(annotation => {
+          const userId = annotation.user ?? annotation.user_id ?? annotation.created_by;
+          if (userId) {
+            userIds.add(userId);
+          }
+        });
+      }
+      return Array.from(userIds).map(id => {
+        console.log(`DiscrepancyList - Buscando username para ID: ${id}. memberNames atual:`, JSON.stringify(this.memberNames, null, 2));
+        return {
+          id,
+          username: this.memberNames[id] || `User ${id}`,
+        };
+      });
+    },
+
+    compareUsersForDocument(exampleId: number, userIds: number[]) {
+      console.log(`Comparar exemplo ${exampleId} para usuários: ${userIds.join(', ')}`)
+      
+      // Navegar para a página de comparação com os IDs como query parameters
+      this.$router.push({
+        path: this.$nuxt.localePath(`/projects/${this.projectId}/compare`),
+        query: {
+          exampleId: exampleId.toString(),
+          user1Id: userIds[0].toString(),
+          user2Id: userIds[1].toString()
+        }
+      });
     }
   }
 })
