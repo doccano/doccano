@@ -1,4 +1,4 @@
-from rest_framework import viewsets, status, generics
+from rest_framework import viewsets, status, generics, serializers
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -91,8 +91,19 @@ class QuestionViewSet(viewsets.ModelViewSet):
         return super().list(request, *args, **kwargs)
 
     def perform_create(self, serializer):
+        import logging
+        logger = logging.getLogger(__name__)
+
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
-        serializer.save(project=project, created_by=self.request.user)
+        logger.info(f"Creating question for project {project.id}")
+        logger.info(f"Request data: {self.request.data}")
+
+        try:
+            serializer.save(project=project, created_by=self.request.user)
+            logger.info("Question created successfully")
+        except Exception as e:
+            logger.error(f"Error creating question: {e}")
+            raise
 
     @action(detail=False, methods=['post'])
     def bulk_create(self, request, project_id=None):

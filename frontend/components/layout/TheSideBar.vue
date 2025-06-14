@@ -38,8 +38,9 @@ import {
   mdiHome,
   mdiLabel,
   mdiPlayCircleOutline,
-  mdiChatOutline, 
-  mdiAlertCircleOutline 
+  mdiChatOutline,
+  mdiAlertCircleOutline,
+  mdiEyeOutline
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -130,6 +131,12 @@ export default {
           text: 'Discrepancies',
           link: 'discrepancies', // LEVA PARA /projects/:id/discrepancies
           isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiEyeOutline,
+          text: 'Perspectives',
+          link: 'perspectives',
+          isVisible: true
         },
         {
           icon: mdiCog,
