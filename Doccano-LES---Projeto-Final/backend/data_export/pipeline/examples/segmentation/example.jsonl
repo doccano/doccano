@@ -1,9 +1,0 @@
-{
-  "filename": "cat.png",
-  "segmentation": [
-    {
-      "points": [38, 81, 32, 78, 47, 82],
-      "label": "cat"
-    }
-  ],
-}

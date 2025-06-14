@@ -1,4 +1,0 @@
-exampleA
-exampleB
-
-exampleC

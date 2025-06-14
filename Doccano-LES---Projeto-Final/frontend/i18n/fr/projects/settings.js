@@ -1,3 +1,0 @@
-export default {
-  title: 'Paramètres'
-}

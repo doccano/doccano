@@ -1,3 +1,0 @@
-{"text": "exampleA", "labels": ["positive"], "meta": {"wikiPageID": 1}}
-{"text": "exampleB", "labels": ["positive", "negative"], "meta": {"wikiPageID": 2}}
-{"text": "exampleC", "labels": [], "meta": {"wikiPageID": 3}}

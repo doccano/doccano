@@ -1,8 +1,0 @@
-.nuxt/
-assets/
-coverage/
-dist/
-node_modules/
-static/
-*.html
-*.md

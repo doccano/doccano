@@ -1,5 +1,0 @@
-{"text": "exampleA", "entities": [[0, 1, "LOC"]], "cats": ["positive"]}
-{"text": "exampleB", "cats": ["positive"]}
-{"text": "exampleC", "entities": [[0, 1, "LOC"]]}
-{"text": "exampleD"}
-{"entities": [[0, 1, "LOC"]], "cats": ["positive"]}
