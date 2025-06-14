@@ -3,7 +3,7 @@
     <v-alert type="info" outlined dense class="mb-4">
       <strong>Attention!</strong> Discrepancies between annotations are highlighted with a pulsing yellow icon
       <v-chip color="warning" x-small class="mx-1"><v-icon x-small>{{ mdiAlertCircle }}</v-icon></v-chip> 
-      in the Status column. Hover over the icon to see details of discrepancies between notes.
+      in the Status column. 
     </v-alert>
 
     <v-checkbox
@@ -13,6 +13,8 @@
     />
 
     <v-data-table
+      v-model="selectedItems"
+      show-select
       :items="processedItems"
       :headers="headers"
       :loading="isLoading"
@@ -25,6 +27,7 @@
         'page-text': '{0}-{1} de {2}'
       }"
       item-key="id"
+      :item-class="getRowClass"
       @input="$emit('input', $event)"
     >
       <template #top>
@@ -50,19 +53,39 @@
 
       <template #[`item.labelPercentages`]="{ item }">
         <div v-if="item.labelPercentages && Object.keys(item.labelPercentages).length > 0">
-          <div v-for="(percentage, label) in item.labelPercentages" :key="label" class="label-percentage">
-            <v-chip x-small :color="getLabelColor(label)" class="mr-1 white--text">
-  {{ getLabelName(label) }}
-</v-chip>
-
+          <!-- Mostrar apenas as primeiras 2 labels -->
+          <div
+            v-for="label in Object.keys(item.labelPercentages).slice(0, 2)"
+            :key="label"
+            class="label-percentage"
+          >
+            <v-chip x-small :color="getLabelColor(label.toString())" class="mr-1 white--text">
+              {{ getLabelName(label.toString()) }}
+            </v-chip>
             <v-progress-linear
-              :value="percentage"
+              :value="item.labelPercentages[label]"
               height="10"
-              :color="getLabelColor(label)"
+              :color="getLabelColor(label.toString())"
               class="mb-1"
             ></v-progress-linear>
-            <span class="percentage-text">{{ percentage }}%</span>
+            <span class="percentage-text">{{ item.labelPercentages[label] }}%</span>
           </div>
+
+          <!-- Botão "See More" sempre presente -->
+          <v-btn
+            x-small
+            text
+            color="primary"
+            class="mt-1"
+            @click="openLabelDialog(item)"
+          >
+            <span v-if="Object.keys(item.labelPercentages).length > 2">
+              See More ({{ Object.keys(item.labelPercentages).length - 2 }}+)
+            </span>
+            <span v-else>
+              See More
+            </span>
+          </v-btn>
         </div>
         <span v-else>No data</span>
       </template>
@@ -82,6 +105,32 @@
         </div>
       </template>
 
+      <template #[`item.discrepancyPercentage`]="{ item }">
+        <div class="discrepancy-info">
+          <div class="d-flex align-center mb-2">
+            <v-progress-circular
+              :value="item.discrepancyData.disagreement"
+              :color="getDiscrepancyColor(item.discrepancyPercentage)"
+              size="40"
+              width="4"
+              class="mr-2"
+            >
+              <span class="caption">{{ item.discrepancyPercentage }}%</span>
+            </v-progress-circular>
+            <div>
+              <div class="caption">
+                <v-icon small color="success">mdi-check</v-icon>
+                {{ item.discrepancyData.agreement }}% agreement
+              </div>
+              <div class="caption">
+                <v-icon small :color="getDiscrepancyColor(item.discrepancyPercentage)">mdi-alert</v-icon>
+                {{ item.discrepancyData.disagreement }}% discrepancy
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+
 <template #[`item.status`]="{ item }">
   <v-chip v-if="item.hasDiscrepancy" color="warning" small class="pulse-animation">
     <v-icon small left>{{ mdiAlertCircle }}</v-icon>
@@ -92,13 +141,136 @@
   </v-chip>
 </template>
 
-
       <template #[`item.action`]="{ item }">
-        <v-btn small color="primary text-capitalize" @click="viewAnnotation(item)">
-          Annotate
+        <v-select
+          v-model="selectedUsersByItem[item.id]"
+          :items="getAvailableUsers(item)"
+          item-text="username"
+          item-value="id"
+          label="Select Users"
+          multiple
+          chips
+          small-chips
+          deletable-chips
+          dense
+          outlined
+          hide-details
+          class="mb-2"
+          :rules="[v => !v || v.length <= 2 || 'Select a maximum of 2 users']"
+        ></v-select>
+        <v-btn
+          small
+          color="primary text-capitalize"
+          :disabled="!selectedUsersByItem[item.id] || selectedUsersByItem[item.id].length !== 2"
+          @click="compareUsersForDocument(item.id, selectedUsersByItem[item.id])"
+        >
+          Compare Annotations
         </v-btn>
       </template>
     </v-data-table>
+
+    <!-- Dialog para mostrar todas as labels -->
+    <v-dialog v-model="labelDialog" max-width="700px">
+      <v-card>
+        <v-card-title class="headline">
+          Label Analysis
+          <v-spacer></v-spacer>
+          <v-btn icon @click="labelDialog = false">
+            <v-icon>mdi-close</v-icon>
+          </v-btn>
+        </v-card-title>
+
+        <v-card-text>
+          <div v-if="selectedItemLabels">
+            <div class="mb-3">
+              <strong>Text:</strong> {{ truncate(selectedItemText, 100) }}
+            </div>
+
+            <v-divider class="mb-4"></v-divider>
+
+            <!-- Abas para alternar entre visualizações -->
+            <v-tabs v-model="dialogTab" class="mb-4">
+              <v-tab>Percentages</v-tab>
+              <v-tab>User Votes</v-tab>
+            </v-tabs>
+
+            <v-tabs-items v-model="dialogTab">
+              <!-- Aba de Percentagens -->
+              <v-tab-item>
+                <div v-for="(percentage, label) in selectedItemLabels" :key="label" class="label-percentage-dialog mb-3">
+                  <div class="d-flex align-center mb-2">
+                    <v-chip small :color="getLabelColor(label.toString())" class="mr-3 white--text">
+                      {{ getLabelName(label.toString()) }}
+                    </v-chip>
+                    <span class="percentage-text-dialog">{{ percentage }}%</span>
+                  </div>
+                  <v-progress-linear
+                    :value="percentage"
+                    height="12"
+                    :color="getLabelColor(label.toString())"
+                    class="mb-1"
+                  ></v-progress-linear>
+                </div>
+              </v-tab-item>
+
+              <!-- Aba de Votos por Usuário -->
+              <v-tab-item>
+                <div v-if="selectedItemUserVotes && Object.keys(selectedItemUserVotes).length > 0">
+                  <div v-for="(labelData, label) in selectedItemUserVotes" :key="label" class="mb-4">
+                    <div class="d-flex align-center mb-2">
+                      <v-chip small :color="getLabelColor(label.toString())" class="mr-3 white--text">
+                        {{ getLabelName(label.toString()) }}
+                      </v-chip>
+                      <span class="caption">({{ labelData.users.length }} vote{{ labelData.users.length !== 1 ? 's' : '' }})</span>
+                    </div>
+
+                    <div class="ml-4">
+                      <v-chip
+                        v-for="user in labelData.users"
+                        :key="user.id"
+                        x-small
+                        outlined
+                        class="mr-1 mb-1"
+                      >
+                        <v-icon left x-small>mdi-account</v-icon>
+                        {{ user.name }}
+                      </v-chip>
+                    </div>
+                  </div>
+
+                  <v-divider class="my-3"></v-divider>
+
+                  <!-- Resumo -->
+                  <div class="caption grey--text">
+                    <strong>Summary:</strong>
+                    {{ Object.keys(selectedItemUserVotes).length }} different label{{ Object.keys(selectedItemUserVotes).length !== 1 ? 's' : '' }}
+                    from {{ getTotalVoters() }} user{{ getTotalVoters() !== 1 ? 's' : '' }}
+                  </div>
+                </div>
+
+                <!-- Mensagem quando não há dados -->
+                <div v-else class="text-center py-4">
+                  <v-icon large color="grey">mdi-information-outline</v-icon>
+                  <div class="mt-2 grey--text">
+                    No user vote data available for this text.
+                  </div>
+                  <div class="caption grey--text mt-1">
+                    Debug info: selectedItemUserVotes = {{ selectedItemUserVotes }}
+                  </div>
+                </div>
+              </v-tab-item>
+            </v-tabs-items>
+          </div>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="labelDialog = false">
+            Close
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -111,6 +283,11 @@ import type { PropType } from 'vue'
 type ExampleDTO = {
   id: number
   text: string
+  assignments?: Array<{
+    id: string
+    assignee: string
+    assignee_id: number
+  }>
   annotations: Array<{
     user: number
     label: string
@@ -146,7 +323,14 @@ export default Vue.extend({
       mdiMagnify,
       mdiAlertCircle,
       memberNames: {} as { [key: number]: string },
-      showOnlyDiscrepancies: false
+      showOnlyDiscrepancies: false,
+      labelDialog: false,
+      selectedItemLabels: null as { [label: string]: number } | null,
+      selectedItemText: '',
+      selectedItemUserVotes: null as { [label: string]: { users: Array<{ id: number, name: string }> } } | null,
+      dialogTab: 0,
+      selectedItems: [] as ExampleDTO[],
+      selectedUsersByItem: {} as { [itemId: number]: number[] }
     }
   },
 
@@ -156,6 +340,7 @@ export default Vue.extend({
         { text: 'Text', value: 'text', sortable: true },
         { text: 'Label Percentage', value: 'labelPercentages', sortable: false },
         { text: 'Participation', value: 'participation', sortable: false },
+        { text: 'Discrepancy', value: 'discrepancyPercentage', sortable: true },
         { text: 'Status', value: 'status', sortable: false },
         { text: 'Action', value: 'action', sortable: false }
       ]
@@ -169,6 +354,7 @@ export default Vue.extend({
   const result: Array<{
     id: number
     text: string
+    annotations: ExampleDTO['annotations']
     annotationsText: string
     hasDiscrepancy: boolean
     discrepancyDetails: string
@@ -176,6 +362,8 @@ export default Vue.extend({
     participationCount: number
     totalMembers: number
     participationRate: number
+    discrepancyPercentage: number
+    discrepancyData: { agreement: number, disagreement: number }
   }> = []
 
   // Agrupar anotações por documento (não por usuário e documento)
@@ -209,12 +397,16 @@ export default Vue.extend({
     const annotations = annotationsByDoc[docId]
     if (!annotations) return
 
-    const memberIds = Object.keys(annotations).map(id => parseInt(id))
-    if (memberIds.length <= 1) return
-
     // Encontrar o documento correspondente
     const item = this.items.find(i => i.id === docId)
     if (!item) return
+
+    // Filtrar apenas usuários que estão atualmente assignados a este texto
+    const exampleAssignees = item.assignments ? item.assignments.map((a: any) => a.assignee_id) : []
+    const allMemberIds = Object.keys(annotations).map(id => parseInt(id))
+    const memberIds = allMemberIds.filter(memberId => exampleAssignees.includes(memberId))
+
+    if (memberIds.length <= 1) return
 
     let hasDiscrepancy = false
     let discrepancyDetails = ''
@@ -223,7 +415,7 @@ export default Vue.extend({
     for (let i = 0; i < memberIds.length; i++) {
       const memberId = memberIds[i]
       const memberAnnotations = annotations[memberId]
-      const memberName = this.memberNames[memberId] || `Usuário ${memberId}`
+      const memberName = this.memberNames[memberId] || `User ${memberId}`
       annotationsText += `${memberName}: ${this.formatAnnotations(memberAnnotations)}\n`
 
       for (let j = i + 1; j < memberIds.length; j++) {
@@ -232,7 +424,7 @@ export default Vue.extend({
         const discrepancy = this.compareAnnotations(memberAnnotations, otherAnnotations)
         if (discrepancy) {
           hasDiscrepancy = true
-          const otherMemberName = this.memberNames[otherMemberId] || `Usuário ${otherMemberId}`
+          const otherMemberName = this.memberNames[otherMemberId] || `User ${otherMemberId}`
           discrepancyDetails += `Discrepancy between ${memberName} and ${otherMemberName}:\n${discrepancy}\n\n`
         }
       }
@@ -246,22 +438,25 @@ export default Vue.extend({
 
     if (this.showOnlyDiscrepancies && !hasDiscrepancy) return
 
-    // Calcular porcentagens de labels
+    // Calcular porcentagens de labels apenas para usuários assignados
     const labelCounts: { [label: string]: number } = {}
     const totalAnnotations: { [label: string]: number } = {}
-    
-    // Contar ocorrências de cada label
-    Object.values(annotations).forEach(memberAnnotations => {
-      memberAnnotations.forEach((annotation: any) => {
-        if (annotation.label) {
-          if (!labelCounts[annotation.label]) {
-            labelCounts[annotation.label] = 0
-            totalAnnotations[annotation.label] = 0
+
+    // Contar ocorrências de cada label apenas dos usuários assignados
+    memberIds.forEach(memberId => {
+      const memberAnnotations = annotations[memberId]
+      if (memberAnnotations) {
+        memberAnnotations.forEach((annotation: any) => {
+          if (annotation.label) {
+            if (!labelCounts[annotation.label]) {
+              labelCounts[annotation.label] = 0
+              totalAnnotations[annotation.label] = 0
+            }
+            labelCounts[annotation.label]++
+            totalAnnotations[annotation.label]++
           }
-          labelCounts[annotation.label]++
-          totalAnnotations[annotation.label]++
-        }
-      })
+        })
+      }
     })
     
     // Calcular porcentagens
@@ -274,21 +469,61 @@ export default Vue.extend({
       })
     }
     
-    // Calcular taxa de participação
-    const totalMembersInProject = this.members.length
+    // Calcular taxa de participação baseada nos assignees específicos deste exemplo
+    const totalAssigneesForExample = exampleAssignees.length
     const participationCount = memberIds.length
-    const participationRate = Math.round((participationCount / totalMembersInProject) * 100)
-    
+    const participationRate = totalAssigneesForExample > 0 ? Math.round((participationCount / totalAssigneesForExample) * 100) : 0
+
+    // Calcular percentagem de discrepância baseada no consenso real
+    const labelVotes: { [label: string]: number } = {}
+    let totalVotes = 0
+
+    // Contar votos para cada label
+    memberIds.forEach(memberId => {
+      const memberAnnotations = annotations[memberId]
+      if (memberAnnotations) {
+        memberAnnotations.forEach((annotation: any) => {
+          if (annotation.label) {
+            const labelKey = annotation.label.toString()
+            labelVotes[labelKey] = (labelVotes[labelKey] || 0) + 1
+            totalVotes++
+          }
+        })
+      }
+    })
+
+    // Calcular consenso real: apenas votos que concordam entre si
+    let consensusVotes = 0
+
+    // Para cada label, contar apenas os votos que concordam (mesmo label)
+    Object.values(labelVotes).forEach(votes => {
+      if (votes > 1) {
+        // Se uma label tem mais de 1 voto, esses votos concordam entre si
+        consensusVotes += votes
+      }
+    })
+
+    const agreementPercentage = totalVotes > 0 ? Math.round((consensusVotes / totalVotes) * 100) : 0
+    const discrepancyPercentage = 100 - agreementPercentage
+
+    const discrepancyData = {
+      agreement: agreementPercentage,
+      disagreement: discrepancyPercentage
+    }
+
     result.push({
       id: docId,
       text: item.text,
+      annotations: item.annotations,
       annotationsText,
       hasDiscrepancy,
       discrepancyDetails,
       labelPercentages,
       participationCount,
-      totalMembers: totalMembersInProject,
-      participationRate
+      totalMembers: totalAssigneesForExample,
+      participationRate,
+      discrepancyPercentage,
+      discrepancyData
     })
   })
 
@@ -310,6 +545,7 @@ export default Vue.extend({
   },
 
 mounted() {
+  console.log('DiscrepancyList - Members recebidos:', JSON.stringify(this.members, null, 2));
   this.loadMemberNames()
   this.loadLabelsIfNeeded()
 },
@@ -352,6 +588,131 @@ loadLabelsIfNeeded() {
       if (rate < 30) return 'error'
       if (rate < 60) return 'warning'
       return 'success'
+    },
+
+    getDiscrepancyColor(percentage: number): string {
+      if (percentage >= 70) return 'error'
+      if (percentage >= 40) return 'warning'
+      return 'success'
+    },
+
+    showTooltip(event: MouseEvent, item: any) {
+      const rect = (event.target as HTMLElement).getBoundingClientRect()
+      this.tooltip.x = rect.left + rect.width / 2
+      this.tooltip.y = rect.top - 10
+      this.tooltip.content = `${item.discrepancyData.agreement}% agreement, ${item.discrepancyData.disagreement}% discrepancy`
+      this.tooltip.show = true
+    },
+
+    hideTooltip() {
+      this.tooltip.show = false
+    },
+
+    getRowClass(item: any): string {
+      const discrepancyPercentage = item.discrepancyPercentage || 0
+      if (discrepancyPercentage >= 70) return 'high-discrepancy-row'
+      if (discrepancyPercentage >= 40) return 'medium-discrepancy-row'
+      return 'low-discrepancy-row'
+    },
+
+    openLabelDialog(item: any) {
+      this.selectedItemLabels = item.labelPercentages
+      this.selectedItemText = item.text
+      this.selectedItemUserVotes = this.getUserVotesForItem(item.id)
+      this.dialogTab = 0
+      this.labelDialog = true
+    },
+
+    getUserVotesForItem(itemId: number) {
+      console.log('🔍 Getting user votes for item:', itemId)
+      const userVotes: { [label: string]: { users: Array<{ id: number, name: string }> } } = {}
+
+      // Encontrar o item específico
+      const item = this.items.find(i => i.id === itemId)
+      console.log('📄 Found item:', item)
+
+      if (!item || !item.annotations) {
+        console.log('❌ No item or annotations found')
+        return null
+      }
+
+      // Filtrar apenas usuários assignados
+      const exampleAssignees = item.assignments ? item.assignments.map((a: any) => a.assignee_id) : []
+      console.log('👥 Example assignees:', exampleAssignees)
+      console.log('📝 Item annotations:', item.annotations)
+
+      // Agrupar anotações por label
+      item.annotations.forEach((annotation: any) => {
+        const userId = annotation.user ?? annotation.user_id ?? annotation.created_by
+        console.log('🔍 Processing annotation:', annotation, 'userId:', userId)
+
+        // Só considerar usuários assignados
+        if (userId && exampleAssignees.includes(userId) && annotation.label) {
+          const labelKey = annotation.label.toString()
+          const userName = this.getUserName(userId)
+
+          console.log('✅ Adding vote:', labelKey, 'by', userName)
+
+          if (!userVotes[labelKey]) {
+            userVotes[labelKey] = { users: [] }
+          }
+
+          // Evitar duplicatas do mesmo usuário
+          if (!userVotes[labelKey].users.find(u => u.id === userId)) {
+            userVotes[labelKey].users.push({
+              id: userId,
+              name: userName
+            })
+          }
+        } else {
+          console.log('❌ Skipping annotation - userId:', userId, 'assignees:', exampleAssignees, 'label:', annotation.label)
+        }
+      })
+
+      console.log('📊 Final user votes:', userVotes)
+      return userVotes
+    },
+
+    getTotalVoters(): number {
+      if (!this.selectedItemUserVotes) return 0
+
+      const allUsers = new Set<number>()
+      Object.values(this.selectedItemUserVotes).forEach(labelData => {
+        labelData.users.forEach(user => allUsers.add(user.id))
+      })
+
+      return allUsers.size
+    },
+
+    getUserName(userId: number): string {
+      // Primeiro, tentar buscar no memberNames (cache)
+      if (this.memberNames[userId]) {
+        return this.memberNames[userId]
+      }
+
+      // Segundo, buscar na lista de members passada como prop
+      const member = this.members.find((m: any) => m.user === userId || m.id === userId)
+      if (member) {
+        const username = member.username || member.user_name || member.name
+        // Cachear para uso futuro
+        this.$set(this.memberNames, userId, username)
+        return username
+      }
+
+      // Terceiro, buscar nos assignments dos items para pegar o nome
+      for (const item of this.items) {
+        if (item.assignments) {
+          const assignment = item.assignments.find((a: any) => a.assignee_id === userId)
+          if (assignment && assignment.assignee) {
+            const username = assignment.assignee
+            this.$set(this.memberNames, userId, username)
+            return username
+          }
+        }
+      }
+
+      // Fallback para User ID
+      return `User ${userId}`
     },
 
     truncate(value: string, length: number): string {
@@ -403,9 +764,30 @@ loadLabelsIfNeeded() {
     },
 
     loadMemberNames() {
+      console.log('📋 Loading member names. Members prop:', this.members)
+
       // Usar os dados dos members que já foram buscados na página principal
       this.members.forEach((member: any) => {
-        this.$set(this.memberNames, member.id, member.username)
+        const userId = member.user || member.id
+        const username = member.username || member.user_name || member.name
+        if (userId && username) {
+          this.$set(this.memberNames, userId, username)
+          console.log('✅ Loaded member:', userId, '->', username)
+        }
+      })
+
+      // Carregar nomes dos assignments também
+      this.items.forEach(item => {
+        if (item.assignments && Array.isArray(item.assignments)) {
+          item.assignments.forEach((assignment: any) => {
+            const userId = assignment.assignee_id
+            const username = assignment.assignee
+            if (userId && username && !this.memberNames[userId]) {
+              this.$set(this.memberNames, userId, username)
+              console.log('✅ Loaded from assignment:', userId, '->', username)
+            }
+          })
+        }
       })
 
       // Para qualquer member ID que não esteja na lista, usar um fallback
@@ -413,8 +795,9 @@ loadLabelsIfNeeded() {
       this.items.forEach(item => {
         if (item.annotations && Array.isArray(item.annotations)) {
           item.annotations.forEach((annotation: any) => {
-            if (annotation.user && !this.memberNames[annotation.user]) {
-              memberIds.add(annotation.user)
+            const userId = annotation.user ?? annotation.user_id ?? annotation.created_by
+            if (userId && !this.memberNames[userId]) {
+              memberIds.add(userId)
             }
           })
         }
@@ -422,12 +805,47 @@ loadLabelsIfNeeded() {
 
       // Só buscar members que não estão na lista já carregada
       memberIds.forEach(memberId => {
-        this.$set(this.memberNames, memberId, `Usuário ${memberId}`)
+        if (!this.memberNames[memberId]) {
+          this.$set(this.memberNames, memberId, `User ${memberId}`)
+          console.log('⚠️ Fallback for user:', memberId)
+        }
       })
+
+      console.log('📋 Final memberNames:', this.memberNames)
     },
 
     viewAnnotation(item: any) {
+      console.log('🔍 ViewAnnotation called with item:', item)
+
+      // Buscar o item original com assignments
+      const originalItem = this.items.find(i => i.id === item.id)
+      console.log('📄 Original item found:', originalItem)
+
+      // Verificar se o usuário atual está assignado a este texto
+      const currentUserId = this.$store.getters['auth/getUserId']
+      console.log('👤 Current user ID:', currentUserId)
+
+      const assignments = originalItem?.assignments || item.assignments
+      console.log('📋 Assignments:', assignments)
+
+      const isAssignee = assignments && assignments.some((assignment: any) => assignment.assignee_id === currentUserId)
+      console.log('✅ Is assignee:', isAssignee)
+
+      if (!isAssignee) {
+        // Mostrar erro se não estiver assignado
+        console.log('❌ User not assigned, showing error')
+        this.$store.dispatch('notification/setNotification', {
+          color: 'error',
+          text: this.$t('dataset.notAssigneeError')
+        })
+        return
+      }
+
+      // Se estiver assignado, prosseguir normalmente
+      console.log('✅ User is assigned, proceeding to annotation page')
       const link = this.getLinkToAnnotationPage()
+      console.log('🔗 Navigation link:', link)
+
       this.$router.push({
         path: this.$nuxt.localePath(link),
         query: { page: item.id.toString() }
@@ -448,7 +866,40 @@ loadLabelsIfNeeded() {
         'BoundingBox': `/projects/${projectId}/object-detection`,
         'Segmentation': `/projects/${projectId}/segmentation`
       }
-      return mapping[projectType] || `/projects/${projectId}`
+      return mapping[projectType] || `/projects/${projectId}/text-classification`
+    },
+
+    getAvailableUsers(item: ExampleDTO): { id: number; username: string }[] {
+      const userIds = new Set<number>();
+      if (item.annotations) {
+        item.annotations.forEach(annotation => {
+          const userId = annotation.user ?? annotation.user_id ?? annotation.created_by;
+          if (userId) {
+            userIds.add(userId);
+          }
+        });
+      }
+      return Array.from(userIds).map(id => {
+        console.log(`DiscrepancyList - Buscando username para ID: ${id}. memberNames atual:`, JSON.stringify(this.memberNames, null, 2));
+        return {
+          id,
+          username: this.memberNames[id] || `User ${id}`,
+        };
+      });
+    },
+
+    compareUsersForDocument(exampleId: number, userIds: number[]) {
+      console.log(`Comparar exemplo ${exampleId} para usuários: ${userIds.join(', ')}`)
+      
+      // Navegar para a página de comparação com os IDs como query parameters
+      this.$router.push({
+        path: this.$nuxt.localePath(`/projects/${this.projectId}/compare`),
+        query: {
+          exampleId: exampleId.toString(),
+          user1Id: userIds[0].toString(),
+          user2Id: userIds[1].toString()
+        }
+      });
     }
   }
 })
@@ -517,5 +968,35 @@ loadLabelsIfNeeded() {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.discrepancy-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Classes para colorir as linhas baseadas na discrepância */
+::v-deep .high-discrepancy-row {
+  background-color: rgba(244, 67, 54, 0.1) !important;
+}
+
+::v-deep .medium-discrepancy-row {
+  background-color: rgba(255, 152, 0, 0.1) !important;
+}
+
+::v-deep .low-discrepancy-row {
+  background-color: rgba(76, 175, 80, 0.05) !important;
+}
+
+/* Estilos para o dialog de labels */
+.label-percentage-dialog {
+  margin-bottom: 16px;
+}
+
+.percentage-text-dialog {
+  font-weight: bold;
+  font-size: 14px;
+  min-width: 40px;
 }
 </style>

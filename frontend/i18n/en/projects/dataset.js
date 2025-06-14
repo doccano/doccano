@@ -18,5 +18,6 @@ export default {
   deleteDocumentsMessage: 'Are you sure you want to delete {number} items from this project?',
   deleteBulkDocumentsTitle: 'Delete All Documents',
   deleteBulkDocumentsMessage: 'Are you sure you want to delete all documents from this project?',
-  pageText: '{0}-{1} of {2}'
+  pageText: '{0}-{1} of {2}',
+  notAssigneeError: 'You must be assigned to this text to annotate it. Please ask an admin to assign you to this text first.'
 }

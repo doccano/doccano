@@ -19,4 +19,5 @@ export default {
   type: 'Type',
   loading: 'Loading... Please wait',
   more: 'More',
+  ok: 'OK',
 }

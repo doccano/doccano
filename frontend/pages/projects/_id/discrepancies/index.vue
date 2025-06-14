@@ -73,10 +73,13 @@ export default defineComponent({
         this.$repositories.member.list(this.projectId)
       ])
 
+      console.log('API Response - membersResponse:', JSON.stringify(membersResponse, null, 2));
+
       this.items = examplesResponse.items.map((item: any) => {
         return {
           id: item.id,
           text: item.text,
+          assignments: item.assignments || [],
           annotations: (item.annotations || []).map((a: any) => ({
             user: a.user ?? a.user_id ?? a.created_by,
             label: a.label,
@@ -90,10 +93,12 @@ export default defineComponent({
 
       this.members = membersResponse.map((member: any) => ({
         id: member.id,
+        user: member.user,
         username: member.username
       }))
 
-      console.log('📦 Anotações recebidas:', JSON.stringify(this.items, null, 2))
+      console.log('Processed members (this.members in index.vue):', JSON.stringify(this.members, null, 2));
+
     } catch (e) {
       console.error('Erro ao buscar dados do projeto:', e)
     } finally {

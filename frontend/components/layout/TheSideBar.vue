@@ -41,7 +41,8 @@ import {
   mdiChatOutline, 
   mdiAlertCircleOutline,
   mdiRobotOutline,
-  mdiFileDocumentOutline
+  mdiFileDocumentOutline,
+  mdiEyeOutline
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -144,6 +145,12 @@ export default {
           text: 'Disagreements Report',
           link: 'disagreements-report', // LEVA PARA /projects/:id/disagreements-report
           isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiEyeOutline,
+          text: 'Perspectives',
+          link: 'perspectives',
+          isVisible: true
         },
         {
           icon: mdiCog,

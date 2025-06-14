@@ -52,6 +52,7 @@
       :total="item.count"
       @update:query="updateQuery"
       @click:labeling="movePage"
+      @not-assignee="showNotAssigneeError"
       @assign="assign"
       @unassign="unassign"
     />
@@ -65,6 +66,7 @@
       :total="item.count"
       @update:query="updateQuery"
       @click:labeling="movePage"
+      @not-assignee="showNotAssigneeError"
       @assign="assign"
       @unassign="unassign"
     />
@@ -78,6 +80,7 @@
       :total="item.count"
       @update:query="updateQuery"
       @click:labeling="movePage"
+      @not-assignee="showNotAssigneeError"
       @edit="editItem"
       @assign="assign"
       @unassign="unassign"
@@ -229,6 +232,13 @@ export default Vue.extend({
       this.dialogReset = false
       await this.$repositories.assignment.reset(this.projectId)
       this.item = await this.$services.example.list(this.projectId, this.$route.query)
+    },
+
+    showNotAssigneeError(_item: ExampleDTO) {
+      this.$store.dispatch('notification/setNotification', {
+        color: 'error',
+        text: this.$t('dataset.notAssigneeError')
+      })
     }
   }
 })
