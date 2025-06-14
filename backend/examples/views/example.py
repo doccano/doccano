@@ -33,7 +33,7 @@ class ExampleList(generics.ListCreateAPIView):
             if self.project.random_order:
                 queryset = queryset.order_by("assignments__id")
 
-        # Se include_annotation for solicitado, fazer prefetch das anotações
+        # Se include_annotation for solicitado, fazer prefetch das anotações e assignments
         if self.request.query_params.get("include_annotation"):
             queryset = queryset.prefetch_related(
                 'categories__label',
@@ -42,7 +42,8 @@ class ExampleList(generics.ListCreateAPIView):
                 'spans__user',
                 'relations__type',
                 'relations__user',
-                'texts__user'
+                'texts__user',
+                'assignments__assignee'
             )
 
         return queryset

@@ -140,7 +140,7 @@ export default {
       ],
       textRules: [
         v => !!v || 'Question text is required',
-        v => v.length >= 10 || 'Question must be at least 10 characters'
+        v => (!v || v.length >= 10) || 'Question must be at least 10 characters'
       ],
       typeRules: [
         v => !!v || 'Question type is required'
@@ -151,7 +151,7 @@ export default {
       ],
       optionRules: [
         v => !!v || 'Option text is required',
-        v => v.length >= 1 || 'Option must not be empty'
+        v => (!v || v.length >= 1) || 'Option must not be empty'
       ]
     }
   },
