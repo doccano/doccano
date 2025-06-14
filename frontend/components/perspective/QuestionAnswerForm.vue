@@ -110,7 +110,7 @@ export default {
       submitting: {},
       textRules: [
         v => !!v || 'Answer is required',
-        v => v.length >= 5 || 'Answer must be at least 5 characters'
+        v => (!v || v.length >= 5) || 'Answer must be at least 5 characters'
       ],
       choiceRules: [
         v => v !== null && v !== undefined || 'Please select an option'

@@ -28,12 +28,12 @@ export const fileFormatRules = (msg) => {
 export const uploadFileRules = (msg) => {
   return [
     (v) => !!v || msg.fileRequired,
-    (v) => !v || v.some((file) => file.size < 100000000) || msg.fileLessThan1MB
+    (v) => !v || (v && v.some && v.some((file) => file.size < 100000000)) || msg.fileLessThan1MB
   ]
 }
 
 export const uploadSingleFileRules = (msg) => {
-  return [(v) => !!v || msg.fileRequired, (v) => !v || v.size < 1000000 || msg.fileLessThan1MB]
+  return [(v) => !!v || msg.fileRequired, (v) => !v || (v && v.size < 1000000) || msg.fileLessThan1MB]
 }
 
 // Rules for user.
@@ -56,5 +56,13 @@ export const emailRules = (msg) => {
       const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
       return pattern.test(v) || msg.format
     }
+  ]
+}
+
+// Rules for text input.
+export const textRules = (msg) => {
+  return [
+    (v) => !!v || (msg && msg.required) || 'Text is required',
+    (v) => (!v || v.length >= 1) || (msg && msg.minLength) || 'Text must not be empty'
   ]
 }

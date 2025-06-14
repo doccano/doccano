@@ -77,6 +77,7 @@ export default defineComponent({
         return {
           id: item.id,
           text: item.text,
+          assignments: item.assignments || [],
           annotations: (item.annotations || []).map((a: any) => ({
             user: a.user ?? a.user_id ?? a.created_by,
             label: a.label,
