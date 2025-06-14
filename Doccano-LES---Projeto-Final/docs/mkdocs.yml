@@ -1,0 +1,45 @@
+# Project information
+site_name: "doccano"
+site_description: "A Text Annotation tool for Humans"
+site_author: "Hiroki Nakayama"
+site_url: "https://doccano.github.io/doccano/"
+docs_dir: .
+
+# Repository
+repo_name: "doccano/doccano"
+repo_url: "https://github.com/doccano/doccano"
+
+# Copyright
+copyright: "Copyright &copy; 2018 - 2019 Hiroki Nakayama"
+
+theme:
+  name: "material"
+  palette:
+    primary: "cyan"
+    accent: "cyan"
+  show_sidebar: true
+
+extra:
+  social:
+    - icon: "fontawesome/brands/github"
+      link: "https://github.com/Hironsan"
+    - icon: "fontawesome/brands/twitter"
+      link: "https://twitter.com/Hironsan13"
+
+plugins:
+  - same-dir
+
+# Page tree
+nav:
+  - Get started: index.md
+  - Install and upgrade doccano: install_and_upgrade_doccano.md
+  - Tutorial: tutorial.md
+  - Setup cloud storage: setup_cloud_storage.md
+  - Advanced:
+      - AWS HTTPS settings: advanced/aws_https_settings.md
+      - OAuth2 settings: advanced/oauth2_settings.md
+      - Auto labeling settings: advanced/auto_labelling_config.md
+  - Developer guide: developer_guide.md
+  - FAQ: faq.md
+  - Code of conduct: CODE_OF_CONDUCT.md
+  - Roadmap: roadmap.md
