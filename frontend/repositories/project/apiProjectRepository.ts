@@ -24,7 +24,7 @@ export class SearchQuery {
   }
 }
 
-//comentário
+// comentário
 
 function toModel(item: { [key: string]: any }): Project {
   return new Project(
