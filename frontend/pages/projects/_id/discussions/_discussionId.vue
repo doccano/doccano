@@ -48,8 +48,10 @@
           <chat-discussion
             v-if="!isDiscussionClosed || isProjectAdmin"
             :current-user-id="currentUserId"
+            :current-username="currentUsername"
             :messages="messages"
             :read-only="isDiscussionClosed"
+            :is-online="isOnline"
             class="mt-4"
             @send-message="handleSendMessage"
             @retry-message="handleRetryMessage"
@@ -191,13 +193,33 @@ export default defineComponent({
     async loadMessages() {
       try {
         const res = await this.$axios.get(`/v1/discussions/${this.discussionId}/chat/`)
-        this.messages = res.data.map((msg: any) => ({
-          id: msg.id,
-          userId: msg.userId,
-          username: msg.username || 'Usuário',
-          text: msg.text,
-          timestamp: new Date(msg.timestamp)
-        }))
+        this.messages = res.data.map((msg: any) => {
+          // Processar mensagens com formato antigo de reply
+          let replyTo = null;
+          let cleanText = msg.text;
+
+          if (msg.text && msg.text.startsWith('↪')) {
+            const replyPattern = /^↪\s+([^:]+):\s+([^\n]*)\n(.*)$/s;
+            const match = msg.text.match(replyPattern);
+
+            if (match) {
+              replyTo = {
+                username: match[1].trim(),
+                text: match[2].trim()
+              };
+              cleanText = match[3].trim();
+            }
+          }
+
+          return {
+            id: msg.id,
+            userId: msg.userId,
+            username: msg.username || 'Usuário',
+            text: cleanText,
+            replyTo,
+            timestamp: new Date(msg.timestamp)
+          };
+        })
       } catch (e) {
         console.error("Erro ao carregar mensagens:", e);
         this.isOnline = false;
@@ -235,21 +257,40 @@ export default defineComponent({
       }
     },
 
-    async handleSendMessage(text: string) {
+    async handleSendMessage(messageData: any) {
+      // Processar tanto string (formato antigo) quanto objeto (formato novo)
+      let text: string;
+      let replyTo: any = null;
+
+      if (typeof messageData === 'string') {
+        text = messageData;
+      } else {
+        text = messageData.text;
+        replyTo = messageData.replyTo;
+      }
+
       const optimisticMessage: Message = {
         id: Date.now(),
         userId: this.currentUserId,
         username: this.currentUsername,
         text,
+        replyTo,
         timestamp: new Date(),
-        status: 'sending'
+        status: this.isOnline ? 'sending' : 'failed'
       };
+
       this.messages.push(optimisticMessage);
+
       if (this.isOnline) {
         try {
+          // Enviar apenas o texto para o backend (por enquanto)
           const savedMessage = await this.$axios.$post(`/v1/discussions/${this.discussionId}/chat/`, { text });
           const index = this.messages.findIndex(m => m.id === optimisticMessage.id);
-          if (index !== -1) this.$set(this.messages, index, savedMessage);
+          if (index !== -1) {
+            // Manter a estrutura de reply no frontend
+            savedMessage.replyTo = replyTo;
+            this.$set(this.messages, index, savedMessage);
+          }
         } catch (error) {
           this.handleSendFailure(optimisticMessage);
         }
@@ -284,9 +325,19 @@ export default defineComponent({
       this.messages[index].status = 'sending';
 
       try {
+        // Preparar dados para reenvio
+        const postData: any = { text: messageToRetry.text };
+
+        // Adicionar dados de reply se existirem
+        if (messageToRetry.replyTo) {
+          postData.reply_to_id = messageToRetry.replyTo.id;
+          postData.reply_to_username = messageToRetry.replyTo.username;
+          postData.reply_to_text = messageToRetry.replyTo.text;
+        }
+
         const savedMessage = await this.$axios.$post(
-          `/v1/discussions/${this.discussionId}/chat/`, 
-          { text: messageToRetry.text }
+          `/v1/discussions/${this.discussionId}/chat/`,
+          postData
         );
         this.$set(this.messages, index, savedMessage);
         this.removeMessageFromQueue(messageToRetry.id);

@@ -118,11 +118,11 @@
             <div>
               <div class="caption">
                 <v-icon small color="success">mdi-check</v-icon>
-                {{ item.discrepancyData.agreement }}% acordo
+                {{ item.discrepancyData.agreement }}% agreement
               </div>
               <div class="caption">
                 <v-icon small :color="getDiscrepancyColor(item.discrepancyPercentage)">mdi-alert</v-icon>
-                {{ item.discrepancyData.disagreement }}% discrepância
+                {{ item.discrepancyData.disagreement }}% discrepancy
               </div>
             </div>
           </div>
@@ -567,6 +567,18 @@ loadLabelsIfNeeded() {
       if (percentage >= 70) return 'error'
       if (percentage >= 40) return 'warning'
       return 'success'
+    },
+
+    showTooltip(event: MouseEvent, item: any) {
+      const rect = (event.target as HTMLElement).getBoundingClientRect()
+      this.tooltip.x = rect.left + rect.width / 2
+      this.tooltip.y = rect.top - 10
+      this.tooltip.content = `${item.discrepancyData.agreement}% agreement, ${item.discrepancyData.disagreement}% discrepancy`
+      this.tooltip.show = true
+    },
+
+    hideTooltip() {
+      this.tooltip.show = false
     },
 
     getRowClass(item: any): string {
