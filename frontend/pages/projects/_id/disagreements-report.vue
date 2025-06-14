@@ -175,6 +175,21 @@
               </v-select>
             </v-col>
           </v-row>
+          
+          <!-- Botão Limpar Filtros -->
+          <v-row class="mt-2">
+            <v-col cols="12" class="text-center">
+              <v-btn
+                color="warning"
+                outlined
+                @click="clearAllFilters"
+                class="clear-filters-btn"
+              >
+                <v-icon left>mdi-filter-remove</v-icon>
+                Limpar Filtros
+              </v-btn>
+            </v-col>
+          </v-row>
         </v-card-text>
       </v-card>
 
@@ -539,12 +554,12 @@ export default {
       
       // Aplicar filtro de anotador
       if (this.filters.annotator) {
-        if (this.filters.annotator === 'a1') {
-          // Lógica especial para 'a1' - mostrar apenas os primeiros 3 itens
-          filtered = filtered.slice(0, Math.min(3, filtered.length))
-        } else {
-          filtered = filtered.filter(item => item.annotator === this.filters.annotator)
-        }
+        filtered = filtered.filter(item => {
+          // Verificar se o anotador selecionado está presente na coluna anotador
+          // A coluna pode conter múltiplos anotadores separados por vírgula
+          const annotators = item.annotator.split(', ').map(name => name.trim())
+          return annotators.includes(this.filters.annotator)
+        })
       }
       
       // Aplicar filtro de perspectiva
@@ -746,7 +761,33 @@ export default {
       console.log('Items antes do filtro:', this.discrepancyItems.length)
       console.log('Items após filtro:', this.filteredDiscrepancyItems.length)
       console.log('Labels disponíveis:', this.labels)
+      console.log('Anotadores disponíveis:', this.annotators)
       console.log('Primeiro item para debug:', this.discrepancyItems[0])
+      
+      // Debug específico do filtro de anotador
+      if (this.filters.annotator) {
+        console.log('Filtro de anotador ativo:', this.filters.annotator)
+        console.log('Exemplos de anotadores nas linhas:')
+        this.discrepancyItems.slice(0, 5).forEach((item, index) => {
+          console.log(`  Linha ${index}: "${item.annotator}"`)
+        })
+      }
+    },
+
+    clearAllFilters() {
+      // Limpar todos os filtros
+      this.filters.label = null
+      this.filters.annotator = null
+      this.filters.perspective = null
+      // Manter o reportType pois é necessário para exportação
+      
+      // Limpar a pesquisa
+      this.search = ''
+      
+      // Aplicar filtros para atualizar a tabela
+      this.applyFilters()
+      
+      console.log('Todos os filtros foram limpos')
     },
     showDetails(item) {
       this.selectedItem = item
@@ -1116,6 +1157,16 @@ export default {
 
 .filter-select:hover {
   transform: translateY(-2px);
+}
+
+.clear-filters-btn {
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+
+.clear-filters-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
 }
 
 /* Search Card */
