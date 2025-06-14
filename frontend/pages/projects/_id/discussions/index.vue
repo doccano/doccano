@@ -8,6 +8,7 @@
         </v-btn>
       </v-col>
 
+      
       <v-col v-if="openDiscussions.length > 0" cols="12" class="mt-4">
         <h3>Open</h3>
         <v-data-table
