@@ -1,0 +1,14 @@
+[
+    {
+        "text": "Hello!",
+        "label": ["こんにちは！"]
+    },
+    {
+        "text": "Good morning.",
+        "label": ["おはようございます。"]
+    },
+    {
+        "text": "See you.",
+        "label": ["さようなら。"]
+    }
+]

@@ -1,0 +1,3 @@
+__label__negative Terrible customer service.
+__label__positive Really great transaction.
+__label__positive Great price.

@@ -1,0 +1,4 @@
+__label__positive exampleA
+__label__positive __label__negative exampleB
+exampleC
+__label__positive

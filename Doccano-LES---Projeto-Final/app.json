@@ -1,0 +1,43 @@
+{
+    "name": "doccano",
+    "description": "Open source text annotation tool for machine learning practitioner.",
+    "keywords": ["Python", "Machine Learning", "Annotation"],
+    "website": "https://doccano.herokuapp.com/",
+    "repository": "https://github.com/doccano/doccano",
+    "logo": "https://github.com/doccano/doccano/wiki/images/doccano.png",
+    "success_url": "/",
+    "env": {
+        "ADMIN_USERNAME": {
+            "description": "The user name for the admin account."
+        },
+        "ADMIN_EMAIL": {
+            "description": "The contact email address for the admin account."
+        },
+        "ADMIN_PASSWORD": {
+            "description": "The password for the admin account."
+        },
+        "SECRET_KEY": {
+            "description": "The value to use as the Django secret key.",
+            "generator": "secret"
+        },
+        "GOOGLE_TRACKING_ID": {
+            "description": "Google Analytics tracking id.",
+            "required": false,
+            "value": ""
+        },
+        "DJANGO_SETTINGS_MODULE": {
+            "description": "Django Settings Module. You don't have to change this.",
+            "required": true,
+            "value": "config.settings.heroku"
+        }
+    },
+    "stack": "container",
+    "scripts": {
+        "postdeploy": "sh /doccano/tools/heroku.sh"
+    },
+    "addons": [
+        {
+            "plan": "heroku-postgresql:mini"
+        }
+    ]
+}

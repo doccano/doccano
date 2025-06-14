@@ -1,0 +1,30 @@
+ARG NODE_VERSION="18.20-bullseye-slim"
+FROM node:${NODE_VERSION} AS frontend-builder
+
+COPY frontend/ /app/
+WORKDIR /app
+# hadolint ignore=DL3008
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends git python3 make g++ ca-certificates \
+ && git config --global url."https://github.com/".insteadOf git://github.com/ \
+ && yarn install --network-timeout 1000000 \
+ && yarn build \
+ && apt-get clean
+
+FROM nginx:1.21.1-alpine AS runtime
+
+RUN addgroup -g 61000 doccano \
+  && adduser -G doccano -S doccano -u 61000
+
+COPY --chown=doccano:doccano --from=frontend-builder /app/dist /var/www/html
+COPY docker/nginx/nginx.conf.template /etc/nginx/nginx.conf.template
+COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+
+RUN chown -R doccano:doccano /var/cache/nginx \
+  && chmod -R g+w /var/cache/nginx \
+  && chown -R doccano:doccano /media \
+  && chown -R doccano:doccano /etc/nginx
+
+EXPOSE 8080
+
+USER doccano:doccano

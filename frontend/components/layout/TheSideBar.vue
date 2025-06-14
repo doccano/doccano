@@ -40,7 +40,8 @@ import {
   mdiPlayCircleOutline,
   mdiChatOutline, 
   mdiAlertCircleOutline,
-  mdiRobotOutline
+  mdiRobotOutline,
+  mdiFileDocumentOutline
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -136,6 +137,12 @@ export default {
           icon: mdiRobotOutline, // ÍCONE DE DISCREPÂNCIAS AUTOMÁTICAS
           text: 'Automatic Discrepancies',
           link: 'automatic-discrepancies', // LEVA PARA /projects/:id/automatic-discrepancies
+          isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiFileDocumentOutline, // ÍCONE DE RELATÓRIO DE DESACORDOS
+          text: 'Disagreements Report',
+          link: 'disagreements-report', // LEVA PARA /projects/:id/disagreements-report
           isVisible: this.isProjectAdmin
         },
         {
