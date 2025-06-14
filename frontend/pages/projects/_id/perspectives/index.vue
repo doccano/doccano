@@ -85,6 +85,27 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Database Connection Error Dialog -->
+    <v-dialog v-model="showDatabaseErrorDialog" max-width="450px" persistent>
+      <v-card>
+        <v-card-title class="headline error--text">
+          <v-icon color="error" class="mr-2">mdi-database-alert</v-icon>
+          {{ $t('perspectives.databaseConnectionErrorTitle') }}
+        </v-card-title>
+        <v-card-text class="pt-4">
+          <v-alert type="error" outlined class="mb-3">
+            {{ $t('perspectives.databaseConnectionError') }}
+          </v-alert>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="primary" @click="showDatabaseErrorDialog = false">
+            {{ $t('generic.ok') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -123,6 +144,7 @@ export default {
       formLoading: false,
       showCreateDialog: false,
       showDeleteDialog: false,
+      showDatabaseErrorDialog: false,
       editingQuestion: null,
       questionToDelete: null,
       isProjectAdmin: false,
@@ -262,15 +284,73 @@ export default {
           await this.loadStats()
         }
       } catch (error) {
-        this.$store.dispatch('notification/setNotification', {
-          color: 'error',
-          text: this.$t('perspectives.failedToDeleteQuestion')
-        })
-        console.error(error)
+        console.error('Delete error:', error)
+
+        // Check if it's a database connection error
+        const isDatabaseError = this.isDatabaseConnectionError(error)
+
+        if (isDatabaseError) {
+          // Show database connection error dialog
+          this.showDatabaseErrorDialog = true
+        } else {
+          // Show generic error notification
+          this.$store.dispatch('notification/setNotification', {
+            color: 'error',
+            text: this.$t('perspectives.failedToDeleteQuestion')
+          })
+        }
       } finally {
         this.showDeleteDialog = false
         this.questionToDelete = null
       }
+    },
+
+    isDatabaseConnectionError(error) {
+      // Check various indicators of database connection issues
+      if (!error) return false
+
+      // Check for network errors (no response from server)
+      if (error.code === 'NETWORK_ERROR' || error.message === 'Network Error') {
+        return true
+      }
+
+      // Check for connection refused or timeout errors
+      if (error.message && (
+        error.message.includes('ECONNREFUSED') ||
+        error.message.includes('timeout') ||
+        error.message.includes('Connection refused') ||
+        error.message.includes('ERR_NETWORK')
+      )) {
+        return true
+      }
+
+      // Check HTTP status codes that indicate server/database issues
+      if (error.response) {
+        const status = error.response.status
+        // 500: Internal Server Error (could be database)
+        // 502: Bad Gateway (server down)
+        // 503: Service Unavailable (database down)
+        // 504: Gateway Timeout (database timeout)
+        if (status === 500 || status === 502 || status === 503 || status === 504) {
+          return true
+        }
+
+        // Check response data for database-specific error messages
+        if (error.response.data) {
+          const errorData = error.response.data
+          const errorText = typeof errorData === 'string' ? errorData : JSON.stringify(errorData)
+
+          if (errorText.includes('database') ||
+              errorText.includes('connection') ||
+              errorText.includes('DatabaseError') ||
+              errorText.includes('OperationalError') ||
+              errorText.includes('InterfaceError')) {
+            return true
+          }
+        }
+      }
+
+      return false
     },
 
     async saveQuestion(questionData) {
@@ -351,6 +431,11 @@ export default {
     closeDialog() {
       this.showCreateDialog = false
       this.editingQuestion = null
+    },
+
+    // Method for testing database connection error (can be removed in production)
+    testDatabaseError() {
+      this.showDatabaseErrorDialog = true
     }
   }
 }

@@ -44,6 +44,8 @@ export default {
   failedToSaveQuestion: 'Failed to save question',
   failedToDeleteQuestion: 'Failed to delete question',
   failedToSubmitAnswer: 'Failed to submit answer',
+  databaseConnectionError: 'Unable to connect to database. Cannot delete question.',
+  databaseConnectionErrorTitle: 'Database Connection Error',
   
   // Validation messages
   questionTextRequired: 'Question text is required',
