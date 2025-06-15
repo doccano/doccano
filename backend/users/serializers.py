@@ -41,6 +41,15 @@ class UserDetailSerializer(serializers.ModelSerializer):
                 'name': group.name
             }
         return groups_dict
+    
+    def validate_email(self, value):
+        """
+        Validate that the email is unique, excluding the current user instance.
+        """
+        user_id = self.instance.id if self.instance else None
+        if User.objects.filter(email=value).exclude(id=user_id).exists():
+            raise serializers.ValidationError("Este email já está sendo usado por outro usuário. Por favor, escolha um email diferente.")
+        return value
 
 
 class RegisterSerializer(serializers.ModelSerializer):

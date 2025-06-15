@@ -46,11 +46,36 @@
         <v-divider class="mb-5" />
 
         <v-form v-if="user" ref="form" @submit.prevent="updateUser">
-          <h2 class="mb-5">Edit User:</h2>
+          <h2 class="mb-5">Editar Usuário:</h2>
 
-          <v-text-field v-model="editedUser.username" label="Username" required />
-          <v-switch v-model="editedUser.isStaff" color="amber" label="Staff" />
-          <v-switch v-model="editedUser.isSuperUser" color="orange" label="Administrator" />
+          <v-text-field v-model="editedUser.username" label="Nome de usuário" required />
+          
+          <!-- Novos campos adicionados -->
+          <v-text-field 
+            v-model="editedUser.firstName" 
+            label="Primeiro Nome" 
+            :rules="[v => !!v || 'Primeiro nome é obrigatório']"
+            required 
+          />
+          <v-text-field 
+            v-model="editedUser.lastName" 
+            label="Sobrenome" 
+            :rules="[v => !!v || 'Sobrenome é obrigatório']"
+            required 
+          />
+          <v-text-field 
+            v-model="editedUser.email" 
+            label="Email" 
+            type="email"
+            :rules="[
+              v => !!v || 'Email é obrigatório',
+              v => /.+@.+\..+/.test(v) || 'Digite um email válido'
+            ]"
+            required 
+          />
+          
+          <v-switch v-model="editedUser.isStaff" color="amber" label="Funcionário" />
+          <v-switch v-model="editedUser.isSuperUser" color="orange" label="Administrador" />
           
           <v-card-subtitle>{{ $t('group.groups') || 'Groups' }}</v-card-subtitle>
           <v-autocomplete
@@ -109,10 +134,10 @@
           </div>
 
           <v-card-actions>
-            <v-btn color="error" @click="handleSingleDelete" :disabled="loading">Delete User</v-btn>
+            <v-btn color="error" @click="handleSingleDelete" :disabled="loading">Excluir Usuário</v-btn>
             <v-spacer />
             <v-btn color="primary" class="mr-4" type="submit" :loading="loading" :disabled="loading">
-              Update Profile
+              Atualizar Perfil
             </v-btn>
           </v-card-actions>
         </v-form>
@@ -167,6 +192,9 @@ export default Vue.extend({
       user: null as UserDetails | null,
       editedUser: {
         username: '',
+        firstName: '',
+        lastName: '',
+        email: '',
         isStaff: false,
         isSuperUser: false,
         groups: [] as number[],
@@ -203,6 +231,9 @@ export default Vue.extend({
         // Save the user data to editedUser
         this.editedUser = {
           username: this.user.username,
+          firstName: this.user.firstName,
+          lastName: this.user.lastName,
+          email: this.user.email,
           isStaff: this.user.isStaff,
           isSuperUser: this.user.isSuperUser,
           groups: this.user.groups || [],
@@ -256,6 +287,39 @@ export default Vue.extend({
       return `Group ${groupId}`
     },
 
+    translateErrorMessage(errorMessage: string): string {
+      // Traduções de mensagens de erro comuns
+      const translations: { [key: string]: string } = {
+        'A user with this email already exists.': 'Este email já está sendo usado por outro usuário. Por favor, escolha um email diferente.',
+        'This field may not be blank.': 'Este campo não pode estar vazio.',
+        'Enter a valid email address.': 'Digite um endereço de email válido.',
+        'A user with that username already exists.': 'Este nome de usuário já está sendo usado. Por favor, escolha outro nome de usuário.',
+        'Username: A user with that username already exists.': 'Nome de usuário: Este nome já está sendo usado. Por favor, escolha outro nome de usuário.',
+        'Email: A user with this email already exists.': 'Email: Este email já está sendo usado por outro usuário. Por favor, escolha um email diferente.',
+      }
+      
+      // Verifica se há uma tradução exata
+      if (translations[errorMessage]) {
+        return translations[errorMessage]
+      }
+      
+      // Verifica se a mensagem já está em português (nossa validação do backend)
+      if (errorMessage.includes('Este email já está sendo usado')) {
+        return errorMessage
+      }
+      
+      // Para mensagens que começam com "Email:", traduz apenas a parte específica
+      if (errorMessage.startsWith('Email:')) {
+        const emailError = errorMessage.replace('Email: ', '')
+        if (translations[`Email: ${emailError}`]) {
+          return translations[`Email: ${emailError}`]
+        }
+        return `Email: ${emailError}`
+      }
+      
+      return errorMessage
+    },
+
     async updateUser() {
       try {
         this.loading = true
@@ -266,16 +330,19 @@ export default Vue.extend({
         const userService = new UserApplicationService(new APIUserRepository())
         await userService.updateUser(id, {
           username: this.editedUser.username,
+          first_name: this.editedUser.firstName,
+          last_name: this.editedUser.lastName,
+          email: this.editedUser.email,
           is_staff: this.editedUser.isStaff,
           is_superuser: this.editedUser.isSuperUser,
           groups: this.editedUser.groups // Using the array of IDs
         })
 
-        this.successMessage = 'User profile updated successfully'
+        this.successMessage = 'Perfil do usuário atualizado com sucesso!'
         await this.fetchUser()
         await this.fetchGroups() // Re-fetch groups to update the selection
       } catch (error: any) {
-        this.errorMessage = error.message
+        this.errorMessage = this.translateErrorMessage(error.message)
       } finally {
         this.loading = false
       }
