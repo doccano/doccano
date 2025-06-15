@@ -41,6 +41,18 @@
           <div v-if="!question.userAnswered">
             <!-- Open text question -->
             <div v-if="question.isOpen">
+              <!-- Data type hint -->
+              <v-alert
+                v-if="question.dataType"
+                type="info"
+                outlined
+                dense
+                class="mb-3"
+              >
+                <v-icon left small>mdi-information</v-icon>
+                {{ getDataTypeMessage(question.dataType) }}
+              </v-alert>
+              
               <v-textarea
                 v-model="answers[question.id]"
                 label="Your answer"
@@ -77,7 +89,18 @@
 
           <div v-else class="text-center py-4">
             <v-icon color="success" size="48">{{ mdiCheckCircle }}</v-icon>
-            <p class="mt-2 text-body-1">You have already answered this question.</p>
+                            <p class="mt-2 text-body-1">You have already answered this item.</p>
+            
+            <v-btn
+              color="warning"
+              outlined
+              class="mt-3"
+              :loading="cancelling[question.id]"
+              @click="cancelAnswer(question)"
+            >
+              <v-icon left>mdi-undo</v-icon>
+              Cancelar Resposta
+            </v-btn>
           </div>
         </v-card-text>
       </v-card>
@@ -108,9 +131,10 @@ export default {
       mdiCheckCircle,
       answers: {},
       submitting: {},
+      cancelling: {},
       textRules: [
         v => !!v || 'Answer is required',
-        v => (!v || v.length >= 5) || 'Answer must be at least 5 characters'
+        v => (!v || v.length >= 1) || 'Answer must be at least 1 character'
       ],
       choiceRules: [
         v => v !== null && v !== undefined || 'Please select an option'
@@ -119,12 +143,21 @@ export default {
   },
 
   methods: {
+    getDataTypeMessage(dataType) {
+      if (dataType === 'string') {
+        return 'This answer should be text'
+      } else if (dataType === 'integer') {
+        return 'This answer should be a number'
+      }
+      return ''
+    },
+
     canSubmit(question) {
       const answer = this.answers[question.id]
       
       if (question.isRequired) {
         if (question.isOpen) {
-          return answer && answer.trim().length >= 5
+          return answer && answer.trim().length >= 1
         } else if (question.isClosed) {
           return answer !== null && answer !== undefined
         }
@@ -162,6 +195,24 @@ export default {
         console.error('Error submitting answer:', error)
       } finally {
         this.$set(this.submitting, question.id, false)
+      }
+    },
+
+    async cancelAnswer(question) {
+      if (!question.userAnswerId) {
+        console.error('No answer ID found for question:', question.id)
+        return
+      }
+
+      // Set cancelling state
+      this.$set(this.cancelling, question.id, true)
+
+      try {
+        await this.$emit('cancel-answer', question.userAnswerId)
+      } catch (error) {
+        console.error('Error cancelling answer:', error)
+      } finally {
+        this.$set(this.cancelling, question.id, false)
       }
     }
   }
