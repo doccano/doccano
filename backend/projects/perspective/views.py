@@ -293,7 +293,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
 
 class AnswerViewSet(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
-    http_method_names = ['get', 'post', 'delete']  # Allow GET, POST and DELETE
+    http_method_names = ['get', 'post', 'delete']  # Allow GET, POST and DELETE (sua funcionalidade)
     permission_classes = [IsAuthenticated, CanAnswerPerspective]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['question']
@@ -308,14 +308,14 @@ class AnswerViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         question = serializer.validated_data['question']
         
-        # Check if user already answered this question
+        # Check if user already answered this question (mesclando as duas mensagens)
         if Answer.objects.filter(question=question, user=self.request.user).exists():
             raise serializers.ValidationError("You have already answered this item.")
         
         serializer.save(user=self.request.user)
 
     def perform_destroy(self, instance):
-        # Only allow users to delete their own answers
+        # Only allow users to delete their own answers (sua funcionalidade)
         if instance.user != self.request.user:
             raise serializers.ValidationError("You can only delete your own answers.")
         
