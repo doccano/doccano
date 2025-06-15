@@ -95,6 +95,15 @@ class QuestionViewSet(viewsets.ModelViewSet):
         
         return super().list(request, *args, **kwargs)
 
+    def destroy(self, request, *args, **kwargs):
+        """Override destroy to ensure consistent response format"""
+        instance = self.get_object()
+        question_text = instance.text[:50] + "..." if len(instance.text) > 50 else instance.text
+        self.perform_destroy(instance)
+        return Response({
+            'message': f'Question "{question_text}" deleted successfully'
+        }, status=status.HTTP_200_OK)
+
     def perform_create(self, serializer):
         import logging
         logger = logging.getLogger(__name__)
@@ -301,7 +310,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
         
         # Check if user already answered this question
         if Answer.objects.filter(question=question, user=self.request.user).exists():
-                            raise serializers.ValidationError("You have already answered this item.")
+            raise serializers.ValidationError("You have already answered this item.")
         
         serializer.save(user=self.request.user)
 
