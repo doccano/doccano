@@ -1,5 +1,17 @@
 <template>
   <div>
+    <div class="d-flex justify-end mb-3">
+      <v-btn
+        v-if="questions.length > 0"
+        color="error"
+        :disabled="loading"
+        @click="$emit('delete-all')"
+      >
+        <v-icon left>{{ mdiDelete }}</v-icon>
+        Delete Perspective
+      </v-btn>
+    </div>
+
     <v-data-table
       :headers="headers"
       :items="questions"

@@ -40,7 +40,39 @@ export class UserApplicationService {
     try {
       return await this.repository.updateUser(id, data)
     } catch (e: any) {
-      throw new Error(e.response?.data?.detail || `Failed to update user with ID ${id}`)
+      // Handle specific validation errors
+      if (e.response?.data) {
+        const errorData = e.response.data
+        
+        // Check for field-specific errors
+        if (errorData.email && Array.isArray(errorData.email)) {
+          throw new Error(`Email: ${errorData.email[0]}`)
+        }
+        
+        if (errorData.username && Array.isArray(errorData.username)) {
+          throw new Error(`Username: ${errorData.username[0]}`)
+        }
+        
+        if (errorData.first_name && Array.isArray(errorData.first_name)) {
+          throw new Error(`First Name: ${errorData.first_name[0]}`)
+        }
+        
+        if (errorData.last_name && Array.isArray(errorData.last_name)) {
+          throw new Error(`Last Name: ${errorData.last_name[0]}`)
+        }
+        
+        // Check for general detail message
+        if (errorData.detail) {
+          throw new Error(errorData.detail)
+        }
+        
+        // Check for non_field_errors
+        if (errorData.non_field_errors && Array.isArray(errorData.non_field_errors)) {
+          throw new Error(errorData.non_field_errors[0])
+        }
+      }
+      
+      throw new Error(`Failed to update user with ID ${id}`)
     }
   }
 

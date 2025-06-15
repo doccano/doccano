@@ -231,6 +231,7 @@
                     :loading="loading"
                     @edit="editQuestion"
                     @delete="deleteQuestion"
+                    @delete-all="deleteAllQuestions"
                   />
                 </div>
                 <div v-else>
@@ -287,6 +288,28 @@
       </v-card>
     </v-dialog>
 
+    <!-- Delete All Confirmation Dialog -->
+    <v-dialog v-model="showDeleteAllDialog" max-width="500px">
+      <v-card>
+        <v-card-title class="headline error--text">
+          <v-icon color="error" class="mr-2">{{ mdiDelete }}</v-icon>
+          {{ $t('perspectives.confirmDeleteAll') }}
+        </v-card-title>
+        <v-card-text>
+          <v-alert type="warning" outlined class="mb-3">
+            {{ $t('perspectives.deleteAllQuestionsWarning') }}
+          </v-alert>
+          <p>{{ $t('perspectives.deleteAllQuestionsConfirm') }}</p>
+          <p class="font-weight-bold">{{ $t('perspectives.thisActionCannotBeUndone') }}</p>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text @click="showDeleteAllDialog = false">{{ $t('generic.cancel') }}</v-btn>
+          <v-btn color="error" @click="confirmDeleteAll">{{ $t('perspectives.deleteAll') }}</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <!-- Database Connection Error Dialog -->
     <v-dialog v-model="showDatabaseErrorDialog" max-width="450px" persistent>
       <v-card>
@@ -312,7 +335,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { mdiPlus } from '@mdi/js'
+import { mdiPlus, mdiDelete } from '@mdi/js'
 import QuestionList from '@/components/perspective/QuestionList.vue'
 import QuestionAnswerForm from '@/components/perspective/QuestionAnswerForm.vue'
 import QuestionForm from '@/components/perspective/QuestionForm.vue'
@@ -340,6 +363,7 @@ export default {
   data() {
     return {
       mdiPlus,
+      mdiDelete,
       activeTab: 0,
       questions: [],
       filteredQuestions: [],
@@ -349,6 +373,7 @@ export default {
       formLoading: false,
       showCreateDialog: false,
       showDeleteDialog: false,
+      showDeleteAllDialog: false,
       showDatabaseErrorDialog: false,
       editingQuestion: null,
       questionToDelete: null,
@@ -560,21 +585,140 @@ export default {
       this.showDeleteDialog = true
     },
 
+    deleteAllQuestions() {
+      this.showDeleteAllDialog = true
+    },
+
     async confirmDelete() {
       if (!this.questionToDelete) return
 
+      const questionToDeleteId = this.questionToDelete.id
+      let deleteSuccessful = false
+
       try {
-        await this.$services.perspective.deleteQuestion(this.projectId, this.questionToDelete.id)
+        await this.$services.perspective.deleteQuestion(this.projectId, questionToDeleteId)
+        deleteSuccessful = true
+        console.log('Question deleted successfully:', questionToDeleteId)
+
+        // Show success notification immediately after successful delete
         this.$store.dispatch('notification/setNotification', {
           color: 'success',
           text: this.$t('perspectives.questionDeletedSuccess')
+        })
+
+        // Try to reload data, but don't let errors here affect the success notification
+        try {
+          await this.loadQuestions()
+          if (this.isProjectAdmin) {
+            await this.loadStats()
+          }
+        } catch (reloadError) {
+          console.error('Error reloading after delete:', reloadError)
+          // Don't show error to user since the delete was successful
+        }
+
+      } catch (error) {
+        console.error('Delete error:', error)
+        console.error('Error details:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        })
+
+        // Check if the operation actually succeeded despite the error
+        if (error.response?.status === 502 ||
+            (error.response?.data && typeof error.response.data === 'object' && error.response.data.message)) {
+          console.log('Delete operation may have succeeded despite error, checking...')
+
+          // Try to reload questions to see if the question was actually deleted
+          try {
+            await this.loadQuestions()
+            const questionStillExists = this.questions.some(q => q.id === questionToDeleteId)
+
+            if (!questionStillExists) {
+              // Question was deleted successfully
+              deleteSuccessful = true
+              this.$store.dispatch('notification/setNotification', {
+                color: 'success',
+                text: this.$t('perspectives.questionDeletedSuccess')
+              })
+              if (this.isProjectAdmin) {
+                await this.loadStats()
+              }
+            }
+          } catch (reloadError) {
+            console.error('Error reloading questions after potential success:', reloadError)
+          }
+        }
+
+        // Only show error if delete was not successful
+        if (!deleteSuccessful) {
+          // Check if it's a database connection error
+          const isDatabaseError = this.isDatabaseConnectionError(error)
+
+          if (isDatabaseError) {
+            // Show database connection error dialog
+            this.showDatabaseErrorDialog = true
+          } else {
+            // Show generic error notification
+            this.$store.dispatch('notification/setNotification', {
+              color: 'error',
+              text: this.$t('perspectives.failedToDeleteQuestion')
+            })
+          }
+        }
+      } finally {
+        this.showDeleteDialog = false
+        this.questionToDelete = null
+      }
+    },
+
+    async confirmDeleteAll() {
+      try {
+        const response = await this.$services.perspective.deleteAllQuestions(this.projectId)
+        console.log('Delete all response:', response)
+
+        this.$store.dispatch('notification/setNotification', {
+          color: 'success',
+          text: this.$t('perspectives.allQuestionsDeletedSuccess')
         })
         await this.loadQuestions()
         if (this.isProjectAdmin) {
           await this.loadStats()
         }
       } catch (error) {
-        console.error('Delete error:', error)
+        console.error('Delete all error:', error)
+        console.error('Error details:', {
+          status: error.response?.status,
+          data: error.response?.data,
+          message: error.message
+        })
+
+        // Check if the operation actually succeeded despite the error
+        // This can happen with 502 errors that are actually successful operations
+        if (error.response?.status === 502 ||
+            (error.response?.data && typeof error.response.data === 'object' && error.response.data.message)) {
+          console.log('Operation may have succeeded despite error, checking...')
+
+          // Try to reload questions to see if they were actually deleted
+          try {
+            await this.loadQuestions()
+            if (this.questions.length === 0) {
+              // Questions were deleted successfully
+              this.$store.dispatch('notification/setNotification', {
+                color: 'success',
+                text: this.$t('perspectives.allQuestionsDeletedSuccess')
+              })
+              if (this.isProjectAdmin) {
+                await this.loadStats()
+              }
+              this.showDeleteAllDialog = false
+              return
+            }
+          } catch (reloadError) {
+            console.error('Error reloading questions:', reloadError)
+          }
+        }
 
         // Check if it's a database connection error
         const isDatabaseError = this.isDatabaseConnectionError(error)
@@ -586,12 +730,11 @@ export default {
           // Show generic error notification
           this.$store.dispatch('notification/setNotification', {
             color: 'error',
-            text: this.$t('perspectives.failedToDeleteQuestion')
+            text: this.$t('perspectives.failedToDeleteAllQuestions')
           })
         }
       } finally {
-        this.showDeleteDialog = false
-        this.questionToDelete = null
+        this.showDeleteAllDialog = false
       }
     },
 
@@ -618,11 +761,19 @@ export default {
       if (error.response) {
         const status = error.response.status
         // 500: Internal Server Error (could be database)
-        // 502: Bad Gateway (server down)
+        // 502: Bad Gateway (server down) - but only if it's actually a server error
         // 503: Service Unavailable (database down)
         // 504: Gateway Timeout (database timeout)
-        if (status === 500 || status === 502 || status === 503 || status === 504) {
+        if (status === 500 || status === 503 || status === 504) {
           return true
+        }
+
+        // For 502, check if it's actually a server error or just a response parsing issue
+        if (status === 502) {
+          // Only treat as database error if there's no successful response data
+          if (!error.response.data || (typeof error.response.data === 'string' && error.response.data.includes('error'))) {
+            return true
+          }
         }
 
         // Check response data for database-specific error messages
