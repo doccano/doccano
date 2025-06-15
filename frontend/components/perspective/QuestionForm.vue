@@ -15,6 +15,8 @@
           outlined
         />
 
+        <v-row>
+          <v-col cols="6">
         <v-select
           v-model="formData.question_type"
           :items="questionTypes"
@@ -23,12 +25,30 @@
           required
           outlined
         />
-
+          </v-col>
+          <v-col cols="6">
         <v-text-field
           v-model.number="formData.order"
           label="Order"
           type="number"
           :rules="orderRules"
+              :readonly="!isEditing"
+              :hint="isEditing ? 'You can change the order when editing' : 'Order is automatically assigned'"
+              :prepend-icon="isEditing ? 'mdi-pencil' : 'mdi-auto-fix'"
+              persistent-hint
+              required
+              outlined
+            />
+          </v-col>
+        </v-row>
+
+        <!-- Data Type field - only for Open Text questions -->
+        <v-select
+          v-if="formData.question_type === 'open'"
+          v-model="formData.data_type"
+          :items="dataTypes"
+          label="Data Type"
+          :rules="dataTypeRules"
           required
           outlined
         />
@@ -66,8 +86,8 @@
                 <v-btn
                   icon
                   color="error"
-                  @click="removeOption(index)"
                   :disabled="formData.options.length <= 2"
+                  @click="removeOption(index)"
                 >
                   <v-icon>{{ mdiDelete }}</v-icon>
                 </v-btn>
@@ -78,8 +98,8 @@
           <v-btn
             text
             color="primary"
-            @click="addOption"
             :disabled="formData.options.length >= 10"
+            @click="addOption"
           >
             <v-icon left>{{ mdiPlus }}</v-icon>
             Add Option
@@ -130,6 +150,7 @@ export default {
       formData: {
         text: '',
         question_type: 'open',
+        data_type: 'string',
         is_required: true,
         order: 1,
         options: []
@@ -137,6 +158,10 @@ export default {
       questionTypes: [
         { text: 'Open Text', value: 'open' },
         { text: 'Multiple Choice', value: 'closed' }
+      ],
+      dataTypes: [
+        { text: 'String', value: 'string' },
+        { text: 'Integer', value: 'integer' }
       ],
       textRules: [
         v => !!v || 'Question text is required',
@@ -148,6 +173,9 @@ export default {
       orderRules: [
         v => v !== null && v !== undefined || 'Order is required',
         v => v > 0 || 'Order must be greater than 0'
+      ],
+      dataTypeRules: [
+        v => !!v || 'Data type is required for open text questions'
       ],
       optionRules: [
         v => !!v || 'Option text is required',
@@ -170,6 +198,7 @@ export default {
           this.formData = {
             text: newQuestion.text,
             question_type: newQuestion.questionType,
+            data_type: newQuestion.dataType || 'string',
             is_required: newQuestion.isRequired,
             order: newQuestion.order,
             options: newQuestion.options.map(opt => ({
@@ -183,11 +212,27 @@ export default {
       }
     },
 
+    nextOrder: {
+      immediate: true,
+      handler(newOrder) {
+        // Only update order for new questions (not editing)
+        if (!this.isEditing && newOrder) {
+          this.formData.order = newOrder
+        }
+      }
+    },
+
     'formData.question_type'(newType) {
-      if (newType === 'closed' && this.formData.options.length === 0) {
+      if (newType === 'closed') {
+        // Clear data_type for multiple choice questions
+        this.formData.data_type = null
+        if (this.formData.options.length === 0) {
         this.addOption()
         this.addOption()
+        }
       } else if (newType === 'open') {
+        // Set default data_type for open text questions
+        this.formData.data_type = 'string'
         this.formData.options = []
       }
     }
@@ -213,6 +258,7 @@ export default {
       this.formData = {
         text: '',
         question_type: 'open',
+        data_type: 'string',
         is_required: true,
         order: this.nextOrder,
         options: []
@@ -226,9 +272,13 @@ export default {
       if (this.$refs.form.validate()) {
         const payload = { ...this.formData }
         
-        // Clean up options for open questions
+        // Clean up data based on question type
         if (payload.question_type === 'open') {
           payload.options = []
+          // Keep data_type for open questions
+        } else if (payload.question_type === 'closed') {
+          // Clear data_type for multiple choice questions
+          payload.data_type = null
         }
 
         this.$emit('save', payload)

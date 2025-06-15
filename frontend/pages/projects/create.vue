@@ -6,6 +6,7 @@
         <project-type-field v-model="editedItem.projectType" />
         <project-name-field v-model="editedItem.name" outlined autofocus />
         <project-description-field v-model="editedItem.description" outlined />
+        <discrepancy-threshold-field v-model="editedItem.labelDiscrepancyThreshold" outlined />
         <tag-list v-model="editedItem.tags" outlined />
         <v-checkbox
           v-if="showExclusiveCategories"
@@ -71,6 +72,7 @@ import Vue from 'vue'
 import ProjectDescriptionField from '~/components/project/ProjectDescriptionField.vue'
 import ProjectNameField from '~/components/project/ProjectNameField.vue'
 import ProjectTypeField from '~/components/project/ProjectTypeField.vue'
+import DiscrepancyThresholdField from '~/components/project/DiscrepancyThresholdField.vue'
 import RandomOrderField from '~/components/project/RandomOrderField.vue'
 import SharingModeField from '~/components/project/SharingModeField.vue'
 import TagList from '~/components/project/TagList.vue'
@@ -86,6 +88,7 @@ const initializeProject = () => {
     name: '',
     description: '',
     projectType: DocumentClassification,
+    labelDiscrepancyThreshold: '',
     enableRandomOrder: false,
     enableSharingMode: false,
     exclusiveCategories: false,
@@ -103,6 +106,7 @@ export default Vue.extend({
     ProjectTypeField,
     ProjectNameField,
     ProjectDescriptionField,
+    DiscrepancyThresholdField,
     RandomOrderField,
     SharingModeField,
     TagList
@@ -133,7 +137,11 @@ export default Vue.extend({
 
   methods: {
     async create() {
-      const project = await this.$services.project.create(this.editedItem)
+      const projectData = {
+        ...this.editedItem,
+        labelDiscrepancyThreshold: parseFloat(this.editedItem.labelDiscrepancyThreshold) || 0
+      }
+      const project = await this.$services.project.create(projectData)
       this.$router.push(`/projects/${project.id}`)
       this.$nextTick(() => {
         this.editedItem = initializeProject()

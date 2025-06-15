@@ -147,7 +147,7 @@ export default Vue.extend({
         
         // Redirecionar após 3 segundos
         setTimeout(() => {
-          this.$router.push(this.localePath('/users'))
+        this.$router.push(this.localePath('/users'))
         }, 3000)
         
       } catch (error: any) {

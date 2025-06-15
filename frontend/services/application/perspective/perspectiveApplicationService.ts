@@ -33,6 +33,10 @@ export class PerspectiveApplicationService {
     return await this.repository.bulkDeleteQuestions(projectId, questionIds)
   }
 
+  async reorderAllQuestions(projectId: string): Promise<{ message: string; reordered_count: number }> {
+    return await this.repository.reorderAllQuestions(projectId)
+  }
+
   async deleteAllQuestions(projectId: string): Promise<void> {
     return await this.repository.deleteAllQuestions(projectId)
   }
@@ -44,6 +48,14 @@ export class PerspectiveApplicationService {
 
   async createAnswer(projectId: string, payload: CreateAnswerPayload): Promise<Answer> {
     return await this.repository.createAnswer(projectId, payload)
+  }
+
+  async deleteAnswer(projectId: string, answerId: number): Promise<void> {
+    return await this.repository.deleteAnswer(projectId, answerId)
+  }
+
+  async getQuestionAnswers(projectId: string, questionId: number): Promise<any> {
+    return await this.repository.getQuestionAnswers(projectId, questionId)
   }
 
   // Statistics

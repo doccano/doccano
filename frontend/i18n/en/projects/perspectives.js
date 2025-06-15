@@ -36,7 +36,7 @@ export default {
   noQuestionsAvailable: 'No questions available to answer at this time.',
   yourAnswer: 'Your answer',
   submitAnswer: 'Submit Answer',
-  alreadyAnswered: 'You have already answered this question.',
+  alreadyAnswered: 'You have already answered this item.',
   noStatisticsAvailable: 'No statistics available.',
   
   // Success/Error messages

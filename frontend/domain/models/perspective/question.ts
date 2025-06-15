@@ -5,6 +5,13 @@ export const QuestionType = {
 
 export type QuestionTypeValue = typeof QuestionType[keyof typeof QuestionType]
 
+export const DataType = {
+  STRING: 'string',
+  INTEGER: 'integer'
+} as const
+
+export type DataTypeValue = typeof DataType[keyof typeof DataType]
+
 export class QuestionOption {
   constructor(
     readonly id: number,
@@ -13,16 +20,25 @@ export class QuestionOption {
   ) {}
 }
 
+export interface QuestionAnswer {
+  id: number
+  content: string
+  created_at: string
+}
+
 export class Question {
   constructor(
     readonly id: number,
     readonly text: string,
     readonly questionType: QuestionTypeValue,
+    readonly dataType: DataTypeValue | null,
     readonly isRequired: boolean,
     readonly order: number,
     readonly options: QuestionOption[],
     readonly answerCount: number,
     readonly userAnswered: boolean,
+    readonly userAnswerId: number | null,
+    readonly answers: QuestionAnswer[],
     readonly createdAt: string,
     readonly updatedAt: string
   ) {}
