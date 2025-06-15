@@ -42,7 +42,8 @@ import {
   mdiAlertCircleOutline,
   mdiRobotOutline,
   mdiFileDocumentOutline,
-  mdiEyeOutline
+  mdiEyeOutline,
+  mdiVote
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -150,6 +151,12 @@ export default {
           icon: mdiEyeOutline,
           text: 'Perspectives',
           link: 'perspectives',
+          isVisible: true
+        },
+        {
+          icon: mdiVote,
+          text: 'Voting',
+          link: 'voting',
           isVisible: true
         },
         {

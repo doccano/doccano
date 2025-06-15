@@ -158,7 +158,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['delete'])
+    @action(detail=False, methods=['post'])
     def bulk_delete(self, request, project_id=None):
         question_ids = request.data.get('ids', [])
         if not question_ids:

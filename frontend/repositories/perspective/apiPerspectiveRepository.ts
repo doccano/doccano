@@ -129,7 +129,9 @@ export class APIPerspectiveRepository {
 
   async deleteQuestion(projectId: string, questionId: number): Promise<void> {
     const url = `/projects/${projectId}/perspective/questions/${questionId}/`
-    await this.request.delete(url)
+    const response = await this.request.delete(url)
+    console.log('Delete question response:', response)
+    return response.data
   }
 
   async bulkCreateQuestions(projectId: string, questions: CreateQuestionPayload[]): Promise<Question[]> {
@@ -151,7 +153,9 @@ export class APIPerspectiveRepository {
 
   async deleteAllQuestions(projectId: string): Promise<void> {
     const url = `/projects/${projectId}/perspective/questions/delete_all/`
-    await this.request.post(url)
+    const response = await this.request.post(url, {})
+    console.log('Delete all questions response:', response)
+    return response.data
   }
 
   // Answers
