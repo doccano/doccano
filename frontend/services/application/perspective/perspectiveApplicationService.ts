@@ -33,6 +33,10 @@ export class PerspectiveApplicationService {
     return await this.repository.bulkDeleteQuestions(projectId, questionIds)
   }
 
+  async deleteAllQuestions(projectId: string): Promise<void> {
+    return await this.repository.deleteAllQuestions(projectId)
+  }
+
   // Answers
   async listAnswers(projectId: string, questionId?: number): Promise<Answer[]> {
     return await this.repository.listAnswers(projectId, questionId)
