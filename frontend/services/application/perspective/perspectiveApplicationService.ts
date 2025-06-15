@@ -37,6 +37,10 @@ export class PerspectiveApplicationService {
     return await this.repository.reorderAllQuestions(projectId)
   }
 
+  async deleteAllQuestions(projectId: string): Promise<void> {
+    return await this.repository.deleteAllQuestions(projectId)
+  }
+
   // Answers
   async listAnswers(projectId: string, questionId?: number): Promise<Answer[]> {
     return await this.repository.listAnswers(projectId, questionId)

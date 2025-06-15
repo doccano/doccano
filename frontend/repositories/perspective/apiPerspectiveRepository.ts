@@ -140,13 +140,18 @@ export class APIPerspectiveRepository {
 
   async bulkDeleteQuestions(projectId: string, questionIds: number[]): Promise<void> {
     const url = `/projects/${projectId}/perspective/questions/bulk_delete/`
-    await this.request.post(url, { question_ids: questionIds })
+    await this.request.post(url, { ids: questionIds })
   }
 
   async reorderAllQuestions(projectId: string): Promise<{ message: string; reordered_count: number }> {
     const url = `/projects/${projectId}/perspective/questions/reorder_all/`
     const response = await this.request.post(url)
     return response.data
+  }
+
+  async deleteAllQuestions(projectId: string): Promise<void> {
+    const url = `/projects/${projectId}/perspective/questions/delete_all/`
+    await this.request.post(url)
   }
 
   // Answers

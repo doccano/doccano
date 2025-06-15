@@ -24,7 +24,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
     ordering = ['order', 'created_at']
 
     def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy', 'bulk_create', 'bulk_delete']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'bulk_create', 'bulk_delete', 'delete_all']:
             permission_classes = [IsAuthenticated, CanCreatePerspective]
         else:
             permission_classes = [IsAuthenticated, CanViewPerspective]
@@ -184,8 +184,21 @@ class QuestionViewSet(viewsets.ModelViewSet):
         self._reorder_questions_after_bulk_delete(project, deleted_orders)
         
         return Response({
-            'message': f'{deleted_count} questions deleted successfully'
-        }, status=status.HTTP_204_NO_CONTENT)
+            'message': f'{deleted_count} questions deleted successfully',
+            'deleted_count': deleted_count
+        }, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def delete_all(self, request, project_id=None):
+        """Delete all questions in the project"""
+        questions = Question.objects.filter(project_id=project_id)
+        deleted_count = questions.count()
+        questions.delete()
+
+        return Response({
+            'message': f'{deleted_count} questions deleted successfully',
+            'deleted_count': deleted_count
+        }, status=status.HTTP_200_OK)
 
     def _reorder_questions_after_bulk_delete(self, project, deleted_orders):
         """
