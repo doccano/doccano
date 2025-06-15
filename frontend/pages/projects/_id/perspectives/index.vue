@@ -211,7 +211,7 @@
             <!-- Items Tab -->
             <v-tab-item key="questions">
               <v-card-text>
-                                  <div v-if="isProjectAdmin">
+                <div v-if="isProjectAdmin">
                   <h3 class="mb-4">Manage Items</h3>
                   
                   <!-- Results Summary -->
@@ -233,7 +233,7 @@
                     @delete="deleteQuestion"
                   />
                 </div>
-                                  <div v-else>
+                <div v-else>
                   <h3 class="mb-4">Answer Items</h3>
                   
                   <question-answer-form
