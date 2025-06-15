@@ -43,8 +43,7 @@ import {
   mdiRobotOutline,
   mdiFileDocumentOutline,
   mdiEyeOutline,
-  mdiVote
-  mdiEyeOutline,
+  mdiVote,
   mdiFileChartOutline
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'

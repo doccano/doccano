@@ -1109,115 +1109,152 @@ export default {
 
     // Perspective computed properties to avoid infinite loops
     activeRespondents() {
-      if (!this.perspectiveStats.questions) return 0
-      const respondents = new Set()
-      this.perspectiveStats.questions.forEach(q => {
-        // Assuming each answer represents a unique respondent for simplicity
-        respondents.add(q.answer_count)
-      })
-      return Math.min(respondents.size, this.availableUsers.length)
+      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions)) return 0
+      try {
+        const respondents = new Set()
+        this.perspectiveStats.questions.forEach(q => {
+          if (q && typeof q.answer_count === 'number') {
+            respondents.add(q.answer_count)
+          }
+        })
+        const availableUsersLength = Array.isArray(this.availableUsers) ? this.availableUsers.length : 0
+        return Math.min(respondents.size, availableUsersLength)
+      } catch (error) {
+        console.error('Error in activeRespondents:', error)
+        return 0
+      }
     },
 
     averageResponseRate() {
-      if (!this.perspectiveStats.questions || this.perspectiveStats.questions.length === 0) return 0
-      const totalRate = this.perspectiveStats.questions.reduce((sum, q) => sum + q.response_rate, 0)
-      return Math.round(totalRate / this.perspectiveStats.questions.length)
+      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions) || this.perspectiveStats.questions.length === 0) return 0
+      try {
+        const totalRate = this.perspectiveStats.questions.reduce((sum, q) => {
+          if (q && typeof q.response_rate === 'number') {
+            return sum + q.response_rate
+          }
+          return sum
+        }, 0)
+        return Math.round(totalRate / this.perspectiveStats.questions.length)
+      } catch (error) {
+        console.error('Error in averageResponseRate:', error)
+        return 0
+      }
     },
 
     questionTypeStats() {
-      if (!this.perspectiveStats.questions) return []
+      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions) || this.perspectiveStats.questions.length === 0) return []
 
-      const typeStats = {}
-      this.perspectiveStats.questions.forEach(q => {
-        typeStats[q.question_type] = (typeStats[q.question_type] || 0) + 1
-      })
+      try {
+        const typeStats = {}
+        this.perspectiveStats.questions.forEach(q => {
+          if (q && q.question_type) {
+            typeStats[q.question_type] = (typeStats[q.question_type] || 0) + 1
+          }
+        })
 
-      const total = this.perspectiveStats.questions.length
-      return Object.entries(typeStats).map(([type, count]) => ({
-        type,
-        count,
-        percentage: Math.round((count / total) * 100)
-      }))
+        const total = this.perspectiveStats.questions.length
+        return Object.entries(typeStats).map(([type, count]) => ({
+          type,
+          count,
+          percentage: Math.round((count / total) * 100)
+        }))
+      } catch (error) {
+        console.error('Error in questionTypeStats:', error)
+        return []
+      }
     },
 
     responseRateDistribution() {
-      if (!this.perspectiveStats.questions) return []
+      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions)) return []
 
-      const ranges = [
-        { range: '80-100%', min: 80, max: 100, color: 'success', count: 0 },
-        { range: '50-79%', min: 50, max: 79, color: 'warning', count: 0 },
-        { range: '0-49%', min: 0, max: 49, color: 'error', count: 0 }
-      ]
+      try {
+        const ranges = [
+          { range: '80-100%', min: 80, max: 100, color: 'success', count: 0 },
+          { range: '50-79%', min: 50, max: 79, color: 'warning', count: 0 },
+          { range: '0-49%', min: 0, max: 49, color: 'error', count: 0 }
+        ]
 
-      this.perspectiveStats.questions.forEach(q => {
-        ranges.forEach(range => {
-          if (q.response_rate >= range.min && q.response_rate <= range.max) {
-            range.count++
+        this.perspectiveStats.questions.forEach(q => {
+          if (q && typeof q.response_rate === 'number') {
+            ranges.forEach(range => {
+              if (q.response_rate >= range.min && q.response_rate <= range.max) {
+                range.count++
+              }
+            })
           }
         })
-      })
 
-      return ranges.filter(r => r.count > 0)
+        return ranges.filter(r => r.count > 0)
+      } catch (error) {
+        console.error('Error in responseRateDistribution:', error)
+        return []
+      }
     },
 
     mostActiveQuestions() {
-      if (!this.perspectiveStats.questions) return []
-      return [...this.perspectiveStats.questions]
-        .sort((a, b) => b.answer_count - a.answer_count)
-        .slice(0, 3)
+      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions)) return []
+      try {
+        return [...this.perspectiveStats.questions]
+          .filter(q => q && typeof q.answer_count === 'number')
+          .sort((a, b) => (b.answer_count || 0) - (a.answer_count || 0))
+          .slice(0, 3)
+      } catch (error) {
+        console.error('Error in mostActiveQuestions:', error)
+        return []
+      }
     },
 
     questionCompletion() {
-      if (!this.perspectiveStats.total_questions) return 0
-      const answeredQuestions = this.perspectiveStats.questions?.filter(q => q.answer_count > 0).length || 0
-      return Math.round((answeredQuestions / this.perspectiveStats.total_questions) * 100)
+      if (!this.perspectiveStats || typeof this.perspectiveStats.total_questions !== 'number' || this.perspectiveStats.total_questions === 0) return 0
+      try {
+        const answeredQuestions = this.perspectiveStats.questions?.filter(q => q && typeof q.answer_count === 'number' && q.answer_count > 0).length || 0
+        return Math.round((answeredQuestions / this.perspectiveStats.total_questions) * 100)
+      } catch (error) {
+        console.error('Error in questionCompletion:', error)
+        return 0
+      }
     },
 
     overallEngagement() {
-      return this.averageResponseRate
+      try {
+        return this.averageResponseRate || 0
+      } catch (error) {
+        console.error('Error in overallEngagement:', error)
+        return 0
+      }
     },
 
     questionDiversity() {
-      const types = this.questionTypeStats
-      return Math.min(100, types.length * 50) // Max 100% for 2+ types
+      try {
+        const types = this.questionTypeStats || []
+        return Math.min(100, types.length * 50) // Max 100% for 2+ types
+      } catch (error) {
+        console.error('Error in questionDiversity:', error)
+        return 0
+      }
     },
 
     // Closed questions for detailed charts
     closedQuestions() {
-      if (!this.perspectiveStats.questions) return []
-      return this.perspectiveStats.questions.filter(q => q.question_type === 'closed' && q.options && q.options.length > 0)
+      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions)) return []
+      try {
+        return this.perspectiveStats.questions.filter(q => q && q.question_type === 'closed' && q.options && Array.isArray(q.options) && q.options.length > 0)
+      } catch (error) {
+        console.error('Error in closedQuestions:', error)
+        return []
+      }
     },
 
     // Discrepancy computed properties
     discrepancySeverityStats() {
       if (!this.discrepancyStats) return []
 
-      // Create severity stats from available data
-      const total = this.discrepancyStats.total_examples || 0
-      const discrepancies = this.discrepancyStats.total_discrepancies || 0
-
-      if (total === 0) return []
-
-      // Create basic severity distribution
-      const stats = []
-
-      if (discrepancies > 0) {
-        const discrepancyRate = this.discrepancyStats.discrepancy_percentage || 0
-
-        if (discrepancyRate >= 75) {
-          stats.push({ level: 'critical', count: Math.ceil(discrepancies * 0.3), percentage: 30 })
-          stats.push({ level: 'high', count: Math.ceil(discrepancies * 0.4), percentage: 40 })
-          stats.push({ level: 'medium', count: Math.floor(discrepancies * 0.3), percentage: 30 })
-        } else if (discrepancyRate >= 50) {
-          stats.push({ level: 'high', count: Math.ceil(discrepancies * 0.5), percentage: 50 })
-          stats.push({ level: 'medium', count: Math.floor(discrepancies * 0.5), percentage: 50 })
-        } else {
-          stats.push({ level: 'medium', count: Math.ceil(discrepancies * 0.6), percentage: 60 })
-          stats.push({ level: 'low', count: Math.floor(discrepancies * 0.4), percentage: 40 })
-        }
+      // Use real severity distribution from backend if available
+      if (this.discrepancyStats.severity_distribution && this.discrepancyStats.severity_distribution.length > 0) {
+        return this.discrepancyStats.severity_distribution
       }
 
-      return stats
+      return []
     },
 
     averageDiscrepancyRate() {
@@ -1537,9 +1574,23 @@ export default {
     },
 
     getQuestionResponseRate(question) {
-      // Calculate response rate based on total project members
-      const totalMembers = this.availableUsers.length || 1
-      return Math.round((question.answer_count / totalMembers) * 100)
+      try {
+        // Use the response_rate from the API if available, otherwise calculate
+        if (question && question.response_rate !== undefined && typeof question.response_rate === 'number') {
+          return question.response_rate
+        }
+
+        // Fallback calculation if response_rate is not available
+        if (question && typeof question.answer_count === 'number') {
+          const totalMembers = (Array.isArray(this.availableUsers) ? this.availableUsers.length : 0) || 1
+          return Math.round((question.answer_count / totalMembers) * 100)
+        }
+
+        return 0
+      } catch (error) {
+        console.error('Error in getQuestionResponseRate:', error)
+        return 0
+      }
     },
 
     // Discrepancy-specific methods
