@@ -24,7 +24,7 @@ class QuestionViewSet(viewsets.ModelViewSet):
     ordering = ['order', 'created_at']
 
     def get_permissions(self):
-        if self.action in ['create', 'update', 'partial_update', 'destroy', 'bulk_create', 'bulk_delete']:
+        if self.action in ['create', 'update', 'partial_update', 'destroy', 'bulk_create', 'bulk_delete', 'delete_all']:
             permission_classes = [IsAuthenticated, CanCreatePerspective]
         else:
             permission_classes = [IsAuthenticated, CanViewPerspective]
@@ -90,6 +90,15 @@ class QuestionViewSet(viewsets.ModelViewSet):
         
         return super().list(request, *args, **kwargs)
 
+    def destroy(self, request, *args, **kwargs):
+        """Override destroy to ensure consistent response format"""
+        instance = self.get_object()
+        question_text = instance.text[:50] + "..." if len(instance.text) > 50 else instance.text
+        self.perform_destroy(instance)
+        return Response({
+            'message': f'Question "{question_text}" deleted successfully'
+        }, status=status.HTTP_200_OK)
+
     def perform_create(self, serializer):
         import logging
         logger = logging.getLogger(__name__)
@@ -122,23 +131,36 @@ class QuestionViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=False, methods=['delete'])
+    @action(detail=False, methods=['post'])
     def bulk_delete(self, request, project_id=None):
         question_ids = request.data.get('ids', [])
         if not question_ids:
             return Response({'error': 'No question IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         questions = Question.objects.filter(
             id__in=question_ids,
             project_id=project_id
         )
-        
+
         deleted_count = questions.count()
         questions.delete()
-        
+
         return Response({
-            'message': f'{deleted_count} questions deleted successfully'
-        }, status=status.HTTP_204_NO_CONTENT)
+            'message': f'{deleted_count} questions deleted successfully',
+            'deleted_count': deleted_count
+        }, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def delete_all(self, request, project_id=None):
+        """Delete all questions in the project"""
+        questions = Question.objects.filter(project_id=project_id)
+        deleted_count = questions.count()
+        questions.delete()
+
+        return Response({
+            'message': f'{deleted_count} questions deleted successfully',
+            'deleted_count': deleted_count
+        }, status=status.HTTP_200_OK)
 
 
 class AnswerViewSet(viewsets.ModelViewSet):
