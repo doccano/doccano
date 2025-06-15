@@ -9,10 +9,16 @@ class QuestionType(models.TextChoices):
     CLOSED = "closed", "Multiple Choice"
 
 
+class DataType(models.TextChoices):
+    STRING = "string", "String"
+    INTEGER = "integer", "Integer"
+
+
 class Question(models.Model):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="perspective_questions")
     text = models.TextField()
     question_type = models.CharField(max_length=10, choices=QuestionType.choices)
+    data_type = models.CharField(max_length=10, choices=DataType.choices, blank=True, null=True)
     is_required = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -26,8 +32,40 @@ class Question(models.Model):
     def __str__(self):
         return f"{self.project.name} - {self.text[:50]}"
 
+    @classmethod
+    def get_next_order(cls, project):
+        """Get the next available order for a project"""
+        max_order = cls.objects.filter(project=project).aggregate(
+            models.Max('order')
+        )['order__max']
+        return (max_order or 0) + 1
+
+    @classmethod
+    def reorder_all_questions(cls, project):
+        """
+        Reorder all questions in a project to have sequential orders starting from 1
+        """
+        questions = cls.objects.filter(project=project).order_by('order')
+        
+        for index, question in enumerate(questions, start=1):
+            if question.order != index:
+                question.order = index
+                question.save(update_fields=['order'])
+        
+        return questions.count()
+
     def save(self, *args, **kwargs):
         is_new = self.pk is None
+        
+        # If this is a new question, ensure we have a valid order
+        if is_new:
+            if not self.order or self.order == 0:
+                self.order = self.get_next_order(self.project)
+            else:
+                # Check if the order is already taken
+                if Question.objects.filter(project=self.project, order=self.order).exists():
+                    self.order = self.get_next_order(self.project)
+        
         super().save(*args, **kwargs)
         
         # If question is updated (not new), reset all answers

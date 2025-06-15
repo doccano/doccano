@@ -66,6 +66,11 @@ class QuestionViewSet(viewsets.ModelViewSet):
             try:
                 member = Member.objects.get(id=member_id, project_id=self.kwargs['project_id'])
                 context['target_user'] = member.user
+                
+                # Include answers for admin users (for filtering purposes)
+                if member.is_admin():
+                    context['include_answers'] = True
+                    
             except Member.DoesNotExist:
                 pass
         return context
@@ -105,6 +110,37 @@ class QuestionViewSet(viewsets.ModelViewSet):
             logger.error(f"Error creating question: {e}")
             raise
 
+    def perform_destroy(self, instance):
+        """
+        Delete question and reorder remaining questions to maintain sequential order
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        project = instance.project
+        deleted_order = instance.order
+        
+        logger.info(f"Deleting question {instance.id} with order {deleted_order}")
+        
+        # Delete the question
+        instance.delete()
+        
+        # Reorder remaining questions with order greater than deleted question
+        questions_to_reorder = Question.objects.filter(
+            project=project,
+            order__gt=deleted_order
+        ).order_by('order')
+        
+        logger.info(f"Reordering {questions_to_reorder.count()} questions after deletion")
+        
+        # Update order for each question (decrease by 1)
+        for question in questions_to_reorder:
+            question.order -= 1
+            question.save(update_fields=['order'])
+            logger.info(f"Updated question {question.id} order from {question.order + 1} to {question.order}")
+        
+        logger.info("Question deletion and reordering completed successfully")
+
     @action(detail=False, methods=['post'])
     def bulk_create(self, request, project_id=None):
         project = get_object_or_404(Project, pk=project_id)
@@ -128,22 +164,114 @@ class QuestionViewSet(viewsets.ModelViewSet):
         if not question_ids:
             return Response({'error': 'No question IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
         
+        project = get_object_or_404(Project, pk=project_id)
         questions = Question.objects.filter(
             id__in=question_ids,
             project_id=project_id
-        )
+        ).order_by('order')
         
+        if not questions.exists():
+            return Response({'error': 'No questions found to delete'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Get the orders of questions to be deleted
+        deleted_orders = list(questions.values_list('order', flat=True))
         deleted_count = questions.count()
+        
+        # Delete the questions
         questions.delete()
+        
+        # Reorder remaining questions
+        self._reorder_questions_after_bulk_delete(project, deleted_orders)
         
         return Response({
             'message': f'{deleted_count} questions deleted successfully'
         }, status=status.HTTP_204_NO_CONTENT)
 
+    def _reorder_questions_after_bulk_delete(self, project, deleted_orders):
+        """
+        Helper method to reorder questions after bulk deletion
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        # Sort deleted orders to process from lowest to highest
+        deleted_orders.sort()
+        
+        logger.info(f"Reordering questions after bulk deletion of orders: {deleted_orders}")
+        
+        # Get all remaining questions ordered by their current order
+        remaining_questions = Question.objects.filter(project=project).order_by('order')
+        
+        # Reassign orders sequentially starting from 1
+        new_order = 1
+        for question in remaining_questions:
+            if question.order != new_order:
+                old_order = question.order
+                question.order = new_order
+                question.save(update_fields=['order'])
+                logger.info(f"Updated question {question.id} order from {old_order} to {new_order}")
+            new_order += 1
+        
+        logger.info("Bulk deletion reordering completed successfully")
+
+    @action(detail=False, methods=['post'])
+    def reorder_all(self, request, project_id=None):
+        """
+        Manually reorder all questions in a project to have sequential orders
+        """
+        project = get_object_or_404(Project, pk=project_id)
+        
+        try:
+            count = Question.reorder_all_questions(project)
+            return Response({
+                'message': f'Successfully reordered {count} questions',
+                'reordered_count': count
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                'error': f'Failed to reorder questions: {str(e)}'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=True, methods=['get'])
+    def answers(self, request, project_id=None, pk=None):
+        """
+        Get all answers for a specific question (without user information for confidentiality)
+        """
+        question = self.get_object()
+        answers = Answer.objects.filter(question=question).order_by('-created_at')
+        
+        # Return only the answer content, not user information
+        answer_data = []
+        for answer in answers:
+            if answer.text_answer:
+                # Open text answer
+                answer_data.append({
+                    'id': answer.id,
+                    'type': 'text',
+                    'content': answer.text_answer,
+                    'created_at': answer.created_at
+                })
+            elif answer.selected_option:
+                # Multiple choice answer
+                answer_data.append({
+                    'id': answer.id,
+                    'type': 'choice',
+                    'content': answer.selected_option.text,
+                    'created_at': answer.created_at
+                })
+        
+        return Response({
+            'question_id': question.id,
+            'question_text': question.text,
+            'question_type': question.question_type,
+            'total_answers': len(answer_data),
+            'answers': answer_data
+        })
+
 
 class AnswerViewSet(viewsets.ModelViewSet):
     serializer_class = AnswerSerializer
-    http_method_names = ['get', 'post']  # Only allow GET and POST
+    http_method_names = ['get', 'post', 'delete']  # Allow GET, POST and DELETE
     permission_classes = [IsAuthenticated, CanAnswerPerspective]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['question']
@@ -160,9 +288,16 @@ class AnswerViewSet(viewsets.ModelViewSet):
         
         # Check if user already answered this question
         if Answer.objects.filter(question=question, user=self.request.user).exists():
-            raise serializers.ValidationError("You have already answered this question.")
+                            raise serializers.ValidationError("You have already answered this item.")
         
-        serializer.save()
+        serializer.save(user=self.request.user)
+
+    def perform_destroy(self, instance):
+        # Only allow users to delete their own answers
+        if instance.user != self.request.user:
+            raise serializers.ValidationError("You can only delete your own answers.")
+        
+        instance.delete()
 
 
 class ProjectQuestionStatsView(generics.RetrieveAPIView):

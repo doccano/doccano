@@ -12,10 +12,12 @@ class QuestionSerializer(serializers.ModelSerializer):
     options = QuestionOptionSerializer(many=True, required=False)
     answer_count = serializers.SerializerMethodField()
     user_answered = serializers.SerializerMethodField()
+    user_answer_id = serializers.SerializerMethodField()
+    answers = serializers.SerializerMethodField()
 
     class Meta:
         model = Question
-        fields = ['id', 'text', 'question_type', 'is_required', 'order', 'options', 'answer_count', 'user_answered', 'created_at', 'updated_at']
+        fields = ['id', 'text', 'question_type', 'data_type', 'is_required', 'order', 'options', 'answer_count', 'user_answered', 'user_answer_id', 'answers', 'created_at', 'updated_at']
         read_only_fields = ['created_at', 'updated_at']
 
     def get_answer_count(self, obj):
@@ -32,6 +34,37 @@ class QuestionSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.answers.filter(user=request.user).exists()
         return False
+
+    def get_user_answer_id(self, obj):
+        # Get the answer ID for the current user
+        target_user = self.context.get('target_user')
+        if target_user:
+            answer = obj.answers.filter(user=target_user).first()
+            return answer.id if answer else None
+        
+        # Fall back to request user
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            answer = obj.answers.filter(user=request.user).first()
+            return answer.id if answer else None
+        return None
+
+    def get_answers(self, obj):
+        # Only include answers if explicitly requested (for admin filtering)
+        include_answers = self.context.get('include_answers', False)
+        if not include_answers:
+            return []
+        
+        # Return simplified answer data for filtering purposes
+        answers = obj.answers.all()
+        return [
+            {
+                'id': answer.id,
+                'content': answer.text_answer or (answer.selected_option.text if answer.selected_option else ''),
+                'created_at': answer.created_at
+            }
+            for answer in answers
+        ]
 
     def create(self, validated_data):
         options_data = validated_data.pop('options', [])

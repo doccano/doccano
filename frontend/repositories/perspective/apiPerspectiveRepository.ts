@@ -10,18 +10,23 @@ function toQuestionOptionModel(item: { [key: string]: any }): QuestionOption {
 }
 
 function toQuestionModel(item: { [key: string]: any }): Question {
-  return new Question(
+  const question = new Question(
     item.id,
     item.text,
     item.question_type,
+    item.data_type || null,
     item.is_required,
     item.order,
     item.options ? item.options.map(toQuestionOptionModel) : [],
     item.answer_count || 0,
     item.user_answered || false,
+    item.user_answer_id || null,
+    item.answers || [],
     item.created_at,
     item.updated_at
   )
+  
+  return question
 }
 
 function toAnswerModel(item: { [key: string]: any }): Answer {
@@ -46,6 +51,7 @@ function toProjectStatsModel(item: { [key: string]: any }): ProjectStats {
 export interface CreateQuestionPayload {
   text: string
   question_type: string
+  data_type?: string | null
   is_required: boolean
   order: number
   options?: { text: string; order: number }[]
@@ -78,20 +84,24 @@ export class APIPerspectiveRepository {
       }
     })
 
+    // Add a large limit to get all questions at once
+    queryParams.append('limit', '1000')
+
     const queryString = queryParams.toString()
     const url = `/projects/${projectId}/perspective/questions/${queryString ? '?' + queryString : ''}`
     console.log('Making request to:', url)
 
     const response = await this.request.get(url)
-    console.log('API Response:', response)
-    console.log('Response data:', response.data)
+    console.log('API Response status:', response.status)
 
     // Handle different response formats
     const data = response.data
     if (Array.isArray(data)) {
+      console.log('Response is array, loaded', data.length, 'questions')
       return data.map(toQuestionModel)
     } else if (data && Array.isArray(data.results)) {
-      // Paginated response
+      // Paginated response - but now we should get all items due to large limit
+      console.log('Response is paginated, loaded', data.results.length, 'questions out of', data.count, 'total')
       return data.results.map(toQuestionModel)
     } else {
       console.error('Unexpected response format:', data)
@@ -133,6 +143,12 @@ export class APIPerspectiveRepository {
     await this.request.post(url, { question_ids: questionIds })
   }
 
+  async reorderAllQuestions(projectId: string): Promise<{ message: string; reordered_count: number }> {
+    const url = `/projects/${projectId}/perspective/questions/reorder_all/`
+    const response = await this.request.post(url)
+    return response.data
+  }
+
   // Answers
   async listAnswers(projectId: string, questionId?: number): Promise<Answer[]> {
     const params = questionId ? `?question=${questionId}` : ''
@@ -156,6 +172,17 @@ export class APIPerspectiveRepository {
     const url = `/projects/${projectId}/perspective/answers/`
     const response = await this.request.post(url, payload)
     return toAnswerModel(response.data)
+  }
+
+  async deleteAnswer(projectId: string, answerId: number): Promise<void> {
+    const url = `/projects/${projectId}/perspective/answers/${answerId}/`
+    await this.request.delete(url)
+  }
+
+  async getQuestionAnswers(projectId: string, questionId: number): Promise<any> {
+    const url = `/projects/${projectId}/perspective/questions/${questionId}/answers/`
+    const response = await this.request.get(url)
+    return response.data
   }
 
   // Statistics
