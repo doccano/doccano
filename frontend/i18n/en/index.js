@@ -18,6 +18,7 @@ import overview from './projects/overview'
 import statistics from './projects/statistics'
 import settings from './projects/settings'
 import perspectives from './projects/perspectives'
+import reports from './projects/reports'
 
 export default {
   home,
@@ -39,5 +40,6 @@ export default {
   statistics,
   settings,
   perspectives,
+  reports,
   group
 }

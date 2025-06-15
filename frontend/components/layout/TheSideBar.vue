@@ -43,7 +43,8 @@ import {
   mdiRobotOutline,
   mdiFileDocumentOutline,
   mdiEyeOutline,
-  mdiVote
+  mdiVote,
+  mdiFileChartOutline
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -158,6 +159,12 @@ export default {
           text: 'Voting',
           link: 'voting',
           isVisible: true
+          },
+          {
+          icon: mdiFileChartOutline,
+          text: 'Statistics',
+          link: 'statistics',
+          isVisible: this.isProjectAdmin
         },
         {
           icon: mdiCog,
