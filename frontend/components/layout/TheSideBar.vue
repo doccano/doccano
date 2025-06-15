@@ -38,7 +38,7 @@ import {
   mdiHome,
   mdiLabel,
   mdiPlayCircleOutline,
-  mdiChatOutline,
+  mdiChatOutline, 
   mdiAlertCircleOutline,
   mdiEyeOutline,
   mdiRobotOutline,
@@ -135,12 +135,6 @@ export default {
           isVisible: this.isProjectAdmin
         },
         {
-          icon: mdiEyeOutline,
-          text: 'Perspectives',
-          link: 'perspectives',
-          isVisible: true
-        },
-        {
           icon: mdiRobotOutline, // ÍCONE DE DISCREPÂNCIAS AUTOMÁTICAS
           text: 'Automatic Discrepancies',
           link: 'automatic-discrepancies', // LEVA PARA /projects/:id/automatic-discrepancies
@@ -151,6 +145,12 @@ export default {
           text: 'Disagreements Report',
           link: 'disagreements-report', // LEVA PARA /projects/:id/disagreements-report
           isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiEyeOutline,
+          text: 'Perspectives',
+          link: 'perspectives',
+          isVisible: true
         },
         {
           icon: mdiCog,
