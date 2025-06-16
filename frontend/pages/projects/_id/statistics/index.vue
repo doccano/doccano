@@ -11,10 +11,10 @@
             <v-btn
               color="primary"
               :loading="exporting"
-              @click="exportData"
+              @click.prevent="exportData"
             >
               <v-icon left>{{ mdiDownload }}</v-icon>
-              Export CSV
+              Export PDF
             </v-btn>
           </v-card-title>
         </v-card>
@@ -1019,6 +1019,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import { mdiDownload, mdiChartBar, mdiFilter } from '@mdi/js'
 
 export default {
@@ -1103,6 +1104,8 @@ export default {
   },
 
   computed: {
+    ...mapGetters('projects', ['project']),
+
     projectId() {
       return this.$route.params.id
     },
@@ -1445,38 +1448,249 @@ export default {
     async exportData() {
       this.exporting = true
       try {
-        const params = {
-          type: 'labels',
-          format: 'csv'
+        console.log('📄 Starting statistics PDF generation...')
+
+        // Check if there is data to export
+        if (!this.labelStats || Object.keys(this.labelStats).length === 0) {
+          throw new Error('No statistics data available for export.')
         }
-        if (this.selectedLabel) {
-          params.label = this.selectedLabel
+
+        // Generate filename
+        const projectName = this.project?.name || 'Project'
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+        const filename = `statistics-${projectName}-${timestamp}`
+
+        // Export PDF without redirection
+        await this.exportToPDF(filename)
+
+        // Show success message
+        if (this.$toast) {
+          this.$toast.success('Statistics PDF exported successfully')
+        } else {
+          console.log('Statistics PDF exported successfully')
         }
-        if (this.selectedUser) {
-          params.user_id = this.selectedUser
-        }
-        
-        const response = await this.$axios.get(`/v1/projects/${this.projectId}/metrics/export`, {
-          params,
-          responseType: 'blob'
-        })
-        
-        const blob = new Blob([response.data], { type: 'text/csv' })
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `statistics_${this.projectId}.csv`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        window.URL.revokeObjectURL(url)
-        
-        this.$toast.success('Export started successfully')
+
+        // Ensure we stay on the current page
+        // Do not perform any navigation or redirection
+
       } catch (error) {
-        console.error('Error exporting data:', error)
-        this.$toast.error('Failed to export data')
+        console.error('Error generating statistics PDF:', error)
+
+        // Show error message
+        if (this.$toast) {
+          this.$toast.error(`Export error: ${error.message}`)
+        } else {
+          alert('Error generating PDF: ' + error.message)
+        }
       } finally {
         this.exporting = false
+      }
+    },
+
+    async exportToPDF(filename) {
+      try {
+        console.log('📄 Starting PDF generation...')
+
+        // Prevent any navigation behavior
+        event?.preventDefault?.()
+
+        // Load jsPDF dynamically
+        const { jsPDF } = await import('jspdf')
+        const { default: autoTable } = await import('jspdf-autotable')
+
+        // eslint-disable-next-line new-cap
+        const doc = new jsPDF()
+
+        // Title
+        doc.setFontSize(20)
+        doc.setFont('helvetica', 'bold')
+        doc.text('Project Statistics Report', 14, 20)
+
+        // Project information
+        doc.setFontSize(12)
+        doc.setFont('helvetica', 'normal')
+        const projectName = this.project?.name || 'Project'
+        const totalLabels = this.labelStats.total_labels || 0
+        const totalExamples = this.labelStats.total_examples || 0
+        const totalUsers = this.labelStats.total_users || 0
+
+        doc.text(`Project: ${projectName}`, 14, 35)
+        doc.text(`Total Labels: ${totalLabels}`, 14, 45)
+        doc.text(`Total Examples: ${totalExamples}`, 14, 55)
+        doc.text(`Active Users: ${totalUsers}`, 14, 65)
+        doc.text(`Generated on: ${new Date().toLocaleString('en-US')}`, 14, 75)
+
+        let currentY = 90
+
+        // Label Distribution Table
+        if (this.labelStats.label_distribution && this.labelStats.label_distribution.length > 0) {
+          doc.setFontSize(14)
+          doc.setFont('helvetica', 'bold')
+          doc.text('Label Distribution', 14, currentY)
+          currentY += 10
+
+          const labelTableData = this.labelStats.label_distribution.map(item => [
+            item.label || 'N/A',
+            (item.count || 0).toString(),
+            `${(item.percentage || 0).toFixed(2)}%`
+          ])
+
+          autoTable(doc, {
+            startY: currentY,
+            head: [['Label', 'Count', 'Percentage']],
+            body: labelTableData,
+            theme: 'striped',
+            headStyles: {
+              fillColor: [63, 81, 181],
+              textColor: 255,
+              fontSize: 10,
+              fontStyle: 'bold'
+            },
+            bodyStyles: {
+              fontSize: 9,
+              cellPadding: 3
+            },
+            columnStyles: {
+              0: { cellWidth: 80 }, // Label
+              1: { cellWidth: 40, halign: 'center' }, // Count
+              2: { cellWidth: 40, halign: 'center' } // Percentage
+            }
+          })
+
+          currentY = doc.lastAutoTable.finalY + 20
+        }
+
+        // User Performance Table
+        if (this.labelStats.user_performance && this.labelStats.user_performance.length > 0) {
+          // Check if there is enough space on the page
+          if (currentY > 200) {
+            doc.addPage()
+            currentY = 20
+          }
+
+          doc.setFontSize(14)
+          doc.setFont('helvetica', 'bold')
+          doc.text('User Performance', 14, currentY)
+          currentY += 10
+
+          const userTableData = this.labelStats.user_performance.map(user => [
+            user.username || 'N/A',
+            (user.total_labels || 0).toString(),
+            (user.labels_per_example || 0).toFixed(2)
+          ])
+
+          autoTable(doc, {
+            startY: currentY,
+            head: [['User', 'Total Labels', 'Labels per Example']],
+            body: userTableData,
+            theme: 'striped',
+            headStyles: {
+              fillColor: [63, 81, 181],
+              textColor: 255,
+              fontSize: 10,
+              fontStyle: 'bold'
+            },
+            bodyStyles: {
+              fontSize: 9,
+              cellPadding: 3
+            },
+            columnStyles: {
+              0: { cellWidth: 70 }, // User
+              1: { cellWidth: 50, halign: 'center' }, // Total Labels
+              2: { cellWidth: 60, halign: 'center' } // Labels per Example
+            }
+          })
+
+          currentY = doc.lastAutoTable.finalY + 20
+        }
+
+        // Add perspective statistics if available
+        if (this.perspectiveStats && this.perspectiveStats.questions && this.perspectiveStats.questions.length > 0) {
+          // Check if there is enough space on the page
+          if (currentY > 200) {
+            doc.addPage()
+            currentY = 20
+          }
+
+          doc.setFontSize(14)
+          doc.setFont('helvetica', 'bold')
+          doc.text('Perspective Statistics', 14, currentY)
+          currentY += 10
+
+          const perspectiveTableData = this.perspectiveStats.questions.slice(0, 10).map(question => [
+            (question.text || 'N/A').substring(0, 50) + (question.text && question.text.length > 50 ? '...' : ''),
+            question.question_type || 'N/A',
+            (question.answer_count || 0).toString(),
+            `${(question.response_rate || 0).toFixed(1)}%`
+          ])
+
+          autoTable(doc, {
+            startY: currentY,
+            head: [['Question', 'Type', 'Answers', 'Response Rate']],
+            body: perspectiveTableData,
+            theme: 'striped',
+            headStyles: {
+              fillColor: [63, 81, 181],
+              textColor: 255,
+              fontSize: 10,
+              fontStyle: 'bold'
+            },
+            bodyStyles: {
+              fontSize: 9,
+              cellPadding: 3
+            },
+            columnStyles: {
+              0: { cellWidth: 80 }, // Question
+              1: { cellWidth: 30 }, // Type
+              2: { cellWidth: 30, halign: 'center' }, // Answers
+              3: { cellWidth: 40, halign: 'center' } // Response Rate
+            }
+          })
+        }
+
+        // Add summary at the end
+        const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : currentY + 15
+        doc.setFontSize(10)
+        doc.setFont('helvetica', 'italic')
+        doc.text('Report automatically generated by Doccano system', 14, finalY)
+        doc.text(`Page 1 of 1 - ${new Date().toLocaleString('en-US')}`, 14, finalY + 8)
+
+        // Salvar o PDF
+        const pdfBlob = doc.output('blob')
+
+        // Para browsers antigos como o IE
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+          window.navigator.msSaveOrOpenBlob(pdfBlob, `${filename}.pdf`)
+          console.log('✅ PDF exportado com sucesso!')
+          return
+        }
+
+        // Para browsers modernos - usar download direto sem redirecionamento
+        const url = URL.createObjectURL(pdfBlob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `${filename}.pdf`
+        link.style.display = 'none'
+
+        // Adicionar ao DOM temporariamente
+        document.body.appendChild(link)
+
+        // Forçar download
+        link.click()
+
+        // Limpar recursos imediatamente após o click
+        document.body.removeChild(link)
+        URL.revokeObjectURL(url)
+
+        console.log('✅ PDF exported successfully!')
+
+        // Ensure we stay on the current page
+        // Do not perform any navigation, redirection or route changes
+        return true // Return success without navigation
+
+      } catch (error) {
+        console.error('❌ Error generating PDF:', error)
+        throw new Error(`Could not generate PDF: ${error.message}`)
       }
     },
 
