@@ -80,8 +80,8 @@ echo "Running database migrations..."
 poetry run python manage.py migrate
 
 # Start Django server first
-echo "Starting Django development server..."
-poetry run python manage.py runserver &
+echo "Starting Django development server on all interfaces..."
+poetry run python manage.py runserver 0.0.0.0:8000 &
 DJANGO_PID=$!
 echo "Django server started with PID: ${DJANGO_PID}"
 
@@ -103,17 +103,19 @@ CELERY_PID=$!
 echo "Celery worker started with PID: ${CELERY_PID}"
 
 # Now start the frontend after the backend is confirmed running
-echo "Starting frontend..."
+echo "Starting frontend on all interfaces..."
 cd "${FRONTEND_DIR}" || { echo "Error: Frontend directory not found"; exit 1; }
-yarn dev &
+yarn dev --host 0.0.0.0 &
 FRONTEND_PID=$!
 echo "Frontend started with PID: ${FRONTEND_PID}"
 echo
 
 echo
 echo "=== All services started ==="
-echo "Backend API: http://127.0.0.1:8000/"
-echo "Frontend UI: http://localhost:3000/"
+echo "Backend API: http://0.0.0.0:8000/ (accessible from network)"
+echo "Frontend UI: http://0.0.0.0:3000/ (accessible from network)"
+echo "Local Backend API: http://127.0.0.1:8000/"
+echo "Local Frontend UI: http://localhost:3000/"
 echo "Press Ctrl+C to stop all services"
 
 # Wait for all background processes to finish (or until we receive SIGINT)

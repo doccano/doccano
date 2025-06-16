@@ -242,6 +242,9 @@ if DEBUG:
         "http://127.0.0.1:3000",
         "http://0.0.0.0:3000",
         "http://localhost:3000",
+        "http://0.0.0.0:80",
+        "http://localhost:80",
+        "http://127.0.0.1:80",
     ]
     CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
