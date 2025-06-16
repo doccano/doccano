@@ -47,6 +47,14 @@ export default {
   databaseConnectionError: 'Unable to connect to database. Cannot delete question.',
   databaseConnectionErrorTitle: 'Database Connection Error',
   
+  // Delete All Perspective messages
+  confirmDeleteAll: 'Confirm Delete Perspective',
+  deleteAllQuestionsWarning: 'This will permanently delete the entire perspective and all associated answers',
+  deleteAllQuestionsConfirm: 'Are you sure you want to delete this perspective for the project?',
+  thisActionCannotBeUndone: 'This action cannot be undone.',
+  deleteAll: 'Delete Perspective',
+  allQuestionsDeletedSuccess: 'Perspective deleted successfully',
+
   // Validation messages
   questionTextRequired: 'Question text is required',
   questionTextMinLength: 'Question must be at least 10 characters',
