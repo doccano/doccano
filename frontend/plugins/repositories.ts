@@ -26,6 +26,7 @@ import { APIUserRepository } from '@/repositories/user/apiUserRepository'
 import { APISegmentationRepository } from '~/repositories/tasks/apiSegmentationRepository'
 import { APIGroupRepository } from '~/repositories/group/apiGroupRepository'
 import { APIPerspectiveRepository } from '~/repositories/perspective/apiPerspectiveRepository'
+import { APIVotingRepository } from '~/repositories/voting/apiVotingRepository'
 export interface Repositories {
   // User
   auth: APIAuthRepository
@@ -75,6 +76,9 @@ export interface Repositories {
   textLabel: APITextLabelRepository
   boundingBox: APIBoundingBoxRepository
   segmentation: APISegmentationRepository
+
+  // Voting
+  voting: APIVotingRepository
 }
 
 declare module 'vue/types/vue' {
@@ -131,7 +135,10 @@ const repositories: Repositories = {
   relation: new APIRelationRepository(),
   textLabel: new APITextLabelRepository(),
   boundingBox: new APIBoundingBoxRepository(),
-  segmentation: new APISegmentationRepository()
+  segmentation: new APISegmentationRepository(),
+
+  // Voting
+  voting: new APIVotingRepository()
 }
 
 const plugin: Plugin = (_, inject) => {

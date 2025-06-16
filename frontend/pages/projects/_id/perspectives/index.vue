@@ -3,10 +3,10 @@
     <!-- Database Error Alert - Always visible when database is down -->
     <v-alert
       v-if="!isDatabaseHealthy"
+      ref="databaseAlert"
       type="error"
       prominent
       class="mb-4"
-      ref="databaseAlert"
     >
       <v-row align="center">
         <v-col class="grow">
@@ -466,21 +466,6 @@ export default {
     }
   },
 
-  async mounted() {
-    await this.loadAdminStatus()
-    if (this.currentMember) {
-      await this.loadQuestions()
-      if (this.isProjectAdmin) {
-        await this.loadStats()
-      }
-    } else {
-      this.$store.dispatch('notification/setNotification', {
-        color: 'error',
-        text: 'Unable to load member information'
-      })
-    }
-  },
-
   watch: {
     isDatabaseHealthy(newValue, oldValue) {
       // When database becomes unhealthy, scroll to show the error message
@@ -494,6 +479,21 @@ export default {
           }
         })
       }
+    }
+  },
+
+  async mounted() {
+    await this.loadAdminStatus()
+    if (this.currentMember) {
+      await this.loadQuestions()
+      if (this.isProjectAdmin) {
+        await this.loadStats()
+      }
+    } else {
+      this.$store.dispatch('notification/setNotification', {
+        color: 'error',
+        text: 'Unable to load member information'
+      })
     }
   },
 

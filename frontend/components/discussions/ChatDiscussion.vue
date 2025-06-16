@@ -36,7 +36,7 @@
     </div>
 
     <!-- Messages Area -->
-    <div class="messages-container" ref="messagesContainer">
+    <div ref="messagesContainer" class="messages-container">
       <div v-if="filteredMessages.length === 0" class="empty-state">
         <v-icon size="64" color="grey lighten-1">mdi-message-outline</v-icon>
         <p class="empty-text">{{ filterTerm ? 'No messages found' : 'No messages yet. Start the conversation!' }}</p>
@@ -109,8 +109,8 @@
                   text
                   x-small
                   color="error"
-                  @click="retryMessage(message)"
                   class="retry-btn"
+                  @click="retryMessage(message)"
                 >
                   <v-icon size="12" class="mr-1">mdi-refresh</v-icon>
                   Retry
@@ -121,8 +121,8 @@
                   v-if="!readOnly && message.status !== 'failed'"
                   text
                   x-small
-                  @click="replyToMessage(message)"
                   class="reply-btn"
+                  @click="replyToMessage(message)"
                 >
                   <v-icon size="12">mdi-reply</v-icon>
                   <span class="reply-symbol">↩</span>
@@ -172,7 +172,7 @@
         </div>
         <p class="reply-text">{{ truncateText(replyTo.text, 100) }}</p>
       </div>
-      <v-btn icon small @click="cancelReply" class="reply-close">
+      <v-btn icon small class="reply-close" @click="cancelReply">
         ×
       </v-btn>
     </div>
@@ -196,9 +196,9 @@
           <v-btn
             color="primary"
             :disabled="!newMessage.trim()"
-            @click="sendMessage"
             class="send-btn"
             elevation="2"
+            @click="sendMessage"
           >
             SEND
           </v-btn>

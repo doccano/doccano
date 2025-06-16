@@ -1284,13 +1284,6 @@ export default {
     }
   },
 
-  async created() {
-    console.log('Statistics page created, projectId:', this.projectId)
-    await this.loadLabelStats()
-    await this.loadPerspectiveStats()
-    await this.loadDiscrepancyStats()
-  },
-
   watch: {
     selectedLabel: {
       handler(newVal, oldVal) {
@@ -1336,6 +1329,13 @@ export default {
         }
       }
     }
+  },
+
+  async created() {
+    console.log('Statistics page created, projectId:', this.projectId)
+    await this.loadLabelStats()
+    await this.loadPerspectiveStats()
+    await this.loadDiscrepancyStats()
   },
 
   async mounted() {

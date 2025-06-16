@@ -128,16 +128,16 @@ export default Vue.extend({
     }
   },
 
-  created() {
-    // Ensure selectedPermissions is initialized as an empty array
-    this.selectedPermissions = []
-  },
-
   watch: {
     permissionsSearch(_val) {
       // When using v-autocomplete with server-side filtering, 
       // we could implement additional filtering here if needed
     }
+  },
+
+  created() {
+    // Ensure selectedPermissions is initialized as an empty array
+    this.selectedPermissions = []
   },
 
   async mounted() {

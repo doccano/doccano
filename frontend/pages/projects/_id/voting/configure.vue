@@ -82,8 +82,8 @@
                          readonly
                          outlined
                          v-bind="attrs"
-                         v-on="on"
                          :rules="[v => !!v || 'Campo obrigatório']"
+                         v-on="on"
                        >
                          <template #prepend>
                            <v-icon>{{ mdiCalendar }}</v-icon>
@@ -113,8 +113,8 @@
                          readonly
                          outlined
                          v-bind="attrs"
-                         v-on="on"
                          :rules="[v => !!v || 'Campo obrigatório']"
+                         v-on="on"
                        >
                          <template #prepend>
                            <v-icon>{{ mdiCalendar }}</v-icon>
@@ -148,8 +148,8 @@
                          readonly
                          outlined
                          v-bind="attrs"
-                         v-on="on"
                          :rules="[v => !!v || 'Campo obrigatório']"
+                         v-on="on"
                        >
                          <template #prepend>
                            <v-icon>{{ mdiClock }}</v-icon>
@@ -185,8 +185,8 @@
                          readonly
                          outlined
                          v-bind="attrs"
-                         v-on="on"
                          :rules="[v => !!v || 'Campo obrigatório']"
+                         v-on="on"
                        >
                          <template #prepend>
                            <v-icon>{{ mdiClock }}</v-icon>
@@ -303,12 +303,12 @@
                        </v-row>
 
                        <!-- Save Rules Button -->
-                       <div class="text-center mt-4" v-if="hasUnsavedRules">
+                       <div v-if="hasUnsavedRules" class="text-center mt-4">
                          <v-btn
                            color="success"
                            type="button"
-                           @click="saveRules"
                            :disabled="!canSaveRules"
+                           @click="saveRules"
                          >
                            <v-icon left>{{ mdiContentSave }}</v-icon>
                            Save Rule
@@ -487,6 +487,11 @@
          </v-card-actions>
        </v-card>
      </v-dialog>
+
+     <!-- Loading overlay -->
+     <v-overlay :value="isLoading">
+       <v-progress-circular indeterminate size="64"></v-progress-circular>
+     </v-overlay>
    </v-container>
  </template>
 
@@ -537,6 +542,7 @@ export default {
       mdiVoteOutline,
       valid: false,
       saving: false,
+      isLoading: false,
       startDateMenu: false,
       endDateMenu: false,
       startTimeMenu: false,
@@ -553,7 +559,7 @@ export default {
         startTime: '',
         endTime: '',
         annotationRules: [],
-        votingMethod: ''
+        votingMethod: 'approve_disapprove'  // Set default value
       }
     }
   },
@@ -566,13 +572,55 @@ export default {
       // Check if we're editing an existing configuration
       const editingConfigId = sessionStorage.getItem('editingConfigId')
       if (editingConfigId) {
-        this.loadExistingConfiguration(editingConfigId)
+        await this.loadExistingConfiguration(editingConfigId)
         sessionStorage.removeItem('editingConfigId')
       }
     } catch(e) {
-      throw new Error(e.response.data.detail)
+      throw new Error(e.response?.data?.detail || e.message)
     } finally {
       this.isLoading = false
+    }
+  },
+
+  head() {
+    return {
+      title: 'Configure Voting'
+    }
+  },
+
+  computed: {
+    project() {
+      return this.$store.getters['projects/project']
+    },
+    
+    isProjectAdmin() {
+      return this.$store.getters['projects/isProjectAdmin']
+    },
+
+    hasUnsavedRules() {
+      return this.configuration.annotationRules.some(rule => !rule.saved)
+    },
+
+    canSaveRules() {
+      return this.configuration.annotationRules.some(rule => 
+        !rule.saved && rule.name.trim() && rule.description.trim()
+      )
+    }
+  },
+
+  watch: {
+    isDatabaseHealthy(newValue, oldValue) {
+      // Se a base de dados ficou indisponível (mudou de true para false)
+      if (oldValue === true && newValue === false) {
+        // Aguarda o próximo tick para garantir que o alerta foi renderizado
+        this.$nextTick(() => {
+          // Faz scroll para o topo da página para mostrar o alerta
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+          })
+        })
+      }
     }
   },
 
@@ -594,48 +642,6 @@ export default {
         description: '',
         saved: false
       })
-    }
-  },
-
-  head() {
-    return {
-      title: 'Configure Voting'
-    }
-  },
-
-  watch: {
-    isDatabaseHealthy(newValue, oldValue) {
-      // Se a base de dados ficou indisponível (mudou de true para false)
-      if (oldValue === true && newValue === false) {
-        // Aguarda o próximo tick para garantir que o alerta foi renderizado
-        this.$nextTick(() => {
-          // Faz scroll para o topo da página para mostrar o alerta
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-          })
-        })
-      }
-    }
-  },
-
-  computed: {
-    project() {
-      return this.$store.getters['projects/project']
-    },
-    
-    isProjectAdmin() {
-      return this.$store.getters['projects/isProjectAdmin']
-    },
-
-    hasUnsavedRules() {
-      return this.configuration.annotationRules.some(rule => !rule.saved)
-    },
-
-    canSaveRules() {
-      return this.configuration.annotationRules.some(rule => 
-        !rule.saved && rule.name.trim() && rule.description.trim()
-      )
     }
   },
 
@@ -716,15 +722,33 @@ export default {
       this.$router.push(this.localePath(`/projects/${this.$route.params.id}/voting`))
     },
 
-    loadExistingConfiguration(configId) {
-      const savedConfigs = localStorage.getItem(`voting_configs_${this.$route.params.id}`)
-      if (savedConfigs) {
-        const configs = JSON.parse(savedConfigs)
-        const config = configs.find(c => c.id.toString() === configId)
-        if (config) {
-          this.configuration = { ...config }
-          this.editingConfigId = configId
+    async loadExistingConfiguration(configId) {
+      try {
+        const config = await this.$services.voting.findById(this.$route.params.id, configId)
+        // Convert API response format to component format
+        this.configuration = {
+          name: config.name,
+          description: config.description,
+          startDate: config.start_date,
+          endDate: config.end_date,
+          startTime: config.start_time,
+          endTime: config.end_time,
+          votingMethod: config.voting_method,
+          annotationRules: config.annotation_rules.map(rule => ({
+            name: rule.name,
+            description: rule.description,
+            order: rule.order,
+            saved: true
+          }))
         }
+        this.editingConfigId = configId
+      } catch (error) {
+        console.error('Error loading configuration:', error)
+        this.$store.dispatch('notification/setNotification', {
+          color: 'error',
+          text: 'Erro ao carregar configuração',
+          timeout: 4000
+        })
       }
     },
 
@@ -735,44 +759,67 @@ export default {
 
       this.saving = true
       try {
-        // Get existing configurations array
-        const existingConfigs = JSON.parse(localStorage.getItem(`voting_configs_${this.$route.params.id}`) || '[]')
-        
+        // Prepare annotation rules data
+        const annotationRules = this.configuration.annotationRules
+          .filter(rule => rule.name.trim() && rule.description.trim())
+          .map((rule, index) => ({
+            name: rule.name.trim(),
+            description: rule.description.trim(),
+            order: rule.order || index
+          }))
+
+        // Prepare configuration data for API
+        const configData = {
+          name: this.configuration.name,
+          description: this.configuration.description,
+          voting_method: this.configuration.votingMethod,
+          start_date: this.configuration.startDate,
+          end_date: this.configuration.endDate,
+          start_time: this.configuration.startTime,
+          end_time: this.configuration.endTime,
+          status: 'configured',
+          annotation_rules: annotationRules
+        }
+
         if (this.editingConfigId) {
           // Update existing configuration
-          const configIndex = existingConfigs.findIndex(c => c.id.toString() === this.editingConfigId)
-          if (configIndex !== -1) {
-            const configToSave = {
-              ...this.configuration,
-              id: parseInt(this.editingConfigId),
-              projectId: this.$route.params.id,
-              updatedAt: new Date().toISOString(),
-              status: 'configured'
-            }
-            existingConfigs[configIndex] = configToSave
-            console.log('Configuration updated:', configToSave)
-          }
+          await this.$services.voting.update(this.$route.params.id, this.editingConfigId, configData)
+          console.log('Configuration updated successfully')
+          
+          this.$store.dispatch('notification/setNotification', {
+            color: 'success',
+            text: 'Configuração atualizada com sucesso',
+            timeout: 4000
+          })
         } else {
           // Create new configuration
-          const configToSave = {
-            ...this.configuration,
-            id: Date.now(), // Simple ID generation
-            projectId: this.$route.params.id,
-            createdAt: new Date().toISOString(),
-            status: 'configured'
-          }
-          existingConfigs.push(configToSave)
-          console.log('Configuration created:', configToSave)
+          const createdConfig = await this.$services.voting.create(this.$route.params.id, configData)
+          console.log('Configuration created successfully:', createdConfig)
+          
+          this.$store.dispatch('notification/setNotification', {
+            color: 'success',
+            text: 'Configuração criada com sucesso',
+            timeout: 4000
+          })
         }
         
-        localStorage.setItem(`voting_configs_${this.$route.params.id}`, JSON.stringify(existingConfigs))
-        
-        // Simulate API call delay
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
+        // Navigate back to voting index
         this.$router.push(this.localePath(`/projects/${this.$route.params.id}/voting`))
       } catch (error) {
         console.error('Error saving configuration:', error)
+        
+        let errorMessage = 'Erro ao salvar configuração'
+        if (error.response && error.response.data && error.response.data.detail) {
+          errorMessage = error.response.data.detail
+        } else if (error.message) {
+          errorMessage = error.message
+        }
+        
+        this.$store.dispatch('notification/setNotification', {
+          color: 'error',
+          text: errorMessage,
+          timeout: 6000
+        })
       } finally {
         this.saving = false
       }

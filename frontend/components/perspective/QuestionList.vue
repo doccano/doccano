@@ -216,8 +216,8 @@
           <v-btn 
             color="primary" 
             large
-            @click="showAnswersDialog = false"
             class="px-6"
+            @click="showAnswersDialog = false"
           >
             <v-icon left>mdi-close</v-icon>
             Close

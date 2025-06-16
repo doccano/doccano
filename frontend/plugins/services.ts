@@ -11,6 +11,7 @@ import { SegmentationApplicationService } from '@/services/application/tasks/seg
 import { SequenceLabelingApplicationService } from '@/services/application/tasks/sequenceLabeling/sequenceLabelingApplicationService'
 import { UserApplicationService } from '~/services/application/user/UserApplicationService'
 import { GroupApplicationService } from '~/services/application/group/GroupApplicationService'
+import { VotingApplicationService } from '~/services/application/voting/votingApplicationService'
 
 export interface Services {
   categoryType: LabelApplicationService
@@ -25,7 +26,8 @@ export interface Services {
   segmentation: SegmentationApplicationService,
   user: UserApplicationService,
   group: GroupApplicationService,
-  perspective: PerspectiveApplicationService
+  perspective: PerspectiveApplicationService,
+  voting: VotingApplicationService
 }
 
 declare module 'vue/types/vue' {
@@ -51,7 +53,8 @@ const plugin: Plugin = (_, inject) => {
     segmentation: new SegmentationApplicationService(repositories.segmentation),
     user: new UserApplicationService(repositories.user),
     group: new GroupApplicationService(repositories.group),
-    perspective: new PerspectiveApplicationService(repositories.perspective)
+    perspective: new PerspectiveApplicationService(repositories.perspective),
+    voting: new VotingApplicationService(repositories.voting)
   }
   inject('services', services)
 }

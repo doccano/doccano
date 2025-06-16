@@ -26,14 +26,14 @@
             <h4>Anotações do {{ user1Name }}:</h4>
             <div v-if="user1Annotations.length === 0">Nenhuma anotação encontrada para este usuário.</div>
             <div v-else>
-              <AnnotatedText :text="documentText" :annotations="user1Annotations" :labelColors="labelColorsDict" />
+              <AnnotatedText :text="documentText" :annotations="user1Annotations" :label-colors="labelColorsDict" />
             </div>
           </v-col>
           <v-col cols="12" md="6">
             <h4>Anotações do {{ user2Name }}:</h4>
             <div v-if="user2Annotations.length === 0">Nenhuma anotação encontrada para este usuário.</div>
             <div v-else>
-              <AnnotatedText :text="documentText" :annotations="user2Annotations" :labelColors="labelColorsDict" />
+              <AnnotatedText :text="documentText" :annotations="user2Annotations" :label-colors="labelColorsDict" />
             </div>
           </v-col>
         </v-row>
