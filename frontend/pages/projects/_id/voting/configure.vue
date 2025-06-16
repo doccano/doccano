@@ -29,7 +29,7 @@
              >
                <v-icon>{{ mdiArrowLeft }}</v-icon>
              </v-btn>
-             <h2>Configure Voting</h2>
+             <h2>Configurar Votação</h2>
            </v-card-title>
 
                      <v-card-text>
@@ -39,10 +39,10 @@
                  <v-col cols="12">
                    <v-text-field
                      v-model="configuration.name"
-                     label="Voting Name"
-                     placeholder="Enter a name for this voting session"
+                     label="Nome da Votação"
+                     placeholder="Insira um nome para esta sessão de votação"
                      outlined
-                     :rules="[v => !!v || 'Required field']"
+                     :rules="[v => !!v || 'Campo obrigatório']"
                    >
                      <template #prepend>
                        <v-icon>{{ mdiVote }}</v-icon>
@@ -54,11 +54,11 @@
                  <v-col cols="12">
                    <v-textarea
                      v-model="configuration.description"
-                     label="Voting Description"
-                     placeholder="Describe the purpose of this voting..."
+                     label="Descrição da Votação"
+                     placeholder="Descreva o propósito desta votação..."
                      outlined
                      rows="3"
-                     :rules="[v => !!v || 'Required field']"
+                     :rules="[v => !!v || 'Campo obrigatório']"
                    >
                      <template #prepend>
                        <v-icon>{{ mdiText }}</v-icon>
@@ -78,12 +78,12 @@
                      <template #activator="{ on, attrs }">
                        <v-text-field
                          v-model="configuration.startDate"
-                         label="Start Date"
+                         label="Data de Início"
                          readonly
                          outlined
                          v-bind="attrs"
                          v-on="on"
-                         :rules="[v => !!v || 'Required field']"
+                         :rules="[v => !!v || 'Campo obrigatório']"
                        >
                          <template #prepend>
                            <v-icon>{{ mdiCalendar }}</v-icon>
@@ -109,12 +109,12 @@
                      <template #activator="{ on, attrs }">
                        <v-text-field
                          v-model="configuration.endDate"
-                         label="End Date"
+                         label="Data de Fim"
                          readonly
                          outlined
                          v-bind="attrs"
                          v-on="on"
-                         :rules="[v => !!v || 'Required field']"
+                         :rules="[v => !!v || 'Campo obrigatório']"
                        >
                          <template #prepend>
                            <v-icon>{{ mdiCalendar }}</v-icon>
@@ -144,12 +144,12 @@
                      <template #activator="{ on, attrs }">
                        <v-text-field
                          v-model="configuration.startTime"
-                         label="Start Time"
+                         label="Hora de Início"
                          readonly
                          outlined
                          v-bind="attrs"
                          v-on="on"
-                         :rules="[v => !!v || 'Required field']"
+                         :rules="[v => !!v || 'Campo obrigatório']"
                        >
                          <template #prepend>
                            <v-icon>{{ mdiClock }}</v-icon>
@@ -181,12 +181,12 @@
                      <template #activator="{ on, attrs }">
                        <v-text-field
                          v-model="configuration.endTime"
-                         label="End Time"
+                         label="Hora de Fim"
                          readonly
                          outlined
                          v-bind="attrs"
                          v-on="on"
-                         :rules="[v => !!v || 'Required field']"
+                         :rules="[v => !!v || 'Campo obrigatório']"
                        >
                          <template #prepend>
                            <v-icon>{{ mdiClock }}</v-icon>
@@ -207,7 +207,7 @@
                    <v-divider class="mb-4" />
                    <h3 class="text-h6 mb-4">
                      <v-icon class="mr-2">{{ mdiFileDocumentEdit }}</v-icon>
-                     Annotation Rules
+                     Regras de Anotação
                    </h3>
 
                    <v-card outlined>
@@ -351,7 +351,7 @@
                    <v-card outlined>
                      <v-card-text>
                        <p class="text-body-2 grey--text mb-4">
-                         Define how annotators should vote on the annotation rules:
+                         Defina como os anotadores devem votar nas regras de anotação:
                        </p>
                        
                        <v-radio-group
@@ -364,10 +364,10 @@
                          >
                            <template #label>
                              <div>
-                               <strong>Approve only rules they agree with</strong>
+                               <strong>Aprovar apenas regras que concordam</strong>
                                <br>
                                <span class="text-body-2 grey--text">
-                                 Annotators can only approve rules they support. Rules not voted remain neutral.
+                                 Anotadores só podem aprovar regras que apoiam. Regras não votadas permanecem neutras.
                                </span>
                              </div>
                            </template>
@@ -380,10 +380,10 @@
                          >
                            <template #label>
                              <div>
-                               <strong>Disapprove only rules they disagree with</strong>
+                               <strong>Reprovar apenas regras que discordam</strong>
                                <br>
                                <span class="text-body-2 grey--text">
-                                 Annotators can only reject rules they oppose. Rules not voted remain neutral.
+                                 Anotadores só podem reprovar regras que se opõem. Regras não votadas permanecem neutras.
                                </span>
                              </div>
                            </template>
@@ -396,10 +396,10 @@
                          >
                            <template #label>
                              <div>
-                               <strong>Approve or disapprove all rules</strong>
+                               <strong>Aprovar ou reprovar todas as regras</strong>
                                <br>
                                <span class="text-body-2 grey--text">
-                                 Annotators must vote on every rule - either approve or disapprove each one.
+                                 Anotadores devem votar em todas as regras - aprovar ou reprovar cada uma.
                                </span>
                              </div>
                            </template>
