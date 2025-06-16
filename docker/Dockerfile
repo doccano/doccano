@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION="3.8.13-slim-bullseye"
+ARG PYTHON_VERSION="3.10.19-slim-trixie"
 ARG NODE_VERSION="18.20-bullseye-slim"
 FROM node:${NODE_VERSION} AS frontend-builder
 
@@ -19,12 +19,11 @@ FROM python:${PYTHON_VERSION} AS backend-builder
 # hadolint ignore=DL3008
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    netcat=1.* \
-    libpq-dev=13.* \
+    libpq-dev=17.* \
     unixodbc-dev=2.* \
     g++=4:* \
-    libssl-dev=1.* \
-    curl \
+    libssl-dev=3.* \
+    curl=8.* \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -32,8 +31,8 @@ WORKDIR /tmp
 COPY backend/pyproject.toml backend/poetry.lock /tmp/
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-RUN pip install -U --no-cache-dir pip==22.2.2 \
- && curl -sSL https://install.python-poetry.org | python - \
+RUN pip install -U --no-cache-dir pip==25.3 \
+ && curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.5.1 python - \
  && export PATH="/root/.local/bin:$PATH" \
  && poetry export --without-hashes -o /requirements.txt \
  && echo "psycopg2-binary==2.8.6" >> /requirements.txt \
@@ -44,9 +43,9 @@ FROM python:${PYTHON_VERSION} AS runtime
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-    libpq-dev=13.* \
+    libpq-dev=17.* \
     unixodbc-dev=2.* \
-    libssl-dev=1.* \
+    libssl-dev=3.* \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -54,7 +53,7 @@ RUN useradd -ms /bin/sh doccano
 RUN mkdir /data \
  && chown doccano:doccano /data
 
-COPY --from=backend-builder /usr/local/lib/python3.8/site-packages /usr/local/lib/python3.8/site-packages
+COPY --from=backend-builder /usr/local/lib/python3.10/site-packages /usr/local/lib/python3.10/site-packages
 COPY --from=backend-builder /usr/local/bin/celery /usr/local/bin/celery
 COPY --from=backend-builder /usr/local/bin/gunicorn /usr/local/bin/gunicorn
 
