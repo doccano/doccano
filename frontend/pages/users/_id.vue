@@ -74,8 +74,8 @@
             required 
           />
           
-          <v-switch v-model="editedUser.isStaff" color="amber" label="Funcionário" />
-          <v-switch v-model="editedUser.isSuperUser" color="orange" label="Administrador" />
+          <v-switch v-model="editedUser.isStaff" color="amber" label="Staff" />
+          <v-switch v-model="editedUser.isSuperUser" color="orange" label="Administrator" />
           
           <v-card-subtitle>{{ $t('group.groups') || 'Groups' }}</v-card-subtitle>
           <v-autocomplete

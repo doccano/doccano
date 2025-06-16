@@ -1,5 +1,6 @@
 export const state = () => ({
-  current: {}
+  current: {},
+  currentMember: null
 })
 
 export const getters = {
@@ -9,6 +10,14 @@ export const getters = {
 
   project(state) {
     return state.current
+  },
+
+  isProjectAdmin(state) {
+    return state.currentMember?.isProjectAdmin || false
+  },
+
+  currentMember(state) {
+    return state.currentMember
   }
 }
 
@@ -22,6 +31,9 @@ export const mutations = {
     if (state.current) {
       state.current.pageTitle = title
     }
+  },
+  setCurrentMember(state, member) {
+    state.currentMember = member
   }
 }
 
@@ -32,6 +44,15 @@ export const actions = {
       commit('setCurrent', project)
     } catch (error) {
       throw new Error(error)
+    }
+  },
+
+  async setCurrentMember({ commit }, { projectId, $repositories }) {
+    try {
+      const member = await $repositories.member.fetchMyRole(projectId)
+      commit('setCurrentMember', member)
+    } catch (error) {
+      console.error('Failed to set current member:', error)
     }
   }
 }
