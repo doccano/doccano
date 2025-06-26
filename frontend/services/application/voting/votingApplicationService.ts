@@ -53,6 +53,7 @@ export class VotingApplicationService {
       throw new Error(e.response.data.detail)
     }
   }
+
   public async getUserVotes(projectId: string, configId: string): Promise<UserVoteStatus[]> {
     try {
       return await this.repository.getUserVotes(projectId, configId)
