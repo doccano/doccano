@@ -37,7 +37,12 @@ import {
   mdiDatabase,
   mdiHome,
   mdiLabel,
-  mdiPlayCircleOutline
+  mdiPlayCircleOutline,
+  mdiChatOutline, 
+  mdiAlertCircleOutline,
+  mdiEyeOutline,
+  mdiRobotOutline,
+  mdiFileDocumentOutline
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -116,6 +121,36 @@ export default {
           text: this.$t('statistics.statistics'),
           link: 'metrics',
           isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiChatOutline, // ÍCONE DE CHAT
+          text: 'Discussão de Critérios',
+          link: 'discussions', // LEVA PARA /projects/:id/discussions
+          isVisible: true
+        },
+        {
+          icon: mdiAlertCircleOutline, // ÍCONE DE DISCREPÂNCIAS
+          text: 'Discrepancies',
+          link: 'discrepancies', // LEVA PARA /projects/:id/discrepancies
+          isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiRobotOutline, // ÍCONE DE DISCREPÂNCIAS AUTOMÁTICAS
+          text: 'Automatic Discrepancies',
+          link: 'automatic-discrepancies', // LEVA PARA /projects/:id/automatic-discrepancies
+          isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiFileDocumentOutline, // ÍCONE DE RELATÓRIO DE DESACORDOS
+          text: 'Disagreements Report',
+          link: 'disagreements-report', // LEVA PARA /projects/:id/disagreements-report
+          isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiEyeOutline,
+          text: 'Perspectives',
+          link: 'perspectives',
+          isVisible: true
         },
         {
           icon: mdiCog,

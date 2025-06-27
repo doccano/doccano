@@ -49,4 +49,10 @@ export class APIMemberRepository {
     const response = await this.request.get(url)
     return toModel(response.data)
   }
+
+  async findById(projectId: string, memberId: number): Promise<MemberItem> {
+    const url = `/projects/${projectId}/members/${memberId}`
+    const response = await this.request.get(url)
+    return toModel(response.data)
+  }
 }

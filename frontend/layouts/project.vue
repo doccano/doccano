@@ -19,6 +19,26 @@
         </v-layout>
       </v-container>
     </v-main>
+
+    <!-- Global Notification Snackbar -->
+    <v-snackbar
+      v-model="showNotification"
+      :color="notificationColor"
+      :timeout="notificationTimeout"
+      bottom
+      right
+    >
+      {{ notificationText }}
+      <template #action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          @click="hideNotification"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -41,7 +61,19 @@ export default {
   },
 
   computed: {
-    ...mapGetters('projects', ['currentProject'])
+    ...mapGetters('projects', ['currentProject']),
+    ...mapGetters('notification', {
+      showNotification: 'show',
+      notificationText: 'text',
+      notificationColor: 'color',
+      notificationTimeout: 'timeout'
+    })
+  },
+
+  methods: {
+    hideNotification() {
+      this.$store.dispatch('notification/hideNotification')
+    }
   },
 
   async created() {

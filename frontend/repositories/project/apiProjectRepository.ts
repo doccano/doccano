@@ -24,6 +24,8 @@ export class SearchQuery {
   }
 }
 
+// comentário
+
 function toModel(item: { [key: string]: any }): Project {
   return new Project(
     item.id,
@@ -31,6 +33,7 @@ function toModel(item: { [key: string]: any }): Project {
     item.description,
     item.guideline,
     item.project_type,
+    item.label_discrepancy_threshold || 0,
     item.random_order,
     item.collaborative_annotation,
     item.single_class_classification,
@@ -54,6 +57,7 @@ function toPayload(item: Project): { [key: string]: any } {
     description: item.description,
     guideline: item.guideline,
     project_type: item.projectType,
+    label_discrepancy_threshold: item.labelDiscrepancyThreshold,
     random_order: item.enableRandomOrder,
     collaborative_annotation: item.enableSharingMode,
     single_class_classification: item.exclusiveCategories,

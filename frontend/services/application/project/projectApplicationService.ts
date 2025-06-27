@@ -8,6 +8,7 @@ type ProjectFields = {
   description: string
   guideline: string
   projectType: string
+  labelDiscrepancyThreshold: number
   enableRandomOrder: boolean
   enableSharingMode: boolean
   exclusiveCategories: boolean
@@ -46,6 +47,7 @@ export class ProjectApplicationService {
     name,
     description,
     projectType,
+    labelDiscrepancyThreshold,
     enableRandomOrder,
     enableSharingMode,
     exclusiveCategories,
@@ -62,6 +64,7 @@ export class ProjectApplicationService {
       description,
       guideline,
       projectType,
+      labelDiscrepancyThreshold,
       enableRandomOrder,
       enableSharingMode,
       exclusiveCategories,
@@ -84,6 +87,7 @@ export class ProjectApplicationService {
       name,
       description,
       projectType,
+      labelDiscrepancyThreshold,
       enableRandomOrder,
       enableSharingMode,
       exclusiveCategories,
@@ -100,6 +104,7 @@ export class ProjectApplicationService {
       description,
       guideline,
       projectType,
+      labelDiscrepancyThreshold,
       enableRandomOrder,
       enableSharingMode,
       exclusiveCategories,

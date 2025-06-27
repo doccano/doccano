@@ -4,6 +4,7 @@ import generic from './generic'
 import rules from './rules'
 import toastui from './toastui'
 import user from './user'
+import group from './group'
 import vuetify from './vuetify'
 import annotation from './projects/annotation'
 import dataset from './projects/dataset'
@@ -16,6 +17,7 @@ import comments from './projects/comments'
 import overview from './projects/overview'
 import statistics from './projects/statistics'
 import settings from './projects/settings'
+import perspectives from './projects/perspectives'
 
 export default {
   home,
@@ -35,5 +37,7 @@ export default {
   comments,
   overview,
   statistics,
-  settings
+  settings,
+  perspectives,
+  group
 }
