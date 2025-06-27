@@ -28,6 +28,7 @@ class ExampleSerializer(serializers.ModelSerializer):
     annotation_approver = serializers.SerializerMethodField()
     is_confirmed = serializers.SerializerMethodField()
     assignments = serializers.SerializerMethodField()
+    annotations = serializers.SerializerMethodField()
 
     @classmethod
     def get_annotation_approver(cls, instance):
@@ -52,6 +53,57 @@ class ExampleSerializer(serializers.ModelSerializer):
             for assignment in instance.assignments.all()
         ]
 
+    def get_annotations(self, instance):
+        request = self.context.get("request")
+        if not request or not request.query_params.get("include_annotation"):
+            return []
+
+        annotations = []
+
+        # Buscar categorias
+        for category in instance.categories.all():
+            annotations.append({
+                "user": category.user.id,
+                "user_id": category.user.id,
+                "created_by": category.user.id,
+                "label": category.label.text if category.label else None,
+                "type": "category"
+            })
+
+        # Buscar spans
+        for span in instance.spans.all():
+            annotations.append({
+                "user": span.user.id,
+                "user_id": span.user.id,
+                "created_by": span.user.id,
+                "label": span.label.text if span.label else None,
+                "start_offset": span.start_offset,
+                "end_offset": span.end_offset,
+                "type": "span"
+            })
+
+        # Buscar relations
+        for relation in instance.relations.all():
+            annotations.append({
+                "user": relation.user.id,
+                "user_id": relation.user.id,
+                "created_by": relation.user.id,
+                "label": relation.type.text if relation.type else None,
+                "type": "relation"
+            })
+
+        # Buscar text labels
+        for text_label in instance.texts.all():
+            annotations.append({
+                "user": text_label.user.id,
+                "user_id": text_label.user.id,
+                "created_by": text_label.user.id,
+                "text": text_label.text,
+                "type": "text"
+            })
+
+        return annotations
+
     class Meta:
         model = Example
         fields = [
@@ -65,8 +117,9 @@ class ExampleSerializer(serializers.ModelSerializer):
             "upload_name",
             "score",
             "assignments",
+            "annotations",
         ]
-        read_only_fields = ["filename", "is_confirmed", "upload_name", "assignments"]
+        read_only_fields = ["filename", "is_confirmed", "upload_name", "assignments", "annotations"]
 
 
 class ExampleStateSerializer(serializers.ModelSerializer):

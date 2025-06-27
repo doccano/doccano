@@ -1,18 +1,11 @@
 from .base import *  # noqa: F403
 
 MIDDLEWARE.append("api.middleware.RangesMiddleware")  # noqa: F405
-# LOGGING = {
-#     'version': 1,
-#     'handlers': {
-#         'console': {
-#             'level': 'DEBUG',
-#             'class': 'logging.StreamHandler',
-#         }
-#     },
-#     'loggers': {
-#         'django.db.backends': {
-#             'level': 'DEBUG',
-#             'handlers': ['console'],
-#         },
-#     }
-# }
+
+import dj_database_url
+
+DATABASES = {
+    "default": dj_database_url.parse(
+        "postgres://doccano_admin:doccano_pass@localhost:5432/doccano?sslmode=disable"
+    )
+}
