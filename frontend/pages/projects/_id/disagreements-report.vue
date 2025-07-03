@@ -182,8 +182,8 @@
               <v-btn
                 color="warning"
                 outlined
-                @click="clearAllFilters"
                 class="clear-filters-btn"
+                @click="clearAllFilters"
               >
                 <v-icon left>mdi-filter-remove</v-icon>
                 Limpar Filtros
@@ -585,12 +585,6 @@ export default {
     }
   },
 
-  mounted() {
-    if (this.$store.hasModule('projects')) {
-      this.$store.commit('projects/setPageTitle', 'Relatório de Desacordos')
-    }
-  },
-
   watch: {
     isDatabaseHealthy(newValue, oldValue) {
       // Se a base de dados ficou indisponível (mudou de true para false)
@@ -603,6 +597,12 @@ export default {
           })
         })
       }
+    }
+  },
+
+  mounted() {
+    if (this.$store.hasModule('projects')) {
+      this.$store.commit('projects/setPageTitle', 'Relatório de Desacordos')
     }
   },
 

@@ -134,7 +134,7 @@
           </div>
 
           <v-card-actions>
-            <v-btn color="error" @click="handleSingleDelete" :disabled="loading">Excluir Usuário</v-btn>
+            <v-btn color="error" :disabled="loading" @click="handleSingleDelete">Excluir Usuário</v-btn>
             <v-spacer />
             <v-btn color="primary" class="mr-4" type="submit" :loading="loading" :disabled="loading">
               Atualizar Perfil
@@ -161,7 +161,7 @@
         <v-card-actions class="px-5 pb-4">
           <v-spacer />
           <v-btn text @click="confirmDelete = false">Cancel</v-btn>
-          <v-btn text class="red--text" @click="deleteUser" :loading="deleteLoading">Delete</v-btn>
+          <v-btn text class="red--text" :loading="deleteLoading" @click="deleteUser">Delete</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

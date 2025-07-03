@@ -70,15 +70,15 @@ export default {
     })
   },
 
+  async created() {
+    const member = await this.$repositories.member.fetchMyRole(this.$route.params.id)
+    this.isProjectAdmin = member.isProjectAdmin
+  },
+
   methods: {
     hideNotification() {
       this.$store.dispatch('notification/hideNotification')
     }
-  },
-
-  async created() {
-    const member = await this.$repositories.member.fetchMyRole(this.$route.params.id)
-    this.isProjectAdmin = member.isProjectAdmin
   }
 }
 </script>

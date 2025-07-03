@@ -141,32 +141,7 @@
   </v-chip>
 </template>
 
-      <template #[`item.action`]="{ item }">
-        <v-select
-          v-model="selectedUsersByItem[item.id]"
-          :items="getAvailableUsers(item)"
-          item-text="username"
-          item-value="id"
-          label="Select Users"
-          multiple
-          chips
-          small-chips
-          deletable-chips
-          dense
-          outlined
-          hide-details
-          class="mb-2"
-          :rules="[v => !v || v.length <= 2 || 'Select a maximum of 2 users']"
-        ></v-select>
-        <v-btn
-          small
-          color="primary text-capitalize"
-          :disabled="!selectedUsersByItem[item.id] || selectedUsersByItem[item.id].length !== 2"
-          @click="compareUsersForDocument(item.id, selectedUsersByItem[item.id])"
-        >
-          Compare Annotations
-        </v-btn>
-      </template>
+
     </v-data-table>
 
     <!-- Dialog para mostrar todas as labels -->
@@ -329,8 +304,7 @@ export default Vue.extend({
       selectedItemText: '',
       selectedItemUserVotes: null as { [label: string]: { users: Array<{ id: number, name: string }> } } | null,
       dialogTab: 0,
-      selectedItems: [] as ExampleDTO[],
-      selectedUsersByItem: {} as { [itemId: number]: number[] }
+      selectedItems: [] as ExampleDTO[]
     }
   },
 
@@ -341,8 +315,7 @@ export default Vue.extend({
         { text: 'Label Percentage', value: 'labelPercentages', sortable: false },
         { text: 'Participation', value: 'participation', sortable: false },
         { text: 'Discrepancy', value: 'discrepancyPercentage', sortable: true },
-        { text: 'Status', value: 'status', sortable: false },
-        { text: 'Action', value: 'action', sortable: false }
+        { text: 'Status', value: 'status', sortable: false }
       ]
     },
     projectId(): string {
@@ -869,38 +842,7 @@ loadLabelsIfNeeded() {
       return mapping[projectType] || `/projects/${projectId}/text-classification`
     },
 
-    getAvailableUsers(item: ExampleDTO): { id: number; username: string }[] {
-      const userIds = new Set<number>();
-      if (item.annotations) {
-        item.annotations.forEach(annotation => {
-          const userId = annotation.user ?? annotation.user_id ?? annotation.created_by;
-          if (userId) {
-            userIds.add(userId);
-          }
-        });
-      }
-      return Array.from(userIds).map(id => {
-        console.log(`DiscrepancyList - Buscando username para ID: ${id}. memberNames atual:`, JSON.stringify(this.memberNames, null, 2));
-        return {
-          id,
-          username: this.memberNames[id] || `User ${id}`,
-        };
-      });
-    },
 
-    compareUsersForDocument(exampleId: number, userIds: number[]) {
-      console.log(`Comparar exemplo ${exampleId} para usuários: ${userIds.join(', ')}`)
-      
-      // Navegar para a página de comparação com os IDs como query parameters
-      this.$router.push({
-        path: this.$nuxt.localePath(`/projects/${this.projectId}/compare`),
-        query: {
-          exampleId: exampleId.toString(),
-          user1Id: userIds[0].toString(),
-          user2Id: userIds[1].toString()
-        }
-      });
-    }
   }
 })
 </script>

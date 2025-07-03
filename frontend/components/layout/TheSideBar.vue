@@ -44,7 +44,8 @@ import {
   mdiFileDocumentOutline,
   mdiEyeOutline,
   mdiVote,
-  mdiFileChartOutline
+  mdiFileChartOutline,
+  mdiCompareHorizontal
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -134,6 +135,12 @@ export default {
           icon: mdiAlertCircleOutline, // ÍCONE DE DISCREPÂNCIAS
           text: 'Discrepancies',
           link: 'discrepancies', // LEVA PARA /projects/:id/discrepancies
+          isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiCompareHorizontal, // ÍCONE DE COMPARAÇÃO
+          text: 'Compare Annotations',
+          link: 'compare-annotations', // LEVA PARA /projects/:id/compare-annotations
           isVisible: this.isProjectAdmin
         },
         {
