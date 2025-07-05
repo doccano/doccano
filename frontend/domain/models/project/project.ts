@@ -74,7 +74,11 @@ export class Project {
     readonly createdAt: string = '',
     readonly updatedAt: string = '',
     readonly author: string = '',
-    readonly isTextProject: boolean = false
+    readonly isTextProject: boolean = false,
+    readonly status: string = 'open',
+    readonly currentVersion: number = 1,
+    readonly isOpen: boolean = true,
+    readonly isClosed: boolean = false
   ) {
     if (!validateMinLength(_name)) {
       throw new Error('Project name is required')
@@ -107,7 +111,11 @@ export class Project {
     enableGraphemeMode: boolean,
     useRelation: boolean,
     tags: TagItem[],
-    allowMemberToCreateLabelType: boolean
+    allowMemberToCreateLabelType: boolean,
+    status: string = 'open',
+    currentVersion: number = 1,
+    isOpen: boolean = true,
+    isClosed: boolean = false
   ) {
     return new Project(
       id,
@@ -123,7 +131,16 @@ export class Project {
       enableGraphemeMode,
       useRelation,
       tags,
-      allowMemberToCreateLabelType
+      allowMemberToCreateLabelType,
+      [],
+      '',
+      '',
+      '',
+      false,
+      status,
+      currentVersion,
+      isOpen,
+      isClosed
     )
   }
 

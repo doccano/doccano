@@ -67,10 +67,21 @@
       </v-combobox>
     </template>
     <template #[`item.action`]="{ item }">
-      <v-btn class="me-1" small color="primary text-capitalize" @click="$emit('edit', item)"
-        >Edit</v-btn
+      <v-btn 
+        class="me-1" 
+        small 
+        color="primary text-capitalize" 
+        :disabled="isProjectClosed"
+        @click="$emit('edit', item)"
       >
-      <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
+        Edit
+      </v-btn>
+      <v-btn 
+        small 
+        color="primary text-capitalize" 
+        :disabled="isProjectClosed"
+        @click="toLabeling(item)"
+      >
         {{ $t('dataset.annotate') }}
       </v-btn>
     </template>
@@ -113,6 +124,10 @@ export default Vue.extend({
       required: true
     },
     isAdmin: {
+      type: Boolean,
+      default: false
+    },
+    isProjectClosed: {
       type: Boolean,
       default: false
     }

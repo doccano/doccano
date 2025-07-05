@@ -46,6 +46,12 @@ class ExampleList(generics.ListCreateAPIView):
                 'assignments__assignee'
             )
 
+        # Filtrar apenas exemplos com discrepâncias se o projeto estiver em versão > 1
+        if self.project.current_version > 1:
+            # Usa o snapshot dos exemplos da versão atual (fixo durante toda a versão)
+            version_example_ids = self.project.get_version_examples()
+            queryset = queryset.filter(id__in=version_example_ids)
+
         return queryset
 
     def perform_create(self, serializer):

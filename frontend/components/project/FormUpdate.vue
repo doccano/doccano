@@ -1,6 +1,38 @@
 <template>
   <v-card>
     <v-card-text v-if="!!project">
+      <!-- Project Status Indicator -->
+      <v-alert 
+        v-if="project.status"
+        :type="(project.isOpen !== undefined ? project.isOpen : true) ? 'info' : 'warning'"
+        outlined
+        dense
+        class="mb-4"
+      >
+        <div class="d-flex align-center">
+          <v-icon small class="mr-2">
+            {{ (project.isOpen !== undefined ? project.isOpen : true) ? 'mdi-lock-open' : 'mdi-lock' }}
+          </v-icon>
+          <span class="text-body-2">
+            <strong>Project Status:</strong> 
+            {{ (project.isOpen !== undefined ? project.isOpen : true) ? 'Open' : 'Closed' }} 
+            (Version {{ project.currentVersion || 1 }})
+          </span>
+          <v-spacer />
+          <v-btn 
+            text 
+            small 
+            color="primary"
+            @click="$router.push(`/projects/${$route.params.id}/settings?tab=tab-versions`)"
+          >
+            Manage Versions
+          </v-btn>
+        </div>
+        <div class="text-caption mt-1" style="opacity: 0.8;">
+          {{ (project.isOpen !== undefined ? project.isOpen : true) ? 'Users can annotate examples' : 'Project is in discussion/voting phase' }}
+        </div>
+      </v-alert>
+
       <v-form ref="form" v-model="valid" :disabled="!isEditing">
         <v-row>
           <v-col cols="12" sm="12" md="6" lg="6" xl="6">

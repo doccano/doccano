@@ -46,7 +46,11 @@ function toModel(item: { [key: string]: any }): Project {
     item.created_at,
     item.updated_at,
     item.author,
-    item.is_text_project
+    item.is_text_project,
+    item.status || 'open',
+    item.current_version || 1,
+    item.is_open !== undefined ? item.is_open : true,
+    item.is_closed !== undefined ? item.is_closed : false
   )
 }
 
@@ -120,5 +124,102 @@ export class APIProjectRepository {
     const url = `/projects/${project.id}/clone`
     const response = await this.request.post(url)
     return toModel(response.data)
+  }
+
+  async closeProject(projectId: string): Promise<any> {
+    const url = `/projects/${projectId}/close`
+    const response = await this.request.post(url)
+    return response.data
+  }
+
+  async reopenProject(projectId: string): Promise<any> {
+    const url = `/projects/${projectId}/reopen`
+    const response = await this.request.post(url)
+    return response.data
+  }
+
+  async getVersionStatus(projectId: string): Promise<any> {
+    const url = `/projects/${projectId}/version-status`
+    const response = await this.request.get(url)
+    return response.data
+  }
+
+  async getVersions(projectId: string): Promise<any> {
+    const url = `/projects/${projectId}/versions`
+    const response = await this.request.get(url)
+    return response.data
+  }
+
+  async getVersionsReport(projectId: string, filters?: any): Promise<any> {
+    const url = `/projects/${projectId}/versions-report`
+    const params = new URLSearchParams()
+    
+    if (filters?.version) params.append('version', filters.version)
+    if (filters?.status) params.append('status', filters.status)
+    if (filters?.user) params.append('user', filters.user)
+    
+    const fullUrl = params.toString() ? `${url}?${params.toString()}` : url
+    const response = await this.request.get(fullUrl)
+    return response.data
+  }
+
+  exportVersionsReport(projectId: string, filters: any = {}) {
+    // Construir parâmetros de query
+    const params = new URLSearchParams()
+    
+    if (filters.version) {
+      params.append('version', filters.version)
+    }
+    if (filters.status) {
+      params.append('status', filters.status)
+    }
+    if (filters.user) {
+      params.append('user', filters.user)
+    }
+    
+    const queryString = params.toString()
+    const url = `/projects/${projectId}/versions-report/export${queryString ? `?${queryString}` : ''}`
+    
+    return this.request.get(url, {
+      responseType: 'blob',
+    }).then((response) => {
+      const blob = new Blob([response.data], { type: 'text/csv' })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `versions-report-${projectId}.csv`
+      link.click()
+      window.URL.revokeObjectURL(url)
+    })
+  }
+
+  exportVersionsReportPdf(projectId: string, filters: any = {}) {
+    // Construir parâmetros de query
+    const params = new URLSearchParams()
+    
+    if (filters.version) {
+      params.append('version', filters.version)
+    }
+    if (filters.status) {
+      params.append('status', filters.status)
+    }
+    if (filters.user) {
+      params.append('user', filters.user)
+    }
+    
+    const queryString = params.toString()
+    const url = `/projects/${projectId}/versions-report/export-pdf${queryString ? `?${queryString}` : ''}`
+    
+    return this.request.get(url, {
+      responseType: 'blob',
+    }).then((response) => {
+      const blob = new Blob([response.data], { type: 'application/pdf' })
+      const url = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `versions-report-${projectId}.pdf`
+      link.click()
+      window.URL.revokeObjectURL(url)
+    })
   }
 }

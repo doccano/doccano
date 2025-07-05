@@ -47,7 +47,48 @@ class VotingConfigurationViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, id=project_id)
+        
+        # Só permite criar configurações de votação se o projeto estiver fechado
+        if project.is_open:
+            raise ValueError("Configurações de votação só podem ser criadas quando o projeto está fechado")
+        
         serializer.save(project=project)
+
+    def create(self, request, *args, **kwargs):
+        """Override para capturar erro de validação"""
+        try:
+            return super().create(request, *args, **kwargs)
+        except ValueError as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def update(self, request, *args, **kwargs):
+        """Override para validar estado do projeto"""
+        configuration = self.get_object()
+        
+        # Só permite atualizar configurações se o projeto estiver fechado
+        if configuration.project.is_open:
+            return Response(
+                {'error': 'Configurações de votação só podem ser modificadas quando o projeto está fechado'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        """Override para validar estado do projeto"""
+        configuration = self.get_object()
+        
+        # Só permite deletar configurações se o projeto estiver fechado
+        if configuration.project.is_open:
+            return Response(
+                {'error': 'Configurações de votação só podem ser deletadas quando o projeto está fechado'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        return super().destroy(request, *args, **kwargs)
     
     @action(detail=True, methods=['get'], url_path='results')
     def get_results(self, request, project_id=None, pk=None):
@@ -99,6 +140,14 @@ class VotingConfigurationViewSet(viewsets.ModelViewSet):
         """Submit or update a vote for an annotation rule"""
         
         configuration = self.get_object()
+        
+        # Só permite votar se o projeto estiver fechado
+        if configuration.project.is_open:
+            return Response(
+                {'error': 'Votação só é permitida quando o projeto está fechado'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
         rule_id = request.data.get('rule_id')
         vote_value = request.data.get('vote')
         
@@ -143,6 +192,13 @@ class VotingConfigurationViewSet(viewsets.ModelViewSet):
         """Remove a user's vote for an annotation rule"""
         
         configuration = self.get_object()
+        
+        # Só permite remover votos se o projeto estiver fechado
+        if configuration.project.is_open:
+            return Response(
+                {'error': 'Remoção de votos só é permitida quando o projeto está fechado'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         try:
             rule = configuration.annotation_rules.get(id=rule_id)
