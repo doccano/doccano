@@ -287,7 +287,6 @@ class VersionsReport(views.APIView):
         # Parâmetros de filtro
         version_filter = request.query_params.get('version', None)
         status_filter = request.query_params.get('status', None)  # 'discrepant' ou 'non_discrepant'
-        user_filter = request.query_params.get('user', None)
         
         from collections import defaultdict
         from examples.models import Example
@@ -336,10 +335,7 @@ class VersionsReport(views.APIView):
                     if status_filter == 'non_discrepant' and example_stats['has_discrepancy']:
                         continue
                 
-                if user_filter:
-                    user_id = int(user_filter)
-                    if user_id not in example_stats['annotations_by_user']:
-                        continue
+
                 
                 version_1_data["examples"].append(example_stats)
             
@@ -360,40 +356,25 @@ class VersionsReport(views.APIView):
                 "examples": []
             }
             
-            # Usar dados do snapshot histórico se disponível
-            if version.examples_snapshot:
-                # Usar dados históricos do snapshot
-                for example_id_str, example_snapshot in version.examples_snapshot.items():
-                    try:
-                        # Aplicar filtros nos dados históricos
-                        if status_filter:
-                            if status_filter == 'discrepant' and not example_snapshot.get('has_discrepancy', False):
-                                continue
-                            if status_filter == 'non_discrepant' and example_snapshot.get('has_discrepancy', False):
-                                continue
-                        
-                        if user_filter:
-                            user_id = int(user_filter)
-                            annotations_by_user = example_snapshot.get('annotations_by_user', {})
-                            # Converter username de volta para user_id para filtro
-                            active_members = project.role_mappings.select_related('user').all()
-                            username_to_id = {m.user.username: m.user_id for m in active_members}
-                            if user_id not in [username_to_id.get(username, 0) for username in annotations_by_user.keys()]:
-                                continue
-                        
-                        version_data["examples"].append(example_snapshot)
-                        
-                    except (ValueError, KeyError):
-                        # Se houver erro nos filtros, pular este exemplo
-                        continue
-            else:
-                # Fallback para dados atuais (para versões criadas antes do snapshot)
+            # Determinar se usar dados históricos ou atuais
+            use_current_data = False
+            
+            # Se é a versão atual e o projeto está aberto, usar dados atuais
+            if version.version == project.current_version and project.status == 'open':
+                use_current_data = True
+            
+            # Se não tem snapshot, usar dados atuais
+            if not version.examples_snapshot:
+                use_current_data = True
+                
+            if use_current_data:
+                # USAR DADOS ATUAIS (versão em andamento ou sem snapshot)
                 # Determinar quais exemplos estavam disponíveis nesta versão
                 if version.version == 1:
                     # Versão 1: todos os exemplos
                     example_ids = list(Example.objects.filter(project=project).values_list('id', flat=True))
                 else:
-                    # Versão 2+: usar snapshot salvo ou dados atuais
+                    # Versão 2+: usar IDs salvos na criação da versão
                     example_ids = version.example_ids
                 
                 # Buscar exemplos desta versão
@@ -414,12 +395,27 @@ class VersionsReport(views.APIView):
                         if status_filter == 'non_discrepant' and example_stats['has_discrepancy']:
                             continue
                     
-                    if user_filter:
-                        user_id = int(user_filter)
-                        if user_id not in example_stats['annotations_by_user']:
-                            continue
+
                     
                     version_data["examples"].append(example_stats)
+            else:
+                # USAR DADOS HISTÓRICOS DO SNAPSHOT (versão fechada)
+                for example_id_str, example_snapshot in version.examples_snapshot.items():
+                    try:
+                        # Aplicar filtros nos dados históricos
+                        if status_filter:
+                            if status_filter == 'discrepant' and not example_snapshot.get('has_discrepancy', False):
+                                continue
+                            if status_filter == 'non_discrepant' and example_snapshot.get('has_discrepancy', False):
+                                continue
+                        
+
+                        
+                        version_data["examples"].append(example_snapshot)
+                        
+                    except (ValueError, KeyError):
+                        # Se houver erro nos filtros, pular este exemplo
+                        continue
             
             # Aplicar filtro de versão
             if version_filter and str(version.version) != version_filter:
@@ -550,7 +546,7 @@ class VersionsReportExport(views.APIView):
         
         # Cabeçalhos
         writer.writerow([
-            'Version', 'Example ID', 'Example Text', 'Status', 'Has Discrepancy',
+            'Version', 'Example Text', 'Status', 'Has Discrepancy',
             'Assigned Users', 'Confirmed Users', 'Total Annotations', 'Labels'
         ])
         
@@ -567,7 +563,6 @@ class VersionsReportExport(views.APIView):
                 
                 writer.writerow([
                     version['version'],
-                    example['example_id'],
                     example['example_text'][:100] + '...' if len(example['example_text']) > 100 else example['example_text'],
                     example['status'],
                     'Yes' if example['has_discrepancy'] else 'No',
@@ -726,7 +721,7 @@ class VersionsReportPDFExport(views.APIView):
                         examples = version_data.get('examples', [])
                         if examples:
                             # Criar tabela com validação robusta
-                            table_data = [['ID', 'Text', 'Status', 'Discrepancy', 'Labels']]
+                            table_data = [['Text', 'Status', 'Discrepancy', 'Labels']]
                             
                             for example in examples:
                                 try:
@@ -767,7 +762,6 @@ class VersionsReportPDFExport(views.APIView):
                                         labels_str = 'No labels'
                                     
                                     table_data.append([
-                                        example_id,
                                         example_text,
                                         status,
                                         discrepancy_text,
@@ -776,13 +770,13 @@ class VersionsReportPDFExport(views.APIView):
                                     
                                 except Exception:
                                     # Se um exemplo falhar, adicionar linha de erro
-                                    table_data.append(['Error', 'Failed to process example', 'N/A', 'N/A', 'N/A'])
+                                    table_data.append(['Failed to process example', 'N/A', 'N/A', 'N/A'])
                                     continue
                             
                             # Criar tabela se temos dados
                             if len(table_data) > 1:
                                 try:
-                                    table = Table(table_data, colWidths=[0.7*inch, 2.5*inch, 1*inch, 1*inch, 2.3*inch])
+                                    table = Table(table_data, colWidths=[3.2*inch, 1*inch, 1*inch, 2.3*inch])
                                     table.setStyle(TableStyle([
                                         ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                                         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -801,7 +795,7 @@ class VersionsReportPDFExport(views.APIView):
                                     # Se a tabela falhar, adicionar lista simples
                                     story.append(Paragraph("Examples (table format failed):", styles['Heading3']))
                                     for i, row in enumerate(table_data[1:6]):  # Máximo 5 exemplos
-                                        story.append(Paragraph(f"• ID {row[0]}: {row[1]} - {row[2]}", styles['Normal']))
+                                        story.append(Paragraph(f"• {row[0]} - {row[1]}", styles['Normal']))
                                     if len(table_data) > 6:
                                         story.append(Paragraph(f"... and {len(table_data) - 6} more examples", styles['Normal']))
                         else:
@@ -883,7 +877,6 @@ class VersionsReportPDFExport(views.APIView):
                 html += """
                 <table>
                     <tr>
-                        <th>ID</th>
                         <th>Text</th>
                         <th>Status</th>
                         <th>Discrepancy</th>
@@ -899,7 +892,6 @@ class VersionsReportPDFExport(views.APIView):
                     
                     html += f"""
                     <tr>
-                        <td>{example['example_id']}</td>
                         <td>{example['example_text'][:100]}{'...' if len(example['example_text']) > 100 else ''}</td>
                         <td>{example['status']}</td>
                         <td>{'Yes' if example['has_discrepancy'] else 'No'}</td>

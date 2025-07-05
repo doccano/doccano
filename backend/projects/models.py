@@ -131,8 +131,7 @@ class Project(PolymorphicModel):
             notes=f"Version {self.current_version} - Discrepant examples from previous version"
         )
         
-        # Salvar snapshot da nova versão
-        new_version.save_examples_snapshot()
+        # NÃO criar snapshot aqui - será criado quando o projeto for fechado
         
         self.save()
         return new_version

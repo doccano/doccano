@@ -30,8 +30,8 @@
 
     <!-- Filtros -->
     <v-card-text>
-      <v-row>
-        <v-col cols="12" md="3">
+            <v-row>
+        <v-col cols="12" md="4">
           <v-select
             v-model="filters.version"
             :items="versionOptions"
@@ -42,7 +42,7 @@
             @change="loadReport"
           />
         </v-col>
-        <v-col cols="12" md="3">
+        <v-col cols="12" md="4">
           <v-select
             v-model="filters.status"
             :items="statusOptions"
@@ -53,18 +53,7 @@
             @change="loadReport"
           />
         </v-col>
-        <v-col cols="12" md="3">
-          <v-select
-            v-model="filters.user"
-            :items="userOptions"
-            label="Filter by User"
-            clearable
-            outlined
-            dense
-            @change="loadReport"
-          />
-        </v-col>
-        <v-col cols="12" md="3">
+        <v-col cols="12" md="4">
           <v-btn
             color="secondary"
             outlined
@@ -260,15 +249,9 @@ export default {
       },
       filters: {
         version: null,
-        status: null,
-        user: null
+        status: null
       },
       headers: [
-        {
-          text: 'Example ID',
-          value: 'example_id',
-          width: 100
-        },
         {
           text: 'Text',
           value: 'example_text',
@@ -334,21 +317,6 @@ export default {
         { text: 'Discrepant', value: 'discrepant' },
         { text: 'Non Discrepant', value: 'non_discrepant' }
       ]
-    },
-
-    userOptions() {
-      // Extrair todos os usuários únicos dos dados
-      const users = new Set()
-      this.reportData.versions.forEach(version => {
-        version.examples.forEach(example => {
-          example.assigned_users.forEach(user => users.add(user))
-        })
-      })
-      
-      return Array.from(users).map(user => ({
-        text: user,
-        value: user
-      }))
     }
   },
 
@@ -417,8 +385,7 @@ export default {
     clearFilters() {
       this.filters = {
         version: null,
-        status: null,
-        user: null
+        status: null
       }
       this.loadReport()
     },
