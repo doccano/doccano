@@ -16,5 +16,6 @@ export default {
   deleteDocumentsTitle: 'Dokument löschen',
   deleteDocumentsMessage:
     'Bist du dir sicher, dass du die Dokumente aus dem Projekt löschen willst?',
-  pageText: '{0}-{1} von {2}'
+  pageText: '{0}-{1} von {2}',
+  notAssigneeError: 'Sie müssen diesem Text zugewiesen sein, um ihn zu annotieren. Bitten Sie einen Administrator, Sie zuerst diesem Text zuzuweisen.'
 }

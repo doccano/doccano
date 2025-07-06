@@ -18,5 +18,6 @@ export default {
   deleteDocumentsMessage: '你确定要从这个项目中删除这些文档吗？',
   deleteBulkDocumentsTitle: '删除全部文档',
   deleteBulkDocumentsMessage: '你确定要从这个项目中删除全部文档吗？',
-  pageText: '{0}-{1} of {2}'
+  pageText: '{0}-{1} of {2}',
+  notAssigneeError: '您必须被分配到此文本才能对其进行标注。请先请求管理员将您分配到此文本。'
 }

@@ -69,7 +69,12 @@
       </v-combobox>
     </template>
     <template #[`item.action`]="{ item }">
-      <v-btn small color="primary text-capitalize" @click="toLabeling(item)">
+      <v-btn 
+        small 
+        color="primary text-capitalize" 
+        :disabled="isProjectClosed"
+        @click="toLabeling(item)"
+      >
         {{ $t('dataset.annotate') }}
       </v-btn>
     </template>
@@ -112,6 +117,10 @@ export default Vue.extend({
       required: true
     },
     isAdmin: {
+      type: Boolean,
+      default: false
+    },
+    isProjectClosed: {
       type: Boolean,
       default: false
     }
@@ -192,6 +201,15 @@ export default Vue.extend({
 
   methods: {
     toLabeling(item: ExampleDTO) {
+      // Verificar se o usuário atual está como assignee deste texto
+      const currentUserId = this.$store.getters['auth/getUserId']
+      const isAssignee = item.assignments.some(assignment => assignment.assignee_id === currentUserId)
+
+      if (!isAssignee) {
+        this.$emit('not-assignee', item)
+        return
+      }
+
       const index = this.items.indexOf(item)
       const offset = (this.options.page - 1) * this.options.itemsPerPage
       const page = (offset + index + 1).toString()

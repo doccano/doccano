@@ -19,5 +19,6 @@ export default {
   deleteBulkDocumentsTitle: 'Supprimer Tous Les Documents',
   deleteBulkDocumentsMessage:
     'Êtes-vous sûr de vouloir supprimer tous les documents de ce projet ?',
-  pageText: '{0}-{1} de {2}'
+  pageText: '{0}-{1} de {2}',
+  notAssigneeError: 'Vous devez être assigné à ce texte pour l\'annoter. Veuillez demander à un administrateur de vous assigner à ce texte d\'abord.'
 }

@@ -24,10 +24,19 @@ import { APICatalogRepository } from '@/repositories/upload/apiCatalogRepository
 import { APIParseRepository } from '@/repositories/upload/apiParseRepository'
 import { APIUserRepository } from '@/repositories/user/apiUserRepository'
 import { APISegmentationRepository } from '~/repositories/tasks/apiSegmentationRepository'
+import { APIGroupRepository } from '~/repositories/group/apiGroupRepository'
+import { APIPerspectiveRepository } from '~/repositories/perspective/apiPerspectiveRepository'
+import { APIVotingRepository } from '~/repositories/voting/apiVotingRepository'
 export interface Repositories {
   // User
   auth: APIAuthRepository
   user: APIUserRepository
+
+  // Group
+  group: APIGroupRepository
+
+  // Perspective
+  perspective: APIPerspectiveRepository
 
   // Project
   project: APIProjectRepository
@@ -67,6 +76,9 @@ export interface Repositories {
   textLabel: APITextLabelRepository
   boundingBox: APIBoundingBoxRepository
   segmentation: APISegmentationRepository
+
+  // Voting
+  voting: APIVotingRepository
 }
 
 declare module 'vue/types/vue' {
@@ -79,6 +91,12 @@ const repositories: Repositories = {
   // User
   auth: new APIAuthRepository(),
   user: new APIUserRepository(),
+  
+  // Group
+  group: new APIGroupRepository(),
+
+  // Perspective
+  perspective: new APIPerspectiveRepository(),
 
   // Project
   project: new APIProjectRepository(),
@@ -117,7 +135,10 @@ const repositories: Repositories = {
   relation: new APIRelationRepository(),
   textLabel: new APITextLabelRepository(),
   boundingBox: new APIBoundingBoxRepository(),
-  segmentation: new APISegmentationRepository()
+  segmentation: new APISegmentationRepository(),
+
+  // Voting
+  voting: new APIVotingRepository()
 }
 
 const plugin: Plugin = (_, inject) => {

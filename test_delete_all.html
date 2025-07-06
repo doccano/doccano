@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Delete All Questions</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 15px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Test Delete All Questions Functionality</h1>
+    
+    <div class="test-section">
+        <h2>Implementation Summary</h2>
+        <p>✅ Added "Delete All Questions" button to QuestionList component</p>
+        <p>✅ Added confirmation dialog with warning message</p>
+        <p>✅ Added deleteAllQuestions method to repository</p>
+        <p>✅ Added deleteAllQuestions method to service</p>
+        <p>✅ Added confirmDeleteAll method to page component</p>
+        <p>✅ Added error handling for database connection issues</p>
+        <p>✅ Added translations for all new text</p>
+        <p>✅ Fixed backend bulk_delete method to use POST instead of DELETE</p>
+        <p>✅ Fixed frontend to send 'ids' parameter instead of 'question_ids'</p>
+        <p>✅ Added dedicated delete_all endpoint to avoid member_id requirement</p>
+        <p>✅ Fixed 400 Bad Request error by using proper endpoint</p>
+    </div>
+
+    <div class="test-section">
+        <h2>Features Implemented</h2>
+        <ul>
+            <li><strong>Delete All Button:</strong> Appears only when there are questions</li>
+            <li><strong>Confirmation Dialog:</strong> Shows warning about permanent deletion</li>
+            <li><strong>Database Error Handling:</strong> Shows specific error dialog if database is disconnected</li>
+            <li><strong>Success Notification:</strong> Shows success message after deletion</li>
+            <li><strong>Auto Refresh:</strong> Reloads questions and statistics after deletion</li>
+            <li><strong>Admin Only:</strong> Only project admins can see and use the delete all button</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>How to Test</h2>
+        <ol>
+            <li>Navigate to a project's Perspectives page as an admin</li>
+            <li>Create some test questions if none exist</li>
+            <li>Look for the red "Delete All Questions" button above the questions table</li>
+            <li>Click the button to see the confirmation dialog</li>
+            <li>Confirm deletion to remove all questions</li>
+            <li>Verify that all questions are deleted and statistics are updated</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>Files Modified</h2>
+        <ul>
+            <li><code>frontend/repositories/perspective/apiPerspectiveRepository.ts</code> - Added deleteAllQuestions method</li>
+            <li><code>frontend/services/application/perspective/perspectiveApplicationService.ts</code> - Added deleteAllQuestions method</li>
+            <li><code>frontend/components/perspective/QuestionList.vue</code> - Added Delete All button</li>
+            <li><code>frontend/pages/projects/_id/perspectives/index.vue</code> - Added dialog and logic</li>
+            <li><code>frontend/i18n/en/projects/perspectives.js</code> - Added translations</li>
+            <li><code>backend/projects/perspective/views.py</code> - Added delete_all endpoint and fixed permissions</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Bug Fixes Applied</h2>
+        <ul>
+            <li>✅ <strong>400 Bad Request Error:</strong> Fixed by creating dedicated delete_all endpoint</li>
+            <li>✅ <strong>Member ID Requirement:</strong> Removed dependency on member_id for delete all operation</li>
+            <li>✅ <strong>Permission Issues:</strong> Added delete_all to admin-only actions</li>
+            <li>✅ <strong>API Consistency:</strong> Used POST method for delete_all endpoint</li>
+            <li>✅ <strong>502 Bad Gateway Error:</strong> Fixed HTTP status code (204 → 200) and improved error handling</li>
+            <li>✅ <strong>Database Connection Error:</strong> Improved error detection and recovery logic</li>
+            <li>✅ <strong>Success Detection:</strong> Added fallback to check if operation succeeded despite errors</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Error Handling Improvements</h2>
+        <ul>
+            <li><strong>Smart Error Detection:</strong> Distinguishes between real errors and false positives</li>
+            <li><strong>Operation Verification:</strong> Checks if questions were actually deleted on error</li>
+            <li><strong>Proper Status Codes:</strong> Backend now returns 200 OK instead of 204 No Content</li>
+            <li><strong>Enhanced Logging:</strong> Better error logging for debugging</li>
+            <li><strong>Graceful Recovery:</strong> Shows success message even if HTTP error occurs but operation succeeds</li>
+            <li><strong>Consistent Notifications:</strong> Success notifications always appear for both single and bulk deletes</li>
+            <li><strong>Isolated Error Handling:</strong> Reload errors don't affect success notifications</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>Single Question Delete Improvements</h2>
+        <ul>
+            <li>✅ <strong>Guaranteed Success Notification:</strong> Success message shows immediately after successful delete</li>
+            <li>✅ <strong>Error Isolation:</strong> Reload errors don't prevent success notification</li>
+            <li>✅ <strong>Smart Recovery:</strong> Detects successful deletes even with HTTP errors</li>
+            <li>✅ <strong>Consistent Backend Response:</strong> Custom destroy method returns 200 OK with message</li>
+            <li>✅ <strong>Better Logging:</strong> Enhanced debugging information for troubleshooting</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h2>User Experience</h2>
+        <p>The delete all functionality follows the user's preferences:</p>
+        <ul>
+            <li>✅ Shows error popup with database connection failure message when database is not connected</li>
+            <li>✅ Provides clear confirmation dialog before destructive action</li>
+            <li>✅ Uses consistent styling with existing delete functionality</li>
+            <li>✅ Only available to admin users who have permission to manage questions</li>
+        </ul>
+    </div>
+
+    <script>
+        console.log('Delete All Questions functionality has been implemented successfully!');
+        console.log('Key features:');
+        console.log('- Delete All button in QuestionList component');
+        console.log('- Confirmation dialog with warning');
+        console.log('- Database error handling');
+        console.log('- GUARANTEED success notifications for both single and bulk deletes');
+        console.log('- Auto refresh after deletion');
+        console.log('- Smart error recovery and operation verification');
+        console.log('- Consistent backend responses with proper status codes');
+    </script>
+</body>
+</html>

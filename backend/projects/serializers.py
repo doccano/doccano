@@ -8,6 +8,7 @@ from .models import (
     IntentDetectionAndSlotFillingProject,
     Member,
     Project,
+    ProjectVersion,
     SegmentationProject,
     Seq2seqProject,
     SequenceLabelingProject,
@@ -47,6 +48,31 @@ class TagSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "project")
 
 
+class ProjectVersionSerializer(serializers.ModelSerializer):
+    author = serializers.SerializerMethodField()
+
+    @classmethod
+    def get_author(cls, instance):
+        if instance.created_by:
+            return instance.created_by.username
+        return ""
+
+    class Meta:
+        model = ProjectVersion
+        fields = [
+            "id",
+            "project",
+            "version",
+            "created_at",
+            "author",
+            "notes",
+        ]
+        read_only_fields = (
+            "created_at",
+            "author",
+        )
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, required=False)
     author = serializers.SerializerMethodField()
@@ -72,6 +98,11 @@ class ProjectSerializer(serializers.ModelSerializer):
             "collaborative_annotation",
             "single_class_classification",
             "allow_member_to_create_label_type",
+            "label_discrepancy_threshold",
+            "status",
+            "current_version",
+            "is_open",
+            "is_closed",
             "is_text_project",
             "tags",
         ]
@@ -79,6 +110,9 @@ class ProjectSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
             "author",
+            "current_version",
+            "is_open",
+            "is_closed",
             "is_text_project",
         )
 

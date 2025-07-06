@@ -17,12 +17,25 @@ export class APIParseRepository {
       uploadIds,
       ...option
     }
-    const response = await this.request.post(url, data)
-    return response.data.task_id
+    // Add timeout and error handling
+    try {
+      const response = await this.request.post(url, data, {
+        timeout: 60000, // 60 seconds timeout
+      })
+      return response.data.task_id
+    } catch (error) {
+      console.error('Upload analysis error:', error)
+      throw error
+    }
   }
 
   revert(serverId: string): void {
     const url = `/fp/revert/`
-    this.request.delete(url, serverId)
+    // Use proper format for DELETE request
+    try {
+      this.request.delete(url, { data: { id: serverId } })
+    } catch (error) {
+      console.error('Revert error:', error)
+    }
   }
 }

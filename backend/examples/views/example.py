@@ -27,11 +27,31 @@ class ExampleList(generics.ListCreateAPIView):
     def get_queryset(self):
         member = get_object_or_404(Member, project=self.project, user=self.request.user)
         if member.is_admin():
-            return self.model.objects.filter(project=self.project)
+            queryset = self.model.objects.filter(project=self.project)
+        else:
+            queryset = self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
+            if self.project.random_order:
+                queryset = queryset.order_by("assignments__id")
 
-        queryset = self.model.objects.filter(project=self.project, assignments__assignee=self.request.user)
-        if self.project.random_order:
-            queryset = queryset.order_by("assignments__id")
+        # Se include_annotation for solicitado, fazer prefetch das anotações e assignments
+        if self.request.query_params.get("include_annotation"):
+            queryset = queryset.prefetch_related(
+                'categories__label',
+                'categories__user',
+                'spans__label',
+                'spans__user',
+                'relations__type',
+                'relations__user',
+                'texts__user',
+                'assignments__assignee'
+            )
+
+        # Filtrar apenas exemplos com discrepâncias se o projeto estiver em versão > 1
+        if self.project.current_version > 1:
+            # Usa o snapshot dos exemplos da versão atual (fixo durante toda a versão)
+            version_example_ids = self.project.get_version_examples()
+            queryset = queryset.filter(id__in=version_example_ids)
+
         return queryset
 
     def perform_create(self, serializer):

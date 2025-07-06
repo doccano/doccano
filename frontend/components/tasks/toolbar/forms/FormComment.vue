@@ -24,7 +24,7 @@ import Comment from '@/components/comment/Comment.vue'
 import FormCreate from '@/components/comment/FormCreate.vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
 import { CommentItem } from '~/domain/models/comment/comment'
-import { UserItem } from '~/domain/models/user/user'
+import { User } from '~/domain/models/user/user'
 
 export default Vue.extend({
   components: {
@@ -42,7 +42,7 @@ export default Vue.extend({
 
   data() {
     return {
-      user: {} as UserItem,
+      user: {} as User,
       comments: [] as CommentItem[]
     }
   },
@@ -60,7 +60,7 @@ export default Vue.extend({
   },
 
   async created() {
-    this.user = await this.$repositories.user.getProfile()
+    this.user = await this.$services.user.getProfile()
   },
 
   methods: {

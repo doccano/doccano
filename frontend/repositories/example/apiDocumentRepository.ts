@@ -12,7 +12,8 @@ function toModel(item: { [key: string]: any }): ExampleItem {
     item.filename,
     item.is_confirmed,
     item.upload_name,
-    item.assignments
+    item.assignments || [],
+    item.annotations || []
   )
 }
 
@@ -49,13 +50,18 @@ function buildQueryParams(
   offset: string,
   q: string,
   isChecked: string,
-  ordering: string
+  ordering: string,
+  includeAnnotation?: boolean
 ): string {
   const params = new URLSearchParams()
   params.append('limit', limit)
   params.append('offset', offset)
   params.append('confirmed', isChecked)
   params.append('ordering', ordering)
+
+  if (includeAnnotation) {
+    params.append('include_annotation', 'true')
+  }
 
   const customParams = ['label', 'assignee']
   let updatedQuery: string = q
@@ -76,10 +82,10 @@ export class APIExampleRepository implements ExampleRepository {
 
   async list(
     projectId: string,
-    { limit = '10', offset = '0', q = '', isChecked = '', ordering = '' }: SearchOption
+    { limit = '10', offset = '0', q = '', isChecked = '', ordering = '', include_annotation = 'false' }: SearchOption
   ): Promise<ExampleItemList> {
     // @ts-ignore
-    const params = buildQueryParams(limit, offset, q, isChecked, ordering)
+    const params = buildQueryParams(limit, offset, q, isChecked, ordering, include_annotation === 'true')
     const url = `/projects/${projectId}/examples?${params}`
     const response = await this.request.get(url)
     return new ExampleItemList(
@@ -115,7 +121,7 @@ export class APIExampleRepository implements ExampleRepository {
   }
 
   async findById(projectId: string, exampleId: number): Promise<ExampleItem> {
-    const url = `/projects/${projectId}/examples/${exampleId}`
+    const url = `/projects/${projectId}/examples/${exampleId}?include_annotation=true`
     const response = await this.request.get(url)
     return toModel(response.data)
   }

@@ -1,8 +1,32 @@
-export class UserItem {
+export class User {
   constructor(
     readonly id: number,
     readonly username: string,
-    readonly isSuperuser: boolean,
-    readonly isStaff: boolean
+    readonly firstName: string,
+    readonly lastName: string,
+    readonly email: string,
+    readonly isActive: boolean,
+    readonly isSuperUser: boolean,
+    readonly isStaff: boolean,
+    readonly groups?: number[],
+    readonly groupsDetails?: { [key: string]: { name: string } }
   ) {}
+}
+
+export class UserDetails extends User {
+  constructor(
+    readonly id: number,
+    readonly username: string,
+    readonly firstName: string,
+    readonly lastName: string,
+    readonly email: string,
+    readonly isActive: boolean,
+    readonly isSuperUser: boolean,
+    readonly isStaff: boolean,
+    readonly dateJoined: string,
+    readonly groups?: number[],
+    readonly groupsDetails?: { [key: string]: { name: string } }
+  ) {
+    super(id, username, firstName, lastName, email, isActive, isSuperUser, isStaff, groups, groupsDetails)
+  }
 }

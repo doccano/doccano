@@ -22,6 +22,42 @@ export class APIMetricsRepository {
     return response.data
   }
 
+  async fetchDiscrepancyStats(projectId: string, params: any = {}): Promise<any> {
+    const url = `/projects/${projectId}/metrics/discrepancy-stats`
+    const response = await this.request.get(url, { params })
+    return response.data
+  }
+
+  async fetchPerspectiveStats(projectId: string, params: any = {}): Promise<any> {
+    const url = `/projects/${projectId}/metrics/perspective-stats`
+    const response = await this.request.get(url, { params })
+    return response.data
+  }
+
+  async fetchLabelStats(projectId: string, params: any = {}): Promise<any> {
+    const url = `/projects/${projectId}/metrics/label-stats`
+    const response = await this.request.get(url, { params })
+    return response.data
+  }
+
+  async fetchDatasetDetails(projectId: string, params: any = {}): Promise<any> {
+    const url = `/projects/${projectId}/metrics/dataset-details`
+    const response = await this.request.get(url, { params })
+    return response.data
+  }
+
+  async fetchDatasetTexts(projectId: string): Promise<any> {
+    const url = `/projects/${projectId}/metrics/dataset-texts`
+    const response = await this.request.get(url)
+    return response.data
+  }
+
+  async fetchPerspectiveAnswers(projectId: string, questionId: string): Promise<any> {
+    const url = `/projects/${projectId}/metrics/perspective-answers/${questionId}`
+    const response = await this.request.get(url)
+    return response.data
+  }
+
   async fetchMemberProgress(projectId: string): Promise<Progress> {
     const url = `/projects/${projectId}/metrics/member-progress`
     const response = await this.request.get(url)
