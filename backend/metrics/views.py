@@ -5,6 +5,7 @@ from collections import defaultdict
 
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -80,13 +81,16 @@ class DiscrepancyStatsAPI(APIView):
 
         # Get filter parameters
         label_filter = request.GET.get('label')
+        text_filter = request.GET.get('text')
 
         # Get active members only
         active_members = Member.objects.filter(project=project_id).select_related('user')
         active_user_ids = set(member.user_id for member in active_members)
 
-        # Get all examples with annotations
+        # Get all examples with annotations, apply text filter if provided
         examples = Example.objects.filter(project=project_id)
+        if text_filter:
+            examples = examples.filter(text__icontains=text_filter)
 
         total_discrepancies = 0
         total_agreements = 0
@@ -604,8 +608,12 @@ class PerspectiveStatsAPI(APIView):
 
                 # Get filter parameters
                 question_filter = request.GET.get('question_id')
+                text_filter = request.GET.get('text')
+                
                 if question_filter:
                     questions = questions.filter(id=question_filter)
+                if text_filter:
+                    questions = questions.filter(text__icontains=text_filter)
 
                 # Get total answers
                 stats['total_answers'] = Answer.objects.filter(question__project=project).count()
@@ -678,10 +686,39 @@ class LabelStatsAPI(APIView):
     def get(self, request, *args, **kwargs):
         try:
             project_id = self.kwargs["project_id"]
+            
+            # Get filter parameters
+            label_filter = request.GET.get('label')
+            user_filter = request.GET.get('user_id')
+            text_filter = request.GET.get('text')
 
-            # Simple counts first
-            span_count = Span.objects.filter(example__project=project_id).count()
-            category_count = Category.objects.filter(example__project=project_id).count()
+            # Base querysets
+            examples_query = Example.objects.filter(project=project_id)
+            
+            # Apply text filter to examples if provided
+            if text_filter:
+                examples_query = examples_query.filter(text__icontains=text_filter)
+                
+            example_ids = list(examples_query.values_list('id', flat=True))
+
+            # Simple counts with filters applied
+            spans_query = Span.objects.filter(example__project=project_id)
+            categories_query = Category.objects.filter(example__project=project_id)
+            
+            if example_ids:
+                spans_query = spans_query.filter(example_id__in=example_ids)
+                categories_query = categories_query.filter(example_id__in=example_ids)
+            
+            if user_filter:
+                spans_query = spans_query.filter(user_id=user_filter)
+                categories_query = categories_query.filter(user_id=user_filter)
+                
+            if label_filter:
+                spans_query = spans_query.filter(label__text=label_filter)
+                categories_query = categories_query.filter(label__text=label_filter)
+
+            span_count = spans_query.count()
+            category_count = categories_query.count()
             total_labels = span_count + category_count
 
             # Get available labels
@@ -704,9 +741,8 @@ class LabelStatsAPI(APIView):
             # Label distribution with users
             label_distribution = {}
 
-            # Process spans (only from active members)
-            spans = Span.objects.filter(example__project=project_id).select_related('label', 'user')
-            for span in spans:
+            # Process spans (only from active members, with filters applied)
+            for span in spans_query.select_related('label', 'user'):
                 # Skip if user is no longer a member of the project
                 if span.user_id not in active_user_ids:
                     continue
@@ -723,9 +759,8 @@ class LabelStatsAPI(APIView):
                 label_distribution[label_text]['count'] += 1
                 label_distribution[label_text]['users'].add(span.user)
 
-            # Process categories (only from active members)
-            categories = Category.objects.filter(example__project=project_id).select_related('label', 'user')
-            for category in categories:
+            # Process categories (only from active members, with filters applied)
+            for category in categories_query.select_related('label', 'user'):
                 # Skip if user is no longer a member of the project
                 if category.user_id not in active_user_ids:
                     continue
@@ -766,16 +801,29 @@ class LabelStatsAPI(APIView):
             # Sort by count
             label_distribution_list.sort(key=lambda x: x['count'], reverse=True)
 
-            # Basic user performance
+            # Basic user performance with filters applied
             user_performance = []
             for member in members:
-                user_span_count = Span.objects.filter(example__project=project_id, user=member.user).count()
-                user_category_count = Category.objects.filter(example__project=project_id, user=member.user).count()
+                # Apply the same filters to user performance calculations
+                user_spans_query = Span.objects.filter(example__project=project_id, user=member.user)
+                user_categories_query = Category.objects.filter(example__project=project_id, user=member.user)
+                
+                if example_ids:
+                    user_spans_query = user_spans_query.filter(example_id__in=example_ids)
+                    user_categories_query = user_categories_query.filter(example_id__in=example_ids)
+                    
+                if label_filter:
+                    user_spans_query = user_spans_query.filter(label__text=label_filter)
+                    user_categories_query = user_categories_query.filter(label__text=label_filter)
+                
+                user_span_count = user_spans_query.count()
+                user_category_count = user_categories_query.count()
                 user_total = user_span_count + user_category_count
 
+                # Apply same filters to user examples calculation
                 user_examples = set()
-                user_examples.update(Span.objects.filter(example__project=project_id, user=member.user).values_list('example_id', flat=True))
-                user_examples.update(Category.objects.filter(example__project=project_id, user=member.user).values_list('example_id', flat=True))
+                user_examples.update(user_spans_query.values_list('example_id', flat=True))
+                user_examples.update(user_categories_query.values_list('example_id', flat=True))
 
                 examples_count = len(user_examples)
                 labels_per_example = round(user_total / examples_count, 2) if examples_count > 0 else 0
@@ -791,18 +839,19 @@ class LabelStatsAPI(APIView):
             # Sort by total labels
             user_performance.sort(key=lambda x: x['total_labels'], reverse=True)
 
-            # Calculate total examples
-            span_examples = set(Span.objects.filter(example__project=project_id).values_list('example_id', flat=True))
-            category_examples = set(Category.objects.filter(example__project=project_id).values_list('example_id', flat=True))
-            total_examples = len(span_examples.union(category_examples))
-
-            avg_labels_per_example = round(total_labels / total_examples, 2) if total_examples > 0 else 0
+            # Calculate total examples with filters applied
+            if example_ids:
+                total_examples = len(example_ids)
+            else:
+                span_examples = set(Span.objects.filter(example__project=project_id).values_list('example_id', flat=True))
+                category_examples = set(Category.objects.filter(example__project=project_id).values_list('example_id', flat=True))
+                total_examples = len(span_examples.union(category_examples))
 
             return Response({
-                'total_labels': total_labels_active,  # Use active members count
+                'total_labels': total_labels,  # Use filtered count
                 'total_examples': total_examples,
                 'total_users': len(available_users),
-                'avg_labels_per_example': round(total_labels_active / total_examples, 2) if total_examples > 0 else 0,
+                'avg_labels_per_example': round(total_labels / total_examples, 2) if total_examples > 0 else 0,
                 'label_distribution': label_distribution_list,
                 'user_performance': user_performance,
                 'available_labels': available_labels,
@@ -864,7 +913,7 @@ class ExportReportsAPI(APIView):
             # Get annotations for this example
             annotations_by_user = defaultdict(list)
 
-            # Get spans (only from users assigned to this example)
+            # Get spans (only from users assigned to this specific example)
             spans = Span.objects.filter(example=example).select_related('label', 'user')
             for span in spans:
                 # Skip if user is not assigned to this specific example
@@ -1048,3 +1097,445 @@ class ExportReportsAPI(APIView):
         response = HttpResponse(output.getvalue(), content_type='text/csv')
         response['Content-Disposition'] = f'attachment; filename="label_analysis_{project_id}.csv"'
         return response
+
+
+class DatasetDetailsAPI(APIView):
+    permission_classes = [IsAuthenticated & IsProjectStaffAndReadOnly]
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            project_id = self.kwargs["project_id"]
+            project = get_object_or_404(Project, pk=project_id)
+            
+            # Get filter parameters
+            text_filter = request.GET.get('text')
+            user_filter = request.GET.get('user_id')
+            label_filter = request.GET.get('label')
+            discrepancy_filter = request.GET.get('discrepancy')
+            perspective_filter = request.GET.get('question_id')
+            
+            # Get all examples with their annotations and assignments
+            examples_queryset = Example.objects.filter(project=project_id).prefetch_related(
+                'assignments__assignee',
+                'spans__label',
+                'spans__user',
+                'categories__label', 
+                'categories__user'
+            )
+            
+            # Apply text filter
+            if text_filter:
+                examples_queryset = examples_queryset.filter(text__icontains=text_filter)
+            
+            # Apply user filter - only examples that this user annotated
+            if user_filter:
+                try:
+                    user_id = int(user_filter)
+                    examples_queryset = examples_queryset.filter(
+                        Q(spans__user_id=user_id) | Q(categories__user_id=user_id)
+                    ).distinct()
+                except (ValueError, TypeError):
+                    pass
+            
+            # Apply label filter
+            if label_filter:
+                examples_queryset = examples_queryset.filter(
+                    Q(spans__label__text__icontains=label_filter) | 
+                    Q(categories__label__text__icontains=label_filter)
+                ).distinct()
+            
+            examples = examples_queryset
+            
+            dataset_details = []
+            
+            for example in examples:
+                # Get assigned users
+                assigned_users = []
+                for assignment in example.assignments.all():
+                    if assignment.assignee:
+                        assigned_users.append(assignment.assignee.username)
+                
+                # Get annotations (spans and categories)
+                annotations = []
+                
+                # Get spans
+                for span in example.spans.all():
+                    label_text = span.label.text if span.label else 'No Label'
+                    user_name = span.user.username if span.user else 'Unknown'
+                    annotations.append(f"{label_text} (by {user_name})")
+                
+                # Get categories
+                for category in example.categories.all():
+                    label_text = category.label.text if category.label else 'No Label'
+                    user_name = category.user.username if category.user else 'Unknown'
+                    annotations.append(f"{label_text} (by {user_name})")
+                
+                # Check for discrepancies
+                user_labels = defaultdict(set)
+                
+                # Collect labels by user for spans
+                for span in example.spans.all():
+                    if span.user and span.label:
+                        user_labels[span.user_id].add(span.label.text)
+                
+                # Collect labels by user for categories  
+                for category in example.categories.all():
+                    if category.user and category.label:
+                        user_labels[category.user_id].add(category.label.text)
+                
+                # Determine if there's a discrepancy
+                has_discrepancy = "No"
+                if len(user_labels) > 1:
+                    # Check if different users have different labels
+                    all_label_sets = list(user_labels.values())
+                    for i, labels1 in enumerate(all_label_sets):
+                        for j, labels2 in enumerate(all_label_sets[i+1:], i+1):
+                            if labels1 != labels2:
+                                has_discrepancy = "Yes"
+                                break
+                        if has_discrepancy == "Yes":
+                            break
+                
+                # Participation: show assigned vs who actually annotated
+                annotating_users = set()
+                annotating_user_objects = []
+                for span in example.spans.all():
+                    if span.user:
+                        annotating_users.add(span.user.username)
+                        annotating_user_objects.append({'id': span.user.id, 'username': span.user.username})
+                for category in example.categories.all():
+                    if category.user:
+                        annotating_users.add(category.user.username)
+                        annotating_user_objects.append({'id': category.user.id, 'username': category.user.username})
+                
+                # Remove duplicates from annotating_user_objects
+                unique_annotating_users = []
+                seen_user_ids = set()
+                for user_obj in annotating_user_objects:
+                    if user_obj['id'] not in seen_user_ids:
+                        unique_annotating_users.append(user_obj)
+                        seen_user_ids.add(user_obj['id'])
+                
+                # Calculate participation percentage
+                total_assigned = len(assigned_users)
+                total_annotating = len(annotating_users)
+                participation_percentage = (total_annotating / total_assigned * 100) if total_assigned > 0 else 0
+                
+                participation_numbers = f"{total_annotating}/{total_assigned}"
+                participation_users = ', '.join(assigned_users) if assigned_users else 'No users assigned'
+                
+                # Build detailed annotation information - Group by label
+                annotation_details = {}
+                
+                # Process spans
+                for span in example.spans.all():
+                    if span.label:
+                        label_text = span.label.text
+                        if label_text not in annotation_details:
+                            annotation_details[label_text] = {
+                                'label': label_text,
+                                'users': [],
+                                'positions': [],
+                                'types': set()
+                            }
+                        
+                        if span.user:
+                            # Check if user is already in the list for this label
+                            user_exists = any(u['id'] == span.user.id for u in annotation_details[label_text]['users'])
+                            if not user_exists:
+                                annotation_details[label_text]['users'].append({
+                                    'id': span.user.id, 
+                                    'username': span.user.username
+                                })
+                        
+                        # Add position if available
+                        if hasattr(span, 'start_offset') and hasattr(span, 'end_offset'):
+                            annotation_details[label_text]['positions'].append({
+                                'start': span.start_offset,
+                                'end': span.end_offset
+                            })
+                        
+                        annotation_details[label_text]['types'].add('span')
+                
+                # Process categories
+                for category in example.categories.all():
+                    if category.label:
+                        label_text = category.label.text
+                        if label_text not in annotation_details:
+                            annotation_details[label_text] = {
+                                'label': label_text,
+                                'users': [],
+                                'positions': [],
+                                'types': set()
+                            }
+                        
+                        if category.user:
+                            # Check if user is already in the list for this label
+                            user_exists = any(u['id'] == category.user.id for u in annotation_details[label_text]['users'])
+                            if not user_exists:
+                                annotation_details[label_text]['users'].append({
+                                    'id': category.user.id, 
+                                    'username': category.user.username
+                                })
+                        
+                        annotation_details[label_text]['types'].add('category')
+                
+                # Convert to list and clean up types
+                annotation_details_list = []
+                for label_data in annotation_details.values():
+                    label_data['types'] = list(label_data['types'])
+                    annotation_details_list.append(label_data)
+                
+                # Apply discrepancy filter
+                should_include = True
+                if discrepancy_filter:
+                    if discrepancy_filter == 'with' and has_discrepancy == "No":
+                        should_include = False
+                    elif discrepancy_filter == 'without' and has_discrepancy == "Yes":
+                        should_include = False
+                
+                if should_include:
+                    dataset_details.append({
+                        'id': example.id,
+                        'text': example.text[:50] + '...' if len(example.text) > 50 else example.text,
+                        'full_text': example.text,
+                        'discrepancy': has_discrepancy,
+                        'participationNumbers': participation_numbers,
+                        'participationPercentage': participation_percentage,
+                        'participationUsers': participation_users,
+                        'annotationDetails': annotation_details_list,
+                        'assigned_users': assigned_users,
+                        'annotating_users': list(annotating_users)
+                    })
+            
+            # Calculate user details
+            user_details = []
+            all_members = Member.objects.filter(project=project_id).select_related('user')
+            for member in all_members:
+                user = member.user
+                # Get all examples assigned to this user (sem filtro extra)
+                assigned_examples = Example.objects.filter(
+                    project=project_id,
+                    assignments__assignee=user
+                ).distinct()
+                texts_assigned = assigned_examples.count()
+                # Get examples that this user realmente anotou (sem filtro extra)
+                labeled_example_ids = set()
+                user_spans = Span.objects.filter(
+                    example__project=project_id,
+                    user=user
+                ).values_list('example_id', flat=True)
+                labeled_example_ids.update(user_spans)
+                user_categories = Category.objects.filter(
+                    example__project=project_id,
+                    user=user
+                ).values_list('example_id', flat=True)
+                labeled_example_ids.update(user_categories)
+                texts_labeled = len(labeled_example_ids)
+                # Total labels usados por esse user
+                total_spans = Span.objects.filter(example__project=project_id, user=user).count()
+                total_categories = Category.objects.filter(example__project=project_id, user=user).count()
+                total_labels = total_spans + total_categories
+                participation = (texts_labeled / texts_assigned * 100) if texts_assigned > 0 else 0
+                user_details.append({
+                    'id': user.id,
+                    'username': user.username,
+                    'textsAssigned': texts_assigned,
+                    'textsLabeled': texts_labeled,
+                    'textLabelingPercentage': participation,
+                    'totalLabels': total_labels,
+                    'participation': participation
+                })
+            # Calculate perspective details
+            perspective_details = []
+            try:
+                questions_queryset = Question.objects.filter(project=project_id)
+                
+                # Apply perspective filter - only show specific question
+                if perspective_filter:
+                    try:
+                        question_id = int(perspective_filter)
+                        questions_queryset = questions_queryset.filter(id=question_id)
+                    except (ValueError, TypeError):
+                        pass
+                
+                questions = questions_queryset
+                total_members = all_members.count()
+                
+                print(f"Found {questions.count()} questions for project {project_id}")
+                
+                for question in questions:
+                    # Get answers for this question
+                    answers_queryset = Answer.objects.filter(question=question)
+                    
+                    # Apply user filter to answers
+                    if user_filter:
+                        try:
+                            user_id = int(user_filter)
+                            answers_queryset = answers_queryset.filter(user_id=user_id)
+                        except (ValueError, TypeError):
+                            pass
+                    
+                    answer_count = answers_queryset.count()
+                    
+                    print(f"Question '{question.text}' has {answer_count} answers")
+                    
+                    # Calculate response rate based on filtered users
+                    if user_filter:
+                        # When filtering by user, response rate is either 0% or 100%
+                        response_rate = 100.0 if answer_count > 0 else 0.0
+                    else:
+                        # Normal response rate calculation
+                        response_rate = (answer_count / total_members * 100) if total_members > 0 else 0
+                    
+                    # Only include questions that have answers or if no user filter is applied
+                    if not user_filter or answer_count > 0:
+                        perspective_details.append({
+                            'id': question.id,
+                            'question': question.text,
+                            'type': question.question_type,
+                            'answers': answer_count,
+                            'responseRate': response_rate
+                        })
+                
+                print(f"Created perspective details: {len(perspective_details)} items")
+                
+            except Exception as e:
+                print(f"Error processing perspective details: {e}")
+                import traceback
+                traceback.print_exc()
+            
+            return Response({
+                'dataset_details': dataset_details,
+                'user_details': user_details,
+                'perspective_details': perspective_details,
+                'total_examples': len(dataset_details),
+                'total_users': len(user_details),
+                'total_questions': len(perspective_details)
+            })
+            
+        except Exception as e:
+            print(f"Error in DatasetDetailsAPI: {e}")
+            import traceback
+            traceback.print_exc()
+            return Response({
+                'error': str(e),
+                'dataset_details': [],
+                'total_examples': 0
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class DatasetTextsAPI(APIView):
+    permission_classes = [IsAuthenticated & IsProjectStaffAndReadOnly]
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            project_id = self.kwargs["project_id"]
+            
+            # Get unique text samples for dropdown (first 50 chars of each text)
+            examples = Example.objects.filter(project=project_id).values_list('text', flat=True)
+            
+            # Create unique text options for dropdown
+            text_options = []
+            seen_texts = set()
+            
+            for text in examples:
+                # Use first 50 characters as the option
+                text_preview = text[:50] + '...' if len(text) > 50 else text
+                if text_preview not in seen_texts:
+                    text_options.append({
+                        'text': text_preview,
+                        'value': text,  # Full text for filtering
+                        'preview': text_preview
+                    })
+                    seen_texts.add(text_preview)
+                    
+                # Limit to avoid too many options
+                if len(text_options) >= 100:
+                    break
+            
+            return Response({
+                'text_options': text_options,
+                'total_texts': len(text_options)
+            })
+            
+        except Exception as e:
+            print(f"Error in DatasetTextsAPI: {e}")
+            return Response({
+                'error': str(e),
+                'text_options': [],
+                'total_texts': 0
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PerspectiveAnswersAPI(APIView):
+    permission_classes = [IsAuthenticated & IsProjectStaffAndReadOnly]
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            project_id = self.kwargs["project_id"]
+            question_id = self.kwargs["question_id"]
+            
+            print(f"Fetching answers for question {question_id} in project {project_id}")
+            
+            # Get the question
+            question = get_object_or_404(Question, pk=question_id, project=project_id)
+            
+            print(f"Found question: '{question.text}' (type: {question.question_type})")
+            
+            # Get all answers for this question
+            answers = Answer.objects.filter(question=question).select_related('user', 'selected_option')
+            
+            print(f"Found {answers.count()} answers")
+            
+            answer_list = []
+            for answer in answers:
+                answer_data = {
+                    'id': answer.id,
+                    'username': answer.user.username if answer.user else 'Unknown',
+                    'createdAt': answer.created_at.isoformat() if hasattr(answer, 'created_at') else None
+                }
+                
+                # Add answer content based on question type
+                if question.question_type == 'open':
+                    # For open questions, get the text_answer field
+                    text_response = answer.text_answer if answer.text_answer else 'No response'
+                    answer_data['text'] = text_response
+                    answer_data['selectedOption'] = None
+                    print(f"Open answer from {answer.user.username}: '{text_response}'")
+                else:  # closed/multiple choice
+                    # For closed questions, get the selected option
+                    if answer.selected_option:
+                        answer_data['selectedOption'] = answer.selected_option.text
+                        print(f"Closed answer from {answer.user.username}: '{answer.selected_option.text}'")
+                    else:
+                        answer_data['selectedOption'] = 'No option selected'
+                        print(f"Closed answer from {answer.user.username}: No option selected")
+                    
+                    # For closed questions, text_answer might contain additional comments
+                    answer_data['text'] = answer.text_answer if answer.text_answer else None
+                
+                answer_list.append(answer_data)
+            
+            response_data = {
+                'question': {
+                    'id': question.id,
+                    'text': question.text,
+                    'type': question.question_type
+                },
+                'answers': answer_list,
+                'total_answers': len(answer_list)
+            }
+            
+            print(f"Returning {len(answer_list)} answers")
+            return Response(response_data)
+            
+        except Exception as e:
+            print(f"Error in PerspectiveAnswersAPI: {e}")
+            import traceback
+            traceback.print_exc()
+            return Response({
+                'error': str(e),
+                'answers': [],
+                'total_answers': 0
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

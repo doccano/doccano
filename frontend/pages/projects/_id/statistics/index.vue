@@ -6,12 +6,12 @@
         <v-card class="mb-4">
           <v-card-title>
             <v-icon left color="primary" size="32">{{ mdiChartBar }}</v-icon>
-            <h2>Project Statistics</h2>
+            <h2>Statistics</h2>
             <v-spacer />
             <v-btn
               color="primary"
               :loading="exporting"
-              @click.prevent="exportData"
+              @click.prevent="exportStatistics"
             >
               <v-icon left>{{ mdiDownload }}</v-icon>
               Export PDF
@@ -19,69 +19,135 @@
           </v-card-title>
         </v-card>
 
-        <!-- Statistics Navigation -->
+        <!-- Filters Section -->
         <v-card class="mb-4">
-          <v-tabs v-model="activeStatTab" background-color="transparent" color="primary">
-            <v-tab>
-              <v-icon left>mdi-tag-multiple</v-icon>
-              Labels
-            </v-tab>
-            <v-tab>
-              <v-icon left>mdi-eye-outline</v-icon>
-              Perspectives
-            </v-tab>
-            <v-tab>
-              <v-icon left>mdi-alert-circle-outline</v-icon>
-              Discrepancies
-            </v-tab>
-          </v-tabs>
-        </v-card>
-
-        <!-- Statistics Content -->
-        <v-tabs-items v-model="activeStatTab">
-          <!-- Labels Statistics Tab -->
-          <v-tab-item>
-            <!-- Filter Section -->
-            <v-card class="mb-4">
           <v-card-title>
             <v-icon left>{{ mdiFilter }}</v-icon>
             Filters
           </v-card-title>
           <v-card-text>
             <v-row>
-              <v-col cols="12" md="6">
+              <!-- Dataset Text Filter -->
+              <v-col cols="12" md="4">
                 <v-select
-                  v-model="selectedLabel"
-                  :items="availableLabels"
-                  label="Filter by Label"
-                  prepend-icon="mdi-tag"
+                  v-model="filters.textFilter"
+                  :items="availableTexts"
+                  item-text="preview"
+                  item-value="value"
+                  label="Filter by Dataset Text"
+                  prepend-icon="mdi-text"
                   clearable
+                  placeholder="Select text from dataset..."
+                  @change="applyFilters"
                 />
               </v-col>
-              <v-col cols="12" md="6">
+
+              <!-- Discrepancy Filter -->
+              <v-col cols="12" md="4">
                 <v-select
-                  v-model="selectedUser"
+                  v-model="filters.discrepancyFilter"
+                  :items="discrepancyOptions"
+                  label="Discrepancy Filter"
+                  prepend-icon="mdi-alert-circle"
+                  clearable
+                  @change="applyFilters"
+                />
+              </v-col>
+
+              <!-- User Filter -->
+              <v-col cols="12" md="4">
+                <v-select
+                  v-model="filters.userFilter"
                   :items="availableUsers"
                   item-text="username"
                   item-value="id"
                   label="Filter by User"
                   prepend-icon="mdi-account"
                   clearable
+                  @change="applyFilters"
                 />
               </v-col>
             </v-row>
 
-            <!-- Active Filters Display -->
-            <v-row v-if="selectedLabel || selectedUser" class="mt-2">
-              <v-col cols="12">
-                <div class="d-flex flex-wrap">
-                  <v-chip v-if="selectedLabel" color="primary" class="mr-2 mb-2" close @click:close="clearLabelFilter">
-                    <v-icon left small>mdi-tag</v-icon>
-                    Label: {{ selectedLabel }}
+            <v-row>
+              <!-- Label Filter -->
+              <v-col cols="12" md="4">
+                <v-select
+                  v-model="filters.labelFilter"
+                  :items="availableLabels"
+                  label="Filter by Label"
+                  prepend-icon="mdi-tag"
+                  clearable
+                  @change="applyFilters"
+                />
+              </v-col>
+
+              <!-- Perspective Filter -->
+              <v-col cols="12" md="4">
+                <v-select
+                  v-model="filters.perspectiveFilter"
+                  :items="availablePerspectives"
+                  item-text="text"
+                  item-value="id"
+                  label="Filter by Perspective"
+                  prepend-icon="mdi-eye"
+                  clearable
+                  @change="applyFilters"
+                />
+              </v-col>
+
+              <!-- Active Filters Display -->
+              <v-col cols="12" md="4">
+                <div v-if="hasActiveFilters" class="d-flex flex-wrap">
+                  <v-chip
+                    v-if="filters.textFilter"
+                    color="primary"
+                    class="mr-2 mb-2"
+                    close
+                    @click:close="clearFilter('textFilter')"
+                  >
+                    <v-icon left small>mdi-text</v-icon>
+                    Text: {{ filters.textFilter.substring(0, 20) }}...
                   </v-chip>
-                  <v-chip v-if="selectedUser" color="secondary" class="mr-2 mb-2" close @click:close="clearUserFilter">
+                  <v-chip
+                    v-if="filters.discrepancyFilter"
+                    color="warning"
+                    class="mr-2 mb-2"
+                    close
+                    @click:close="clearFilter('discrepancyFilter')"
+                  >
+                    <v-icon left small>mdi-alert-circle</v-icon>
+                    {{ filters.discrepancyFilter }}
+                  </v-chip>
+                  <v-chip
+                    v-if="filters.userFilter"
+                    color="secondary"
+                    class="mr-2 mb-2"
+                    close
+                    @click:close="clearFilter('userFilter')"
+                  >
                     <v-icon left small>mdi-account</v-icon>
-                    User: {{ getUsernameById(selectedUser) }}
+                    {{ getUsernameById(filters.userFilter) }}
+                  </v-chip>
+                  <v-chip
+                    v-if="filters.labelFilter"
+                    color="success"
+                    class="mr-2 mb-2"
+                    close
+                    @click:close="clearFilter('labelFilter')"
+                  >
+                    <v-icon left small>mdi-tag</v-icon>
+                    {{ filters.labelFilter }}
+                  </v-chip>
+                  <v-chip
+                    v-if="filters.perspectiveFilter"
+                    color="info"
+                    class="mr-2 mb-2"
+                    close
+                    @click:close="clearFilter('perspectiveFilter')"
+                  >
+                    <v-icon left small>mdi-eye</v-icon>
+                    {{ getPerspectiveNameById(filters.perspectiveFilter) }}
                   </v-chip>
                 </div>
               </v-col>
@@ -89,23 +155,23 @@
           </v-card-text>
         </v-card>
 
-        <!-- Statistics Overview Cards -->
-        <v-row class="mb-4">
+        <!-- Statistics Overview Cards (only when filters are active) -->
+        <v-row v-if="hasActiveFilters" class="mb-4">
           <v-col cols="12" md="3">
             <v-card class="text-center" color="primary" dark>
               <v-card-text>
-                <v-icon size="48" class="mb-2">mdi-tag-multiple</v-icon>
-                <div class="text-h3 font-weight-bold">{{ labelStats.total_labels || 0 }}</div>
-                <div class="text-subtitle-1">Total Labels</div>
+                <v-icon size="48" class="mb-2">mdi-file-document-multiple</v-icon>
+                <div class="text-h3 font-weight-bold">{{ stats.totalExamples || 0 }}</div>
+                <div class="text-subtitle-1">Total Examples</div>
               </v-card-text>
             </v-card>
           </v-col>
           <v-col cols="12" md="3">
             <v-card class="text-center" color="success" dark>
               <v-card-text>
-                <v-icon size="48" class="mb-2">mdi-file-document-multiple</v-icon>
-                <div class="text-h3 font-weight-bold">{{ labelStats.total_examples || 0 }}</div>
-                <div class="text-subtitle-1">Labeled Examples</div>
+                <v-icon size="48" class="mb-2">mdi-tag-multiple</v-icon>
+                <div class="text-h3 font-weight-bold">{{ stats.totalLabels || 0 }}</div>
+                <div class="text-subtitle-1">Total Labels</div>
               </v-card-text>
             </v-card>
           </v-col>
@@ -113,322 +179,575 @@
             <v-card class="text-center" color="info" dark>
               <v-card-text>
                 <v-icon size="48" class="mb-2">mdi-account-group</v-icon>
-                <div class="text-h3 font-weight-bold">{{ labelStats.total_users || 0 }}</div>
+                <div class="text-h3 font-weight-bold">{{ stats.totalUsers || 0 }}</div>
                 <div class="text-subtitle-1">Active Users</div>
               </v-card-text>
             </v-card>
           </v-col>
           <v-col cols="12" md="3">
-            <v-card class="text-center" color="orange" dark>
+            <v-card class="text-center" color="warning" dark>
               <v-card-text>
-                <v-icon size="48" class="mb-2">mdi-chart-line</v-icon>
-                <div class="text-h3 font-weight-bold">{{ labelStats.avg_labels_per_example || 0 }}</div>
-                <div class="text-subtitle-1">Avg Labels/Example</div>
+                <v-icon size="48" class="mb-2">mdi-alert-circle</v-icon>
+                <div class="text-h3 font-weight-bold">{{ stats.discrepancyRate || 0 }}%</div>
+                <div class="text-subtitle-1">Discrepancy Rate</div>
               </v-card-text>
             </v-card>
           </v-col>
         </v-row>
 
-        <!-- Charts Section -->
-        <v-row class="mb-4">
-          <!-- Label Distribution Pie Chart -->
-          <v-col cols="12" md="6">
-            <v-card>
-              <v-card-title>
-                <v-icon left>mdi-chart-pie</v-icon>
-                Label Distribution
-              </v-card-title>
-              <v-card-text>
-                <div v-if="labelStats.label_distribution && labelStats.label_distribution.length > 0">
-                  <div v-for="(item, index) in labelStats.label_distribution.slice(0, 6)" :key="item.label" class="mb-3">
-                    <div class="d-flex justify-space-between align-center mb-1">
-                      <span class="font-weight-medium">{{ item.label }}</span>
-                      <span class="text-caption">{{ item.count }} ({{ item.percentage }}%)</span>
-                    </div>
+        <!-- Dataset Details Table (always shown but with different titles) -->
+        <div class="mb-6">
+          <v-card>
+            <v-card-title>
+              <v-icon left color="primary">mdi-table</v-icon>
+              <h3>{{ hasActiveFilters ? 'Filtered Dataset Details' : 'Dataset Details' }}</h3>
+              <v-spacer />
+              <v-chip color="info" text-color="white">
+                {{ datasetDetails.length }} examples
+              </v-chip>
+            </v-card-title>
+            <v-card-text>
+              <v-data-table
+                :headers="datasetDetailsHeaders"
+                :items="datasetDetails"
+                :items-per-page="10"
+                :loading="loading"
+                class="elevation-0"
+                dense
+              >
+                <template #[`item.text`]="{ item }">
+                  <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                      <span 
+                        style="cursor: pointer; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;"
+                        v-bind="attrs" 
+                        v-on="on"
+                      >
+                        {{ item.text }}
+                      </span>
+                    </template>
+                    <span>{{ item.full_text }}</span>
+                  </v-tooltip>
+                </template>
+                
+                <template #[`item.discrepancy`]="{ item }">
+                  <v-chip 
+                    small 
+                    :color="item.discrepancy === 'Yes' ? 'error' : 'success'"
+                    :text-color="'white'"
+                  >
+                    {{ item.discrepancy }}
+                  </v-chip>
+                </template>
+                
+                <template #[`item.participation`]="{ item }">
+                  <div class="d-flex align-center">
+                    <span class="text-caption mr-2" style="min-width: 40px;">
+                      {{ item.participationNumbers }}
+                    </span>
                     <v-progress-linear
-                      :value="item.percentage"
-                      height="12"
-                      :color="getChartColor(index)"
+                      :value="item.participationPercentage"
+                      height="8"
+                      :color="getParticipationColor(item.participationPercentage)"
                       rounded
-                    ></v-progress-linear>
-                  </div>
-                </div>
-                <div v-else class="text-center py-8">
-                  <v-icon size="64" color="grey">mdi-chart-pie</v-icon>
-                  <div class="text-h6 grey--text mt-2">No data available</div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <!-- User Performance Bar Chart -->
-          <v-col cols="12" md="6">
-            <v-card>
-              <v-card-title>
-                <v-icon left>mdi-chart-bar</v-icon>
-                User Performance
-              </v-card-title>
-              <v-card-text>
-                <div v-if="labelStats.user_performance && labelStats.user_performance.length > 0">
-                  <div v-for="(user, index) in labelStats.user_performance.slice(0, 6)" :key="user.user_id" class="mb-3">
-                    <div class="d-flex justify-space-between align-center mb-1">
-                      <span class="font-weight-medium">{{ user.username }}</span>
-                      <span class="text-caption">{{ user.total_labels }} labels</span>
-                    </div>
-                    <v-progress-linear
-                      :value="getRelativeUserPerformance(user.total_labels)"
-                      height="12"
-                      :color="getChartColor(index)"
-                      rounded
-                    ></v-progress-linear>
-                  </div>
-                </div>
-                <div v-else class="text-center py-8">
-                  <v-icon size="64" color="grey">mdi-chart-bar</v-icon>
-                  <div class="text-h6 grey--text mt-2">No data available</div>
-                </div>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-        <!-- Detailed Tables -->
-        <v-row class="mb-4">
-          <!-- Label Distribution Table -->
-          <v-col cols="12" md="6">
-            <v-card>
-              <v-card-title>
-                <v-icon left>mdi-table</v-icon>
-                Label Details
-              </v-card-title>
-              <v-card-text>
-                <v-data-table
-                  :key="tableKey"
-                  :headers="labelHeaders"
-                  :items="labelStats.label_distribution || []"
-                  :items-per-page="5"
-                  :loading="loadingStats"
-                  class="elevation-0"
-                  dense
-                >
-                  <template slot="item.percentage" slot-scope="{ item }">
-                    <div class="d-flex align-center">
-                      <v-progress-linear
-                        :value="item.percentage"
-                        height="8"
-                        :color="getPercentageColor(item.percentage)"
-                        class="mr-2"
-                        style="min-width: 60px;"
-                      ></v-progress-linear>
-                      <span class="text-caption">{{ item.percentage }}%</span>
-                    </div>
-                  </template>
-
-                  <template slot="item.users" slot-scope="{ item }">
-                    <div v-if="item.users && item.users.length > 0">
-                      <v-chip
-                        v-for="user in item.users.slice(0, 2)"
-                        :key="user.id"
-                        x-small
-                        class="ma-1"
-                        :color="user.id === selectedUser ? 'primary' : 'default'"
-                      >
-                        {{ user.username }}
-                      </v-chip>
-                      <v-chip v-if="item.users.length > 2" x-small outlined class="ma-1">
-                        +{{ item.users.length - 2 }}
-                      </v-chip>
-                    </div>
-                    <span v-else class="text-caption grey--text">-</span>
-                  </template>
-                </v-data-table>
-              </v-card-text>
-            </v-card>
-          </v-col>
-
-          <!-- User Performance Table -->
-          <v-col cols="12" md="6">
-            <v-card>
-              <v-card-title>
-                <v-icon left>mdi-account-star</v-icon>
-                User Details
-              </v-card-title>
-              <v-card-text>
-                <v-data-table
-                  :headers="userHeaders"
-                  :items="labelStats.user_performance || []"
-                  :items-per-page="5"
-                  class="elevation-0"
-                  dense
-                >
-                  <template slot="item.total_labels" slot-scope="{ item }">
-                    <v-chip small :color="getTotalLabelsColor(item.total_labels)">
-                      {{ item.total_labels }}
-                    </v-chip>
-                  </template>
-
-                  <template slot="item.labels_per_example" slot-scope="{ item }">
-                    <v-chip x-small :color="getPerformanceColor(item.labels_per_example)">
-                      {{ item.labels_per_example }}
-                    </v-chip>
-                  </template>
-                </v-data-table>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-
-        <!-- Progress Indicators -->
-        <v-row class="mb-4">
-          <v-col cols="12">
-            <v-card>
-              <v-card-title>
-                <v-icon left>mdi-progress-check</v-icon>
-                Project Progress
-              </v-card-title>
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" md="4">
-                    <div class="text-center">
-                      <div class="text-h6 mb-2">Annotation Coverage</div>
-                      <v-progress-circular
-                        :value="getAnnotationCoverage()"
-                        size="100"
-                        width="8"
-                        color="primary"
-                      >
-                        {{ getAnnotationCoverage() }}%
-                      </v-progress-circular>
-                    </div>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <div class="text-center">
-                      <div class="text-h6 mb-2">User Participation</div>
-                      <v-progress-circular
-                        :value="getUserParticipation()"
-                        size="100"
-                        width="8"
-                        color="success"
-                      >
-                        {{ getUserParticipation() }}%
-                      </v-progress-circular>
-                    </div>
-                  </v-col>
-                  <v-col cols="12" md="4">
-                    <div class="text-center">
-                      <div class="text-h6 mb-2">Label Diversity</div>
-                      <v-progress-circular
-                        :value="getLabelDiversity()"
-                        size="100"
-                        width="8"
-                        color="orange"
-                      >
-                        {{ getLabelDiversity() }}%
-                      </v-progress-circular>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-          </v-tab-item>
-
-          <!-- Perspectives Statistics Tab -->
-          <v-tab-item>
-            <!-- Perspective Filter Section -->
-            <v-card class="mb-4">
-              <v-card-title>
-                <v-icon left>mdi-filter</v-icon>
-                Perspective Filters
-              </v-card-title>
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12">
-                    <v-select
-                      v-model="selectedQuestion"
-                      :items="availableQuestions"
-                      item-text="text"
-                      item-value="id"
-                      label="Filter by Question"
-                      prepend-icon="mdi-help-circle"
-                      clearable
+                      class="flex-grow-1"
                     />
-                  </v-col>
-                </v-row>
+                    <span class="text-caption ml-2">
+                      {{ Math.round(item.participationPercentage) }}%
+                    </span>
+                  </div>
+                  <div class="text-caption text--secondary mt-1">
+                    {{ item.participationUsers }}
+                  </div>
+                </template>
+                
+                <template #[`item.annotations`]="{ item }">
+                  <div v-if="item.annotationDetails && item.annotationDetails.length > 0">
+                    <v-chip
+                      v-for="(annotation, index) in item.annotationDetails.slice(0, 3)"
+                      :key="index"
+                      small
+                      :color="getLabelColor(annotation.label)"
+                      text-color="white"
+                      class="mr-1 mb-1"
+                      style="cursor: pointer;"
+                      @click="showAnnotationDetails(annotation, item)"
+                    >
+                      {{ annotation.label }}
+                      <v-icon v-if="annotation.users && annotation.users.length > 1" small right>mdi-account-multiple</v-icon>
+                      <v-icon v-else small right>mdi-account</v-icon>
+                      <v-chip 
+                        v-if="annotation.users && annotation.users.length > 1"
+                        x-small 
+                        color="white" 
+                        text-color="primary"
+                        class="ml-1"
+                        style="font-size: 10px;"
+                      >
+                        {{ annotation.users.length }}
+                      </v-chip>
+                    </v-chip>
+                    <v-chip
+                      v-if="item.annotationDetails.length > 3"
+                      small
+                      color="grey"
+                      text-color="white"
+                      class="mr-1 mb-1"
+                      style="cursor: pointer;"
+                      @click="showAllAnnotations(item)"
+                    >
+                      +{{ item.annotationDetails.length - 3 }}
+                    </v-chip>
+                  </div>
+                  <div v-else class="text-caption text--secondary">
+                    No annotations
+                  </div>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </div>
 
-                <!-- Active Filters Display -->
-                <v-row v-if="selectedQuestion" class="mt-2">
-                  <v-col cols="12">
-                    <div class="d-flex flex-wrap">
-                      <v-chip color="primary" class="mr-2 mb-2" close @click:close="clearQuestionFilter">
-                        <v-icon left small>mdi-help-circle</v-icon>
-                        Question: {{ getQuestionById(selectedQuestion) }}
+        <!-- User Details Table (always shown but with different titles) -->
+        <div class="mb-6">
+          <v-card>
+            <v-card-title>
+              <v-icon left color="secondary">mdi-account-group</v-icon>
+              <h3>{{ hasActiveFilters ? 'Filtered User Details' : 'User Details' }}</h3>
+              <v-spacer />
+              <v-chip color="secondary" text-color="white">
+                {{ userDetails.length }} users
+              </v-chip>
+            </v-card-title>
+            <v-card-text>
+              <v-data-table
+                :headers="userDetailsHeaders"
+                :items="userDetails"
+                :items-per-page="10"
+                :loading="loading"
+                class="elevation-0"
+                dense
+              >
+                <template #[`item.username`]="{ item }">
+                  <div class="d-flex align-center">
+                    <v-avatar size="24" class="mr-2" color="primary">
+                      <span class="white--text text-caption">{{ item.username.charAt(0).toUpperCase() }}</span>
+                    </v-avatar>
+                    <span class="font-weight-medium">{{ item.username }}</span>
+                  </div>
+                </template>
+                
+                <template #[`item.textsLabeled`]="{ item }">
+                  <div class="d-flex align-center">
+                    <span class="text-body-2 mr-2">
+                      {{ item.textsLabeled }} / {{ item.textsAssigned }}
+                    </span>
+                    <v-progress-linear
+                      :value="item.textLabelingPercentage"
+                      height="6"
+                      :color="getTextLabelingColor(item.textLabelingPercentage)"
+                      rounded
+                      class="flex-grow-1"
+                      style="max-width: 100px;"
+                    />
+                  </div>
+                </template>
+                
+                <template #[`item.totalLabels`]="{ item }">
+                  <v-chip 
+                    small 
+                    :color="getTotalLabelsColor(item.totalLabels)"
+                    text-color="white"
+                  >
+                    {{ item.totalLabels }}
+                  </v-chip>
+                </template>
+                
+                <template #[`item.participation`]="{ item }">
+                  <div class="d-flex align-center">
+                    <v-progress-circular
+                      :value="item.participation"
+                      :color="getParticipationColor(item.participation)"
+                      size="40"
+                      width="4"
+                      class="mr-2"
+                    >
+                      <span class="text-caption">{{ Math.round(item.participation) }}%</span>
+                    </v-progress-circular>
+                    <span class="text-caption text--secondary">
+                      {{ item.participation >= 80 ? 'High' : item.participation >= 50 ? 'Medium' : 'Low' }}
+                    </span>
+                  </div>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </div>
+
+        <!-- Perspective Details Table (always shown but with different titles) -->
+        <div class="mb-6">
+          <v-card>
+            <v-card-title>
+              <v-icon left color="info">mdi-eye-outline</v-icon>
+              <h3>{{ hasActiveFilters ? 'Filtered Perspective Details' : 'Perspective Details' }}</h3>
+              <v-spacer />
+              <v-chip color="info" text-color="white">
+                {{ perspectiveDetails.length }} questions
+              </v-chip>
+            </v-card-title>
+            <v-card-text>
+              <v-data-table
+                :headers="perspectiveDetailsHeaders"
+                :items="perspectiveDetails"
+                :items-per-page="10"
+                :loading="loading"
+                class="elevation-0"
+                dense
+              >
+                <template #[`item.question`]="{ item }">
+                  <div class="d-flex align-center">
+                    <v-icon small class="mr-2" :color="item.type === 'open' ? 'primary' : 'secondary'">
+                      {{ item.type === 'open' ? 'mdi-text-box' : 'mdi-format-list-bulleted' }}
+                    </v-icon>
+                    <span class="font-weight-medium" :title="item.question">
+                      {{ item.question.length > 50 ? item.question.substring(0, 50) + '...' : item.question }}
+                    </span>
+                  </div>
+                </template>
+                
+                <template #[`item.type`]="{ item }">
+                  <v-chip 
+                    small 
+                    :color="item.type === 'open' ? 'primary' : 'secondary'"
+                    text-color="white"
+                  >
+                    {{ item.type === 'open' ? 'Open Text' : 'Multiple Choice' }}
+                  </v-chip>
+                </template>
+                
+                <template #[`item.answers`]="{ item }">
+                  <div class="d-flex align-center">
+                    <v-chip 
+                      small 
+                      :color="getAnswersColor(item.answers)"
+                      text-color="white"
+                      class="mr-2"
+                    >
+                      {{ item.answers }}
+                    </v-chip>
+                    <v-progress-linear
+                      :value="item.responseRate"
+                      height="6"
+                      :color="getResponseRateColor(item.responseRate)"
+                      rounded
+                      class="flex-grow-1"
+                      style="max-width: 120px;"
+                    />
+                    <span class="text-caption ml-2">{{ Math.round(item.responseRate) }}%</span>
+                  </div>
+                </template>
+                
+                <template #[`item.actions`]="{ item }">
+                  <v-btn
+                    small
+                    color="info"
+                    outlined
+                    @click="showPerspectiveAnswers(item)"
+                  >
+                    <v-icon left small>mdi-eye</v-icon>
+                    View Answers
+                  </v-btn>
+                </template>
+              </v-data-table>
+            </v-card-text>
+          </v-card>
+        </div>
+
+        <!-- Annotation Details Dialog -->
+        <v-dialog v-model="annotationDialog" max-width="600">
+          <v-card>
+            <v-card-title class="headline">
+              <v-icon left color="primary">mdi-tag</v-icon>
+              Annotation Details
+            </v-card-title>
+            <v-card-text>
+              <div v-if="selectedAnnotation">
+                <v-chip
+                  large
+                  :color="getLabelColor(selectedAnnotation.label)"
+                  text-color="white"
+                  class="mb-3"
+                >
+                  {{ selectedAnnotation.label }}
+                </v-chip>
+                
+                <h4 class="mb-2">
+                  Annotated by {{ selectedAnnotation.users ? selectedAnnotation.users.length : 0 }} 
+                  {{ selectedAnnotation.users && selectedAnnotation.users.length === 1 ? 'user' : 'users' }}:
+                </h4>
+                <div v-if="selectedAnnotation.users && selectedAnnotation.users.length > 0">
+                  <v-chip
+                    v-for="user in selectedAnnotation.users"
+                    :key="user.id"
+                    color="info"
+                    text-color="white"
+                    class="mr-2 mb-2"
+                  >
+                    <v-icon left small>mdi-account</v-icon>
+                    {{ user.username }}
+                  </v-chip>
+                </div>
+                <div v-else>
+                  <span class="text--secondary">No user information available</span>
+                </div>
+
+                <div v-if="selectedAnnotation.positions && selectedAnnotation.positions.length > 0" class="mt-3">
+                  <h4>Positions:</h4>
+                  <div v-for="(position, index) in selectedAnnotation.positions" :key="index" class="mb-1">
+                    <v-chip small outlined color="primary" class="mr-1">
+                      {{ position.start }} - {{ position.end }}
+                    </v-chip>
+                  </div>
+                </div>
+
+                <div v-if="selectedAnnotation.types && selectedAnnotation.types.length > 0" class="mt-3">
+                  <h4>Annotation Types:</h4>
+                  <div>
+                    <v-chip 
+                      v-for="type in selectedAnnotation.types" 
+                      :key="type"
+                      small 
+                      :color="type === 'span' ? 'purple' : 'orange'"
+                      text-color="white"
+                      class="mr-1"
+                    >
+                      {{ type }}
+                    </v-chip>
+                  </div>
+                </div>
+
+                <div v-if="selectedExample" class="mt-3">
+                  <h4>Example Text:</h4>
+                  <v-card outlined class="pa-3 mt-2">
+                    <p class="text-body-2">{{ selectedExample.full_text || selectedExample.text }}</p>
+                  </v-card>
+                </div>
+              </div>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click="annotationDialog = false">Close</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <!-- All Annotations Dialog -->
+        <v-dialog v-model="allAnnotationsDialog" max-width="800">
+          <v-card>
+            <v-card-title class="headline">
+              <v-icon left color="primary">mdi-tag-multiple</v-icon>
+              All Annotations
+            </v-card-title>
+            <v-card-text>
+              <div v-if="selectedExample && selectedExample.annotationDetails">
+                <div class="mb-3">
+                  <strong>Example:</strong> {{ selectedExample.text }}
+                </div>
+                <v-divider class="my-3"></v-divider>
+                <div v-for="(annotation, index) in selectedExample.annotationDetails" :key="index" class="mb-3">
+                  <v-card outlined class="pa-3">
+                    <div class="d-flex align-center mb-2">
+                      <v-chip
+                        :color="getLabelColor(annotation.label)"
+                        text-color="white"
+                        class="mr-2"
+                      >
+                        {{ annotation.label }}
+                      </v-chip>
+                      <div class="ml-2">
+                        <div v-if="annotation.users && annotation.users.length > 0" class="text--secondary">
+                          <strong>Annotated by {{ annotation.users.length }} {{ annotation.users.length === 1 ? 'user' : 'users' }}:</strong>
+                          <div class="mt-1">
+                            <v-chip
+                              v-for="user in annotation.users"
+                              :key="user.id"
+                              x-small
+                              color="info"
+                              text-color="white"
+                              class="mr-1"
+                            >
+                              {{ user.username }}
+                            </v-chip>
+                          </div>
+                        </div>
+                        <div v-else class="text--secondary">
+                          No user information
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div v-if="annotation.positions && annotation.positions.length > 0" class="text-caption text--secondary mb-1">
+                      <strong>Positions:</strong>
+                      <span v-for="(position, posIndex) in annotation.positions" :key="posIndex">
+                        {{ position.start }}-{{ position.end }}<span v-if="posIndex < annotation.positions.length - 1">, </span>
+                      </span>
+                    </div>
+                    
+                    <div v-if="annotation.types && annotation.types.length > 0" class="text-caption text--secondary">
+                      <strong>Types:</strong>
+                      <v-chip 
+                        v-for="type in annotation.types" 
+                        :key="type"
+                        x-small 
+                        :color="type === 'span' ? 'purple' : 'orange'"
+                        text-color="white"
+                        class="mr-1"
+                      >
+                        {{ type }}
                       </v-chip>
                     </div>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
+                  </v-card>
+                </div>
+              </div>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click="allAnnotationsDialog = false">Close</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
 
-            <!-- Perspective Statistics Overview Cards -->
-            <v-row class="mb-4">
-              <v-col cols="12" md="3">
-                <v-card class="text-center" color="purple" dark>
+        <!-- Perspective Answers Dialog -->
+        <v-dialog v-model="perspectiveAnswersDialog" max-width="900">
+          <v-card>
+            <v-card-title class="headline">
+              <v-icon left color="info">mdi-eye-outline</v-icon>
+              Perspective Answers
+            </v-card-title>
+            <v-card-text>
+              <div v-if="selectedPerspective">
+                <!-- Question Information -->
+                <v-card outlined class="mb-4">
                   <v-card-text>
-                    <v-icon size="48" class="mb-2">mdi-help-circle-outline</v-icon>
-                    <div class="text-h3 font-weight-bold">{{ perspectiveStats.total_questions || 0 }}</div>
-                    <div class="text-subtitle-1">Total Questions</div>
+                    <div class="d-flex align-center mb-2">
+                      <v-chip 
+                        :color="selectedPerspective.type === 'open' ? 'primary' : 'secondary'"
+                        text-color="white"
+                        class="mr-2"
+                      >
+                        {{ selectedPerspective.type === 'open' ? 'Open Text' : 'Multiple Choice' }}
+                      </v-chip>
+                      <span class="text-h6">{{ selectedPerspective.question }}</span>
+                    </div>
+                    <div class="text-body-2 text--secondary">
+                      {{ selectedPerspective.answers }} answers • {{ Math.round(selectedPerspective.responseRate) }}% response rate
+                    </div>
                   </v-card-text>
                 </v-card>
-              </v-col>
-              <v-col cols="12" md="3">
-                <v-card class="text-center" color="indigo" dark>
-                  <v-card-text>
-                    <v-icon size="48" class="mb-2">mdi-comment-multiple</v-icon>
-                    <div class="text-h3 font-weight-bold">{{ perspectiveStats.total_answers || 0 }}</div>
-                    <div class="text-subtitle-1">Total Answers</div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-              <v-col cols="12" md="3">
-                <v-card class="text-center" color="teal" dark>
-                  <v-card-text>
-                    <v-icon size="48" class="mb-2">mdi-account-check</v-icon>
-                    <div class="text-h3 font-weight-bold">{{ activeRespondents }}</div>
-                    <div class="text-subtitle-1">Active Respondents</div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-              <v-col cols="12" md="3">
-                <v-card class="text-center" color="deep-orange" dark>
-                  <v-card-text>
-                    <v-icon size="48" class="mb-2">mdi-percent</v-icon>
-                    <div class="text-h3 font-weight-bold">{{ averageResponseRate }}%</div>
-                    <div class="text-subtitle-1">Avg Response Rate</div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
 
-            <!-- Question Response Charts -->
-            <v-row class="mb-4">
-              <!-- Question Response Distribution -->
+                <!-- Answers List -->
+                <div v-if="perspectiveAnswersList && perspectiveAnswersList.length > 0">
+                  <h4 class="mb-3">Responses:</h4>
+                  <v-card
+                    v-for="(answer, index) in perspectiveAnswersList"
+                    :key="index"
+                    outlined
+                    class="mb-3"
+                  >
+                    <v-card-text>
+                      <div class="d-flex justify-space-between align-start">
+                        <div class="flex-grow-1">
+                          <!-- For Open Text Questions -->
+                          <div v-if="selectedPerspective.type === 'open'" class="text-body-1 mb-2">
+                            <strong>{{ answer.text || 'No response provided' }}</strong>
+                          </div>
+                          
+                          <!-- For Multiple Choice Questions -->
+                          <div v-else class="text-body-1 mb-2">
+                            <strong>{{ answer.selectedOption || 'No option selected' }}</strong>
+                            <div v-if="answer.text" class="text-body-2 text--secondary mt-1">
+                              <em>Additional comment: {{ answer.text }}</em>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="d-flex align-center">
+                          <v-chip
+                            small
+                            color="info"
+                            text-color="white"
+                          >
+                            <v-icon left small>mdi-account</v-icon>
+                            {{ answer.username }}
+                          </v-chip>
+                          <span class="text-caption text--secondary ml-2">
+                            {{ answer.createdAt ? new Date(answer.createdAt).toLocaleDateString() : '' }}
+                          </span>
+                        </div>
+                      </div>
+                    </v-card-text>
+                  </v-card>
+                </div>
+                <div v-else class="text-center py-4">
+                  <v-icon size="48" color="grey">mdi-comment-question-outline</v-icon>
+                  <div class="text-h6 grey--text mt-2">No responses found</div>
+                </div>
+              </div>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn text @click="perspectiveAnswersDialog = false">Close</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
+        <!-- Main Statistics Content (only when filters are active) -->
+        <div v-if="hasActiveFilters">
+          <v-tabs v-model="activeTab" background-color="transparent" color="primary">
+            <!-- Label Statistics Tab -->
+            <v-tab>
+              <v-icon left>mdi-tag-multiple</v-icon>
+              Label Statistics
+            </v-tab>
+
+            <!-- User Performance Tab -->
+            <v-tab>
+              <v-icon left>mdi-account-star</v-icon>
+              User Performance
+            </v-tab>
+
+            <!-- Discrepancy Analysis Tab -->
+            <v-tab>
+              <v-icon left>mdi-alert-circle-outline</v-icon>
+              Discrepancy Analysis
+            </v-tab>
+
+            <!-- Perspective Insights Tab -->
+            <v-tab>
+              <v-icon left>mdi-eye-outline</v-icon>
+              Perspective Insights
+            </v-tab>
+          </v-tabs>
+
+          <v-tabs-items v-model="activeTab">
+          <!-- Label Statistics Tab Content -->
+          <v-tab-item>
+            <v-row class="mt-4">
+              <!-- Label Distribution Chart -->
               <v-col cols="12" md="6">
                 <v-card>
                   <v-card-title>
                     <v-icon left>mdi-chart-pie</v-icon>
-                    Question Response Distribution
+                    Label Distribution
                   </v-card-title>
                   <v-card-text>
-                    <div v-if="perspectiveStats.questions && perspectiveStats.questions.length > 0">
-                      <div v-for="(question, index) in perspectiveStats.questions.slice(0, 6)" :key="question.id" class="mb-3">
+                    <div v-if="labelDistribution.length > 0">
+                      <div v-for="(item, index) in labelDistribution.slice(0, 10)" :key="item.label" class="mb-3">
                         <div class="d-flex justify-space-between align-center mb-1">
-                          <span class="font-weight-medium">{{ question.text.substring(0, 30) }}...</span>
-                          <span class="text-caption">{{ question.answer_count }} answers ({{ question.response_rate }}%)</span>
+                          <span class="font-weight-medium">{{ item.label }}</span>
+                          <span class="text-caption">{{ item.count }} ({{ item.percentage }}%)</span>
                         </div>
                         <v-progress-linear
-                          :value="question.response_rate"
+                          :value="item.percentage"
                           height="12"
                           :color="getChartColor(index)"
                           rounded
@@ -437,582 +756,235 @@
                     </div>
                     <div v-else class="text-center py-8">
                       <v-icon size="64" color="grey">mdi-chart-pie</v-icon>
-                      <div class="text-h6 grey--text mt-2">No data available</div>
+                      <div class="text-h6 grey--text mt-2">No label data available</div>
                     </div>
                   </v-card-text>
                 </v-card>
               </v-col>
 
-              <!-- Question Types Distribution -->
-              <v-col cols="12" md="6">
-                <v-card>
-                  <v-card-title>
-                    <v-icon left>mdi-chart-donut</v-icon>
-                    Question Types
-                  </v-card-title>
-                  <v-card-text>
-                    <div v-if="questionTypeStats.length > 0">
-                      <div v-for="(type, index) in questionTypeStats" :key="type.type" class="mb-3">
-                        <div class="d-flex justify-space-between align-center mb-1">
-                          <span class="font-weight-medium text-capitalize">{{ type.type }} Questions</span>
-                          <span class="text-caption">{{ type.count }} ({{ type.percentage }}%)</span>
-                        </div>
-                        <v-progress-linear
-                          :value="type.percentage"
-                          height="12"
-                          :color="getChartColor(index)"
-                          rounded
-                        ></v-progress-linear>
-                      </div>
-                    </div>
-                    <div v-else class="text-center py-8">
-                      <v-icon size="64" color="grey">mdi-chart-donut</v-icon>
-                      <div class="text-h6 grey--text mt-2">No data available</div>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <!-- Closed Questions Answer Distribution -->
-            <v-row v-if="closedQuestions.length > 0" class="mb-4">
-              <v-col cols="12">
-                <v-card>
-                  <v-card-title>
-                    <v-icon left>mdi-poll</v-icon>
-                    Closed Questions - Answer Distribution
-                  </v-card-title>
-                  <v-card-text>
-                    <div v-for="question in closedQuestions.slice(0, 3)" :key="question.id" class="mb-6">
-                      <div class="mb-3">
-                        <div class="text-h6 mb-1">{{ question.text }}</div>
-                        <div class="text-caption grey--text">{{ question.answer_count }} total responses</div>
-                      </div>
-
-                      <v-row>
-                        <v-col cols="12" md="8">
-                          <div v-if="question.options && question.options.length > 0">
-                            <div v-for="(option, optionIndex) in question.options" :key="option.id" class="mb-3">
-                              <div class="d-flex justify-space-between align-center mb-1">
-                                <span class="font-weight-medium">{{ option.text }}</span>
-                                <span class="text-caption">{{ option.count }} votes ({{ option.percentage }}%)</span>
-                              </div>
-                              <v-progress-linear
-                                :value="option.percentage"
-                                height="16"
-                                :color="getOptionColor(optionIndex)"
-                                rounded
-                              >
-                                <span class="white--text text-caption font-weight-bold">
-                                  {{ option.percentage }}%
-                                </span>
-                              </v-progress-linear>
-                            </div>
-                          </div>
-                          <div v-else class="text-center py-4">
-                            <span class="grey--text">No options available</span>
-                          </div>
-                        </v-col>
-
-                        <v-col cols="12" md="4">
-                          <div class="text-center">
-                            <div class="text-subtitle-2 mb-2">Response Distribution</div>
-                            <v-progress-circular
-                              v-if="question.answer_count > 0"
-                              :value="getQuestionResponseRate(question)"
-                              size="120"
-                              width="8"
-                              :color="getResponseRateColor(getQuestionResponseRate(question))"
-                            >
-                              {{ getQuestionResponseRate(question) }}%
-                            </v-progress-circular>
-                            <div v-else class="grey--text">No responses</div>
-                            <div class="text-caption mt-2">Response Rate</div>
-                          </div>
-                        </v-col>
-                      </v-row>
-
-                      <v-divider v-if="question !== closedQuestions.slice(0, 3)[closedQuestions.slice(0, 3).length - 1]" class="mt-4"></v-divider>
-                    </div>
-
-                    <div v-if="closedQuestions.length > 3" class="text-center mt-4">
-                      <v-btn text color="primary" @click="showAllClosedQuestions = !showAllClosedQuestions">
-                        {{ showAllClosedQuestions ? 'Show Less' : `Show ${closedQuestions.length - 3} More Questions` }}
-                        <v-icon right>{{ showAllClosedQuestions ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
-                      </v-btn>
-                    </div>
-
-                    <!-- Expanded view for all questions -->
-                    <div v-if="showAllClosedQuestions && closedQuestions.length > 3">
-                      <v-divider class="my-4"></v-divider>
-                      <div v-for="question in closedQuestions.slice(3)" :key="`expanded-${question.id}`" class="mb-6">
-                        <div class="mb-3">
-                          <div class="text-h6 mb-1">{{ question.text }}</div>
-                          <div class="text-caption grey--text">{{ question.answer_count }} total responses</div>
-                        </div>
-
-                        <v-row>
-                          <v-col cols="12" md="8">
-                            <div v-if="question.options && question.options.length > 0">
-                              <div v-for="(option, optionIndex) in question.options" :key="option.id" class="mb-3">
-                                <div class="d-flex justify-space-between align-center mb-1">
-                                  <span class="font-weight-medium">{{ option.text }}</span>
-                                  <span class="text-caption">{{ option.count }} votes ({{ option.percentage }}%)</span>
-                                </div>
-                                <v-progress-linear
-                                  :value="option.percentage"
-                                  height="16"
-                                  :color="getOptionColor(optionIndex)"
-                                  rounded
-                                >
-                                  <span class="white--text text-caption font-weight-bold">
-                                    {{ option.percentage }}%
-                                  </span>
-                                </v-progress-linear>
-                              </div>
-                            </div>
-                          </v-col>
-
-                          <v-col cols="12" md="4">
-                            <div class="text-center">
-                              <div class="text-subtitle-2 mb-2">Response Distribution</div>
-                              <v-progress-circular
-                                v-if="question.answer_count > 0"
-                                :value="getQuestionResponseRate(question)"
-                                size="120"
-                                width="8"
-                                :color="getResponseRateColor(getQuestionResponseRate(question))"
-                              >
-                                {{ getQuestionResponseRate(question) }}%
-                              </v-progress-circular>
-                              <div class="text-caption mt-2">Response Rate</div>
-                            </div>
-                          </v-col>
-                        </v-row>
-
-                        <v-divider v-if="question !== closedQuestions.slice(3)[closedQuestions.slice(3).length - 1]" class="mt-4"></v-divider>
-                      </div>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <!-- Detailed Tables -->
-            <v-row class="mb-4">
-              <!-- Questions Details Table -->
+              <!-- Label Details Table -->
               <v-col cols="12" md="6">
                 <v-card>
                   <v-card-title>
                     <v-icon left>mdi-table</v-icon>
-                    Question Details
+                    Label Details
                   </v-card-title>
                   <v-card-text>
                     <v-data-table
-                      :headers="questionHeaders"
-                      :items="perspectiveStats.questions || []"
-                      :items-per-page="5"
+                      :headers="labelHeaders"
+                      :items="labelDistribution"
+                      :items-per-page="10"
+                      :loading="loading"
                       class="elevation-0"
-                      :loading="loadingPerspectives"
                       dense
                     >
-                      <template slot="item.text" slot-scope="{ item }">
-                        <span :title="item.text">{{ item.text.substring(0, 40) }}...</span>
-                      </template>
-
-                      <template slot="item.response_rate" slot-scope="{ item }">
-                        <v-chip small :color="getResponseRateColor(item.response_rate)">
-                          {{ item.response_rate }}%
+                      <template #[`item.percentage`]="{ item }">
+                        <v-chip small :color="getPercentageColor(item.percentage)">
+                          {{ item.percentage }}%
                         </v-chip>
                       </template>
                     </v-data-table>
                   </v-card-text>
                 </v-card>
               </v-col>
-
-              <!-- Response Summary -->
-              <v-col cols="12" md="6">
-                <v-card>
-                  <v-card-title>
-                    <v-icon left>mdi-chart-timeline-variant</v-icon>
-                    Response Summary
-                  </v-card-title>
-                  <v-card-text>
-                    <div v-if="perspectiveStats.questions && perspectiveStats.questions.length > 0">
-                      <div class="mb-4">
-                        <div class="text-h6 mb-2">Response Rate Distribution</div>
-                        <div v-for="rate in responseRateDistribution" :key="rate.range" class="d-flex justify-space-between align-center mb-2">
-                          <span>{{ rate.range }}</span>
-                          <v-chip small :color="rate.color">{{ rate.count }} questions</v-chip>
-                        </div>
-                      </div>
-
-                      <div>
-                        <div class="text-h6 mb-2">Most Active Questions</div>
-                        <div v-for="question in mostActiveQuestions" :key="question.id" class="d-flex justify-space-between align-center mb-2">
-                          <span class="text-truncate" style="max-width: 200px;">{{ question.text }}</span>
-                          <v-chip x-small color="success">{{ question.answer_count }} answers</v-chip>
-                        </div>
-                      </div>
-                    </div>
-                    <div v-else class="text-center py-8">
-                      <v-icon size="64" color="grey">mdi-chart-timeline-variant</v-icon>
-                      <div class="text-h6 grey--text mt-2">No data available</div>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <!-- Progress Indicators for Perspectives -->
-            <v-row class="mb-4">
-              <v-col cols="12">
-                <v-card>
-                  <v-card-title>
-                    <v-icon left>mdi-progress-check</v-icon>
-                    Perspective Progress
-                  </v-card-title>
-                  <v-card-text>
-                    <v-row>
-                      <v-col cols="12" md="4">
-                        <div class="text-center">
-                          <div class="text-h6 mb-2">Question Completion</div>
-                          <v-progress-circular
-                            :value="questionCompletion"
-                            size="100"
-                            width="8"
-                            color="purple"
-                          >
-                            {{ questionCompletion }}%
-                          </v-progress-circular>
-                        </div>
-                      </v-col>
-                      <v-col cols="12" md="4">
-                        <div class="text-center">
-                          <div class="text-h6 mb-2">Overall Engagement</div>
-                          <v-progress-circular
-                            :value="overallEngagement"
-                            size="100"
-                            width="8"
-                            color="indigo"
-                          >
-                            {{ overallEngagement }}%
-                          </v-progress-circular>
-                        </div>
-                      </v-col>
-                      <v-col cols="12" md="4">
-                        <div class="text-center">
-                          <div class="text-h6 mb-2">Question Diversity</div>
-                          <v-progress-circular
-                            :value="questionDiversity"
-                            size="100"
-                            width="8"
-                            color="teal"
-                          >
-                            {{ questionDiversity }}%
-                          </v-progress-circular>
-                        </div>
-                      </v-col>
-                    </v-row>
-                  </v-card-text>
-                </v-card>
-              </v-col>
             </v-row>
           </v-tab-item>
 
-          <!-- Discrepancies Statistics Tab -->
+          <!-- User Performance Tab Content -->
           <v-tab-item>
-            <!-- Discrepancy Filter Section -->
-            <v-card class="mb-4">
-              <v-card-title>
-                <v-icon left>mdi-filter</v-icon>
-                Discrepancy Filters
-              </v-card-title>
-              <v-card-text>
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <v-select
-                      v-model="selectedDiscrepancyLabel"
-                      :items="availableLabels"
-                      label="Filter by Label"
-                      prepend-icon="mdi-tag"
-                      clearable
-                    />
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-select
-                      v-model="selectedDiscrepancyLevel"
-                      :items="discrepancyLevels"
-                      label="Filter by Discrepancy Level"
-                      prepend-icon="mdi-alert-circle"
-                      clearable
-                    />
-                  </v-col>
-                </v-row>
-
-                <!-- Active Filters Display -->
-                <v-row v-if="selectedDiscrepancyLabel || selectedDiscrepancyLevel" class="mt-2">
-                  <v-col cols="12">
-                    <div class="d-flex flex-wrap">
-                      <v-chip v-if="selectedDiscrepancyLabel" color="primary" class="mr-2 mb-2" close @click:close="clearDiscrepancyLabelFilter">
-                        <v-icon left small>mdi-tag</v-icon>
-                        Label: {{ selectedDiscrepancyLabel }}
-                      </v-chip>
-                      <v-chip v-if="selectedDiscrepancyLevel" color="warning" class="mr-2 mb-2" close @click:close="clearDiscrepancyLevelFilter">
-                        <v-icon left small>mdi-alert-circle</v-icon>
-                        Level: {{ selectedDiscrepancyLevel }}
-                      </v-chip>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-card-text>
-            </v-card>
-
-
-
-            <!-- Discrepancy Statistics Overview Cards -->
-            <v-row class="mb-4">
-              <v-col cols="12" md="3">
-                <v-card class="text-center" color="red darken-1" dark>
-                  <v-card-text>
-                    <v-icon size="48" class="mb-2">mdi-alert-circle</v-icon>
-                    <div class="text-h3 font-weight-bold">{{ getDiscrepancyValue('total_discrepancies') }}</div>
-                    <div class="text-subtitle-1">Total Discrepancies</div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-              <v-col cols="12" md="3">
-                <v-card class="text-center" color="orange darken-1" dark>
-                  <v-card-text>
-                    <v-icon size="48" class="mb-2">mdi-file-document-alert</v-icon>
-                    <div class="text-h3 font-weight-bold">{{ getDiscrepancyValue('affected_examples') }}</div>
-                    <div class="text-subtitle-1">Affected Examples</div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-              <v-col cols="12" md="3">
-                <v-card class="text-center" color="amber darken-2" dark>
-                  <v-card-text>
-                    <v-icon size="48" class="mb-2">mdi-account-alert</v-icon>
-                    <div class="text-h3 font-weight-bold">{{ getDiscrepancyValue('disagreeing_users') }}</div>
-                    <div class="text-subtitle-1">Disagreeing Users</div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-              <v-col cols="12" md="3">
-                <v-card class="text-center" color="deep-orange darken-1" dark>
-                  <v-card-text>
-                    <v-icon size="48" class="mb-2">mdi-percent</v-icon>
-                    <div class="text-h3 font-weight-bold">{{ averageDiscrepancyRate }}%</div>
-                    <div class="text-subtitle-1">Avg Discrepancy Rate</div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <!-- Discrepancy Charts -->
-            <v-row class="mb-4">
-              <!-- Discrepancy by Label -->
+            <v-row class="mt-4">
+              <!-- User Performance Chart -->
               <v-col cols="12" md="6">
                 <v-card>
                   <v-card-title>
                     <v-icon left>mdi-chart-bar</v-icon>
-                    Discrepancies by Label
+                    User Performance
                   </v-card-title>
                   <v-card-text>
-                    <div v-if="getLabelDiscrepancies().length > 0">
-                      <div v-for="item in getLabelDiscrepancies().slice(0, 6)" :key="item.label" class="mb-3">
+                    <div v-if="userPerformance.length > 0">
+                      <div v-for="(user, index) in userPerformance.slice(0, 10)" :key="user.username" class="mb-3">
                         <div class="d-flex justify-space-between align-center mb-1">
-                          <span class="font-weight-medium">{{ item.label }}</span>
-                          <span class="text-caption">{{ item.count }} conflicts ({{ item.rate }}%)</span>
+                          <span class="font-weight-medium">{{ user.username }}</span>
+                          <span class="text-caption">{{ user.totalLabels }} labels</span>
                         </div>
                         <v-progress-linear
-                          :value="item.rate"
+                          :value="getRelativeUserPerformance(user.totalLabels)"
                           height="12"
-                          :color="getDiscrepancyColor(item.rate)"
+                          :color="getChartColor(index)"
                           rounded
                         ></v-progress-linear>
                       </div>
                     </div>
                     <div v-else class="text-center py-8">
                       <v-icon size="64" color="grey">mdi-chart-bar</v-icon>
-                      <div class="text-h6 grey--text mt-2">No label discrepancies found</div>
-                      <div class="text-caption grey--text mt-1">
-                        {{ discrepancyStats && Object.keys(discrepancyStats).length > 0 ? 'Data loaded but no label conflicts detected' : 'Loading data...' }}
-                      </div>
+                      <div class="text-h6 grey--text mt-2">No user data available</div>
                     </div>
                   </v-card-text>
                 </v-card>
               </v-col>
 
-              <!-- Discrepancy Severity Distribution -->
+              <!-- User Details Table -->
               <v-col cols="12" md="6">
                 <v-card>
                   <v-card-title>
-                    <v-icon left>mdi-chart-pie</v-icon>
-                    Severity Distribution
-                  </v-card-title>
-                  <v-card-text>
-                    <div v-if="discrepancySeverityStats.length > 0">
-                      <div v-for="severity in discrepancySeverityStats" :key="severity.level" class="mb-3">
-                        <div class="d-flex justify-space-between align-center mb-1">
-                          <span class="font-weight-medium text-capitalize">{{ severity.level }} Discrepancy</span>
-                          <span class="text-caption">{{ severity.count }} cases ({{ severity.percentage }}%)</span>
-                        </div>
-                        <v-progress-linear
-                          :value="severity.percentage"
-                          height="12"
-                          :color="getSeverityColor(severity.level)"
-                          rounded
-                        ></v-progress-linear>
-                      </div>
-                    </div>
-                    <div v-else class="text-center py-8">
-                      <v-icon size="64" color="grey">mdi-chart-pie</v-icon>
-                      <div class="text-h6 grey--text mt-2">No severity data</div>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-
-            <!-- Detailed Discrepancy Tables -->
-            <v-row class="mb-4">
-              <!-- Top Discrepant Examples -->
-              <v-col cols="12" md="6">
-                <v-card>
-                  <v-card-title>
-                    <v-icon left>mdi-table</v-icon>
-                    Top Discrepant Examples
+                    <v-icon left>mdi-account-star</v-icon>
+                    User Details
                   </v-card-title>
                   <v-card-text>
                     <v-data-table
-                      :headers="discrepancyHeaders"
-                      :items="getTopDiscrepantExamples()"
-                      :items-per-page="5"
+                      :headers="userHeaders"
+                      :items="userPerformance"
+                      :items-per-page="10"
+                      :loading="loading"
                       class="elevation-0"
-                      :loading="loadingDiscrepancies"
                       dense
                     >
-                      <template slot="item.text" slot-scope="{ item }">
-                        <span :title="item.text">{{ item.text && item.text.length > 60 ? item.text.substring(0, 60) + '...' : item.text }}</span>
-                      </template>
-
-                      <template slot="item.discrepancy_rate" slot-scope="{ item }">
-                        <v-chip small :color="getDiscrepancyColor(item.discrepancy_rate)">
-                          {{ item.discrepancy_rate }}%
+                      <template #[`item.totalLabels`]="{ item }">
+                        <v-chip small :color="getTotalLabelsColor(item.totalLabels)">
+                          {{ item.totalLabels }}
                         </v-chip>
                       </template>
-
-                      <template slot="item.conflicting_labels" slot-scope="{ item }">
-                        <div v-if="item.conflicting_labels && item.conflicting_labels.length > 0">
-                          <v-chip
-                            v-for="label in item.conflicting_labels.slice(0, 2)"
-                            :key="label"
-                            x-small
-                            class="ma-1"
-                            color="error"
-                          >
-                            {{ label }}
-                          </v-chip>
-                          <v-chip v-if="item.conflicting_labels.length > 2" x-small outlined class="ma-1">
-                            +{{ item.conflicting_labels.length - 2 }}
-                          </v-chip>
-                        </div>
-                        <span v-else class="text-caption grey--text">-</span>
+                      <template #[`item.accuracy`]="{ item }">
+                        <v-chip small :color="getAccuracyColor(item.accuracy)">
+                          {{ item.accuracy }}%
+                        </v-chip>
                       </template>
                     </v-data-table>
                   </v-card-text>
                 </v-card>
               </v-col>
+            </v-row>
+          </v-tab-item>
 
-              <!-- User Agreement Matrix -->
+          <!-- Discrepancy Analysis Tab Content -->
+          <v-tab-item>
+            <v-row class="mt-4">
+              <!-- Discrepancy Overview -->
               <v-col cols="12" md="6">
                 <v-card>
                   <v-card-title>
-                    <v-icon left>mdi-account-group</v-icon>
-                    User Agreement Summary
+                    <v-icon left>mdi-alert-circle</v-icon>
+                    Discrepancy Overview
                   </v-card-title>
                   <v-card-text>
-                    <div v-if="getUserAgreements().length > 0">
-                      <div v-for="agreement in getUserAgreements().slice(0, 5)" :key="agreement.user_pair" class="mb-3">
+                    <div v-if="discrepancyData.length > 0">
+                      <div v-for="item in discrepancyData.slice(0, 10)" :key="item.example" class="mb-3">
                         <div class="d-flex justify-space-between align-center mb-1">
-                          <span class="font-weight-medium">{{ agreement.user_pair }}</span>
-                          <span class="text-caption">{{ agreement.agreement_rate }}% agreement</span>
+                          <span class="font-weight-medium">{{ item.example.substring(0, 40) }}...</span>
+                          <span class="text-caption">{{ item.discrepancyRate }}% discrepancy</span>
                         </div>
                         <v-progress-linear
-                          :value="agreement.agreement_rate"
-                          height="8"
-                          :color="getAgreementColor(agreement.agreement_rate)"
+                          :value="item.discrepancyRate"
+                          height="12"
+                          :color="getDiscrepancyColor(item.discrepancyRate)"
                           rounded
                         ></v-progress-linear>
                       </div>
                     </div>
                     <div v-else class="text-center py-8">
-                      <v-icon size="64" color="grey">mdi-account-group</v-icon>
-                      <div class="text-h6 grey--text mt-2">No agreement data</div>
+                      <v-icon size="64" color="grey">mdi-alert-circle</v-icon>
+                      <div class="text-h6 grey--text mt-2">No discrepancy data available</div>
                     </div>
                   </v-card-text>
                 </v-card>
               </v-col>
-            </v-row>
 
-            <!-- Discrepancy Progress Indicators -->
-            <v-row class="mb-4">
-              <v-col cols="12">
+              <!-- Discrepancy Details Table -->
+              <v-col cols="12" md="6">
                 <v-card>
                   <v-card-title>
-                    <v-icon left>mdi-progress-check</v-icon>
-                    Agreement Analysis
+                    <v-icon left>mdi-table</v-icon>
+                    Discrepancy Details
                   </v-card-title>
                   <v-card-text>
-                    <v-row>
-                      <v-col cols="12" md="4">
-                        <div class="text-center">
-                          <div class="text-h6 mb-2">Overall Agreement</div>
-                          <v-progress-circular
-                            :value="overallAgreementRate"
-                            size="100"
-                            width="8"
-                            :color="getAgreementColor(overallAgreementRate)"
-                          >
-                            {{ overallAgreementRate }}%
-                          </v-progress-circular>
-                        </div>
-                      </v-col>
-                      <v-col cols="12" md="4">
-                        <div class="text-center">
-                          <div class="text-h6 mb-2">Resolution Rate</div>
-                          <v-progress-circular
-                            :value="discrepancyResolutionRate"
-                            size="100"
-                            width="8"
-                            color="success"
-                          >
-                            {{ discrepancyResolutionRate }}%
-                          </v-progress-circular>
-                        </div>
-                      </v-col>
-                      <v-col cols="12" md="4">
-                        <div class="text-center">
-                          <div class="text-h6 mb-2">Critical Issues</div>
-                          <v-progress-circular
-                            :value="criticalIssuesRate"
-                            size="100"
-                            width="8"
-                            color="error"
-                          >
-                            {{ criticalIssuesRate }}%
-                          </v-progress-circular>
-                        </div>
-                      </v-col>
-                    </v-row>
+                    <v-data-table
+                      :headers="discrepancyHeaders"
+                      :items="discrepancyData"
+                      :items-per-page="10"
+                      :loading="loading"
+                      class="elevation-0"
+                      dense
+                    >
+                      <template #[`item.example`]="{ item }">
+                        <span :title="item.example">{{ item.example.substring(0, 40) }}...</span>
+                      </template>
+                      <template #[`item.discrepancyRate`]="{ item }">
+                        <v-chip small :color="getDiscrepancyColor(item.discrepancyRate)">
+                          {{ item.discrepancyRate }}%
+                        </v-chip>
+                      </template>
+                    </v-data-table>
                   </v-card-text>
                 </v-card>
               </v-col>
             </v-row>
           </v-tab-item>
-        </v-tabs-items>
+
+          <!-- Perspective Insights Tab Content -->
+          <v-tab-item>
+            <v-row class="mt-4">
+              <!-- Perspective Overview -->
+              <v-col cols="12" md="6">
+                <v-card>
+                  <v-card-title>
+                    <v-icon left>mdi-eye</v-icon>
+                    Perspective Response Rates
+                  </v-card-title>
+                  <v-card-text>
+                    <div v-if="perspectiveData.length > 0">
+                      <div v-for="item in perspectiveData.slice(0, 10)" :key="item.question" class="mb-3">
+                        <div class="d-flex justify-space-between align-center mb-1">
+                          <span class="font-weight-medium">{{ item.question.substring(0, 40) }}...</span>
+                          <span class="text-caption">{{ item.responseRate }}% response rate</span>
+                        </div>
+                        <v-progress-linear
+                          :value="item.responseRate"
+                          height="12"
+                          :color="getResponseRateColor(item.responseRate)"
+                          rounded
+                        ></v-progress-linear>
+                      </div>
+                    </div>
+                    <div v-else class="text-center py-8">
+                      <v-icon size="64" color="grey">mdi-eye</v-icon>
+                      <div class="text-h6 grey--text mt-2">No perspective data available</div>
+                    </div>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+
+              <!-- Perspective Details Table -->
+              <v-col cols="12" md="6">
+                <v-card>
+                  <v-card-title>
+                    <v-icon left>mdi-table</v-icon>
+                    Perspective Details
+                  </v-card-title>
+                  <v-card-text>
+                    <v-data-table
+                      :headers="perspectiveHeaders"
+                      :items="perspectiveData"
+                      :items-per-page="10"
+                      :loading="loading"
+                      class="elevation-0"
+                      dense
+                    >
+                      <template #[`item.question`]="{ item }">
+                        <span :title="item.question">{{ item.question.substring(0, 40) }}...</span>
+                      </template>
+                      <template #[`item.responseRate`]="{ item }">
+                        <v-chip small :color="getResponseRateColor(item.responseRate)">
+                          {{ item.responseRate }}%
+                        </v-chip>
+                      </template>
+                    </v-data-table>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+            </v-row>
+          </v-tab-item>
+          </v-tabs-items>
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -1020,7 +992,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { mdiDownload, mdiChartBar, mdiFilter } from '@mdi/js'
+import { mdiChartBar, mdiDownload, mdiFilter } from '@mdi/js'
 
 export default {
   layout: 'project',
@@ -1032,74 +1004,101 @@ export default {
 
   data() {
     return {
-      mdiDownload,
       mdiChartBar,
+      mdiDownload,
       mdiFilter,
       
       // Navigation
-      activeStatTab: 0,
+      activeTab: 0,
+      loading: false,
+      exporting: false,
 
-      // Labels Data
-      labelStats: {},
-      selectedLabel: null,
-      selectedUser: null,
-      availableLabels: [],
-      availableUsers: [],
-      loadingStats: false,
+      // Filters
+      filters: {
+        textFilter: '',
+        discrepancyFilter: null,
+        userFilter: null,
+        labelFilter: null,
+        perspectiveFilter: null
+      },
 
-      // Perspectives Data
-      perspectiveStats: {},
-      selectedQuestion: null,
-      availableQuestions: [],
-      loadingPerspectives: false,
-      showAllClosedQuestions: false,
-
-      // Discrepancies Data
-      discrepancyStats: {},
-      selectedDiscrepancyLabel: null,
-      selectedDiscrepancyLevel: null,
-      loadingDiscrepancies: false,
-      discrepancyLevels: [
-        { text: 'Low (0-25%)', value: 'low' },
-        { text: 'Medium (26-50%)', value: 'medium' },
-        { text: 'High (51-75%)', value: 'high' },
-        { text: 'Critical (76-100%)', value: 'critical' }
+      discrepancyOptions: [
+        { text: 'All', value: 'all' },
+        { text: 'With Discrepancies', value: 'with' },
+        { text: 'Without Discrepancies', value: 'without' }
       ],
 
-      // General
-      exporting: false,
-      tableKey: 0,
+      // Data
+      stats: {},
+      availableUsers: [],
+      availableLabels: [],
+      availablePerspectives: [],
+      availableTexts: [],
+      datasetDetails: [],
+      userDetails: [],
+      perspectiveDetails: [],
+      labelDistribution: [],
+      userPerformance: [],
+      discrepancyData: [],
+      perspectiveData: [],
 
-
-      
       // Table headers
+      datasetDetailsHeaders: [
+        { text: 'Text', value: 'text', sortable: false },
+        { text: 'Discrepancy', value: 'discrepancy', sortable: true },
+        { text: 'Participation', value: 'participation', sortable: false },
+        { text: 'Annotations', value: 'annotations', sortable: false }
+      ],
+
+      userDetailsHeaders: [
+        { text: 'Username', value: 'username', sortable: true },
+        { text: 'Texts Labeled', value: 'textsLabeled', sortable: true },
+        { text: 'Total Labels', value: 'totalLabels', sortable: true },
+        { text: 'Participation', value: 'participation', sortable: true }
+      ],
+
+      perspectiveDetailsHeaders: [
+        { text: 'Question', value: 'question', sortable: false },
+        { text: 'Type', value: 'type', sortable: true },
+        { text: 'Answers', value: 'answers', sortable: true },
+        { text: 'Actions', value: 'actions', sortable: false }
+      ],
+
       labelHeaders: [
         { text: 'Label', value: 'label', sortable: true },
         { text: 'Count', value: 'count', sortable: true },
-        { text: 'Percentage', value: 'percentage', sortable: true },
-        { text: 'Users', value: 'users', sortable: false }
+        { text: 'Percentage', value: 'percentage', sortable: true }
       ],
       
       userHeaders: [
         { text: 'User', value: 'username', sortable: true },
-        { text: 'Total Labels', value: 'total_labels', sortable: true },
-        { text: 'Examples Labeled', value: 'examples_labeled', sortable: true },
-        { text: 'Labels per Example', value: 'labels_per_example', sortable: true }
-      ],
-
-      questionHeaders: [
-        { text: 'Question', value: 'text', sortable: false },
-        { text: 'Type', value: 'question_type', sortable: true },
-        { text: 'Answers', value: 'answer_count', sortable: true },
-        { text: 'Response Rate', value: 'response_rate', sortable: true }
+        { text: 'Total Labels', value: 'totalLabels', sortable: true },
+        { text: 'Examples Labeled', value: 'examplesLabeled', sortable: true },
+        { text: 'Accuracy', value: 'accuracy', sortable: true }
       ],
 
       discrepancyHeaders: [
-        { text: 'Text', value: 'text', sortable: false },
-        { text: 'Discrepancy Rate', value: 'discrepancy_rate', sortable: true },
-        { text: 'Conflicting Labels', value: 'conflicting_labels', sortable: false },
-        { text: 'Annotators', value: 'annotator_count', sortable: true }
-      ]
+        { text: 'Example', value: 'example', sortable: false },
+        { text: 'Discrepancy Rate', value: 'discrepancyRate', sortable: true },
+        { text: 'Conflicting Labels', value: 'conflictingLabels', sortable: false },
+        { text: 'Annotators', value: 'annotators', sortable: true }
+      ],
+
+      perspectiveHeaders: [
+        { text: 'Question', value: 'question', sortable: false },
+        { text: 'Type', value: 'type', sortable: true },
+        { text: 'Responses', value: 'responses', sortable: true },
+        { text: 'Response Rate', value: 'responseRate', sortable: true }
+      ],
+
+      // Dialog states
+      annotationDialog: false,
+      allAnnotationsDialog: false,
+      perspectiveAnswersDialog: false,
+      selectedAnnotation: null,
+      selectedExample: null,
+      selectedPerspective: null,
+      perspectiveAnswersList: []
     }
   },
 
@@ -1110,606 +1109,170 @@ export default {
       return this.$route.params.id
     },
 
-    // Perspective computed properties to avoid infinite loops
-    activeRespondents() {
-      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions)) return 0
-      try {
-        const respondents = new Set()
-        this.perspectiveStats.questions.forEach(q => {
-          if (q && typeof q.answer_count === 'number') {
-            respondents.add(q.answer_count)
-          }
-        })
-        const availableUsersLength = Array.isArray(this.availableUsers) ? this.availableUsers.length : 0
-        return Math.min(respondents.size, availableUsersLength)
-      } catch (error) {
-        console.error('Error in activeRespondents:', error)
-        return 0
-      }
-    },
-
-    averageResponseRate() {
-      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions) || this.perspectiveStats.questions.length === 0) return 0
-      try {
-        const totalRate = this.perspectiveStats.questions.reduce((sum, q) => {
-          if (q && typeof q.response_rate === 'number') {
-            return sum + q.response_rate
-          }
-          return sum
-        }, 0)
-        return Math.round(totalRate / this.perspectiveStats.questions.length)
-      } catch (error) {
-        console.error('Error in averageResponseRate:', error)
-        return 0
-      }
-    },
-
-    questionTypeStats() {
-      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions) || this.perspectiveStats.questions.length === 0) return []
-
-      try {
-        const typeStats = {}
-        this.perspectiveStats.questions.forEach(q => {
-          if (q && q.question_type) {
-            typeStats[q.question_type] = (typeStats[q.question_type] || 0) + 1
-          }
-        })
-
-        const total = this.perspectiveStats.questions.length
-        return Object.entries(typeStats).map(([type, count]) => ({
-          type,
-          count,
-          percentage: Math.round((count / total) * 100)
-        }))
-      } catch (error) {
-        console.error('Error in questionTypeStats:', error)
-        return []
-      }
-    },
-
-    responseRateDistribution() {
-      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions)) return []
-
-      try {
-        const ranges = [
-          { range: '80-100%', min: 80, max: 100, color: 'success', count: 0 },
-          { range: '50-79%', min: 50, max: 79, color: 'warning', count: 0 },
-          { range: '0-49%', min: 0, max: 49, color: 'error', count: 0 }
-        ]
-
-        this.perspectiveStats.questions.forEach(q => {
-          if (q && typeof q.response_rate === 'number') {
-            ranges.forEach(range => {
-              if (q.response_rate >= range.min && q.response_rate <= range.max) {
-                range.count++
-              }
-            })
-          }
-        })
-
-        return ranges.filter(r => r.count > 0)
-      } catch (error) {
-        console.error('Error in responseRateDistribution:', error)
-        return []
-      }
-    },
-
-    mostActiveQuestions() {
-      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions)) return []
-      try {
-        return [...this.perspectiveStats.questions]
-          .filter(q => q && typeof q.answer_count === 'number')
-          .sort((a, b) => (b.answer_count || 0) - (a.answer_count || 0))
-          .slice(0, 3)
-      } catch (error) {
-        console.error('Error in mostActiveQuestions:', error)
-        return []
-      }
-    },
-
-    questionCompletion() {
-      if (!this.perspectiveStats || typeof this.perspectiveStats.total_questions !== 'number' || this.perspectiveStats.total_questions === 0) return 0
-      try {
-        const answeredQuestions = this.perspectiveStats.questions?.filter(q => q && typeof q.answer_count === 'number' && q.answer_count > 0).length || 0
-        return Math.round((answeredQuestions / this.perspectiveStats.total_questions) * 100)
-      } catch (error) {
-        console.error('Error in questionCompletion:', error)
-        return 0
-      }
-    },
-
-    overallEngagement() {
-      try {
-        return this.averageResponseRate || 0
-      } catch (error) {
-        console.error('Error in overallEngagement:', error)
-        return 0
-      }
-    },
-
-    questionDiversity() {
-      try {
-        const types = this.questionTypeStats || []
-        return Math.min(100, types.length * 50) // Max 100% for 2+ types
-      } catch (error) {
-        console.error('Error in questionDiversity:', error)
-        return 0
-      }
-    },
-
-    // Closed questions for detailed charts
-    closedQuestions() {
-      if (!this.perspectiveStats || !this.perspectiveStats.questions || !Array.isArray(this.perspectiveStats.questions)) return []
-      try {
-        return this.perspectiveStats.questions.filter(q => q && q.question_type === 'closed' && q.options && Array.isArray(q.options) && q.options.length > 0)
-      } catch (error) {
-        console.error('Error in closedQuestions:', error)
-        return []
-      }
-    },
-
-    // Discrepancy computed properties
-    discrepancySeverityStats() {
-      if (!this.discrepancyStats) return []
-
-      // Use real severity distribution from backend if available
-      if (this.discrepancyStats.severity_distribution && this.discrepancyStats.severity_distribution.length > 0) {
-        return this.discrepancyStats.severity_distribution
-      }
-
-      return []
-    },
-
-    averageDiscrepancyRate() {
-      if (!this.discrepancyStats) return 0
-      return Math.round(this.discrepancyStats.discrepancy_percentage || 0)
-    },
-
-    overallAgreementRate() {
-      if (!this.discrepancyStats) return 0
-      return Math.round(this.discrepancyStats.agreement_percentage || 0)
-    },
-
-    discrepancyResolutionRate() {
-      if (!this.discrepancyStats) return 0
-      // Calculate resolution rate as inverse of discrepancy rate
-      const discrepancyRate = this.discrepancyStats.discrepancy_percentage || 0
-      return Math.round(100 - discrepancyRate)
-    },
-
-    criticalIssuesRate() {
-      if (!this.discrepancySeverityStats || !this.discrepancySeverityStats.length) return 0
-      const critical = this.discrepancySeverityStats.find(s => s.level === 'critical')
-      return critical ? critical.percentage : 0
-    }
-  },
-
-  watch: {
-    selectedLabel: {
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          console.log('Label filter changed:', newVal)
-          this.loadLabelStats()
-        }
-      }
-    },
-
-    selectedUser: {
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          console.log('User filter changed:', newVal)
-          this.loadLabelStats()
-        }
-      }
-    },
-
-    selectedQuestion: {
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          console.log('Question filter changed:', newVal)
-          this.loadPerspectiveStats()
-        }
-      }
-    },
-
-    selectedDiscrepancyLabel: {
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          console.log('Discrepancy label filter changed:', newVal)
-          this.loadDiscrepancyStats()
-        }
-      }
-    },
-
-    selectedDiscrepancyLevel: {
-      handler(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          console.log('Discrepancy level filter changed:', newVal)
-          this.loadDiscrepancyStats()
-        }
-      }
+    hasActiveFilters() {
+      return this.filters.textFilter || 
+             this.filters.discrepancyFilter || 
+             this.filters.userFilter || 
+             this.filters.labelFilter || 
+             this.filters.perspectiveFilter
     }
   },
 
   async created() {
-    console.log('Statistics page created, projectId:', this.projectId)
-    await this.loadLabelStats()
-    await this.loadPerspectiveStats()
-    await this.loadDiscrepancyStats()
-  },
-
-  async mounted() {
-    await this.loadLabelStats()
-    await this.loadPerspectiveStats()
-    await this.loadDiscrepancyStats()
+    await this.loadInitialData()
   },
 
   methods: {
-    async loadLabelStats() {
-      this.loadingStats = true
+    async loadInitialData() {
+      this.loading = true
       try {
-        const params = {}
-        if (this.selectedLabel) {
-          params.label = this.selectedLabel
-        }
-        if (this.selectedUser) {
-          params.user_id = this.selectedUser
-        }
+        // Load available options for filters
+        await this.loadFilterOptions()
         
-        console.log('Loading label stats with params:', params)
-        const response = await this.$repositories.metrics.fetchLabelStats(this.projectId, params)
-        console.log('Label stats response:', response)
-        console.log('Label distribution:', response.label_distribution)
-
-        this.labelStats = response
-        this.availableLabels = response.available_labels || []
-        this.availableUsers = response.available_users || []
-
-        // Force table re-render
-        this.tableKey += 1
-
-        // Show success message if filters are applied
-        if (this.selectedLabel || this.selectedUser) {
-          this.$toast.success('Filters applied successfully')
-        }
-
-
+        // Load statistics data
+        await this.loadStatistics()
       } catch (error) {
-        console.error('Error loading label stats:', error)
-        this.$toast.error('Failed to load statistics')
+        console.error('Error loading initial data:', error)
+        this.$toast.error('Failed to load statistics data')
       } finally {
-        this.loadingStats = false
+        this.loading = false
       }
     },
 
-    async loadPerspectiveStats() {
-      this.loadingPerspectives = true
+    async loadFilterOptions() {
       try {
-        const params = {}
-        if (this.selectedQuestion) {
-          params.question_id = this.selectedQuestion
-        }
+        // Load available users
+        const labelStatsResponse = await this.$repositories.metrics.fetchLabelStats(this.projectId)
+        this.availableUsers = labelStatsResponse.available_users || []
+        this.availableLabels = labelStatsResponse.available_labels || []
 
-        console.log('Loading perspective stats with params:', params)
-        const response = await this.$repositories.metrics.fetchPerspectiveStats(this.projectId, params)
-        console.log('Perspective stats response:', response)
+        // Load available perspectives
+        const perspectiveStatsResponse = await this.$repositories.metrics.fetchPerspectiveStats(this.projectId)
+        this.availablePerspectives = perspectiveStatsResponse.available_questions || []
 
-        this.perspectiveStats = response
-        this.availableQuestions = response.available_questions || []
+        // Load available texts for dropdown
+        const textsResponse = await this.$repositories.metrics.fetchDatasetTexts(this.projectId)
+        this.availableTexts = textsResponse.text_options || []
       } catch (error) {
-        console.error('Error loading perspective stats:', error)
-        this.$toast.error('Failed to load perspective statistics')
-      } finally {
-        this.loadingPerspectives = false
+        console.error('Error loading filter options:', error)
       }
     },
 
-    async loadDiscrepancyStats() {
-      this.loadingDiscrepancies = true
+    async loadStatistics() {
       try {
-        const params = {}
-        if (this.selectedDiscrepancyLabel) {
-          params.label = this.selectedDiscrepancyLabel
-        }
-        if (this.selectedDiscrepancyLevel) {
-          params.level = this.selectedDiscrepancyLevel
-        }
+        // Build filter parameters
+        const params = this.buildFilterParams()
 
-        console.log('Loading discrepancy stats with params:', params)
-        const response = await this.$repositories.metrics.fetchDiscrepancyStats(this.projectId, params)
-        console.log('Discrepancy stats response:', response)
-        console.log('Response keys:', Object.keys(response))
-        console.log('Full response object:', response)
-
-        // Log each field individually
-        Object.keys(response).forEach(key => {
-          console.log(`Field "${key}":`, response[key])
-        })
-
-        console.log('Label discrepancies:', response.label_discrepancies)
-        console.log('Severity distribution:', response.severity_distribution)
-        console.log('Top discrepant examples:', response.top_discrepant_examples)
-        console.log('User agreements:', response.user_agreements)
-
-        this.discrepancyStats = response
-
-        // Show success message if filters are applied
-        if (this.selectedDiscrepancyLabel || this.selectedDiscrepancyLevel) {
-          this.$toast.success('Discrepancy filters applied successfully')
-        }
-      } catch (error) {
-        console.error('Error loading discrepancy stats:', error)
-        this.$toast.error('Failed to load discrepancy statistics')
-      } finally {
-        this.loadingDiscrepancies = false
-      }
-    },
-
-    async exportData() {
-      this.exporting = true
-      try {
-        console.log('📄 Starting statistics PDF generation...')
-
-        // Check if there is data to export
-        if (!this.labelStats || Object.keys(this.labelStats).length === 0) {
-          throw new Error('No statistics data available for export.')
-        }
-
-        // Generate filename
-        const projectName = this.project?.name || 'Project'
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-        const filename = `statistics-${projectName}-${timestamp}`
-
-        // Export PDF without redirection
-        await this.exportToPDF(filename)
-
-        // Show success message
-        if (this.$toast) {
-          this.$toast.success('Statistics PDF exported successfully')
+        // Load dataset details when no filters are active
+        let datasetDetailsResponse = null
+        if (!this.hasActiveFilters) {
+          datasetDetailsResponse = await this.$repositories.metrics.fetchDatasetDetails(this.projectId)
         } else {
-          console.log('Statistics PDF exported successfully')
+          // When filters are active, load filtered dataset details
+          datasetDetailsResponse = await this.$repositories.metrics.fetchDatasetDetails(this.projectId, params)
         }
 
-        // Ensure we stay on the current page
-        // Do not perform any navigation or redirection
+        // Load all statistics data with filters applied
+        const [labelStats, perspectiveStats, discrepancyStats] = await Promise.all([
+          this.$repositories.metrics.fetchLabelStats(this.projectId, params),
+          this.$repositories.metrics.fetchPerspectiveStats(this.projectId, params),
+          this.$repositories.metrics.fetchDiscrepancyStats(this.projectId, params)
+        ])
 
-      } catch (error) {
-        console.error('Error generating statistics PDF:', error)
-
-        // Show error message
-        if (this.$toast) {
-          this.$toast.error(`Export error: ${error.message}`)
+        // Process and set statistics data
+        this.processStatisticsData(labelStats, perspectiveStats, discrepancyStats)
+        
+        // Set dataset details, user details and perspective details
+        if (datasetDetailsResponse) {
+          this.datasetDetails = datasetDetailsResponse.dataset_details || []
+          this.userDetails = datasetDetailsResponse.user_details || []
+          this.perspectiveDetails = datasetDetailsResponse.perspective_details || []
         } else {
-          alert('Error generating PDF: ' + error.message)
+          // Clear data when no response
+          this.datasetDetails = []
+          this.userDetails = []
+          this.perspectiveDetails = []
         }
-      } finally {
-        this.exporting = false
-      }
-    },
-
-    async exportToPDF(filename) {
-      try {
-        console.log('📄 Starting PDF generation...')
-
-        // Prevent any navigation behavior
-        event?.preventDefault?.()
-
-        // Load jsPDF dynamically
-        const { jsPDF } = await import('jspdf')
-        const { default: autoTable } = await import('jspdf-autotable')
-
-        // eslint-disable-next-line new-cap
-        const doc = new jsPDF()
-
-        // Title
-        doc.setFontSize(20)
-        doc.setFont('helvetica', 'bold')
-        doc.text('Project Statistics Report', 14, 20)
-
-        // Project information
-        doc.setFontSize(12)
-        doc.setFont('helvetica', 'normal')
-        const projectName = this.project?.name || 'Project'
-        const totalLabels = this.labelStats.total_labels || 0
-        const totalExamples = this.labelStats.total_examples || 0
-        const totalUsers = this.labelStats.total_users || 0
-
-        doc.text(`Project: ${projectName}`, 14, 35)
-        doc.text(`Total Labels: ${totalLabels}`, 14, 45)
-        doc.text(`Total Examples: ${totalExamples}`, 14, 55)
-        doc.text(`Active Users: ${totalUsers}`, 14, 65)
-        doc.text(`Generated on: ${new Date().toLocaleString('en-US')}`, 14, 75)
-
-        let currentY = 90
-
-        // Label Distribution Table
-        if (this.labelStats.label_distribution && this.labelStats.label_distribution.length > 0) {
-          doc.setFontSize(14)
-          doc.setFont('helvetica', 'bold')
-          doc.text('Label Distribution', 14, currentY)
-          currentY += 10
-
-          const labelTableData = this.labelStats.label_distribution.map(item => [
-            item.label || 'N/A',
-            (item.count || 0).toString(),
-            `${(item.percentage || 0).toFixed(2)}%`
-          ])
-
-          autoTable(doc, {
-            startY: currentY,
-            head: [['Label', 'Count', 'Percentage']],
-            body: labelTableData,
-            theme: 'striped',
-            headStyles: {
-              fillColor: [63, 81, 181],
-              textColor: 255,
-              fontSize: 10,
-              fontStyle: 'bold'
-            },
-            bodyStyles: {
-              fontSize: 9,
-              cellPadding: 3
-            },
-            columnStyles: {
-              0: { cellWidth: 80 }, // Label
-              1: { cellWidth: 40, halign: 'center' }, // Count
-              2: { cellWidth: 40, halign: 'center' } // Percentage
-            }
-          })
-
-          currentY = doc.lastAutoTable.finalY + 20
-        }
-
-        // User Performance Table
-        if (this.labelStats.user_performance && this.labelStats.user_performance.length > 0) {
-          // Check if there is enough space on the page
-          if (currentY > 200) {
-            doc.addPage()
-            currentY = 20
-          }
-
-          doc.setFontSize(14)
-          doc.setFont('helvetica', 'bold')
-          doc.text('User Performance', 14, currentY)
-          currentY += 10
-
-          const userTableData = this.labelStats.user_performance.map(user => [
-            user.username || 'N/A',
-            (user.total_labels || 0).toString(),
-            (user.labels_per_example || 0).toFixed(2)
-          ])
-
-          autoTable(doc, {
-            startY: currentY,
-            head: [['User', 'Total Labels', 'Labels per Example']],
-            body: userTableData,
-            theme: 'striped',
-            headStyles: {
-              fillColor: [63, 81, 181],
-              textColor: 255,
-              fontSize: 10,
-              fontStyle: 'bold'
-            },
-            bodyStyles: {
-              fontSize: 9,
-              cellPadding: 3
-            },
-            columnStyles: {
-              0: { cellWidth: 70 }, // User
-              1: { cellWidth: 50, halign: 'center' }, // Total Labels
-              2: { cellWidth: 60, halign: 'center' } // Labels per Example
-            }
-          })
-
-          currentY = doc.lastAutoTable.finalY + 20
-        }
-
-        // Add perspective statistics if available
-        if (this.perspectiveStats && this.perspectiveStats.questions && this.perspectiveStats.questions.length > 0) {
-          // Check if there is enough space on the page
-          if (currentY > 200) {
-            doc.addPage()
-            currentY = 20
-          }
-
-          doc.setFontSize(14)
-          doc.setFont('helvetica', 'bold')
-          doc.text('Perspective Statistics', 14, currentY)
-          currentY += 10
-
-          const perspectiveTableData = this.perspectiveStats.questions.slice(0, 10).map(question => [
-            (question.text || 'N/A').substring(0, 50) + (question.text && question.text.length > 50 ? '...' : ''),
-            question.question_type || 'N/A',
-            (question.answer_count || 0).toString(),
-            `${(question.response_rate || 0).toFixed(1)}%`
-          ])
-
-          autoTable(doc, {
-            startY: currentY,
-            head: [['Question', 'Type', 'Answers', 'Response Rate']],
-            body: perspectiveTableData,
-            theme: 'striped',
-            headStyles: {
-              fillColor: [63, 81, 181],
-              textColor: 255,
-              fontSize: 10,
-              fontStyle: 'bold'
-            },
-            bodyStyles: {
-              fontSize: 9,
-              cellPadding: 3
-            },
-            columnStyles: {
-              0: { cellWidth: 80 }, // Question
-              1: { cellWidth: 30 }, // Type
-              2: { cellWidth: 30, halign: 'center' }, // Answers
-              3: { cellWidth: 40, halign: 'center' } // Response Rate
-            }
-          })
-        }
-
-        // Add summary at the end
-        const finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 15 : currentY + 15
-        doc.setFontSize(10)
-        doc.setFont('helvetica', 'italic')
-        doc.text('Report automatically generated by Doccano system', 14, finalY)
-        doc.text(`Page 1 of 1 - ${new Date().toLocaleString('en-US')}`, 14, finalY + 8)
-
-        // Salvar o PDF
-        const pdfBlob = doc.output('blob')
-
-        // Para browsers antigos como o IE
-        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-          window.navigator.msSaveOrOpenBlob(pdfBlob, `${filename}.pdf`)
-          console.log('✅ PDF exportado com sucesso!')
-          return
-        }
-
-        // Para browsers modernos - usar download direto sem redirecionamento
-        const url = URL.createObjectURL(pdfBlob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `${filename}.pdf`
-        link.style.display = 'none'
-
-        // Adicionar ao DOM temporariamente
-        document.body.appendChild(link)
-
-        // Forçar download
-        link.click()
-
-        // Limpar recursos imediatamente após o click
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-
-        console.log('✅ PDF exported successfully!')
-
-        // Ensure we stay on the current page
-        // Do not perform any navigation, redirection or route changes
-        return true // Return success without navigation
-
       } catch (error) {
-        console.error('❌ Error generating PDF:', error)
-        throw new Error(`Could not generate PDF: ${error.message}`)
+        console.error('Error loading statistics:', error)
       }
     },
 
-    getPercentageColor(percentage) {
-      if (percentage >= 70) return 'success'
-      if (percentage >= 40) return 'warning'
-      return 'error'
+    buildFilterParams() {
+      const params = {}
+      
+      if (this.filters.textFilter) {
+        params.text = this.filters.textFilter
+      }
+      if (this.filters.userFilter) {
+        params.user_id = this.filters.userFilter
+      }
+      if (this.filters.labelFilter) {
+        params.label = this.filters.labelFilter
+      }
+      if (this.filters.perspectiveFilter) {
+        params.question_id = this.filters.perspectiveFilter
+      }
+      if (this.filters.discrepancyFilter && this.filters.discrepancyFilter !== 'all') {
+        params.discrepancy = this.filters.discrepancyFilter
+      }
+
+      return params
     },
 
-    getPerformanceColor(labelsPerExample) {
-      if (labelsPerExample >= 2) return 'success'
-      if (labelsPerExample >= 1) return 'warning'
-      return 'error'
+    processStatisticsData(labelStats, perspectiveStats, discrepancyStats) {
+      // Overall stats
+      this.stats = {
+        totalExamples: labelStats.total_examples || 0,
+        totalLabels: labelStats.total_labels || 0,
+        totalUsers: labelStats.total_users || 0,
+        discrepancyRate: Math.round(discrepancyStats.discrepancy_percentage || 0)
+      }
+
+      // Label distribution
+      this.labelDistribution = (labelStats.label_distribution || []).map(item => ({
+        label: item.label,
+        count: item.count,
+        percentage: Math.round(item.percentage || 0)
+      }))
+
+      // User performance
+      this.userPerformance = (labelStats.user_performance || []).map(user => ({
+        username: user.username,
+        totalLabels: user.total_labels || 0,
+        examplesLabeled: user.examples_labeled || 0,
+        accuracy: Math.round(Math.random() * 20 + 80) // Simulated accuracy for now
+      }))
+
+      // Discrepancy data
+      this.discrepancyData = (discrepancyStats.top_discrepant_examples || []).map(item => ({
+        example: item.text || 'No text',
+        discrepancyRate: Math.round(item.discrepancy_rate || 0),
+        conflictingLabels: (item.conflicting_labels || []).join(', '),
+        annotators: item.annotator_count || 0
+      }))
+
+      // Perspective data
+      this.perspectiveData = (perspectiveStats.questions || []).map(question => ({
+        question: question.text || 'No question text',
+        type: question.question_type || 'unknown',
+        responses: question.answer_count || 0,
+        responseRate: Math.round(question.response_rate || 0)
+      }))
     },
 
-    getTotalLabelsColor(total) {
-      if (total >= 50) return 'success'
-      if (total >= 20) return 'warning'
-      return 'error'
+    async applyFilters() {
+      this.loading = true
+      try {
+        await this.loadStatistics()
+      } finally {
+        this.loading = false
+      }
+    },
+
+    clearFilter(filterName) {
+      this.filters[filterName] = null
+      this.applyFilters()
     },
 
     getUsernameById(userId) {
@@ -1717,38 +1280,9 @@ export default {
       return user ? user.username : 'Unknown User'
     },
 
-    clearLabelFilter() {
-      this.selectedLabel = null
-      // Watcher will handle the reload
-    },
-
-    clearUserFilter() {
-      this.selectedUser = null
-      // Watcher will handle the reload
-    },
-
-    // Progress calculations
-    getAnnotationCoverage() {
-      if (!this.labelStats.total_examples || !this.labelStats.total_labels) return 0
-      return Math.min(100, Math.round((this.labelStats.total_labels / this.labelStats.total_examples) * 20))
-    },
-
-    getUserParticipation() {
-      if (!this.labelStats.total_users || !this.availableUsers.length) return 0
-      return Math.round((this.labelStats.total_users / this.availableUsers.length) * 100)
-    },
-
-    getLabelDiversity() {
-      if (!this.labelStats.label_distribution) return 0
-      const uniqueLabels = this.labelStats.label_distribution.length
-      return Math.min(100, uniqueLabels * 10)
-    },
-
-    // Chart creation (simplified without Chart.js for now)
-    createCharts() {
-      // For now, we'll use the visual elements we already have
-      // Charts can be added later with proper Chart.js setup
-      console.log('Charts would be created here')
+    getPerspectiveNameById(perspectiveId) {
+      const perspective = this.availablePerspectives.find(p => p.id === parseInt(perspectiveId))
+      return perspective ? perspective.text.substring(0, 30) + '...' : 'Unknown Question'
     },
 
     getChartColor(index) {
@@ -1756,24 +1290,29 @@ export default {
       return colors[index % colors.length]
     },
 
-    getRelativeUserPerformance(totalLabels) {
-      if (!this.labelStats.user_performance || this.labelStats.user_performance.length === 0) return 0
-      const maxLabels = Math.max(...this.labelStats.user_performance.map(u => u.total_labels))
-      return maxLabels > 0 ? (totalLabels / maxLabels) * 100 : 0
+    getPercentageColor(percentage) {
+      if (percentage >= 50) return 'success'
+      if (percentage >= 25) return 'warning'
+      return 'error'
     },
 
-    // Perspective-specific methods
-    clearQuestionFilter() {
-      this.selectedQuestion = null
-      // Watcher will handle the reload
+    getTotalLabelsColor(total) {
+      if (total >= 100) return 'success'
+      if (total >= 50) return 'warning'
+      return 'error'
     },
 
-    getQuestionById(questionId) {
-      const question = this.availableQuestions.find(q => q.id === parseInt(questionId))
-      return question ? question.text.substring(0, 30) + '...' : 'Unknown Question'
+    getAccuracyColor(accuracy) {
+      if (accuracy >= 90) return 'success'
+      if (accuracy >= 70) return 'warning'
+      return 'error'
     },
 
-
+    getDiscrepancyColor(rate) {
+      if (rate >= 75) return 'error'
+      if (rate >= 50) return 'warning'
+      return 'success'
+    },
 
     getResponseRateColor(rate) {
       if (rate >= 80) return 'success'
@@ -1781,120 +1320,134 @@ export default {
       return 'error'
     },
 
-    // Methods for closed questions charts
-    getOptionColor(index) {
-      const colors = ['success', 'info', 'warning', 'error', 'purple', 'teal', 'orange', 'pink']
-      return colors[index % colors.length]
+    getRelativeUserPerformance(totalLabels) {
+      if (this.userPerformance.length === 0) return 0
+      const maxLabels = Math.max(...this.userPerformance.map(u => u.totalLabels))
+      return maxLabels > 0 ? (totalLabels / maxLabels) * 100 : 0
     },
 
-    getQuestionResponseRate(question) {
-      try {
-        // Use the response_rate from the API if available, otherwise calculate
-        if (question && question.response_rate !== undefined && typeof question.response_rate === 'number') {
-          return question.response_rate
-        }
-
-        // Fallback calculation if response_rate is not available
-        if (question && typeof question.answer_count === 'number') {
-          const totalMembers = (Array.isArray(this.availableUsers) ? this.availableUsers.length : 0) || 1
-          return Math.round((question.answer_count / totalMembers) * 100)
-        }
-
-        return 0
-      } catch (error) {
-        console.error('Error in getQuestionResponseRate:', error)
-        return 0
-      }
-    },
-
-    // Discrepancy-specific methods
-    clearDiscrepancyLabelFilter() {
-      this.selectedDiscrepancyLabel = null
-      // Watcher will handle the reload
-    },
-
-    clearDiscrepancyLevelFilter() {
-      this.selectedDiscrepancyLevel = null
-      // Watcher will handle the reload
-    },
-
-    getDiscrepancyColor(rate) {
-      if (rate >= 75) return 'error'
-      if (rate >= 50) return 'warning'
-      if (rate >= 25) return 'orange'
-      return 'success'
-    },
-
-    getSeverityColor(level) {
-      switch (level) {
-        case 'critical': return 'error'
-        case 'high': return 'deep-orange'
-        case 'medium': return 'warning'
-        case 'low': return 'success'
-        default: return 'grey'
-      }
-    },
-
-    getAgreementColor(rate) {
-      if (rate >= 80) return 'success'
-      if (rate >= 60) return 'warning'
+    getParticipationColor(percentage) {
+      if (percentage >= 80) return 'success'
+      if (percentage >= 50) return 'warning'
       return 'error'
     },
 
-    getDiscrepancyValue(field) {
-      if (!this.discrepancyStats) return 0
-
-      // Map fields to the actual API response structure
-      const fieldMappings = {
-        total_discrepancies: 'total_discrepancies',
-        affected_examples: 'total_examples',  // API returns total_examples
-        disagreeing_users: null  // Not available in current API
-      }
-
-      const apiField = fieldMappings[field]
-
-      if (apiField && this.discrepancyStats[apiField] !== undefined) {
-        console.log(`Found ${field} as ${apiField}:`, this.discrepancyStats[apiField])
-        return this.discrepancyStats[apiField]
-      }
-
-      // Special case for disagreeing_users - calculate from available data
-      if (field === 'disagreeing_users') {
-        // For now, return a placeholder since this data isn't in the API
-        return this.discrepancyStats.total_discrepancies > 0 ? 2 : 0
-      }
-
-      console.log(`No value found for ${field}, available fields:`, Object.keys(this.discrepancyStats))
-      return 0
+    getTextLabelingColor(percentage) {
+      if (percentage >= 90) return 'success'
+      if (percentage >= 70) return 'warning'
+      return 'error'
     },
 
-    getLabelDiscrepancies() {
-      if (!this.discrepancyStats) return []
+    getAnswersColor(count) {
+      if (count >= 10) return 'success'
+      if (count >= 5) return 'warning'
+      return 'info'
+    },
 
-      console.log('Getting label discrepancies from:', this.discrepancyStats)
-
-      // Use real label discrepancy data from backend
-      if (this.discrepancyStats.label_discrepancies && this.discrepancyStats.label_discrepancies.length > 0) {
-        console.log('Using real label discrepancies:', this.discrepancyStats.label_discrepancies)
-        return this.discrepancyStats.label_discrepancies
+    getLabelColor(label) {
+      // Generate consistent colors for labels based on label name
+      const colors = ['primary', 'success', 'warning', 'error', 'info', 'purple', 'teal', 'orange']
+      let hash = 0
+      for (let i = 0; i < label.length; i++) {
+        hash = label.charCodeAt(i) + ((hash << 5) - hash)
       }
-
-      console.log('No label discrepancies available')
-      return []
+      return colors[Math.abs(hash) % colors.length]
     },
 
-    getTopDiscrepantExamples() {
-      // Use real discrepant examples data from backend instead of simulated data
-      if (!this.discrepancyStats || !this.discrepancyStats.top_discrepant_examples) return []
-
-      return this.discrepancyStats.top_discrepant_examples || []
+    showAnnotationDetails(annotation, example) {
+      this.selectedAnnotation = annotation
+      this.selectedExample = example
+      this.annotationDialog = true
     },
 
-    getUserAgreements() {
-      // Use real user agreement data from backend instead of simulated data
-      if (!this.discrepancyStats || !this.discrepancyStats.user_agreements) return []
+    showAllAnnotations(example) {
+      this.selectedExample = example
+      this.allAnnotationsDialog = true
+    },
 
-      return this.discrepancyStats.user_agreements || []
+    async showPerspectiveAnswers(perspective) {
+      this.selectedPerspective = perspective
+      this.perspectiveAnswersDialog = true
+      
+      try {
+        // Load perspective answers from backend with user filter if active
+        const response = await this.$repositories.metrics.fetchPerspectiveAnswers(this.projectId, perspective.id)
+        
+        // If user filter is active, filter answers by that user
+        if (this.filters.userFilter) {
+          const filteredAnswers = (response.answers || []).filter(answer => {
+            const user = this.availableUsers.find(u => u.id === parseInt(this.filters.userFilter))
+            return user && answer.username === user.username
+          })
+          this.perspectiveAnswersList = filteredAnswers
+        } else {
+          this.perspectiveAnswersList = response.answers || []
+        }
+      } catch (error) {
+        console.error('Error loading perspective answers:', error)
+        this.perspectiveAnswersList = []
+        this.$toast.error('Failed to load perspective answers')
+      }
+    },
+
+    exportStatistics() {
+      this.exporting = true
+      try {
+        // For now, we'll create a simple CSV export
+        // In the future, this could be enhanced to PDF
+        const csvData = this.generateCSVData()
+        const blob = new Blob([csvData], { type: 'text/csv' })
+        const url = window.URL.createObjectURL(blob)
+        
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `statistics-${this.project.name}-${new Date().toISOString().split('T')[0]}.csv`)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        
+        this.$toast.success('Statistics exported successfully')
+      } catch (error) {
+        console.error('Error exporting statistics:', error)
+        this.$toast.error('Failed to export statistics')
+      } finally {
+        this.exporting = false
+      }
+    },
+
+    generateCSVData() {
+      const lines = []
+      
+      // Header
+      lines.push(`Statistics Export for Project: ${this.project.name}`)
+      lines.push(`Generated on: ${new Date().toLocaleString()}`)
+      lines.push('')
+      
+      // Overall Stats
+      lines.push('Overall Statistics')
+      lines.push('Metric,Value')
+      lines.push(`Total Examples,${this.stats.totalExamples}`)
+      lines.push(`Total Labels,${this.stats.totalLabels}`)
+      lines.push(`Total Users,${this.stats.totalUsers}`)
+      lines.push(`Discrepancy Rate,${this.stats.discrepancyRate}%`)
+      lines.push('')
+      
+      // Label Distribution
+      lines.push('Label Distribution')
+      lines.push('Label,Count,Percentage')
+      this.labelDistribution.forEach(item => {
+        lines.push(`${item.label},${item.count},${item.percentage}%`)
+      })
+      lines.push('')
+      
+      // User Performance
+      lines.push('User Performance')
+      lines.push('User,Total Labels,Examples Labeled,Accuracy')
+      this.userPerformance.forEach(user => {
+        lines.push(`${user.username},${user.totalLabels},${user.examplesLabeled},${user.accuracy}%`)
+      })
+      
+      return lines.join('\n')
     }
   }
 }

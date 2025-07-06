@@ -78,7 +78,6 @@
 import {
   mdiAccount,
   mdiBookOpenOutline,
-  mdiChartBar,
   mdiCog,
   mdiCommentAccountOutline,
   mdiDatabase,
@@ -166,12 +165,6 @@ export default {
           icon: mdiBookOpenOutline,
           text: this.$t('guideline.guideline'),
           link: 'guideline',
-          isVisible: this.isProjectAdmin
-        },
-        {
-          icon: mdiChartBar,
-          text: this.$t('statistics.statistics'),
-          link: 'metrics',
           isVisible: this.isProjectAdmin
         },
         {
