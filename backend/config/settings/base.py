@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "projects",
     "metrics",
     "users",
+    "groups",
     "data_import",
     "data_export",
     "auto_labeling",
@@ -71,6 +72,7 @@ INSTALLED_APPS = [
     "health_check.contrib.migrations",
     "health_check.contrib.celery",
     "django_cleanup",
+    "discussions",
 ]
 
 
@@ -156,7 +158,8 @@ REST_FRAMEWORK = {
     # or allow read-only access for unauthenticated users.
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly",
-        "rest_framework.permissions.IsAuthenticated",
+        # "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny"
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework.authentication.SessionAuthentication",
@@ -233,7 +236,13 @@ ALLOWED_HOSTS = ["*"]
 
 if DEBUG:
     CORS_ORIGIN_ALLOW_ALL = True
-    CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1:3000", "http://0.0.0.0:3000", "http://localhost:3000"]
+    CSRF_TRUSTED_ORIGINS = [
+        "http://127.0.0.1:8000",
+        "http://localhost:8000",
+        "http://127.0.0.1:3000",
+        "http://0.0.0.0:3000",
+        "http://localhost:3000",
+    ]
     CSRF_TRUSTED_ORIGINS += env.list("CSRF_TRUSTED_ORIGINS", [])
 
 # Batch size for importing data
@@ -254,13 +263,28 @@ if not EMAIL_HOST:
 MEDIA_ROOT = env("MEDIA_ROOT", path.join(BASE_DIR, "media"))
 MEDIA_URL = "/media/"
 
-# Filepond settings
+# Ensure media directory exists
+import os
+if not os.path.exists(MEDIA_ROOT):
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
+
+# Filepond settings - place this AFTER MEDIA_ROOT definition
 DJANGO_DRF_FILEPOND_UPLOAD_TMP = path.join(BASE_DIR, "filepond-temp-uploads")
-DJANGO_DRF_FILEPOND_FILE_STORE_PATH = MEDIA_ROOT
+DJANGO_DRF_FILEPOND_FILE_STORE_PATH = MEDIA_ROOT  # This ensures the path is available
+
+# Ensure filepond temp directory exists
+if not os.path.exists(DJANGO_DRF_FILEPOND_UPLOAD_TMP):
+    os.makedirs(DJANGO_DRF_FILEPOND_UPLOAD_TMP, exist_ok=True)
 
 # File upload setting
 MAX_UPLOAD_SIZE = env.int("MAX_UPLOAD_SIZE", pow(1024, 3))  # default: 1GB per a file
 ENABLE_FILE_TYPE_CHECK = env.bool("ENABLE_FILE_TYPE_CHECK", False)
+# Add temporary file handling settings
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
+FILE_UPLOAD_MAX_MEMORY_SIZE = 2621440  # 2.5 MB
 
 # Celery settings
 DJANGO_CELERY_RESULTS_TASK_ID_MAX_LENGTH = 191
@@ -280,6 +304,32 @@ except EnvError:
 CELERY_ACCEPT_CONTENT = ["application/json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_TIME_LIMIT = 600  # Add timeout for tasks
+CELERY_TASK_SOFT_TIME_LIMIT = 500
+
+# Fix for Windows and macOS Celery issues
+import os
+import platform
+if platform.system() == 'Darwin':  # macOS
+    os.environ['OBJC_DISABLE_INITIALIZE_FORK_SAFETY'] = 'YES'
+elif platform.system() == 'Windows':  # Windows
+    # Windows-specific settings
+    os.environ['FORKED_BY_MULTIPROCESSING'] = '1'
+
+# Configure Celery worker settings
+CELERY_WORKER_CONCURRENCY = env.int('CELERY_WORKER_CONCURRENCY', 2)
+CELERY_TASK_CREATE_MISSING_QUEUES = True
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+CELERY_WORKER_FORCE_EXECV = True
+
+# Use appropriate pool based on platform
+if platform.system() in ['Darwin', 'Windows']:
+    CELERY_WORKER_POOL = 'solo'  # Use 'solo' pool to avoid forking issues on macOS and Windows
+    
+    # Also set these for command-line options
+    import multiprocessing
+    multiprocessing.set_start_method('spawn', force=True)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
@@ -292,3 +342,6 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 SITE_ID = 1
+
+APPEND_SLASH = True
+

@@ -37,7 +37,9 @@ import {
   mdiDatabase,
   mdiHome,
   mdiLabel,
-  mdiPlayCircleOutline
+  mdiPlayCircleOutline,
+  mdiChatOutline, 
+  mdiAlertCircleOutline 
 } from '@mdi/js'
 import { getLinkToAnnotationPage } from '~/presenter/linkToAnnotationPage'
 
@@ -115,6 +117,18 @@ export default {
           icon: mdiChartBar,
           text: this.$t('statistics.statistics'),
           link: 'metrics',
+          isVisible: this.isProjectAdmin
+        },
+        {
+          icon: mdiChatOutline, // ÍCONE DE CHAT
+          text: 'Discussão de Critérios',
+          link: 'discussions', // LEVA PARA /projects/:id/discussions
+          isVisible: true
+        },
+        {
+          icon: mdiAlertCircleOutline, // ÍCONE DE DISCREPÂNCIAS
+          text: 'Discrepancies',
+          link: 'discrepancies', // LEVA PARA /projects/:id/discrepancies
           isVisible: this.isProjectAdmin
         },
         {

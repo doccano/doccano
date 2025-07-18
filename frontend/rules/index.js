@@ -11,7 +11,8 @@ export const labelNameRules = (msg) => {
 export const userNameRules = (msg) => {
   return [
     (v) => !!v || msg.userNameRequired,
-    (v) => (v && v.length <= 30) || msg.userNameLessThan30Chars
+    (v) => (v && v.length <= 30) || msg.userNameLessThan30Chars,
+    (v) => (v && v.length >= 3) || msg.minLength
   ]
 }
 
@@ -39,10 +40,21 @@ export const uploadSingleFileRules = (msg) => {
 export const passwordRules = (msg) => {
   return [
     (v) => !!v || msg.passwordRequired,
-    (v) => (v && v.length <= 30) || msg.passwordLessThan30Chars
+    (v) => (v && v.length <= 30) || msg.passwordLessThan30Chars,
+    (v) => (v && v.length >= 8) || msg.minLength,
   ]
 }
 
 export const templateNameRules = () => {
   return [(v) => !!v || 'Name is required']
+}
+
+export const emailRules = (msg) => {
+  return [
+    (v) => !!v || msg.required,
+    (v) => {
+      const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      return pattern.test(v) || msg.format
+    }
+  ]
 }

@@ -58,7 +58,7 @@ import Vue from 'vue'
 import BaseCard from '@/components/utils/BaseCard.vue'
 import { MemberItem } from '~/domain/models/member/member'
 import { RoleItem } from '~/domain/models/role/role'
-import { UserItem } from '~/domain/models/user/user'
+import { User } from '~/domain/models/user/user'
 
 export default Vue.extend({
   components: {
@@ -80,11 +80,11 @@ export default Vue.extend({
     return {
       isLoading: false,
       valid: false,
-      users: [] as UserItem[],
+      users: [] as User[],
       roles: [] as RoleItem[],
       username: '',
       rules: {
-        userRequired: (v: UserItem) => (!!v && !!v.username) || 'Required',
+        userRequired: (v: User) => (!!v && !!v.username) || 'Required',
         roleRequired: (v: RoleItem) => (!!v && !!v.name) || 'Required'
       },
       mdiAccount,
@@ -94,18 +94,21 @@ export default Vue.extend({
 
   async fetch() {
     this.isLoading = true
-    this.users = await this.$repositories.user.list(this.username)
+    const list = await this.$services.user.list(this.username)
+    this.users = list.results
     this.isLoading = false
   },
 
   computed: {
     user: {
-      get(): UserItem {
+      get(): User {
         return {
           id: this.value.user,
           username: this.value.username,
+          email: '',
           isStaff: false,
-          isSuperuser: false
+          isSuperUser: false,
+          isActive: false,
         }
       },
       set(val: MemberItem) {
