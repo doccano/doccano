@@ -98,6 +98,9 @@ class RestAPIRequestTesting(APIView):
                 attrs_dict["params"] = {}
             if "headers" not in attrs_dict or not isinstance(attrs_dict.get("headers"), dict):
                 attrs_dict["headers"] = {}
+            # Ensure Content-Type header is set for JSON requests
+            if "Content-Type" not in attrs_dict["headers"]:
+                attrs_dict["headers"]["Content-Type"] = "application/json"
             if "body" not in attrs_dict or not isinstance(attrs_dict.get("body"), dict):
                 attrs_dict["body"] = {}
 
