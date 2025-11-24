@@ -32,18 +32,23 @@ class AutoLabelingConfigSerializer(serializers.ModelSerializer):
             # Frontend sends as [{name: "url", value: "..."}, ...]
             for attr in model_attrs:
                 if isinstance(attr, dict) and "name" in attr:
-                    attrs_dict[attr["name"]] = attr.get("value", "")
+                    value = attr.get("value", "")
+                    # Convert empty string or empty list to empty dict for object fields
+                    if value == "" or value == []:
+                        value = {}
+                    attrs_dict[attr["name"]] = value
         else:
             # Already in dict format
             attrs_dict = model_attrs
 
         # For CustomRESTRequestModel, provide defaults for optional fields if not present
         if data.get("model_name") == "Custom REST Request":
-            if "params" not in attrs_dict:
+            # Convert empty strings to empty dicts and provide defaults
+            if "params" not in attrs_dict or attrs_dict.get("params") == "" or attrs_dict.get("params") == []:
                 attrs_dict["params"] = {}
-            if "headers" not in attrs_dict:
+            if "headers" not in attrs_dict or attrs_dict.get("headers") == "" or attrs_dict.get("headers") == []:
                 attrs_dict["headers"] = {}
-            if "body" not in attrs_dict:
+            if "body" not in attrs_dict or attrs_dict.get("body") == "" or attrs_dict.get("body") == []:
                 attrs_dict["body"] = {}
 
         # Now try to create the model with the populated attributes
