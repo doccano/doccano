@@ -74,22 +74,54 @@ class RestAPIRequestTesting(APIView):
         return get_object_or_404(Project, pk=self.kwargs["project_id"])
 
     def create_model(self):
-        model_name = self.request.data["model_name"]
-        model_attrs = self.request.data["model_attrs"]
+        model_name = self.request.data.get("model_name")
+        model_attrs = self.request.data.get("model_attrs")
+
+        # Convert model_attrs from UI format (list of objects) to dict format
+        attrs_dict = {}
+        if isinstance(model_attrs, list):
+            # Frontend sends as [{name: "url", value: "..."}, ...]
+            for attr in model_attrs:
+                if isinstance(attr, dict) and "name" in attr:
+                    value = attr.get("value", "")
+                    # Convert empty string to empty dict for object fields
+                    if value == "" or value == []:
+                        value = {}
+                    attrs_dict[attr["name"]] = value
+        else:
+            # Already in dict format
+            attrs_dict = model_attrs
+
+        # For CustomRESTRequestModel, provide defaults for optional fields if not present
+        if model_name == "Custom REST Request":
+            if "params" not in attrs_dict or not isinstance(attrs_dict.get("params"), dict):
+                attrs_dict["params"] = {}
+            if "headers" not in attrs_dict or not isinstance(attrs_dict.get("headers"), dict):
+                attrs_dict["headers"] = {}
+            if "body" not in attrs_dict or not isinstance(attrs_dict.get("body"), dict):
+                attrs_dict["body"] = {}
+
         try:
-            model = RequestModelFactory.create(model_name, model_attrs)
+            model = RequestModelFactory.create(model_name, attrs_dict)
             return model
-        except Exception:
+        except Exception as e:
             model = RequestModelFactory.find(model_name)
             schema = model.schema()
             required_fields = ", ".join(schema["required"]) if "required" in schema else ""
             raise ValidationError(
-                "The attributes does not match the model."
+                "The attributes does not match the model. "
                 "You need to correctly specify the required fields: {}".format(required_fields)
             )
 
     def send_request(self, model, example):
         try:
+            # For CustomRESTRequestModel, if body is empty, automatically populate it with text
+            if hasattr(model, 'body') and isinstance(model.body, dict) and not model.body:
+                # Create a copy to avoid modifying the original model
+                import copy
+                model = copy.deepcopy(model)
+                model.body = {"text": example}
+
             return model.send(example)
         except requests.exceptions.ConnectionError:
             raise URLConnectionError

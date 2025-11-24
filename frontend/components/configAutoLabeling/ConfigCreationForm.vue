@@ -85,10 +85,15 @@ export default Vue.extend({
     },
     'fields.modelAttrs': {
       handler() {
-        this.passTesting = {
-          parameter: false,
-          template: false,
-          mapping: false
+        // Allow optional fields like params, headers, body to be unset
+        // Only reset testing status when modelName changes, not when attrs change
+        // For CustomRESTRequestModel, params/headers/body are optional
+        // So we allow auto-generated fields without requiring user to test
+        const hasSomeValues = this.fields.modelAttrs && this.fields.modelAttrs.length > 0
+        if (hasSomeValues) {
+          // Don't reset testing status for optional fields
+          // Let user proceed without testing if optional fields are empty
+          return
         }
       },
       deep: true
