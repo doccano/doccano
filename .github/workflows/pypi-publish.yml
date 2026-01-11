@@ -7,7 +7,11 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    environment:
+      name: pypi
+      url: https://pypi.org/p/doccano
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - name: Preparation
@@ -46,8 +50,7 @@ jobs:
           sed -e "s/, from = \"..\"//g" backend/pyproject.toml > pyproject.toml
           poetry build
       - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: ${{ secrets.PYPI_USERNAME }}
-          password: ${{ secrets.PYPI_PASSWORD }}
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           packages_dir: ./dist/
