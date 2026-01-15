@@ -5,7 +5,7 @@ from rest_framework.reverse import reverse
 from api.tests.utils import CRUDMixin
 from examples.tests.utils import make_doc
 from label_types.tests.utils import make_label
-from projects.models import ProjectType
+from projects.models import Member, ProjectType
 from projects.tests.utils import prepare_project
 
 
@@ -83,12 +83,12 @@ class TestCategoryDistribution(CRUDMixin):
         # Create a category by annotator
         mommy.make("Category", example=self.example, label=self.label, user=self.project.annotator)
         # Remove the annotator from the project
-        from projects.models import Member
         Member.objects.filter(user=self.project.annotator, project=self.project.item).delete()
         # Should not raise KeyError
         response = self.assert_fetch(self.project.admin, status.HTTP_200_OK)
-        # The response should only include current members
-        expected = {member.username: {self.label.text: 0} for member in [self.project.admin, self.project.approver]}
+        # The response should only include current members (after removal)
+        current_members = Member.objects.filter(project=self.project.item).select_related("user")
+        expected = {member.user.username: {self.label.text: 0} for member in current_members}
         expected[self.project.admin.username][self.label.text] = 1
         # The removed user's annotations should not be in the distribution
         self.assertEqual(response.data, expected)
