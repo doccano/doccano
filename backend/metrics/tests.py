@@ -78,3 +78,17 @@ class TestCategoryDistribution(CRUDMixin):
         expected = {member.username: {self.label.text: 0} for member in self.project.members}
         expected[self.project.admin.username][self.label.text] = 1
         self.assertEqual(response.data, expected)
+
+    def test_fetch_distribution_with_removed_user(self):
+        # Create a category by annotator
+        mommy.make("Category", example=self.example, label=self.label, user=self.project.annotator)
+        # Remove the annotator from the project
+        from projects.models import Member
+        Member.objects.filter(user=self.project.annotator, project=self.project.item).delete()
+        # Should not raise KeyError
+        response = self.assert_fetch(self.project.admin, status.HTTP_200_OK)
+        # The response should only include current members
+        expected = {member.username: {self.label.text: 0} for member in [self.project.admin, self.project.approver]}
+        expected[self.project.admin.username][self.label.text] = 1
+        # The removed user's annotations should not be in the distribution
+        self.assertEqual(response.data, expected)

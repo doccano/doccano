@@ -29,7 +29,9 @@ class LabelManager(Manager):
             username = item["user__username"]
             label = item[f"{self.label_type_field}__text"]
             count = item["count"]
-            distribution[username][label] = count
+            # Skip users who are no longer members of the project
+            if username in distribution:
+                distribution[username][label] = count
         return distribution
 
     def get_labels(self, label, project):
