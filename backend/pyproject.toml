@@ -97,17 +97,17 @@ enable = false
 
 [tool.black]
 line-length = 120
-target-version = ['py37', 'py38']
+target-version = ['py310']
 include = '\.pyi?$'
 
 [tool.flake8]
 max-line-length = 120
 max-complexity = 18
-ignore = "E203,E266,W503,"
+ignore = "E203,E266,W503,E704"
 filename = "*.py"
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.10"
 ignore_missing_imports = true
 show_error_codes = true
 exclude = [

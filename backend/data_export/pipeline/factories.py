@@ -69,18 +69,20 @@ def create_formatter(project: Project, file_format: str) -> List[Formatter]:
             FastText.name: [FastTextCategoryFormatter(Categories.column)],
         },
         ProjectType.SEQUENCE_LABELING: {
-            JSONL.name: [
-                DictFormatter(Spans.column),
-                DictFormatter(Relations.column),
-                DictFormatter(Comments.column),
-                RenameFormatter(**mapper_relation_extraction),
-            ]
-            if use_relation
-            else [
-                TupledSpanFormatter(Spans.column),
-                ListedCategoryFormatter(Comments.column),
-                RenameFormatter(**mapper_sequence_labeling),
-            ]
+            JSONL.name: (
+                [
+                    DictFormatter(Spans.column),
+                    DictFormatter(Relations.column),
+                    DictFormatter(Comments.column),
+                    RenameFormatter(**mapper_relation_extraction),
+                ]
+                if use_relation
+                else [
+                    TupledSpanFormatter(Spans.column),
+                    ListedCategoryFormatter(Comments.column),
+                    RenameFormatter(**mapper_sequence_labeling),
+                ]
+            )
         },
         ProjectType.SEQ2SEQ: {
             CSV.name: [

@@ -1,6 +1,7 @@
 """
 Represents label collection.
 """
+
 import abc
 from collections import defaultdict
 from typing import Dict, List, Tuple

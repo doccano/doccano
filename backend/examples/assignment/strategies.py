@@ -32,8 +32,7 @@ def create_assignment_strategy(strategy_name: StrategyName, dataset_size: int, w
 
 class BaseStrategy(abc.ABC):
     @abc.abstractmethod
-    def assign(self) -> List[Assignment]:
-        ...
+    def assign(self) -> List[Assignment]: ...
 
 
 class WeightedSequentialStrategy(BaseStrategy):
