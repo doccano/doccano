@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 Any setting that is configured via an environment variable may
 also be set in a `.env` file in the project base directory.
 """
+
 from os import path
 
 import dj_database_url
