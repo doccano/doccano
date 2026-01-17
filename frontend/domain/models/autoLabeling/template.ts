@@ -29,12 +29,22 @@ export class ConfigTemplateItem {
       if ('type' in value && value.type === 'string') {
         response.push({ name: key, type: 'textField', value: '' })
       } else if ('anyOf' in value) {
-        response.push({
-          name: key,
-          type: 'selectField',
-          value: '',
-          items: value.anyOf.map((item: { const: string; type: string }) => item.const)
-        })
+        // Check if anyOf contains an object type
+        const hasObjectType = value.anyOf.some((item: { type: string; const?: string }) => item.type === 'object')
+        if (hasObjectType) {
+          response.push({
+            name: key,
+            type: 'objectField',
+            value: []
+          })
+        } else {
+          response.push({
+            name: key,
+            type: 'selectField',
+            value: '',
+            items: value.anyOf.map((item: { const: string; type: string }) => item.const)
+          })
+        }
       } else if ('type' in value && value.type === 'object') {
         response.push({
           name: key,
