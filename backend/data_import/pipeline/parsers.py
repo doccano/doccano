@@ -136,8 +136,8 @@ class TextFileParser(Parser):
 
     def parse(self, filename: str) -> Iterator[Dict[Any, Any]]:
         encoding = decide_encoding(filename, self.encoding)
-        with open(filename, encoding=encoding) as f:
-            yield {DEFAULT_TEXT_COLUMN: f.read()}
+        with open(filename, encoding=encoding, errors="replace") as f:
+            yield {DEFAULT_TEXT_COLUMN: f.read().replace("\x00", "\uFFFD")}
 
 
 class CSVParser(Parser):
