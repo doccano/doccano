@@ -54,7 +54,7 @@
     "vue-template-compiler": "^2.6.14",
     "vue-virtual-scroller": "^1.0.10",
     "vue-youtube": "^1.4.0",
-    "vuetify": "^2.*",
+    "vuetify": "^3.*",
     "wavesurfer.js": "^5.1.0",
     "webpack": "^4.46.0",
     "yarn": "^1.22.10"
