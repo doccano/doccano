@@ -1,0 +1,1078 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Text Annotation tool for Humans">
+      
+      
+        <link rel="canonical" href="https://doccano.github.io/doccano/install_and_upgrade_doccano/">
+      
+      
+        <meta name="author" content="Hiroki Nakayama">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.0">
+    
+    
+      
+        <title>Install and upgrade doccano - doccano</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bc7e593a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab28b872.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#00bdd6">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="cyan" data-md-color-accent="cyan">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#install-doccano" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://doccano.github.io/doccano/" title="doccano" class="md-header-nav__button md-logo" aria-label="doccano">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            doccano
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Install and upgrade doccano
+            
+          </span>
+        </div>
+      
+    </div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/doccano/doccano/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    doccano/doccano
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://doccano.github.io/doccano/" title="doccano" class="md-nav__button md-logo" aria-label="doccano">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    doccano
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/doccano/doccano/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    doccano/doccano
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." class="md-nav__link">
+      Get started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Install and upgrade doccano
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      Install and upgrade doccano
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#system-requirements" class="md-nav__link">
+    System requirements
+  </a>
+  
+    <nav class="md-nav" aria-label="System requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-browser-support" class="md-nav__link">
+    Web browser support
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#port-requirements" class="md-nav__link">
+    Port requirements
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-with-pip" class="md-nav__link">
+    Install with pip
+  </a>
+  
+    <nav class="md-nav" aria-label="Install with pip">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-postgresql-as-a-database" class="md-nav__link">
+    Use PostgreSQL as a database
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-rabbitmq-as-a-message-broker" class="md-nav__link">
+    Use RabbitMQ as a message broker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-flower-to-monitor-celery-tasks" class="md-nav__link">
+    Use Flower to monitor Celery tasks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-with-docker" class="md-nav__link">
+    Install with Docker
+  </a>
+  
+    <nav class="md-nav" aria-label="Install with Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-a-local-image-with-docker" class="md-nav__link">
+    Build a local image with Docker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-flower" class="md-nav__link">
+    Use Flower
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-with-docker-compose" class="md-nav__link">
+    Install with Docker Compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-from-source" class="md-nav__link">
+    Install from source
+  </a>
+  
+    <nav class="md-nav" aria-label="Install from source">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    Backend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    Frontend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-create-a-python-package" class="md-nav__link">
+    How to create a Python package
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-to-cloud" class="md-nav__link">
+    Install to cloud
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade-doccano" class="md-nav__link">
+    Upgrade doccano
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrade doccano">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#after-v160" class="md-nav__link">
+    After v1.6.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#before-v160" class="md-nav__link">
+    Before v1.6.0
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../tutorial/" class="md-nav__link">
+      Tutorial
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../setup_cloud_storage/" class="md-nav__link">
+      Setup cloud storage
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Advanced
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Advanced" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        <span class="md-nav__icon md-icon"></span>
+        Advanced
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../advanced/aws_https_settings/" class="md-nav__link">
+      AWS HTTPS settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../advanced/oauth2_settings/" class="md-nav__link">
+      OAuth2 settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../advanced/auto_labelling_config/" class="md-nav__link">
+      Auto labeling settings
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../developer_guide/" class="md-nav__link">
+      Developer guide
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../faq/" class="md-nav__link">
+      FAQ
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../CODE_OF_CONDUCT/" class="md-nav__link">
+      Code of conduct
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../roadmap/" class="md-nav__link">
+      Roadmap
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#system-requirements" class="md-nav__link">
+    System requirements
+  </a>
+  
+    <nav class="md-nav" aria-label="System requirements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#web-browser-support" class="md-nav__link">
+    Web browser support
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#port-requirements" class="md-nav__link">
+    Port requirements
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-with-pip" class="md-nav__link">
+    Install with pip
+  </a>
+  
+    <nav class="md-nav" aria-label="Install with pip">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-postgresql-as-a-database" class="md-nav__link">
+    Use PostgreSQL as a database
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-rabbitmq-as-a-message-broker" class="md-nav__link">
+    Use RabbitMQ as a message broker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-flower-to-monitor-celery-tasks" class="md-nav__link">
+    Use Flower to monitor Celery tasks
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-with-docker" class="md-nav__link">
+    Install with Docker
+  </a>
+  
+    <nav class="md-nav" aria-label="Install with Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-a-local-image-with-docker" class="md-nav__link">
+    Build a local image with Docker
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-flower" class="md-nav__link">
+    Use Flower
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-with-docker-compose" class="md-nav__link">
+    Install with Docker Compose
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-from-source" class="md-nav__link">
+    Install from source
+  </a>
+  
+    <nav class="md-nav" aria-label="Install from source">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    Backend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    Frontend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-create-a-python-package" class="md-nav__link">
+    How to create a Python package
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#install-to-cloud" class="md-nav__link">
+    Install to cloud
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#upgrade-doccano" class="md-nav__link">
+    Upgrade doccano
+  </a>
+  
+    <nav class="md-nav" aria-label="Upgrade doccano">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#after-v160" class="md-nav__link">
+    After v1.6.0
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#before-v160" class="md-nav__link">
+    Before v1.6.0
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/doccano/doccano/edit/master/docs/install_and_upgrade_doccano.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="install-doccano">Install doccano</h1>
+<p>Install doccano on local or in the cloud. Choose the installation method that works best for your environment:</p>
+<ul>
+<li><a href="#install-doccano">Install doccano</a></li>
+<li><a href="#system-requirements">System requirements</a><ul>
+<li><a href="#web-browser-support">Web browser support</a></li>
+<li><a href="#port-requirements">Port requirements</a></li>
+</ul>
+</li>
+<li><a href="#install-with-pip">Install with pip</a><ul>
+<li><a href="#use-postgresql-as-a-database">Use PostgreSQL as a database</a></li>
+<li><a href="#use-rabbitmq-as-a-message-broker">Use RabbitMQ as a message broker</a></li>
+<li><a href="#use-flower-to-monitor-celery-tasks">Use Flower to monitor Celery tasks</a></li>
+</ul>
+</li>
+<li><a href="#install-with-docker">Install with Docker</a><ul>
+<li><a href="#build-a-local-image-with-docker">Build a local image with Docker</a></li>
+<li><a href="#use-flower">Use Flower</a></li>
+</ul>
+</li>
+<li><a href="#install-with-docker-compose">Install with Docker Compose</a></li>
+<li><a href="#install-from-source">Install from source</a><ul>
+<li><a href="#backend">Backend</a></li>
+<li><a href="#frontend">Frontend</a></li>
+<li><a href="#how-to-create-a-python-package">How to create a Python package</a></li>
+</ul>
+</li>
+<li><a href="#install-to-cloud">Install to cloud</a></li>
+<li><a href="#upgrade-doccano">Upgrade doccano</a><ul>
+<li><a href="#after-v160">After v1.6.0</a></li>
+<li><a href="#before-v160">Before v1.6.0</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="system-requirements">System requirements</h2>
+<p>You can install doccano on a Linux, Windows, or macOS machine running Python 3.8+.</p>
+<h3 id="web-browser-support">Web browser support</h3>
+<p>doccano is tested with the latest version of Google Chrome and is expected to work in the latest versions of:</p>
+<ul>
+<li>Google Chrome</li>
+<li>Apple Safari</li>
+</ul>
+<p>If using other web browsers, or older versions of supported web browsers, unexpected behavior could occur.</p>
+<h3 id="port-requirements">Port requirements</h3>
+<p>doccano uses port 8000 by default. To use a different port, specify it when running doccano webserver.</p>
+<h2 id="install-with-pip">Install with pip</h2>
+<p>To install doccano with pip, you need Python 3.8+. Run the following:</p>
+<pre><code class="language-bash">pip install doccano
+</code></pre>
+<p>After you install doccano, start the server with the following command:</p>
+<pre><code class="language-bash"># Initialize database. First time only.
+doccano init
+# Create a super user. First time only.
+doccano createuser --username admin --password pass
+# Start a web server.
+doccano webserver --port 8000
+</code></pre>
+<p>In another terminal, run the following command:</p>
+<pre><code class="language-bash"># Start the task queue to handle file upload/download.
+doccano task
+</code></pre>
+<p>Open <a href="http://localhost:8000/">http://localhost:8000/</a>.</p>
+<h3 id="use-postgresql-as-a-database">Use PostgreSQL as a database</h3>
+<p>By default, SQLite 3 is used for the default database system. You can also use other database systems like PostgreSQL, MySQL, and so on. Here we will show you how to use PostgreSQL.</p>
+<p>First, you need to install <code>psycopg2-binary</code> as an additional dependency:</p>
+<pre><code class="language-bash">pip install psycopg2-binary
+</code></pre>
+<p>Next, set up PostgreSQL. You can set up PostgreSQL directly, but here we will use Docker. Let's run the <code>docker run</code> command with the user name(<code>POSTGRES_USER</code>), password(<code>POSTGRES_PASSWORD</code>), and database name(<code>POSTGRES_DB</code>). For other options, please refer to the <a href="https://hub.docker.com/_/postgres">official documentation</a>.</p>
+<pre><code class="language-bash">docker run -d \
+  --name doccano-postgres \
+  -e POSTGRES_USER=doccano_admin \
+  -e POSTGRES_PASSWORD=doccano_pass \
+  -e POSTGRES_DB=doccano \
+  -v doccano-db:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  postgres:13.8-alpine
+</code></pre>
+<p>Then, set <code>DATABASE_URL</code> environment variable according to your PostgreSQL credentials. The schema is in line with dj-database-url. Please refer to the <a href="https://github.com/jazzband/dj-database-url">official documentation</a> for the detailed information.</p>
+<pre><code class="language-bash"># export DATABASE_URL=&quot;postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable&quot;
+export DATABASE_URL=&quot;postgres://doccano_admin:doccano_pass@localhost:5432/doccano?sslmode=disable&quot;
+</code></pre>
+<p>That's it. Now you can start by running the <code>doccano init</code> command.</p>
+<h3 id="use-rabbitmq-as-a-message-broker">Use RabbitMQ as a message broker</h3>
+<p>doccano uses Celery and a message broker to handle long tasks like importing/exporting datasets. By default, SQLite3 is used for the default message broker. You can also use other message brokers like RabbitMQ, Redis, and so on. Here we will show you how to use RabbitMQ.</p>
+<p>First, set up RabbitMQ. You can set up RabbitMQ directly, but here we will use Docker. Let's run the <code>docker run</code> command with the user name(<code>RABBITMQ_DEFAULT_USER</code>), password(<code>RABBITMQ_DEFAULT_PASS</code>). For other options, please refer to the <a href="https://hub.docker.com/_/rabbitmq">official documentation</a>.</p>
+<pre><code class="language-bash">docker run -d \
+  --hostname doccano \
+  --name doccano-rabbit \
+  -e RABBITMQ_DEFAULT_USER=doccano_rabit \
+  -e RABBITMQ_DEFAULT_PASS=doccano_pass \
+  -p 5672:5672 \
+  rabbitmq:3.10.7-alpine
+</code></pre>
+<p>Then, set <code>CELERY_BROKER_URL</code> environment variable according to your RabbitMQ credentials. If you want to know the schema, please refer to the <a href="https://docs.celeryq.dev/en/stable/userguide/configuration.html#broker-settings">official documentation</a>.</p>
+<pre><code class="language-bash"># export CELERY_BROKER_URL='amqp://${RABBITMQ_DEFAULT_USER}:${RABBITMQ_DEFAULT_PASS}@localhost:5672//'
+export CELERY_BROKER_URL='amqp://doccano_rabit:doccano_pass@localhost:5672//'
+</code></pre>
+<p>That's it. Now you can start webserver and task queue by running the <code>doccano webserver</code> and <code>doccano task</code> command. Notice that the both commands needs <code>DATABASE_URL</code> and <code>CELERY_BROKER_URL</code> environment variables if you would change them.</p>
+<h3 id="use-flower-to-monitor-celery-tasks">Use Flower to monitor Celery tasks</h3>
+<p>If you want to monitor and manage celery tasks, you can use <a href="https://flower.readthedocs.io/en/latest/index.html">Flower</a>. The <code>–basic_auth</code> option accepts <em>user:password</em> pairs separated by a comma. If configured, any client trying to access this Flower instance will be prompted to provide the credentials specified in this argument:</p>
+<pre><code class="language-bash">doccano flower --basic_auth=user1:password1,user2:password2
+</code></pre>
+<p>Open <a href="http://localhost:5555/">http://localhost:5555/</a>.</p>
+<h2 id="install-with-docker">Install with Docker</h2>
+<p>doccano is also available as a <a href="https://www.docker.com/">Docker</a> container. Make sure you have Docker installed on your machine.</p>
+<p>To install and start doccano at <a href="http://localhost:8000">http://localhost:8000</a>, run the following command:</p>
+<pre><code class="language-bash">docker pull doccano/doccano
+docker container create --name doccano \
+  -e &quot;ADMIN_USERNAME=admin&quot; \
+  -e &quot;ADMIN_EMAIL=admin@example.com&quot; \
+  -e &quot;ADMIN_PASSWORD=password&quot; \
+  -v doccano-db:/data \
+  -p 8000:8000 doccano/doccano
+</code></pre>
+<p>Next, start doccano by running the container:</p>
+<pre><code class="language-bash">docker container start doccano
+</code></pre>
+<p>To stop the container, run <code>docker container stop doccano -t 5</code>.
+All data created in the container persist across restarts.</p>
+<p>If you want to use the latest features, please specify <code>nightly</code> tag:</p>
+<pre><code class="language-bash">docker pull doccano/doccano:nightly
+</code></pre>
+<h3 id="build-a-local-image-with-docker">Build a local image with Docker</h3>
+<p>If you want to build a local image, run:</p>
+<pre><code class="language-bash">docker build -t doccano:latest . -f docker/Dockerfile
+</code></pre>
+<h3 id="use-flower">Use Flower</h3>
+<p>Set <code>FLOWER_BASIC_AUTH</code> environment variable and open <code>5555</code> port. The variable accepts <em>user:password</em> pairs separated by a comma.</p>
+<pre><code class="language-bash">docker container create --name doccano \
+  -e &quot;ADMIN_USERNAME=admin&quot; \
+  -e &quot;ADMIN_EMAIL=admin@example.com&quot; \
+  -e &quot;ADMIN_PASSWORD=password&quot; \
+  -e &quot;FLOWER_BASIC_AUTH=username:password&quot;
+  -v doccano-db:/data \
+  -p 8000:8000 -p 5555:5555 doccano/doccano
+</code></pre>
+<h2 id="install-with-docker-compose">Install with Docker Compose</h2>
+<p>You need to install Git and to clone the repository:</p>
+<pre><code class="language-bash">git clone https://github.com/doccano/doccano.git
+cd doccano
+</code></pre>
+<p>To install and start doccano at <a href="http://localhost">http://localhost</a>, run the following command:</p>
+<pre><code class="language-bash">cd docker
+cp .env.example .env
+# Edit with the editor of your choice, in this example nano is used (ctrl+x, then &quot;y&quot; to save).
+nano .env
+docker-compose -f docker-compose.prod.yml --env-file .env up
+</code></pre>
+<p>You can override the default setting by rewriting the <code>.env</code> file. See <a href="https://github.com/doccano/doccano/blob/master/docker/.env.example">./docker/.env.example</a> in detail.</p>
+<h2 id="install-from-source">Install from source</h2>
+<p>If you want to develop doccano, consider downloading the source code using Git and running doccano locally. First of all, clone the repository:</p>
+<pre><code class="language-bash">git clone https://github.com/doccano/doccano.git
+cd doccano
+</code></pre>
+<h3 id="backend">Backend</h3>
+<p>The doccano backend is built in Python 3.8+ and uses <a href="https://github.com/python-poetry/poetry">Poetry</a> as a dependency manager. If you haven't installed them yet, please see <a href="https://www.python.org/downloads/">Python</a> and <a href="https://python-poetry.org/docs/">Poetry</a> documentation.</p>
+<p>First, to install the defined dependencies for our project, just run the <code>install</code> command. After that, activate the virtual environment by running <code>shell</code> command:</p>
+<pre><code class="language-bash">cd backend
+poetry install
+poetry shell
+</code></pre>
+<p>Second, set up the database and run the development server. Doccano uses <a href="https://www.djangoproject.com/">Django</a> and <a href="https://www.django-rest-framework.org/">Django Rest Framework</a> as a backend. We can set up them by using Django command:</p>
+<pre><code class="language-bash">python manage.py migrate
+python manage.py create_roles
+python manage.py create_admin --noinput --username &quot;admin&quot; --email &quot;admin@example.com&quot; --password &quot;password&quot;
+python manage.py runserver
+</code></pre>
+<p>In another terminal, you need to run Celery to use import/export dataset feature:</p>
+<pre><code class="language-bash">cd doccano/backend
+celery --app=config worker --loglevel=INFO --concurrency=1
+</code></pre>
+<p>After you change the code, don't forget to run <a href="https://mypy.readthedocs.io/en/stable/index.html">mypy</a>, <a href="https://flake8.pycqa.org/en/latest/">flake8</a>, <a href="https://github.com/psf/black">black</a>, and <a href="https://github.com/PyCQA/isort">isort</a>. These ensure code consistency. To run them, just run the following commands:</p>
+<pre><code class="language-bash">poetry run task mypy
+poetry run task flake8
+poetry run task black
+poetry run task isort
+</code></pre>
+<p>Similarly, you can run the test by executing the following command:</p>
+<pre><code class="language-bash">poetry run task test
+</code></pre>
+<p>Did you pass the test? Great!</p>
+<h3 id="frontend">Frontend</h3>
+<p>The doccano frontend is built in Node.js and uses <a href="https://yarnpkg.com/">Yarn</a> as a package manager. If you haven't installed them yet, please see <a href="https://nodejs.org/en/">Node.js</a> and <a href="https://yarnpkg.com/">Yarn</a> documentation.</p>
+<p>First, to install the defined dependencies for our project, just run the <code>install</code> command.</p>
+<pre><code class="language-bash">cd frontend
+yarn install
+</code></pre>
+<p>Then run the <code>dev</code> command to serve with hot reload at <localhost:3000>:</p>
+<pre><code class="language-bash">yarn dev
+</code></pre>
+<p>After you change the code, don't forget to run 
+the following commands to ensure code consistency:</p>
+<pre><code class="language-bash">yarn lintfix
+yarn precommit
+yarn fix:prettier
+</code></pre>
+<h3 id="how-to-create-a-python-package">How to create a Python package</h3>
+<p>During development, you may want to create a Python package and verify it works correctly. In such a case, you can create a package by running the following command in the root directory of your project:</p>
+<pre><code class="language-bash">./tools/create-package.sh
+</code></pre>
+<p>This command builds the frontend, copies the files, and packages them. This will take a few minutes. After finishing the command, you will find <code>sdist</code> and <code>wheel</code> in <code>backend/dist</code>:</p>
+<pre><code class="language-bash">Building doccano (1.5.5.post335.dev0+6be6d198)
+  - Building sdist
+  - Built doccano-1.5.5.post335.dev0+6be6d198.tar.gz
+  - Building wheel
+  - Built doccano-1.5.5.post335.dev0+6be6d198-py3-none-any.whl
+</code></pre>
+<p>Then, you can install the package via <code>pip install</code> command:</p>
+<pre><code class="language-bash">pip install doccano-1.5.5.post335.dev0+6be6d198-py3-none-any.whl
+</code></pre>
+<h2 id="install-to-cloud">Install to cloud</h2>
+<p>doccano also supports one-click deployment to cloud providers. Click the following button, configure the environment, and access the UI.</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Button</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AWS</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=doccano&amp;templateURL=https://doccano.s3.amazonaws.com/public/cloudformation/template.aws.yaml"><img alt="AWS CloudFormation Launch Stack SVG Button" src="https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg" /></a></td>
+</tr>
+<tr>
+<td>Heroku</td>
+<td><a href="https://dashboard.heroku.com/new?template=https%3A%2F%2Fgithub.com%2Fdoccano%2Fdoccano"><img alt="Deploy" src="https://www.herokucdn.com/deploy/button.svg" /></a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="upgrade-doccano">Upgrade doccano</h2>
+<p>Caution: If you use SQLite3 as a database, upgrading the package would lose your database.</p>
+<p>The migrate command has been supported since v1.6.0.</p>
+<h3 id="after-v160">After v1.6.0</h3>
+<p>To upgrade to the latest version of doccano, reinstall or upgrade using pip.</p>
+<pre><code class="language-bash">pip install -U doccano
+</code></pre>
+<p>If you need to update the database scheme, run the following:</p>
+<pre><code class="language-bash">doccano migrate
+</code></pre>
+<h3 id="before-v160">Before v1.6.0</h3>
+<p>First, you need to copy the database file and media directory in the case of SQLite3:</p>
+<pre><code class="language-bash">mkdir -p ~/doccano
+# Replace your path.
+cp venv/lib/python3.8/site-packages/backend/db.sqlite3 ~/doccano/
+cp -r venv/lib/python3.8/site-packages/backend/media ~/doccano/
+</code></pre>
+<p>Then, upgrade the package:</p>
+<pre><code class="language-bash">pip install -U doccano
+</code></pre>
+<p>At the end, run the migration:</p>
+<pre><code class="language-bash">doccano migrate
+</code></pre>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href=".." class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Get started
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../tutorial/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Tutorial
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2018 - 2019 Hiroki Nakayama
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/Hironsan" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/Hironsan13" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.6a3d08fc.min.js"></script>
+      <script src="../assets/javascripts/bundle.71201edf.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

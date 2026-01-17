@@ -1,0 +1,775 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A Text Annotation tool for Humans">
+      
+      
+        <link rel="canonical" href="https://doccano.github.io/doccano/developer_guide/">
+      
+      
+        <meta name="author" content="Hiroki Nakayama">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.0">
+    
+    
+      
+        <title>Developer guide - doccano</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.bc7e593a.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab28b872.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#00bdd6">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="cyan" data-md-color-accent="cyan">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#developer-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="https://doccano.github.io/doccano/" title="doccano" class="md-header-nav__button md-logo" aria-label="doccano">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            doccano
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Developer guide
+            
+          </span>
+        </div>
+      
+    </div>
+    
+    
+      <div class="md-header-nav__source">
+        
+<a href="https://github.com/doccano/doccano/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    doccano/doccano
+  </div>
+</a>
+      </div>
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="https://doccano.github.io/doccano/" title="doccano" class="md-nav__button md-logo" aria-label="doccano">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    doccano
+  </label>
+  
+    <div class="md-nav__source">
+      
+<a href="https://github.com/doccano/doccano/" title="Go to repository" class="md-source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M439.55 236.05L244 40.45a28.87 28.87 0 00-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 01-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 000 40.81l195.61 195.6a28.86 28.86 0 0040.8 0l194.69-194.69a28.86 28.86 0 000-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    doccano/doccano
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." class="md-nav__link">
+      Get started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../install_and_upgrade_doccano/" class="md-nav__link">
+      Install and upgrade doccano
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../tutorial/" class="md-nav__link">
+      Tutorial
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../setup_cloud_storage/" class="md-nav__link">
+      Setup cloud storage
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-5" type="checkbox" id="nav-5">
+    
+    <label class="md-nav__link" for="nav-5">
+      Advanced
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Advanced" data-md-level="1">
+      <label class="md-nav__title" for="nav-5">
+        <span class="md-nav__icon md-icon"></span>
+        Advanced
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../advanced/aws_https_settings/" class="md-nav__link">
+      AWS HTTPS settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../advanced/oauth2_settings/" class="md-nav__link">
+      OAuth2 settings
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../advanced/auto_labelling_config/" class="md-nav__link">
+      Auto labeling settings
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Developer guide
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      Developer guide
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    backend
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    docker
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    frontend
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tools" class="md-nav__link">
+    tools
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-of-python-package" class="md-nav__link">
+    Architecture of Python package
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../faq/" class="md-nav__link">
+      FAQ
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../CODE_OF_CONDUCT/" class="md-nav__link">
+      Code of conduct
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../roadmap/" class="md-nav__link">
+      Roadmap
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#backend" class="md-nav__link">
+    backend
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    docker
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#frontend" class="md-nav__link">
+    frontend
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tools" class="md-nav__link">
+    tools
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-of-python-package" class="md-nav__link">
+    Architecture of Python package
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/doccano/doccano/edit/master/docs/developer_guide.md" title="Edit this page" class="md-content__button md-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
+                  </a>
+                
+                
+                <h1 id="developer-guide">Developer Guide</h1>
+<p>The important doccano directories are:</p>
+<pre><code class="language-bash">├── backend/
+├── docker/
+├── frontend/
+└── tools/
+</code></pre>
+<h2 id="backend">backend</h2>
+<p>The <code>backend/</code> directory includes the backend's REST API code. These APIs are built by <a href="https://www.python.org/">Python 3.8+</a> and <a href="https://www.djangoproject.com">Django 4.0+</a>. All of the packages are managed by Poetry, Python packaging, and dependency management software. The directory structure of the backend follows mainly the <a href="https://www.djangoproject.com">Django</a> structure. The following table shows the main files and directories:</p>
+<table>
+<thead>
+<tr>
+<th>file or directory</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>api/</td>
+<td>Django application. In the older versions, this manages all the APIs. Now, there is only an API to check the status of Celery tasks.</td>
+</tr>
+<tr>
+<td>auto_labeling/</td>
+<td>Django application. This manages the features related to auto labeling.</td>
+</tr>
+<tr>
+<td>config/</td>
+<td>Django settings. This includes multiple setting files like production and development.</td>
+</tr>
+<tr>
+<td>data_export/</td>
+<td>Django application. This manages the features related to data export.</td>
+</tr>
+<tr>
+<td>data_import/</td>
+<td>Django application. This manages the features related to data import.</td>
+</tr>
+<tr>
+<td>examples/</td>
+<td>Django application. This manages the features related to manipulate <a href="https://developers.google.com/machine-learning/glossary#example">examples</a>.</td>
+</tr>
+<tr>
+<td>label_types/</td>
+<td>Django application. This manages the feature related to label types.</td>
+</tr>
+<tr>
+<td>labels/</td>
+<td>Django application. This manages the feature related to labeling.</td>
+</tr>
+<tr>
+<td>metrics/</td>
+<td>Django application. This manages the feature related to project metrics like the progress for each user, label distribution and so on.</td>
+</tr>
+<tr>
+<td>projects/</td>
+<td>Django application. This manages the feature related to project manipulation. A project includes its members, examples, label types, and labels.</td>
+</tr>
+<tr>
+<td>roles/</td>
+<td>Django application. This manages the feature related to roles. There are three roles: administrator, annotator, approver. These roles are assigned to the project members and defines their permission.</td>
+</tr>
+<tr>
+<td>users/</td>
+<td>Django application. This manages the feature related to users.</td>
+</tr>
+<tr>
+<td>cli.py</td>
+<td>This defines the command line interfaces. If you install doccano by Python package, this file is used to setup database, create a superuser, run webserver and so on.</td>
+</tr>
+<tr>
+<td>manage.py</td>
+<td>Django management script. See <a href="https://docs.djangoproject.com/en/4.0/ref/django-admin/">django-admin and manage.py</a> in detail.</td>
+</tr>
+<tr>
+<td>poetry.lock</td>
+<td>Related to Poetry. This file prevents you from automatically getting the latest versions of your dependencies. See <a href="https://python-poetry.org/docs/basic-usage/">Basic usage</a> in Poetry documentation.</td>
+</tr>
+<tr>
+<td>pyproject.toml</td>
+<td>This file contains build system requirements and information, which are used by pip to build the package. See <a href="https://pip.pypa.io/en/stable/reference/build-system/pyproject-toml/">pyproject.toml</a> and <a href="https://python-poetry.org/docs/pyproject/">The pyproject.toml file in Poetry</a> in detail.</td>
+</tr>
+</tbody>
+</table>
+<p>If you want to set up the backend environment, see the <a href="../install_and_upgrade_doccano/#install-from-source">Installation guide</a>.</p>
+<p>Also, you can set the following environment variables:</p>
+<table>
+<thead>
+<tr>
+<th>Environment Variable</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SECRET_KEY</td>
+<td>A secret key for a particular doccano installation. This is used to provide cryptographic signing, and should be set to a unique, unpredictable value. You should change the fixed default value. See <a href="https://docs.djangoproject.com/en/4.1/ref/settings/#std-setting-SECRET_KEY">SECRET_KEY</a> in detail.</td>
+</tr>
+<tr>
+<td>DEBUG</td>
+<td>A boolean that turns on/off debug mode. If <code>DEBUG</code> is <code>True</code>, the detailed error message will be shown. The default value is <code>True</code>. See <a href="https://docs.djangoproject.com/en/4.1/ref/settings/">DEBUG</a> in detail.</td>
+</tr>
+<tr>
+<td>DATABASE_URL</td>
+<td>A string to specify the database configuration. The string schema is in line with <a href="https://github.com/jazzband/dj-database-url">dj-database-url</a>. See the page for the detailed information.</td>
+</tr>
+<tr>
+<td>IMPORT_BATCH_SIZE</td>
+<td>A number to specify the batch size for importing dataset. The larger the value, the faster the dataset imports. The default value is <code>1000</code>.</td>
+</tr>
+<tr>
+<td>MAX_UPLOAD_SIZE</td>
+<td>A number to specify the max upload file size. The default value is 1073741824(1024^3=1GB).</td>
+</tr>
+<tr>
+<td>ENABLE_FILE_TYPE_CHECK</td>
+<td>A boolean that turns on/off file type check on importing datasets. If <code>ENABLE_FILE_TYPE_CHECK</code> is <code>True</code>, the MIME types of the files are checked.</td>
+</tr>
+<tr>
+<td>CELERY_BROKER_URL</td>
+<td>A string to point to your broker’s service URL. See <a href="https://docs.celeryq.dev/en/stable/userguide/configuration.html">Configuration and defaults</a> in detail.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="docker">docker</h2>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nginx/</td>
+<td>The <code>nginx</code> directory contains a NGINX configuration files. They are used only in <code>docker-compose.prod.yml</code>.</td>
+</tr>
+<tr>
+<td>.env.example</td>
+<td>The example of <code>.env</code> file. This is used only in <code>docker-compose.prod.yml</code>.</td>
+</tr>
+<tr>
+<td>docker-compose.prod.yml</td>
+<td>This file contains Docker Compose configuration to run a production environment. We adopted the three tier architecture.</td>
+</tr>
+<tr>
+<td>Dockerfile</td>
+<td>The dockerfile. You can pull the image from <a href="https://hub.docker.com/r/doccano/doccano">doccano/doccano</a>.</td>
+</tr>
+<tr>
+<td>Dockerfile.heroku</td>
+<td>The dockerfile for Heroku.</td>
+</tr>
+<tr>
+<td>Dockerfile.nginx</td>
+<td>The dockerfile to build nginx container. This is used only in <code>docker-compose.prod.yml</code>.</td>
+</tr>
+<tr>
+<td>Dockerfile.prod</td>
+<td>The dockerfile to build application container. This is used only in <code>docker-compose.prod.yml</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The architecture of the <code>docker-compose.prod.yml</code> is as follows:</p>
+<p><img alt="" src="../images/developer_guide/architecture_docker_compose.png" /></p>
+<p>On the other hand, the one of the <code>Dockerfile</code> is as follows:</p>
+<p><img alt="" src="../images/developer_guide/architecture_docker.png" /></p>
+<h2 id="frontend">frontend</h2>
+<p>The <code>frontend/</code> directory contains frontend code. The <code>frontend</code> directory structure follows the <a href="https://ru.nuxtjs.org">Nuxt.js</a> structure. See the <a href="https://nuxtjs.org/guide/directory-structure/">Nuxt.js documentation</a> for details.</p>
+<h2 id="tools">tools</h2>
+<p>The <code>tools</code> directory contains some shell scripts. They are mainly used in Docker containers:</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>create-package.sh</td>
+<td>This script creates doccano's Python package. Note that yarn and poetry must already be installed.</td>
+</tr>
+<tr>
+<td>heroku.sh</td>
+<td>This script is used to create django's superuser in Heroku.</td>
+</tr>
+<tr>
+<td>prod-celery.sh</td>
+<td>This script is used to run celery in <code>docker-compose.prod.yml</code>.</td>
+</tr>
+<tr>
+<td>prod-flower.sh</td>
+<td>This script is used to run Flower in <code>docker-compose.prod.yml</code>.</td>
+</tr>
+<tr>
+<td>prod-django.sh</td>
+<td>This script is used to run gunicorn in <code>docker-compose.prod.yml</code>. In addition, create roles, superuser, and migrate.</td>
+</tr>
+<tr>
+<td>run.sh</td>
+<td>This script is used in <code>Dockerfile</code>. After creating roles and superuser, run gunicorn and celery.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="architecture-of-python-package">Architecture of Python package</h2>
+<p><img alt="" src="../images/developer_guide/architecture_python_package.png" /></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../advanced/auto_labelling_config/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Auto labeling settings
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../faq/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                FAQ
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2018 - 2019 Hiroki Nakayama
+          </div>
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+  <div class="md-footer-social">
+    
+      
+      
+        
+        
+      
+      <a href="https://github.com/Hironsan" target="_blank" rel="noopener" title="github.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+      </a>
+    
+      
+      
+        
+        
+      
+      <a href="https://twitter.com/Hironsan13" target="_blank" rel="noopener" title="twitter.com" class="md-footer-social__link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+      </a>
+    
+  </div>
+
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/vendor.6a3d08fc.min.js"></script>
+      <script src="../assets/javascripts/bundle.71201edf.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "..",
+          features: [],
+          search: Object.assign({
+            worker: "../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
