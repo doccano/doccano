@@ -56,7 +56,6 @@ django-drf-filepond = "^0.5.0"
 celery = "^5.2.3"
 django-celery-results = "2.4.0"
 SQLAlchemy = "^1.4.31"
-waitress = "^2.0.0"
 django-health-check = "^3.16.5"
 djangorestframework-xml = "^2.0.0"
 django-storages = {extras = ["google"], version = "^1.13.1"}
@@ -69,6 +68,7 @@ environs = "^14.5.0"
 django-polymorphic = "^4.9.0"
 drf-yasg = "^1.21.11"
 pandas = "^2.3.3"
+waitress = "^3.0.2"
 
 [tool.poetry.dev-dependencies]
 model-mommy = "^2.0.0"
@@ -78,13 +78,15 @@ isort = {extras = ["pyproject"], version = "^5.10.1"}
 autopep8 = "^1.6.0"
 mypy = "^1.4.1"
 watchdog = "^2.1.6"
-black = "^22.1.0"
 pyproject-flake8 = "^0.0.1-alpha.2"
 types-chardet = "^4.0.3"
 types-requests = "^2.27.10"
 types-waitress = "^2.0.6"
 taskipy = "^1.10.1"
 unittest-xml-reporting = "^3.2.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.12.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
