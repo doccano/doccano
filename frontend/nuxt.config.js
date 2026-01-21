@@ -1,7 +1,12 @@
 import colors from 'vuetify/es5/util/colors'
 import i18n from './i18n'
 
+const BASE_URL = process.env.BASE_URL || '/'
+
 export default {
+  router: {
+    base: BASE_URL
+  },
   ssr: false,
   /*
    ** Headers of the page
@@ -26,7 +31,7 @@ export default {
   },
 
   env: {
-    baseUrl: '/v1'
+    baseUrl: `${BASE_URL}v1`
   },
 
   /*
