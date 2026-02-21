@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
                 ("manual", models.BooleanField(default=False)),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
                 ("updated_at", models.DateTimeField(auto_now=True)),
-                ("text", models.TextField()),
+                ("text", models.CharField(max_length=500)),
                 (
                     "example",
                     models.ForeignKey(

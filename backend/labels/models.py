@@ -96,7 +96,7 @@ class Span(Label):
 class TextLabel(Label):
     objects = TextLabelManager()
     example = models.ForeignKey(to=Example, on_delete=models.CASCADE, related_name="texts")
-    text = models.TextField()
+    text = models.CharField(max_length=500)
 
     def is_same_text(self, other: "TextLabel"):
         return self.text == other.text
