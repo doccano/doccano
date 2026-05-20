@@ -72,7 +72,6 @@ export default {
     [
       '@nuxtjs/vuetify',
       {
-        customVariables: ['~/assets/css/fonts.css'],
         treeShake: true,
         defaultAssets: {
           font: false,
