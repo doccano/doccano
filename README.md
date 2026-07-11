@@ -190,3 +190,7 @@ Here are some tips might be helpful. [How to Contribute to Doccano Project](http
 ## Contact
 
 For help and feedback, feel free to contact [the author](https://github.com/Hironsan).
+
+---
+
+*[Mukller](https://github.com/Mukller)*
