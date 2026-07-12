@@ -48,13 +48,13 @@ docker compose -f docker/docker-compose.yml down
 
 ## Troubleshooting
 
-- **Export not working?**  
-  The Celery worker must be running (it is included in the default Docker Compose setup).  
+- **Export not working?**
+  The Celery worker must be running (it is included in the default Docker Compose setup).
   If you see no exported file, check the logs of the `worker` service:
   ```bash
   docker compose -f docker/docker-compose.yml logs worker
   ```
-- **Persistent data:**  
+- **Persistent data:**
   By default, the database is stored in a Docker volume for persistence between runs.
 
 ---

@@ -280,7 +280,7 @@ Then run the `dev` command to serve with hot reload at <localhost:3000>:
 yarn dev
 ```
 
-After you change the code, don't forget to run 
+After you change the code, don't forget to run
 the following commands to ensure code consistency:
 
 ```bash

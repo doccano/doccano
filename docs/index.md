@@ -43,7 +43,7 @@ To complete a labeling project with doccano:
       The default is **username:** admin, **password:** password.
 
 5. Change the default admin password at <http://localhost:8000/admin/password_change/>.
-6. Return to the doccano UI at <http://localhost:8000/projects?>. 
+6. Return to the doccano UI at <http://localhost:8000/projects?>.
 7. Create a project for labeling data. Click **Create**, select a project type, and fill out project details.
 8. Import a dataset. Go to the **Dataset** page and click **Actions** >  **Import Dataset** and import the dataset you want to use.
 9. Click **Annotate** and label the data.

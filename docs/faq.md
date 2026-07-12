@@ -4,8 +4,8 @@
 
 To create a new doccano user:
 
-1. Run the doccano webserver. 
-2. Log in to the admin site (in the case of pip installation) via <http://localhost:{port}/admin/>. 
+1. Run the doccano webserver.
+2. Log in to the admin site (in the case of pip installation) via <http://localhost:{port}/admin/>.
 
       The example below uses the port `8000` and username `admin`. If you set your own port or username and password on running the server, use those values to log in.
       ![](images/faq/user_creation/login.png)
@@ -24,11 +24,11 @@ Congratulations. Now you can log in to doccano as a new user. After logging out 
 
 To add a user to your project:
 
-1. Log in to doccano. 
-2. Click on your project. 
+1. Log in to doccano.
+2. Click on your project.
 3. From the left side menu, click **Members**. If you are not the administrator of the project, **Members** will not appear.
       ![](images/faq/add_annotator/select_members.png)
-4. Click **Add** and fill in the Add Member form with the user name and role you want to add to the project. 
+4. Click **Add** and fill in the Add Member form with the user name and role you want to add to the project.
 5. Click **Save**.
       ![](images/faq/add_annotator/select_user.png)
 
@@ -39,7 +39,7 @@ Now the new user can access the project.
 To change a user's password:
 
 1. Run the doccano webserver.
-2. Log in to the admin site (in the case of pip installation) via <http://localhost:{port}/admin/>. 
+2. Log in to the admin site (in the case of pip installation) via <http://localhost:{port}/admin/>.
 
       **Note**: You need to have a staff permission to log in to the admin site. If you don't have the right permissions, ask the administrator to change your password.
       ![](images/faq/user_creation/login.png)
@@ -49,12 +49,12 @@ To change a user's password:
       ![](images/faq/how_to_change_password/user_list.png)
 5. Click the link that says **this form** in the password section.
       ![](images/faq/how_to_change_password/user_page.png)
-6. Fill out the form and change the password. 
+6. Fill out the form and change the password.
       ![](images/faq/how_to_change_password/change_password.png)
 
 ## I can't upload my data
 
-To troubleshoot, review this list: 
+To troubleshoot, review this list:
 
 - File encoding: `UTF-8` is appropriate.
 - Filename: alphabetic file name is suitable.
@@ -62,7 +62,7 @@ To troubleshoot, review this list:
 - When you are using JSON/JSONL: Confirm JSON data is valid.
   - You can use [JSONLint](https://jsonlint.com/) or some other tool (when JSONL, pick one data and check it).
 - When you are using CSV: Confirm CSV data is valid.
-  - You can use Excel or some tools that have import CSV feature. 
+  - You can use Excel or some tools that have import CSV feature.
 - Lack of line: Data file should not contain blank line.
 - Lack of field: Data file should not contain blank field.
 
@@ -70,7 +70,7 @@ To troubleshoot, review this list:
 
 ## I want to change the port number
 
-In the case of Docker Compose, you can change the port number by editing `docker-compose.prod.yml`. 
+In the case of Docker Compose, you can change the port number by editing `docker-compose.prod.yml`.
 
 1. Change `80:8080` to `<your_port>:8080` in `nginx`/`ports` section as follows:
 
@@ -95,7 +95,7 @@ In the case of Docker Compose, you can change the port number by editing `docker
 ## I want to update to the latest doccano image
 
 1. Execute `git pull` to reflect the latest doccano.
-2. Delete the volume that `doccano_node_modules`, `doccano_static_volume`, `doccano_venv` and `doccano_www`. 
+2. Delete the volume that `doccano_node_modules`, `doccano_static_volume`, `doccano_venv` and `doccano_www`.
    **Do not delete `doccano_postgres_data` because it stores your projects data.**
 3. Rebuild the doccano image.
 
