@@ -2,7 +2,7 @@
 
 ## What is doccano?
 
-**doccano** is an open-source data labeling tool for machine learning practitioners. You can use doccano to perform different types of labeling tasks with many data formats. To see what doccano can do, try the [doccano demo](http://doccano.herokuapp.com).
+**doccano** is an open-source data labeling tool for machine learning practitioners. You can use doccano to perform different types of labeling tasks with many data formats. To try doccano, follow the [Quickstart](#quickstart) instructions below. The animation shows an example of the annotation interface.
 
 ![Demo image](https://raw.githubusercontent.com/doccano/doccano/master/docs/images/demo/demo.gif)
 

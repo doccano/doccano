@@ -11,7 +11,7 @@ doccano is an open-source text annotation tool for humans. It provides annotatio
 
 ## Demo
 
-Try the [annotation demo](http://doccano.herokuapp.com).
+To try doccano, follow the installation instructions in the [Usage](#usage) section below. The animation shows an example of the annotation interface.
 
 ![Demo image](https://raw.githubusercontent.com/doccano/doccano/master/docs/images/demo/demo.gif)
 
